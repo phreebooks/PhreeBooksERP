@@ -128,17 +128,17 @@ switch ($_REQUEST['action']) {
 
 		$order->journal_main_array = $order->build_journal_main_array();	// build ledger main record
 		// ***************************** START TRANSACTION *******************************
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		$order->validate_purchase_invoice_id();
 		$order->Post('insert');
 	    if ($order->purchase_invoice_id == '') {	// it's a new record, increment the po/so/inv to next number
 		  	$order->increment_purchase_invoice_id();
 		}
 		gen_add_audit_log($journal_types_list[$order->journal_id]['text']. ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
-		$admin->DataBase->transCommit();	// finished successfully
+		$admin->DataBase->commit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
   	}catch(Exception $e){
-  		$admin->DataBase->transRollback();
+  		$admin->DataBase->rollBack();
   		\core\classes\messageStack::add($e->getMessage());
   	}
 	break;

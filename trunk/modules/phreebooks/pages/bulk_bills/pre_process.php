@@ -72,7 +72,7 @@ switch ($_REQUEST['action']) {
 			if (!count($payment_list)) throw new \core\classes\userException(GL_ERROR_NO_ITEMS);
 			// ***************************** START TRANSACTION *******************************
 			$first_payment_ref = $purchase_invoice_id; // first check number, needed for printing
-			$admin->DataBase->transStart();
+			$admin->DataBase->beginTransaction();
 			// post each payment by vendor (save journal record id)
 			foreach ($payment_list as $account => $values) {
 				$order = new \phreebooks\classes\journal\journal_20();
@@ -132,9 +132,9 @@ switch ($_REQUEST['action']) {
 			  'min' => $first_payment_ref,
 			  'max' => $last_payment_ref,
 			);
-			$admin->DataBase->transCommit();	// finished successfully
+			$admin->DataBase->commit();	// finished successfully
   		}catch(Exception $e){
-  			$admin->DataBase->transRollback();
+  			$admin->DataBase->rollBack();
   			\core\classes\messageStack::add($e->getMessage());
   		}
 

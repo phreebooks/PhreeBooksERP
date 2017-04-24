@@ -103,6 +103,7 @@ class admin extends \core\classes\admin {
 					onLoadSuccess: function(data){
 						console.log('the loading of the crm history datagrid was succesfull');
 						$.messager.progress('close');
+						if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 					},
 					onLoadError: function(){
 						console.error('the loading of the crm history datagrid resulted in a error');
@@ -148,6 +149,7 @@ class admin extends \core\classes\admin {
 				        	onLoadSuccess:function(data){
 				        		console.log('the loading the crm form was succesfull');
 				        		$.messager.progress('close');
+				        		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 				        	},
 				            onLoadError: function(){
 				        		console.error('the loading of the crm form resulted in a error');
@@ -252,6 +254,7 @@ class admin extends \core\classes\admin {
 					onLoadSuccess: function(data){
 	                	$('#log_date').datetimebox('setValue', formatDateTime(data.log_date));	
 	                	console.log('succesfull loaded form data = '+JSON.stringify(data));
+	                	if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 		            },
 			        onSubmit: function(param){
 						console.log('submitting crm form');
@@ -260,7 +263,6 @@ class admin extends \core\classes\admin {
 			        success: function(data){
 			        	console.log('succesfull submitted crm form');
 	                	data = eval('('+data+')');
-	                	console.log(data);
 	                    if (data.error_message){
 	                    	console.error(data.error_message);
 	                        $.messager.show({ title: '<?php echo TEXT_ERROR?>', msg: data.error_message });

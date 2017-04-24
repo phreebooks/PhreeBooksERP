@@ -117,7 +117,7 @@ echo $toolbar->build();
 	    echo '    <th colspan="3" class="ui-state-highlight">' . TEXT_APPROVALS . '</th>' . chr(10);
 	    if ($value['mfg'] == '1') {
 		  if (!$mfg_approved) {
-	        echo '    <td align="center">' . TEXT_MFG . '&nbsp;' . html_pull_down_menu('user_mfg', $user_list, $user_mfg) . '&nbsp;' . html_password_field('pw_mfg', '') . '</td>' . chr(10);
+	        echo '    <td align="center">' . TEXT_MFG . '&nbsp;' . html_pull_down_menu('user_mfg', $user_list, $user_mfg) . '&nbsp;' . \core\classes\htmlElement::password('pw_mfg', TEXT_PASSWORD) . '</td>' . chr(10);
 	      } else {
 	        echo '    <td align="center">' . TEXT_MFG . ' - ' . get_user_name($value['mfg_id']) . '</td>' . chr(10);
 		  }
@@ -126,7 +126,7 @@ echo $toolbar->build();
 	    }
 	    if ($value['qa'] == '1') {
 		  if (!$qa_approved) {
-	        echo '    <td align="center">' . TEXT_QA . '&nbsp;' . html_pull_down_menu('user_qa', $user_list, $user_qa) . '&nbsp;' . html_password_field('pw_qa', '') . '</td>' . chr(10);
+	        echo '    <td align="center">' . TEXT_QA . '&nbsp;' . html_pull_down_menu('user_qa', $user_list, $user_qa) . '&nbsp;' . \core\classes\htmlElement::password('pw_qa', TEXT_PASSWORD) . '</td>' . chr(10);
 	      } else {
 	        echo '    <td align="center">' . TEXT_QA . ' - ' . get_user_name($value['qa_id']) . '</td>' . chr(10);
 		  }

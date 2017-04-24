@@ -31,7 +31,7 @@ abstract class journal {
 		if ($id != 0) {
 			$sql = $admin->DataBase->prepare("SELECT * FROM " . TABLE_JOURNAL_MAIN . " WHERE id = $id");
 			$sql->execute();
-			$temp = $sql->fetch(\PDO::FETCH_LAZY);
+			$temp = $sql->fetch(\PDO::FETCH_ASSOC);
 			foreach ($temp as $key => $value) $this->$key = $value;
 			// make sure we have a record or die (there's a problem that needs to be fixed)
 		  	if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(TEXT_DIED_TRYING_TO_BUILD_A_JOURNAL_ENTRY_WITH_ID . ' = ' . $id);
@@ -184,7 +184,7 @@ abstract class journal {
 		\core\classes\messageStack::debug_log("\n    Validating trial balance for period: $period ... ");
 		$sql = $admin->DataBase->prepare("SELECT sum(debit_amount) as debit, sum(credit_amount) as credit FROM " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " WHERE period = " . $period);
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		// check to see if we are still in balance, round debits and credits and compare
 		\core\classes\messageStack::debug_log(" debits = {$result['debit']} and credits = {$result['credit']}");
 		$debit_total  = round($result['debit'],  $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places']);
@@ -198,7 +198,7 @@ abstract class journal {
 				$sql = $admin->DataBase->prepare("SELECT id FROM " . TABLE_CHART_OF_ACCOUNTS . " WHERE account_type = 44 limit 1");
 				$sql->execute();
 				if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException('Failed trying to locate retained earnings account to make rounding adjustment. There must be one and only one Retained Earnings account in the chart of accounts!');
-				$result = $sql->fetch(\PDO::FETCH_LAZY);
+				$result = $sql->fetch(\PDO::FETCH_ASSOC);
 				$adj_gl_account = $result['id'];
 		  	} else {
 				$adj_gl_account = ROUNDING_GL_ACCOUNT;
@@ -250,7 +250,7 @@ abstract class journal {
 		  	$id = $this->inventory_auto_add($sku, $desc, $item_cost, $full_price);
 			$result['inventory_type'] = 'si';
 		}
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		$type = $result['inventory_type'];
 		// only update items that are to be tracked in inventory (non-stock are tracked for PO/SO only)
 		if (strpos(COG_ITEM_TYPES, $type) !== false || ($type == 'ns' && $field <> 'quantity_on_hand')) {
@@ -311,7 +311,7 @@ abstract class journal {
 	  		\core\classes\messageStack::debug_log(" ...Exiting COGS, no work to be done.");
 	  		return true;
 		}
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 	  		$admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_HISTORY . " SET remaining = remaining + {$result['qty']} WHERE id = " . $result['inventory_history_id']);
 		}
 		\core\classes\messageStack::debug_log(" ... Finished rolling back COGS");
@@ -338,7 +338,7 @@ abstract class journal {
 		$sql = $admin->DataBase->prepare("SELECT id FROM " . TABLE_INVENTORY . " WHERE sku = '$sku'");
 		$sql->execute();
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(TEXT_THE_SKU_ENTERED_COULD_NOT_BE_FOUND);
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		$sku_id = $result['id'];
 		$raw_sql = "SELECT a.sku, a.description, a.qty, i.inventory_type, i.quantity_on_hand, i.account_inventory_wage, i.item_cost AS price
 		  FROM " . TABLE_INVENTORY_ASSY_LIST . " a INNER JOIN " . TABLE_INVENTORY . " i ON a.sku = i.sku
@@ -347,7 +347,7 @@ abstract class journal {
 		$sql->execute();
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_SKU_NOT_ASSY . $sku);
 		$assy_cost = 0;
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 		  	if ($result['quantity_on_hand'] < ($qty * $result['qty']) && strpos(COG_ITEM_TYPES, $result['inventory_type']) !== false) {
 				\core\classes\messageStack::debug_log("\n    Not enough of SKU = {$result['sku']} needed " . ($qty * $result['qty']) . " and had " . $result['quantity_on_hand']);
 				throw new \core\classes\userException(GL_ERROR_NOT_ENOUGH_PARTS . $result['sku']);

@@ -35,7 +35,7 @@ switch ($_REQUEST['action']) {
 	break;
   case 'save':
   	try{
-  		$admin->DataBase->transStart();
+  		$admin->DataBase->beginTransaction();
 		\core\classes\user::validate_security($security_level, 2);
 	  	$id          = db_prepare_input($_POST['id']);
 		$wo_title    = db_prepare_input($_POST['wo_title']);
@@ -107,13 +107,13 @@ switch ($_REQUEST['action']) {
 		    );
 			if (!db_perform(TABLE_WO_STEPS, $sql_data_array, 'insert')) throw new \core\classes\userException("wasn't able to insert in to table");
 		}
-		$admin->DataBase->transCommit();
+		$admin->DataBase->commit();
 		// finish
 		gen_add_audit_log(($id  ? sprintf(WO_AUDIT_LOG_BUILDER, TEXT_UPDATE) : sprintf(WO_AUDIT_LOG_BUILDER, TEXT_ADD)) . $task_id);
 		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS,(isset($_POST['id']) ? TEXT_UPDATED : TEXT_ADDED), TEXT_WORK_ORDER_RECORD , $wo_title),'success');
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	} catch(Exception $e) {
-		$admin->DataBase->transRollback();
+		$admin->DataBase->rollBack();
 	  	\core\classes\messageStack::add($e->getMessage(), 'error');
 	  	$_REQUEST['action'] = 'edit';
 	}

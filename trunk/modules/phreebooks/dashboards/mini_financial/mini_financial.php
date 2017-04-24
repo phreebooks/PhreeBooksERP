@@ -111,7 +111,7 @@ class mini_financial extends \core\classes\ctl_panel {
 			  FROM " . TABLE_CHART_OF_ACCOUNTS . " c INNER JOIN " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h ON c.id = h.account_id
 			  WHERE h.period = $period and c.account_type = " . $account_type);
 			$sql->execute();
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 				if ($negate_array[$key]) {
 			  		$total_1 -= $result['balance'];
 				} else {
@@ -137,11 +137,11 @@ class mini_financial extends \core\classes\ctl_panel {
 		// find the period range within the fiscal year from the first period to current requested period
 		$sql = $admin->DataBase->prepare("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		$fiscal_year = $result['fiscal_year'];
 		$sql = $admin->DataBase->prepare("SELECT period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = $fiscal_year ORDER BY period LIMIT 1");
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		$first_period = $result['period'];
 		// build revenues
 		$cur_year  = $this->add_income_stmt_data(30, $first_period, $period, $negate = true); // Income account_type
@@ -177,9 +177,9 @@ class mini_financial extends \core\classes\ctl_panel {
 		  FROM " . TABLE_CHART_OF_ACCOUNTS . " c INNER JOIN " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " h ON c.id = h.account_id
 		  WHERE h.period = $first_period and c.account_type = $type GROUP BY h.account_id order by c.id");
 		$sql->execute();
-		$beg_balance = $sql->fetch(\PDO::FETCH_LAZY);
+		$beg_balance = $sql->fetch(\PDO::FETCH_ASSOC);
 		$ytd_total_1 = 0;
-		while ($year_to_period = $ytd_period->fetch(\PDO::FETCH_LAZY)){
+		while ($year_to_period = $ytd_period->fetch(\PDO::FETCH_ASSOC)){
 			if ($negate) {
 				$ytd_total_1 += -$beg_balance['beginning_balance'] - $year_to_period['balance'];
 				$ytd_temp     = $this->ProcessData(-$beg_balance['beginning_balance'] - $year_to_period['balance']);

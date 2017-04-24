@@ -67,16 +67,16 @@ switch ($_REQUEST['action']) {
 			  'description'      => $desc,
 			);
 			// *************** START TRANSACTION *************************
-			$admin->DataBase->transStart();
+			$admin->DataBase->beginTransaction();
 			$glEntry->Post($glEntry->id ? 'edit' : 'insert');
-	  		$admin->DataBase->transCommit();	// post the chart of account values
+	  		$admin->DataBase->commit();	// post the chart of account values
 	  		gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
 	  		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_ASSEMBLED, TEXT_SKU , $sku), 'success');
 	  		$messageStack->write_debug();
 	  		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 			// *************** END TRANSACTION *************************
 		}catch(Exception $e){
-			$admin->DataBase->transRollback();
+			$admin->DataBase->rollBack();
 			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			$messageStack->write_debug();
@@ -88,16 +88,16 @@ switch ($_REQUEST['action']) {
 			if (!$glEntry->id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 			$delAssy = new \core\classes\journal($glEntry->id); // load the posted record based on the id submitted
 			// *************** START TRANSACTION *************************
-		  	$admin->DataBase->transStart();
+		  	$admin->DataBase->beginTransaction();
 		  	if ($delAssy->unPost('delete')) {	// unpost the prior assembly
-				$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
+				$admin->DataBase->commit(); // if not successful rollback will already have been performed
 				gen_add_audit_log(TEXT_INVENTORY_ASSEMBLY . ' - ' . TEXT_DELETE, $delAssy->journal_rows[0]['sku'], $delAssy->journal_rows[0]['qty']);
 				$messageStack->write_debug();
 				gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 				// *************** END TRANSACTION *************************
 		  	}
 		}catch(Exception $e){
-			$admin->DataBase->transRollback();
+			$admin->DataBase->rollBack(); 
 			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			$messageStack->write_debug();
@@ -109,7 +109,7 @@ switch ($_REQUEST['action']) {
     		$oID = (int)$_GET['oID'];
 			$cInfo = new \core\classes\objectInfo(array());
     	}catch(Exception $e){
-			$admin->DataBase->transRollback();
+			$admin->DataBase->rollBack();
 			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo(array());
 			$messageStack->write_debug();

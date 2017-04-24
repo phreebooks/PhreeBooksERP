@@ -19,20 +19,7 @@
 ?>
 <div title="<?php echo TEXT_GENERAL;?>" id="tab_general">
 
-  <div class="easyui-window" id="inv_image" title="<?php echo $basis->cInfo->inventory->sku; ?>" data-options="modal:true,closed:true" >
-    <?php if (isset($basis->cInfo->inventory->image_with_path) && $basis->cInfo->inventory->image_with_path) {
-    	echo html_image(DIR_WS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $basis->cInfo->inventory->image_with_path, '', 600) . chr(10);
-    } else {
-    	echo TEXT_NO_IMAGE;
-    }
-    ?>
-    <div>
-	  <h2><?php echo TEXT_SKU . ': ' . $basis->cInfo->inventory->sku; ?></h2>
-	  <p><?php echo '<br />' . $basis->cInfo->inventory->description_sales; ?></p>
-    </div>
-  </div>
-
-  <table class="ui-widget" style="border-style:none;width:100%">
+	<table class="ui-widget" style="border-style:none;width:100%">
     <tr><td>
     <table class="ui-widget" style="border-style:none;width:100%">
      <tbody class="ui-widget-content">
@@ -46,9 +33,22 @@
 	  <td align="right"><?php if(isset($basis->cInfo->inventory->quantity_on_hand)) echo TEXT_QUANTITY_ON_HAND; ?></td>
 	  <td><?php if(isset($basis->cInfo->inventory->quantity_on_hand)) echo html_input_field('quantity_on_hand', $basis->currencies->precise($basis->cInfo->inventory->quantity_on_hand), 'disabled="disabled" size="6" maxlength="5" style="text-align:right"', false); ?></td>
 	  <td rowspan="5" align="center">
-		<?php if (isset($basis->cInfo->inventory->image_with_path) && $basis->cInfo->inventory->image_with_path) { // show image if it is defined
-			echo html_image(DIR_WS_MY_FILES . $_SESSION['user']->company . '/inventory/images/' . $basis->cInfo->inventory->image_with_path, $basis->cInfo->inventory->image_with_path, '', '100', 'onclick="showImage()"');
-		} else echo '&nbsp;'; ?>
+	  		<div style="max-width:200px;max-height:200px">
+			  	<?php
+			  	$i = $x = 0;
+			  	foreach (explode(":",$basis->cInfo->inventory->image_with_path) as $image ){
+			  		$i++;
+			  		echo html_image(DIR_WS_MY_FILES . "{$_SESSION['user']->company}/inventory/images/{$image}", $image, '100%', '', "class='inventoryImages' style='display:none;border:none'" ).chr(13); 
+				}?>
+			  	<div class="imagetools" style="">
+			    	<div style="cursor:pointer;float:left;color:#fff;" onclick="plusDivs(-1)">&#10094;</div>
+			    	<div style="cursor:pointer;float:right;color:#fff;" onclick="plusDivs(1)">&#10095;</div>
+			    	<?php while($x != $i ){
+			    		$x++;
+						echo "<span class='butons' onclick='currentDiv({$x})'></span>";
+			    	}?>
+			  	</div>
+			</div>
 	  </td>
 	</tr>
 	<tr>
@@ -172,7 +172,7 @@
                                 textField:'text',
                                 method:'get',
                                 url:'index.php?action=GetAllPriceSheets',
-                                required:true,
+                                required:false,
                                 limitToList: true,
                                 loader: customloader,
                                 queryParams: {
@@ -188,12 +188,11 @@
 		     </thead>
 		</table>
 		<div id="PurchaseToolbar" >
-	        <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-add',plain:true" onclick="append()"><?php echo TEXT_ADD?></a>
-   		    <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-remove',plain:true" onclick="removeit()"><?php echo TEXT_REMOVE?></a>
-	        <a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-save',plain:true" onclick="accept()"><?php echo TEXT_ACCEPT?></a>
-       		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-undo',plain:true" onclick="reject()"><?php echo TEXT_REJECT?></a>
-       		<a href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:'icon-search',plain:true" onclick="getChanges()"><?php echo TEXT_GETCHANGES?></a>
-        </div>
+		    <a href="#" class="easyui-linkbutton" iconCls="icon-add"    plain="true" onclick="javascript:$('#purdg').edatagrid('addRow')"><?php echo TEXT_ADD?></a>
+    		<a href="#" class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="javascript:$('#purdg').edatagrid('destroyRow')"><?php echo TEXT_REMOVE?></a>
+    		<a href="#" class="easyui-linkbutton" iconCls="icon-save"   plain="true" onclick="javascript:$('#purdg').edatagrid('saveRow')"><?php echo TEXT_SAVE?></a>
+    		<a href="#" class="easyui-linkbutton" iconCls="icon-undo"   plain="true" onclick="javascript:$('#purdg').edatagrid('cancelRow')"><?php echo TEXT_REJECT?></a>
+		</div>
 	<?php } ?>
     <table class="ui-widget" style="border-style:none;width:100%">
  	 <thead class="ui-widget-header">
@@ -284,8 +283,11 @@
 </div>
 
 <script type="text/javascript">
-$('#purdg').datagrid({
+$('#purdg').edatagrid({
 	url: "index.php?action=getPurchasedetails",
+    saveUrl: 'index.php?action=savePurchasedetails',
+    updateUrl: 'index.php?action=savePurchasedetails',
+    destroyUrl: 'index.php?action=deletePurchasedetails',
 	queryParams: {
 		sku: '<?php echo $basis->cInfo->inventory->sku;?>',
 		dataType: 'json',
@@ -298,6 +300,7 @@ $('#purdg').datagrid({
 	onLoadSuccess:function(data){
 		console.log('the loading of the purchase details datagrid was succesfull');
 		$.messager.progress('close');
+		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 	},
 	onLoadError: function(){
 		console.error('the loading of the purchase details datagrid resulted in a error');
@@ -306,11 +309,6 @@ $('#purdg').datagrid({
 	},
 	onDblClickRow: function(index , row){
 		console.log('a row in the purchase details datagrids was double clicked');
-	},
-	onCollapseRow: function(index , row){
-		if (row.isNewRecord){
-	        $('#cdg').datagrid('deleteRow',index);
-	    }
 	},
 	onClickCell: onClickCell,
 	onEndEdit: 	onEndEdit,
@@ -355,9 +353,14 @@ function onClickCell(index, field){
 function onEndEdit(index, row){
     var ed = $(this).datagrid('getEditor', {
         index: index,
-        field: 'productid'
+        field: 'purch_taxable'
     });
-    row.productname = $(ed.target).combobox('getText');
+    row.description_short = $(ed.target).combobox('getText');
+    var ed = $(this).datagrid('getEditor', {
+        index: index,
+        field: 'vendor_id'
+    });
+    row.primary_name = $(ed.target).combobox('getText');
 }
 function append(){
     if (endEditing()){

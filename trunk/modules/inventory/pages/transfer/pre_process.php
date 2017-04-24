@@ -32,7 +32,7 @@ if (file_exists($custom_path)) { include($custom_path); }
 switch ($_REQUEST['action']) {
   	case 'save':
   		try{
-  			$admin->DataBase->transStart();
+  			$admin->DataBase->beginTransaction();
 			\core\classes\user::validate_security($security_level, 2); // security check
 			// 	retrieve and clean input values
 			$source_store_id = $_POST['source_store_id'];
@@ -178,14 +178,14 @@ switch ($_REQUEST['action']) {
 	    	$glEntry->Post($glEntry->id ? 'edit' : 'insert');
 			// 	link first record to second record
 //			$admin->DataBase->query("UPDATE ".TABLE_JOURNAL_MAIN." SET so_po_ref_id=$glEntry->id WHERE id=$first_id");
-	    	$admin->DataBase->transCommit();	// post the chart of account values
+	    	$admin->DataBase->commit();	// post the chart of account values
 	    	// *************** END TRANSACTION *************************
 			gen_add_audit_log(sprintf(INV_LOG_TRANSFER, $source_store_id, $dest_store_id), $sku, $qty);
 	   		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
 	   		$messageStack->write_debug();
 	   		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 	  	}catch(Exception $e){
-			$admin->DataBase->transRollback();
+			$admin->DataBase->rollBack();
 			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			$messageStack->write_debug();
@@ -200,16 +200,16 @@ switch ($_REQUEST['action']) {
 	  		$xfer_to_id = $result['id']; // save the matching adjust ID
 	  		if ($result->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException('cannot delete there is no offsetting record to delete!');
 	  		// *************** START TRANSACTION *************************
-	    	$admin->DataBase->transStart();
+	    	$admin->DataBase->beginTransaction();
 	    	if (!$delOrd->unPost('delete')) throw new \core\classes\userException('cannot unpost record!');
 		  	$delOrd = new \core\classes\journal($xfer_to_id);
 		  	if ($delOrd->unPost('delete')) throw new \core\classes\userException('cannot unpost record!');
-		   	$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
+		   	$admin->DataBase->commit(); // if not successful rollback will already have been performed
 		    gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
 		    $messageStack->write_debug();
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		}catch(Exception $e){
-			$admin->DataBase->transRollback();
+			$admin->DataBase->rollBack();
 			\core\classes\messageStack::add($e->getMessage(), $e->getCode());
 			$cInfo = new \core\classes\objectInfo($_POST);
 			$messageStack->write_debug();

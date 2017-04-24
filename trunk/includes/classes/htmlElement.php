@@ -398,6 +398,46 @@ class htmlElement {
 		return $field;
 	}
 	
+	/**
+	 * easyui combobox @todo maybe change this to the combogrid and then a default dropdown box to combobox
+	 * @param unknown $name
+	 * @param unknown $label
+	 * @param unknown $values
+	 * @param string $parameters
+	 * @param string $required
+	 * @param string $default
+	 * @return string
+	 */
+	static function period_combobox($name, $label, $default = '', $include_all = false, $parameters = '', $required = false) {
+		if (strpos($name, '[]')) { // don't show id attribute if generic array
+			$id = false;
+		} else {
+			$id = str_replace('[', '_', $name); // clean up for array inputs causing html errors
+			$id = str_replace(']', '',  $id);
+		}
+		$include_all = ($include_all) ? 'true' : 'false';
+		if (gen_not_null($label))  $label = "label='{$label}: '";
+		$field = "<input class='easyui-combobox' name='{$name}' {$label} labelPosition='before' data-options=\"limitToList:true,url: 'index.php?action=GetAllPeriods',
+                    method: 'get',
+                    queryParams: {
+  						dataType: 'json',
+  		                contentType: 'application/json',
+  		                include_all: {$include_all},
+  		                async: false,
+  		                default: '{$default}',
+  					},
+                    valueField:'id',
+                    textField:'text',
+                    groupField:'fiscal_year',
+                    loader: customloader,
+  		                \"";
+		if ($id)                   	 	$field .= " id='{$id}'";
+		if (gen_not_null($parameters)) 	$field .= ' ' . $parameters;
+		if ($required)					$field .= ' required="required" ';
+		$field .= '>';
+		return $field;
+	}
+	
 	function html_pull_down_menu($name, $values, $default = '', $parameters = '', $required = false) {
 		//@todo needs to be replaced by self::combobox
 	}

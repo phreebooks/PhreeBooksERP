@@ -31,7 +31,7 @@ class company_links extends \core\classes\ctl_panel {
 		// fetch the pages params to copy to new install
 		$sql = $admin->DataBase->prepare("SELECT params FROM ".TABLE_USERS_PROFILES." WHERE menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'"); // just need one
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		$this->default_params = unserialize($result['params']);
 		parent::install($column_id, $row_id);
   	}

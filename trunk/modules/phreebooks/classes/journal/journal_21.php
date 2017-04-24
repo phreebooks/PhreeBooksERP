@@ -108,10 +108,10 @@ class journal_21 extends \core\classes\journal {
 			$sql = $admin->DataBase->prepare("SELECT id FROM ".TABLE_INVENTORY_HISTORY." WHERE ref_id={$this->id} AND sku='{$this->journal_rows[$i]['sku']}'");
 			$sql->execute();
 			if ($sql->fetch(\PDO::FETCH_NUM) > 0) {
-				$result = $sql->fetch(\PDO::FETCH_LAZY);
+				$result = $sql->fetch(\PDO::FETCH_ASSOC);
 				$sql = $admin->DataBase->prepare("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_USAGE." WHERE inventory_history_id=".$result['id']);
 				$sql->execute();
-				while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+				while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 					if ($result['journal_main_id'] <> $this->id) {
 						\core\classes\messageStack::debug_log("\n    check_for_re_post is queing for cogs usage id = " . $result['journal_main_id']);
 						$p_date = $admin->DataBase->query("SELECT post_date FROM ".TABLE_JOURNAL_MAIN." WHERE id=".$result['journal_main_id']);
@@ -126,7 +126,7 @@ class journal_21 extends \core\classes\journal {
 		if ($this->id) {
 			$sql = $admin->DataBase->query("SELECT ref_id, post_date FROM ".TABLE_JOURNAL_ITEM." WHERE so_po_item_ref_id = $this->id AND gl_type in ('chk', 'pmt')");
 			$sql->execute();
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+			while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 				\core\classes\messageStack::debug_log("\n    check_for_re_post is queing for payment id = " . $result['ref_id']);
 				$idx = substr($result['post_date'], 0, 10).':'.str_pad($result['ref_id'], 8, '0', STR_PAD_LEFT);
 				$repost_ids[$idx] = $result['ref_id'];
@@ -189,7 +189,7 @@ class journal_21 extends \core\classes\journal {
 		// first find out the last period with data in the system from the current_status table
 		$sql = $admin->DataBase->query("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
-		$fiscal_year = $sql->fetch(\PDO::FETCH_LAZY);
+		$fiscal_year = $sql->fetch(\PDO::FETCH_ASSOC);
 		$sql = "SELECT max(period) as period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = " . $fiscal_year;
 		$result = $admin->DataBase->query($sql);
 		$max_period = $result['period'];
@@ -202,7 +202,7 @@ class journal_21 extends \core\classes\journal {
 			WHERE account_id in ('$affected_acct_string') and period = " . $i;
 			$sql = $admin->DataBase->prepare($sql);
 			$sql->execute();
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+			while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 				$sql = "UPDATE " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " SET beginning_balance = {$result['beginning_balance']}
 				WHERE period = " . ($i + 1) . " and account_id = '{$result['account_id']}'";
 				$admin->DataBase->exec($sql);
@@ -398,7 +398,7 @@ class journal_21 extends \core\classes\journal {
 		$sql->execute();
 		// catch sku's that are not in the inventory database but have been requested to post, error
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
-		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
+		$defaults = $sql->fetch(\PDO::FETCH_ASSOC);
 		// only calculate cogs for certain inventory_types
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) {
 			\core\classes\messageStack::debug_log(". Exiting COGS, no work to be done with this SKU.");
@@ -551,7 +551,7 @@ class journal_21 extends \core\classes\journal {
 		$cogs = 0;
 		$sql = $admin->DataBase->prepare("SELECT inventory_type, item_cost, cost_method, serialize FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 		$sql->execute();
-		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
+		$defaults = $sql->fetch(\PDO::FETCH_ASSOC);
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) return $cogs; // not in inventory, return no cost
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) return $cogs; // this type not tracked in cog, return no cost
 		if ($defaults['cost_method'] == 'a') return $qty * $this->fetch_avg_cost($sku, $qty);
@@ -565,7 +565,7 @@ class journal_21 extends \core\classes\journal {
 		$sql = $admin->DataBase->prepare($raw_sql);
 		$sql->execute();
 		$working_qty = abs($qty);
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) { // loops until either qty is zero and/or inventory history is exhausted
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) { // loops until either qty is zero and/or inventory history is exhausted
 			if ($working_qty <= $result['remaining']) { // this history record has enough to fill request
 				$cogs += $result['unit_cost'] * $working_qty;
 				$working_qty = 0;
@@ -594,7 +594,7 @@ class journal_21 extends \core\classes\journal {
 		$sql->execute();
 		$total_stock = 0;
 		$last_cost   = 0;
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 			$total_stock += $result['remaining'];
 			$last_cost    = $result['avg_cost']; // just keep the cost from the last record as this keeps the avg value of the post date
 		}
@@ -649,7 +649,7 @@ class journal_21 extends \core\classes\journal {
 			\core\classes\messageStack::debug_log(" ...Exiting COGS, no work to be done.");
 			return true;
 		}
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 			$admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_HISTORY . " SET remaining = remaining + {$result['qty']} WHERE id = " . $result['inventory_history_id']);
 		}
 		\core\classes\messageStack::debug_log(" ... Finished rolling back COGS");
@@ -665,7 +665,7 @@ class journal_21 extends \core\classes\journal {
 			$raw_sql = "SELECT id, sku, qty FROM " . TABLE_JOURNAL_ITEM . " WHERE ref_id = {$ref_id} and gl_type = 'soo'";
 			$sql = $admin->DataBase->prepare($raw_sql);
 			$sql->execute();
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+			while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 				if ($result['sku']) $item_array[$result['id']]['ordered'] = $result['qty'];
 			}
 			// retrieve the total number of units processed (received/shipped) less this order (may be multiple sales/purchases)
@@ -673,7 +673,7 @@ class journal_21 extends \core\classes\journal {
 			WHERE m.so_po_ref_id = {$ref_id} and i.gl_type = '{$this->gl_type}'";
 			if (!$post && $id) $raw_sql .= " and m.id <> " . $id; // unposting so don't include current id (journal_id = 6 or 12)
 			$sql = $admin->DataBase->prepare($raw_sql);
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+			while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 				if ($result['sku']) $item_array[$result['id']]['processed'] += $result['qty'];
 			}
 		}
@@ -772,7 +772,7 @@ class journal_21 extends \core\classes\journal {
 
 		// ***************************** START TRANSACTION *******************************
 		\core\classes\messageStack::debug_log("\n  started order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id);
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		// *************  Pre-POST processing *************
 		// add/update address book
 		if ($this->bill_add_update) { // billing address
@@ -785,7 +785,7 @@ class journal_21 extends \core\classes\journal {
 		// ************* post-POST processing *************
 					$this->increment_purchase_invoice_id();
 		\core\classes\messageStack::debug_log("\n  committed order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id . "\n\n");
-		$admin->DataBase->transCommit();
+		$admin->DataBase->commit();
 		// ***************************** END TRANSACTION *******************************
 		\core\classes\messageStack::add('Successfully posted ' . TEXT_POINT_OF_SALE . " Ref # $this->purchase_invoice_id", 'success');
 		return true;
@@ -794,9 +794,9 @@ class journal_21 extends \core\classes\journal {
   	function refund_ordr() {
     	global $admin, $messageStack;
 		// *************** START TRANSACTION *************************
-    	$admin->DataBase->transStart();
+    	$admin->DataBase->beginTransaction();
     	$this->unPost('delete');
-   		$admin->DataBase->transCommit();
+   		$admin->DataBase->commit();
 		// *************** END TRANSACTION *************************
 		return true;
 	}

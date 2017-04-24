@@ -78,7 +78,7 @@ echo $toolbar->build();
 	</tr>
 	<tr>
 		<td class="dataTableContent"><?php echo TEXT_COUNTRY; ?></td>
-		<td class="dataTableContent"><?php echo html_pull_down_menu('ship_country_code', gen_get_countries(), $sInfo->ship_country_code) . chr(10); ?></td>
+		<td class="dataTableContent"><?php echo html_pull_down_menu('ship_country_code', $_SESSION['language']->get_countries_dropdown(), $sInfo->ship_country_code) . chr(10); ?></td>
 	</tr>
 	<tr>
 		<td class="dataTableContent"><?php echo TEXT_TELEPHONE; ?></td>

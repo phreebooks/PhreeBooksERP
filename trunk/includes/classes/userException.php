@@ -19,13 +19,10 @@
 // this class will allow us to catch user errors and return them to theire pevious page.
 namespace core\classes;
 class userException extends \Exception {
-	public $action = "LoadCrash";
 
 	function __construct ($message, $action = NULL, $code = 0, Exception $previous = NULL){
 		\core\classes\messageStack::debug_log(" There was a error $message -> action = $action" );
 		error_log("userException ".$message . PHP_EOL, 3, DIR_FS_MY_FILES."/errors.log");
-		log_trace();
-		if ($action) $this->action = $action;
 		parent::__construct($message, $code, $previous);
 	}
 

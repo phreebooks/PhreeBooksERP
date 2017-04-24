@@ -8,6 +8,7 @@ class ns extends \inventory\classes\inventory {//Non-stock Item
 	public $not_used_fields			= array('quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'serialize');
 
 	function __construct(){
+		parent::__construct();
 		$this->quantity_on_hand = '';
 	}
 	

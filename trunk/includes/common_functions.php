@@ -109,7 +109,7 @@
 	    $sql->execute();
     	$type_format_array = array();
     	if ($first_none) $type_format_array[] = array('id' => '', 'text' => TEXT_NONE);
-    	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+    	while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 		  	switch ($show_id) {
 			    case '1': // description only
 					$text_value = $result['description'];
@@ -131,11 +131,11 @@
 
   	function gen_get_period_pull_down($include_all = true) { //@todo move to DateTime
     	global $admin;
-    	$sql = $admin->DataBase->prepare("SELECT period, start_date, end_date FROM " . TABLE_ACCOUNTING_PERIODS . " ORDER BY period");
+    	$sql = $admin->DataBase->prepare("SELECT period, start_date, end_date, fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " ORDER BY period");
     	$sql->execute();
     	$period_array = array();
     	if ($include_all) $period_array[] = array('id' => 'all', 'text' => TEXT_ALL);
-    	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+    	while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
     		$startdate = new \core\classes\DateTime($result['start_date']);
     		$enddate   = new \core\classes\DateTime($result['end_date']);
 	  		$text_value = TEXT_PERIOD . " {$result['period']} : " . $startdate->format(DATE_FORMAT) . ' - ' . $enddate->format(DATE_FORMAT);
@@ -166,7 +166,7 @@
 	    $sql = $admin->DataBase->prepare($raw_sql);
 	    $sql->execute();
 	    if ($first_none) $output[] = array('id' => '', 'text' => TEXT_PLEASE_SELECT);
-	    while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+	    while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 	  		switch ($show_id) {
 				default:
 				case '0': $text_value = $result['id']; break;
@@ -251,7 +251,7 @@
 		if (($_SESSION['user']->admin_prefs['restrict_store'] && $_SESSION['user']->admin_prefs['def_store_id'] == 0) || !$_SESSION['user']->admin_prefs['restrict_store']) {
         	$result_array[0] = array('id' => '0', 'text' => COMPANY_ID);
 		}
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 	  		if (($_SESSION['user']->admin_prefs['restrict_store'] && $_SESSION['user']->admin_prefs['def_store_id'] == $result['id']) || !$_SESSION['user']->admin_prefs['restrict_store']) {
  	     	 	$result_array[$result['id']] = $result;
 	  		}
@@ -528,14 +528,12 @@ function get_dir_tree($dir, $root = true)  {
       }
       $query = substr($query, 0, -2) . ' where ' . $parameters;
     }
-    $sql = $admin->DataBase->exec($query);
-    $sql->execute();
-    return $sql->fetchall();// @todo this method doens' work after exec
+    return $admin->DataBase->exec($query);
   }
 
-  function db_input($string) {
-    return addslashes($string);
-  }
+  	function db_input($string) {
+    	return addslashes($string);
+  	}
 
   	function db_prepare_input($string, $required = false) {
     	if (is_string($string)) {
@@ -589,10 +587,10 @@ function get_dir_tree($dir, $root = true)  {
   }
 
   function html_image($src, $alt = '', $width = '', $height = '', $params = '') {
-    $image = '<img src="' . $src . '" alt="' . $alt . '" style="border:none"';
-    if (gen_not_null($alt))    $image .= ' title="' . $alt . '"';
-    if ($width > 0)            $image .= ' width="' . $width . '"';
-    if ($height > 0)           $image .= ' height="' . $height . '"';
+    $image = "<img src='{$src}' alt='{$alt}'";
+    if (gen_not_null($alt))    $image .= " title='{$alt}'";
+    if ($width > 0)            $image .= " width='{$width}'";
+    if ($height > 0)           $image .= " height='{$height}'";
     if (gen_not_null($params)) $image .= ' ' . $params;
     $image .= ' />';
     return $image;

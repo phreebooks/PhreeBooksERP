@@ -117,18 +117,18 @@ switch ($_REQUEST['action']) {
 	  	if (sizeof($journal_repost) > 0) {
 	  		foreach ($journal_repost as $key => $value) {
 	  			$result = $admin->DataBase->query("SELECT m.id FROM journal_main m join journal_item i ON m.id = i.ref_id WHERE i.sku = '{$value}' ORDER BY m.post_date, m.id");
-	  			$admin->DataBase->transStart();
+	  			$admin->DataBase->beginTransaction();
 	  			while (!$result->EOF) {
 	  				$gl_entry = new journal($result->fields['id']);
 	  				$gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
 	  				if (!$gl_entry->Post('edit', true)) {
-	  					$admin->DataBase->transRollback();
+	  					$admin->DataBase->rollBack();
 	  					\core\classes\messageStack::add('<br /><br />Failed Re-posting the journals, try a smaller range. The record that failed was # '.$gl_entry->id,'error');
 	  					break;
 	  				}
 	  				$result->MoveNext();
 	  			}
-	  			$admin->DataBase->transCommit();
+	  			$admin->DataBase->commit();
 	  		}
 	  	}
 	}

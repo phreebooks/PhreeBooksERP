@@ -41,7 +41,7 @@ class customer_websites extends \core\classes\ctl_panel {
 		if ($sql->fetch(\PDO::FETCH_NUM) < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 				$contents .= '<div style="height:16px;">';
 				$contents .= "  <a href=' http://{$result['website']}' target='_blank'>{$result['primary_name']}</a>" . chr(10);
 				$contents .= '</div>';

@@ -176,7 +176,7 @@ class admin {
 	 */
 
 	function check_prerequisites_versions() {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		global $admin;
 		if (is_array($this->prerequisites) && sizeof($this->prerequisites) > 0) {
 			foreach ($this->prerequisites as $module_class => $RequiredVersion) {
@@ -193,14 +193,14 @@ class admin {
 	 */
 
 	function install_dirs($path_my_files) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		foreach ($this->dirlist as $dir) {
 			validate_path($path_my_files . $dir, 0755);
 	  	}
 	}
 
 	function remove_dirs($path_my_files) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		foreach(array_reverse($this->dirlist) as $dir) {
 			if (!@rmdir($path_my_files . $dir)) throw new \core\classes\userException (sprintf(ERROR_CANNOT_REMOVE_MODULE_DIR, $path_my_files . $dir));
 	  	}
@@ -213,7 +213,7 @@ class admin {
 	 */
 	function install_update_tables() {
 	  	global $admin;
-	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+	  	\core\classes\messageStack::development("executing ".__METHOD__ );
 	  	foreach ($this->tables as $table => $create_table_sql) {
 	    	if (!$admin->DataBase->table_exists($table)) {
 		  		if (!$admin->DataBase->query($create_table_sql)) throw new \core\classes\userException (sprintf("Error installing table: %s", $table));
@@ -225,7 +225,7 @@ class admin {
 
 	function remove_tables() {
 	  	global $admin;
-	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+	  	\core\classes\messageStack::development("executing ".__METHOD__ );
 	  	foreach ($this->tables as $table) {
 			if ($admin->DataBase->table_exists($table)){
 				if ($admin->DataBase->query('DROP TABLE ' . $table)) throw new \core\classes\userException (sprintf("Error deleting table: %s", $table));
@@ -235,7 +235,7 @@ class admin {
 
 	function add_report_heading($doc_title, $doc_group) {
 	  	global $admin;
-	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+	  	\core\classes\messageStack::development("executing ".__METHOD__ );
 	  	$result = $admin->DataBase->query("SELECT id FROM ".TABLE_PHREEFORM." WHERE doc_group = '$doc_group'");
 	  	if ($result->fetch(\PDO::FETCH_NUM) < 1) {
 	    	$admin->DataBase->query("INSERT INTO ".TABLE_PHREEFORM." (parent_id, doc_type, doc_title, doc_group, doc_ext, security, create_date) VALUES
@@ -248,7 +248,7 @@ class admin {
 
 	function add_report_folder($parent_id, $doc_title, $doc_group, $doc_ext) {
 	  	global $admin;
-	  	\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+	  	\core\classes\messageStack::development("executing ".__METHOD__ );
 	  	if ($parent_id == '') throw new \core\classes\userException("parent_id isn't set for document $doc_title");
 	  	$result = $admin->DataBase->query("SELECT id FROM ".TABLE_PHREEFORM." WHERE doc_group = '$doc_group' AND doc_ext = '$doc_ext'");
 	  	if ($result->fetch(\PDO::FETCH_NUM) < 1) {

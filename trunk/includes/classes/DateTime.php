@@ -267,10 +267,17 @@ class DateTime extends \DateTime {
 		if ($sql->fetch(\PDO::FETCH_NUM) <> 1) { // post_date is out of range of defined accounting periods
 			if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR);
 		}
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		if (!$hide_error) throw new \core\classes\userException(ERROR_MSG_BAD_POST_DATE);
 		return $result['period'];
 	}
+	
+	function format($format) {
+		$datetime2 = new \DateTime('2000-00-00');
+		$this->interval = $this->diff($datetime2);
+		if ($this->interval->y > 50) return " 0 &nbsp;&nbsp;&nbsp; ";
+		return parent::format($format);
+		
+	}
 }
-
 ?>

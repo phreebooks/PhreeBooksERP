@@ -30,7 +30,6 @@ class fields {
 
 	public function __construct($sync = true, $type = null){
 	  	$this->security_id = \core\classes\user::security_level(SECURITY_ID_CONFIGURATION);
-		require_once(DIR_FS_MODULES . 'phreedom/functions/phreedom.php');
 	  	foreach ($_REQUEST as $key => $value) $this->$key = $value;
 	  	$this->id = isset($_POST['sID'])? $_POST['sID'] : $_GET['sID'];
 	  	$this->type = $type;
@@ -208,7 +207,7 @@ class fields {
     	$sql = $admin->DataBase->prepare("SELECT ".implode(', ', $field_list)." FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->current_module}' ORDER BY group_by, sort_order");
     	$sql->execute();
     	$rowCnt = 0;
-    	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+    	while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 	  		$params  = unserialize($result['params']);
 			$actions = '';
 			if ($this->security_id > 1)									  $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="loadPopUp(\'fields_edit\', ' . $result['id'] . ')"') . chr(10);
@@ -408,7 +407,7 @@ class fields {
   		$sql_data_array = array();
     	$sql = $admin->DataBase->prepare("SELECT field_name, entry_type, params, required, field_name FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id='{$this->current_module}' and field_name NOT IN ('id','last_update','last_journal_date','first_date','creation_date') ");
     	$sql->execute();
-    	while ($xtra_db_fields = $sql->fetch(\PDO::FETCH_LAZY)) {
+    	while ($xtra_db_fields = $sql->fetch(\PDO::FETCH_ASSOC)) {
         	$field_name = $xtra_db_fields['field_name'];
         	switch ($xtra_db_fields['entry_type']){
         		case 'multi_check_box':
@@ -444,10 +443,11 @@ class fields {
   	 */
   	public function display($fields){
   		global $admin;
+  		\core\classes\messageStack::development("executing ".__METHOD__);
   		$tab_array = array();
 		$sql = $admin->DataBase->prepare("SELECT fields.tab_id, tabs.tab_name as tab_name, fields.description as description, fields.params as params, fields.group_by, fields.field_name, fields.entry_type FROM ".TABLE_EXTRA_FIELDS." AS fields JOIN ".TABLE_EXTRA_TABS." AS tabs ON (fields.tab_id = tabs.id) WHERE fields.module_id='{$this->current_module}' ORDER BY tabs.sort_order ASC, fields.group_by ASC, fields.sort_order ASC");
 		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
   			if (!in_array($result['tab_id'], $tab_array)){
   				if (!empty($tab_array)){
   					$this->extra_tab_html .= '  </table>';
@@ -488,7 +488,7 @@ class fields {
 	  	if($this->type_params == '' && $type == null ) return $values;
 		$sql = $admin->DataBase->prepare("SELECT params, field_name FROM ".TABLE_EXTRA_FIELDS." WHERE module_id='{$this->current_module}'");
 		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 			$xtra_params = unserialize($result['params']);
 	  		$temp = explode(':',$xtra_params[$this->type_params]);
 		    if(!in_array($type,$temp)) $values [] = $result['field_name'];
@@ -502,7 +502,7 @@ class fields {
 		if (!$module) return $tab_array;
     	$sql = $admin->DataBase->query("select id, tab_name from " . TABLE_EXTRA_TABS . " where module_id = '{$module}' order by tab_name");
     	$sql->execute();
-    	while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+    	while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
       		$tab_array[$result['id']] = $result['tab_name'];
     	}
     	return $tab_array;
@@ -515,6 +515,7 @@ class fields {
    	 * @param object $cInfo
    	 */
   	function build_field($param_array, $cInfo) {
+  		\core\classes\messageStack::development("executing ".__METHOD__ );
 		$output = '<tr><td>' . $param_array['description'] . '</td>';
 		$params = unserialize($param_array['params']);
 		switch ($params['type']) {
@@ -604,13 +605,13 @@ class fields {
   		// First check to see if inventory field table is synced with actual inventory table
   		$sql = $admin->DataBase->prepare("DESCRIBE " . $db_table);
   		$sql->execute();
-  		while ($column = $sql->fetch(\PDO::FETCH_LAZY)){
+  		while ($column = $sql->fetch(\PDO::FETCH_ASSOC)){
   			$table_fields[] = $column['Field'];
   		}
   		sort($table_fields);
   		$sql = $admin->DataBase->prepare("SELECT field_name FROM " . TABLE_EXTRA_FIELDS . " WHERE module_id = '$module' ORDER BY field_name");
   		$sql->execute();
-  		while ($column = $sql->fetch(\PDO::FETCH_LAZY)){
+  		while ($column = $sql->fetch(\PDO::FETCH_ASSOC)){
   			$field_list[] = $column['field_name'];
   		}
   		$needs_sync = false;
@@ -632,7 +633,7 @@ class fields {
   				foreach ($add_list as $value) { // find the field attributes and copy to field list table
   					$sql = $admin->DataBase->prepare("SHOW fields FROM $db_table like '$value'");
   					$sql->execute();
-  					$myrow = $sql->fetch(\PDO::FETCH_LAZY);
+  					$myrow = $sql->fetch(\PDO::FETCH_ASSOC);
   					$Params = array('default' => $myrow['Default']);
   					$type = $myrow['Type'];
   					if (strpos($type,'(') === false) {

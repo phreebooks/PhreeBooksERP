@@ -11,6 +11,7 @@ class ai extends \inventory\classes\inventory {//Activity Item
 	public $posible_cost_methodes   = array();
 
 	function __construct(){
+		parent::__construct();
 		$this->quantity_on_hand = '';
 	}
 	

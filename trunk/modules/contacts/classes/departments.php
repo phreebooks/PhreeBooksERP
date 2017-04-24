@@ -75,7 +75,7 @@ class departments {
 		);
     	$sql = $admin->DataBase->prepare("SELECT id, description_short, description, subdepartment, primary_dept_id, department_inactive FROM ".$this->db_table);
     	$sql->execute();
-    	while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+    	while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
      		$actions = '';
 	  		if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', "onclick='loadPopUp(\"departments_edit\", \"{$result['id']}\")'") . chr(10);
 	  		if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . HR_INFO_DELETE_INTRO . '\')) subjectDelete(\'departments\', ' . $result['id'] . ')"') . chr(10);

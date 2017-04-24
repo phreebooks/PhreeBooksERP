@@ -63,7 +63,7 @@ class contacts {
 		if ($_SESSION['ENCRYPTION_VALUE'] && ENABLE_ENCRYPTION) {
 		  	$sql = $admin->DataBase->prepare("SELECT id, hint, enc_value FROM ".TABLE_DATA_SECURITY." WHERE module='contacts' and ref_1={$this->id}");
 		  	$sql->execute();
-		  	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		  	while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 		    	$val = explode(':', \core\classes\encryption::decrypt($_SESSION['ENCRYPTION_VALUE'], $result['enc_value']));
 		    	$this->payment_data[] = array(
 			  	  'id'   => $result['id'],
@@ -85,7 +85,7 @@ class contacts {
 		\core\classes\user::validate_security($this->security_level, 4);
 		if ( $this->id == '' ) throw new \core\classes\userException("the id field isn't set");	// error check, no delete if a journal entry exists
 		$result = $admin->DataBase->query("SELECT id FROM ".TABLE_JOURNAL_MAIN." WHERE bill_acct_id={$this->id} OR ship_acct_id={$this->id} OR store_id={$this->id} LIMIT 1");
-		if ($result->fetch(\PDO::FETCH_NUM) != 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
+		if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(ACT_ERROR_CANNOT_DELETE);
 	  	$admin->DataBase->exec("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE ref_id={$this->id}");
 	  	$admin->DataBase->exec("DELETE FROM ".TABLE_DATA_SECURITY." WHERE ref_1={$this->id}");
 	  	$admin->DataBase->exec("DELETE FROM ".TABLE_CONTACTS     ." WHERE id={$this->id}");
@@ -93,10 +93,18 @@ class contacts {
 	  	foreach (glob("{$this->dir_attachments}contacts_{$this->id}_*.zip") as $filename) unlink($filename); // remove attachments
   	}
 
+  	/*
+  	 * this function is for renaming
+  	 */
+  	
+  	function rename($shortName){
+  		$result = $admin->DataBase->exec("UPDATE " . TABLE_CONTACTS . " SET short_name = '{$shortName}' WHERE id = '{$this->id}'");
+  	}
+  	
    	/**
    	* this function returns alle order
    	*/
-  	function load_orders($journal_id, $only_open = true, $limit = 0) {
+  	public function load_orders($journal_id, $only_open = true, $limit = 0) {
   		global $admin;
   		$raw_sql  = "SELECT id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id FROM ".TABLE_JOURNAL_MAIN." WHERE";
   		$raw_sql .= ($only_open) ? " closed = '0' and " : "";
@@ -198,7 +206,7 @@ class contacts {
   	/**
   	 * editContacts page main tab 
   	 */
-  	function PageMainTabGeneral(){
+  	public function PageMainTabGeneral(){
   		?>	<table>
 	      		<tr> 
 	      			<td><?php echo \core\classes\htmlElement::textbox("short_name",	constant('ACT_' . strtoupper($this->type) . '_SHORT_NAME'), 'size="21" maxlength="20"', $this->short_name, $this->auto_type == false);?></td>
@@ -237,7 +245,7 @@ class contacts {
   	/**
   	 * this method outputs a line on the template page.
   	 */
-  	function list_row ($js_function = "submitSeq") {
+  	public function list_row ($js_function = "submitSeq") {
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ ." of class ". get_class($admin_class));
   		$security_level = \core\classes\user::validate($this->security_token); // in this case it must be done after the class is defined for
   		$bkgnd          = ($this->inactive) ? ' style="background-color:pink"' : '';

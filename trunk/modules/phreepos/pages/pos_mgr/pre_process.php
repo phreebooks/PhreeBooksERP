@@ -40,7 +40,7 @@ switch ($_REQUEST['action']) {
 		  	$result = $admin->DataBase->query("select closed from " . TABLE_JOURNAL_MAIN . " where id = " . $id);
 		  	if ($result->fields['closed'] == '1') throw new \core\classes\userException(TEXT_A_POS_SALE_CANNOT_BE_DELETED_IF_IT_IS_CLOSED);
 		  	// *************** START TRANSACTION *************************
-		  	$admin->DataBase->transStart();
+		  	$admin->DataBase->beginTransaction();
 		  	$delOrd->unPost('delete');
 
 		  	// delete the payments
@@ -58,12 +58,12 @@ switch ($_REQUEST['action']) {
 			  		\core\classes\messageStack::add(sprintf('The payment method (%s) was not refunded with the processor. The refund in the amount of %s needs to be credited with the processor manually.', $pmt_method, $admin->currencies->format_full($value['debit_amount'])), 'caution');
 				}
 		    }
-			$admin->DataBase->transCommit();
+			$admin->DataBase->commit();
 		    gen_add_audit_log(TEXT_ARGS_ENTRY, TEXT_CUSTOMER_DEPOSITS . ' - ' . TEXT_DELETE, $delOrd->purchase_invoice_id, $delOrd->total_amount);
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 		    // *************** END TRANSACTION *************************
 		}catch(Exception $e){
-	  		$admin->DataBase->transRollback();
+	  		$admin->DataBase->rollBack();
 			\core\classes\messageStack::add($e->getMessage());
 	  	}
 	  	$messageStack->write_debug();

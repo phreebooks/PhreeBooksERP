@@ -31,7 +31,7 @@ switch ($_REQUEST['action']) {
 		reset($_POST);
 		while (list($key, $value) = each($_POST)) $sInfo->$key = db_prepare_input($value);
 		// generate ISO2 codes for countries (needed by UPS and others)
-		$sInfo->ship_country_code = gen_get_country_iso_2_from_3($sInfo->ship_country_code);
+		$sInfo->ship_country_code = $_SESSION['language']->get_country_iso_2_from_3($sInfo->ship_country_code);
 		$sInfo->ship_date = date('Y-m-d', strtotime($sInfo->ship_date));
 		// read checkboxes
 		$sInfo->residential_address = isset($_POST['residential_address']) ? '1' : '0';
@@ -71,7 +71,7 @@ switch ($_REQUEST['action']) {
 			$shipment = new $shipping_method();
 			$result = $shipment->retrieveLabel($sInfo);
 		} else {
-			$sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
+			$sInfo->ship_country_code = $_SESSION['language']->get_country_iso_3_from_2($sInfo->ship_country_code);
 			throw new \core\classes\userException(SHIPPING_UPS_NO_PACKAGES);
 		}
 		$temp = $admin->DataBase->query("select next_shipment_num from " . TABLE_CURRENT_STATUS);
@@ -99,7 +99,7 @@ switch ($_REQUEST['action']) {
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('method', 'labels', 'date')) . 'module=shipping&page=popup_label_viewer&method=' . $shipping_module . '&date=' . $sInfo->ship_date . '&labels=' . $tracking_list, 'SSL'));
 	} catch(exception $e) {
 		\core\classes\messageStack::add($e->getMessage());
-		$sInfo->ship_country_code = gen_get_country_iso_3_from_2($sInfo->ship_country_code);
+		$sInfo->ship_country_code = $_SESSION['language']->get_country_iso_3_from_2($sInfo->ship_country_code);
 	}
 	break;
 

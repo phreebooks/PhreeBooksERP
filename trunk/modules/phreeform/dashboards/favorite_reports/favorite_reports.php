@@ -36,7 +36,7 @@ class favorite_reports extends \core\classes\ctl_panel {
 		$data_array = array(array('id' => '', 'text' => TEXT_PLEASE_SELECT));
 		$sql = $admin->DataBase->prepare("SELECT id, security, doc_title FROM " . TABLE_PHREEFORM . " WHERE doc_ext IN ('rpt','frm') ORDER BY doc_title");
 		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 		  	if (security_check($result['security'])) {
 				$data_array[] = array('id' => $result['id'], 'text' => $result['doc_title']);
 		  	}

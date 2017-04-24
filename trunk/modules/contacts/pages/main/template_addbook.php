@@ -83,6 +83,7 @@ $('#shipping_address').datagrid({
 	onLoadSuccess: function(data){
 		console.log('the loading of the shipping address datagrid was succesfull');
 		$.messager.progress('close');
+		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 	},
 	onLoadError: function(){
 		console.error('the loading of the shipping address datagrid resulted in a error');
@@ -135,6 +136,7 @@ $('#shipping_address').datagrid({
         	onLoadSuccess:function(data){
         		console.log('the loading the shipping_address form was succesfull');
         		$.messager.progress('close');
+        		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
         	},
             onLoadError: function(){
         		console.error('the loading of the shipping_address form resulted in a error');
@@ -165,6 +167,7 @@ $('#billing_address').datagrid({
 	onLoadSuccess: function(data){
 		console.log('the loading of the billing address datagrid was succesfull');
 		$.messager.progress('close');
+		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 	},
 	onLoadError: function(){
 		console.error('the loading of the billing address datagrid resulted in a error');
@@ -217,6 +220,7 @@ $('#billing_address').datagrid({
         	onLoadSuccess: function(data){
         		console.log('the loading the billing_address form was succesfull');
         		$.messager.progress('close');
+        		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
         	},
             onLoadError: function(){
         		console.error('the loading of the billing_address form resulted in a error');
@@ -270,7 +274,11 @@ function deleteShipping (){
                             msg: result.error_message
                         });
                     }
-                },'json');
+                },'json')  
+	          	.fail(function(xhr, status, error) {
+		          		console.error('we received a error from the server returned = '+ JSON.stringify(xhr));
+					$.messager.alert('<?php echo TEXT_ERROR?>',error);
+			    });
             }
         });
     }
@@ -319,7 +327,11 @@ function deleteBilling (){
                             msg: result.error_message
                         });
                     }
-                },'json');
+                },'json')  
+	          	.fail(function(xhr, status, error) {
+		          		console.error('we received a error from the server returned = '+ JSON.stringify(xhr));
+					$.messager.alert('<?php echo TEXT_ERROR?>',error);
+			    });
             }
         });
     }

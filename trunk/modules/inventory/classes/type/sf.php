@@ -10,6 +10,7 @@ class sf extends \inventory\classes\inventory {//Flat Rate - Service
 	public $posible_cost_methodes   = array('f');
 
 	function __construct(){
+		parent::__construct();
 		$this->quantity_on_hand = '';
 	}
 	

@@ -53,7 +53,7 @@ class to_receive_inv extends \core\classes\ctl_panel {
 		if ($sql->fetch(\PDO::FETCH_NUM) < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 			  	$inv_balance = $result['total_amount'] - fetch_partially_paid($result['id']);
 			  	if ($result['journal_id'] == 7) $inv_balance = -$inv_balance;
 			 	$total += $inv_balance;

@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
   case 'save':
   case 'print':
   	try{
-  		$admin->DataBase->transStart();
+  		$admin->DataBase->beginTransaction();
 		\core\classes\user::validate_security($security_level, 2);
 	  	// create and retrieve customer account (defaults also)
 		$order->bill_short_name     = db_prepare_input($_POST['search']);
@@ -147,9 +147,9 @@ switch ($_REQUEST['action']) {
 		} // else print or print_update, fall through and load javascript to call form_popup and clear form
 		$print_record_id = $order->id; // save id for printing
 		$order  = new temp(); // reset all values
-		$admin->DataBase->transCommit();
+		$admin->DataBase->commit();
 	} catch (Exception $e) { // else there was a post error, display and re-display form
-		$admin->DataBase->transRollback();
+		$admin->DataBase->rollBack();
 	 	\core\classes\messageStack::add($e->getMessage());
 	  	$order = new \core\classes\objectInfo($_POST);
 	  	$order->post_date = \core\classes\DateTime::db_date_format($_POST['post_date']); // fix the date to original format

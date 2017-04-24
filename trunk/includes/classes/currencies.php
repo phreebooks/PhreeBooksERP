@@ -41,7 +41,7 @@ class currencies {
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
   		$sql = $admin->DataBase->prepare("SELECT * FROM " .$this->db_table);
   		$sql->execute();
-  		while ($row = $sql->fetch(\PDO::FETCH_LAZY)) {
+  		while ($row = $sql->fetch(\PDO::FETCH_ASSOC)) {
 	  		$this->currencies[$row['code']] = array(
 	    	  'title'           => $row['title'],
 	    	  'symbol_left'     => $row['symbol_left'],
@@ -234,12 +234,12 @@ class currencies {
 		// Can't delete default currency or last currency
 		$sql = $admin->DataBase->prepare("SELECT currencies_id FROM {$this->db_table} WHERE code = '" . DEFAULT_CURRENCY . "'");
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		if ($result['currencies_id'] == $id) throw new \core\classes\userException(ERROR_CANNOT_DELETE_DEFAULT_CURRENCY);
 		$sql = $admin->DataBase->prepare("SELECT m.id, c.title FROM " . TABLE_JOURNAL_MAIN . " m LEFT JOIN {$this->db_table} c ON m.currencies_code = c.code WHERE c.currencies_id = '$id' LIMIT 1");
 		$sql->execute();
 		if ($sql->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(ERROR_CURRENCY_DELETE_IN_USE);
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		$admin->DataBase->exec("DELETE FROM {$this->db_table} WHERE currencies_id = '$id'");
 		gen_add_audit_log(TEXT_CURRENCIES . ' - ' . TEXT_DELETE, $result['title']);
 		return true;

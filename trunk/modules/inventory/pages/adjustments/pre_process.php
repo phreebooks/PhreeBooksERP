@@ -88,10 +88,10 @@ switch ($_REQUEST['action']) {
 			'post_date'     => $post_date,
 	    );
 		// *************** START TRANSACTION *************************
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		$glEntry->override_cogs_acct = $adj_account; // force cogs account to be users specified account versus default inventory account
 		$glEntry->Post($glEntry->id ? 'edit' : 'insert');
-	    $admin->DataBase->transCommit();	// post the chart of account values
+	    $admin->DataBase->commit();	// post the chart of account values
 	    gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . ($_REQUEST['action']=='save' ? TEXT_SAVE : TEXT_EDIT), $sku, $qty);
 	    \core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, TEXT_INVENTORY_ADJUSTMENT, $glEntry->purchase_invoice_id), 'success');
 	    $messageStack->write_debug();
@@ -109,9 +109,9 @@ switch ($_REQUEST['action']) {
 		if (!$glEntry->id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
 		$delOrd = new \phreebooks\classes\journal\journal_16($glEntry->id);
 		// *************** START TRANSACTION *************************
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		$delOrd->unPost('delete');
-		$admin->DataBase->transCommit(); // if not successful rollback will already have been performed
+		$admin->DataBase->commit(); // if not successful rollback will already have been performed
 		gen_add_audit_log(TEXT_INVENTORY_ADJUSTMENT . ' - ' . TEXT_DELETE, $delOrd->journal_rows[0]['sku'], $delOrd->journal_rows[0]['qty']);
 		$messageStack->write_debug();
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));

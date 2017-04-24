@@ -184,7 +184,7 @@ class journal_09 extends \core\classes\journal {
 		$sql->execute();
 		// catch sku's that are not in the inventory database but have been requested to post, error
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_CALCULATING_COGS);
-		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
+		$defaults = $sql->fetch(\PDO::FETCH_ASSOC);
 		// only calculate cogs for certain inventory_types
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) {
 			\core\classes\messageStack::debug_log(". Exiting COGS, no work to be done with this SKU.");
@@ -338,7 +338,7 @@ class journal_09 extends \core\classes\journal {
 		$cogs = 0;
 		$sql = $admin->DataBase->prepare("SELECT inventory_type, item_cost, cost_method, serialize FROM ".TABLE_INVENTORY." WHERE sku='$sku'");
 		$sql->execute();
-		$defaults = $sql->fetch(\PDO::FETCH_LAZY);
+		$defaults = $sql->fetch(\PDO::FETCH_ASSOC);
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) return $cogs; // not in inventory, return no cost
 		if (strpos(COG_ITEM_TYPES, $defaults['inventory_type']) === false) return $cogs; // this type not tracked in cog, return no cost
 		if ($defaults['cost_method'] == 'a') return $qty * $this->fetch_avg_cost($sku, $qty);
@@ -352,7 +352,7 @@ class journal_09 extends \core\classes\journal {
 		$sql = $admin->DataBase->prepare($raw_sql);
 		$sql->execute();
 		$working_qty = abs($qty);
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) { // loops until either qty is zero and/or inventory history is exhausted
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) { // loops until either qty is zero and/or inventory history is exhausted
 			if ($working_qty <= $result['remaining']) { // this history record has enough to fill request
 				$cogs += $result['unit_cost'] * $working_qty;
 				$working_qty = 0;
@@ -381,7 +381,7 @@ class journal_09 extends \core\classes\journal {
 		$sql->execute();
 		$total_stock = 0;
 		$last_cost   = 0;
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 			$total_stock += $result['remaining'];
 			$last_cost    = $result['avg_cost']; // just keep the cost from the last record as this keeps the avg value of the post date
 		}
@@ -436,7 +436,7 @@ class journal_09 extends \core\classes\journal {
 			\core\classes\messageStack::debug_log(" ...Exiting COGS, no work to be done.");
 			return true;
 		}
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 			$admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_HISTORY . " SET remaining = remaining + {$result['qty']} WHERE id = " . $result['inventory_history_id']);
 		}
 		\core\classes\messageStack::debug_log(" ... Finished rolling back COGS");
@@ -525,7 +525,7 @@ class journal_09 extends \core\classes\journal {
 
 		// ***************************** START TRANSACTION *******************************
 		\core\classes\messageStack::debug_log("\n  started order post purchase_invoice_id = {$this->purchase_invoice_id} and id = " . $this->id);
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		// *************  Pre-POST processing *************
 		// add/update address book
 		if ($this->bill_add_update) { // billing address
@@ -639,7 +639,7 @@ class journal_09 extends \core\classes\journal {
 			$this->increment_purchase_invoice_id();
 		}
 		\core\classes\messageStack::debug_log("\n  committed order post purchase_invoice_id = {$this->purchase_invoice_id} and id = {$this->id}");
-		$admin->DataBase->transCommit();	// finished successfully
+		$admin->DataBase->commit();	// finished successfully
 		//echo 'committed transaction - bailing!'; exit();
 		// ***************************** END TRANSACTION *******************************
 		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_POSTED, $this->id_field_name, $this->purchase_invoice_id), 'success');

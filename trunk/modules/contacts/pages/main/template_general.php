@@ -47,6 +47,7 @@ echo \core\classes\htmlElement::hidden('terms', $basis->cInfo->contact->special_
 	        	onLoadSuccess: function(data){
 	        		console.log('the loading the main_address form was succesfull');
 	        		$.messager.progress('close');
+	        		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 	        	},
 	            onLoadError: function(){
 	        		console.error('the loading of the main_address form resulted in a error');

@@ -15878,21 +15878,17 @@
     <hu_hu>Narancs</hu_hu>
     <ru_ru>Оранжевый</ru_ru>
   </translation>
-  <translation xml:id="TEXT_ORDER">
-    <hu_hu>Rendel</hu_hu>
-    <ru_ru>Заказ</ru_ru>
-    <en_us>Order</en_us>
-    <es_cr>Órden</es_cr>
-    <id_id>Pesanan</id_id>
-    <nl_nl>Volgorde</nl_nl>
-    <pt_br>Ordem</pt_br>
-  </translation>
   <translation xml:id="TEXT_ORDERED_WRONG_PART">
     <en_us>Ordered Wrong Part</en_us>
     <pt_br>Item errado solicitado</pt_br>
   </translation>
   <translation xml:id="TEXT_ORDERS">
     <en_us>Orders</en_us>
+    <nl_nl>Bestellingen</nl_nl>
+  </translation>
+  <translation xml:id="TEXT_ORDER">
+    <en_us>Order</en_us>
+    <nl_nl>Bestelling</nl_nl>
   </translation>
   <translation xml:id="TEXT_ORDER_HISTORY">
     <en_us>Order History</en_us>

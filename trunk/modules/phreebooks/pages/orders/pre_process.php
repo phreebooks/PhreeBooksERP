@@ -241,12 +241,12 @@ switch ($_REQUEST['action']) {
 		\core\classes\user::validate_security($security_level, 4);
 	  	$id = ($_POST['id'] <> '') ? $_POST['id'] : ''; // will be null unless opening an existing purchase/receive
 		if (!$id) throw new \core\classes\userException(TEXT_THERE_WERE_ERRORS_DURING_PROCESSING . ' ' . TEXT_THE_RECORD_WAS_NOT_DELETED);
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		$delOrd = new $temp($id); // load the posted record based on the id submitted
 		$delOrd->recur_frequency = db_prepare_input($_POST['recur_frequency']);
 		$delOrd->unPost('delete');
 		$messageStack->write_debug();
-		$admin->DataBase->transCommit();
+		$admin->DataBase->commit();
 		gen_add_audit_log($order->description . ' - Delete', $delOrd->purchase_invoice_id, $delOrd->total_amount);
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}catch(Exception $e){

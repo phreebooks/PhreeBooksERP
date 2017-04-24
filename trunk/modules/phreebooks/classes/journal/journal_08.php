@@ -56,7 +56,7 @@ class journal_08 extends \core\classes\journal {
 		// first find out the last period with data in the system from the current_status table
 		$sql = $admin->DataBase->query("SELECT fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $period);
 		if ($sql->fetch(\PDO::FETCH_NUM) == 0) throw new \core\classes\userException(GL_ERROR_BAD_ACCT_PERIOD);
-		$fiscal_year = $sql->fetch(\PDO::FETCH_LAZY);
+		$fiscal_year = $sql->fetch(\PDO::FETCH_ASSOC);
 		$sql = "SELECT max(period) as period FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE fiscal_year = " . $fiscal_year;
 		$result = $admin->DataBase->query($sql);
 		$max_period = $result['period'];
@@ -69,7 +69,7 @@ class journal_08 extends \core\classes\journal {
 			WHERE account_id in ('$affected_acct_string') and period = " . $i;
 			$sql = $admin->DataBase->prepare($sql);
 			$sql->execute();
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+			while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 				$sql = "UPDATE " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " SET beginning_balance = {$result['beginning_balance']}
 				WHERE period = " . ($i + 1) . " and account_id = '{$result['account_id']}'";
 				$admin->DataBase->exec($sql);
@@ -215,7 +215,7 @@ class journal_08 extends \core\classes\journal {
 			\core\classes\messageStack::debug_log(" ...Exiting COGS, no work to be done.");
 			return true;
 		}
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 			$admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_HISTORY . " SET remaining = remaining + {$result['qty']} WHERE id = " . $result['inventory_history_id']);
 		}
 		\core\classes\messageStack::debug_log(" ... Finished rolling back COGS");

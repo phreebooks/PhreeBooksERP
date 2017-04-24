@@ -33,7 +33,7 @@ class company_notes extends \core\classes\ctl_panel {
 		$sql = $admin->DataBase->prepare("SELECT params FROM " . TABLE_USERS_PROFILES . "
 		  WHERE menu_id = '{$this->menu_id}' and dashboard_id = '" . get_class($this) . "'"); // just need one
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		$this->default_params = unserialize($result['params']);
 		parent::install($column_id, $row_id);
 
@@ -82,7 +82,7 @@ class company_notes extends \core\classes\ctl_panel {
 		  WHERE user_id = {$_SESSION['user']->admin_id} and menu_id = '{$this->menu_id}'
 		  and dashboard_id = '" . get_class($this). "'");
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		if ($remove_id) { // remove element
 		  	$this->params		= unserialize($result['params']);
 		  	$first_part 		= array_slice($this->params, 0, $remove_id - 1);

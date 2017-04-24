@@ -236,6 +236,18 @@ class admin extends \core\classes\admin {
 		$this->add_report_folder($id, TEXT_REPORTS,       'vend', 'fr');
 		parent::load_reports();
 	}
+	
+	function RenameContactItem (\core\classes\basis $basis){
+		\core\classes\messageStack::development("executing ".__METHOD__ );
+		\core\classes\user::validate_security_by_token(SECURITY_ID_MAINTAIN_INVENTORY, 4); // security check
+		if ( property_exists($basis->cInfo, 'contact_id') !== true) throw new \core\classes\userException(TEXT_ID_NOT_DEFINED);
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->contact_id}");
+		$sql->execute();
+		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
+		$basis->cInfo->contact->rename($basis->cInfo->short_name);
+		$basis->cInfo->success = true;
+		$basis->cInfo->message = TEXT_RENAMED_SUCCESSFULLY;
+	}
 
 	/**
 	 * this function will load the contact manager page
@@ -245,13 +257,14 @@ class admin extends \core\classes\admin {
 		$basis->observer->send_menu($basis);
 		if (property_exists($basis->cInfo, 'type') !== true) $basis->cInfo->type = 'c'; // default to customer
 		switch ($basis->cInfo->type) {
-			case 'b': $contact = TEXT_BRANCH;	break;
-			case 'c': $contact = TEXT_CUSTOMER;	break;
-			case 'e': $contact = TEXT_EMPLOYEE;	break;
-			case 'i': $contact = TEXT_CRM;		break;
-			case 'j': $contact = TEXT_PROJECT;	break;
-			case 'v': $contact = TEXT_VENDOR;	break;
-		}
+			case 'b': $contact = TEXT_BRANCH;	$security_level = SECURITY_ID_MAINTAIN_BRANCH;		break;
+			case 'c': $contact = TEXT_CUSTOMER;	$security_level = SECURITY_ID_MAINTAIN_CUSTOMERS;	break;
+			case 'e': $contact = TEXT_EMPLOYEE;	$security_level = SECURITY_ID_MAINTAIN_EMPLOYEES;	break;
+			case 'i': $contact = TEXT_CRM;		$security_level = SECURITY_ID_PHREECRM;				break;
+			case 'j': $contact = TEXT_PROJECT;	$security_level = SECURITY_ID_MAINTAIN_PROJECTS;	break;
+			case 'v': $contact = TEXT_VENDOR;	$security_level = SECURITY_ID_MAINTAIN_VENDORS;		break;
+		} 
+		\core\classes\user::validate_security($security_level);
 		?>
 		<div data-options="region:'center'">
 		    <table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, $contact);?>" style="height:500px;padding:50px;">
@@ -264,11 +277,12 @@ class admin extends \core\classes\admin {
 	        	       	<th data-options="field:'state_province',sortable:true"><?php echo TEXT_STATE_PROVINCE?></th>
 	        	       	<th data-options="field:'postal_code',sortable:true"><?php echo TEXT_POSTAL_CODE?></th>
 	        	       	<th data-options="field:'telephone1',sortable:true"><?php echo TEXT_TELEPHONE?></th>
+	        	       	<th data-options="field:'contactid',align:'right',formatter:actionformater"><?php echo TEXT_ACTIONS?></th>
 	            	</tr>
 	        	</thead>
 	    	</table>
 	    	<div id="toolbar">
-	    		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact()"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
+	    		<a class="easyui-linkbutton" iconCls="icon-edit" plain="true" onclick="editContact(-1)"><?php echo sprintf(TEXT_EDIT_ARGS, $contact);?></a>
 		        <a class="easyui-linkbutton" iconCls="icon-add" plain="true" onclick="newContact()"><?php echo sprintf(TEXT_NEW_ARGS, $contact);?></a>
 	        	<a class="easyui-linkbutton" iconCls="icon-remove" plain="true" onclick="deleteContact()"><?php echo sprintf(TEXT_DELETE_ARGS, $contact);?></a>
 	        	<?php echo \core\classes\htmlElement::checkbox('contact_show_inactive', TEXT_SHOW_INACTIVE, '1', false,'onchange="doSearch()"' );?>
@@ -277,7 +291,7 @@ class admin extends \core\classes\admin {
 	    	<div id="win" class="easyui-window">
 	    		<div id="contactToolbar" style="margin:2px 5px;">
 					<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="closeWindow()"><?php echo TEXT_CANCEL?></a>
-					<?php if (\core\classes\user::validate($basis->cInfo->contact->security_token, true) < 2){?>
+					<?php if (\core\classes\user::validate($security_level, true) < 2){?>
 					<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveContact()" ><?php echo TEXT_SAVE?></a>
 					<?php }?>
 					<a class="easyui-linkbutton" iconCls="icon-help" plain="true" onclick="loadHelp()"><?php TEXT_HELP?></a>
@@ -285,6 +299,17 @@ class admin extends \core\classes\admin {
 			</div>
     	</div>	
 		<script type="text/javascript">
+			function actionformater (value,row,index){ 
+				var temp = '';
+				var security_level = <?php echo \core\classes\user::validate($security_level)?>;
+				if (security_level > 1) temp += buildIcon(icon_path+'16x16/actions/edit-find-replace.png', "<?php echo TEXT_EDIT;?>", 'onclick="editContact('+index+','+row+')"');
+				if (security_level > 3) temp += buildIcon(icon_path+'16x16/apps/accessories-text-editor.png', '<?php echo TEXT_RENAME;?>', 'onclick="renameItem('+row.contactid+')"');
+				if (security_level > 3) temp += buildIcon(icon_path+'16x16/emblems/emblem-unreadable.png', "<?php echo TEXT_DELETE;?>", 'onclick="deleteItem('+row.contactid+')"');
+				if (row.attachments != '')  temp += buildIcon(icon_path+'16x16/status/mail-attachment.png', "<?php echo TEXT_DOWNLOAD_ATTACHMENT;?>",'onclick="downloadAttachment('+row.contactid+')"'); //@todo
+				if (security_level > 2)  temp += buildIcon(icon_path+'16x16/mimetypes/x-office-spreadsheet.png', "<?php echo TEXT_SALES;?>",'onclick="contactChart(\'annual_sales\', '+row.contactid+')"'); //@todo
+				return temp;
+			}
+			
 			document.title = '<?php echo sprintf(TEXT_MANAGER_ARGS, $contact); ?>';
 	    	function doSearch(value){
 	    		console.log('A search was requested.');
@@ -305,7 +330,9 @@ class admin extends \core\classes\admin {
 	            $('#win').window('resize');
 	        }
 	        
-	        function editContact(){
+	        function editContact(index, row){
+	        	console.log('a row in the datagrid was double clicked');
+				//document.location = "index.php?action=editContact&contactid="+ row.contactid;
 		        $('#win').window('open').window('center').window('setTitle','<?php echo sprintf(TEXT_EDIT_ARGS, $contact);?>');
 	        }
 	        
@@ -328,13 +355,10 @@ class admin extends \core\classes\admin {
 					$.messager.progress('close');
 					$.messager.alert('<?php echo TEXT_ERROR?>','Load error:'+arguments.responseText);
 				},
-				onDblClickRow: function(index , row){
-					console.log('a row in the datagrid was double clicked');
-					document.location = "index.php?action=editContact&contactid="+ row.contactid;
-					//$('#win').window('open').window('center').window('setTitle',"<?php echo TEXT_EDIT?>"+ ' ' + row.name);
-				},
+				onDblClickRow: editContact,
 				pagination: true,
 				pageSize:   <?php echo MAX_DISPLAY_SEARCH_RESULTS?>,
+		  		PageList:   <?php echo MAX_DISPLAY_SEARCH_RESULTS?>,
 				remoteSort:	true,
 				idField:	"contactid",
 				fitColumns:	true,
@@ -355,9 +379,8 @@ class admin extends \core\classes\admin {
 				fit:	true,
 				queryParams: {
 					type: '<?php echo $basis->cInfo->type;?>',
-					dataType: 'html',
-	                contentType: 'text/html',
-	                async: false,
+					contentType:'inlineForm',
+			        async: false,
 				},
 				onLoadError: function(){
 					console.error('the loading of the window resulted in a error');
@@ -379,6 +402,58 @@ class admin extends \core\classes\admin {
 				console.log('close contact window');
 				$('#win').window('close', true);
 			}	
+
+
+			function deleteItem(id) {
+			    var index = $('#dg').datagrid('getRowIndex', id);
+			    console.log('delete contact item was clicked');
+			    $.messager.confirm('<?php echo TEXT_CONFORM?>','<?php echo sprintf(TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_ARGS, TEXT_INVENTORY_ITEM)?>',function(r){
+			    	if (r){
+			        	$.post('index.php?action=DeleteContact',{contact_id: id, dataType: 'json', async: false, contentType: 'application/json'},function(data){
+			        		console.log('result of delete '+ JSON.stringify(data));	
+			        		if(data.success == false){
+  				        		$.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
+			                	console.error('error deleting contact item '+ id);
+			                }else{
+			            		console.log('succesfully deleted contact item '+ id);
+			                  	$('#dg').datagrid('deleteRow', index);
+			                }
+			            },'json')
+			          	.fail(function(xhr, status, error) {
+			          		console.error('we received a error from the server returned = '+ JSON.stringify(xhr));
+							$.messager.alert('<?php echo TEXT_ERROR?>',error);
+				    	});
+			        }
+			    });
+			}
+			
+			function renameItem(id) {
+				var index = $('#dg').datagrid('getRowIndex', id);
+			    console.log('rename contact item was clicked');
+			    $.messager.prompt('<?php echo TEXT_RENAME;?>', '<?php echo TEXT_RENAME_TO; ?>', function(newShortName){
+			    	if (newShortName){
+			        	$.post('index.php?action=RenameContactItem',{contact_id: id, short_name: newShortName, dataType: 'json', async: false, contentType: 'application/json'},function(data){
+			        		console.log('result of rename '+ JSON.stringify(data));	
+			        		if(data.success == false){
+  				        		$.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
+  				        		console.error('error rename contact item '+ id);
+			                }else{
+			            		console.log('succesfully rename contact item '+ id);
+			            		$('#dg').datagrid('updateRow',{
+			            			index: index,
+			            			row: data.contact,
+			            		});
+			                } 
+			            },'json')  
+			          	.fail(function(xhr, status, error) {
+			          		console.error('we received a error from the server returned = '+ JSON.stringify(xhr));
+							$.messager.alert('<?php echo TEXT_ERROR?>',error);
+				    	});
+			        }
+			    });
+			}
+
+		
 		</script><?php 
 		$basis->observer->send_footer($basis);
 	}
@@ -406,6 +481,8 @@ class admin extends \core\classes\admin {
 		$sql = $basis->DataBase->prepare("SELECT id as contactid, short_name, title, CASE WHEN c.type = 'e' OR c.type = 'i' THEN CONCAT(contact_first , ' ',contact_last) ELSE primary_name END AS name, primary_name, contact_last, contact_first, contact_middle, contact, account_number, gov_id_number, address1, address2, city_town, state_province, postal_code, telephone1, telephone2, telephone3, telephone4, email, website, inactive, c.type, address_id, country_code FROM ".TABLE_CONTACTS." c LEFT JOIN ".TABLE_ADDRESS_BOOK." a ON c.id = a.ref_id $search ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}");
 		$sql->execute();
 		$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		$basis->cInfo->success = true;
+		$basis->cInfo->message = TEXT_LOADED_SUCCESSFULLY;
 	}
 
 	function loadAddresses (\core\classes\basis &$basis) {
@@ -418,6 +495,8 @@ class admin extends \core\classes\admin {
 		$temp = array();
 		$basis->cInfo->total = sizeof($results);
 		$basis->cInfo->rows = $results;
+		$basis->cInfo->success = true;
+		$basis->cInfo->message = TEXT_LOADED_SUCCESSFULLY;
 	}
 	
 	function editAddress (\core\classes\basis &$basis) {
@@ -497,7 +576,11 @@ class admin extends \core\classes\admin {
 	                                        msg: result.error_message
 	                                    });
 	                                }
-	                            },'json');
+	                            },'json')  
+	  				          	.fail(function(xhr, status, error) {
+	  				          		console.error('we received a error from the server returned = '+ JSON.stringify(xhr));
+									$.messager.alert('<?php echo TEXT_ERROR?>',error);
+							    });
 	                        }
 	                    });
 	                }
@@ -514,7 +597,8 @@ class admin extends \core\classes\admin {
 	        			console.log('submitting Address Relation form ');
 	                },
 	                onLoadSuccess: function(data){
-	                	console.log('succesfull loaded form data '+JSON.stringify(data));
+	                	console.log('succesfull loaded form data '+JSON.stringify(data));`
+	                	if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 		            },
 	                success: function(data){
 	                	data = eval('('+data+')');
@@ -539,30 +623,20 @@ class admin extends \core\classes\admin {
 	
 	function saveAddress  (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		try{
-			$sql = $basis->DataBase->prepare("INSERT INTO " . TABLE_ADDRESS_BOOK . " (`address_id`, `ref_id`, `type`, `primary_name`, `contact`, `address1`, `address2`, `city_town`, `state_province`,`postal_code`, `country_code`, `telephone1`, `telephone2`, `telephone3`, `telephone4`, `email`, `website`) VALUES (:address_id, :ref_id, :type, :primary_name, :contact, :address1, :address2, :city_town, :state_province, :postal_code, :country_code, :telephone1, :telephone2, :telephone3, :telephone4, :email, :website) ON DUPLICATE KEY UPDATE primary_name = :primary_name, contact = :contact, address1 = :address1, address2 = :address2, city_town = :city_town, state_province = :state_province, postal_code = :postal_code, country_code = :country_code, telephone1 = :telephone1, telephone2 = :telephone2, telephone3 = :telephone3, telephone4 = :telephone4, email = :email, website = :website, type = :type");
-			$sql->execute(array(':address_id' => $basis->cInfo->address_id, ':ref_id' => $basis->cInfo->ref_id, ':type' => "{$basis->cInfo->type}m", ':primary_name' => $basis->cInfo->primary_name, ':contact' => $basis->cInfo->contact, ':address1' => $basis->cInfo->address1, ':address2' => $basis->cInfo->address2, ':city_town' => $basis->cInfo->city_town, ':state_province' => $basis->cInfo->state_province, ':postal_code' => $basis->cInfo->postal_code, ':country_code' => $basis->cInfo->country_code, ':telephone1' => $basis->cInfo->telephone1, ':telephone2' => $basis->cInfo->telephone2, ':telephone3' => $basis->cInfo->telephone3, ':telephone4' => $basis->cInfo->telephone4, ':email' => $basis->cInfo->email, ':website' => $basis->cInfo->website));
-			if($basis->cInfo->address_id == ''){//find new contact id.
-				$basis->cInfo->address_id = $basis->DataBase->lastInsertId();
-			}
-			$basis->cInfo->success = true;
-			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
-		}catch (\Exception $e) {
-			$basis->cInfo->success = false;
-			$basis->cInfo->error_message = $e->getMessage();
+		$sql = $basis->DataBase->prepare("INSERT INTO " . TABLE_ADDRESS_BOOK . " (`address_id`, `ref_id`, `type`, `primary_name`, `contact`, `address1`, `address2`, `city_town`, `state_province`,`postal_code`, `country_code`, `telephone1`, `telephone2`, `telephone3`, `telephone4`, `email`, `website`) VALUES (:address_id, :ref_id, :type, :primary_name, :contact, :address1, :address2, :city_town, :state_province, :postal_code, :country_code, :telephone1, :telephone2, :telephone3, :telephone4, :email, :website) ON DUPLICATE KEY UPDATE primary_name = :primary_name, contact = :contact, address1 = :address1, address2 = :address2, city_town = :city_town, state_province = :state_province, postal_code = :postal_code, country_code = :country_code, telephone1 = :telephone1, telephone2 = :telephone2, telephone3 = :telephone3, telephone4 = :telephone4, email = :email, website = :website, type = :type");
+		$sql->execute(array(':address_id' => $basis->cInfo->address_id, ':ref_id' => $basis->cInfo->ref_id, ':type' => "{$basis->cInfo->type}m", ':primary_name' => $basis->cInfo->primary_name, ':contact' => $basis->cInfo->contact, ':address1' => $basis->cInfo->address1, ':address2' => $basis->cInfo->address2, ':city_town' => $basis->cInfo->city_town, ':state_province' => $basis->cInfo->state_province, ':postal_code' => $basis->cInfo->postal_code, ':country_code' => $basis->cInfo->country_code, ':telephone1' => $basis->cInfo->telephone1, ':telephone2' => $basis->cInfo->telephone2, ':telephone3' => $basis->cInfo->telephone3, ':telephone4' => $basis->cInfo->telephone4, ':email' => $basis->cInfo->email, ':website' => $basis->cInfo->website));
+		if($basis->cInfo->address_id == ''){//find new contact id.
+			$basis->cInfo->address_id = $basis->DataBase->lastInsertId();
 		}
+		$basis->cInfo->success = true;
+		$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
 	}
 	
 	function deleteAddress  (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		try{
-			$basis->DataBase->exec("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE address_id={$basis->cInfo->address_id}");
-			$basis->cInfo->success = true;
-			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
-		}catch (\Exception $e) {
-			$basis->cInfo->success = false;
-			$basis->cInfo->error_message = $e->getMessage();
-		}
+		$basis->DataBase->exec("DELETE FROM ".TABLE_ADDRESS_BOOK ." WHERE address_id={$basis->cInfo->address_id}");
+		$basis->cInfo->success = true;
+		$basis->cInfo->message = TEXT_DELETED_SUCCESSFULLY;
 	}
 	
 	function editContactRelation (\core\classes\basis &$basis) {
@@ -638,6 +712,7 @@ class admin extends \core\classes\admin {
 	                },
 	                onLoadSuccess: function(data){
 	                	console.log('succesfull loaded form data ');
+	                	if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 		            },
 	                success: function(data){
 	                	data = eval('('+data+')');
@@ -744,38 +819,28 @@ class admin extends \core\classes\admin {
 
 	
 	function saveContact (\core\classes\basis &$basis) {
-		try{
-			if (property_exists($basis->cInfo, 'id') !== true) throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
-			$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->id}");
-			$sql->execute();
-			$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
-			// error check
-			$basis->cInfo->contact->data_complete();
-			// start saving data
-			$basis->cInfo->contact->save();
-			$basis->cInfo->success = true;
-			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
-		}catch (\Exception $e) {
-			\core\classes\messageStack::debug_log("there was a error ".$e->getMessage() );
-			$basis->cInfo->success = false;
-			$basis->cInfo->error_message = $e->getMessage();
-		}
-	}
-
-	function DeleteContact (\core\classes\basis &$basis) {
-		if (property_exists($basis->cInfo, 'contactid') !== true) throw new \core\classes\userException("contactid variable isn't set can't execute method DeleteContact ");
-		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->contactid}");
+		if (property_exists($basis->cInfo, 'id') !== true) throw new \core\classes\userException("id variable isn't set can't execute method SaveContact ");
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->id}");
 		$sql->execute();
 		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 		// error check
+		$basis->cInfo->contact->data_complete();
+		// start saving data
+		$basis->cInfo->contact->save();
+		$basis->cInfo->success = true;
+		$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
+	}
+
+	function DeleteContact (\core\classes\basis &$basis) {
+		\core\classes\messageStack::development("executing ".__METHOD__ );
+		\core\classes\user::validate_security_by_token(SECURITY_ID_MAINTAIN_INVENTORY, 4); // security check
+		if ( property_exists($basis->cInfo, 'contact_id') !== true) throw new \core\classes\userException(TEXT_ID_NOT_DEFINED);
+		$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_CONTACTS . " WHERE id = {$basis->cInfo->contact_id}");
+		$sql->execute();
+		$basis->cInfo->contact = $sql->fetch(\PDO::FETCH_CLASS | \PDO::FETCH_CLASSTYPE);
 		$basis->cInfo->contact->delete();
-		$temp = $basis->cInfo; 
-		if( $basis->cInfo->contentType == "application/json"){
-			$basis->cInfo->success = true;
-			$basis->cInfo->message = TEXT_SAVED_SUCCESSFULLY;
-		}else{
-			$basis->addEventToStack('LoadContactMgrPage');
-		}
+		$basis->cInfo->success = true;
+		$basis->cInfo->message = TEXT_DELETED_SUCCESSFULLY;
 	}
 
 	function ContactAttachmentDownload (\core\classes\basis &$basis) {
@@ -899,6 +964,7 @@ class admin extends \core\classes\admin {
 				},
 				pagination: true,
 				pageSize:   <?php echo MAX_DISPLAY_SEARCH_RESULTS?>,
+		  		PageList:   <?php echo MAX_DISPLAY_SEARCH_RESULTS?>,
 				remoteSort:	true,
 				idField:	"contactid",
 				fitColumns:	true,
@@ -949,7 +1015,7 @@ class admin extends \core\classes\admin {
 						WHERE bill_acct_id = {$basis->cInfo->cID} and journal_id in (12,13) and post_date >= '".$date->format('Y-m-d')."' group by year, month LIMIT 12");
 				$sql->execute();
 				for ($i=0; $i<12; $i++) {
-					$result = $sql->fetch(\PDO::FETCH_LAZY);
+					$result = $sql->fetch(\PDO::FETCH_ASSOC);
 					if ($result['year'] == $date->format('Y') && $result['month'] == $date->format('m')) {
 						$value = $result['total'];
 					} else {

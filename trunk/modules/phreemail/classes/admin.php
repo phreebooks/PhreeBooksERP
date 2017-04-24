@@ -164,6 +164,7 @@ class admin extends \core\classes\admin {
 					onLoadSuccess: function(data){
 						console.log('the loading of the email history datagrid was succesfull');
 						$.messager.progress('close');
+						if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 					},
 					onLoadError: function(){
 						console.error('the loading of the email history datagrid resulted in a error');

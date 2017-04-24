@@ -65,7 +65,7 @@ class tabs {
 	   	$sql = $admin->DataBase->prepare("select id, tab_name, description, sort_order from " . TABLE_EXTRA_TABS . " where module_id='" . $this->module . "'");
 	   	$rowCnt = 0;
 	   	$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 		  $actions = '';
 		  if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="loadPopUp(\'tabs_edit\', ' . $result['id'] . ')"') . chr(10);
 		  if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . EXTRA_TABS_DELETE_INTRO . '\')) subjectDelete(\'tabs\', ' . $result['id'] . ')"') . chr(10);

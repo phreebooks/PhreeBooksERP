@@ -64,6 +64,7 @@ var customloader = function(param, success, error){
 		data: param,
 		dataType: 'json',
 		success: function(data){
+			console.log('type data = '+typeof data)
 			if (data.rows){
 				success(data.rows);  // used the data.rows array to fill combobox list
 			} else {

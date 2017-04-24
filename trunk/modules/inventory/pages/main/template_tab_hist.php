@@ -19,129 +19,77 @@
 // start the history tab html
 ?>
 <div title="<?php echo TEXT_HISTORY;?>" id="tab_history">
-  <fieldset>
-    <legend><?php echo TEXT_SKU_HISTORY; ?></legend>
-	  <?php echo TEXT_CREATION_DATE .' '. 	\core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->inventory->creation_date). ' '.
-	  			 TEXT_LAST_UPDATE .' '. 	\core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->inventory->last_update). ' '.  
-	  			 TEXT_LAST_ENTRY_DATE .' '. \core\classes\DateTime::createFromFormat(DATE_FORMAT, $basis->cInfo->inventory->last_journal_date)?> <br>
-  </fieldset>
-  <fieldset>
-	<legend><?php echo TEXT_SKU_ACTIVITY; ?></legend>
-		<table class="ui-widget" style="border-collapse:collapse;width:100%">
-	  		<tr><td valign="top" width="50%">
-	  			<?php if(in_array('purchase',$basis->cInfo->inventory->posible_transactions)){?>
-				  	<table id='open_purchase_orders' title="<?php echo TEXT_OPEN_PURCHASE_ORDERS; ?>">
-				    	<thead>
-				    		<tr>
-					        	<th data-options="field:'purchase_invoice_id',sortable:true, align:'center'"><?php echo TEXT_PO_NUMBER;?></th>
-				    	        <th data-options="field:'post_date',sortable:true, align:'center', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_DATE?></th>
-				        	    <th data-options="field:'qty',sortable:true, align:'center', formatter: function(value,row,index){ return formatQty(value)}"><?php echo TEXT_QUANTITY?></th>
-					            <th data-options="field:'date_1',sortable:true, align:'right', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_RECEIVE_DATE?></th>
-				    	    </tr>
-				    	</thead>
-				    </table>
-			<?php }?>
-			<?php if(in_array('sell',$basis->cInfo->inventory->posible_transactions)){?>
-					<table id='open_sales_orders' title="<?php echo TEXT_OPEN_SALES_ORDERS; ?>">
-				    	<thead>
-				    		<tr>
-					        	<th data-options="field:'purchase_invoice_id',sortable:true, align:'center'"><?php echo TEXT_SO_NUMBER;?></th>
-				    	        <th data-options="field:'post_date',sortable:true, align:'center', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_DATE?></th>
-				        	    <th data-options="field:'qty',sortable:true, align:'center', formatter: function(value,row,index){ return formatQty(value)}"><?php echo TEXT_QUANTITY?></th>
-					            <th data-options="field:'date_1',sortable:true, align:'right', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_REQUIRED_DATE?></th>
-				    	    </tr>
-				    	</thead>
-				    </table>
-			<?php }?>
-		<table class="ui-widget" style="border-collapse:collapse;width:100%">
-		 <thead class="ui-widget-header">
-		  <tr><th colspan="4"><?php echo TEXT_AVERAGE_USAGE_EXCLUDING_THIS_MONTH; ?></th></tr>
-		  <tr>
-		    <th width="25%"><?php echo TEXT_LAST_MONTH; ?></th>
-		    <th width="25%"><?php echo TEXT_3_MONTHS; ?></th>
-		    <th width="25%"><?php echo TEXT_6_MONTHS; ?></th>
-		    <th width="25%"><?php echo TEXT_12_MONTHS; ?></th>
-		  </tr>
-		 </thead>
-		 <tbody class="ui-widget-content">
-		  <tr>
-		    <td align="center" width="25%"><?php echo $basis->cInfo->inventory->history['averages']['1month']; ?></td>
-		    <td align="center" width="25%"><?php echo $basis->cInfo->inventory->history['averages']['3month']; ?></td>
-		    <td align="center" width="25%"><?php echo $basis->cInfo->inventory->history['averages']['6month']; ?></td>
-		    <td align="center" width="25%"><?php echo $basis->cInfo->inventory->history['averages']['12month']; ?></td>
-		  </tr>
-		</tbody>
-		</table>
-	  </td>
-	  <td valign="top" width="25%">
-	  	<?php if(isset($basis->cInfo->inventory->purchases_history)){?>
-		<table class="ui-widget" style="border-collapse:collapse;width:100%">
-		 <thead class="ui-widget-header">
-		  <tr><th colspan="4"><?php echo TEXT_PURCHASES_BY_MONTH; ?></th></tr>
-		  <tr>
-		    <th><?php echo TEXT_YEAR; ?></th>
-		    <th><?php echo TEXT_THIS_MONTH; ?></th>
-		    <th><?php echo TEXT_QUANTITY; ?></th>
-		    <th><?php echo TEXT_PURCHASE_COST; ?></th>
-		  </tr>
-		 </thead>
-		 <tbody class="ui-widget-content">
-		  <?php
-		if ($basis->cInfo->inventory->purchases_history) {
-		  $odd = true;
-		  foreach ($basis->cInfo->inventory->purchases_history as $value) {
-		    echo '<tr class="' . ($odd?'odd':'even') . '">' . chr(10);
-		    echo '  <td align="center">' . $value['ThisYear']. '</td>' . chr(10);
-			echo '  <td align="center">' . $value['MonthName']. '</td>' . chr(10);
-		    echo '  <td align="center">' . ($value['qty'] ? $value['qty'] : '&nbsp;') . '</td>' . chr(10);
-		    echo '  <td align="right">' . ($value['total_amount'] ? $basis->currencies->format($value['total_amount']) : '&nbsp;') . '</td>' . chr(10);
-			echo '</tr>' . chr(10);
-			$odd = !$odd;
-		  }
-		} else {
-		  echo '<tr><td align="center" colspan="4">' . TEXT_NO_RESULTS_FOUND . '</td></tr>' . chr(10);
-		}
-	  ?>
-		</tbody>
-		</table>
+	<fieldset>
+    	<legend><?php echo TEXT_SKU_HISTORY; ?></legend>
+	  	<?php 
+	  		$creation_date 		= new 	\core\classes\DateTime($basis->cInfo->inventory->creation_date);
+	  		$last_update 		= new 	\core\classes\DateTime($basis->cInfo->inventory->last_update);
+	  		$last_journal_date 	= new 	\core\classes\DateTime($basis->cInfo->inventory->last_journal_date);
+	  
+	  		echo TEXT_CREATION_DATE 	.' : <output>'.	$creation_date->format(DATE_TIME_FORMAT) 		. "</output>   ". 
+	  			 TEXT_LAST_UPDATE 		.' : <output>'. $last_update->format(DATE_TIME_FORMAT)   		. "</output>   ".
+	  			 TEXT_LAST_ENTRY_DATE 	.' : <output>'.	$last_journal_date->format(DATE_TIME_FORMAT)	. "</output>";
+	  		?> <br>
+  	</fieldset>
+	<fieldset>
+		<legend><?php echo TEXT_SKU_ACTIVITY; ?></legend>
+		<?php if(in_array('purchase',$basis->cInfo->inventory->posible_transactions)){?>
+			<table id='open_purchase_orders' title="<?php echo TEXT_OPEN_PURCHASE_ORDERS; ?>">
+			   	<thead>
+			   		<tr>
+			        	<th data-options="field:'purchase_invoice_id',sortable:true, align:'center'"><?php echo TEXT_PO_NUMBER;?></th>
+			   	        <th data-options="field:'post_date',sortable:true, align:'center', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_DATE?></th>
+			       	    <th data-options="field:'qty',sortable:true, align:'center', formatter: function(value,row,index){ return formatQty(value)}"><?php echo TEXT_QUANTITY?></th>
+			            <th data-options="field:'date_1',sortable:true, align:'right', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_RECEIVE_DATE?></th>
+			   	    </tr>
+			   	</thead>
+			</table>
 		<?php }?>
-	  </td>
-	  <td valign="top" width="25%">
-	  	<?php if(isset($basis->cInfo->inventory->sales_history)){?>
-		<table class="ui-widget" style="border-collapse:collapse;width:100%">
-		 <thead class="ui-widget-header">
-		  <tr><th colspan="4"><?php echo TEXT_SALES_BY_MONTH; ?></th></tr>
-		  <tr>
-		    <th><?php echo TEXT_YEAR; ?></th>
-		    <th><?php echo TEXT_THIS_MONTH; ?></th>
-		    <th><?php echo TEXT_QUANTITY; ?></th>
-		    <th><?php echo TEXT_SALES_INCOME; ?></th>
-		  </tr>
-		 </thead>
-		 <tbody class="ui-widget-content">
-		  <?php
-		if ($basis->cInfo->inventory->sales_history) {
-		  $odd = true;
-		  foreach ($basis->cInfo->inventory->sales_history as $value) {
-		    echo '<tr class="' . ($odd?'odd':'even') . '">' . chr(10);
-			echo '  <td align="center">' . $value['ThisYear']. '</td>' . chr(10);
-			echo '  <td align="center">' . $value['MonthName']. '</td>' . chr(10);
-		    echo '  <td align="center">' . ($value['qty'] ? $value['qty'] : '&nbsp;') . '</td>' . chr(10);
-		    echo '  <td align="right">' . ($value['total_amount'] ? $basis->currencies->format($value['total_amount']) : '&nbsp;') . '</td>' . chr(10);
-			echo '</tr>' . chr(10);
-			$odd = !$odd;
-		  }
-		} else {
-		  echo '<tr><td align="center" colspan="4">' . TEXT_NO_RESULTS_FOUND . '</td></tr>' . chr(10);
-		}
-	  ?>
-		</tbody>
-		</table>
+		<?php if(in_array('sell',$basis->cInfo->inventory->posible_transactions)){?>
+			<table id='sales_by_month' title="<?php echo TEXT_SALES_BY_MONTH; ?>">
+			   	<thead>
+			   		<tr>
+			        	<th data-options="field:'year',sortable:true, align:'center'"><?php echo TEXT_YEAR;?></th>
+		    	        <th data-options="field:'month',sortable:true, align:'center'"><?php echo TEXT_THIS_MONTH?></th>
+		        	    <th data-options="field:'qty',sortable:true, align:'center', formatter: function(value,row,index){ return formatQty(value)}"><?php echo TEXT_QUANTITY?></th>
+			            <th data-options="field:'post_date',sortable:true, align:'right', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_PURCHASE_COST?></th>
+			   	    </tr>
+			   	</thead>
+			</table>
+		<?php }
+		if(in_array('purchase',$basis->cInfo->inventory->posible_transactions)){?>
+			<table id='purchases_by_month' title="<?php echo TEXT_PURCHASES_BY_MONTH; ?>">
+		    	<thead>
+		    		<tr>
+			        	<th data-options="field:'year',sortable:true, align:'center'"><?php echo TEXT_YEAR;?></th>
+		    	        <th data-options="field:'month',sortable:true, align:'center'"><?php echo TEXT_THIS_MONTH?></th>
+		        	    <th data-options="field:'qty',sortable:true, align:'center', formatter: function(value,row,index){ return formatQty(value)}"><?php echo TEXT_QUANTITY?></th>
+			            <th data-options="field:'post_date',sortable:true, align:'right', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_PURCHASE_COST?></th>
+		    	    </tr>
+		    	</thead>
+		    </table>
+		<?php }
+		if(in_array('sell',$basis->cInfo->inventory->posible_transactions)){?>
+			<table id='open_sales_orders' title="<?php echo TEXT_OPEN_SALES_ORDERS; ?>">
+			   	<thead>
+			   		<tr>
+			        	<th data-options="field:'purchase_invoice_id',sortable:true, align:'center'"><?php echo TEXT_SO_NUMBER;?></th>
+			   	        <th data-options="field:'post_date',sortable:true, align:'center', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_DATE?></th>
+			       	    <th data-options="field:'qty',sortable:true, align:'center', formatter: function(value,row,index){ return formatQty(value)}"><?php echo TEXT_QUANTITY?></th>
+			            <th data-options="field:'date_1',sortable:true, align:'right', formatter: function(value,row,index){ return formatDate(new Date(value))}"><?php echo TEXT_REQUIRED_DATE?></th>
+			   	    </tr>
+			   	</thead>
+			</table>
 		<?php }?>
-	  </td>
-	  </tr>
-    </table>
-  </fieldset>
+		<table id='average_use' title="<?php echo TEXT_AVERAGE_USAGE_EXCLUDING_THIS_MONTH; ?>">
+			<thead>
+			  	<tr>
+			       	<th data-options="field:'period',sortable:true, align:'center'"><?php echo TEXT_PERIOD;?></th>
+			      	<th data-options="field:'average',sortable:true, align:'center'"><?php echo TEXT_AVERAGE?></th>
+			    </tr>
+			</thead>
+		</table>
+	</fieldset>
 </div>
 <script type="text/javascript">
 $('#open_purchase_orders').datagrid({
@@ -153,10 +101,10 @@ $('#open_purchase_orders').datagrid({
         contentType: 'application/json',
         async: false,
 	},
-	width: '500px',
+	width: '400px',
 	style:{
-		float:'left',
-		margin:'50px',
+		float: 'left',
+		margin:'10px',
 	},
 	onBeforeLoad:function(){
 		console.log('loading of the inventory open purchase orders datagrid');
@@ -164,6 +112,7 @@ $('#open_purchase_orders').datagrid({
 	onLoadSuccess: function(data){
 		console.log('the loading of the inventory open purchase orders was succesfull');
 		$.messager.progress('close');
+		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 	},
 	onLoadError: function(){
 		console.error('the loading of the inventory open purchase orders resulted in a error');
@@ -195,10 +144,10 @@ $('#open_sales_orders').datagrid({
         contentType: 'application/json',
         async: false,
 	},
-	width: '500px',
+	width: '400px',
 	style:{
-		float:'left',
-		margin:'50px',
+		float: 'left',
+		margin: '10px',
 	},
 	onBeforeLoad:function(){
 		console.log('loading of the inventory open sales orders datagrid');
@@ -206,6 +155,7 @@ $('#open_sales_orders').datagrid({
 	onLoadSuccess: function(data){
 		console.log('the loading of the inventory open sales orders was succesfull');
 		$.messager.progress('close');
+		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 	},
 	onLoadError: function(){
 		console.error('the loading of the inventory open sales orders resulted in a error');
@@ -227,4 +177,135 @@ $('#open_sales_orders').datagrid({
 		if (row.closed == '1') return 'background-color:pink;';
 	},
 });
+<?php 
+$oneYearBack = new \core\classes\DateTime();
+$oneYearBack->modify('- 1 year');
+?>
+$('#purchases_by_month').datagrid({
+	url:		"index.php?action=loadOrders",
+	queryParams: {
+		sku: '<?php echo $basis->cInfo->inventory->sku;?>',
+		journal_id: '6,21',
+		post_date_max : '<?php echo $oneYearBack->format('Y-m-d');  ?>',
+		dataType: 'json',
+        contentType: 'application/json',
+        async: false,
+	},
+	width: '350px',
+	style:{
+		float: 'right',
+		margin: '10px',
+	},
+	onBeforeLoad:function(){
+		console.log('loading of the inventory purchases by month datagrid');
+	},
+	onLoadSuccess: function(data){
+		console.log('the loading of the inventory purchases by month was succesfull');
+		$.messager.progress('close');
+		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
+	},
+	onLoadError: function(){
+		console.error('the loading of the inventory purchases by month resulted in a error');
+		$.messager.progress('close');
+		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for table purchases by month');
+	},
+	onDblClickRow: function(index , row){
+		console.log('a row in the inventory purchases by month was double clicked');
+		//@todo open order
+	},
+	remoteSort:	false,
+	fitColumns:	true,
+	idField:	"id",
+	singleSelect:true,
+    view:		groupview,
+    groupField:	'period',
+	sortName:	"period",
+	sortOrder: 	"dsc",
+	loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+	rowStyler: function(index,row){
+		if (row.closed == '1') return 'background-color:pink;';
+	},
+});
+
+$('#sales_by_month').datagrid({
+	url:		"index.php?action=loadOrders",
+	queryParams: {
+		sku: '<?php echo $basis->cInfo->inventory->sku;?>',
+		journal_id: '6,21',
+		post_date_max : '<?php echo $oneYearBack->format('Y-m-d');  ?>',
+		dataType: 'json',
+        contentType: 'application/json',
+        async: false,
+	},
+	width: '350px',
+	style:{
+		float:'right',
+		margin:'10px',
+	},
+	onBeforeLoad:function(){
+		console.log('loading of the inventory sales by month datagrid');
+	},
+	onLoadSuccess: function(data){
+		console.log('the loading of the inventory sales by month was succesfull'+JSON.stringify(data));
+		$.messager.progress('close');
+		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
+	},
+	onLoadError: function(){
+		console.error('the loading of the inventory sales by month resulted in a error');
+		$.messager.progress('close');
+		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for table sales by month');
+	},
+	onDblClickRow: function(index , row){
+		console.log('a row in the inventory sales by month was double clicked');
+		//@todo open order
+	},
+	remoteSort:	false,
+	fitColumns:	true,
+	idField:	"id",
+	singleSelect:true,
+    view:		groupview,
+    groupField:	'period',
+	sortName:	"period",
+	sortOrder: 	"dsc",
+	loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+	rowStyler: function(index,row){
+		if (row.closed == '1') return 'background-color:pink;';
+	},
+});
+
+$('#average_use').datagrid({
+	url:		"index.php?action=GetInventoryAvarages",
+	queryParams: {
+		sku: '<?php echo $basis->cInfo->inventory->sku;?>',
+		dataType: 'json',
+        contentType: 'application/json',
+        async: false,
+	},
+	width: '400px',
+	style:{
+		float: 'left',
+		margin:'10px',
+	},
+	onBeforeLoad:function(){
+		console.log('loading of the inventory average use datagrid');
+	},
+	onLoadSuccess: function(data){
+		console.log('the loading of the inventory average use was succesfull');
+		$.messager.progress('close');
+		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
+	},
+	onLoadError: function(){
+		console.error('the loading of the inventory average use resulted in a error');
+		$.messager.progress('close');
+		$.messager.alert('<?php echo TEXT_ERROR?>','Load error for table average use');
+	},
+	remoteSort:	false,
+	fitColumns:	true,
+	idField:	"period",
+	sortName:	"period",
+	sortOrder: 	"dsc",
+	loadMsg:	"<?php echo TEXT_PLEASE_WAIT?>",
+});
+
+
 </script>

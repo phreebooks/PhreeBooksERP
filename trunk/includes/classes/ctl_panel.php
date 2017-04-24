@@ -147,7 +147,7 @@ class ctl_panel {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__  ." of class ". get_class($this));
 		$sql = $admin->DataBase->prepare("SELECT max(row_id) AS max_row FROM " . TABLE_USERS_PROFILES . " WHERE user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and column_id = {$column_id}");
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		return ($result['max_row'] + 1);
 	}
 
@@ -174,7 +174,7 @@ class ctl_panel {
 		if ($new_column >= 1) {
 			$sql = $admin->DataBase->prepare("SELECT MAX(row_id) as max_row FROM " . TABLE_USERS_PROFILES . " WHERE user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and column_id = '{$new_column}'");
 			$sql->execute();
-			$result = $sql->fetch(\PDO::FETCH_LAZY);
+			$result = $sql->fetch(\PDO::FETCH_ASSOC);
 			$new_max_row = $result['max_row'] + 1;
 			$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET column_id = {$new_column}, row_id = $new_max_row WHERE id = '{$this->id}'");
 			$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET row_id = row_id - 1 WHERE user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and column_id = '{$this->column_id}' and row_id >= '{$this->row_id}'");
@@ -191,7 +191,7 @@ class ctl_panel {
 		if ($new_column <= MAX_CP_COLUMNS) {
 			$sql = $admin->DataBase->prepare("SELECT MAX(row_id) as max_row FROM " . TABLE_USERS_PROFILES . " WHERE user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and column_id = '{$new_column}'");
 			$sql->execute();
-			$result = $sql->fetch(\PDO::FETCH_LAZY);
+			$result = $sql->fetch(\PDO::FETCH_ASSOC);
 			$new_max_row = $result['max_row'] + 1;
 			$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET column_id = {$new_column}, row_id = $new_max_row WHERE id = '{$this->id}'");
 			$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET row_id = row_id - 1 WHERE user_id = {$this->user_id} and menu_id = '{$this->menu_id}' and column_id = '{$this->column_id}' and row_id >= '{$this->row_id}'");
@@ -220,7 +220,7 @@ class ctl_panel {
 		$new_row = $this->row_id + 1;
 		$sql = $admin->DataBase->prepare("SELECT max(row_id) as max_row from " . TABLE_USERS_PROFILES . " WHERE user_id={$this->user_id} and menu_id='{$this->menu_id}' and column_id='{$this->column_id}'");
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		if ($new_row <= $result['max_row']) {
 			$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET row_id=$this->row_id WHERE user_id={$this->user_id} and menu_id='{$this->menu_id}' and column_id={$this->column_id} and row_id='$new_row'");
 			$admin->DataBase->exec("UPDATE " . TABLE_USERS_PROFILES . " SET row_id=$new_row     WHERE WHERE id = '{$this->id}'");

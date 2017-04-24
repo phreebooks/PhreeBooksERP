@@ -54,7 +54,7 @@ class todays_audit_log extends \core\classes\ctl_panel {
 		if ($sql->fetch(\PDO::FETCH_NUM) < 1) {
 			$contents = TEXT_NO_RESULTS_FOUND;
 		} else {
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 	        	$contents .= '<div style="float:right">' . $admin->currencies->format_full($result['amount'], true, DEFAULT_CURRENCY, 1, 'fpdf') . '</div>';
 	            $contents .= "<div>{$result['display_name']} --> {$result['action']} --> {$result['reference_id']} </div>" . chr(10);
 	        }

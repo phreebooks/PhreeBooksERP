@@ -294,7 +294,7 @@ class paymentech {
 				<AVSstate>" . $order->bill_state_province . "</AVSstate>
 				<AVSphoneNum>" . $order->bill_telephone . "</AVSphoneNum>
 				<AVSname>" . $this->cc_card_owner . "</AVSname>
-				<AVScountryCode>" . gen_get_country_iso_2_from_3($order->bill_country_code) . "</AVScountryCode>
+				<AVScountryCode>" . $_SESSION['language']->get_country_iso_2_from_3($order->bill_country_code) . "</AVScountryCode>
 				<AVSDestzip>" . preg_replace("/[^A-Za-z0-9]/", "", $order->ship_postal_code) . "</AVSDestzip>
 				<AVSDestaddress1>" . $order->ship_address1 . "</AVSDestaddress1>"
 				 . ( $order->ship_address2 ? '
@@ -303,7 +303,7 @@ class paymentech {
 				<AVSDeststate>" . $order->ship_state_province . "</AVSDeststate>
 				<AVSDestphoneNum>" . $order->ship_telephone . "</AVSDestphoneNum>
 				<AVSDestname>" . $order->ship_primary_name . "</AVSDestname>
-				<AVSDestcountryCode>" . gen_get_country_iso_2_from_3($order->ship_country_code) . "</AVSDestcountryCode>
+				<AVSDestcountryCode>" . $_SESSION['language']->get_country_iso_2_from_3($order->ship_country_code) . "</AVSDestcountryCode>
 				<OrderID>" . $order->purchase_invoice_id . "</OrderID>
 				<Amount>" . ($order->total_amount * pow(10, $admin->currencies->currencies[DEFAULT_CURRENCY]['decimal_places'])) . "</Amount>
 			</NewOrder>

@@ -320,7 +320,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
     	$sql = $admin->DataBase->prepare("SELECT tax_auth_id, description_short, account_id , tax_rate FROM " . TABLE_TAX_AUTH . " ORDER BY description_short");
     	$sql->execute();
     	if ($sql->fetch(\PDO::FETCH_NUM) < 1) throw new \core\classes\userException("there are no tax records");
-    	while ($tax_auth_values = $sql->fetch(\PDO::FETCH_LAZY)){
+    	while ($tax_auth_values = $sql->fetch(\PDO::FETCH_ASSOC)){
 			$tax_auth_array[$tax_auth_values['tax_auth_id']] = array(
 			  'description_short' => $tax_auth_values['description_short'],
 			  'account_id'        => $tax_auth_values['account_id'],
@@ -361,7 +361,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	    $tax_rate_drop_down = array();
 	    if ($contactForm == true) $tax_rate_drop_down[] = array('id' => '-1', 'text' => TEXT_PRODUCT_DEFAULT, 'auths' => '');
 	    $tax_rate_drop_down[] = array('id' => '0', 'rate' => '0', 'text' => TEXT_NONE, 'auths' => '');
-	    while ($tax_rates = $sql->fetch(\PDO::FETCH_LAZY)){
+	    while ($tax_rates = $sql->fetch(\PDO::FETCH_ASSOC)){
 			$tax_rate_drop_down[] = array(
 			  'id'    => $tax_rates['tax_rate_id'],
 			  'rate'  => gen_calculate_tax_rate($tax_rates['rate_accounts'], $tax_auth_array),
@@ -480,7 +480,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 			  AND post_date>= '$start_date' AND post_date<'".$end_date->modify("+1 day")->format("Y-m-d")."' ORDER BY post_date, id";
 			$result = $admin->DataBase->query($sql);
 			$cnt = 0;
-			$admin->DataBase->transStart();
+			$admin->DataBase->beginTransaction();
 			while (!$result->EOF) {
 			    $gl_entry = new \core\classes\journal($result->fields['id']);
 			    $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
@@ -488,11 +488,11 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 				$cnt++;
 			    $result->MoveNext();
 			}
-		    $admin->DataBase->transCommit();
+		    $admin->DataBase->commit();
 			return $cnt;
 
 	  	}catch(Exception $e){
-  		  $admin->DataBase->transRollback();
+  		  $admin->DataBase->rollBack();
   		  throw $e;
   		}
   	}

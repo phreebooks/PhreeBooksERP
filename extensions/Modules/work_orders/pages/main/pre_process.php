@@ -127,7 +127,7 @@ switch ($_REQUEST['action']) {
 
   case 'save_step':
   	try{
-  		$admin->DataBase->transStart();
+  		$admin->DataBase->beginTransaction();
 		$id         = db_prepare_input($_POST['id']); // the id of the work order
 	    $step       = db_prepare_input($_POST['rowSeq']);
 		$user_mfg   = db_prepare_input($_POST['user_mfg']);
@@ -222,12 +222,12 @@ switch ($_REQUEST['action']) {
 				gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
 			}
 		}
-		$admin->DataBase->transCommit();	// post the chart of account values
+		$admin->DataBase->commit();	// post the chart of account values
 		gen_add_audit_log(sprintf(WO_AUDIT_LOG_STEP_COMPLETE, $step));
 		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, TEXT_UPDATED, TEXT_WORK_ORDER_STEP , $step),'success');
 		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')) . '&action=build&id=' . $id, 'SSL'));
 	} catch(Exception $e) {
-		$admin->DataBase->transRollback();
+		$admin->DataBase->rollBack();
 	  	\core\classes\messageStack::add($e->getMessage());
 	  	$_REQUEST['action'] = 'build';
 	  	$_POST['rowSeq'] = $id; // make it look like an edit

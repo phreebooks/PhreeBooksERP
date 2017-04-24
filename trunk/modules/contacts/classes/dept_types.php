@@ -50,7 +50,7 @@ class dept_types {
 		// Check for this department type being used in a department, if so do not delete
 		$sql = $admin->DataBase->prepare("SELECT department_type FROM " . TABLE_DEPARTMENTS);
 		$sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 	  		if ($this->id == $result['department_type']) throw new \core\classes\userException(SETUP_DEPT_TYPES_DELETE_ERROR);
 		}
 		// OK to delete
@@ -69,7 +69,7 @@ class dept_types {
 		);
     	$sql = $admin->DataBase->prepare("SELECT id, description FROM " . $this->db_table);
 	    $sql->execute();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 	  		$actions = '';
 			if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT, 'small', 'onclick="loadPopUp(\'dept_types_edit\', \'' . $result['id'] . '\')"') . chr(10);
 	  		if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . SETUP_DEPT_TYPES_DELETE_INTRO . '\')) subjectDelete(\'dept_types\', ' . $result['id'] . ')"') . chr(10);

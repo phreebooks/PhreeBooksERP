@@ -267,7 +267,7 @@ class admin extends \core\classes\admin {
 		  		$basis->DataBase->exec ("ALTER TABLE ".TABLE_USERS_PROFILES." CHANGE dashboard_id dashboard_id VARCHAR( 255 ) NOT NULL DEFAULT ''");
 		  		$sql = $basis->DataBase->prepare("SELECT * FROM ".TABLE_USERS_PROFILES." WHERE module_id <> '' ");
 				$sql->execute();
-				while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+				while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 					\core\classes\messageStack::debug_log("started validating if dashboard {$result['dashboard_id']} if it exists in module {$result['module_id']}");
 					if ( array_key_exists( $result['dashboard_id'] , $basis->classes[ $result['module_id'] ]->dashboards) ) {
 						\core\classes\messageStack::debug_log("updating dashboard {$result['dashboard_id']} in module {$result['module_id']}");
@@ -315,42 +315,51 @@ class admin extends \core\classes\admin {
 	 * @throws \core\classes\userException
 	 */
 	function ValidateUser (\core\classes\basis &$basis) {
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		// Errors will happen here if there was a problem logging in, logout and restart
-		\core\classes\messageStack::debug_log("database type ".$basis->DataBase->getAttribute(\PDO::ATTR_DRIVER_NAME));
+		\core\classes\messageStack::development("database type ".$basis->DataBase->getAttribute(\PDO::ATTR_DRIVER_NAME));
 		if (!$basis->DataBase instanceof \PDO) throw new \core\classes\userException("Database isn't created");
 		try{
-			$sql = $basis->DataBase->prepare("SELECT admin_id, admin_name, inactive, display_name, admin_email, admin_pass, account_id, admin_prefs, admin_security
-			  FROM " . TABLE_USERS . " WHERE admin_name = '{$basis->cInfo->admin_name}'");
-			$sql->execute();
-			$result = $sql->fetch(\PDO::FETCH_LAZY);
-			if (!$result || $result['inactive']) throw new \Exception(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD);
+			$sql = $basis->DataBase->prepare("SELECT count(*) FROM " . TABLE_USERS . " WHERE admin_name = :admin_name");
+			$sql->execute(array(':admin_name' => $basis->cInfo->admin_name));
+			$number_of_rows = $sql->fetchColumn();
+			$sql = $basis->DataBase->prepare("SELECT * FROM " . TABLE_USERS . " WHERE admin_name = :admin_name");
+			$sql->execute(array(':admin_name' => $basis->cInfo->admin_name));
+			$result = $sql->fetch(\PDO::FETCH_ASSOC);
+			if ($number_of_rows <> 1 || $result['inactive'] == 1) throw new \Exception(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD);
 			\core\classes\encryption::validate_password($basis->cInfo->admin_pass, $result['admin_pass']);
+			$_SESSION['user']->admin_id			= $result['admin_id'];
+			$_SESSION['user']->is_role			= $result['is_role'];
+			$_SESSION['user']->admin_name		= $result['admin_name'];
+			$_SESSION['user']->inactive			= $result['inactive'];
+			$_SESSION['user']->display_name		= $result['display_name'];
+			$_SESSION['user']->admin_email		= $result['admin_email'];
+			$_SESSION['user']->admin_pass		= $result['admin_pass'];
+			$_SESSION['user']->account_id		= $result['account_id'];
+			$_SESSION['user']->admin_store_id	= $result['admin_store_id'];
+			$_SESSION['user']->admin_prefs		= unserialize($result['admin_prefs']);
+			$_SESSION['user']->admin_security	= \core\classes\user::parse_permissions($result['admin_security']);
+			// load init functions for each module and execute
+			foreach ($basis->classes as $key => $module_class) $module_class->should_update($basis);
+			if (defined('TABLE_CONTACTS') && $_SESSION['user']->account_id > 0) {
+				$sql = $basis->DataBase->prepare("SELECT dept_rep_id FROM " . TABLE_CONTACTS . " WHERE id = :account_id");
+				$sql->execute(array(':account_id' => $_SESSION['user']->account_id));
+				$dept = $sql->fetch(\PDO::FETCH_ASSOC);
+				$_SESSION['user']->department = $dept['dept_rep_id'];
+			}
+			gen_add_audit_log(TEXT_USER_LOGIN . " -> id: {$_SESSION['user']->admin_id} name: {$_SESSION['user']->display_name}");
+			// check for session timeout to reload to requested page
+			if (!empty($_POST['previous']) && false === strpos ($_POST['previous'],'LoadLostPassword')&& false === strpos ($_POST['previous'],'ValidateUser') && false === strpos ($_POST['previous'],'logout') ){
+				gen_redirect(html_href_link(FILENAME_DEFAULT, $_POST['previous'], 'SSL'));
+			}
+			// check safe mode is allowed to log in.
+			if (get_cfg_var('safe_mode')) throw new \core\classes\userException(SAFE_MODE_ERROR); //@todo is this removed as of php 5.3??
+			$basis->addEventToStack("LoadMainPage");
 		}catch (\Exception $e){
-			\core\classes\messageStack::error($_SESSION['user']->get_ip_address(). " ". $e);
-			\core\classes\messageStack::add($e);
+			\core\classes\messageStack::error($_SESSION['user']->get_ip_address(). " ". $e->getMessage());
+			\core\classes\messageStack::add($e->getMessage());
 			$_SESSION['user']->LoadLogIn();
 		}
-		foreach ($result as $key => $value) $_SESSION['user']->$key = $value;
-		$_SESSION['user']->admin_prefs    = unserialize($result['admin_prefs']);
-		$_SESSION['user']->admin_security = \core\classes\user::parse_permissions($result['admin_security']);
-		
-		// load init functions for each module and execute
-		foreach ($basis->classes as $key => $module_class) $module_class->should_update($basis);
-		if (defined('TABLE_CONTACTS')) {
-			$sql = $basis->DataBase->prepare("select dept_rep_id from " . TABLE_CONTACTS . " where id = " . $result['account_id']);
-			$sql->execute();
-			$dept = $sql->fetch(\PDO::FETCH_LAZY);
-			$_SESSION['user']->department = $dept['dept_rep_id'];
-		}
-		gen_add_audit_log(TEXT_USER_LOGIN . " -> id: {$_SESSION['user']->admin_id} name: {$_SESSION['user']->display_name}");
-		// check for session timeout to reload to requested page
-		if (!empty($_POST['previous']) && false === strpos ($_POST['previous'],'LoadLostPassword')&& false === strpos ($_POST['previous'],'ValidateUser') && false === strpos ($_POST['previous'],'logout') ){
-			gen_redirect(html_href_link(FILENAME_DEFAULT, $_POST['previous'], 'SSL'));
-		}
-		// check safe mode is allowed to log in.
-		if (get_cfg_var('safe_mode')) throw new \core\classes\userException(SAFE_MODE_ERROR); //@todo is this removed as of php 5.3??
-		$basis->addEventToStack("LoadMainPage");
 	}
 
 	/**
@@ -411,23 +420,22 @@ class admin extends \core\classes\admin {
 		$_SESSION['user']->logout();
 	}
 
-	/**
-	 * load varibles for login page
-	 * @param \core\classes\basis $basis
-	 */
-	function LoadLogIn (\core\classes\basis &$basis){
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$basis->page_title		= TEXT_PHREEBOOKS_ERP;
-		$basis->module			= 'phreedom';
-		$basis->page			= 'main';
-		$basis->template 		= 'template_login';
-		//@todo js not working jet
-		$basis->js .= "
-				$(window).load(function() {
-					$( \"#admin_name\" ).select();
-				});";
-	}
-
+	function GetAllPeriods (\core\classes\basis &$basis){ //@todo move to DateTime
+    	$sql = $basis->DataBase->prepare("SELECT period, start_date, end_date, fiscal_year FROM " . TABLE_ACCOUNTING_PERIODS . " ORDER BY period");
+    	$sql->execute();
+//    	$basis->cInfo->rows = array();
+    	if ($basis->cInfo->include_all == 'true') $basis->cInfo->rows['all'] = array('id' => 'all', 'text' => TEXT_ALL);
+    	while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
+    		$startdate	= new \core\classes\DateTime($result['start_date']);
+    		$enddate	= new \core\classes\DateTime($result['end_date']);
+    		$period		= $result['period'];
+    		$basis->cInfo->rows[$period] = array('id' => $period, 'fiscal_year' => $result['fiscal_year'], 'text' => TEXT_PERIOD . " {$period} : " . $startdate->format(DATE_FORMAT) . ' - ' . $enddate->format(DATE_FORMAT));
+    	}
+    	$basis->cInfo->rows[$basis->cInfo->default]['selected'] = true;
+    	$basis->cInfo->success = true;
+    	$basis->cInfo->message = TEXT_LOADED_SUCCESSFULLY;
+  	}
+//@todo Remove?
 	function LoadLostPassword (\core\classes\basis $basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$basis->page_title		= TEXT_PHREEBOOKS_ERP;
@@ -435,17 +443,24 @@ class admin extends \core\classes\admin {
 		$basis->page			= 'main';
 		$basis->template 		= 'template_pw_lost';
 	}
-
+//@todo rewrite
 	function LoadCrash (\core\classes\basis $basis){
-		global $messageStack;
-		$basis->observer->send_menu($basis);
-		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		$messageStack->write_debug();
-		$basis->observer->send_footer($basis);
-		$basis->module			= 'phreedom';
-		$basis->page			= 'main';
-		$basis->template 		= 'template_crash';
-		$basis->page_title		=  TEXT_PHREEBOOKS_ERP;
+		if( $_REQUEST['contentType'] == "application/json" || $_REQUEST['dataType'] == "json" ){
+			$temp['rows'] = 0;
+			$temp['success'] = false;
+			$temp['error_message'] = $e->getMessage();
+			echo json_encode($temp);
+		}else{
+			global $messageStack;
+			$basis->observer->send_menu($basis);
+			\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+			$messageStack->write_debug();
+			$basis->observer->send_footer($basis);
+			$basis->module			= 'phreedom';
+			$basis->page			= 'main';
+			$basis->template 		= 'template_crash';
+			$basis->page_title		=  TEXT_PHREEBOOKS_ERP;
+		}
 	}
 
 	/**
@@ -487,7 +502,7 @@ class admin extends \core\classes\admin {
 		$query_raw    = "SELECT SQL_CALC_FOUND_ROWS " . implode(', ', $field_list) . " FROM " . TABLE_USERS . " WHERE is_role = '0'{$search} ORDER BY {$disp_order}";
 		$sql = $basis->DataBase->prepare($query_raw);
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		$query_result = $basis->DataBase->query($query_raw, (MAX_DISPLAY_SEARCH_RESULTS * ($_REQUEST['list'] - 1)).", ".  MAX_DISPLAY_SEARCH_RESULTS);
 		$query_split  = new \core\classes\splitPageResults($_REQUEST['list'], '');
 		history_save('users');
@@ -498,7 +513,7 @@ class admin extends \core\classes\admin {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$sql = $basis->DataBase->prepare("SELECT admin_id, admin_name, admin_email FROM " . TABLE_USERS . " WHERE admin_email = '{$basis->admin_email}'");
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		if ($basis->admin_email == '' || $basis->admin_email <> $result['admin_email']) throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_EMAIL_ADDRESS);
 		$new_password = \core\classes\encryption::random_password(ENTRY_PASSWORD_MIN_LENGTH);
 		$admin_pass   = \core\classes\encryption::password($new_password);
@@ -588,7 +603,7 @@ class admin extends \core\classes\admin {
 		$user = ($basis->cInfo->user_id) ? " user_id = {$basis->cInfo->user_id} AND " : "";
 		$sql = $basis->DataBase->prepare("SELECT params FROM " . TABLE_USERS_PROFILES . " WHERE {$user} dashboard_id LIKE '%{$basis->cInfo->dashboard}'");
 		$sql->execute();
-		$result = $sql->fetch(\PDO::FETCH_LAZY);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
 		$temp = unserialize($result['params']);
 		if (is_array($temp)) {
 			$index = 1;

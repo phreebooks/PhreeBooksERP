@@ -10,6 +10,7 @@ class ci extends \inventory\classes\inventory {//Charge Item
 	public $posible_cost_methodes   = array('f');
 
 	function __construct(){
+		parent::__construct();
 		$this->quantity_on_hand = '';
 	}
 	

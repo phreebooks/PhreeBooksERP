@@ -21,8 +21,10 @@ class PDO extends \PDO {
 	public $count_queries = 0;
 	public $total_query_time = 0;
 
-	public function __construct($dsn, $username="", $password="", $driver_options = array()) {
-        parent::__construct($dsn,$username,$password, $driver_options);
+	public function __construct($dsn, $username = "", $password = "", $driver_options = array()) {
+		$driver_options = array_merge($driver_options, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
+		\core\classes\messageStack::development("executing ".__METHODE__." driver options = ". print_r($driver_options,true));
+        parent::__construct($dsn, $username, $password, $driver_options);
     }
 
 	public function query($query) {
@@ -37,7 +39,7 @@ class PDO extends \PDO {
 	}
 
 	public function prepare ($query, $options = NULL){
-		\core\classes\messageStack::debug_log("executing query: $query");
+		\core\classes\messageStack::debug_log("preparing query: $query");
 		$time_start = explode(' ', microtime());
 		$temp =  parent::prepare($query);
 		$time_end = explode (' ', microtime());
@@ -64,9 +66,16 @@ class PDO extends \PDO {
 	 * @return boolean
 	 */
 	public function table_exists($table_name) {
-		\core\classes\messageStack::debug_log("looking for match {$row['Field']} == $field_name");
-		if ($this->query("SHOW TABLES like '$table_name'") != false) return true;
-		return false;
+		\core\classes\messageStack::debug_log( "executing " . __METHOD__." checking table $table_name" );
+		try {
+			$result = $this->query("SELECT 1 FROM $table_name LIMIT 1");
+		} catch (PDOException $e) {
+			\core\classes\messageStack::development(" we didn't find table $table_name ");
+			return false;
+		}
+		\core\classes\messageStack::development(" we found table $table_name ");
+		// Result is either boolean FALSE (no table found) or PDOStatement Object (table found)
+		return $result !== false;
 	}
 
 	/**
@@ -76,10 +85,11 @@ class PDO extends \PDO {
 	 * @return boolean
 	 */
 	public function field_exists($table_name, $field_name) {
+		\core\classes\messageStack::development( "executing " . __METHOD__);
 		$result = $this->prepare("DESCRIBE $table_name");
 		$result->execute();
 		while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
-			\core\classes\messageStack::debug_log("looking for match {$row['Field']} == $field_name");
+			\core\classes\messageStack::development("looking for match {$row['Field']} == $field_name");
 			if  ($row['Field'] == $field_name) return true;
 		}
 		return false;
@@ -93,8 +103,9 @@ class PDO extends \PDO {
 	
 	function write_configure($constant, $value = '') {
 		if (!$constant) throw new \core\classes\userException("contant isn't defined for value: $value");
+		\core\classes\messageStack::development( "executing " . __METHOD__. " adding value $value to constant $constant ");
 		$sql = $this->prepare("INSERT INTO " . TABLE_CONFIGURATION . " (configuration_key, configuration_value) VALUES (:configuration_key, :configuration_value) ON DUPLICATE KEY UPDATE configuration_value = :configuration_value");
-		$sql->execute(array(':configuration_key'=>$constant, ':configuration_value'=>$value));
+		$sql->execute(array(':configuration_key' => $constant, ':configuration_value' => $value));
 		$_SESSION['user']->updateConfig($constant, $value);
 		return true;
 	}
@@ -105,8 +116,8 @@ class PDO extends \PDO {
 	 */
 	
 	function remove_configure($constant){
-		global $admin;
 		if (!$constant) throw new \core\classes\userException("There is no constant to remove");
+		\core\classes\messageStack::development( "executing " . __METHOD__. " removing constant $constant ");
 		$this->exec("delete from " . TABLE_CONFIGURATION . " where configuration_key = '$constant'");
 		$_SESSION['user']->removeConfig($constant, $value);
 		return true;

@@ -36,7 +36,7 @@ class inventory {
 	public $qty_per_store			= array();
 	public $posible_cost_methodes   = array('f','l','a');
 	public $not_used_fields			= array();
-	public $attachments				= array();
+	public $attachments;
 	public $assy_cost				= 0;
 	public $remove_image			= false;
 	public $purchases_history		= array();
@@ -50,11 +50,13 @@ class inventory {
 	 */
 	public function __construct(){
 		global $admin;
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		$this->security_level = \core\classes\user::validate(SECURITY_ID_MAINTAIN_INVENTORY); // in this case it must be done after the class is defined for
 //		foreach ($_POST as $key => $value) $this->$key = $value;
 	  	$this->fields 		 = new \inventory\classes\fields(false, $this->type);
-		$this->tab_list['general'] = array('file'=>'template_tab_gen',	'tag'=>'general', 'order'=>10, 'text'=>TEXT_SYSTEM);
-		$this->tab_list['history'] = array('file'=>'template_tab_hist',	'tag'=>'history', 'order'=>20, 'text'=>TEXT_HISTORY);
+		$this->tab_list['general']   = array('file'=>'template_tab_gen',	'tag'=>'general',  'order'=>10, 'text'=>TEXT_SYSTEM);
+		$this->tab_list['history']   = array('file'=>'template_tab_hist',	'tag'=>'history',  'order'=>20, 'text'=>TEXT_HISTORY);
+		$this->tab_list['connections'] = array('file'=>'template_connections',	'tag'=>'connections', 'order'=>22, 'text'=>TEXT_CONNECTIONS);
 		$this->attachments = unserialize($this->attachments) !== false ? unserialize($this->attachments) : array();
 	/*	if($this->auto_field){
 			$result = $admin->DataBase->query("SELECT ".$this->auto_field." FROM ".TABLE_CURRENT_STATUS);
@@ -67,7 +69,7 @@ class inventory {
 	 * this function gets inventory details from the database
 	 */
 	function getInventory(){
-		global $admin;
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		$this->purchases_history = null;
 		$this->sales_history	 = null;
 		$this->purchase_array	 = null;
@@ -76,7 +78,6 @@ class inventory {
 		$this->get_qty();
 		$this->assy_cost = $this->item_cost;
 		$this->create_purchase_array();
-		$this->gather_history();
 	}
 
 	/**
@@ -85,21 +86,25 @@ class inventory {
 	 */
 	function get_item_by_id($id) {
 		global $admin;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__." id = $id" );
 		$this->purchases_history = null;
 		$this->sales_history	 = null;
 		$this->purchase_array	 = null;
 		$this->id = $id;
 		$result = $admin->DataBase->query("SELECT * FROM ".TABLE_INVENTORY." WHERE id = $id");
-		if ($result->fetch(\PDO::FETCH_NUM) != 0) foreach ($result as $key => $value) {
-			if (is_null($value)) $this->$key = '';
+		$sql->execute();
+		if ($sql->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(TEXT_NO_RECORD_FOUND);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
+		foreach ($result as $key => $value) {
+			if(is_null($value)) $this->$key = '';
 			else $this->$key = $value;
 		}
-		$this->attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
+		$this->attachments = unserialize($this->attachments) !== false ? unserialize($this->attachments) : array();
 		$this->remove_unwanted_keys();
 		$this->get_qty();
 		$this->assy_cost = $this->item_cost;
 		$this->create_purchase_array();
-		$this->gather_history();
+		return true;
 	}
 
 	/**
@@ -109,22 +114,26 @@ class inventory {
 
 	function get_item_by_sku($sku){
 		global $admin;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__. " sku = $sku" );
 		$this->purchases_history = null;
 		$this->sales_history	 = null;
 		$this->purchase_array	 = null;
 		$this->sku = $sku;
-		$result = $admin->DataBase->query("SELECT * FROM " . TABLE_INVENTORY . " WHERE sku = '{$sku}'");
-		if($result->fetch(\PDO::FETCH_NUM)!=0) foreach ($result as $key => $value) {
+		$sql = $admin->DataBase->prepare("SELECT * FROM " . TABLE_INVENTORY . " WHERE sku = '{$sku}'");
+		$sql->execute();
+		if ($sql->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(TEXT_NO_RECORD_FOUND);
+		$result = $sql->fetch(\PDO::FETCH_ASSOC);
+		foreach ($result as $key => $value) {
 			if(is_null($value)) $this->$key = '';
 			else $this->$key = $value;
 		}
 		// expand attachments
-		$this->attachments = $result['attachments'] ? unserialize($result['attachments']) : array();
+		$this->attachments = unserialize($this->attachments) !== false ? unserialize($this->attachments) : array();
 		$this->remove_unwanted_keys();
 		$this->get_qty();
 		$this->assy_cost = $this->item_cost;
 		$this->create_purchase_array();
-		$this->gather_history();
+		return true;
 	}
 
 	/**
@@ -132,6 +141,7 @@ class inventory {
 	 */
 
 	function remove_unwanted_keys(){
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		$this->not_used_fields = $this->fields->unwanted_fields($this->inventory_type);
 		foreach ($this->not_used_fields as $key => $value) {
 			if(isset($this->$value)) unset($this->$value);
@@ -140,6 +150,7 @@ class inventory {
 
 	function get_qty(){
 		global $admin;
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		if(in_array('quantity_on_hand', $this->not_used_fields)) return;
 		$raw_sql = " SELECT id, short_name, primary_name FROM " . TABLE_CONTACTS . " c JOIN " . TABLE_ADDRESS_BOOK . " a ON c.id = a.ref_id WHERE c.type = 'b' ORDER BY short_name ";
 	  	$sql = $admin->DataBase->query($raw_sql);
@@ -160,7 +171,7 @@ class inventory {
 			$this->qty_table .='      <td>' . COMPANY_ID . '</td>';
 			$this->qty_table .="      <td align='center'>{$qty}</td>";
 		    $this->qty_table .='    </tr>' . chr(10);
-		    while ($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+		    while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 		    	$qty = $this->store_stock($result['id']);
 		  		$this->qty_per_store[$result['id']] = $qty;
 		  		$this->quantity_on_hand += $qty;
@@ -187,6 +198,7 @@ class inventory {
 	//this is to check if you are allowed to create a new product
 	function check_create_new() {
 		global $admin;
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		if (!$this->sku) $this->sku = $this->next_sku;
 		$admin->classes['inventory']->validate_name($this->sku);
 		return $this->create_new();
@@ -194,6 +206,7 @@ class inventory {
 
 	//this is the general create new inventory item
 	function create_new() {
+		\core\classes\messageStack::development("executing ".__METHOD__ );
 		$sql_data_array = array(
 	  		'sku'						=> $this->sku,
 	  		'inventory_type'			=> $this->inventory_type,
@@ -229,16 +242,16 @@ class inventory {
 	 * @throws Exception
 	 */
 
-	function copy($id, $newSku) {
+	function copy($newSku) {
 		global $admin;
+		\core\classes\messageStack::development("executing ".__METHOD__ ." id = $this->id new sku = $newSku");
 		if (!$newSku) $newSku = $this->next_sku;
 		$admin->classes['inventory']->validate_name($newSku);
-		if(isset($id))$this->get_item_by_id($id);
-		else throw new \core\classes\userException("id should be submitted in order to copy");
+		if($this->id == '') throw new \core\classes\userException("id should be submitted in order to copy");
 		$this->old_id					= $this->id;
 		$this->old_sku					= $this->sku;
 		$sql_data_array = array();
-		$not_usable_keys = array('id','sku','last_journal_date','upc_code','image_with_path','quantity_on_hand','quantity_on_order','quantity_on_sales_order','quantity_on_allocation','creation_date','last_update');
+		$not_usable_keys = array('id','sku','last_journal_date','upc_code','image_with_path','quantity_on_hand','quantity_on_order','quantity_on_sales_order','quantity_on_allocation','creation_date','last_update','title','help_path','auto_field','tab_list','posible_transactions','posible_cost_methodes','store_stock','qty_table','purchase_array','history','qty_per_store','not_used_fields','assy_cost','remove_image','purchases_history','sales_history','security_level','fields','old_id','old_sku');
 		foreach ($this as $key => $value) {
 			if(!in_array($key, $not_usable_keys)) $sql_data_array[$key] = $value;
 		}
@@ -246,6 +259,8 @@ class inventory {
 		$sql_data_array['sku']				= $newSku ;
 		$sql_data_array['creation_date'] 	= date('Y-m-d H:i:s');
 		$sql_data_array['last_update'] 		= date('Y-m-d H:i:s');
+		$sql_data_array ['attachments'] 	= sizeof($this->attachments) > 0 ? serialize($this->attachments) : '';
+		$sql_data_array['class'] 			= get_class($this);
 		db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
 		$this->id							= \core\classes\PDO::lastInsertId('id');
 		$this->store_stock 					= array();
@@ -253,32 +268,20 @@ class inventory {
 		$this->history 						= array();
 		$this->qty_per_store				= array();
 		$this->attachments					= array();
-		$result = $admin->DataBase->query("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = $id");
-		while(!$result->EOF) {
-	  		$output_array = array(
-				'inventory_id'   => $this->id,
-				'price_sheet_id' => $result['price_sheet_id'],
-				'price_levels'   => $result['price_levels'],
-	  		);
+		$sql = $admin->DataBase->query("SELECT price_sheet_id, price_levels FROM " . TABLE_INVENTORY_SPECIAL_PRICES . " WHERE inventory_id = $id");
+		$sql->execute();
+  		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
+  			$result['inventory_id'] = $this->id;
 	  		db_perform(TABLE_INVENTORY_SPECIAL_PRICES, $output_array, 'insert');
-	  		$result->MoveNext();
 		}
-		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->old_sku . "'");
-		while(!$result->EOF) {
-			$sql_data_array = array (
-				'sku'						=> $this->sku,
-				'vendor_id' 				=> $result['vendor_id'],
-				'description_purchase'		=> $result['description_purchase'],
-				'item_cost'	 				=> $result['item_cost'],
-				'purch_package_quantity'	=> $result['purch_package_quantity'],
-				'purch_taxable'	 			=> $result['purch_taxable'],
-				'price_sheet_v'				=> $result['price_sheet_v'],
-			);
+		$sql = $admin->DataBase->query("SELECT * FROM " . TABLE_INVENTORY_PURCHASE . " WHERE sku = '{$this->old_sku}'");
+		$sql->execute();
+  		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
+			$sql_data_array = $result;
+			$sql_data_array['sku'] = $this->sku;
 			db_perform(TABLE_INVENTORY_PURCHASE, $sql_data_array, 'insert');
-	  		$result->MoveNext();
 		}
 		gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_COPY, $this->old_sku . ' => ' . $this->sku);
-		$this->get_item_by_sku($this->sku);
 		return true;
 	}
 
@@ -286,49 +289,50 @@ class inventory {
  	* this function is for renaming
  	*/
 
-	function rename($id, $newSku){
+	function rename($newSku){
 		global $admin;
+		\core\classes\messageStack::development("executing ".__METHOD__ . " new sku name = $newSku");
 		if (!$newSku) $newSku = $this->next_sku;
 		$admin->classes['inventory']->validate_name($newSku);
-		if(isset($id))$this->get_item_by_id($id);
+//		if(isset($id)) $this->get_item_by_id($id);
 		$sku_list = array($this->sku);
 		if (isset($this->edit_ms_list) && $this->edit_ms_list == true) { // build list of sku's to rename (without changing contents)
-	  		$result = $admin->DataBase->query("select sku from " . TABLE_INVENTORY . " where sku like '" . $this->sku . "-%'");
-	  		while(!$result->EOF) {
-				$sku_list[] = $result['sku'];
-				$result->MoveNext();
-	  		}
+	  		$sql = $admin->DataBase->prepare("SELECT sku FROM " . TABLE_INVENTORY . " WHERE sku LIKE '{$this->sku}-%'");
+	  		$sql->execute();
+	  		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) $sku_list[] = $result['sku'];
 		}
 		// start transaction (needs to all work or reset to avoid unsyncing tables)
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		// rename the afffected tables
 		for ($i = 0; $i < count($sku_list); $i++) {
 	  		$new_sku = str_replace($this->sku, $newSku, $sku_list[$i], $count = 1);
-	  		$result = $admin->DataBase->query("update " . TABLE_INVENTORY .           " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $admin->DataBase->query("update " . TABLE_INVENTORY_ASSY_LIST . " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $admin->DataBase->query("update " . TABLE_INVENTORY_COGS_OWED . " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $admin->DataBase->query("update " . TABLE_INVENTORY_HISTORY .   " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $admin->DataBase->query("update " . TABLE_INVENTORY_MS_LIST .   " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $admin->DataBase->query("update " . TABLE_JOURNAL_ITEM .        " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
-	  		$result = $admin->DataBase->query("update " . TABLE_INVENTORY_PURCHASE .  " set sku = '" . $new_sku . "' where sku = '" . $sku_list[$i] . "'");
+	  		$result = $admin->DataBase->exec("UPDATE " . TABLE_INVENTORY .           " SET sku = '{$new_sku}' WHERE sku = '{$sku_list[$i] }'");
+	  		$result = $admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_ASSY_LIST . " SET sku = '{$new_sku}' WHERE sku = '{$sku_list[$i] }'");
+	  		$result = $admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_COGS_OWED . " SET sku = '{$new_sku}' WHERE sku = '{$sku_list[$i] }'");
+	  		$result = $admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_HISTORY .   " SET sku = '{$new_sku}' WHERE sku = '{$sku_list[$i] }'");
+	  		$result = $admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_MS_LIST .   " SET sku = '{$new_sku}' WHERE sku = '{$sku_list[$i] }'");
+	  		$result = $admin->DataBase->exec("UPDATE " . TABLE_JOURNAL_ITEM .        " SET sku = '{$new_sku}' WHERE sku = '{$sku_list[$i] }'");
+	  		$result = $admin->DataBase->exec("UPDATE " . TABLE_INVENTORY_PURCHASE .  " SET sku = '{$new_sku}' WHERE sku = '{$sku_list[$i] }'");
 		}
-		$admin->DataBase->transCommit();
+		$this->sku = $newSku;
+		$admin->DataBase->commit();
 		return true;
 	}
 
 	//this is to check if you are allowed to remove
-	function check_remove($id) {
+	function check_remove() {
 		global $admin;
-		if(isset($id))$this->get_item_by_id($id);
-		else throw new \core\classes\userException("id should be submitted in order to delete");
+		\core\classes\messageStack::development("executing ".__METHOD__ );
+		if( $this->id == '' && $this->sku == '') throw new \core\classes\userException("id or sku should be submitted in order to delete");
+		if( $this->sku == '' ) $this->get_item_by_id($this->id);
 		// check to see if there is inventory history remaining, if so don't allow delete
-		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_HISTORY . " where sku = '" . $this->sku . "' and remaining > 0");
+		$result = $admin->DataBase->query("SELECT id FROM " . TABLE_INVENTORY_HISTORY . " WHERE sku = '{$this->sku}' AND remaining > 0");
 		if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(INV_ERROR_DELETE_HISTORY_EXISTS);
 		// check to see if this item is part of an assembly
-		$result = $admin->DataBase->query("select id from " . TABLE_INVENTORY_ASSY_LIST . " where sku = '" . $this->sku . "'");
+		$result = $admin->DataBase->query("SELECT id FROM " . TABLE_INVENTORY_ASSY_LIST . " WHERE sku = '{$this->sku}'");
 		if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(INV_ERROR_DELETE_ASSEMBLY_PART);
-		$result = $admin->DataBase->query( "select id from " . TABLE_JOURNAL_ITEM . " where sku = '" . $this->sku . "' limit 1");
-		if ($result->Recordcount() > 0) throw new \core\classes\userException(INV_ERROR_CANNOT_DELETE);
+		$result = $admin->DataBase->query("SELECT id FROM " . TABLE_JOURNAL_ITEM . " WHERE sku = '{$this->sku}' LIMIT 1");
+		if ($result->fetch(\PDO::FETCH_NUM) > 0) throw new \core\classes\userException(INV_ERROR_CANNOT_DELETE);
 		$this->remove();
 	  	return true;
 
@@ -338,36 +342,33 @@ class inventory {
 	// the function check_remove calls this function.
 	function remove(){
 		global $admin;
-		$admin->DataBase->exec("delete from " . TABLE_INVENTORY . " where id = " . $this->id);
+		\core\classes\messageStack::development("executing ".__METHOD__ );
+		$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY . " WHERE id = " . $this->id);
 		if($this->image_with_path != '') {
-			$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY . " where image_with_path = '" . $this->image_with_path ."'");
+			$result = $admin->DataBase->query("SELECT * FROM " . TABLE_INVENTORY . " WHERE image_with_path = '{$this->image_with_path}'");
 	  		if ( $result->fetch(\PDO::FETCH_NUM) == 0) { // delete image
 				$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/images/';
 				if (file_exists($file_path . $this->image_with_path)) unlink ($file_path . $this->image_with_path);
 	  		}
 		}
-	  	$admin->DataBase->exec("delete from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = '" . $this->id . "'");
-	  	$admin->DataBase->exec("delete from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku . "'");
+	  	$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_SPECIAL_PRICES . " WHERE inventory_id = '{$this->id}'");
+	  	$admin->DataBase->exec("DELETE FROM " . TABLE_INVENTORY_PURCHASE . " WHERE sku = '{$this->sku}'");
 		gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_DELETE, $this->sku);
 	}
 
 	// this is the general save function.
 	function save() {
-		global $admin, $fields;
-	    $sql_data_array = $fields->what_to_save();
+		global $admin;
+		\core\classes\messageStack::development("executing ".__METHOD__ );
+	    $sql_data_array = $this->fields->what_to_save();
 	    // handle the checkboxes
+	    if ($this->id == '') $admin->classes['inventory']->validate_name($this->sku);
 	    $sql_data_array['class'] = get_class($this);
 	    $sql_data_array['inactive'] = isset($_POST['inactive']) ? $_POST['inactive'] : '0'; // else unchecked
 	    foreach(array('quantity_on_hand', 'quantity_on_order', 'quantity_on_sales_order', 'quantity_on_allocation', 'creation_date', 'last_update', 'last_journal_date' ) as $key){
 	    	unset($sql_data_array[$key]);
 	    }
 		$sql_data_array['last_update'] = date('Y-m-d H-i-s');
-		if (\core\classes\user::security_level(SECURITY_ID_PURCHASE_INVENTORY) > 1){
-			$sql_data_array['item_cost'] = $this->store_purchase_array();
-			$sql_data_array['vendor_id'] = $this->min_vendor_id;
-		} else{
-			if (isset($sql_data_array['item_cost'])) unset($sql_data_array['item_cost']);
-		}
 		$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/inventory/images';
 		if ($this->remove_image == '1') { // update the image with relative path
 	  		if ($this->image_with_path && file_exists($file_path . '/' . $this->image_with_path)) unlink ($file_path . '/' . $this->image_with_path);
@@ -406,53 +407,40 @@ class inventory {
 	  		if (is_uploaded_file($_FILES['file_name']['tmp_name'])) { // find an image slot to use
 	    		$image_id = 0;
 	    		while (true) {
-		    		if (!file_exists(INVENTORY_DIR_ATTACHMENTS.'inventory_'.$this->id.'_'.$image_id.'.zip')) break;
+		    		if (!file_exists(INVENTORY_DIR_ATTACHMENTS."inventory_{$this->id}_{$image_id}.zip")) break;
 		    		$image_id++;
 	    		}
-	    		saveUploadZip('file_name', INVENTORY_DIR_ATTACHMENTS, 'inventory_'.$this->id.'_'.$image_id.'.zip');
+	    		saveUploadZip('file_name', INVENTORY_DIR_ATTACHMENTS, "inventory_{$this->id}_{$image_id}.zip");
 	    		$this->attachments[$image_id] = $_FILES['file_name']['name'];
 	  		}
 	  		$sql_data_array ['attachments'] = sizeof($this->attachments) > 0 ? serialize($this->attachments) : '';
 		}
 		unset($sql_data_array['last_journal_date]']);
-		if ($this->id != ''){
-			unset($sql_data_array['creation_date]']);
-			db_perform(TABLE_INVENTORY, $sql_data_array, 'update', "id = " . $this->id);
-			gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_UPDATE, $this->sku . ' - ' . $sql_data_array['description_short']);
-		}else{
-			db_perform(TABLE_INVENTORY, $sql_data_array, 'insert');
-			$this->id = \core\classes\PDO::lastInsertId('id');
-			$result = $admin->DataBase->query("select price_sheet_id, price_levels from " . TABLE_INVENTORY_SPECIAL_PRICES . " where inventory_id = " . $this->id);
-			while(!$result->EOF) {
-	  			$output_array = array(
-					'inventory_id'   => $this->id,
-					'price_sheet_id' => $result['price_sheet_id'],
-					'price_levels'   => $result['price_levels'],
-	  			);
-	  			db_perform(TABLE_INVENTORY_SPECIAL_PRICES, $output_array, 'insert');
-	  			$result->MoveNext();
-			}
-			gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_COPY, " id " . $this->id . ' new sku = ' . $this->sku);
-		}
-		return $sql_data_array;
+		$keys = array_keys($sql_data_array);
+		$fields = implode(", ",$keys);
+		$placeholder = "'".implode("', '",$sql_data_array)."'";
+		unset($sql_data_array['id']);
+		unset($sql_data_array['creation_date']);
+		$output = implode(', ', array_map(
+				function ($v, $k) { return sprintf("%s='%s'", $k, $v); },
+				$sql_data_array,
+				array_keys($sql_data_array)
+				));
+		$sql = $admin->DataBase->prepare("INSERT INTO ".TABLE_INVENTORY." ($fields) VALUES ($placeholder) ON DUPLICATE KEY UPDATE $output");//@todo
+		$sql->execute();
+		if ($this->id == '') $this->id = $admin->DataBase->lastInsertId();
+		gen_add_audit_log(TEXT_INVENTORY_ITEM . ' - ' . TEXT_UPDATE, $this->sku . ' - ' . $sql_data_array['description_short']);
+		return true;
 	}
 
 	function create_purchase_array(){
 		global $admin;
+		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		if(!in_array('purchase',$this->posible_transactions)) return;
-		$result = $admin->DataBase->query("select * from " . TABLE_INVENTORY_PURCHASE . " where sku = '" . $this->sku  . "'");
-		while(!$result->EOF){
-			$this->purchase_array[]= array (
-				'id'						=> $result['id'],
-				'vendor_id' 				=> $result['vendor_id'],
-				'description_purchase'		=> $result['description_purchase'],
-				'item_cost'	 				=> $result['item_cost'],
-				'purch_package_quantity'	=> $result['purch_package_quantity'],
-				'purch_taxable'	 			=> $result['purch_taxable'],
-				'price_sheet_v'				=> $result['price_sheet_v'],
-			);
-			$result->MoveNext();
-		}
+		$sql = $admin->DataBase->prepare("select * from " . TABLE_INVENTORY_PURCHASE . " where sku = '{$this->sku}'");
+		$sql->execute();
+		$this->purchase_array = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		\core\classes\messageStack::debug_log("found ".print_r($this->purchase_array, true) );
 	}
 
 	function store_purchase_array(){
@@ -530,82 +518,6 @@ class inventory {
 			if($value['action'] == 'delete') $result = $admin->DataBase->exec("delete from " . TABLE_INVENTORY_PURCHASE . " where id = '" . $value['id'] . "'");
 		}
 		return $lowest_cost == 99999999999 ? 0 : $lowest_cost; //added in case no purchase data entered when creating new product
-	}
-
-	function gather_history() {
-    	global $admin;
-    	$date = new \core\classes\DateTime();
-		$date->modify("-{$date->format('j')} day");
-		$endDate = clone $date;
-		for($i = 0; $i < 13; $i++) {
-	  		$this->purchases_history["{$date->format('Y')}-{$date->format('m')}"] = array(
-	  			'post_date'		=> $date->format('Y-m-d'),
-	  			'MonthName'		=> constant("TEXT_". strtoupper($date->format('F'))."_SHORT"),
-	  			'ThisYear'		=> $date->format('Y'),
-	  			'qty'			=> 0,
-	  			'total_amount'	=> 0,
-	  		);
-	  		$this->sales_history["{$date->format('Y')}-{$date->format('m')}"] = array(
-	  			'post_date'		=> $date->format('Y-m-d'),
-	  			'MonthName'		=> constant("TEXT_". strtoupper($date->format('F'))."_SHORT"),
-	  			'ThisYear'		=> $date->format('Y'),
-	  			'qty'			=> 0,
-	  			'usage'			=> 0,
-	  			'total_amount'	=> 0,
-	  		);
-	  		$date->modify("-1 month");
-		}
-		$endDate->modify("-1 year");
-		$last_year = $endDate->format('Y-m-d');
-
-		// load the units received and sold, assembled and adjusted
-		$sql = "SELECT m.journal_id, m.post_date, i.qty, i.gl_type, i.credit_amount, i.debit_amount
-		  FROM " . TABLE_JOURNAL_MAIN . " m INNER JOIN " . TABLE_JOURNAL_ITEM . " i ON m.id = i.ref_id
-		  WHERE m.journal_id in (6, 12, 14, 16, 19, 21) AND i.sku = '{$this->sku}' AND m.post_date >= '{$last_year}'
-		  ORDER BY m.post_date DESC";
-		$sql = $admin->DataBase->prepare($sql);
-		$sql->execute();
-		while($result = $sql->fetch(\PDO::FETCH_LAZY)) {
-			$month = substr($result['post_date'], 0, 7);
-	  		switch ($result['journal_id']) {
-	    		case  6:
-	    		case 21:
-	      			$this->purchases_history[$month]['qty']          += $result['qty'];
-	      			$this->purchases_history[$month]['total_amount'] += $result['debit_amount'];
-		  			break;
-	    		case 12:
-	    		case 19:
-	      			$this->sales_history[$month]['qty']              += $result['qty'];
-	      			$this->sales_history[$month]['usage']            += $result['qty'];
-	      			$this->sales_history[$month]['total_amount']     += $result['credit_amount'];
-		  			break;
-	    		case 14:
-		  			if ($result['gl_type'] == 'asi') { // only if part of an assembly
-	        			$this->sales_history[$month]['usage'] -= $result['qty']; // need to negate quantity since assy.
-		  			}
-		  			break;
-	    		case 16:
-	      			$this->sales_history[$month]['usage'] += $result['qty'];
-		  			break;
-	  		}
-		}
-
-		// calculate average usage
-		$cnt = 0;
-		foreach ($this->sales_history as $key => $value) {
-	  		if ($cnt == 0) {
-	    		$cnt++;
-				continue; // skip current month since we probably don't have the full months worth
-	  		}
-	  		$this->history['averages']['12month'] += $this->sales_history[$key]['usage'];
-	  		if ($cnt < 7) $this->history['averages']['6month'] += $this->sales_history[$key]['usage'];
-	  		if ($cnt < 4) $this->history['averages']['3month'] += $this->sales_history[$key]['usage'];
-	  		if ($cnt < 2) $this->history['averages']['1month'] += $this->sales_history[$key]['usage'];
-	  		$cnt++;
-		}
-		$this->history['averages']['12month'] = round($this->history['averages']['12month'] / 12, 2);
-		$this->history['averages']['6month']  = round($this->history['averages']['6month']  /  6, 2);
-		$this->history['averages']['3month']  = round($this->history['averages']['3month']  /  3, 2);
 	}
 
 /*******************************************************************************************************************/
@@ -726,7 +638,7 @@ class inventory {
 			$sql = $admin->DataBase->prepare($raw_sql);
 			$sql->execute();
 			$special_prices = array();
-			while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+			while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 				$special_prices[$result['price_sheet_id']] = $result['price_levels'];
 			}
 			$levels = isset($special_prices[$price_sheets['id']]) ? $special_prices[$price_sheets['id']] : $price_sheets['default_levels'];

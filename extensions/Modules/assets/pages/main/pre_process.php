@@ -218,13 +218,13 @@ switch ($_REQUEST['action']) {
 		}
 	}
 	// start transaction (needs to all work or reset to avoid unsyncing tables)
-	$admin->DataBase->transStart();
+	$admin->DataBase->beginTransaction();
 	// rename the afffected tables
 	for($i = 0; $i < count($sku_list); $i++) {
 		$new_sku = str_replace($orig_sku, $asset_id, $sku_list[$i], $count = 1);
 		$result = $admin->DataBase->query("update " . TABLE_ASSETS . " set asset_id = '" . $new_sku . "' where asset_id = '" . $sku_list[$i] . "'");
 	}
-	$admin->DataBase->transCommit();	// finished successfully
+	$admin->DataBase->commit();	// finished successfully
 	break;
   case 'download':
 	$cID   = db_prepare_input($_POST['id']);

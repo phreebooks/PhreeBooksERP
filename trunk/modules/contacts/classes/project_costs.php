@@ -76,7 +76,7 @@ class project_costs {
 		);
     	$sql = $admin->DataBase->prepare("SELECT cost_id, description_short, cost_type, inactive FROM " . $this->db_table);
     	$sql->execute();
-    	while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+    	while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 	  		$actions = '';
 	  		if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="loadPopUp(\'project_costs_edit\', ' . $result['cost_id'] . ')"') . chr(10);
 	  		if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . SETUP_PROJECT_COSTS_DELETE_INTRO . '\')) subjectDelete(\'project_costs\', ' . $result['cost_id'] . ')"') . chr(10);

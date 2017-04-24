@@ -189,7 +189,7 @@ try{
 		  $stock_note[] = ORD_INV_STOCK_LOW;
 		  $stock_note[] = ORD_INV_STOCK_BAL . $inventory_array['branch_qty_in_stock'];
 		  // fetch open orders
-		  $sku_history = gather_history($inventory_array['sku']);//@todo is moved to inventory class
+		  $sku_history = gather_history($inventory_array['sku']);//@todo this is removed as a function need work around
 		  if (is_array($sku_history['open_po'])) {
 		    $stock_note[] = TEXT_OPEN_PURCHASE_ORDERS . ': ';
 		    foreach ($sku_history['open_po'] as $value) {

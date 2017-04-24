@@ -70,7 +70,7 @@ switch ($_REQUEST['action']) {
 		  	if ($order->journal_rows[$i]['gl_type'] == $search_gl_type) $order->journal_rows[$i]['gl_type'] = $order->gl_type;
 		}
 		// ***************************** START TRANSACTION *******************************
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		if ($purchase_invoice_id) {
 		  	$order->journal_main_array['purchase_invoice_id'] = $purchase_invoice_id;
 		  	$order->purchase_invoice_id = $purchase_invoice_id;
@@ -85,10 +85,10 @@ switch ($_REQUEST['action']) {
 		gen_add_audit_log($journal_types_list[$order->journal_id]['text'] . ' - ' . TEXT_ADD, $order->purchase_invoice_id, $order->total_amount);
 		// set the closed flag on the quote
 		$result = $admin->DataBase->query("update " . TABLE_JOURNAL_MAIN . " set closed = '1' where id = " . $id);
-		$admin->DataBase->transCommit();	// finished successfully
+		$admin->DataBase->commit();	// finished successfully
 		// ***************************** END TRANSACTION *******************************
   	}catch(Exception $e){
-  		$admin->DataBase->transRollback();
+  		$admin->DataBase->rollBack();
   		\core\classes\messageStack::add($e->getMessage());
   	}
 	break;

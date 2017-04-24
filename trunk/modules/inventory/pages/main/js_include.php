@@ -19,6 +19,7 @@
 ?>
 <script type="text/javascript" src="includes/easyui/plugins/datagrid-detailview.js"></script>
 <script type="text/javascript" src="includes/easyui/plugins/datagrid-groupview.js"></script>
+<script type="text/javascript" src="includes/easyui/plugins/jquery.edatagrid.js"></script>
 <script type="text/javascript">
 document.title = '<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_INVENTORY); ?>';
 // pass some php variables
@@ -27,15 +28,6 @@ var image_delete_msg  	= '<?php echo INV_MSG_DELETE_INV_ITEM; ?>';
 var text_sku          	= '<?php echo TEXT_SKU; ?>';
 var text_properties   	= '<?php echo TEXT_PROPERTIES;?>';
 var default_tax 	  	= '<?php echo $basis->cInfo->inventory->purch_taxable;?>';
-var text_no 			= '<?php echo TEXT_NO; ?>';
-var text_yes			= '<?php echo TEXT_YES; ?>';
-var filter_equal_to 	= '<?php echo TEXT_EQUAL_TO. ': ';?>';
-var filter_not_equal_to = '<?php echo TEXT_NOT_EQUAL_TO. ': ';?>';
-var filter_like			= '<?php echo TEXT_LIKE. ': ';?>';
-var filter_not_like		= '<?php echo TEXT_NOT_LIKE. ': ';?>';
-var filter_bigger_than	= '<?php echo TEXT_BIGGER_THAN. ': ';?>';
-var filter_less_than	= '<?php echo TEXT_LESS_THAN. ': ';?>';
-var filter_contains		= '<?php echo TEXT_CONTAINS;?>';
 
 <?php echo $basis->cInfo->inventory->js_tax_rates;?>
 // required function called with every page load
@@ -98,31 +90,10 @@ function setSkuLength() {
 	}
 }
 
-function deleteItem(id, type) {
-	location.href = 'index.php?action=DeleteInventoryItem&id='+id+'&inventory_type='+type;
-}
-
 function showImage() {
 	$('#inv_image').window('open');
 }
 
-function copyItem(id, type) {
-	$.messager.prompt('<?php echo TEXT_COPY;?>', '<?php echo TEXT_COPY_TO; ?>', function(skuID){
-		if (skuID){
-			return location.href = 'index.php?action=CopyInventoryItem&id='+id+'&sku='+skuID+'&inventory_type='+type;
-		}
-		return false;
-	});
-}
-
-function renameItem(id, type) {
-	$.messager.prompt('<?php echo TEXT_RENAME;?>', '<?php echo TEXT_RENAME_TO; ?>', function(skuID){
-		if (skuID){
-			return location.href = 'index.php?action=RenameInventoryItem&id='+id+'&sku='+skuID+'&inventory_type='+type;
-		}
-		return false;
-	});
-}
 
 function printOrder(id) {
 	var printWin = window.open("index.php?module=phreeform&page=popup_gen&gID=cust:inv&date=a&xfld=journal_main.id&xcr=EQUAL&xmin="+id,"reportFilter","width=700px,height=550px,resizable=1,scrollbars=1,top=150px,left=200px");
@@ -580,106 +551,80 @@ $(document).ready(function(){
 	});
 });
 // ******* EOF - AJAX BOM Where Used pair *********/
-// ******* BOF - filter functions *****************/
 
-function updateFilter(rowCnt, start){
-	var text 	 = document.getElementById('filter_field'+ rowCnt ).value;
-	var RowCells = document.getElementById('filter_table').rows[rowCnt].cells;
-	switch (SecondField[text]) {
-		case  'multi_check_box':
-			RowCells[2].innerHTML =	'<input type="text" name="filter_criteria[]" readonly  id="filter_criteria' + rowCnt + '"  value="'+ filter_contains +'" />';
-			break;
-		default:
-			var tempValue = new Array( filter_equal_to , filter_not_equal_to , filter_like , filter_not_like, filter_bigger_than , filter_less_than );
-	    	var tempId    = new Array("0","1","2","3","4","5");
-	    	RowCells[2].innerHTML =	'<select name="filter_criteria[]" id="filter_criteria'+ rowCnt + '" ></select>';
-	    	buildSelect('filter_criteria'+ rowCnt, tempValue, tempId);
-	}
-	switch (SecondField[text]) {
-    	case  'drop_down':
-    	case  'multi_check_box':
-    	case  'radio':
-        	var tempValue 	=  SecondFieldId[text];
-        	var tempId     	=  SecondFieldValue[text];
-        	RowCells[3].innerHTML =	'<select name="filter_value[]" id="filter_value'+ rowCnt + '" ></select>';
-        	buildSelect('filter_value'+ rowCnt, tempValue, tempId);
-    		break;
-        case  'check_box':
-        	if (typeFilterValue == 'SELECT' ) valueFilterValue = '';
-        	var tempValue = new Array(text_no, text_yes);
-        	var tempId    = new Array("0","1");
-        	RowCells[3].innerHTML =	'<select name="filter_value[]" id="filter_value'+ rowCnt + '" ></select>';
-        	buildSelect('filter_value'+ rowCnt, tempValue, tempId);
-    		break;
-    	default:
-    		if(!start ){
-    			var typeFilterValue  = document.getElementById('filter_value'+ rowCnt ).tagName;
-    			var valueFilterValue = document.getElementById('filter_value'+ rowCnt ).value;
-    			if (typeFilterValue != 'INPUT') valueFilterValue = '';
-    			RowCells[3].innerHTML = '<input type="text" name="filter_value[]" id="filter_value' + rowCnt + '" size="64" maxlength="64" value="'+valueFilterValue+'" />';
-    		}else {
-    			RowCells[3].innerHTML = '<input type="text" name="filter_value[]" id="filter_value' + rowCnt + '" size="64" maxlength="64" />';
-    		}
-   	}
+//******** BOF - image carousel *******************/
+var slideIndex = 1;
+
+function plusDivs(n) {
+	console.log("plusDivs = "+n);
+  	showDivs(slideIndex += n);
 }
 
-function addFilterRow(){
-	var newCell;
-	var cell;
-	var newRow  = document.getElementById('filter_table_body').insertRow(-1);
-	var rowCnt  = newRow.rowIndex;
-	newRow.id =  rowCnt;
-	cell  = '<td align="center" >';
-	cell += buildIcon(icon_path+'16x16/emblems/emblem-unreadable.png', image_delete_text, 'onClick="removeFilterRow('+rowCnt+')"') + '</td>';
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-
-	cell  = '   <td">';
-	cell +=		'<select name="filter_field[]" id="filter_field'+ rowCnt + '" onChange="updateFilter('+ rowCnt + ', false)"></select>';
-	cell += '   </td>';
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-	cell  = '   <td">';
-	cell += '   </td>';
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-	newCell = newRow.insertCell(-1);
-	newCell.innerHTML = cell;
-	buildSelect('filter_field'+ rowCnt, FirstValue, FirstId);
-	updateFilter(rowCnt, true);
-
+function currentDiv(n) {
+	console.log("currentDiv = "+n);
+  	showDivs(slideIndex = n);
 }
 
-function buildSelect(selElement, value, id) {
-  for (i=0; i<value.length; i++) {
-	newOpt = document.createElement("option");
-	newOpt.text = value[i];
-	document.getElementById(selElement).options.add(newOpt);
-	document.getElementById(selElement).options[i].value = id[i];
-  }
+function showDivs(n) {
+	console.log("showDivs = "+n);
+  	var i;
+  	var x = document.getElementsByClassName("inventoryImages");
+  	var dots = document.getElementsByClassName("butons");
+  	if (n > x.length) {slideIndex = 1}    
+  	if (n < 1) {slideIndex = x.length}
+  	for (i = 0; i < x.length; i++) {
+     	x[i].style.display = "none";  
+  	}
+  	for (i = 0; i < dots.length; i++) {
+    	dots[i].className = dots[i].className.replace(" whitebutton", "");
+  	}
+  	x[slideIndex-1].style.display = "block";  
+  	dots[slideIndex-1].className += " whitebutton";
 }
 
-function removeFilterRow(rowCnt) {
-	$('#'+rowCnt).remove();
-}
+$(document).ready(function() {
+	console.log("int");
+  	showDivs(1);
+});
 
-function TableStartValues( valueFilterField, valueCriteriaField, valueValueField){
-	addFilterRow();
-	rowCnt = document.getElementById('filter_table_body').rows.length;
-	document.getElementById('filter_field'+ rowCnt ).value    = valueFilterField ;
-	updateFilter(rowCnt, true);
-	document.getElementById('filter_criteria'+ rowCnt ).value = valueCriteriaField;
-	document.getElementById('filter_value'+ rowCnt ).value = valueValueField;
-}
-<?php if($include_template == 'template_main.php'){?>
-$(document).keydown(function(e) {
-    if(e.keyCode == 13) {
-    	submitToDo('filter');
-    }
- });
- <?php }?>
-// *********** EOF - filter functions *****************/
-
-
-// -->
 </script>
+<style>
+.imagetools{
+	display:inline-block;
+	width:100%;
+	font-size:18px;
+	color:#fff;
+	text-align:center;
+	position:absolute;
+	left:50%;
+	bottom:0;
+	transform:translate(-50%,0%);
+	-ms-transform:translate(-50%,0%);
+}
+
+.whitebutton{
+	color:#000;
+	background-color:#fff;
+}
+
+.butons{
+	cursor:pointer;
+	height:13px;
+	width:13px;
+	padding:0;
+	background-color:#000;
+	color:#fff;
+	display:inline-block;
+	padding-left:8px;
+	padding-right:8px;
+	text-align:center;
+	border-radius:50%;
+	border:1px solid #ccc;
+}
+
+.butons:hover{
+	color:#000;
+	background-color:#fff;
+}
+
+</style>

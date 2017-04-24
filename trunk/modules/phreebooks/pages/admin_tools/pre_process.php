@@ -149,7 +149,7 @@ switch ($_REQUEST['action']) {
 			\core\classes\user::validate_security($security_level, 3);
 			$result = $admin->DataBase->query("SELECT journal_main_id FROM ".TABLE_INVENTORY_COGS_OWED);
 			$cnt = 0;
-			$admin->DataBase->transStart();
+			$admin->DataBase->beginTransaction();
 			while (!$result->EOF) {
 			    $gl_entry = new journal($result->fields['journal_main_id']);
 			    $gl_entry->remove_cogs_rows(); // they will be regenerated during the re-post
@@ -157,11 +157,11 @@ switch ($_REQUEST['action']) {
 				$cnt++;
 			    $result->MoveNext();
 			}
-		    $admin->DataBase->transCommit();
+		    $admin->DataBase->commit();
 		    \core\classes\messageStack::add(sprintf(GEN_ADM_TOOLS_RE_POST_SUCCESS, $cnt), 'success');
 			gen_add_audit_log(TEXT_RE-POST_JOURNALS . ' - ', "inventory owed");
 		}catch(Exception $e){
-			$admin->DataBase->transRollback();
+			$admin->DataBase->rollBack();
 			\core\classes\messageStack::add($e->getMessage());
 		}
 		$messageStack->write_debug();
@@ -246,7 +246,7 @@ switch ($_REQUEST['action']) {
 	}
 	if ($_REQUEST['action'] == 'coa_hist_fix' && sizeof($bad_accounts) > 0) {
 		// *************** START TRANSACTION *************************
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 	    $glEntry = new \core\classes\journal();
 		foreach ($bad_accounts as $gl_acct => $acct_array) {
 		  $glEntry->affected_accounts[$gl_acct] = 1;
@@ -256,7 +256,7 @@ switch ($_REQUEST['action']) {
 		}
 		$min_period = max($first_error_period, 2); // avoid a crash if min_period is the first period
 		if ($glEntry->update_chart_history_periods($min_period - 1)) { // from prior period than the error account
-			$admin->DataBase->transCommit();
+			$admin->DataBase->commit();
 			\core\classes\messageStack::add(TEXT_THE_CHART_BALANCES_HAVE_BEEN_REPAIRED,'success');
 			gen_add_audit_log(TEXT_REPAIRED_GL_BALANCES);
 		}

@@ -28,8 +28,7 @@
     <table border="0" width="100%">
 	  <tr><th colspan="5"><?php echo MODULE_BANK_IMPORT_CONFIG_INFO; ?></th></tr>
 	  <tr>
-	    <td colspan="4"><?php echo BANK_IMPORT_QUESTION_POSTS; ?></td>
-	    <td nowrap="nowrap"><?php echo html_combo_box('question_posts', $all_chart, $_POST['question_posts'] ? $_POST['question_posts'] : QUESTION_POSTS, ''); ?></td>
+	    <td colspan="5"><?php echo \core\classes\htmlElement::combobox('question_posts', BANK_IMPORT_QUESTION_POSTS, $all_chart, $_POST['question_posts'] ? $_POST['question_posts'] : QUESTION_POSTS); ?></td>
 	  </tr>
 	  <tr>
 	    <td colspan="4"><?php echo BANK_IMPORT_DEBIT_CREDIT; ?></td>

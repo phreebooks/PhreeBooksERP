@@ -175,7 +175,7 @@ class encryption {
     		if (md5($stack[1] . $plainPassword) == $stack[0]) return true;
   		}
   		if ($encryptedPassword == ENCRYPTION_VALUE) throw new \core\classes\userException(TEXT_ERROR_WRONG_ENCRYPTION_KEY);
-  		else throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD, 'LoadLogIn');
+  		throw new \core\classes\userException(TEXT_YOU_ENTERED_THE_WRONG_USERNAME_OR_PASSWORD, 'LoadLogIn');
 	}
 
 	/**

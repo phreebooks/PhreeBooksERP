@@ -41,12 +41,12 @@ if ($contact) {
   foreach ($contact as $key => $value) $xml .= "\t" . xmlEntry($key, $value);
   $xml .= "\t</Contact>\n";
 }
-while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
   $xml .= "\t<BillAddress>\n";
   foreach ($result as $key => $value) $xml .= "\t" . xmlEntry($key, $value);
   $xml .= "\t</BillAddress>\n";
 }
-if (defined('MODULE_SHIPPING_STATUS'))  while ($ship_add = $sql->fetch(\PDO::FETCH_LAZY)){
+if (defined('MODULE_SHIPPING_STATUS'))  while ($ship_add = $sql->fetch(\PDO::FETCH_ASSOC)){
   $xml .= "\t<ShipAddress>\n";
   foreach ($result as $key => $value) $xml .= "\t" . xmlEntry($key, $value);
   $xml .= "\t</ShipAddress>\n";

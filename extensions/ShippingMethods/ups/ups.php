@@ -195,8 +195,8 @@ class ups extends \shipping\classes\shipping {
 		if (COMPANY_CITY_TOWN) $sBody .= $crlf . '<City>' . COMPANY_CITY_TOWN . '</City>';
 		if (COMPANY_ZONE) $sBody .= $crlf . '<StateProvinceCode>' . COMPANY_ZONE . '</StateProvinceCode>';
 		if (COMPANY_POSTAL_CODE) $sBody .= $crlf . '<PostalCode>' . COMPANY_POSTAL_CODE . '</PostalCode>';
-//		$country_name = gen_get_country_iso_2_from_3(COMPANY_COUNTRY);
-		$sBody .= $crlf . '<CountryCode>' . gen_get_country_iso_2_from_3(COMPANY_COUNTRY) . '</CountryCode>';
+//		$country_name = $_SESSION['language']->get_country_iso_2_from_3(COMPANY_COUNTRY);
+		$sBody .= $crlf . '<CountryCode>' . $_SESSION['language']->get_country_iso_2_from_3(COMPANY_COUNTRY) . '</CountryCode>';
 		$sBody .= $crlf . '</Address>';
 		$sBody .= $crlf . '</Shipper>';
 		$sBody .= $crlf . '<ShipTo>';
@@ -204,7 +204,7 @@ class ups extends \shipping\classes\shipping {
 		if ($pkg->ship_to_city) $sBody .= $crlf.'<City>' . $pkg->ship_to_city . '</City>';
 		if ($pkg->ship_to_state) $sBody .= $crlf.'<StateProvinceCode>' . strtoupper($pkg->ship_to_state) . '</StateProvinceCode>';
 		if ($pkg->ship_to_postal_code) $sBody .= $crlf . '<PostalCode>' . $pkg->ship_to_postal_code . '</PostalCode>';
-//		$country_name = gen_get_country_iso_2_from_3($pkg->ship_to_country_code);
+//		$country_name = $_SESSION['language']->get_country_iso_2_from_3($pkg->ship_to_country_code);
 		$sBody .= $crlf . '<CountryCode>' . $pkg->ship_to_country_iso2 . '</CountryCode>';
 		if ($pkg->residential_address) $sBody .= $crlf . '<ResidentialAddress></ResidentialAddress>';
 		$sBody .= $crlf . '</Address>';
@@ -214,7 +214,7 @@ class ups extends \shipping\classes\shipping {
 		if ($pkg->ship_city_town) $sBody .= $crlf . '<City>' . $pkg->ship_city_town . '</City>';
 		if ($pkg->ship_state_province) $sBody .= $crlf . '<StateProvinceCode>' . strtoupper($pkg->ship_state_province) . '</StateProvinceCode>';
 		if ($pkg->ship_postal_code) $sBody .= $crlf . '<PostalCode>' . $pkg->ship_postal_code . '</PostalCode>';
-//		$country_name = gen_get_country_iso_2_from_3($pkg->ship_country_code);
+//		$country_name = $_SESSION['language']->get_country_iso_2_from_3($pkg->ship_country_code);
 		$sBody .= $crlf . '<CountryCode>' . $pkg->ship_from_country_iso2 . '</CountryCode>';
 		$sBody .= $crlf . '</Address>';
 		$sBody .= $crlf . '</ShipFrom>';
@@ -310,7 +310,7 @@ class ups extends \shipping\classes\shipping {
 		if ($pkg->ship_city_town) $sBody .= $crlf . '<PoliticalDivision2>' . $pkg->ship_city_town . '</PoliticalDivision2>';
 		if ($pkg->ship_state_province) $sBody .= $crlf . '<PoliticalDivision1>' . strtoupper($pkg->ship_state_province) . '</PoliticalDivision1>';
 		if ($pkg->ship_postal_code) $sBody .= $crlf . '<PostcodePrimaryLow>' . $pkg->ship_postal_code . '</PostcodePrimaryLow>';
-//		$country_name = gen_get_country_iso_2_from_3($pkg->ship_country_code);
+//		$country_name = $_SESSION['language']->get_country_iso_2_from_3($pkg->ship_country_code);
 		$sBody .= $crlf . '<CountryCode>' . $pkg->ship_from_country_iso2 . '</CountryCode>';
 		$sBody .= $crlf . '</AddressArtifactFormat>';
 		$sBody .= $crlf . '</TransitFrom>';
@@ -320,7 +320,7 @@ class ups extends \shipping\classes\shipping {
 		if ($pkg->ship_to_city) $sBody .= $crlf . '<PoliticalDivision2>' . $pkg->ship_to_city . '</PoliticalDivision2>';
 		if ($pkg->ship_to_state) $sBody .= $crlf.'<PoliticalDivision1>' . strtoupper($pkg->ship_to_state) . '</PoliticalDivision1>';
 		if ($pkg->ship_to_postal_code) $sBody .= $crlf.'<PostcodePrimaryLow>' . $pkg->ship_to_postal_code . '</PostcodePrimaryLow>';
-//		$country_name = gen_get_country_iso_2_from_3($pkg->ship_to_country_code);
+//		$country_name = $_SESSION['language']->get_country_iso_2_from_3($pkg->ship_to_country_code);
 		$sBody .= $crlf . '<CountryCode>' . $pkg->ship_to_country_iso2 . '</CountryCode>';
 		if ($pkg->residential_address) $sBody .= $crlf . '<ResidentialAddressIndicator/>';
 		$sBody .= $crlf . '</AddressArtifactFormat>';
@@ -346,7 +346,7 @@ class ups extends \shipping\classes\shipping {
 
 		$this->package = $pkg->split_shipment($pkg);
 		if (!$this->package) throw new \core\classes\userException(SHIPPING_UPS_PACKAGE_ERROR . $pkg->pkg_weight);
-		if ($shipping_defaults['TnTEnable'] && gen_get_country_iso_2_from_3($pkg->ship_to_country_code) == 'US') {
+		if ($shipping_defaults['TnTEnable'] && $_SESSION['language']->get_country_iso_2_from_3($pkg->ship_to_country_code) == 'US') {
 			// Use UPS time in transit to get shipment time
 			$strXML = $this->FormatTnTRequest();
 			$url = (MODULE_SHIPPING_UPS_TEST_MODE == 'Test') ? MODULE_SHIPPING_UPS_TNT_URL_TEST : MODULE_SHIPPING_UPS_TNT_URL;
@@ -533,7 +533,7 @@ class ups extends \shipping\classes\shipping {
 		foreach ($results as $label) {
 		    $returnArray[] = $ups_results + array('tracking' => $label['tracking']);
 			$date = explode('-', $sInfo->ship_date); // date format YYYY-MM-DD
-			$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/shipping/labels/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/' . $date[2] . '/';
+			$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/labels/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/' . $date[2] . '/';
 			validate_path($file_path);
 			// check for label to be for thermal printer or plain paper
 			if (MODULE_SHIPPING_UPS_PRINTER_TYPE == 'Thermal') {
@@ -589,7 +589,7 @@ class ups extends \shipping\classes\shipping {
 		if (COMPANY_CITY_TOWN) $sBody .= $crlf . '<City>' . COMPANY_CITY_TOWN . '</City>';
 		if (COMPANY_ZONE) $sBody .= $crlf . '<StateProvinceCode>' . COMPANY_ZONE . '</StateProvinceCode>';
 		if (COMPANY_POSTAL_CODE) $sBody .= $crlf . '<PostalCode>' . COMPANY_POSTAL_CODE . '</PostalCode>';
-		$sBody .= $crlf . '<CountryCode>' . gen_get_country_iso_2_from_3(COMPANY_COUNTRY) . '</CountryCode>';
+		$sBody .= $crlf . '<CountryCode>' . $_SESSION['language']->get_country_iso_2_from_3(COMPANY_COUNTRY) . '</CountryCode>';
 		$sBody .= $crlf . '</Address>';
 		$sBody .= $crlf . '</Shipper>';
 
@@ -623,7 +623,7 @@ class ups extends \shipping\classes\shipping {
 		if (COMPANY_CITY_TOWN) $sBody .= $crlf . '<City>' . COMPANY_CITY_TOWN . '</City>';
 		if (COMPANY_ZONE) $sBody .= $crlf . '<StateProvinceCode>' . COMPANY_ZONE . '</StateProvinceCode>';
 		if (COMPANY_POSTAL_CODE) $sBody .= $crlf . '<PostalCode>' . COMPANY_POSTAL_CODE . '</PostalCode>';
-		$sBody .= $crlf . '<CountryCode>' . gen_get_country_iso_2_from_3(COMPANY_COUNTRY) . '</CountryCode>';
+		$sBody .= $crlf . '<CountryCode>' . $_SESSION['language']->get_country_iso_2_from_3(COMPANY_COUNTRY) . '</CountryCode>';
 		$sBody .= $crlf . '</Address>';
 		$sBody .= $crlf . '</ShipFrom>';
 */
@@ -897,7 +897,7 @@ class ups extends \shipping\classes\shipping {
 
 		// delete the label file
 		$date = explode('-', $shipments->fields['ship_date']);
-		$file_path = DIR_FS_MY_FILES . $_SESSION['user']->company . '/shipping/labels/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/' . $date[2] . '/';
+		$file_path = DIR_FS_MY_FILES . $_SESSION['company'] . '/shipping/labels/' . $this->id . '/' . $date[0] . '/' . $date[1] . '/' . $date[2] . '/';
 		if (file_exists($file_path . $shipments->fields['tracking_id'] . '.lpt')) {
 			$file_name = $shipments->fields['tracking_id'] . '.lpt';
 		} elseif (file_exists($file_path . $shipments->fields['tracking_id'] . '.gif')) {

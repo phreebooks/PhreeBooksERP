@@ -180,7 +180,7 @@ switch ($_REQUEST['action']) {
 			  	$sql = $admin->DataBase->prepare("show engines");
 			  	$innoDB_enabled = false;
 			  	$sql->execute();
-				while ($result = $sql->fetch(\PDO::FETCH_LAZY))	if ($result['Engine'] == 'InnoDB') $innoDB_enabled = true;
+				while ($result = $sql->fetch(\PDO::FETCH_ASSOC))	if ($result['Engine'] == 'InnoDB') $innoDB_enabled = true;
 			  	if (!$innoDB_enabled) throw new \core\classes\userException(MSG_ERROR_INNODB_NOT_ENABLED);
 			}
 			

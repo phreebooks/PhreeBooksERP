@@ -293,7 +293,7 @@ class xml_orders extends parser {
 	$messageStack->write_debug();
 	if (!$post_success) { // extract the error message from the messageStack and return with error
 // echo 'failed a post need to rollback here.<br>';
-	  $admin->DataBase->transRollback();
+	  $admin->DataBase->rollBack();
 	  $this->failed[] = $this->order['reference'];
 	  $text = strip_tags($messageStack->output());//@todo this function doesn't exist anymore
 	  $this->response[] = preg_replace('/&nbsp;/', '', $text); // the &nbsp; messes up the response XML

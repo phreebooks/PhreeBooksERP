@@ -46,7 +46,7 @@ class user {
 		setcookie('pb_company' , $this->company,  $cookie_exp);
 		setcookie('pb_language', $_SESSION['language']->language_code, $cookie_exp);
 	}
-	
+		
 	final static public function get($variable){
 		if (isset(self::$variable)) 	return self::$variable;
 		return "unknown";
@@ -102,7 +102,7 @@ class user {
 	 */
 
 	final static function validate($token = 0, $user_active = false) {
-		\core\classes\messageStack::development("executing ".__METHOD__);
+		\core\classes\messageStack::development("executing ".__METHOD__. " token = $token user level = {$_SESSION['user']->admin_security[$token]}");
 		if ($token == '') throw new \core\classes\userException("security token is empty.");
   		$security_level = $_SESSION['user']->admin_security[$token];
   		if (!in_array($security_level, array(1,2,3,4)) && !$user_active) throw new \core\classes\userException(ERROR_NO_PERMISSION);
@@ -128,7 +128,10 @@ class user {
 	 * @throws \core\classes\userException
 	 */
 	final static function validate_security_by_token($token = 0, $required_level = 1, $user_active = false) {
-		if (self::validate($token = 0, $user_active = false) < $required_level) throw new \core\classes\userException(ERROR_NO_PERMISSION);
+		\core\classes\messageStack::development("executing ".__METHOD__ . " token = $token and required level = $required_level");
+		if (self::validate($token, $user_active) < $required_level) throw new \core\classes\userException(ERROR_NO_PERMISSION);
+		\core\classes\messageStack::development("user has required security level");
+		return true;
 	}
 	/**
 	 * this will return a array of permissions
@@ -169,13 +172,13 @@ class user {
 		if(count($this->config) == 0){
 			$result = $basis->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration ");
 			$result->execute();
-			while ($row = $result->fetch(\PDO::FETCH_LAZY)){
+			while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
 				$this->config[$row['configuration_key']] = $row['configuration_value'];
 			}
 			/*/ load user config 
 			$result = $basis->DataBase->prepare("SELECT configuration_key, configuration_value FROM " . DB_PREFIX . "configuration where user = '$this->admin_id'");
 			$result->execute();
-			while ($row = $result->fetch(\PDO::FETCH_LAZY)){
+			while ($row = $result->fetch(\PDO::FETCH_ASSOC)){
 				$this->config[$row['configuration_key']] = $row['configuration_value'];
 			}	*/		
 		}

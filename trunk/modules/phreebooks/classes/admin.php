@@ -17,7 +17,51 @@
 // Path: /modules/phreebooks/classes/admin.php
 //
 namespace phreebooks\classes;
-require_once (DIR_FS_ADMIN . 'modules/phreebooks/config.php');
+
+define('SECURITY_ID_SEARCH',               4);
+define('SECURITY_ID_GEN_ADMIN_TOOLS',     19);
+define('SECURITY_ID_SALES_ORDER',         28);
+define('SECURITY_ID_SALES_QUOTE',         29);
+define('SECURITY_ID_SALES_INVOICE',       30);
+define('SECURITY_ID_SALES_CREDIT',        31);
+define('SECURITY_ID_SALES_STATUS',        32);
+define('SECURITY_ID_POINT_OF_SALE',       33);
+define('SECURITY_ID_INVOICE_MGR',         34);
+define('SECURITY_ID_QUOTE_STATUS',        35);
+define('SECURITY_ID_CUST_CREDIT_STATUS',  40);
+define('SECURITY_ID_PURCHASE_ORDER',      53);
+define('SECURITY_ID_PURCHASE_QUOTE',      54);
+define('SECURITY_ID_PURCHASE_INVENTORY',  55);
+define('SECURITY_ID_POINT_OF_PURCHASE',   56);
+define('SECURITY_ID_PURCHASE_CREDIT',     57);
+define('SECURITY_ID_PURCHASE_STATUS',     58);
+define('SECURITY_ID_RFQ_STATUS',          59);
+define('SECURITY_ID_VCM_STATUS',          60);
+define('SECURITY_ID_PURCH_INV_STATUS',    61);
+define('SECURITY_ID_SELECT_PAYMENT',     101);
+define('SECURITY_ID_CUSTOMER_RECEIPTS',  102);
+define('SECURITY_ID_PAY_BILLS',          103);
+define('SECURITY_ID_ACCT_RECONCILIATION',104);
+define('SECURITY_ID_ACCT_REGISTER',      105);
+define('SECURITY_ID_VOID_CHECKS',        106);
+define('SECURITY_ID_CUSTOMER_PAYMENTS',  107);
+define('SECURITY_ID_VENDOR_RECEIPTS',    108);
+define('SECURITY_ID_RECEIPTS_STATUS',    111);
+define('SECURITY_ID_PAYMENTS_STATUS',    112);
+define('SECURITY_ID_JOURNAL_ENTRY',      126);
+define('SECURITY_ID_GL_BUDGET',          129);
+define('SECURITY_ID_JOURNAL_STATUS',     130);
+// New Database Tables
+define('TABLE_ACCOUNTING_PERIODS',        DB_PREFIX . 'accounting_periods');
+define('TABLE_ACCOUNTS_HISTORY',          DB_PREFIX . 'accounts_history');
+define('TABLE_CHART_OF_ACCOUNTS',         DB_PREFIX . 'chart_of_accounts');
+define('TABLE_CHART_OF_ACCOUNTS_HISTORY', DB_PREFIX . 'chart_of_accounts_history');
+define('TABLE_JOURNAL_ITEM',              DB_PREFIX . 'journal_item');
+define('TABLE_JOURNAL_MAIN',              DB_PREFIX . 'journal_main');
+define('TABLE_TAX_AUTH',                  DB_PREFIX . 'tax_authorities');
+define('TABLE_TAX_RATES',                 DB_PREFIX . 'tax_rates');
+define('TABLE_RECONCILIATION',            DB_PREFIX . 'reconciliation');
+
 class admin extends \core\classes\admin {
 	public $sort_order = 2;
 	public $id = 'phreebooks';
@@ -283,32 +327,32 @@ class admin extends \core\classes\admin {
 		$this->mainmenu["banking"]->submenu ["reconciliation"]		= new \core\classes\menuItem (60, 	TEXT_ACCOUNT_RECONCILIATION,		'module=phreebooks&amp;page=reconciliation', 			SECURITY_ID_ACCT_RECONCILIATION,						'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["customers"]->submenu ["quotes"]  	= new \core\classes\menuItem (20, 	TEXT_QUOTE,			'action=LoadJournalManager&amp;jID=9&amp;list=1', 						SECURITY_ID_SALES_QUOTE,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["customers"]->submenu ["quotes"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_QUOTE),			'module=phreebooks&amp;page=orders&amp;jID=9');
-		$this->mainmenu["customers"]->submenu ["quotes"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_QUOTE),		'action=LoadJournalManager&amp;jID=9&amp;list=1');
+		$this->mainmenu["customers"]->submenu ["quotes"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_QUOTE),		'action=LoadJournalManager&amp;jID=9');
 		$this->mainmenu["customers"]->submenu ["orders"]   	= new \core\classes\menuItem (30, 	TEXT_ORDER,			'action=LoadJournalManager&amp;jID=10&amp;list=1', 						SECURITY_ID_SALES_ORDER,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["customers"]->submenu ["orders"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_ORDER),			'module=phreebooks&amp;page=orders&amp;jID=10');
-		$this->mainmenu["customers"]->submenu ["orders"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_ORDER),		'action=LoadJournalManager&amp;jID=10&amp;list=1');
+		$this->mainmenu["customers"]->submenu ["orders"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_ORDER),		'action=LoadJournalManager&amp;jID=10');
 		$this->mainmenu["customers"]->submenu ["invoice"]   	= new \core\classes\menuItem (30, 	TEXT_INVOICE,			'action=LoadJournalManager&amp;jID=12&amp;list=1', 				SECURITY_ID_SALES_INVOICE, 								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["customers"]->submenu ["invoice"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_INVOICE),			'module=phreebooks&amp;page=orders&amp;jID=12');
-		$this->mainmenu["customers"]->submenu ["invoice"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVOICE),		'action=LoadJournalManager&amp;jID=12&amp;list=1');
+		$this->mainmenu["customers"]->submenu ["invoice"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVOICE),		'action=LoadJournalManager&amp;jID=12');
 		$this->mainmenu["customers"]->submenu ["credits"]   	= new \core\classes\menuItem (30, 	TEXT_CREDIT,			'action=LoadJournalManager&amp;jID=13&amp;list=1', 				SECURITY_ID_SALES_CREDIT, 								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["customers"]->submenu ["credits"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_CREDIT),			'module=phreebooks&amp;page=orders&amp;jID=13');
-		$this->mainmenu["customers"]->submenu ["credits"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CREDIT),		'action=LoadJournalManager&amp;jID=13&amp;list=1');
+		$this->mainmenu["customers"]->submenu ["credits"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CREDIT),		'action=LoadJournalManager&amp;jID=13');
 		//VENDOR
 		$this->mainmenu["vendors"]->submenu ["quotes"]  	= new \core\classes\menuItem (20, 	TEXT_QUOTE,			'action=LoadJournalManager&amp;jID=3&amp;list=1', 						SECURITY_ID_PURCHASE_QUOTE,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["vendors"]->submenu ["quotes"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_QUOTE),			'module=phreebooks&amp;page=orders&amp;jID=3');
-		$this->mainmenu["vendors"]->submenu ["quotes"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_QUOTE),		'action=LoadJournalManager&amp;jID=3&amp;list=1');
+		$this->mainmenu["vendors"]->submenu ["quotes"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_QUOTE),		'action=LoadJournalManager&amp;jID=3');
 		$this->mainmenu["vendors"]->submenu ["orders"]   	= new \core\classes\menuItem (30, 	TEXT_ORDER,			'action=LoadJournalManager&amp;jID=4&amp;list=1', 						SECURITY_ID_PURCHASE_ORDER,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["vendors"]->submenu ["orders"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_ORDER),			'module=phreebooks&amp;page=orders&amp;jID=4');
-		$this->mainmenu["vendors"]->submenu ["orders"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_ORDER),		'action=LoadJournalManager&amp;jID=4&amp;list=1');
+		$this->mainmenu["vendors"]->submenu ["orders"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_ORDER),		'action=LoadJournalManager&amp;jID=4');
 		$this->mainmenu["vendors"]->submenu ["invoice"]   	= new \core\classes\menuItem (30, 	TEXT_INVOICE,			'action=LoadJournalManager&amp;jID=6&amp;list=1', 					SECURITY_ID_PURCHASE_INVENTORY,							'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["vendors"]->submenu ["invoice"]->submenu ["new"] 	= new \core\classes\menuItem (5, 	sprintf(TEXT_NEW_ARGS, TEXT_INVOICE),			'module=phreebooks&amp;page=orders&amp;jID=6');
-		$this->mainmenu["vendors"]->submenu ["invoice"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVOICE),		'action=LoadJournalManager&amp;jID=6&amp;list=1');
+		$this->mainmenu["vendors"]->submenu ["invoice"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_INVOICE),		'action=LoadJournalManager&amp;jID=6');
 		$this->mainmenu["vendors"]->submenu ["credits"]   	= new \core\classes\menuItem (30, 	TEXT_CREDIT,				'action=LoadJournalManager&amp;jID=7&amp;list=1', 				SECURITY_ID_PURCHASE_CREDIT,							'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["vendors"]->submenu ["credits"]->submenu ["new"] 	= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_CREDIT),			'module=phreebooks&amp;page=orders&amp;jID=7');
-		$this->mainmenu["vendors"]->submenu ["credits"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CREDIT),		'action=LoadJournalManager&amp;jID=7&amp;list=1');
+		$this->mainmenu["vendors"]->submenu ["credits"]->submenu ["mgr"] 	= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_CREDIT),		'action=LoadJournalManager&amp;jID=7');
 		$this->mainmenu["gl"]->submenu ["journals"]    		= new \core\classes\menuItem ( 5, 	TEXT_GENERAL_JOURNAL,		'action=LoadJournalManager&amp;jID=2&amp;list=1', 				SECURITY_ID_JOURNAL_ENTRY,								'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["gl"]->submenu ["journals"]->submenu ["new"] 		= new \core\classes\menuItem ( 5, 	sprintf(TEXT_NEW_ARGS, TEXT_GENERAL_JOURNAL),			'module=phreebooks&amp;page=orders&amp;jID=2');
-		$this->mainmenu["gl"]->submenu ["journals"]->submenu ["mgr"] 		= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_GENERAL_JOURNAL),		'action=LoadJournalManager&amp;jID=2&amp;list=1');
+		$this->mainmenu["gl"]->submenu ["journals"]->submenu ["mgr"] 		= new \core\classes\menuItem (10, 	sprintf(TEXT_MANAGER_ARGS, TEXT_GENERAL_JOURNAL),		'action=LoadJournalManager&amp;jID=2');
 		$this->mainmenu["gl"]->submenu ["search"]    		= new \core\classes\menuItem (15, 	TEXT_SEARCH,				'module=phreebooks&amp;page=search&amp;journal_id=-1',	 				SECURITY_ID_SEARCH,										'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["gl"]->submenu ["budget"]    		= new \core\classes\menuItem (50, 	TEXT_BUDGETING,				'module=phreebooks&amp;page=budget',				 					SECURITY_ID_GL_BUDGET,									'MODULE_PHREEBOOKS_STATUS');
 		$this->mainmenu["gl"]->submenu ["admin_tools"]		= new \core\classes\menuItem (70, 	TEXT_ADMINISTRATIVE_TOOLS,	'module=phreebooks&amp;page=admin_tools',				 				SECURITY_ID_GEN_ADMIN_TOOLS,							'MODULE_PHREEBOOKS_STATUS');
@@ -403,7 +447,7 @@ class admin extends \core\classes\admin {
 		if (version_compare ( $db_version, '3.51', '<' )) {
 			$sql = $basis->DataBase->prepare ( "SELECT id, so_po_ref_id FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id = 16 AND so_po_ref_id > 0" );
 			$sql->execute();
-		  	while ($result = $sql->fetch(\PDO::FETCH_LAZY)) { // to fix transfers to store 0 from any other store
+		  	while ($result = $sql->fetch(\PDO::FETCH_ASSOC)) { // to fix transfers to store 0 from any other store
 				if ($result['so_po_ref_id'] > $result['id']) {
 					$basis->DataBase->query ( "UPDATE " . TABLE_JORNAL_MAIN . " SET so_po_ref_id = -1 WHERE id=" . $result['id'] );
 				}
@@ -485,16 +529,17 @@ class admin extends \core\classes\admin {
 	
 	function loadOrders (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ ); 
-		if (empty($basis->cInfo->journal_id)) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED);
+		if (property_exists($basis->cInfo, 'journal_id') !== true) throw new \core\classes\userException(TEXT_JOURNAL_ID_NOT_DEFINED);
 		if ($basis->cInfo->rows == 'NaN') $basis->cInfo->rows = MAX_DISPLAY_SEARCH_RESULTS;
 		$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
-		$raw_sql  = "SELECT id, journal_id, closed, closed_date, post_date, total_amount, purchase_invoice_id, purch_order_id FROM ".TABLE_JOURNAL_MAIN." WHERE ";
-		$raw_sql .= ($basis->cInfo->only_open)  ? " closed = '0' AND " : "";
-		$raw_sql .= ($basis->cInfo->post_date)  ? " post_date = '{$basis->cInfo->post_date}' AND " : "";
-		$raw_sql .= ($basis->cInfo->post_date_min)  ? " post_date >= '{$basis->cInfo->post_date_min}' AND " : "";
-		$raw_sql .= ($basis->cInfo->post_date_max)  ? " post_date =< '{$basis->cInfo->post_date_max}' AND " : "";
-		$raw_sql .= ($basis->cInfo->contact_id) ? " bill_acct_id = '{$basis->cInfo->contact_id}' AND " : "";
-		$raw_sql .= " journal_id IN ({$basis->cInfo->journal_id}) ORDER BY post_date DESC $offset";
+		$raw_sql  = "SELECT m.id, journal_id, closed, closed_date, period, m.post_date, YEAR(m.post_date) as year, MONTH(m.post_date) as month, total_amount, purchase_invoice_id, purch_order_id, i.qty FROM ".TABLE_JOURNAL_MAIN." m JOIN ".TABLE_JOURNAL_ITEM." i ON m.id = i.ref_id WHERE ";
+		$raw_sql .= ($basis->cInfo->only_open)  ? " m.closed = '0' AND " : "";
+		$raw_sql .= ($basis->cInfo->post_date)  ? " m.post_date = '{$basis->cInfo->post_date}' AND " : "";
+		$raw_sql .= ($basis->cInfo->post_date_min)  ? " m.post_date >= '{$basis->cInfo->post_date_min}' AND " : "";
+		$raw_sql .= ($basis->cInfo->post_date_max)  ? " m.post_date <= '{$basis->cInfo->post_date_max}' AND " : "";
+		$raw_sql .= ($basis->cInfo->contact_id) ? " m.bill_acct_id = '{$basis->cInfo->contact_id}' AND " : "";
+		$raw_sql .= ($basis->cInfo->sku) ? " i.sku = '{$basis->cInfo->sku}' AND " : "";
+		$raw_sql .= " m.journal_id IN ({$basis->cInfo->journal_id}) ORDER BY post_date DESC $offset";
 		$sql = $basis->DataBase->prepare($raw_sql);
 		$sql->execute();
 		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
@@ -527,7 +572,7 @@ class admin extends \core\classes\admin {
 					WHERE m.journal_id  = {$basis->cInfo->journal_id} {$sku} {$store_id} AND m.closed = '0'
 					ORDER BY i.date_1");
 				$sql->execute();
-				while($result = $sql->fetch(\PDO::FETCH_LAZY)) {
+				while($result = $sql->fetch(\PDO::FETCH_ASSOC)) {
 					// this looks for partial received to make sure this item is still on order
 					$adj = $basis->DataBase->query($sql = "SELECT SUM(qty) as qty FROM " . TABLE_JOURNAL_ITEM . " WHERE gl_type = '{$gl_type}' AND so_po_item_ref_id = '{$result['item_id']}' "); 
 					if ($result['qty'] > $adj['qty']) $results = $result;
@@ -547,6 +592,19 @@ class admin extends \core\classes\admin {
 			$basis->cInfo->success = false;
 			$basis->cInfo->error_message = $e->getMessage();
 		}
+	}
+	
+	function GetInventoryAvarages (\core\classes\basis &$basis){
+		\core\classes\messageStack::development("executing ".__METHOD__ );
+		if (property_exists($basis->cInfo, 'sku') !== true) throw new \core\classes\userException(TEXT_SKU_NOT_DEFINED);
+		$last_year = CURRENT_ACCOUNTING_PERIOD - 12;
+		$sql = "SELECT m.period, ROUND( AVG(i.qty),2 ) AS average FROM " . TABLE_JOURNAL_MAIN . " m INNER JOIN " . TABLE_JOURNAL_ITEM . " i ON m.id = i.ref_id
+				  WHERE m.journal_id in (12, 19) AND i.sku = '{$basis->cInfo->sku}' AND m.period >= '{$last_year}'
+				  GROUP BY m.period";
+		$sql = $basis->DataBase->prepare($sql);
+		$sql->execute();
+		$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);;
+		$basis->cInfo->total = sizeof( $basis->cInfo->rows);
 	}
 	
 	function GetAllContactsAndJournals (\core\classes\basis &$basis) {
@@ -579,55 +637,50 @@ class admin extends \core\classes\admin {
 	
 	function GetAllJournals (\core\classes\basis &$basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
-		try{
-			if (!property_exists($basis->cInfo, 'jID')) 	throw new \core\classes\userException(TEXT_JOURNAL_TYPE_NOT_DEFINED);
-			if ($basis->cInfo->rows == 'NaN') $basis->cInfo->rows = MAX_DISPLAY_SEARCH_RESULTS;
-			$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
-			$period = ($basis->cInfo->search_period == 'all') ? '' : " and period = {$basis->cInfo->search_period} ";
-			if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
-				$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
-						'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
-				// hook for inserting new search fields to the query criteria.
-				if (is_array($extra_search_fields)) $search_fields = array_merge($search_fields, $extra_search_fields);
-				$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
-			}
-			$criteria[] = ($basis->cInfo->only_open) ? " j.closed = '0' and " : "";
-			$search = (sizeof($criteria) > 0) ?  implode(' and ', $criteria) : '';
-			$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id in ({$basis->cInfo->jID}) {$search} {$period} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}");
-			$sql->execute();
-			$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
-			$basis->cInfo->total = sizeof($results);
-			$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id in ({$basis->cInfo->jID}) {$search} {$period} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} $offset");
-			$sql->execute();
-			$basis->cInfo->rows = $sql->fetchAll(\PDO::FETCH_ASSOC);
-		}catch (\Exception $e) {
-			$basis->cInfo->rows = 0;
-			$basis->cInfo->success = false;
-			$basis->cInfo->error_message = $e->getMessage();
+		if (!property_exists($basis->cInfo, 'jID')) 	throw new \core\classes\userException(TEXT_JOURNAL_TYPE_NOT_DEFINED);
+		if ($basis->cInfo->rows == 'NaN') $basis->cInfo->rows = MAX_DISPLAY_SEARCH_RESULTS;
+		$offset = ($basis->cInfo->rows)? " LIMIT ".(($basis->cInfo->page - 1) * $basis->cInfo->rows).", {$basis->cInfo->rows}" : "";
+		$period = ($basis->cInfo->search_period == 'all') ? '' : " and period = {$basis->cInfo->search_period} ";
+		if (isset($basis->cInfo->search_text) && $basis->cInfo->search_text <> '') {
+			$search_fields = array('a.primary_name', 'a.contact', 'a.telephone1', 'a.telephone2', 'a.address1',
+					'a.address2', 'a.city_town', 'a.postal_code', 'c.short_name');
+			// hook for inserting new search fields to the query criteria.
+			$criteria[] = '(' . implode(" like '%{$basis->cInfo->search_text}%' or ", $search_fields) . " like '%{$basis->cInfo->search_text}%')";
 		}
+		$criteria[] = ($basis->cInfo->only_open) ? " j.closed = '0' and " : "";
+		$search = (sizeof($criteria) > 0) ?  implode(' and ', $criteria) : '';
+//		$sql = $basis->DataBase->prepare("SELECT *, MONTH(post_date) as month, YEAR(post_date) as year FROM " . TABLE_JOURNAL_MAIN . " WHERE journal_id in ({$basis->cInfo->jID}) {$search} {$period} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order}");
+//		$sql->execute();
+//		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+//		$basis->cInfo->total = sizeof($results);
+		$sql = $basis->DataBase->prepare("SELECT a.*, MONTH(a.post_date) as month, YEAR(a.post_date) as year FROM " . TABLE_JOURNAL_MAIN . " a JOIN " . TABLE_JOURNAL_ITEM . " b WHERE journal_id in ({$basis->cInfo->jID}) {$search} {$period} ORDER BY {$basis->cInfo->sort} {$basis->cInfo->order} $offset");
+		$sql->execute();
+		$results = $sql->fetchAll(\PDO::FETCH_ASSOC);
+		$basis->cInfo->total = sizeof($results);
+		$basis->cInfo->rows = $results;
 	}
 	
 	function LoadJournalManager (\core\classes\basis $basis){
   		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
   		$basis->observer->send_menu($basis);
   		switch ($basis->cInfo->jID) {
-  			case  2: \core\classes\user::validate ( SECURITY_ID_JOURNAL_ENTRY);      break;
-  			case  3: \core\classes\user::validate ( SECURITY_ID_PURCHASE_QUOTE);     break;
-  			case  4: \core\classes\user::validate ( SECURITY_ID_PURCHASE_ORDER);     break;
-  			case  6: \core\classes\user::validate ( SECURITY_ID_PURCHASE_INVENTORY); break;
-  			case  7: \core\classes\user::validate ( SECURITY_ID_PURCHASE_CREDIT);    break;
-  			case  9: \core\classes\user::validate ( SECURITY_ID_SALES_QUOTE);        break;
-  			case 10: \core\classes\user::validate ( SECURITY_ID_SALES_ORDER);        break;
-  			case 12: \core\classes\user::validate ( SECURITY_ID_SALES_INVOICE);      break;
-  			case 13: \core\classes\user::validate ( SECURITY_ID_SALES_CREDIT);       break;
-  			case 18: \core\classes\user::validate ( SECURITY_ID_CUSTOMER_RECEIPTS);  break;
-  			case 20: \core\classes\user::validate ( SECURITY_ID_PAY_BILLS);          break;
-  			case 21: \core\classes\user::validate ( SECURITY_ID_PAY_BILLS);          break;//@todo
-  			case 22: \core\classes\user::validate ( SECURITY_ID_PAY_BILLS);          break;//@todo
+  			case  2: $security_level = SECURITY_ID_JOURNAL_ENTRY;      break;
+  			case  3: $security_level = SECURITY_ID_PURCHASE_QUOTE;     break;
+  			case  4: $security_level = SECURITY_ID_PURCHASE_ORDER;     break;
+  			case  6: $security_level = SECURITY_ID_PURCHASE_INVENTORY; break;
+  			case  7: $security_level = SECURITY_ID_PURCHASE_CREDIT;    break;
+  			case  9: $security_level = SECURITY_ID_SALES_QUOTE;        break;
+  			case 10: $security_level = SECURITY_ID_SALES_ORDER;        break;
+  			case 12: $security_level = SECURITY_ID_SALES_INVOICE;      break;
+  			case 13: $security_level = SECURITY_ID_SALES_CREDIT;       break;
+  			case 18: $security_level = SECURITY_ID_CUSTOMER_RECEIPTS;  break;
+  			case 20: $security_level = SECURITY_ID_PAY_BILLS;          break;
+  			case 21: $security_level = SECURITY_ID_PAY_BILLS;          break;//@todo
+  			case 22: $security_level = SECURITY_ID_PAY_BILLS;          break;//@todo
   			default:
   				die('Bad or missing journal id found (LoadJournalManager), jID needs to be passed to this script to identify the correct procedure.');
   		}
-  		$security_level = \core\classes\user::validate ( $security_token );?>
+  		\core\classes\user::validate_security($security_level);?>
   			<div data-options="region:'center'">
   				<table id="dg" title="<?php echo sprintf(TEXT_MANAGER_ARGS, TEXT_JOURNAL);?>" style="height:500px;padding:50px;">
   					<thead>
@@ -638,7 +691,7 @@ class admin extends \core\classes\admin {
   		    	           	<th data-options="field:'purch_order_id',align:'center',sortable:true"><?php echo TEXT_REFERENCE?></th>
   		        	       	<th data-options="field:'closed',align:'center',sortable:true,formatter: function(value,row,index){ if(value == '1'){return '<?php echo TEXT_YES?>'}else{return ''}}"><?php echo TEXT_CLOSED?></th>
   		        	       	<th data-options="field:'total_amount',align:'right',sortable:true, formatter: function(value,row,index){ return formatCurrency(value)}"><?php echo TEXT_AMOUNT?></th>
-<!--   		        	       	<th data-options="field:'id',align:'right',formatter:actionformater"><?php echo TEXT_ACTIONS?></th>-->
+   		        	       	<th data-options="field:'id',align:'right',formatter:actionformater"><?php echo TEXT_ACTIONS?></th>
   		            	</tr>
   		        	</thead>
   		    	</table>
@@ -649,14 +702,14 @@ class admin extends \core\classes\admin {
   		        	<?php echo \core\classes\htmlElement::checkbox('Journal_show_inactive', TEXT_SHOW_INACTIVE, '1', false,'onChange="doSearch()"' );?>
   		        	<div style="float: right;">
 						<?php 
-						echo \core\classes\htmlElement::combobox('search_period', TEXT_ACCOUNTING_PERIOD, gen_get_period_pull_down(false), CURRENT_ACCOUNTING_PERIOD);
+						echo \core\classes\htmlElement::period_combobox('search_period', TEXT_ACCOUNTING_PERIOD, CURRENT_ACCOUNTING_PERIOD);
 						echo \core\classes\htmlElement::search('search_text','doSearch');?>
 					</div>
   		    	</div>
   		    	<div id="win" class="easyui-window">
   		    		<div id="contactToolbar" style="margin:2px 5px;">
   						<a class="easyui-linkbutton" iconCls="icon-undo" plain="true" onclick="closeWindow()"><?php echo TEXT_CANCEL?></a>
-  						<?php if (\core\classes\user::validate($basis->cInfo->contact->security_token, true) < 2){?>
+  						<?php if (\core\classes\user::validate($security_level, true) < 2){?>
   						<a class="easyui-linkbutton" iconCls="icon-save" plain="true" onclick="saveContact()" ><?php echo TEXT_SAVE?></a>
   						<?php }?>
   						<a class="easyui-linkbutton" iconCls="icon-help" plain="true" onclick="loadHelp()"><?php TEXT_HELP?></a>
@@ -664,12 +717,16 @@ class admin extends \core\classes\admin {
   				</div>
   	    	</div>	
   			<script type="text/javascript">
-  			/*	function actionformater (value,row,index){
-  					var href = 'innerlist.php?list='+row.id;
-  					var dhref = 'dellist.php?list='+row.id;
-  					return '<center><a target="_blank" href="' + href + '"><span class="btn btn-primary btn-xs"><i class="fa fa-search"></i> Preview</span></a><a href="' + dhref + '" class="panel-tool-close" plain="true" >Remove Entry</a></center>';
-  				}*/
-  				
+	  			function actionformater (value,row,index){ 
+					var temp = '';
+					var security_level = <?php echo \core\classes\user::validate($security_level)?>;
+					if (security_level > 1) temp += buildIcon(icon_path+'16x16/actions/edit-find-replace.png', "<?php echo TEXT_EDIT;?>", 'onclick="editContact('+index+','+row+')"');
+					if (security_level > 3) temp += buildIcon(icon_path+'16x16/apps/accessories-text-editor.png', '<?php echo TEXT_RENAME;?>', 'onclick="renameItem('+row.contactid+')"');
+					if (security_level > 3) temp += buildIcon(icon_path+'16x16/emblems/emblem-unreadable.png', "<?php echo TEXT_DELETE;?>", 'onclick="deleteItem('+row.contactid+')"');
+					if (row.attachments != '')  temp += buildIcon(icon_path+'16x16/status/mail-attachment.png', "<?php echo TEXT_DOWNLOAD_ATTACHMENT;?>",'onclick="downloadAttachment('+row.contactid+')"'); //@todo
+					if (security_level > 2)  temp += buildIcon(icon_path+'16x16/mimetypes/x-office-spreadsheet.png', "<?php echo TEXT_SALES;?>",'onclick="contactChart(\'annual_sales\', '+row.contactid+')"'); //@todo
+					return temp;
+				}	
   				
   				document.title = '<?php echo sprintf(TEXT_MANAGER_ARGS, $contact); ?>';
   		    	function doSearch(value){
@@ -714,7 +771,7 @@ class admin extends \core\classes\admin {
   				$('#dg').datagrid({
   					url:		"index.php?action=GetAllJournals",
   					queryParams: {
-						search_period: $('#search_period').val(),
+						search_period: <?php echo CURRENT_ACCOUNTING_PERIOD;?>,
   						dataType: 'json',
   		                contentType: 'application/json',
   		                async: false,
@@ -738,6 +795,7 @@ class admin extends \core\classes\admin {
   					},
   					pagination: true,
   					pageSize:   <?php echo MAX_DISPLAY_SEARCH_RESULTS?>,
+  		  			PageList:   <?php echo MAX_DISPLAY_SEARCH_RESULTS?>,
   					remoteSort:	true,
   					idField:	"id",
   					fitColumns:	true,

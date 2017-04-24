@@ -144,7 +144,7 @@ class basis {
 			define('DB_DATABASE', $_SESSION['user']->company);
 			require_once(DIR_FS_MY_FILES . $_SESSION['user']->company . '/config.php');
 			if(!defined('DB_SERVER_HOST')) define('DB_SERVER_HOST',DB_SERVER);
-			$this->DataBase = new \core\classes\PDO(DB_TYPE.":dbname={$_SESSION['user']->company};host=".DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, array(\PDO::ATTR_ERRMODE => \PDO::ERRMODE_EXCEPTION));
+			$this->DataBase = new \core\classes\PDO(DB_TYPE.":dbname={$_SESSION['user']->company};host=".DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD);
 			$this->DataBase->setAttribute(\PDO::ATTR_EMULATE_PREPARES, false);
 			$_SESSION['user']->loadConfig($this);
 			require(DIR_FS_MODULES . 'phreedom/config.php');

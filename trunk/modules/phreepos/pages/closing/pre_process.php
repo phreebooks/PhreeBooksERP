@@ -119,9 +119,9 @@ switch ($_REQUEST['action']) {
 		  'bill_primary_name'   => TEXT_POSTED_CASH_DIFFERENCE_IN_TILL,
 		  'store_id'            => $glEntry->store_id,
 		);
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		$glEntry->Post($glEntry->id ? 'edit' : 'insert', true);
-		$admin->DataBase->transCommit();
+		$admin->DataBase->commit();
 		$newrow = $admin->DataBase->query("select i.id from " . TABLE_JOURNAL_MAIN . " m join " . TABLE_JOURNAL_ITEM . " i on m.id = i.ref_id where i.gl_account = '" . $tills->gl_acct_id . "' and m.id ='".$glEntry->id."'");
 		$cleared_items[] = $newrow->fields['id'];
 		$statement_balance = $admin->currencies->clean_value($_POST['statement_balance']);
@@ -163,7 +163,7 @@ switch ($_REQUEST['action']) {
 		gen_add_audit_log(TEXT_ACCOUNT_RECONCILIATION." ". TEXT_PERIOD ." : " . $period, $tills->gl_acct_id);
 		$post_date = ''; // reset for new form
   	}catch(Exception $e){
-  		$admin->DataBase->transRollback();
+  		$admin->DataBase->rollBack();
   		\core\classes\messageStack::add($e->getMessage());
   		gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
   	}

@@ -49,7 +49,7 @@ switch ($_REQUEST['action']) {
 	  		\core\classes\user::validate_security($security_level, 4);
 			// load the module installation class
 			if (!array_key_exists($method, $admin->classes)) throw new \core\classes\userException(sprintf('Looking for the installation script for module %s, but could not locate it. The module cannot be installed!', $method));
-			$admin->DataBase->transStart();
+			$admin->DataBase->beginTransaction();
 			require_once(DIR_FS_MODULES . $method . '/config.php'); // config is not loaded yet since module is not installed.
 			if ($_REQUEST['action'] == 'install') {
 		  		$admin->classes[$method]->install(DIR_FS_MY_FILES.$_SESSION['user']->company.'/', false);
@@ -63,10 +63,10 @@ switch ($_REQUEST['action']) {
 	   			\core\classes\messageStack::add(sprintf(GEN_MODULE_UPDATE_SUCCESS, $admin->classes[$method]->id, $admin->classes[$method]->version), 'success');
 			}
 			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) \core\classes\messageStack::add($note, 'caution');
-			$admin->DataBase->transCommit();
+			$admin->DataBase->commit();
 			break;
   		}catch (Exception $e){
-  			$admin->DataBase->transRollback();
+  			$admin->DataBase->rollBack();
   			\core\classes\messageStack::add($e->getMessage());
   			break;
   		}
@@ -75,14 +75,14 @@ switch ($_REQUEST['action']) {
 		  	\core\classes\user::validate_security($security_level, 4);
 			// load the module installation class
 			if (!array_key_exists($method, $admin->classes)) throw new \core\classes\userException(sprintf('Looking for the delete script for module %s, but could not locate it. The module cannot be deleted!', $method));
-			$admin->DataBase->transStart();
+			$admin->DataBase->beginTransaction();
 			$admin->classes[$method]->delete(DIR_FS_MY_FILES.$_SESSION['user']->company.'/');
-			$admin->DataBase->transCommit();
+			$admin->DataBase->commit();
 			if (sizeof($admin->classes[$method]->notes) > 0) foreach ($admin->classes[$method]->notes as $note) \core\classes\messageStack::add($note, 'caution');
 			gen_add_audit_log(sprintf(TEXT_UNINSTALLED_MODULE, $admin->classes[$method]->text));
 			break;
   		}catch (Exception $e){
-  			$admin->DataBase->transRollback();
+  			$admin->DataBase->rollBack();
   			\core\classes\messageStack::add($e->getMessage());
   			break;
   		}
@@ -90,7 +90,7 @@ switch ($_REQUEST['action']) {
   		try{
 		  	\core\classes\user::validate_security($security_level, 3);
 			// save general tab
-			$admin->DataBase->transStart();
+			$admin->DataBase->beginTransaction();
 			foreach ($admin->classes['phreedom']->keys as $key => $default) {
 				$field = strtolower($key);
 		     	if (isset($_POST[$field])) $admin->DataBase->write_configure($key, db_prepare_input($_POST[$field]));
@@ -99,27 +99,27 @@ switch ($_REQUEST['action']) {
 					install_build_co_config_file($_SESSION['user']->company, $_SESSION['user']->company . '_TITLE', db_prepare_input($_POST[$field]));
 				}
 			}
-		    $admin->DataBase->transCommit();
+		    $admin->DataBase->commit();
 			\core\classes\messageStack::add(TEXT_CONFIGURATION_VALUES_HAVE_BEEN_SAVED,'success');
 			$default_tab_id = 'company';
 		    break;
   		}catch (Exception $e){
-  			$admin->DataBase->transRollback();
+  			$admin->DataBase->rollBack();
   			\core\classes\messageStack::add($e->getMessage());
   			break;
   		}
   	case 'delete':
   		try{
-  			$admin->DataBase->transStart();
+  			$admin->DataBase->beginTransaction();
   			\core\classes\user::validate_security($security_level, 4);
   			$subject = $_POST['subject'];
     		$id      = $_POST['rowSeq'];
 			if (!$subject || !$id) break;
     		if ($$subject->btn_delete($id)) $close_popup = true;
-    		$admin->DataBase->transCommit();
+    		$admin->DataBase->commit();
 		   	break;
   		}catch (Exception $e){
-  			$admin->DataBase->transRollback();
+  			$admin->DataBase->rollBack();
   			\core\classes\messageStack::add($e->getMessage());
   			break;
   		}
@@ -201,10 +201,10 @@ switch ($_REQUEST['action']) {
 			$_SESSION['db_pw']     = $db_pw;
 		    gen_redirect(html_href_link(FILENAME_DEFAULT, $get_parmas, ENABLE_SSL_ADMIN ? 'SSL' : 'NONSSL'));
 			$default_tab_id = 'manager';
-  			$admin->DataBase->transCommit();
+  			$admin->DataBase->commit();
 		   	break;
   		}catch (Exception $e){
-  			$admin->DataBase->transRollback();
+  			$admin->DataBase->rollBack();
   			$db = new queryFactory;//@todo pdo
 			$admin->DataBase->connect(DB_SERVER_HOST, DB_SERVER_USERNAME, DB_SERVER_PASSWORD, DB_DATABASE);
   			\core\classes\messageStack::add($e->getMessage());

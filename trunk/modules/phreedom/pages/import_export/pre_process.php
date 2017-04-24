@@ -155,13 +155,13 @@ switch ($_REQUEST['action']) {
 	$total_amount = $admin->currencies->format($total_amount);
 	if ($total_amount <> 0) throw new \core\classes\userException(GL_ERROR_NO_BALANCE);
 	// *************** START TRANSACTION *************************
-	$admin->DataBase->transStart();
+	$admin->DataBase->beginTransaction();
 	foreach ($glEntry->beg_bal as $account => $values) {
 	  $sql = "update " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " set beginning_balance = {$values['beg_bal']} where period = 1 and account_id = '$account'";
 	  $result = $admin->DataBase->query($sql);
 	}
 	$glEntry->update_chart_history_periods($period = 1); // roll the beginning balances into chart history table
-	$admin->DataBase->transCommit();	// post the chart of account values
+	$admin->DataBase->commit();	// post the chart of account values
 	gen_add_audit_log('Enter Beginning Balances');
 	$messageStack->write_debug();
 	gen_redirect(html_href_link(FILENAME_DEFAULT, gen_get_all_get_params(array('action')), 'SSL'));
@@ -197,7 +197,7 @@ switch ($_REQUEST['action']) {
 			define('JOURNAL_ID',12);
 			break;
 		}
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		// preload the chart of accounts
 		$result = $admin->DataBase->query("select id from " . TABLE_CHART_OF_ACCOUNTS);
 		$coa = array();
@@ -219,9 +219,9 @@ switch ($_REQUEST['action']) {
 		}
 		\core\classes\messageStack::add(TEXT_SUCCESS . '-' . $journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT . ': ' . sprintf(SUCCESS_IMPORT_COUNT, $so_po->line_count),'success');
 		gen_add_audit_log($journal_types_list[JOURNAL_ID]['text'] . '-' . TEXT_IMPORT, $so_po->line_count);
-		$admin->DataBase->transCommit();
+		$admin->DataBase->commit();
   	}catch(Exception $e){
-  		$admin->DataBase->transRollback();
+  		$admin->DataBase->rollBack();
   		\core\classes\messageStack::add($e->getMessage());
   	}
   	default:

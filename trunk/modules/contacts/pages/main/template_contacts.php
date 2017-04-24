@@ -53,6 +53,7 @@ $('#cdg').datagrid({
 	onLoadSuccess:function(data){
 		console.log('the loading of the contacts datagrid was succesfull');
 		$.messager.progress('close');
+		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 	},
 	onLoadError: function(){
 		console.error('the loading of the contacts datagrid resulted in a error');
@@ -107,6 +108,7 @@ $('#cdg').datagrid({
         	onLoadSuccess:function(data){
         		console.log('the loading the contacts form was succesfull');
         		$.messager.progress('close');
+        		if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
         	},
             onLoadError: function(){
         		console.error('the loading of the contacts form resulted in a error');
@@ -164,7 +166,7 @@ function deleteContact(){
     if (row){
     	$.messager.confirm('<?php echo TEXT_CONFORM?>','<?php echo sprintf(TEXT_ARE_YOU_SURE_YOU_WANT_TO_DELETE_ARGS, TEXT_CONTACT)?>',function(r){
             if (r){
-                $.post('index.php?action=DeleteContact',{contactid:row.contactid,dataType: 'json', async: false, contentType: 'application/json'},function(result){
+                $.post('index.php?action=DeleteContact',{contact_id:row.contactid,dataType: 'json', async: false, contentType: 'application/json'},function(result){
                     if (result.success){
                         $('#cdg').datagrid('deleteRow', index);
                     } else {
@@ -173,7 +175,11 @@ function deleteContact(){
                             msg: result.error_message
                         });
                     }
-                },'json');
+                },'json')  
+	          	.fail(function(xhr, status, error) {
+		          		console.error('we received a error from the server returned = '+ JSON.stringify(xhr));
+					$.messager.alert('<?php echo TEXT_ERROR?>',error);
+			    });
             }
         });
     }

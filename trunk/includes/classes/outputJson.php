@@ -5,6 +5,7 @@ class outputJson {
 	function send_header (\core\classes\basis $basis){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
 		header('Content-Type: application/json');
+		$basis->cInfo->rows = array();
 	}
 	
 	function send_constants (\core\classes\basis $basis){	 
@@ -16,6 +17,7 @@ class outputJson {
 	
 	public function update (\core\classes\basis $basis) {
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );
+		if (property_exists($basis->cInfo, 'rows') !== true) $basis->cInfo->rows = array();
 		header_remove();
 		\core\classes\messageStack::debug_log("returning " . print_r($basis->cInfo, true));
 		header('Content-Type: application/json');

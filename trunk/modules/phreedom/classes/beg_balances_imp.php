@@ -246,14 +246,14 @@ class beg_bal_import {
 		if (is_array($sku_list)) {
 		  	$glEntry->affected_accounts = $affected_accounts;
 		  	// *************** START TRANSACTION *************************
-		  	$db->transStart();
+		  	$db->beginTransaction();
 		  	// update inventory balances on hand
 			foreach ($sku_list as $sku => $details) {
 				$sql = "update " . TABLE_INVENTORY . "
 				  set quantity_on_hand = quantity_on_hand + " . $details['qty'] . " where sku = '" . $sku . "'";
 				$result = $admin->DataBase->query($sql);
 				if ($result->AffectedRows() <> 1){
-					$db->transRollback();
+					$db->rollBack();
 					throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_SKU_THE_PROCESS_WAS_TERMINATED_ARGS, $sku));
 				}
 				$history_array = array(
@@ -273,14 +273,14 @@ class beg_bal_import {
 				  where account_id = '$account' and period = 1";
 				$result = $admin->DataBase->query($sql);
 				if ($result->AffectedRows() <> 1) {
-					$db->transRollback();
+					$db->rollBack();
 					throw new \core\classes\userException(sprintf(TEXT_FAILED_UPDATING_ACCOUNT_THE_PROCESS_WAS_TERMINATED_ARGS, $account));
 				}
 		  }
 		  // update the chart of accounts history through the existing periods
 		  $glEntry->update_chart_history_periods($period = 1);
 		  $messageStack->write_debug();
-		  $db->transCommit();	// post the chart of account values
+		  $db->commit();	// post the chart of account values
 		  // *************** END TRANSACTION *************************
 		}
 		$this->line_count = $row_id;

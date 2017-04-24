@@ -75,7 +75,7 @@ switch ($_REQUEST['action']) {
 			  'action' => $_POST['dis_action'][$key],
 			);
 		}
-		$admin->DataBase->transStart();
+		$admin->DataBase->beginTransaction();
 		// Check attachments
 		$result = $admin->DataBase->query("select attachments from " . TABLE_RMA . " where id = '$id'");
 		$attachments = $result->fields['attachments'] ? unserialize($result->fields['attachments']) : array();
@@ -140,11 +140,11 @@ switch ($_REQUEST['action']) {
 			$next_num = string_increment($sql_data_array['rma_num']);
 			$admin->DataBase->query("update " . TABLE_CURRENT_STATUS . " set next_rma_num = '" . $next_num . "'");
 		}
-		$admin->DataBase->transCommit();
+		$admin->DataBase->commit();
 		\core\classes\messageStack::add(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['id'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_RMA , $rma_num), 'success');
 		gen_add_audit_log(sprintf(TEXT_SUCCESSFULLY_ARGS, ($_POST['id'] ? TEXT_UPDATED : TEXT_ADDED ), TEXT_RMA , $rma_num));
   	}catch(Exception $e){
-  		$admin->DataBase->transRollback();
+  		$admin->DataBase->rollBack();
   		\core\classes\messageStack::add($e->getMessage());
   	}
 	break;

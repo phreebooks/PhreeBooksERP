@@ -71,7 +71,7 @@ class project_phases {
 	    $result = $admin->DataBase->prepare("SELECT phase_id, description_short, description_long, cost_type, cost_breakdown, inactive FROM {$this->db_table}");
 	    $sql->execute();
 	    $project_costs = new \contacts\classes\project_costs();
-		while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+		while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
 			$actions = '';
 			if ($this->security_id > 1) $actions .= html_icon('actions/edit-find-replace.png', TEXT_EDIT,   'small', 'onclick="loadPopUp(\'project_phases_edit\', ' . $result['phase_id'] . ')"') . chr(10);
 			if ($this->security_id > 3) $actions .= html_icon('emblems/emblem-unreadable.png', TEXT_DELETE, 'small', 'onclick="if (confirm(\'' . SETUP_PROJECT_PHASES_DELETE_INTRO . '\')) subjectDelete(\'project_phases\', ' . $result['phase_id'] . ')"') . chr(10);

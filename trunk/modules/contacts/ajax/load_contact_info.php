@@ -39,7 +39,7 @@ $sql = $admin->DataBase->prepare($query_raw);
 
 $xml .= xmlEntry("guess", $_REQUEST['guess']);
 $sql->execute();
-while ($result = $sql->fetch(\PDO::FETCH_LAZY)){
+while ($result = $sql->fetch(\PDO::FETCH_ASSOC)){
   	$xml .= "\t<guesses>\n";
   	$xml .= "\t" . xmlEntry("id",    $result['id']);
   	$xml .= "\t" . xmlEntry("guess", $result['short_name'] . ' - ' . $result['primary_name']);

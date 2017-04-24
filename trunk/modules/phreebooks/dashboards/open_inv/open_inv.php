@@ -58,6 +58,7 @@ class open_inv extends \core\classes\ctl_panel {
 			onLoadSuccess: function(data){
 				console.log('the loading of the open invoices was succesfull');
 				$.messager.progress('close');
+				if(data.error_message) $.messager.alert('<?php echo TEXT_ERROR?>',data.error_message);
 			},
 			onLoadError: function(){
 				console.error('the loading of the open invoices resulted in a error');
@@ -70,6 +71,7 @@ class open_inv extends \core\classes\ctl_panel {
 			},
 			pagination: true,
 			pageSize:   <?php echo MAX_DASHBOARD_SEARCH_RESULTS?>,
+	  		PageList:   <?php echo MAX_DASHBOARD_SEARCH_RESULTS?>,
 			remoteSort:	true,
 			fitColumns:	true,
 			showFooter: true,

@@ -63,7 +63,7 @@ foreach ($page_list as $mod => $params) {
 ?>
 	    <tr>
 	      <td>
-	        <?php echo html_combo_box('bank_acct', $cash_chart, '', ''); ?>
+	        <?php echo \core\classes\htmlElement::combobox('bank_acct', TEXT_CASH_ACCOUNT, $cash_chart); ?>
 	      </td>
 	      <td>
 			<?php echo html_file_field  ('file_name') . ' '; ?>

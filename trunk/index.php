@@ -33,18 +33,20 @@ try{
    	session_write_close();
    	\core\classes\messageStack::end();
 }catch (\Exception $e) {
-	\core\classes\messageStack::add($e->getMessage());
-	if (is_object($admin->DataBase)) gen_add_audit_log($e->getMessage());
-	\core\classes\messageStack::debug_log(" ".$e->getMessage());
-	\core\classes\messageStack::debug_log(" fire event : $e->action");
-	\core\classes\messageStack::debug_log("\n\n\n".$e->getTraceAsString());
-	if( $_REQUEST['contentType'] == "application/json"){
-		$temp['rows'] = 0;
-		$temp['success'] = false;
-		$temp['error_message'] = $e->getMessage();
-		echo json_encode($temp);
+	\core\classes\messageStack::error("caught in index ".$e->getMessage());
+	\core\classes\messageStack::error("\n\n\n".$e->getTraceAsString());
+	if (is_object($admin->DataBase)) {
+		\core\classes\messageStack::development(' database is in transaction rolling back because of the error');
+		gen_add_audit_log($e->getMessage());
+		if ($admin->DataBase->inTransaction()) $admin->DataBase->rollBack();
+	}
+	if( $_REQUEST['contentType'] == "application/json" || $_REQUEST['dataType'] == "json" ){
+		$admin->cInfo->success	= false;
+		$admin->cInfo->error_message = $e->getMessage();
+		if (method_exists ( $admin->observer, 'update' )) $admin->observer->update($admin);
 	}else{
 		if (is_object($admin) && !empty($e->action)) {
+			\core\classes\messageStack::debug_log(" fire event : $e->action");
 			// maybe redirect user to template error method.
 			$admin->removeEventsAndAddNewEvent($e->action); //@todo werkt nog niet altijd
 			$admin->startProcessingEvents();
