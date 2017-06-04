@@ -1,4 +1,4 @@
-PhreeBooks Release 5
+PhreeBooks Open Source ERP
 =========================
 
 UPDATE 2017-06-04 - PhreeSoft has changed its position on the PhreeBooks project. We will no longer support any PhreeBoks versions prior to Release 5. Release 4 is under development by team member Rene and the release date is unknown. PhreeSoft will soon release it's GPL version of Bizuno and PhreeBooks 5.0 will be the officially supported stand alone version of Bizuno with a PhreeBooks portal. A free upgrade script will be available to upgrade your database from PhreeBooks R3.7 to PhreeBooks 5.0. Note that this involves a small bit of code to operate in a stand-alone capacity but primarily relies on the GPL Bizuno library, also hosted on GitHub. Most of the extensions that existed in the PhreeBooks R3.7 release will still be available but for a nominal cost. This is necessary to help cover some of the hard costs running this project, like hosting, ssl certificates, code signing certificates, etc.
