@@ -56,6 +56,7 @@ if ($custom_html) { // load the template only as the rest of the html will be ge
   <script type="text/javascript" src="includes/jquery.dataTables.min.js"></script>
   <script type="text/javascript" src="https://www.google.com/jsapi"></script>
   <script type="text/javascript" src="includes/common.js"></script>
+  <script type="text/javascript" src="ckeditor/ckeditor.js"></script>
 <?php 
 require_once(DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php');
 // load the jquery and javascript translations

@@ -93,7 +93,7 @@ echo $toolbar->build_toolbar();
 	    </tr>
 	    <tr>
 		  <td align="right" valign="top"><?php echo TEXT_MESSAGE_BODY; ?></td>
-		  <td><?php echo html_textarea_field('message_body', '60', '8', $message_body); ?></td>
+		  <td><?php echo html_htmlarea_field('message_body', '60', '8', $message_body); ?></td>
 	    </tr>
 	   </tbody>
 	  </table>

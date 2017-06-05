@@ -977,6 +977,11 @@
   <iso3>SEN</iso3>
 </country>
 <country>
+  <name>Serbia</name>
+  <iso2>RS</iso2>
+  <iso3>SRB</iso3>
+</country>
+<country>
   <name>Seychelles</name>
   <iso2>SC</iso2>
   <iso3>SYC</iso3>
@@ -1457,11 +1462,6 @@
   <name>Yemen</name>
   <iso2>YE</iso2>
   <iso3>YEM</iso3>
-</country>
-<country>
-  <name>Yugoslavia</name>
-  <iso2>YU</iso2>
-  <iso3>YUG</iso3>
 </country>
 <country>
   <name>Zaire</name>
