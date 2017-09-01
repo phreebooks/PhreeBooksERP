@@ -20,7 +20,6 @@
 // Set the level of error reporting
   error_reporting(E_ALL & ~E_NOTICE);
 // set php_self in the local scope
-  if (!isset($PHP_SELF)) $PHP_SELF = $_SERVER['PHP_SELF'];
 // Check for application configuration parameters, may be preloaded in running from a subdirectory, so skip
 // currently scripts run from top level (index.php only) and second level, so we only need to check these two levels
 if (!defined('DIR_FS_ADMIN')) {
@@ -48,10 +47,6 @@ set_error_handler("PhreebooksErrorHandler");
 set_exception_handler('PhreebooksExceptionHandler');
 spl_autoload_register('Phreebooks_autoloader', true, false);
 // set the session name and save path
-$http_domain  = gen_get_top_level_domain(HTTP_SERVER);
-$https_domain = gen_get_top_level_domain(HTTPS_SERVER);
-$current_domain = (($request_type == 'NONSSL') ? $http_domain : $https_domain);
-
 // set the session cookie parameters
 session_start();
 session_set_cookie_params(0, '/', (gen_not_null($current_domain) ? $current_domain : ''));

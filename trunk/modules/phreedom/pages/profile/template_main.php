@@ -41,15 +41,15 @@ echo $toolbar->build();
  <tbody class="ui-widget-content">
    <tr>
      <td><?php echo sprintf(TEXT_SELECT_ARGS, TEXT_THEME); ?> : </td>
-     <td><?php echo html_pull_down_menu('theme', load_theme_dropdown(), $prefs['theme']?$prefs['theme']:DEFAULT_THEME, 'onchange="updateColors()"'); ?></td>
+     <td><?php echo html_pull_down_menu('theme', load_theme_dropdown(), $_SESSION['user']->theme, 'onchange="updateColors()"'); ?></td>
    </tr>
    <tr>
      <td><?php echo TEXT_SELECT_MENU_LOCATION; ?></td>
-     <td><?php echo html_pull_down_menu('menu', load_menu_dropdown(), $prefs['menu']?$prefs['menu']:DEFAULT_MENU); ?></td>
+     <td><?php echo html_pull_down_menu('menu', load_menu_dropdown(), $_SESSION['user']->menu); ?></td>
    </tr>
    <tr>
      <td><?php echo TEXT_SELECT_COLOR_SCHEME; ?></td>
-     <td><?php echo html_pull_down_menu('colors', load_colors_dropdown(), $prefs['colors']?$prefs['colors']:DEFAULT_COLORS); ?></td>
+     <td><?php echo html_pull_down_menu('colors', load_colors_dropdown(), $_SESSION['user']->colors); ?></td>
    </tr>
  </tbody>
 </table>

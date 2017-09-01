@@ -19,8 +19,7 @@
 namespace core\classes;
 class htmlElement {
 	
-	function html_href_link($page = '', $parameters = '', $connection = 'NONSSL', $add_session_id = false) {
-		global $request_type, $http_domain, $https_domain;
+	function html_href_link($page = '', $parameters = '', $connection = 'NONSSL') {
 		if ($page == '') throw new \core\classes\userException('Unable to determine the page link!<br />Function used:<br />html_href_link(\'' . $page . '\', \'' . $parameters . '\', \'' . $connection . '\')');
 		if ($connection == 'SSL') {
 			$link = DIR_WS_FULL_PATH;
@@ -36,16 +35,6 @@ class htmlElement {
 			$separator = '&amp;';
 		}
 		while ( (substr($link, -1) == '&') || (substr($link, -1) == '?') ) $link = substr($link, 0, -1);
-		// Add the session ID when moving from different HTTP and HTTPS servers, or when SID is defined
-		if ( ($add_session_id == true) && (session_status() == PHP_SESSION_ACTIVE) ) {
-			if (defined('SID') && gen_not_null(SID)) {
-				$sid = SID;
-			} elseif ( ( ($request_type == 'NONSSL') && ($connection == 'SSL') && (ENABLE_SSL_ADMIN == 'true') ) || ( ($request_type == 'SSL') && ($connection == 'NONSSL') ) ) {
-				if ($http_domain != $https_domain) {
-					$sid = session_name() . '=' . session_id();
-				}
-			}
-		}
 		if (isset($sid)) $link .= $separator . $sid;
 		return $link;
 	}

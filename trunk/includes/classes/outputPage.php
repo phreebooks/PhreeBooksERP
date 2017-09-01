@@ -44,8 +44,8 @@ class outputPage  {
     	echo "<head>";
     	echo "<meta http-equiv='Content-Type' content='text/html; charset=".CHARSET."' />";
     	echo "<title>".TEXT_PHREEBOOKS_ERP."</title>";
-    	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css'."' />". chr(13);
-    	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css'."' />". chr(13);
+    	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.$_SESSION['user']->colors.'/stylesheet.css'."' />". chr(13);
+    	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/'.$_SESSION['user']->colors.'/easyui.css'."' />". chr(13);
     	echo "<link rel='stylesheet' type='text/css' href='".DIR_WS_THEMES.'css/icon.css'."' />". chr(13);
     	echo "<script type='text/javascript' src='includes/common.js'></script>". chr(13);
     	echo "<script type='text/javascript' src='includes/easyui/jquery.min.js'></script>". chr(13);

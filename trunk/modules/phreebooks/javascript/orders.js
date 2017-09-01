@@ -933,6 +933,7 @@ function updateUnitPrice(rowCnt) {
 }
 
 function updateTotalPrices() {
+	console.log("running updateTotalPrices");
   var numRows = 0;
   var discount = parseFloat(cleanCurrency(document.getElementById('discount').value));
   if (isNaN(discount)) discount = 0;
@@ -1011,8 +1012,10 @@ function updateTotalPrices() {
   var new_total = subtotal - discount + freight + taxable_subtotal;
   var tot = new String(new_total);
   document.getElementById('total').value = formatCurrency(tot);
+  console.log("JournalID = " +journalID+" applyCreditLimit = "+ applyCreditLimit);
   if (journalID == '12' && applyCreditLimit == '1') {
-	if (tot > custCreditLimit && document.getElementById('override_user').value == '') showOverride();
+	  console.log("apply credit Limit check if total ("+new_total+") is bigger than ("+custCreditLimit+")");
+	  if (new_total > custCreditLimit && document.getElementById('override_user').value == '') showOverride();
   } else {
     if (document.getElementById('tb_icon_save'))          document.getElementById('tb_icon_save').style.visibility          = "";
     if (document.getElementById('tb_icon_print'))         document.getElementById('tb_icon_print').style.visibility         = "";
@@ -1044,9 +1047,12 @@ function calculateDiscount() {
 }
 
 function showOverride() {
+	console.log("executing showOverride");
 	var total = parseFloat(cleanCurrency($('#total').val()));
 	var limit = parseFloat(custCreditLimit); // both strings
+	console.log("total = "+total+" limit = "+limit);
 	if (total > limit) {
+		console.log("Total is over limit showing override");
 		if (document.getElementById('tb_icon_save'))          document.getElementById('tb_icon_save').style.visibility          = "hidden";
 		if (document.getElementById('tb_icon_print'))         document.getElementById('tb_icon_print').style.visibility         = "hidden";
 		if (document.getElementById('tb_icon_post_previous')) document.getElementById('tb_icon_post_previous').style.visibility = "hidden";

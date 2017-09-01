@@ -556,7 +556,6 @@ function get_dir_tree($dir, $root = true)  {
 // Section 3. HTML Functions
 /**************************************************************************************************************/
   function html_href_link($page = '', $parameters = '', $connection = 'NONSSL', $add_session_id = false) {
-    global $request_type, $http_domain, $https_domain;
 	if ($page == '') throw new \core\classes\userException('Unable to determine the page link!<br />Function used:<br />html_href_link(\'' . $page . '\', \'' . $parameters . '\', \'' . $connection . '\')');
     if ($connection == 'SSL') {
       $link = DIR_WS_FULL_PATH;
@@ -572,16 +571,6 @@ function get_dir_tree($dir, $root = true)  {
       $separator = '&amp;';
     }
     while ( (substr($link, -1) == '&') || (substr($link, -1) == '?') ) $link = substr($link, 0, -1);
-	// Add the session ID when moving from different HTTP and HTTPS servers, or when SID is defined
-    if ( ($add_session_id == true) && (session_status() == PHP_SESSION_ACTIVE) ) {
-      if (defined('SID') && gen_not_null(SID)) {
-        $sid = SID;
-      } elseif ( ( ($request_type == 'NONSSL') && ($connection == 'SSL') && (ENABLE_SSL_ADMIN == 'true') ) || ( ($request_type == 'SSL') && ($connection == 'NONSSL') ) ) {
-        if ($http_domain != $https_domain) {
-          $sid = session_name() . '=' . session_id();
-        }
-      }
-    }
     if (isset($sid)) $link .= $separator . $sid;
     return $link;
   }
@@ -852,7 +841,6 @@ function get_dir_tree($dir, $root = true)  {
  */
 
   function html_heading_bar($heading_array, $extra_headings = array(TEXT_ACTION)) {
-	global $PHP_SELF;
 	$result = array();
 	$output .= html_hidden_field('sf', $_REQUEST['sf']) . chr(10);
     $output .= html_hidden_field('so', ($_REQUEST['so'] == 'desc' ? 'desc' : 'asc') ) . chr(10);
@@ -870,9 +858,9 @@ function get_dir_tree($dir, $root = true)  {
 	       }
 	  }
 	  $output .= '<th nowrap="nowrap">' . chr(10);
-	  if ($value) $output .= html_image(DIR_WS_IMAGES . $image_asc  , TEXT_ASC,  '', '', 'onclick="submitSortOrder(\''.$value.'\',\'asc\')"'). chr(10);
+	  if ($value) $output .= html_image(DIR_WS_THEMES . 'images/' . $image_asc  , TEXT_ASC,  '', '', 'onclick="submitSortOrder(\''.$value.'\',\'asc\')"'). chr(10);
 	  $output .= $value;
-	  if ($value) $output .= html_image(DIR_WS_IMAGES . $image_desc , TEXT_DESCENDING_SHORT, '', '', 'onclick="submitSortOrder(\''.$value.'\',\'desc\')"'). chr(10);
+	  if ($value) $output .= html_image(DIR_WS_THEMES . 'images/' . $image_desc , TEXT_DESCENDING_SHORT, '', '', 'onclick="submitSortOrder(\''.$value.'\',\'desc\')"'). chr(10);
 	  $output .= '</th>' . chr(10);
 	}
 	if (sizeof($extra_headings) > 0) foreach ($extra_headings as $value) {

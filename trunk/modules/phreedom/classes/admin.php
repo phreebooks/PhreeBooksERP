@@ -339,6 +339,9 @@ class admin extends \core\classes\admin {
 			$_SESSION['user']->admin_store_id	= $result['admin_store_id'];
 			$_SESSION['user']->admin_prefs		= unserialize($result['admin_prefs']);
 			$_SESSION['user']->admin_security	= \core\classes\user::parse_permissions($result['admin_security']);
+			if(isset($_SESSION['user']->admin_prefs['theme'])) $_SESSION['user']->theme  	= $_SESSION['user']->admin_prefs['theme'];
+			if(isset($_SESSION['user']->admin_prefs['colors'])) $_SESSION['user']->colors 	= $_SESSION['user']->admin_prefs['colors'];
+			if(isset($_SESSION['user']->admin_prefs['menu'])) $_SESSION['user']->menu   	= $_SESSION['user']->admin_prefs['menu'];
 			// load init functions for each module and execute
 			foreach ($basis->classes as $key => $module_class) $module_class->should_update($basis);
 			if (defined('TABLE_CONTACTS') && $_SESSION['user']->account_id > 0) {

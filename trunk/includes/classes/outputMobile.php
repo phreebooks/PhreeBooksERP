@@ -38,10 +38,10 @@ class outputMobile {
   		$this->js_files[] = "includes/easyui/jquery.easyui.min.js";
   		$this->js_files[] = "includes/common.js";
   		$this->js_files[] = DIR_FS_ADMIN . DIR_WS_THEMES . '/config.php';
-  		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/stylesheet.css';
-  		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery_datatables.css';
-  		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/jquery-ui.css';
-  		$this->css_files[] = DIR_WS_THEMES.'css/'.MY_COLORS.'/easyui.css';
+  		$this->css_files[] = DIR_WS_THEMES."css/{$_SESSION['user']->colors}/stylesheet.css";
+  		$this->css_files[] = DIR_WS_THEMES."css/{$_SESSION['user']->colors}/jquery_datatables.css";
+  		$this->css_files[] = DIR_WS_THEMES."css/{$_SESSION['user']->colors}/jquery-ui.css";
+  		$this->css_files[] = DIR_WS_THEMES."css/{$_SESSION['user']->colors}/easyui.css";
   		$this->css_files[] = DIR_WS_THEMES.'css/icon.css';
     }
 

@@ -26,6 +26,9 @@ class user {
 	public $languages = array();
 	public $companies = array();
 	private $SESSION_TIMEOUT = 360;
+	public $theme  = 'default';
+	public $colors = 'start';
+	public $menu   = 'top';
 
 	function __construct(){
 		\core\classes\messageStack::debug_log("executing ".__METHOD__ );

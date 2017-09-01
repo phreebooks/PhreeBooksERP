@@ -22,10 +22,6 @@ if (defined('TIMEZONE') && TIMEZONE <> '') date_default_timezone_set(TIMEZONE);
 $locale = (defined('LOCALE') && LOCALE <> '') ? LOCALE : 'en_US';
 setlocale(LC_ALL, $locale.'.UTF-8');
 setlocale(LC_CTYPE, 'C');
-
-define('DEFAULT_THEME','default');
-define('DEFAULT_MENU','top');
-define('DEFAULT_COLORS','start');
 define('MAX_CP_COLUMNS', 3); // set the maximum number of dashboard columns
 define('VERSION_CHECK_URL','http://www.phreesoft.com/revisions.xml');
 define('MAX_IMPORT_CSV_ITEMS',5); // for importing linked tables if possible with csv
