@@ -20,7 +20,7 @@
 function fetch_item_description($id) {
   global $admin;
   $result = $admin->DataBase->query("select description from " . TABLE_JOURNAL_ITEM . " where ref_id = " . $id . " limit 1");
-  return $result->fields['description'];
+  return $result['description'];
 }
 
 function validate_fiscal_year($next_fy, $next_period, $next_start_date, $num_periods = 12) {
@@ -80,13 +80,9 @@ function build_and_check_account_history_records() {
 
 function get_fiscal_year_pulldown() {
     global $admin;
-    $fy_values = $admin->DataBase->query("select distinct as id, fiscal_year as text from " . TABLE_ACCOUNTING_PERIODS . " order by fiscal_year");
-    $fy_array = array();
-    while (!$fy_values->EOF) {
-      	$fy_array[] = array('id' => $fy_values->fields['fiscal_year'], 'text' => $fy_values->fields['fiscal_year']);
-      	$fy_values->MoveNext();
-    }
-    return $fy_array;
+    $sql = $admin->DataBase->prepare("SELECT DISTINCT fiscal_year as id, fiscal_year as text from " . TABLE_ACCOUNTING_PERIODS . " order by fiscal_year");
+    $sql->execute();
+	return $sql->fetchAll(\PDO::FETCH_ASSOC);
 }
 
 function load_coa_types() {
@@ -108,20 +104,11 @@ function load_coa_types() {
 function load_coa_info($types = array()) { // includes inactive accounts
   global $admin;
   $coa_data = array();
-  $sql = "select * from " . TABLE_CHART_OF_ACCOUNTS;
-  if (sizeof($types > 0)) $sql .= " where account_type in (" . implode(", ", $types) . ")";
-  $result = $admin->DataBase->query($sql);
-  while (!$result->EOF) {
-    $coa_data[$result->fields['id']] = array(
-	  'id'              => $result->fields['id'],
-	  'description'     => $result->fields['description'],
-	  'heading_only'    => $result->fields['heading_only'],
-	  'primary_acct_id' => $result->fields['primary_acct_id'],
-	  'account_type'    => $result->fields['account_type'],
-	);
-	$result->MoveNext();
-  }
-  return $coa_data;
+  $string_sql = "SELECT * FROM " . TABLE_CHART_OF_ACCOUNTS;
+  if (sizeof($types > 0)) $string_sql .= " WHERE account_type IN (" . implode(", ", $types) . ")";
+  $sql = $admin->DataBase->prepare($string_sql);
+  $sql->execute();
+  return $sql->fetchAll(\PDO::FETCH_ASSOC);
 }
 
 function fill_paid_invoice_array($id, $account_id, $type = 'c') {
@@ -293,7 +280,7 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
   $acct_balance = 0;
   if (!$gl_acct_id) return $acct_balance;
   $sql = "select beginning_balance from " . TABLE_CHART_OF_ACCOUNTS_HISTORY . "
-	where account_id = '" . $gl_acct_id . "' and period = " . $period;
+	where account_id = '{$gl_acct_id}' and period = " . $period;
   $result = $admin->DataBase->query($sql);
   $acct_balance = $result->fields['beginning_balance'];
 
@@ -422,24 +409,6 @@ function load_cash_acct_balance($post_date, $gl_acct_id, $period) {
 	  $result->MoveNext();
 	}
     return $result_array;
-  }
-
-  function gen_auto_update_period($show_message = true) {
-	global $admin, $messageStack;
-	$period = \core\classes\DateTime::period_of_date(date('Y-m-d'), true);
-	if ($period == CURRENT_ACCOUNTING_PERIOD && defined('CURRENT_ACCOUNTING_PERIOD')) return; // we're in the current period
-	if (!$period) { // we're outside of the defined fiscal years
-	  if ($show_message) \core\classes\messageStack::add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
-	} else { // update CURRENT_ACCOUNTING_PERIOD constant with this new period
-	  $result = $admin->DataBase->query("select start_date, end_date from " . TABLE_ACCOUNTING_PERIODS . " where period = " . $period);
-	  $admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD',       $period);
-	  $admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD_START', $result->fields['start_date']);
-	  $admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD_END',   $result->fields['end_date']);
-	  gen_add_audit_log(TEXT_CHANGED . " " . TEXT_ACCOUNTING_PERIOD);
-	  if ($show_message) {
-	    \core\classes\messageStack::add(sprintf(ERROR_MSG_ACCT_PERIOD_CHANGE, $period),'success');
-	  }
-	}
   }
 
   function build_search_sql($fields, $id, $id_from = '', $id_to = '') {

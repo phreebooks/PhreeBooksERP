@@ -394,10 +394,7 @@ class admin extends \core\classes\admin {
 	}
 
 	function after_ValidateUser(\core\classes\basis &$basis) {
-		if (AUTO_UPDATE_PERIOD) {
-			require_once (DIR_FS_MODULES . 'phreebooks/functions/phreebooks.php');
-			gen_auto_update_period ();
-		}
+		if (AUTO_UPDATE_PERIOD) \core\classes\DateTime::update_period(false);
 	}
 
 	function upgrade(\core\classes\basis &$basis) {

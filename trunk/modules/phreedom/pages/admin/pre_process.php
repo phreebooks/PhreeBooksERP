@@ -188,7 +188,7 @@ switch ($_REQUEST['action']) {
 			  	$date->modify("-{$date->format('j')} day");
 			  	validate_fiscal_year($date->format('Y'), '1', $date->format('Y-m-d'));
 			  	build_and_check_account_history_records();
-			  	gen_auto_update_period(false);
+			  	\core\classes\DateTime::update_period(false);
 			}
 			// reset SESSION['company'] to new company and redirect to install->store_setup
 			$admin->DataBase->query("update " . TABLE_CONFIGURATION . " set configuration_value = '" . $co_name . "'

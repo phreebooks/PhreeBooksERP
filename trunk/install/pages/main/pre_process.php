@@ -270,7 +270,7 @@ switch ($_REQUEST['action']) {
 		  	\core\classes\messageStack::debug_log("\n  building and checking chart history");
 		  	build_and_check_account_history_records();
 		  	\core\classes\messageStack::debug_log("\n  updating current period");
-		  	gen_auto_update_period(false);
+		  	\core\classes\DateTime::update_period(false);
 			// write the includes/configure.php file
 			\core\classes\messageStack::debug_log("\n  writing configure.php file");
 			$config_contents = str_replace('DEFAULT_HTTP_SERVER',      $srvr_http,   $config_contents);

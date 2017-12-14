@@ -21,7 +21,7 @@ $security_level = \core\classes\user::validate(SECURITY_ID_GEN_ADMIN_TOOLS);
 require(DIR_FS_WORKING . 'functions/phreebooks.php');
 /**************   page specific initialization  *************************/
 // General Journal
-if (!defined('CURRENT_ACCOUNTING_PERIOD')) gen_auto_update_period(false);
+if (!defined('CURRENT_ACCOUNTING_PERIOD')) \core\classes\DateTime::update_period(false);
 $start_date = ($_POST['start_date'])  ? \core\classes\DateTime::db_date_format($_POST['start_date']) : CURRENT_ACCOUNTING_PERIOD_START;
 $end_date   = ($_POST['end_date'])    ? \core\classes\DateTime::db_date_format($_POST['end_date'])   : CURRENT_ACCOUNTING_PERIOD_END;
 // see what fiscal year we are looking at (assume this FY is entered for the first time)

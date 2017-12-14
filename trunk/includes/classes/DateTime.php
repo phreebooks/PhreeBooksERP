@@ -37,6 +37,14 @@ class DateTime extends \DateTime {
 			'p' => TEXT_YEAR_TO_DATE_IN_ACCOUNTING_PERIODS,		// This Year to Date in accountingperiods
 			'z' => TEXT_DATE_BY_PERIOD,
 	);
+	public $period;
+	
+	function __construct(){
+		if (defined('AUTO_UPDATE_PERIOD') && AUTO_UPDATE_PERIOD == true) {
+			self::update_period ();
+		}
+		parent::__construct();
+	}
 
 	/** builds sql date string and description string based on passed criteria
 	 * function requires as input an associative array with two entries:
@@ -278,6 +286,22 @@ class DateTime extends \DateTime {
 		if ($this->interval->y > 50) return " 0 &nbsp;&nbsp;&nbsp; ";
 		return parent::format($format);
 		
+	}
+	
+	function update_period($show_message = true) {
+		global $admin;
+		$this->period = $this->period_of_date(date('Y-m-d'), true);
+		if ($this->period == CURRENT_ACCOUNTING_PERIOD && defined('CURRENT_ACCOUNTING_PERIOD')) return; // we're in the current period
+		if (!$this->period) { // we're outside of the defined fiscal years
+			if ($show_message) \core\classes\messageStack::add(ERROR_MSG_POST_DATE_NOT_IN_FISCAL_YEAR,'error');
+		} else { // update CURRENT_ACCOUNTING_PERIOD constant with this new period
+			$result = $admin->DataBase->query("SELECT start_date, end_date FROM " . TABLE_ACCOUNTING_PERIODS . " WHERE period = " . $this->period);
+			$admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD',       $this->period);
+			$admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD_START', $result['start_date']);
+			$admin->DataBase->write_configure('CURRENT_ACCOUNTING_PERIOD_END',   $result['end_date']);
+			gen_add_audit_log(TEXT_CHANGED . " " . TEXT_ACCOUNTING_PERIOD);
+			if ($show_message) \core\classes\messageStack::add(sprintf(ERROR_MSG_ACCT_PERIOD_CHANGE, $this->period),'success');
+		}
 	}
 }
 ?>
