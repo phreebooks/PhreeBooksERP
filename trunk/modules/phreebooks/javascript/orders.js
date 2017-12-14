@@ -353,7 +353,7 @@ function fillOrder(xml) {
 	  }
     });
     insertValue('discount', order_discount);
-    calculateDiscountPercent();
+    calculateDiscount(true);
   });
 }
 
@@ -990,7 +990,9 @@ function updateTotalPrices() {
   }
 
   // recalculate discount
+  console.log("updateTotalPrices discount percent = "+discountPercent/100);
   discount = subtotal * (discountPercent/100);
+  console.log("updateTotalPrices discount amount = "+discount);
   var strDiscount = new String(discount);
   document.getElementById('discount').value = formatCurrency(strDiscount);
   // freight
@@ -1025,25 +1027,32 @@ function updateTotalPrices() {
 }
 
 function calculateDiscountPercent() {
-  var percent  = parseFloat(cleanCurrency(document.getElementById('disc_percent').value));
-  var subTotal = parseFloat(cleanCurrency(document.getElementById('subtotal').value));
-  var discount = new String((percent / 100) * subTotal);
-  document.getElementById('discount').value = formatCurrency(discount);
-  updateTotalPrices();
+	console.error("calculateDiscountPercent function doesnt exist");
 }
 
-function calculateDiscount() {
-  // determine the discount percent
-  var discount = parseFloat(cleanCurrency(document.getElementById('discount').value));
-  if (isNaN(discount)) discount = 0;
-  var subTotal = parseFloat(cleanCurrency(document.getElementById('subtotal').value));
-  if (subTotal != 0) {
-    var percent = 100000 * (1 - ((subTotal - discount) / subTotal));
-    document.getElementById('disc_percent').value = Math.round(percent) / 1000;
-  } else {
-  	document.getElementById('disc_percent').value = '0.00';
-  }
-  updateTotalPrices();
+function calculateDiscount(StartPercent) {
+	console.log("calculateDiscount");
+	var subTotal = parseFloat(cleanCurrency(document.getElementById('subtotal').value));
+	if(StartPercent){
+		console.log("calculating the discount amount");
+		var percent  = parseFloat(cleanCurrency(document.getElementById('disc_percent').value));
+		var discount = new String((percent / 100) * subTotal);
+		document.getElementById('discount').value = formatCurrency(discount);
+	}else{
+		console.log("calculating the discount percent");
+		// determine the discount percent
+		var discount = parseFloat(cleanCurrency(document.getElementById('discount').value));
+		if (isNaN(discount)) discount = 0;
+		console.log("discount = "+discount+" subtotal = " +subTotal);
+		if (subTotal != 0) {
+			var percent = 100000 * (discount / subTotal);
+			console.log(" percent before rounding and dividing = "+percent);
+			document.getElementById('disc_percent').value = formatCurrency(Math.round(percent) / 1000);
+		} else {
+			document.getElementById('disc_percent').value = formatCurrency('0.00');
+		}
+	}
+	updateTotalPrices();
 }
 
 function showOverride() {

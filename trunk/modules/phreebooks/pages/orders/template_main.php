@@ -413,8 +413,8 @@ echo html_input_field('bill_email', $order->bill_email, 'size="35" maxlength="48
       echo html_pull_down_menu('disc_gl_acct_id', $gl_array_list, $order->disc_gl_acct_id, ''); ?>
 		  </td>
           <td align="right">
-<?php echo TEXT_DISCOUNT_PERCENT . '(%) ' . html_input_field('disc_percent', ($order->disc_percent ? number_format(100*$order->disc_percent,3) : '0'), 'size="7" maxlength="6" onchange="calculateDiscountPercent()" style="text-align:right"') . ' ' . TEXT_DISCOUNT; ?>
-<?php echo html_input_field('discount', $admin->currencies->format(($order->discount ? $order->discount : '0'), true, $order->currencies_code, $order->currencies_value), 'size="15" maxlength="20" onchange="calculateDiscount()" style="text-align:right"'); ?>
+<?php echo TEXT_DISCOUNT_PERCENT . '(%) ' . html_input_field('disc_percent', ($order->disc_percent ? number_format(100*$order->disc_percent,3) : '0'), 'size="7" maxlength="6" onchange="calculateDiscount(true)" style="text-align:right"') . ' ' . TEXT_DISCOUNT; ?>
+<?php echo html_input_field('discount', $admin->currencies->format(($order->discount ? $order->discount : '0'), true, $order->currencies_code, $order->currencies_value), 'size="15" maxlength="20" onchange="calculateDiscount(false)" style="text-align:right"'); ?>
 		  </td>
         </tr>
 <?php } else {
