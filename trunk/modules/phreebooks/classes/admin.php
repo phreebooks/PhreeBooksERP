@@ -452,6 +452,23 @@ class admin extends \core\classes\admin {
 			if (! $basis->DataBase->field_exists ( TABLE_JOURNAL_ITEM, 'purch_package_quantity' ))
 				$basis->DataBase->query ( "ALTER TABLE " . TABLE_JOURNAL_ITEM . " ADD purch_package_quantity float default NULL AFTER project_id" );
 		}
+		if (version_compare ( $db_version, '4.0', '<' )) {
+			if ($basis->DataBase->table_exists ( TABLE_CHART_OF_ACCOUNTS_HISTORY )){
+				\core\classes\messageStack::debug_log(" renaming table 'chart of accounts history'");
+				//@todo
+				\core\classes\messageStack::debug_log(" create view 'chart of accounts history'");
+				$basis->DataBase->query ( "CREATE OR REPLACE VIEW " . TABLE_CHART_OF_ACCOUNTS_HISTORY . " AS SELECT p.period, a.id AS gl_account, account_type,
+					CASE 
+						WHEN (p.period % 12 = 1  OR p.period = 1) AND a.account_type IN (30,32,34,42,44) THEN 0
+						WHEN a.account_type = 40 AND p.period % 12 = 0 THEN (IFNULL((SELECT SUM(debit_amount - credit_amount) FROM " . TABLE_JOURNAL_MAIN . " AS m join " . TABLE_JOURNAL_ITEM . " AS i JOIN chart_of_accounts c ON m.id = i.ref_id AND i.gl_account = c.id WHERE c.account_type IN (30,32,34,42,44) AND m.period >= (p.period -12) AND m.period <= p.period),0)) 
+						WHEN a.account_type IN (30,32,34,42,44) THEN        (IFNULL((SELECT SUM(debit_amount - credit_amount) FROM " . TABLE_JOURNAL_MAIN . " AS m JOIN " . TABLE_JOURNAL_ITEM . " AS i ON m.id = i.ref_id WHERE i.gl_account = a.id AND m.period < p.period AND m.journal_id NOT IN (3,4,9,10) AND m.period >= p.period - 12 + (p.period % 12 )),0))
+					    	ELSE (IFNULL((SELECT SUM(debit_amount - credit_amount) FROM " . TABLE_JOURNAL_MAIN . " AS m JOIN " . TABLE_JOURNAL_ITEM . " AS i ON m.id = i.ref_id WHERE i.gl_account = a.id AND m.journal_id NOT IN (3,4,9,10) AND m.period < p.period),0)) 
+					END as total,
+					IFNULL((SELECT SUM(debit_amount)  FROM " . TABLE_JOURNAL_MAIN . " AS m join " . TABLE_JOURNAL_ITEM . " AS i ON m.id = i.ref_id WHERE i.gl_account = a.id AND m.period = p.period AND m.journal_id NOT IN (3,4,9,10)), 0) AS debit_amount,
+					IFNULL((SELECT SUM(credit_amount) FROM " . TABLE_JOURNAL_MAIN . " AS m join " . TABLE_JOURNAL_ITEM . " AS i ON m.id = i.ref_id WHERE i.gl_account = a.id AND m.period = p.period AND m.journal_id NOT IN (3,4,9,10)), 0) AS credit_amount FROM ". TABLE_ACCOUNTING_PERIODS ." AS p, ". TABLE_CHART_OF_ACCOUNTS." AS a WHERE a.heading_only = '0' ORDER BY p.period
+				");
+			}
+		}
 	}
 
 	function delete($path_my_files) {

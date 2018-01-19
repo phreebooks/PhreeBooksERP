@@ -29,22 +29,22 @@ class toolbar {
 	function __construct($id = '0') {
 	    // set up the default toolbar
 		$this->id                  = $id;
-		$this->icon_list['cancel'] = array('show' => true, 'icon' => 'actions/edit-undo.png',        'params' => '', 'text' => TEXT_CANCEL, 'order' => 1);
+		$this->icon_list['cancel'] = array('show' => true, 'icon' => 'icon-undo',        'params' => '', 'text' => TEXT_CANCEL, 'order' => 1);
 		$this->icon_list['open']   = array('show' => true, 'icon' => 'actions/document-open.png',    'params' => '', 'text' => TEXT_OPEN,   'order' => 2);
-		$this->icon_list['save']   = array('show' => true, 'icon' => 'devices/media-floppy.png',     'params' => '', 'text' => TEXT_SAVE,   'order' => 3);
-		$this->icon_list['delete'] = array('show' => true, 'icon' => 'actions/edit-delete.png',      'params' => '', 'text' => TEXT_DELETE, 'order' => 4);
-		$this->icon_list['print']  = array('show' => true, 'icon' => 'phreebooks/pdficon_large.gif', 'params' => '', 'text' => TEXT_PRINT,  'order' => 5);
+		$this->icon_list['save']   = array('show' => true, 'icon' => 'icon-save',     'params' => '', 'text' => TEXT_SAVE,   'order' => 3);
+		$this->icon_list['delete'] = array('show' => true, 'icon' => 'icon-remove',      'params' => '', 'text' => TEXT_DELETE, 'order' => 4);
+		$this->icon_list['print']  = array('show' => true, 'icon' => 'icon-help', 'params' => '', 'text' => TEXT_PRINT,  'order' => 5);
 	}
 
   	function add_icon($name, $params = '', $order = 98) { // adds some common icons, per request
 		switch ($name) {
 		  	case 'back':
-		  	case 'previous':   $image = 'actions/go-previous.png';            $text = TEXT_BACK;       break;
+		  	case 'previous':   $image = 'icon-go_previous';            $text = TEXT_BACK;       break;
 		  	case 'continue':
-		  	case 'next':       $image = 'actions/go-next.png';                $text = TEXT_CONTINUE;   break;
+		  	case 'next':       $image = 'icon-go_next';                $text = TEXT_CONTINUE;   break;
 		  	case 'copy':       $image = 'actions/edit-copy.png';              $text = TEXT_COPY;       break;
-		  	case 'edit':       $image = 'actions/edit-find-replace.png';      $text = TEXT_EDIT;       break;
-		  	case 'email':      $image = 'apps/internet-mail.png';             $text = TEXT_EMAIL;      break;
+		  	case 'edit':       $image = 'icon-edit';      $text = TEXT_EDIT;       break;
+		  	case 'email':      $image = 'icon-email';             $text = TEXT_EMAIL;      break;
 		  	case 'export':     $image = 'actions/format-indent-more.png';     $text = TEXT_EXPORT;     break;
 		  	case 'export_csv': $image = 'mimetypes/x-office-spreadsheet.png'; $text = TEXT_EXPORT_CSV; break;
 		  	case 'finish':     $image = 'actions/document-save.png';          $text = TEXT_FINISH;     break;
@@ -54,7 +54,7 @@ class toolbar {
 		  	case 'rename':     $image = 'apps/accessories-text-editor.png';   $text = TEXT_RENAME;     break;
 		  	case 'payment':    $image = 'apps/accessories-calculator.png';    $text = TEXT_PAYMENT;    break;
 		  	case 'ship_all':   $image = 'mimetypes/package-x-generic.png';    $text = TEXT_FILL_SO;	   break;
-		  	case 'search':     $image = 'actions/system-search.png';          $text = TEXT_SEARCH;     break;
+		  	case 'search':     $image = 'icon-search';          $text = TEXT_SEARCH;     break;
 		  	case 'update':     $image = 'apps/system-software-update.png';    $text = TEXT_UPDATE;     break;
 		  	default:           $image = 'emblems/emblem-important.png';       $text = $name . ' ICON NOT FOUND';
 		}
@@ -84,7 +84,8 @@ class toolbar {
 	    foreach($this->icon_list as $uniqid => $row) foreach($row as $key => $value) $sort_arr[$key][$uniqid] = $value;
 		array_multisort($sort_arr['order'], SORT_ASC, $this->icon_list);
 		foreach ($this->icon_list as $id => $icon) {
-		  	if ($icon['show']) $output .= html_icon($icon['icon'], $icon['text'], $this->icon_size, "id ='tb_icon_{$id}' ". $icon['params']) . "\n";
+		  	if ($icon['show']) $output .= "<a id ='tb_icon_{$id}' {$icon['params']}  href='#' class='easyui-linkbutton' iconCls='{$icon['icon']}'>{$icon['text']}</a>"; 
+		  	//html_icon($icon['icon'], $icon['text'], $this->icon_size, "id ='tb_icon_{$id}' ". $icon['params']) . "\n";
 		}
 		$output .= "</div> \n"; // end of the right justified icons
 		// display alerts/error messages, if any
