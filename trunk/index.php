@@ -1,73 +1,68 @@
 <?php
-// +-----------------------------------------------------------------+
-// |                   PhreeBooks Open Source ERP                    |
-// +-----------------------------------------------------------------+
-// | Copyright(c) 2008-2014 PhreeSoft      (www.PhreeSoft.com)       |
-// +-----------------------------------------------------------------+
-// | This program is free software: you can redistribute it and/or   |
-// | modify it under the terms of the GNU General Public License as  |
-// | published by the Free Software Foundation, either version 3 of  |
-// | the License, or any later version.                              |
-// |                                                                 |
-// | This program is distributed in the hope that it will be useful, |
-// | but WITHOUT ANY WARRANTY; without even the implied warranty of  |
-// | MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the   |
-// | GNU General Public License for more details.                    |
-// +-----------------------------------------------------------------+
-// Path: /index.php
-//
-ob_start();
-ini_set('display_errors', '1');
-ini_set('max_input_vars', '3000');
-error_reporting(E_ALL ^ E_NOTICE);
-if (isset($_POST['module']))    $module = $_POST['module'];
-elseif (isset($_GET['module'])) $module = $_GET['module'];
-else                            $module = 'phreedom';
-if (isset($_POST['page']))      $page = $_POST['page'];
-elseif (isset($_GET['page']))   $page = $_GET['page'];
-else                     		$page = 'main';
-$user_validated = false;
-require_once('includes/application_top.php');
-if (!$user_validated) {
-  if ($page == 'ajax'){
-	echo createXmlHeader() . xmlEntry('error', SORRY_YOU_ARE_LOGGED_OUT) . createXmlFooter();
-	die;
-  }
-  $_SESSION['pb_cat']    = isset($_GET['module']) 	? $_GET['module']	: '';
-  $_SESSION['pb_module'] = isset($_GET['page']) 	? $_GET['page']		: '';
-  $_SESSION['pb_jID']    = isset($_GET['jID']) 		? $_GET['jID'] 		: '';
-  $_SESSION['pb_type']   = isset($_GET['type'])		? $_GET['type']		: '';
-  $module = 'phreedom';
-  $page   = 'main';
-  if (!isset($_REQUEST['action']) || $_REQUEST['action'] <> 'validate') $_REQUEST['action'] = 'login';
-} else {
-  unset($_SESSION['pb_cat']);
-  unset($_SESSION['pb_module']);
-  unset($_SESSION['pb_jID']);
-  unset($_SESSION['pb_type']);
-}
-if ($page == 'ajax') {
-  $pre_process_path = DIR_FS_MODULES . $module . 'custom/ajax/' . $_GET['op'] . '.php';
-  if (file_exists($pre_process_path)) { require($pre_process_path); die; }
-  $pre_process_path = DIR_FS_MODULES . $module . '/ajax/' . $_GET['op'] . '.php';
-  if (file_exists($pre_process_path)) { require($pre_process_path); die; }
-  die; // go no further
-}
-$custom_html      = false;
-$include_header   = false;
-$include_footer   = false;
-$include_template = 'template_main.php';
-$pre_process_path = DIR_FS_MODULES . $module . '/pages/' . $page . '/pre_process.php';
-if (file_exists($pre_process_path)) { define('DIR_FS_WORKING', DIR_FS_MODULES . $module . '/'); }
-  else trigger_error('No pre_process file, looking for the file: ' . $pre_process_path, E_USER_ERROR);
-require($pre_process_path); 
-if (file_exists(DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template)) {
-  $template_path = DIR_FS_WORKING . 'custom/pages/' . $page . '/' . $include_template;
-} else {
-  $template_path = DIR_FS_WORKING . 'pages/' . $page . '/' . $include_template;
-}
-require('includes/template_index.php');
-require('includes/application_bottom.php');
-ob_end_flush();
-session_write_close();
-?>
+/*
+ * PhreeBooks 5 - Main entry point for all scripts, calls controller to handle details
+ *
+ * NOTICE OF LICENSE
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.TXT.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/OSL-3.0
+ *
+ * DISCLAIMER
+ * Do not edit or add to this file if you wish to upgrade Bizuno to newer
+ * versions in the future. If you wish to customize Bizuno for your
+ * needs please refer to http://www.phreesoft.com for more information.
+ *
+ * @name       Bizuno ERP
+ * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
+ * @copyright  2008-2018, PhreeSoft Inc.
+ * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * @version    2.x Last Update: 2018-04-10
+ * @filesource /index.php
+ */
+
+namespace bizuno;
+
+define('MODULE_BIZUNO_VERSION','2.1.0');
+
+ini_set('display_errors', true);
+error_reporting(E_ALL);
+//error_reporting(E_ALL ^E_NOTICE);
+/*******************************/
+if (!defined('SCRIPT_START_TIME')) { define('SCRIPT_START_TIME', microtime(true)); }
+
+@include("bizunoCFG.php");
+
+// Host Information/source paths
+define('BIZUNO_HOST',      'phreebooks'); // PhreeBooks 5 hosted
+define('BIZUNO_HOME',      'index.php?'); // filename of the main entry index script
+define('BIZUNO_AJAX',      'index.php?'); // root path for AJAX requests
+// URL paths
+$path = pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME);
+define('BIZUNO_SRVR',      "http".(!empty($_SERVER['HTTPS'])?"s":"")."://".$_SERVER["SERVER_NAME"].$path.'/'); // url to server with trailing slash
+define('BIZUNO_LOGO',      BIZUNO_SRVR.'phreebooks.png');
+define('BIZUNO_URL',       BIZUNO_SRVR.'lib/'); // full url to Bizuno plugin library folder
+define('BIZUNO_URL_FS',    BIZUNO_SRVR.'bizunoFS.php?'); // full url to Bizuno plugin extensions folder
+define('BIZUNO_URL_EXT',   BIZUNO_SRVR.'ext/'); // full url to Bizuno plugin extensions folder
+define('BIZUNO_URL_CUSTOM',BIZUNO_SRVR.'myExt/'); // full url to Bizuno plugin custom extensions folder
+// File system paths
+define('BIZUNO_ROOT',      dirname(__FILE__).'/'); // relative path to bizuno root index file
+define('BIZUNO_LIB',       BIZUNO_ROOT.'lib/'); // file system path to Bizuno Library
+define('BIZUNO_EXT',       BIZUNO_ROOT.'ext/'); // file system path to Bizuno Extensions
+define('BIZUNO_DATA',      BIZUNO_ROOT.'myFiles/'); // myFolder
+define('BIZUNO_CUSTOM',    BIZUNO_ROOT.'myExt/'); // file system path to Bizuno custom extensions
+// Database
+if (!defined('BIZUNO_DB_HOST'))  { define('BIZUNO_DB_HOST',  ''); }
+if (!defined('BIZUNO_DB_NAME'))  { define('BIZUNO_DB_NAME',  ''); }
+if (!defined('BIZUNO_DB_USER'))  { define('BIZUNO_DB_USER',  ''); }
+if (!defined('BIZUNO_DB_PASS'))  { define('BIZUNO_DB_PASS',  ''); }
+if (!defined('BIZUNO_DB_PREFIX')){ define('BIZUNO_DB_PREFIX',''); }
+define('PORTAL_DB_PREFIX', BIZUNO_DB_PREFIX); // Portal table prefix
+$GLOBALS['dbBizuno'] = $GLOBALS['dbPortal'] = ['type'=>'mysql','host'=>BIZUNO_DB_HOST,'name'=>BIZUNO_DB_NAME,'user'=>BIZUNO_DB_USER,'pass'=>BIZUNO_DB_PASS,'prefix'=>BIZUNO_DB_PREFIX];
+// Third Party Apps
+define('BIZUNO_3P_QZ_TRAY',BIZUNO_EXT ."extShipping/qz-tray/");
+define('BIZUNO_3P_TCPDF',  BIZUNO_ROOT.'apps/TCPDF/');
+
+require("portal/main.php");
+$ctl = new main();
+new view($ctl->layout);

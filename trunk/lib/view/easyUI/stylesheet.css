@@ -1,0 +1,56 @@
+/*
+ * Final CSS for Bizuno
+ *
+ * NOTICE OF LICENSE
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.TXT.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/OSL-3.0
+ *
+ * DISCLAIMER
+ * Do not edit or add to this file if you wish to upgrade Bizuno to newer
+ * versions in the future. If you wish to customize Bizuno for your
+ * needs please refer to http://www.phreesoft.com for more information.
+ *
+ * @name       Bizuno ERP
+ * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
+ * @copyright  2008-2018, PhreeSoft Inc.
+ * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * @version    2.x Last Update: 2018-04-10
+ * @filesource /view/theme/default/stylesheet.css
+ */
+
+a, div, body, html, table{ font:normal normal 12px Verdana; }
+body					 { background-color:#ffffff; margin:0; }
+h1 { width:auto; clear:both; color:#003080; font-size:16px; font-variant:small-caps; font-weight:bold; background-color:transparent; padding:4px; }
+h2 { width:auto; clear:both; color:#003080; font-size:14px; font-variant:small-caps; font-weight:bold; background-color:transparent; padding:2px; }
+p                        { line-height: 1.5em; margin: 0px 0px 1em; padding: 0px; }
+form                     { display:inline; margin: 0; padding: 0; }
+input, select, textarea, file, checkbox, radio { font-size:11px; padding: 0; }
+fieldset                 { margin: 0; padding: 10px; border: 1px solid #666; }
+legend                   { font-family:Tahoma,Verdana,Arial,sans-serif; font-size:14px; font-weight:bold; margin: 0; padding: 0 4px; }
+label                    { margin: 0; padding: 0; font-weight: bold; }
+th						 { text-align:center; font-weight:bold;}
+.modal                   { display:none; position:fixed; z-index:10000; top:0; left:0; height:100%; width:100%;
+						   background: rgba( 255, 255, 255, .8 ) url('../../images/loading.gif') 50% 50% no-repeat; }
+.msgCount                { color:#ff0000; padding:0px 0; text-align:center;font: 24px Arial, sans-serif; }
+body.loading             { overflow: hidden; }
+body.loading .modal      { display: block; }
+.journal-waiting         { background-color:#FFFF00; }
+.row-inactive            { background-color:#6293BB; }
+.row-default             { background-color:lightgreen; }
+.ui-tab-image            { display:inline-block; line-height:12px; padding-top:5px; }
+.ui-tab-image img        { border:0; }
+/* drag-drop for journal totals */
+.jrnlLeft         { width:250px; float:left; }
+.jrnlLeft table   { background:#E0ECFF; }
+.jrnlLeft td      { background:#EEE; }
+.jrnlRight        { float:right; width:440px; }
+.jrnlRight table  { background:#CCCCCC; width:100%; }
+.jrnlRight td     { background:#FAFAFA; color:#444; text-align:center; padding:2px; }
+.jrnlRight td     { background:#E0ECFF; }
+.jrnlRight td.drop{ background:#FAFAFA; width:230px; }
+.jrnlRight td.over{ background:#FBEC88; }
+.jrnlItem         { text-align:center; border:1px solid #499B33; background:#FAFAFA; color:#444; width:230px; }
+.jrnlAssgn        { border:1px solid #BC2A4D; }
+.jrnlTrash        { background-color:red; }

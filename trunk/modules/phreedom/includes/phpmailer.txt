@@ -1,8 +1,0 @@
-File: /modules/phreedom/includes/phpmailer.txt
-
-Changes to the PHPMailer Version 5.1 to work within the PhreeBooks framework
-
-function SetLanguage (see file) to make it work within the PhreeBooks language structure.
-
-Create directory /language/en_us and move english language from SetLanguage function 
-to PHP constant structure.

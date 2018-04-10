@@ -1,1 +1,0 @@
-INSERT INTO admin_pages (page_key, language_key, main_page, page_params, menu_key, display_on_menu, sort_order) VALUES ('phreebooksInterface', 'BOX_TOOLS_PHREEBOOKSINTERFACE', 'FILENAME_PHREEBOOKS', '', 'modules', 'Y', 99);
