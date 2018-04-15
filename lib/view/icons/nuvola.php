@@ -1,0 +1,133 @@
+<?php
+/*
+ * Sets the list of available icons and how to access them. Typically called from the dynamic css pull
+ *
+ * NOTICE OF LICENSE
+ * This source file is subject to the Open Software License (OSL 3.0)
+ * that is bundled with this package in the file LICENSE.TXT.
+ * It is also available through the world-wide-web at this URL:
+ * http://opensource.org/licenses/OSL-3.0
+ *
+ * DISCLAIMER
+ * Do not edit or add to this file if you wish to upgrade Bizuno to newer
+ * versions in the future. If you wish to customize Bizuno for your
+ * needs please refer to http://www.phreesoft.com for more information.
+ *
+ * @name       Bizuno ERP
+ * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
+ * @copyright  2008-2018, PhreeSoft
+ * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
+ * @version    2.x Last Update: 2018-01-08
+ * @filesource /view/theme/nuvola/icons-nuvola.php
+ */
+
+$icons = [
+    'add'        => ['dir'=>'nuvola','path'=>'edit_add.png'],
+    'apply'      => ['dir'=>'nuvola','path'=>'apply.png'],
+    'attachment' => ['dir'=>'nuvola','path'=>'attach.png'],
+    'average'    => ['dir'=>'nuvola','path'=>'log.png'],
+    'back'       => ['dir'=>'nuvola','path'=>'back.png'],
+    'backup'     => ['dir'=>'nuvola','path'=>'nfs_mount.png'],
+    'bank'       => ['dir'=>'nuvola','path'=>'bank.png'],
+    'bank-check' => ['dir'=>'nuvola','path'=>'bank-check.png'],
+    'barcode'    => ['dir'=>'nuvola','path'=>'kmid.png'],
+    'bkmrkDel'   => ['dir'=>'nuvola','path'=>'bookmark.png'],
+    'bookmark'   => ['dir'=>'nuvola','path'=>'bookmark.png'],
+    'budget'     => ['dir'=>'nuvola','path'=>'wallet.png'],
+    'cancel'     => ['dir'=>'nuvola','path'=>'cancel.png'],
+    'chat'       => ['dir'=>'nuvola','path'=>'edu_languages.png'],
+    'collapse'   => ['dir'=>'nuvola','path'=>'edit_remove.png'],
+    'checkin'    => ['dir'=>'nuvola','path'=>'kgpg_import.png'],
+    'checkout'   => ['dir'=>'nuvola','path'=>'kgpg_export.png'],
+    'clear'      => ['dir'=>'nuvola','path'=>'rebuild.png'],
+    'close'      => ['dir'=>'nuvola','path'=>'fileclose.png'],
+    'continue'   => ['dir'=>'nuvola','path'=>'next.png'],
+    'copy'       => ['dir'=>'nuvola','path'=>'kmultiple.png'],
+    'credit'     => ['dir'=>'nuvola','path'=>'emblem-symbolic-link.png'],
+    'date'       => ['dir'=>'nuvola','path'=>'date.png'],
+    'debug'      => ['dir'=>'nuvola','path'=>'bug.png'],
+    'delete'     => ['dir'=>'nuvola','path'=>'cancel.png'],
+    'design'     => ['dir'=>'nuvola','path'=>'designer.png'],
+    'dirNew'     => ['dir'=>'nuvola','path'=>'folder_new.png'],
+    'docNew'     => ['dir'=>'nuvola','path'=>'filenew.png'],
+    'download'   => ['dir'=>'nuvola','path'=>'kget.png'],
+    'edit'       => ['dir'=>'nuvola','path'=>'edit.png'],
+    'email'      => ['dir'=>'nuvola','path'=>'email.png'],
+    'employee'   => ['dir'=>'nuvola','path'=>'employee.png'],
+    'encrypt-off'=> ['dir'=>'nuvola','path'=>'decrypted.png'],
+    'expand'     => ['dir'=>'nuvola','path'=>'edit_add.png'],
+    'exit'       => ['dir'=>'nuvola','path'=>'exit.png'],
+    'export'     => ['dir'=>'nuvola','path'=>'1uparrow.png'],
+    'fileMgr'    => ['dir'=>'nuvola','path'=>'file-manager.png'],
+    'fillup'     => ['dir'=>'nuvola','path'=>'fill.png'],
+    'help'       => ['dir'=>'nuvola','path'=>'info.png'],
+    'home'       => ['dir'=>'nuvola','path'=>'folder_home.png'],
+    'import'     => ['dir'=>'nuvola','path'=>'kget_list.png'],
+    'inv-adj'    => ['dir'=>'nuvola','path'=>'inv-adjustment.png'],
+    'inventory'  => ['dir'=>'nuvola','path'=>'colors.png'],
+    'journal'    => ['dir'=>'nuvola','path'=>'journal.png'],
+    'lock'       => ['dir'=>'nuvola','path'=>'lock.png'],
+    'locked'     => ['dir'=>'nuvola','path'=>'lock.png'],
+    'logout'     => ['dir'=>'nuvola','path'=>'exit.png'],
+    'merge'      => ['dir'=>'nuvola','path'=>'pipe.png'],
+    'mimeDir'    => ['dir'=>'nuvola','path'=>'folder.png'],
+    'mimeDoc'    => ['dir'=>'nuvola','path'=>'document.png'],
+    'mimeDrw'    => ['dir'=>'nuvola','path'=>'image.png'],
+    'mimeHtml'   => ['dir'=>'nuvola','path'=>'html.png'],
+    'mimeImg'    => ['dir'=>'nuvola','path'=>'background.png'],
+    'mimeLst'    => ['dir'=>'nuvola','path'=>'text-x-generic-template.png'],
+    'mimePdf'    => ['dir'=>'nuvola','path'=>'pdf.png'],
+    'mimePpt'    => ['dir'=>'nuvola','path'=>'kchart_chrt.png'],
+    'mimeTxt'    => ['dir'=>'nuvola','path'=>'txt.png'],
+    'mimeXls'    => ['dir'=>'nuvola','path'=>'spreadsheet.png'],
+    'mimeZip'    => ['dir'=>'nuvola','path'=>'tar.png'],
+    'mimeXML'    => ['dir'=>'nuvola','path'=>'source.png'],
+    'message'    => ['dir'=>'nuvola','path'=>'reddot.png'],
+    'move'       => ['dir'=>'nuvola','path'=>'kgpg_show.png'],
+    'new'        => ['dir'=>'nuvola','path'=>'filenew.png'],
+    'newFolder'  => ['dir'=>'nuvola','path'=>'folder_new.png'],
+    'next'       => ['dir'=>'nuvola','path'=>'next.png'],
+    'no_image'   => ['dir'=>'nuvola','path'=>'messagebox_warning.png'],
+    'open'       => ['dir'=>'nuvola','path'=>'fileopen.png'],
+    'order'      => ['dir'=>'nuvola','path'=>'signature.png'],
+    'payment'    => ['dir'=>'nuvola','path'=>'cash-register.png'],
+    'phpmyadmin' => ['dir'=>'nuvola','path'=>'phpmyadmin.jpg'],
+    'pos'        => ['dir'=>'nuvola','path'=>'display.png'],
+    'previous'   => ['dir'=>'nuvola','path'=>'previous.png'],
+    'preview'    => ['dir'=>'nuvola','path'=>'dvi.png'],
+    'price'      => ['dir'=>'nuvola','path'=>'price.png'],
+    'print'      => ['dir'=>'nuvola','path'=>'printer.png'],
+    'profile'    => ['dir'=>'nuvola','path'=>'colorize.png'],
+    'purchase'   => ['dir'=>'nuvola','path'=>'package.png'],
+    'quote'      => ['dir'=>'nuvola','path'=>'internet-group-chat.png'],
+    'recur'      => ['dir'=>'nuvola','path'=>'redo.png'],
+    'refresh'    => ['dir'=>'nuvola','path'=>'reload.png'],
+    'register'   => ['dir'=>'nuvola','path'=>'register.jpeg'],
+    'rename'     => ['dir'=>'nuvola','path'=>'abiword_abi.png'],
+    'report'     => ['dir'=>'nuvola','path'=>'document.png'],
+    'reset'      => ['dir'=>'nuvola','path'=>'reload_page.png'],
+    'restore'    => ['dir'=>'nuvola','path'=>'revert.png'],
+    'roles'      => ['dir'=>'nuvola','path'=>'kgpg_identity.png'],
+    'sales'      => ['dir'=>'nuvola','path'=>'sales.png'],
+    'save'       => ['dir'=>'nuvola','path'=>'filesave.png'],
+    'saveprint'  => ['dir'=>'nuvola','path'=>'printsave.png'],
+    'save_as'    => ['dir'=>'nuvola','path'=>'filesaveas.png'],
+    'search'     => ['dir'=>'nuvola','path'=>'viewmag.png'],
+    'select_all' => ['dir'=>'nuvola','path'=>'randr.png'],
+    'settings'   => ['dir'=>'nuvola','path'=>'misc.png'],
+    'shipping'   => ['dir'=>'nuvola','path'=>'truck.png'],
+    'support'    => ['dir'=>'nuvola','path'=>'edu_languages.png'],
+    'tip'        => ['dir'=>'nuvola','path'=>'ktip.png'],
+    'toggle'     => ['dir'=>'nuvola','path'=>'krita_kra.png'],
+    'tools'      => ['dir'=>'nuvola','path'=>'kgpg_edit.png'],
+    'transfer'   => ['dir'=>'nuvola','path'=>'usb.png'],
+    'trash'      => ['dir'=>'nuvola','path'=>'trashcan_empty.png'],
+    'truck'      => ['dir'=>'nuvola','path'=>'truck.png'],
+    'unlock'     => ['dir'=>'nuvola','path'=>'decrypted.png'],
+    'upload'     => ['dir'=>'nuvola','path'=>'upload.jpg'],
+    'up'         => ['dir'=>'nuvola','path'=>'up.png'],
+    'update'     => ['dir'=>'nuvola','path'=>'install.png'],
+    'users'      => ['dir'=>'nuvola','path'=>'personal.png'],
+    'web'        => ['dir'=>'nuvola','path'=>'homepage.png'],
+    'work'       => ['dir'=>'nuvola','path'=>'applications-development.png'],
+];

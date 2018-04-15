@@ -1,0 +1,60 @@
+=== PhreeBooks 5 ERP/Accounting ===
+Contributors: PhreeSoft Inc
+Donate link: https://www.PhreeSoft.com/
+Tags: erp, accounting, bookkeeping, crm, quickbooks, woocommerce, e-commerce, cart, phreebooks, bizuno, inventory control
+License: GPL3
+License URI: https://www.gnu.org/licenses/gpl.html
+
+Bizuno Accounting, by PhreeSoft, is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform.
+
+== Description ==
+
+Bizuno Accounting, by PhreeSoft, is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform. Features include CRM, Customer account management, vendor management, full featured double-entry accounting, inventory control, financial transaction management an more. Features include:
+
+* Multi-user and multi-Currency capability
+* Over 40 standard reports and PhreeForm report/form generator with user level lockout security
+* Multi-language at the user level
+* Full security control at the user/role level to access
+* Independent, configurable dashboard with over 20 choices at each main menu
+* Extensible with available PhreeSoft modules, extensions and tools for even more power
+* Interfaces available from PhreeSoft to many popular shopping cart, including WooCommerce
+* User defined themes, icon sets and colors
+
+== Installation ==
+
+= Minimum Requirements =
+
+* PHP version 5.4 or greater (PHP 5.6 or greater is recommended, tested with PHP 7)
+* MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
+
+1. Upload the file to your web site directory. PhreeBooks 5 can be installed in a subdirectory within your web site root directory.
+1. Navigate to the PhreeBooks 5 root folder. The portal should be displayed.
+1. Enter your administrator email and password along with the database credentials.
+1. A pop up will appear to enter some initial information, select your preferences and press the Next icon.
+1. Wait about 10 seconds to get everything up and configured and the page will reload with your new Bizuno home page dashboard.
+
+== Upgrade Notice ==
+
+2018-04-15 - Release 5.0.1 - No action required, upgrade through the installed app or simply replace the files with the new version
+2018-04-10 - Initial Release to GitHub repository
+
+== Frequently Asked Questions ==
+
+= How can I convert from my existing accounting system? =
+
+* The PhreeSoft help files have information on how to convert from your current system. There is a free PhreeBooks R3.7 conversion tool available through the PhreeSoft store. Others may be available, or, if not, use the `Line in the Sand` approach.
+
+= Which chart of accounts do I use? =
+
+* There are a few common standard charts included. You can select one of these as a base to complete the install. After that you may add/delete chart accounts manually or import a completely new chart of accounts. Note that once a journal entry has been made, you cannot replace your entire chart of accounts, it must be replaced PRIOR to your first journal entry.
+
+== Changelog ==
+
+= 5.0.1 =
+2018-04-15 - Fixes for PHP 5.4, minor bug fixes, minor improvements
+= 5.0.0 =
+2018-04-10 - Initial Release (based on Bizuno library Revision 2.1.0)
+
+== About PhreeSoft ==
+
+PhreeSoft was the original developer of the PhreeBooks open source ERP/Accounting application back in 2007. PhreeBooks development was suspended in 2015 to focus on the next generation of ERP/Accounting requirements and provide faster, highly customizable, more user friendly experience. Bizuno was also developed as a library that can be plugged into host applications such as WordPress and provided as a hosted solution for those that do not want to manage their web sites. Along with this plugin, PhreeBooks 5 is another distribution of stand alone version utilizing the Bizuno library.

@@ -1,3 +1,0 @@
-Based on the tango icon project Version 0.8.0. www.tango.
-
-http://tango.freedesktop.org/Tango_Desktop_Project
