@@ -1,3 +1,6 @@
+releases export-ignore
+archives/* export-ignore
+
 #################
 ## Eclipse
 #################
