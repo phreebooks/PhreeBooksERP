@@ -327,7 +327,7 @@ final class bizRegistry
         if ($menuID=='quickBar' && validateSecurity('bizuno', 'admin', 1)) {
             $sysMsgs = dbGetMulti(BIZUNO_DB_PREFIX."phreemsg", "status='0'");
             if (sizeof($sysMsgs)) { $links['child']['sysMsg']['attr']['value'] = sizeof($sysMsgs); }
-            if (!empty($this->addUpgrade) && (!defined('BIZUNO_HOST_UPGRADE') || empty(BIZUNO_HOST_UPGRADE))) {
+            if (!empty($this->addUpgrade) && (!defined('BIZUNO_HOST_UPGRADE') || !constant('BIZUNO_HOST_UPGRADE'))) {
                 $links['child']['upgrade'] = ['order'=>0,'label'=>lang('bizuno_upgrade'),'icon'=>'download','required'=>true,'hideLabel'=>true,
                     'events'=>['onClick'=>"hrefClick('bizuno/backup/managerUpgrade');"]];
             }

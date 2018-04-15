@@ -76,7 +76,7 @@ class main //extends controller
         $bizunoLang = $this->loadBaseLang($bizunoUser['profile']['language']);
         $session = clean('bizunoSession', 'json', 'cookie');
         msgDebug("\nEntering validateUser with session = ".print_r($session, true)." and lang = ".$bizunoUser['profile']['language']);
-        if ($session && !empty(BIZUNO_DB_NAME)) { $this->setSession($session); }
+        if ($session && defined('BIZUNO_DB_NAME') && !empty(constant('BIZUNO_DB_NAME'))) { $this->setSession($session); }
         else { // not logged in, try to log in
             if (!$email= clean('UserID',['format'=>'email','default'=>$bizUser], 'post')) { return; }
             if (!$pass = clean('UserPW',['format'=>'text', 'default'=>$bizPass], 'post')) { return; }
@@ -108,7 +108,7 @@ class main //extends controller
         global $bizunoUser;
         msgDebug("\nEntering validateBusiness");
         if (getUserCache('profile', 'biz_id')) { return true; } // logged in and business selected
-        if (empty(BIZUNO_DB_NAME)) { // logged in but bizuno DBs have not been installed
+        if (defined('BIZUNO_DB_NAME') && empty(constant('BIZUNO_DB_NAME'))) { // logged in but bizuno DBs have not been installed
             $GLOBALS['bizuno_install_admin_id']= 1; // set flags used when requesting to install
             $GLOBALS['bizuno_install_biz_id']  = 1;
             $bizunoUser['dashboards']['login']['dashboard_id'] = 'install'; // replace the login dashboard with the install dashboard

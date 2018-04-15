@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-26
+ * @version    2.x Last Update: 2018-04-11
  * @filesource /lib/controller/module/phreebooks/currency.php
  */
 
@@ -167,6 +167,7 @@ class phreebooksCurrency
     public function delete(&$layout)
 	{
         if (!validateSecurity('bizuno', 'admin', 4)) { return; }
+		$idx = clean('rID', 'integer', 'get');
 		$iso = clean('data', 'text', 'get');
         if (!$iso) { return msgAdd("Bad data!"); }
 		// cannot delete default currency
@@ -179,9 +180,9 @@ class phreebooksCurrency
 		unset($isoVals[$iso]);
         setModuleCache('phreebooks', 'currency', 'iso', $isoVals);
 		msgLog(lang('currency').": $title ($iso) - ".lang('deleted'));
-		$actionData = "jq('#dgCurrency').datagrid('loadData', ".json_encode(array_values(getModuleCache('phreebooks', 'currency', 'iso'))).");";
-		$actionData.= "jq('#divCurEdit').html('');";
-		return array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>$actionData]]);
+		$actionData = "jq('#dgCurrency').datagrid('loadData', ".json_encode(array_values($isoVals)).");";
+		$actionData.= "jq('#accCurrencyDtl').html(''); reloadSessionStorage(); jq('#dgCurrency').datagrid('deleteRow', $idx);";
+        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>$actionData]]);
 	}
 	
     /**
@@ -243,47 +244,37 @@ class phreebooksCurrency
      */
     public function dgCurrency($name, $security=0)
 	{
-		return [
-            'id'     => $name,
+		return ['id' => $name,
 			'attr'   => [
                 'toolbar'      => "#{$name}Toolbar",
-				'singleSelect' => true,
-                ],
+				'singleSelect' => true],
 			'events' => [
                 'data'         => "dataCurrency",
 				'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accCurrency', 'dgCurrency', 'accCurrencyDtl', '".lang('details')."', 'phreebooks/currency/edit&iso='+rowData.code); }",
 				'onClickRow'   => "function(rowIndex, rowData) { selectedCurrency = rowData.code; }",
-				'rowStyler'    => "function(index, row) { if (row.code=='".getUserCache('profile', 'currency', false, 'USD')."') { return {class:'row-default'}; }}",
-                ],
+				'rowStyler'    => "function(index, row) { if (row.code=='".getUserCache('profile', 'currency', false, 'USD')."') { return {class:'row-default'}; }}"],
 			'source' => [
                 'actions'=> [
                     'currencyNew'   => ['order'=>10,'html'=>  ['icon'=>'new',
 						'events'=>  ['onClick'=>"jsonAction('phreebooks/currency/add');"]]],
 					'currencyUpdate'=> ['order'=>80,'html'=>  ['icon'=>'update',
-						'events'=>  ['onClick'=>"jq('body').addClass('loading'); jsonAction('phreebooks/currency/update');"]]],
-                        ],
-                ],
+						'events'=>  ['onClick'=>"jq('body').addClass('loading'); jsonAction('phreebooks/currency/update');"]]]]],
 			'columns'=> [
                 'action' => ['order'=> 1, 'label'=>lang('action'), 'attr'=>  ['width'=>50],
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> [
                         'delete'=> ['icon'=>'trash','size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
-							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/currency/delete', 0, jq('#$name').datagrid('getRows')[indexTBD]['code']);"],
-                            ],
-                        ],
-                    ],
-				'code'   => ['order'=>10,'label'=>lang('code'),      'attr'=>  ['width'=> 50,'resizable'=>true]],
-				'title'  => ['order'=>20,'label'=>lang('title'),     'attr'=>  ['width'=>200,'resizable'=>true]],
-				'value'  => ['order'=>30,'label'=>lang('exc_rate'),  'attr'=>  ['width'=>100,'resizable'=>true]],
-				'pfxneg' => ['order'=>40,'label'=>$this->lang['neg_prefix'],'attr'=>  ['width'=>100,'resizable'=>true]],
-				'prefix' => ['order'=>50,'label'=>lang('prefix'),    'attr'=>  ['width'=> 80,'resizable'=>true]],
-				'sep'    => ['order'=>60,'label'=>lang('separator'), 'attr'=>  ['width'=> 80,'resizable'=>true]],
-				'dec_pt' => ['order'=>70,'label'=>$this->lang['dec_point'], 'attr'=>  ['width'=>100,'resizable'=>true]],
-				'dec_len'=> ['order'=>80,'label'=>$this->lang['dec_length'],'attr'=>  ['width'=>100,'resizable'=>true]],
-				'suffix' => ['order'=>90,'label'=>lang('suffix'),    'attr'=>  ['width'=> 80,'resizable'=>true]],
-				'sfxneg' => ['order'=>99,'label'=>$this->lang['neg_suffix'],'attr'=>  ['width'=>100,'resizable'=>true]],
-                ],
-			'footnotes' => ['codes'=>lang('color_codes').': <span class="row-default">'.lang('default').'</span>'],
-            ];
+							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/currency/delete', indexTBD, jq('#$name').datagrid('getRows')[indexTBD]['code']);"]]]],
+				'code'   => ['order'=>10,'label'=>lang('code'),             'attr'=>['width'=> 50,'resizable'=>true]],
+				'title'  => ['order'=>20,'label'=>lang('title'),            'attr'=>['width'=>200,'resizable'=>true]],
+				'value'  => ['order'=>30,'label'=>lang('exc_rate'),         'attr'=>['width'=>100,'resizable'=>true]],
+				'pfxneg' => ['order'=>40,'label'=>$this->lang['neg_prefix'],'attr'=>['width'=>100,'resizable'=>true]],
+				'prefix' => ['order'=>50,'label'=>lang('prefix'),           'attr'=>['width'=> 80,'resizable'=>true]],
+				'sep'    => ['order'=>60,'label'=>lang('separator'),        'attr'=>['width'=> 80,'resizable'=>true]],
+				'dec_pt' => ['order'=>70,'label'=>$this->lang['dec_point'], 'attr'=>['width'=>100,'resizable'=>true]],
+				'dec_len'=> ['order'=>80,'label'=>$this->lang['dec_length'],'attr'=>['width'=>100,'resizable'=>true]],
+				'suffix' => ['order'=>90,'label'=>lang('suffix'),           'attr'=>['width'=> 80,'resizable'=>true]],
+				'sfxneg' => ['order'=>99,'label'=>$this->lang['neg_suffix'],'attr'=>['width'=>100,'resizable'=>true]]],
+			'footnotes' => ['codes'=>lang('color_codes').': <span class="row-default">'.lang('default').'</span>']];
 	}
 }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-17
+ * @version    2.x Last Update: 2018-04-13
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -152,20 +152,20 @@ class inventoryPrices
 							'events'=> ['onClick'=>"var title=prompt('".lang('msg_entry_copy')."'); if (title!=null) jsonAction('inventory/prices/copy', idTBD, title);"]],
 						'trash'=> ['icon'=>'trash', 'size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
 							'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/prices/delete', idTBD);"]]]],
-				'title'      => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.settings',     'label'=>lang("title"),    'format'=>'setng:title',
-					'attr'=>  ['width'=>80, 'sortable'=>true, 'resizable'=>true]],
-				'method'     => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.method',       'label'=>lang("method"),
-					'attr'=>  ['width'=>80, 'sortable'=>true, 'resizable'=>true]],
-				'ref_id'     => ['order'=>30, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.ref_id',       'label'=>lang("reference"),'format'=>'dbVal;'.BIZUNO_DB_PREFIX.'inventory_prices;settings:title;id',
-					'attr'=>  ['width'=>80, 'sortable'=>true, 'resizable'=>true]],
-				'contact_id' => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.contact_id',   'label'=>lang("address_book_primary_name"),'format'=>'contactName',
-					'attr'=>  ['width'=>175, 'sortable'=>true, 'resizable'=>true]],
-				'inventory_id'=> ['order'=>50, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inventory_id','label'=>lang("sku"),      'format'=>'dbVal;inventory;description_short;id',
-					'attr'=>  ['width'=>175, 'sortable'=>true, 'resizable'=>true]],
-				'currency'   => ['order'=>60, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.currency',     'label'=>lang("currency"),
+				'title'      => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.settings',     'label'=>lang('title'),    'format'=>'setng:title',
 					'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
-				'last_update'=> ['order'=>70, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.settings',     'label'=>lang("last_update"),'format'=>'setng:last_update',
-					'attr'=>  ['width'=>100, 'sortable'=>true, 'resizable'=>true]]]];
+				'method'     => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.method',       'label'=>lang('method'),
+					'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
+				'ref_id'     => ['order'=>30, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.ref_id',       'label'=>lang('reference'),'format'=>'dbVal;'.BIZUNO_DB_PREFIX.'inventory_prices;settings:title;id',
+					'attr'=>  ['width'=>80, 'sortable'=>true, 'resizable'=>true]],
+				'contact_id' => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.contact_id',   'label'=>lang('address_book_primary_name'),'format'=>'contactName',
+					'attr'=>  ['width'=>175, 'sortable'=>true, 'resizable'=>true]],
+				'inventory_id'=> ['order'=>50, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inventory_id','label'=>lang('description'),'format'=>'dbVal;inventory;description_short;id',
+					'attr'=>  ['width'=>175, 'sortable'=>true, 'resizable'=>true]],
+				'currency'   => ['order'=>60, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.currency',     'label'=>lang('currency'),
+					'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
+				'last_update'=> ['order'=>70, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.settings',     'label'=>lang('last_update'),'format'=>'setng:last_update',
+					'attr'=>  ['width'=>70, 'sortable'=>true, 'resizable'=>true]]]];
         $cList  = $iList = [];
         $search = addslashes($this->defaults['search']);
         if ($mID) { 

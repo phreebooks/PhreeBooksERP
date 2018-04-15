@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-06-01
+ * @version    2.x Last Update: 2018-04-13
  * @filesource /lib/view/module/phreeform/divRptDetail.php
  */
 
@@ -26,6 +26,7 @@ namespace bizuno;
 htmlToolbar($output, $data['toolbar']['tbDetail']);
 $output['body'] .= "
   <h1>".$data['report']['title']."</h1>
+  <fieldset>".$data['report']['description']."</fieldset>
   <div>
     ".lang('id').": {$data['report']['id']}<br />
     ".lang('type').": {$data['report']['mime_type']}<br />

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-06
+ * @version    2.x Last Update: 2018-04-13
  * @filesource /controller/module/phreeform/main.php
  */
 
@@ -144,11 +144,13 @@ class phreeformMain
 	public function detailReport(&$layout=[])
     {
         if (!$security = validateSecurity('phreeform', 'phreeform', 1)) { return; }
-		$rID = clean('rID', 'integer', 'get');
+		$rID    = clean('rID', 'integer', 'get');
 		if (!$rID) { return $this->detailHome($layout); } // default to home listing
 		$report = dbGetRow(BIZUNO_DB_PREFIX."phreeform", "id='$rID'");
         if ($report['mime_type'] == 'dir') { return; } // folder, just return to do nothing
-		$data = ['action'=>'divHTML', 'divID'=>'rightColumn',
+        $details= phreeFormXML2Obj($report['doc_data']);
+        $report['description'] = $details->description;
+		$data   = ['action'=>'divHTML', 'divID'=>'rightColumn',
             'divs' => ['divDetail' => ['order'=>50, 'src'=>BIZUNO_LIB."view/module/phreeform/divRptDetail.php"]],
             'toolbar'  => ['tbDetail'=> ['hideLabels'=>true,'icons' => [
                 'open'  => ['order'=>10,'events'=>['onClick'=>"winOpen('phreeformOpen', 'phreeform/render/open&rID=$rID');"]],

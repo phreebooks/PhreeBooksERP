@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-10
+ * @version    2.x Last Update: 2018-04-15
  * @filesource /index.php
  */
 
 namespace bizuno;
 
-define('MODULE_BIZUNO_VERSION','2.1.0');
+define('MODULE_BIZUNO_VERSION','2.1.1');
 
 ini_set('display_errors', true);
 error_reporting(E_ALL);
