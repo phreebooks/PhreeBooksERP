@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-15
+ * @version    2.x Last Update: 2018-04-23
  * @filesource /index.php
  */
 
 namespace bizuno;
 
-define('MODULE_BIZUNO_VERSION','2.1.1');
+define('MODULE_BIZUNO_VERSION','2.1.2');
 
 ini_set('display_errors', true);
 error_reporting(E_ALL);
@@ -31,7 +31,7 @@ error_reporting(E_ALL);
 /*******************************/
 if (!defined('SCRIPT_START_TIME')) { define('SCRIPT_START_TIME', microtime(true)); }
 
-@include("bizunoCFG.php");
+if (file_exists('bizunoCFG.php')) { include('bizunoCFG.php'); } // fetch the db and host specific credentials
 
 // Host Information/source paths
 define('BIZUNO_HOST',      'phreebooks'); // PhreeBooks 5 hosted

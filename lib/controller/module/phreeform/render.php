@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-16
+ * @version    2.x Last Update: 2018-04-23
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -162,6 +162,7 @@ class phreeformRender
      */
     public function render(&$layout=[])
     {
+        msgTrap();
         global $report;
         $data = [];
 		$rID      = clean('rID', 'integer', 'request'); // could come in as $_POST or $_GET
@@ -169,21 +170,21 @@ class phreeformRender
 		$format   = clean('fmt', 'text', 'post');
 		$xmlReport= dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'doc_data', "id=$rID");
 		$report   = phreeFormXML2Obj($xmlReport);
-//        msgAdd("report = ".print_r($report, true));
+//      msgAdd("report = ".print_r($report, true));
 		if (!empty($report->special_class)) {
             if (!$this->loadSpecialClass($report->special_class)) { return; }
 		}
-		$delivery       = clean('delivery', ['format'=>'char', 'default'=>'D'], 'post');
-		$from_email     = clean('fromEmail',['format'=>'email','default'=>getUserCache('profile', 'email')], 'post');
-		$from_name      = clean('fromName', ['format'=>'text', 'default'=>getUserCache('profile', 'title')], 'post');
-		$to_email       = clean('toEmail',  ['format'=>'email','default'=>clean('rEmail','email','get')], 'post');
-		$to_name        = clean('toName',   ['format'=>'text', 'default'=>clean('rName', 'text', 'get')], 'post');
-		$cc_email       = clean('CCEmail',  'email','post');
-		$cc_name        = clean('CCName',   'text', 'post');
+		$delivery       = clean('delivery',  ['format'=>'char', 'default'=>'D'], 'post');
+		$from_email     = clean('fromEmail', ['format'=>'email','default'=>getUserCache('profile', 'email')], 'post');
+		$from_name      = clean('fromName',  ['format'=>'text', 'default'=>getUserCache('profile', 'title')], 'post');
+		$to_email       = clean('toEmail',   ['format'=>'email','default'=>clean('rEmail','email','get')], 'post');
+		$to_name        = clean('toName',    ['format'=>'text', 'default'=>clean('rName', 'text', 'get')], 'post');
+		$cc_email       = clean('CCEmail',   'email','post');
+		$cc_name        = clean('CCName',    'text', 'post');
 		$message_subject= $report->title.' '.lang('from').' '.getModuleCache('bizuno', 'settings', 'company', 'primary_name');
-		$message_subject= isset($_POST['msgSubject']) ? $_POST['msgSubject'] : $message_subject;
-		$message_body   = isset($report->EmailBody) ? TextReplace($report->EmailBody) : sprintf(lang('email_body'), $report->title, getModuleCache('bizuno', 'settings', 'company', 'primary_name'));
-		$email_text     = isset($_POST['msgBody']) ? $_POST['msgBody'] : $message_body;
+		$message_subject= clean('msgSubject',['format'=>'text', 'default'=>$message_subject], 'post');
+		$message_body   = isset($report->EmailBody)   ? TextReplace($report->EmailBody) : sprintf(lang('email_body'), $report->title, getModuleCache('bizuno', 'settings', 'company', 'primary_name'));
+		$email_text     = clean('msgBody',   ['format'=>'text', 'default'=>$message_body], 'post');
 		// read in user data and merge with report defaults
 		if ($report->reporttype == 'rpt') {
 			if (isset($_POST['fld_fld'])) { // alter the field listings based on form data
@@ -205,9 +206,9 @@ class phreeformRender
 				$report->grouplist[$key]->default = (isset($_POST['critGrpSel']) && $_POST['critGrpSel'] == ($key+1)) ? 1 : 0;
             } }
 		}
-        if (isset($_GET['date']))             { $report->datedefault = clean('date', 'text', 'get'); } // should be encoded, this first as it means date override
-        elseif (isset($_POST['critDateSel'])) { $report->datedefault = $_POST['critDateSel'].':'.$_POST['critDateMin'].':'.$_POST['critDateMax']; }
-		elseif (isset($_POST['period'])) {
+        if     (isset($_GET['date']))        { $report->datedefault = clean('date', 'text', 'get'); } // should be encoded, this first as it means date override
+        elseif (isset($_POST['critDateSel'])){ $report->datedefault = $_POST['critDateSel'].':'.$_POST['critDateMin'].':'.$_POST['critDateMax']; }
+		elseif (isset($_POST['period']))     {
 			$period = clean($_POST['period'], 'integer');
 			if ($period != getModuleCache('phreebooks', 'fy', 'period')) {
 				$result = dbGetRow(BIZUNO_DB_PREFIX.'journal_periods', "period=$period");
@@ -239,7 +240,7 @@ class phreeformRender
 			case 'frm':
 				$data = $this->BuildForm($report, $delivery);
 				if (!isset($data['pdf'])) { // there has been a problem change format to html since we have a regular form submit (not json)
-					$data = ['type'=>'html', 'divs'=>  ['noPDF'=>  ['type'=>'html', 'html'=>'']]];
+					$data = ['type'=>'html','divs'=>['noPDF'=>['type'=>'html','html'=>'']]];
 				}
 				break;
 			case 'rpt':
@@ -388,15 +389,17 @@ class phreeformRender
 		global $report, $posted_currencies;
 		// Generate a form for each group element
 		$output = [];
-		$pdf    = new PDF();
-		foreach ($report->recordID as $formNum => $Fvalue) {
+        if (!empty($report->special_class)) {
+            $fqcn = "\\bizuno\\$report->special_class";
+            $special_form = new $fqcn();
+        }
+		$pdf = new PDF();
+		foreach ($report->recordID as $Fvalue) {
 			// find the single line data from the query for the current form page
 			$TrailingSQL = " FROM $report->sqlTable WHERE ".($report->sqlCrit ? "$report->sqlCrit AND " : '').prefixTables($report->formbreakfield)."='$Fvalue'";
 			$report->FieldValues = [];
 			$report->currentValues = false; // reset the stored processing values to save sql's
-			if (isset($report->special_class) && $report->special_class) {
-                $fqcn = "\\bizuno\\$report->special_class";
-                $special_form = new $fqcn();
+			if (!empty($report->special_class) && method_exists($special_form, 'load_query_results')) {
 				$report->FieldValues  = $special_form->load_query_results($report->formbreakfield, $Fvalue);
 			} elseif (strlen($report->sqlField) > 0) {
 				msgDebug("\nExecuting sql = SELECT $report->sqlField $TrailingSQL");
@@ -418,12 +421,10 @@ class phreeformRender
 					if (!$field->settings->boxfield[0]->fieldname) {
 						return msgAdd($this->lang['err_pf_field_empty'] . $field->title);
 					}
-					if (isset($report->special_class) && $report->special_class) {
+					if (!empty($report->special_class) && method_exists($special_form, 'load_text_block_data')) {
 						$tField = $special_form->load_text_block_data($field->settings->boxfield);
 					} else {
-						$arrTxtBlk = []; // Build the fieldlist
-                        foreach ($field->settings->boxfield as $idx => $entry) { $arrTxtBlk[] = prefixTables($entry->fieldname) . ' AS r' . $idx; }
-						$strTxtBlk= implode(', ', $arrTxtBlk);
+                        $strTxtBlk = $this->setFieldList($field->settings->boxfield);
 						msgDebug("\n Executing textblock sql = SELECT $strTxtBlk $TrailingSQL");
                         if (!$stmt= dbGetResult("SELECT $strTxtBlk $TrailingSQL")) { return msgAdd("Error selecting data! See trace file.", 'trap'); }
 						$result   = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -437,13 +438,11 @@ class phreeformRender
 					msgDebug("\nSetting TextBlockData = ".$tField);
 					$report->fieldlist[$key]->settings->text = $tField;
 				}
-                if ($field->type == 'LtrTpl') {// letter template
+                if ($field->type == 'LtrTpl') { // letter template
                     if (!$field->settings->boxfield[0]->fieldname) {
 						return msgAdd($this->lang['err_pf_field_empty'] . $field->title);
 					}
-                    $arrTxtBlk = []; // Build the fieldlist
-                    foreach ($field->settings->boxfield as $idx => $entry) { $arrTxtBlk[] = prefixTables($entry->fieldname) . ' AS r' . $idx; }
-                    $strTxtBlk= implode(', ', $arrTxtBlk);
+                    $strTxtBlk = $this->setFieldList($field->settings->boxfield);
                     msgDebug("\n Executing textblock sql = SELECT $strTxtBlk $TrailingSQL");
                     if (!$stmt= dbGetResult("SELECT $strTxtBlk $TrailingSQL")) { return msgAdd("Error selecting data! See trace file.", 'trap'); }
                     $result   = $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -454,53 +453,42 @@ class phreeformRender
                         $temp   = isset($field->settings->boxfield[$i]->formatting)? viewFormat ($temp, $field->settings->boxfield[$i]->formatting): $temp;
                         $tField = str_replace($field->settings->boxfield[$i]->title, $temp, $tField);
                     }
-//					msgDebug("\nSetting Letter Template = ".$tField);
 					$report->fieldlist[$key]->settings->text = $tField;
                 }
-				// Pre-load all total fields with 'Continued' label for multipage
-                if ($field->type == 'Ttl') { $report->fieldlist[$key]->text = lang('continued'); }
 			}
 			$pdf->PageCnt = $pdf->PageNo(); // reset the current page numbering for this new form
 			$pdf->AddPage();
 			// Send the table
 			foreach ($report->fieldlist as $key => $TableObject) {
-				if ($TableObject->type == 'Tbl') {
-                    if (!isset($TableObject->settings->boxfield)) { return msgAdd($this->lang['err_pf_field_empty'] . $TableObject->title); }
-					// Build the sql
-					$tblField   = '';
-					$tblHeading = [];
-                    foreach ($TableObject->settings->boxfield as $TableField) { if (isset($TableField->title)) { $tblHeading[] = $TableField->title; } }
-					$data = [];
-					if (isset($report->special_class) && $report->special_class) {
-						$data = $special_form->load_table_data($TableObject->boxfield);
-					} elseif (isset($TableObject->settings->fieldname) && $TableObject->settings->fieldname) {
-						$field = 'd'.$key;
-						$data = ProcessData($report->FieldValues[$field], $TableObject->settings->processing);
-						$data = viewFormat ($data, $TableObject->settings->formatting);
-					} else {
-						$tblField = [];
-                        foreach ($TableObject->settings->boxfield as $idx => $TableField) { $tblField[] = prefixTables($TableField->fieldname).' AS r'.$idx; }
-						$tblField= implode(', ', $tblField);
-                        if (!$stmt = dbGetResult("SELECT $tblField $TrailingSQL")) { return msgAdd("Error selecting table data! See trace file."); }
-						$data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-					}
-					array_unshift($data, $tblHeading); // set the first data element to the headings
-					$TableObject->data = $data;
-					$StoredTable = clone $TableObject;
-					$pdf->FormTable($TableObject);
-				}
+                if ($TableObject->type <> 'Tbl') { continue; }
+                if (!isset($TableObject->settings->boxfield)) { return msgAdd($this->lang['err_pf_field_empty'] . $TableObject->title); }
+                // Build the sql
+                $tblField   = '';
+                $tblHeading = [];
+                foreach ($TableObject->settings->boxfield as $TableField) { if (isset($TableField->title)) { $tblHeading[] = $TableField->title; } }
+                $data = [];
+                if (!empty($report->special_class) && method_exists($special_form, 'load_table_data')) {
+                    $data = $special_form->load_table_data($TableObject->boxfield);
+                } elseif (!empty($TableObject->settings->fieldname)) {
+                    $data = ProcessData($report->FieldValues["d$key"], $TableObject->settings->processing);
+                } else {
+                    $tblField = $this->setFieldList($TableObject->settings->boxfield);
+                    if (!$stmt = dbGetResult("SELECT $tblField $TrailingSQL")) { return msgAdd("Error selecting table data! See trace file.", 'trap'); }
+                    $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                }
+                array_unshift($data, $tblHeading); // set the first data element to the headings
+                $TableObject->data = $data;
+                $StoredTable = clone $TableObject;
+                $pdf->FormTable($TableObject);
 			}
 			// Send the duplicate data table (only works if each form is contained in a single page [no multi-page])
 			foreach ($report->fieldlist as $field) {
-				if ($field->type == 'TDup') {
-					if (!$StoredTable) {
-						return msgAdd(lang('PHREEFORM_EMPTYTABLE') . $field->title);
-					}
-					// insert new coordinates into existing table
-					$StoredTable->abscissa = $field->abscissa;
-					$StoredTable->ordinate = $field->ordinate;
-					$pdf->FormTable($StoredTable);
-				}
+                if ($field->type <> 'TDup') { continue; }
+                if (!$StoredTable) { return msgAdd(lang('PHREEFORM_EMPTYTABLE') . $field->title); }
+                // insert new coordinates into existing table
+                $StoredTable->abscissa = $field->abscissa;
+                $StoredTable->ordinate = $field->ordinate;
+                $pdf->FormTable($StoredTable);
 			}
 			foreach ($report->fieldlist as $key => $field) {
 				// Set the totals (need to be on last printed page) - Handled in the Footer function in TCPDF
@@ -508,7 +496,7 @@ class phreeformRender
                     if (!isset($field->settings->boxfield)) { return msgAdd($this->lang['err_pf_field_empty'].' '.$field->title); }
 					$report->fieldlist[$key]->settings->processing = isset($field->settings->processing) ? $field->settings->processing : '';
 					$report->fieldlist[$key]->settings->formatting = isset($field->settings->formatting) ? $field->settings->formatting : '';
-					if (isset($report->special_class) && $report->special_class) {
+					if (!empty($report->special_class) && method_exists($special_form, 'load_total_results')) {
 						$report->FieldValues = $special_form->load_total_results($field);
 					} else {
 						$ttlField = [];
@@ -521,8 +509,6 @@ class phreeformRender
                     if (!isset($field->settings->boxfield[0]->formatting)) { $field->settings->boxfield[0]->formatting = ''; }
 					$report->fieldlist[$key]->settings->text = viewFormat($temp, $field->settings->boxfield[0]->formatting);
 				}
-				// Set the data for the last Page if last page only flag checked, pull from temp save
-                if ($field->type == 'Data' && $field->display == '2') { $report->fieldlist[$key]->text = $report->fieldlist[$key]->texttemp; }
 			}
 			// set the printed flag field if provided
 			if (isset($report->setprintedfield)) {
@@ -561,12 +547,14 @@ class phreeformRender
         global $report, $posted_currencies;
 		// Generate a form for each group element
 		$output = NULL;
-		foreach ($report->recordID as $formNum => $Fvalue) {
+        if ($report->special_class) {
+            $fqcn = "\\bizuno\\$report->special_class";
+            $special_form = new $fqcn();
+        }
+        foreach ($report->recordID as $formNum => $Fvalue) {
 			// find the single line data from the query for the current form page
 			$TrailingSQL = "FROM $report->sqlTable WHERE ".($report->sqlCrit ? $report->sqlCrit . " AND " : '').prefixTables($report->formbreakfield)."='$Fvalue'";
 			if ($report->special_class) {
-                $fqcn = "\\bizuno\\$report->special_class";
-                $special_form = new $fqcn();
 				$report->FieldValues  = $special_form->load_query_results($report->formbreakfield, $Fvalue);
 			} else {
                 if (!$stmt = dbGetResult("SELECT $report->sqlField $TrailingSQL")) { return msgAdd("Error selecting field values! See trace file."); }
@@ -597,11 +585,9 @@ class phreeformRender
 						if ($report->special_class) {
 							$TextField = $special_form->load_text_block_data($field->settings->boxfield);
 						} else {
-							$arrTxtBlk = []; // Build the fieldlist
-                            foreach ($field->settings->boxfield as $idx => $entry) { $arrTxtBlk[] = prefixTables($entry->fieldname) . ' as r' . $idx; }
-							$strTxtBlk    = implode(', ', $arrTxtBlk);
-							$result       = dbGetResult("SELECT $strTxtBlk $TrailingSQL");
-							$TextField    = '';
+                            $strTxtBlk = $this->setFieldList($field->settings->boxfield);
+							$result    = dbGetResult("SELECT $strTxtBlk $TrailingSQL");
+							$TextField = '';
 							for ($i = 0; $i < sizeof($field->settings->boxfield); $i++) {
 								$temp = $field->settings->boxfield[$i]->processing ? ProcessData($result->fields['r'.$i], $field->settings->boxfield[$i]->processing) : $result->fields['r'.$i];
 								$temp = $field->settings->boxfield[$i]->formatting ? viewFormat($temp, $field->settings->boxfield[$i]->formatting) : $temp;
@@ -623,9 +609,7 @@ class phreeformRender
             $fld = 'd'.$field->type;
             $data = viewFormat (ProcessData($report->FieldValues[$fld], $field->settings->processing), $field->settings->formatting);
         } else {
-            $arrField = [];
-            foreach ($field->settings->boxfield as $idx => $TableField) { $tblField[] = prefixTables($TableField->fieldname).' AS r'.$idx; }
-            $tblField= implode(', ', $arrField);
+            $tblField = $this->setFieldList($field->settings->boxfield);
             if (!$stmt = dbGetResult("SELECT $tblField $TrailingSQL")) { return msgAdd("Error selecting table data! See trace file."); }
             $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         }
@@ -641,9 +625,7 @@ class phreeformRender
 						if ($report->special_class) {
 							$data = $special_form->load_table_data($field->settings->boxfield);
 						} else {
-							$tblField = [];
-                            foreach ($field->settings->boxfield as $key => $TableField) { $tblField[] = prefixTables($TableField->fieldname) . ' as r' . $key; }
-							$tblField = implode(', ', $tblField);
+                            $tblField = $this->setFieldList($field->settings->boxfield);
                             if (!$stmt = dbGetResult("SELECT $tblField $TrailingSQL")) { return msgAdd("Error selecting table data! See trace file."); }
                             $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 						}
@@ -993,5 +975,12 @@ class phreeformRender
             return msgAdd("Cannot find special class: $special_class");
         }
         return true;
+    }
+    
+    private function setFieldList($fields=[])
+    {
+        $output = []; // Build the fieldlist
+        foreach ($fields as $idx => $entry) { $output[] = prefixTables($entry->fieldname)." AS r$idx"; }
+        return implode(', ', $output);
     }
 }

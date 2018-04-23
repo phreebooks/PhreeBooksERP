@@ -15,16 +15,15 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-06-01
+ * @version    2.x Last Update: 2018-04-19
  * @filesource /lib/controller/module/bizuno/dashboards/company_notes/company_notes.php
- * 
  */
 
 namespace bizuno;
 
-define('DASHBOARD_COMPANY_NOTES_VERSION','1.0');
+define('DASHBOARD_COMPANY_NOTES_VERSION','2.0');
 
 class company_notes 
 {
@@ -35,7 +34,7 @@ class company_notes
 	
 	function __construct($settings)
     {
-		$this->security= getUserCache('security', 'profile', 0);
+		$this->security= 1;
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $defaults      = ['users'=>'-1','roles'=>'-1'];
         $this->settings= array_replace_recursive($defaults, $settings);
@@ -44,8 +43,8 @@ class company_notes
     public function settingsStructure()
     {
         return [
-            'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
-            'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']]];
+            'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
+            'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']]];
 	}
 
     public function install($moduleID = '', $menu_id = '')
@@ -64,6 +63,7 @@ class company_notes
 
     public function render()
     {
+        $security = getUserCache('security', 'admin', false, 0);
         $data = [
             $this->code.'_0' => ['label' => lang('note'),
                 'classes'=> ['easyui-validatebox'],
@@ -71,13 +71,11 @@ class company_notes
             $this->code.'_button' => [
                 'attr'   => ['type'   => 'button', 'value' => lang('new')],
                 'styles' => ['cursor' => 'pointer'],
-                'events' => ['onClick'=> "dashboardAttr('$this->moduleID:$this->code', 0);"],
-            ],
-        'delete_icon' => ['icon'=>'trash', 'size'=>'small'],
-        ];
+                'events' => ['onClick'=> "dashboardAttr('$this->moduleID:$this->code', 0);"]],
+        'delete_icon' => ['icon'=>'trash', 'size'=>'small']];
         $html  = '<div>';
         $html .= '  <div id="'.$this->code.'_attr" style="display:none">';
-        if ($this->security > 1) {
+        if ($security > 1) {
             $html .= '    <form id="'.$this->code.'Form" action="">';
             $html .= '      <div style="white-space:nowrap">'.html5($this->code.'_0',      $data[$this->code.'_0']).'</div>';
             $html .= '      <div style="text-align:right;">' .html5($this->code.'_button', $data[$this->code.'_button']).'</div>';
@@ -91,7 +89,7 @@ class company_notes
             foreach ($this->settings['data'] as $entry) {
               $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"];
               $html .= '  <div>';
-              if ($this->security > 3) { $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>'; }
+              if ($security > 2) { $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>'; }
               $html .= '    <div style="min-height:16px;">&#9679; '.$entry.'</div>';
               $html .= '  </div>';
               $index++;
@@ -110,6 +108,7 @@ jq("#'.$this->code.'Form").keypress(function(event) {
 
     public function save()
     {
+        if (getUserCache('security', 'admin', false, 0) < 2) { return msgAdd('Illegal Access!'); } 
         $menu_id  = clean('menuID', 'cmd', 'get');
         $rmID     = clean('rID', 'integer', 'get');
         $add_entry= clean($this->code.'_0', 'text', 'post');

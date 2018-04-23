@@ -15,11 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-06-01
+ * @version    2.x Last Update: 2018-04-19
  * @filesource /lib/controller/module/bizuno/dashboards/company_to_do/company_to_do.php
- * 
  */
 
 namespace bizuno;
@@ -35,7 +34,7 @@ class company_to_do
 	
 	function __construct($settings)
     {
-		$this->security= getUserCache('security', 'profile', 0);
+		$this->security= 1;
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $defaults      = ['users'=>'-1','roles'=>'-1'];
         $this->settings= array_replace_recursive($defaults, $settings);
@@ -64,6 +63,7 @@ class company_to_do
 
     public function render()
     {
+        $security = getUserCache('security', 'admin', false, 0);
         $data = [
             $this->code.'_0' => ['label' => lang('note'),
                 'classes'=> ['easyui-validatebox'],
@@ -77,7 +77,7 @@ class company_to_do
         ];
         $html  = '<div>';
         $html .= '  <div id="'.$this->code.'_attr" style="display:none">';
-        if ($this->security > 1) {
+        if ($security > 1) {
             $html .= '    <form id="'.$this->code.'Form" action="">';
             $html .= '      <div style="white-space:nowrap">'.html5($this->code.'_0',      $data[$this->code.'_0']).'</div>';
             $html .= '      <div style="text-align:right;">' .html5($this->code.'_button', $data[$this->code.'_button']).'</div>';
@@ -91,7 +91,7 @@ class company_to_do
             foreach ($this->settings['data'] as $entry) {
               $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"];
               $html .= '  <div>';
-              if ($this->security > 3) { $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>'; }
+              if ($security > 2) { $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>'; }
               $html .= '    <div style="min-height:16px;">&#9679; '.$entry.'</div>';
               $html .= '  </div>';
               $index++;
@@ -105,6 +105,7 @@ class company_to_do
 
     public function save()
     {
+        if (getUserCache('security', 'admin', false, 0) < 2) { return msgAdd('Illegal Access!'); } 
         $menu_id  = clean('menuID', 'cmd', 'get');
         $rmID     = clean('rID', 'integer', 'get');	
         $add_entry= clean($this->code.'_0', 'text', 'post');

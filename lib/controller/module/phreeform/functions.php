@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-16
+ * @version    2.x Last Update: 2018-04-23
  * @filesource /controller/module/phreeform/functions.php
  */
 
@@ -749,8 +749,8 @@ function ReplaceNonAllowedCharacters($string)
  * @return array - list of page sizes
  */
 function phreeformPages($lang)
-{ // TBD make the key just the TCPDF supported paper sizes, pull dimemnsions from array 
-	$output = [
+{ // TBD make the key just the TCPDF supported paper sizes, pull dimensions from array 
+	return [
         ['id'=>'LETTER:216:279', 'text'=>$lang['paper_letter']],
         ['id'=>'LEGAL:216:357',  'text'=>$lang['paper_legal']],
         ['id'=>'A3:297:420',     'text'=>'A3'],
@@ -763,9 +763,7 @@ function phreeformPages($lang)
         ['id'=>'A7:74:105',      'text'=>'A7'],
         ['id'=>'A8:52:74',       'text'=>'A8'],
         ['id'=>'A9:37:52',       'text'=>'A9'],
-        ['id'=>'TABLOID:279:432','text'=>$lang['paper_tabloid']],
-      ];
-	return $output;	
+        ['id'=>'TABLOID:279:432','text'=>$lang['paper_tabloid']]];
 }
 
 /**
@@ -830,8 +828,7 @@ function phreeformSizes()
 		['id'=>'16', 'text'=>'16'], 
 		['id'=>'18', 'text'=>'18'], 
 		['id'=>'20', 'text'=>'20'], 
-		['id'=>'24', 'text'=>'24'], 
-        ];
+		['id'=>'24', 'text'=>'24']];
 }
 
 /**
@@ -894,8 +891,7 @@ function phreeformBarCodes()
 		['id'=>'CODABAR', 'text'=> 'CODABAR'],
 		['id'=>'CODE11',  'text'=> 'CODE 11'],
 		['id'=>'PHARMA',  'text'=> 'PHARMACODE'],
-		['id'=>'PHARMA2T','text'=> 'PHARMACODE TWO-TRACKS'],
-        ];
+		['id'=>'PHARMA2T','text'=> 'PHARMACODE TWO-TRACKS']];
 }
 
 /**

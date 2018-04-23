@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-10
+ * @version    2.x Last Update: 2018-04-17
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -111,6 +111,7 @@ $lang = [
 	'pf_proc_today' => "Today's Date",
 	'pf_proc_rnd2d' => 'Round (2 decimal)',
 	'pf_proc_n2wrd' => 'Number to Words',
+	'pf_proc_null0' => 'Null if Zero',
 	'pf_proc_blank' => 'Blank Out Data',
 	'pf_proc_yesbno' => 'Yes - Blank No',
 	'pf_proc_printed' => 'Printed Flag',

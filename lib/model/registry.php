@@ -388,6 +388,11 @@ final class bizRegistry
             msgDebug("\ninitMethods is looking at module: {$structure['id']} and folder $folderID");
             if (!file_exists($structure['path']."$folderID")) { continue; } 
             $methods = scandir($structure['path']."$folderID");
+//            if (file_exists(BIZUNO_CUSTOM."{$structure['id']}/$folderID") && strpos($structure['path'], BIZUNO_CUSTOM) === false) {
+//                msgDebug("\ninitMethods is looking at customizations for module: {$structure['id']} and folder $folderID");
+//                $methods = array_merge($methods, scandir(BIZUNO_CUSTOM."{$structure['id']}/$folderID");
+                //need to also pass path to custom folder
+//            }
             $this->cleanMissingMethods($structure['id'], $folderID, $methods);
             $this->initMethodList($structure, $folderID, $methods);
         }

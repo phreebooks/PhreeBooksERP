@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-15
+ * @version    2.x Last Update: 2018-04-19
  * @filesource /lib/controller/module/bizuno/dashboards/install/install.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_INSTALL_VERSION','1.0');
+define('DASHBOARD_INSTALL_VERSION','2.0');
 
 class install
 {
@@ -56,7 +56,7 @@ class install
             $html .= html5('UserEmail', ['label'=>'User Email','attr'=>['size'=>40]])."<br />";
             $html .= html5('UserPass', ['label'=>'Password', 'attr'=>['type'=>'password']])."</fieldset>";
         }
-        if (defined('BIZUNO_DB_NAME') && empty(constant('BIZUNO_DB_NAME'))) { // collect username and database info as not logged in
+        if (''==constant('BIZUNO_DB_NAME')) { // collect username and database info as not logged in
             $lang['dbDesc']  = "Since your db connection has not been set, we'll need your database credentials to make sure we can connect to your db.";
             $html .= "<fieldset><legend>Database Settings</legend>".$lang['dbDesc']."<br />";
             $html .= html5('dbHost', ['label'=>'Database Host','attr'=>['value'=>'localhost']])."<br />";

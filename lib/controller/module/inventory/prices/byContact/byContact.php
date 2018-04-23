@@ -17,9 +17,8 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-08-27
+ * @version    2.0 Last Update: 2018-04-17
  * @filesource /lib/controller/module/inventory/prices/byContact.php
- * 
  */
 
 namespace bizuno;
@@ -151,7 +150,7 @@ class byContact extends inventoryPrices
 			$levels = $this->decodeQuantity($values['iCost'], $values['iList'], $values['qty'], $settings['attr']);
 			msgDebug("\nMethod = $this->code with attr = ".$settings['attr']." returned levels: ".print_r($levels, true));
             $prices['price'] = isset($prices['price']) ? min($prices['price'], $levels['price']) : $levels['price'];
-            if (!isset($prices['sheets'][$row['ref_id']])) { 
+            if (!isset($prices['sheets'][$row['ref_id']]) && $levels['price']) { // only add price sheet if a price was returned
                 $prices['sheets'][$row['ref_id']] = ['title'=>$this->lang['title'], 'default'=>1, 'levels'=>$levels['levels']];
             }
 		}

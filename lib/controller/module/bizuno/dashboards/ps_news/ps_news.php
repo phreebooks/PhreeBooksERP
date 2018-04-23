@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-05-22
+ * @version    2.x Last Update: 2018-04-19
  * @filesource /lib/controller/module/bizuno/dashboards/ps_news/ps_news.php
  */
 
@@ -50,7 +50,7 @@ class ps_news
         $newsCnt = 0;
         foreach ($news->channel->item as $entry) { 
             $html .= '<a href="'.$entry->link.'" target="_blank"><h3>'.$entry->title."</h3></a><p>$entry->description</p>";
-            if ($newsCnt++ > $maxItems) { break; }
+            if ($newsCnt++ > $this->maxItems) { break; }
         }
         $html.= '</div></div><div style="min-height:4px;"> </div>';
         return $html;

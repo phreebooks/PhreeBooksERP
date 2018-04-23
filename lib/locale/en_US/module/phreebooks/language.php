@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-09
+ * @version    2.x Last Update: 2018-04-19
  * @filesource /locale/en_US/module/phreebooks/language.php
  */
 
@@ -118,6 +118,10 @@ $lang = [
     'create_credit' => 'Create Credit Memo',
     'fill_purchase' => 'Receive/Fill Purchase',
     'fill_sale' => 'Invoice/Fill Sale',
+    'pb_inv_unit' => 'Unit Price',
+    'pb_tax_by_journal' => 'Tax by Journal',
+    'pb_total_by_journal' => 'Total by Journal',
+    'pb_so_status' => 'SO Item Details',
     'pb_gl_age_00' => 'Aging Current',
 	'pb_gl_age_30' => 'Aging 30 Days',
 	'pb_gl_age_60' => 'Aging 60 Days',
@@ -128,7 +132,7 @@ $lang = [
 	'ly_actual' => 'Last Year',
 	'pb_is_last_ytd' => 'Last YTD',
 	'ly_budget' => 'Last Year Budget',
-	'pb_is_last_budget_ytd' => 'LY Budget YTD',
+	'pb_is_last_bdgt_ytd' => 'LY Budget YTD',
 	'fiscal_dates' => 'Fiscal Dates',
 	'desc_gl_db_purge' => 'Delete all Journal Entries (type \'purge\' in the text box and press purge button)<br />',
     // Currency

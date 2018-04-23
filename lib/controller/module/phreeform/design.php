@@ -334,50 +334,37 @@ class phreeformDesign
      */
     private function dgTables($name)
     {
-		$data = [
+		return [
             'id'   => $name,
 			'type' => 'edatagrid',
 			'tip'  => $this->lang['tip_phreeform_database_syntax'],
 			'attr' => [
                 'toolbar'     => "#{$name}Toolbar",
 			    'singleSelect'=>true,
-				'idField'     => 'id',
-                ],
+				'idField'     => 'id'],
 			'events' => [
                 'data'         => 'dataTables',
 				'onAfterEdit'  => "function(rowIndex, rowData, changes) { sessionTables(); }",
 				'onLoadSuccess'=> "function() { jq(this).datagrid('enableDnd'); }",
 				'onClickCell'  => "function(rowIndex) {
-					switch (icnAction) {
-						case 'trash':    jq('#$name').edatagrid('destroyRow', rowIndex); break;
-					}
+					switch (icnAction) { case 'trash': jq('#$name').edatagrid('destroyRow', rowIndex); break; }
 					icnAction = '';
-				}",
-                ],
+				}"],
 			'source' => [
                 'actions' => [
                     'new'   => ['order'=>10, 'html'=>  ['icon'=>'add',   'size'=>'small', 'events'=>  ['onClick'=>"jq('#$name').edatagrid('addRow');"]]],
-					'verify'=> ['order'=>20, 'html'=>  ['icon'=>'verify','size'=>'small', 'events'=>  ['onClick'=>"verifyTables();"]]],
-                    ],
-                ],
+					'verify'=> ['order'=>20, 'html'=>  ['icon'=>'verify','size'=>'small', 'events'=>  ['onClick'=>"verifyTables();"]]]]],
 			'columns' => [
                 'action' => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>150],
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> [
                         'move' => ['icon'=>'move', 'size'=>'small','order'=>20],
-						'trash'=> ['icon'=>'trash','size'=>'small','order'=>50,'events'=>['onClick'=>"icnAction='trash';"]],
-                        ],
-                    ],
+						'trash'=> ['icon'=>'trash','size'=>'small','order'=>50,'events'=>['onClick'=>"icnAction='trash';"]]]],
 				'join_type' => ['order'=>10, 'label'=>$this->lang['join_type'], 'attr'=>  ['width'=>100, 'resizable'=>true],
-					'events'=> ['editor'=>"{type:'combobox',options:{editable:false,mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getTablesJoin',valueField:'id',textField:'text'}}"],
-                    ],
+					'events'=> ['editor'=>"{type:'combobox',options:{editable:false,mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getTablesJoin',valueField:'id',textField:'text'}}"]],
 				'tablename' => ['order'=>20, 'label'=>$this->lang['table_name'], 'attr'=>  ['width'=>200, 'resizable'=>true],
-					'events'=> ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getTables',valueField:'id',textField:'text'}}"],
-                    ],
-				'relationship'=>  ['order'=>30, 'label'=>lang('relationship'), 'attr'=>  ['width'=>300,'resizable'=>true,'editor'=>'text']],
-                ],
-            ];
-		return $data;
+					'events'=> ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getTables',valueField:'id',textField:'text'}}"]],
+				'relationship'=>  ['order'=>30, 'label'=>lang('relationship'), 'attr'=>  ['width'=>300,'resizable'=>true,'editor'=>'text']]]];
 	}
 	
 	/**

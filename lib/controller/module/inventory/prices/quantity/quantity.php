@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-07
+ * @version    2.x Last Update: 2018-04-17
  * @filesource /lib/controller/module/inventory/prices/quantity.php
  */
 
@@ -135,12 +135,11 @@ class quantity extends inventoryPrices
 			} elseif (isset($settings['default']) && $settings['default']) {
 				$default_price = $levels['price'];
 			}
-			if (!isset($prices['sheets'][$row['id']])) {
+			if (!isset($prices['sheets'][$row['id']]) && $levels['price']) { // only add price sheet if a price was returned
                 $prices['sheets'][$row['id']] = [
                     'title'  => $settings['title'],
                     'default'=> $values['cSheet']==$row['id'] || (isset($settings['default']) && $settings['default']) ? 1 : 0,
-                    'levels' => $levels['levels'],
-                    ];
+                    'levels' => $levels['levels']];
             }
 		}
         if (!isset($prices['price']) && $default_price) { $prices['price'] = $default_price; }

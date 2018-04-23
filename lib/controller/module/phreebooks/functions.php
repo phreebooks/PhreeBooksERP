@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-04
+ * @version    2.x Last Update: 2018-04-19
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -73,6 +73,7 @@ function processPhreeBooks($value, $format = '')
 {
 	global $report;
 	switch ($format) {
+        // *********** Statement Processing ***************
 		case 'age_00': 
 		case 'age_30': 
 		case 'age_60': 
@@ -91,6 +92,12 @@ function processPhreeBooks($value, $format = '')
             if ($format=='begBal') { return $report->currentValues['aging']['beg_bal']; }   // beginning balance
             if ($format=='endBal') { return $report->currentValues['aging']['end_bal']; }   // ending balance
 			break;
+        // ************ Bank Processing *******************
+        case 'bnkReg':
+            $rID = intval($value);
+			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id=$rID");
+			return in_array($main['journal_id'], [7,13,18,19,20,21]) ? -$main['total_amount'] : $main['total_amount'];
+        // ************ Income Statement Processing *******************
 		case 'isCur':  return $report->currentValues['amount'];       // income_statement current period
 		case 'isYtd':  return $report->currentValues['amount_ytd'];   // income_statement year to date
 		case 'isBdgt': return $report->currentValues['budget'];       // income_statement budget current period
@@ -99,6 +106,130 @@ function processPhreeBooks($value, $format = '')
 		case 'isLytd': return $report->currentValues['ly_amount_ytd'];// income_statement last year to date
 		case 'isLBgt': return $report->currentValues['ly_budget'];    // income_statement last year budget current period
 		case 'isLBtd': return $report->currentValues['ly_budget_ytd'];// income_statement last year budget year to date
+        // ************ Invoice Processing *******************
+		case 'invBalance': // needs journal_main.id
+            $rID = intval($value);
+            if (!$rID) { return ''; }
+			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id='$rID'");
+			$jID  = $main['journal_id']; 
+			$total_inv = in_array($jID, [6,13]) ? -$main['total_amount'] : $main['total_amount'];
+			$total_paid= 0;
+			$result = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "item_ref_id='$rID' AND gl_type='pmt'");
+			foreach ($result as $row) {
+                if (in_array($jID, [6,13])) { $total_paid += $row['debit_amount'] - $row['credit_amount']; }
+                else { $total_paid += $row['credit_amount'] - $row['debit_amount']; }
+			}
+			return $total_inv + (in_array($jID, [6,13]) ? $total_paid : -$total_paid);
+		case 'invRefNum': // needs journal_main.id
+            $rID = intval($value);
+			return dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'invoice_num', "id=$rID");
+        case 'invUnit':
+            $rID = intval($value);
+            if (!$rID) { return ''; }
+            $row =  dbGetValue(BIZUNO_DB_PREFIX.'journal_item', ['qty','credit_amount','debit_amount'], "id=$rID");
+            return !empty($row['qty']) ? ($row['credit_amount'] + $row['debit_amount'])/$row['qty'] : 0;
+        case 'paymentDue': // needs journal_main.id
+            $rID  = clean($value, 'integer');
+            if (!$rID) { return ''; }
+			$row  = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id','total_amount','post_date','terms'], "id=$rID");
+            $type = in_array($row['journal_id'], [3,4,6,7]) ? 'v' : 'c';
+            $dates= localeDueDate($row['post_date'], $row['terms'], $type);
+            $discount = $row['post_date'] <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
+            if ($format == 'pmtDisc') { return $discount; }
+            return $row['total_amount'] - $discount;
+		case 'paymentRcv': // needs journal_main.id
+            $rID   = clean($value, 'integer');
+            if (!$rID) { return ''; }
+            $jID   = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'journal_id', "id=$rID");
+			$result= dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "item_ref_id=$rID AND gl_type IN ('dsc','pmt')");
+			$total_paid = 0;
+            foreach ($result as $row) { $total_paid += $row['credit_amount'] - $row['debit_amount']; }
+			return in_array($jID, [6,13]) ? -$total_paid : $total_paid;
+        case 'paymentRef': // gets the payment transaction code, needs journal_main.id
+            $invID = clean($value, 'integer');
+			$pmtID = dbGetValue(BIZUNO_DB_PREFIX.'journal_item', 'ref_id', "item_ref_id=$invID");
+            if ($pmtID) { return dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'trans_code', "ref_id=$pmtID AND gl_type='ttl'"); }
+            else        { return ''; }
+        case 'pmtDate': // needs journal_main.id
+            $rID   = clean($value, 'integer');
+			$result= dbGetValue(BIZUNO_DB_PREFIX.'journal_main', ['post_date','journal_id','terms'], "id=$rID");
+            if (!in_array($result['journal_id'], ['3','4','6','7','9','10','12','13'])) { return ''; }
+			$temp  = localeDueDate($result['post_date'], $result['terms']);
+			return $temp['net_date'];
+        case 'pmtDisc': return 'TBD';
+ 		case 'ship_bal': // pass table journal_item.id and check for quantites remaining to be shipped
+            msgDebug("\nEntering ship_bal with value = $value");
+			$refID = clean($value, 'integer');
+            if (!$refID) { return 0; }
+            $qtySO = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'qty', "id=$refID");
+			if ($qtySO) {
+                $filled = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'SUM(qty) as qty', "item_ref_id=$refID", false);
+				return $qtySO - $filled;
+            } else { return 0; }
+		case 'shipBalVal': // pass table journal_item.id and check for quantites remaining to be shipped
+			$refID = clean($value, 'integer');
+            $ttlSO = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'debit_amount+credit_amount', "id=$refID", false);
+			if ($ttlSO) {
+                $invSO = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'SUM(debit_amount+credit_amount) as invSO', "item_ref_id=$refID", false);
+				return $ttlSO - $invSO;
+            } else { return 0; }
+		case 'ship_prior': // pass table journal_item.id and check for quantites shipped prior
+            if (!$value) { return 0; }
+            if (strpos($value, ':')) {
+                $tmp = explode(':', $value);
+                $links = ['ref_id'=>$tmp[0], 'item_ref_id'=>$tmp[1]];
+            } else {
+    			$links = dbGetValue(BIZUNO_DB_PREFIX."journal_item", ['ref_id', 'item_ref_id'], "id=$value");
+            }
+			if ($links['item_ref_id']) {
+				return dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'SUM(qty)', "item_ref_id={$links['item_ref_id']} AND ref_id!={$links['ref_id']}", false);
+            } else { return 0; }
+        case 'soStatus': // pulls the entire Sales Order line items from a given Invoice #, rqd to pass (journal_main.id)
+            $rID    = intval($value);
+            $invRows= dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id=$rID AND gl_type='itm'");
+            $soID   = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'so_po_ref_id', "id=$rID");
+            $soRows = dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id=$soID AND gl_type='itm'");
+            foreach (array_keys($soRows) as $idx) { $soRows[$idx]['qty'] = 0; } // erase the qyantity as actuals will be calculated later
+            $invID = 0;
+            foreach ($invRows as $invRow) { 
+                $soRows[$invRow['item_cnt']-1] = $invRow;
+                $invID = $invRow['ref_id'];
+            } // combine values
+            foreach ($report->fieldlist as $TableObject) { if ($TableObject->type <> 'Tbl') { continue; } else { break; } } // get the report table field
+            $output = [];
+            foreach ($soRows as $row) {
+                $rowData = [];
+                foreach ($TableObject->settings->boxfield as $cIdx => $col) {
+                    $parts = explode('.', $col->fieldname, 2); // strip the table name
+                    switch ($parts[1]) {
+                        case 'credit_amount': $rowData["r$cIdx"] = $row['item_ref_id'] ? $row['credit_amount'] : 0; break;
+                        case 'debit_amount':  $rowData["r$cIdx"] = $row['item_ref_id'] ? $row['debit_amount']  : 0; break;
+                        default: 
+                            if (!empty($col->processing) && $col->processing == 'ship_prior'){
+                                $rowData["r$cIdx"] = "$invID:".($row['item_ref_id'] ? $row['item_ref_id'] : $row['id']); // needs encoding current invoice ID:SO item ID
+                            } elseif (!empty($col->processing) && $col->processing == 'ship_bal')  { // reindex so processing will yield proper results
+                                if (!$row['sku']) { $rowData["r$cIdx"] = 0; }
+                                else { $rowData["r$cIdx"] = $row['item_ref_id'] ? $row['item_ref_id'] : $row['id']; }
+                            } else {
+                                $rowData["r$cIdx"] = isset($row[$parts[1]]) ? $row[$parts[1]] : '';
+                            }
+                    }
+                }
+                $output[] = $rowData;
+            }
+            msgDebug("\nReturning processed soRows = ".print_r($soRows, true));
+            return $output;
+        case 'subTotal': 
+            $rID = clean($value, 'integer');
+			return dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(debit_amount-credit_amount) AS F0", "ref_id=$rID AND gl_type='itm'", false);
+        case 'taxJrnl':
+            $rID = intval($value);
+			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'sales_tax'], "id=$rID");
+			return in_array($main['journal_id'], [7,13,18,19,20,21]) ? -$main['sales_tax'] : $main['sales_tax'];
+        case 'ttlJrnl':
+            $rID = intval($value);
+			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id=$rID");
+			return in_array($main['journal_id'], [7,13,18,19,20,21]) ? -$main['total_amount'] : $main['total_amount'];
 		default:
 	}
 }
@@ -198,6 +329,7 @@ function jrnlGetPaymentData($rID=0, $cID=0, $preChecked=[])
 	// pull contact info and open invoices
 	$jID = (isset($output['main']['type']) && $output['main']['type']=='v') ? '6,7' : '12,13';
     if ($output['main']['type']=='v' && validateSecurity('phreebooks', 'j2_mgr', 1)) { $jID .= ',2'; }
+    $today = date('Y-m-d');
 	$criteria = "contact_id_b='$cID' AND journal_id IN ($jID) AND closed='0'";
 	$result = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $criteria, "post_date");
 	msgDebug("\nFound number of open invoices = ".sizeof($result));
@@ -207,7 +339,8 @@ function jrnlGetPaymentData($rID=0, $cID=0, $preChecked=[])
 		$row['total_amount'] += getPaymentInfo($row['id'], $row['journal_id']);
         if (in_array(JOURNAL_ID, [17,22])) { $row['total_amount'] = -$row['total_amount']; } // need to negate for reverse cash flow
 		$dates= localeDueDate($row['post_date'], $row['terms'], $output['main']['type']);
-        $discount = $row['post_date'] <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
+        msgDebug("\npost date = {$row['post_date']} and early date = {$dates['early_date']}");
+        $discount = $today <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
 		$output['items'][] = [
             'idx'         => $itemIdx,
 			'id'          => 0,
@@ -219,12 +352,12 @@ function jrnlGetPaymentData($rID=0, $cID=0, $preChecked=[])
 			'waiting'     => in_array($row['journal_id'], [6,7]) ? $row['waiting'] : 0,
 			'qty'         => 1,
 			'description' => sprintf(lang('phreebooks_pmt_desc_short'), $row['invoice_num'], $row['purch_order_id'] ? $row['purch_order_id'] : lang('none')),
-			'amount'      => $row['total_amount'],
+			'amount'      => roundAmount($row['total_amount']),
 			'gl_account'  => $row['gl_acct_id'],
 			'post_date'   => $row['post_date'],
 			'date_1'      => $dates['net_date'],
 			'discount'    => $discount,
-			'total'       => $row['total_amount'] - $discount,
+			'total'       => roundAmount($row['total_amount']) - $discount,
 			'checked'     => in_array($row['id'], $preChecked) ? true : false];
 		$itemIdx++;
 	}

@@ -18,7 +18,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-10
+ * @version    2.x Last Update: 2018-04-19
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -95,40 +95,44 @@ class phreebooksAdmin {
                         'save' => ['order' => 50, 'page' => 'admin', 'class' => 'phreebooksAdmin', 'method' => 'usersSave']]]],
             'api' => ['path' => 'phreebooks/api/journalAPI', 'attr' => ['jID' => 12]]]; // default to import sales
         $this->phreeformProcessing = [
-            'subTotal'  => ['text'=>lang('subtotal'),             'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'invBalance'=> ['text'=>lang('balance'),              'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'invRefNum' => ['text'=>lang('journal_main_invoice_num_2'),'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'bnkReg'    => ['text'=>lang('bank_register_format'), 'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'pmtDate'   => ['text'=>lang('payment_due_date'),     'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'pmtDisc'   => ['text'=>lang('payment_discount'),     'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'paymentDue'=> ['text'=>lang('payment_due'),          'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'paymentRcv'=> ['text'=>lang('payment_received'),     'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'paymentRef'=> ['text'=>lang('payment_reference'),    'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'ship_bal'  => ['text'=>lang('shipped_balance'),      'group'=>$this->lang['title'],'module'=>'bizuno','function'=> 'viewFormat'],
-            'shipBalVal'=> ['text'=>lang('shipped_balance_value'),'group'=>$this->lang['title'],'module'=>'bizuno','function'=> 'viewFormat'],
-            'ship_prior'=> ['text'=>lang('shipped_prior'),        'group'=>$this->lang['title'],'module'=>'bizuno','function'=> 'viewFormat'],
-            'rep_id'    => ['text'=>lang('contacts_rep_id_c'),    'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'taxTitle'  => ['text'=>lang('tax_rates_title'),      'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'terms'     => ['text'=>lang('terms')." (".lang('customers').")",'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'terms_v'   => ['text'=>lang('terms')." (".lang('vendors').")",  'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'age_00'    => ['text'=>$this->lang['pb_gl_age_00'],  'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'age_30'    => ['text'=>$this->lang['pb_gl_age_30'],  'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'age_60'    => ['text'=>$this->lang['pb_gl_age_60'],  'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'age_90'    => ['text'=>$this->lang['pb_gl_age_90'],  'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'begBal'    => ['text'=>lang('beginning_balance'),    'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'endBal'    => ['text'=>lang('ending_balance'),       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'isCur'     => ['text'=>lang('gl_acct_type_30'),      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'isYtd'     => ['text'=>$this->lang['pb_is_ytd'],     'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'isBdgt'    => ['text'=>lang('budget'),               'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'isBytd'    => ['text'=>$this->lang['pb_is_budget_ytd'],'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'isLcur'    => ['text'=>$this->lang['ly_actual'],     'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'isLytd'    => ['text'=>$this->lang['pb_is_last_ytd'],'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'isLBgt'    => ['text'=>$this->lang['ly_budget'],     'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'isLBtd'    => ['text'=>$this->lang['pb_is_last_budget_ytd'],'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks']];
+            'subTotal'  => ['text'=>lang('subtotal'),                  'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'invBalance'=> ['text'=>lang('balance'),                   'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'invRefNum' => ['text'=>lang('journal_main_invoice_num_2'),'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'invUnit'   => ['text'=>$this->lang['pb_inv_unit'],        'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'bnkReg'    => ['text'=>lang('bank_register_format'),      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'pmtDate'   => ['text'=>lang('payment_due_date'),          'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'pmtDisc'   => ['text'=>lang('payment_discount'),          'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'paymentDue'=> ['text'=>lang('payment_due'),               'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'paymentRcv'=> ['text'=>lang('payment_received'),          'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'paymentRef'=> ['text'=>lang('payment_reference'),         'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'ship_bal'  => ['text'=>lang('shipped_balance'),           'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'shipBalVal'=> ['text'=>lang('shipped_balance_value'),     'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'ship_prior'=> ['text'=>lang('shipped_prior'),             'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'taxJrnl'   => ['text'=>$this->lang['pb_tax_by_journal'],  'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'ttlJrnl'   => ['text'=>$this->lang['pb_total_by_journal'],'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'rep_id'    => ['text'=>lang('contacts_rep_id_c'),         'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'taxTitle'  => ['text'=>lang('tax_rates_title'),           'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'terms'     => ['text'=>lang('terms')." (".lang('customers').")",'group'=>$this->lang['title'],'module'=>'bizuno', 'function'=>'viewFormat'],
+            'terms_v'   => ['text'=>lang('terms')." (".lang('vendors').")",  'group'=>$this->lang['title'],'module'=>'bizuno', 'function'=>'viewFormat'],
+            'soStatus'  => ['text'=>$this->lang['pb_so_status'],       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_00'    => ['text'=>$this->lang['pb_gl_age_00'],       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_30'    => ['text'=>$this->lang['pb_gl_age_30'],       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_60'    => ['text'=>$this->lang['pb_gl_age_60'],       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_90'    => ['text'=>$this->lang['pb_gl_age_90'],       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'begBal'    => ['text'=>lang('beginning_balance'),         'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'endBal'    => ['text'=>lang('ending_balance'),            'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'isCur'     => ['text'=>lang('gl_acct_type_30'),           'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'isYtd'     => ['text'=>$this->lang['pb_is_ytd'],          'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'isBdgt'    => ['text'=>lang('budget'),                    'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'isBytd'    => ['text'=>$this->lang['pb_is_budget_ytd'],   'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'isLcur'    => ['text'=>$this->lang['ly_actual'],          'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'isLytd'    => ['text'=>$this->lang['pb_is_last_ytd'],     'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'isLBgt'    => ['text'=>$this->lang['ly_budget'],          'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'isLBtd'    => ['text'=>$this->lang['pb_is_last_bdgt_ytd'],'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks']];
         $this->phreeformFormatting = [
-            'j_desc' => ['text' => lang('journal_main_journal_id'), 'group' => $this->lang['title'], 'module' => 'bizuno', 'function' => 'viewFormat'],
-            'glType' => ['text' => lang('gl_acct_type'), 'group' => $this->lang['title'], 'module' => 'bizuno', 'function' => 'viewFormat'],
-            'glTitle' => ['text' => lang('gl_acct_title'), 'group' => $this->lang['title'], 'module' => 'bizuno', 'function' => 'viewFormat']];
+            'j_desc' => ['text'=>lang('journal_main_journal_id'),      'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'glType' => ['text'=>lang('gl_acct_type'),                 'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'glTitle'=> ['text'=>lang('gl_acct_title'),                'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat']];
         $this->notes = [$this->lang['note_phreebooks_install_1'],$this->lang['note_phreebooks_install_2'],$this->lang['note_phreebooks_install_3']];
     }
 

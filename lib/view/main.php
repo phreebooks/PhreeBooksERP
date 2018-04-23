@@ -149,14 +149,10 @@ final class view extends portalView
 function viewFormat($value, $format = '')
 {
 	global $currencies, $bizunoLang;
-// msgDebug("\nIn viewFormat value = $value and format = $format");
+//  msgDebug("\nIn viewFormat value = $value and format = $format");
 	switch ($format) {
 		case 'blank':      return '';
 		case 'blankNull':  return $value ? $value : '';
-        case 'bnkReg':
-            $rID = intval($value);
-			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id=$rID");
-			return in_array($main['journal_id'], [7,13,18,19,20,21]) ? -$main['total_amount'] : $main['total_amount'];
 		case 'contactID':
             return ($result = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'short_name', "id='$value'")) ? $result : getModuleCache('bizuno', 'settings', 'company', 'id');
         case 'contactName':if (!$value) { return ''; }
@@ -198,7 +194,32 @@ function viewFormat($value, $format = '')
 			return $result ? BIZUNO_DATA."images/$result" : '';
         case 'inv_mvmnt':
             return viewInvSales($value); // value passed should be the SKU
-		case 'invBalance': // needs journal_main.id
+		case 'lc':        return mb_strtolower($value);
+		case 'j_desc':    return isset($bizunoLang["journal_main_journal_id_$value"]) ? $bizunoLang["journal_main_journal_id_$value"] : $value;
+		case 'neg':       return -$value;
+		case 'n2wrd':     require_once(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/functions.php");
+			return viewCurrencyToWords($value);
+        case 'null0':     return ((real)$value == 0) ? '' : $value;
+        case 'number':    return number_format((float)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'), getModuleCache('bizuno', 'settings', 'locale', 'number_decimal'), getModuleCache('bizuno', 'settings', 'locale', 'number_thousand'));
+		case 'printed':   return $value ? '' : lang('duplicate');
+        case 'precise':   $output = number_format((real)$value, getModuleCache('bizuno', 'settings', 'locale', 'precision'));
+			$zero = number_format(0, getModuleCache('bizuno', 'settings', 'locale', 'precision')); // to handle -0.00
+			return ($output == '-'.$zero) ? $zero : $output;
+		case 'rep_id':	  $result = dbGetValue(BIZUNO_DB_PREFIX."users", 'title', "admin_id='$value'");
+			return $result ? $result : $value;
+		case 'rnd2d':     return !is_numeric($value) ? $value : number_format(round($value, 2), 2, '.', '');
+        case 'taxTitle':return viewTaxTitle($value);
+        case 'terms':   return viewTerms($value); // must be passed encoded terms, default terms will use customers default
+        case 'terms_v': return viewTerms($value, true, 'v'); // must be passed encoded terms, default terms will use customers default
+        case 'today':   return date('Y-m-d');
+        case 'uc':      return mb_strtoupper($value);
+        case 'yesBno':  return $value ? lang('yes') : '';
+/* BEGIN DEPRECATION - mostly moved to PhreeBooks functions.php */
+        case 'bnkReg':
+            $rID = intval($value);
+			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id=$rID");
+			return in_array($main['journal_id'], [7,13,18,19,20,21]) ? -$main['total_amount'] : $main['total_amount'];
+        case 'invBalance': // needs journal_main.id
 			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id='$value'");
 			$jID  = $main['journal_id']; 
 			$total_inv = in_array($jID, [6,13]) ? -$main['total_amount'] : $main['total_amount'];
@@ -212,19 +233,6 @@ function viewFormat($value, $format = '')
 		case 'invRefNum': // needs journal_main.id
             $rID = intval($value);
 			return dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'invoice_num', "id=$rID");
-		case 'lc':        return mb_strtolower($value);
-		case 'j_desc':    return isset($bizunoLang["journal_main_journal_id_$value"]) ? $bizunoLang["journal_main_journal_id_$value"] : $value;
-		case 'neg':       return -$value;
-		case 'n2wrd':     require_once(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/functions.php");
-			return viewCurrencyToWords($value);
-        case 'number':    return number_format((float)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'), getModuleCache('bizuno', 'settings', 'locale', 'number_decimal'), getModuleCache('bizuno', 'settings', 'locale', 'number_thousand'));
-        case 'pmtDate': // needs journal_main.id
-            $rID   = clean($value, 'integer');
-			$result= dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['post_date','journal_id','terms'], "id=$rID");
-            if (!in_array($result['journal_id'], ['3','4','6','7','9','10','12','13'])) { return ''; }
-			$temp  = localeDueDate($result['post_date'], $result['terms']);
-			return $temp['net_date'];
-        case 'pmtDisc':
         case 'paymentDue': // needs journal_main.id
             $rID  = clean($value, 'integer');
 			$row  = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id','total_amount','post_date','terms'], "id=$rID");
@@ -240,25 +248,27 @@ function viewFormat($value, $format = '')
 			$total_paid = 0;
             foreach ($result as $row) { $total_paid += $row['credit_amount'] - $row['debit_amount']; }
 			return in_array($jID, [6,13]) ? -$total_paid : $total_paid;
-		case 'paymentRef': // gets the payment transaction code, needs journal_main.id
+        case 'paymentRef': // gets the payment transaction code, needs journal_main.id
             $invID = clean($value, 'integer');
 			$pmtID = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'ref_id', "item_ref_id=$invID");
             if ($pmtID) { return dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'trans_code', "ref_id=$pmtID AND gl_type='ttl'"); }
             else        { return ''; }
-		case 'printed':   return $value ? '' : lang('duplicate');
-        case 'precise':   $output = number_format((real)$value, getModuleCache('bizuno', 'settings', 'locale', 'precision'));
-			$zero = number_format(0, getModuleCache('bizuno', 'settings', 'locale', 'precision')); // to handle -0.00
-			return ($output == '-'.$zero) ? $zero : $output;
-		case 'rep_id':	  $result = dbGetValue(BIZUNO_DB_PREFIX."users", 'title', "admin_id='$value'");
-			return $result ? $result : $value;
-		case 'rnd2d':     return !is_numeric($value) ? $value : number_format(round($value, 2), 2, '.', '');
-		case 'ship_bal': // pass table journal_item.id and check for quantites remaining to be shipped
+        case 'pmtDate': // needs journal_main.id
+            $rID   = clean($value, 'integer');
+			$result= dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['post_date','journal_id','terms'], "id=$rID");
+            if (!in_array($result['journal_id'], ['3','4','6','7','9','10','12','13'])) { return ''; }
+			$temp  = localeDueDate($result['post_date'], $result['terms']);
+			return $temp['net_date'];
+        case 'pmtDisc': return 'TBD';
+        case 'ship_bal': // pass table journal_item.id and check for quantites remaining to be shipped
+            msgDebug("\nEntering ship_bal with value = $value");
 			$refID = clean($value, 'integer');
+            if (!$refID) { return 0; }
             $qtySO = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'qty', "id=$refID");
 			if ($qtySO) {
                 $filled = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'SUM(qty) as qty', "item_ref_id=$refID", false);
 				return $qtySO - $filled;
-            } else { return ""; }
+            } else { return 0; }
 		case 'shipBalVal': // pass table journal_item.id and check for quantites remaining to be shipped
 			$refID = clean($value, 'integer');
             $ttlSO = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'debit_amount+credit_amount', "id=$refID", false);
@@ -281,11 +291,16 @@ function viewFormat($value, $format = '')
             } else { $service = ''; }
 			return $title." ".$service;
 		case 'ship_prior': // pass table journal_item.id and check for quantites shipped prior
-			$iID   = clean($value, 'integer');
-			$links = dbGetValue(BIZUNO_DB_PREFIX."journal_item", ['ref_id', 'item_ref_id'], "id=$iID");
+            if (!$value) { return 0; }
+            if (strpos($value, ':')) {
+                $tmp = explode(':', $value);
+                $links = ['ref_id'=>$tmp[0], 'item_ref_id'=>$tmp[1]];
+            } else {
+    			$links = dbGetValue(BIZUNO_DB_PREFIX."journal_item", ['ref_id', 'item_ref_id'], "id=$value");
+            }
 			if ($links['item_ref_id']) {
 				return dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'SUM(qty)', "item_ref_id={$links['item_ref_id']} AND ref_id!={$links['ref_id']}", false);
-            } else { return ''; }
+            } else { return 0; }
 		case 'shipTrack': // get tracking from journal_main.invoice_num
 			$result = dbGetMulti(BIZUNO_DB_PREFIX."extShipping", "ref_id='$value' OR ref_id LIKE '$value-%'");
 			$output = array();
@@ -294,12 +309,7 @@ function viewFormat($value, $format = '')
         case 'subTotal': 
             $rID = clean($value, 'integer');
 			return dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(debit_amount-credit_amount) AS F0", "ref_id=$rID AND gl_type='itm'", false);
-        case 'taxTitle':return viewTaxTitle($value);
-        case 'terms':   return viewTerms($value); // must be passed encoded terms, default terms will use customers default
-        case 'terms_v': return viewTerms($value, true, 'v'); // must be passed encoded terms, default terms will use customers default
-        case 'today':   return date('Y-m-d');
-        case 'uc':      return mb_strtoupper($value);
-        case 'yesBno':  return $value ? lang('yes') : '';
+/* END DEPRECATION */
 	}
 	if (getModuleCache('phreeform', 'formatting', $format, 'function')) {
 		$func = getModuleCache('phreeform', 'formatting')[$format]['function'];

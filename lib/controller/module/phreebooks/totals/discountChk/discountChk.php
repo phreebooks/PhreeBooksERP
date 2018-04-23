@@ -99,7 +99,6 @@ class discountChk
                 msgDebug("\nGL TYPE MATCH "); // never hits this loop as the dsc row has been removed
 				$this->fields['totals_discount_id']['attr']['value'] = $row['id'];
 				$this->fields['totals_discount_gl']['attr']['value'] = $row['gl_account'];
-//				$this->fields['totals_discount']['attr']['value']    = $row['credit_amount'] + $row['debit_amount']; // this is
 			}
         } }
 		$output['body'] .= '<div style="text-align:right">'."\n";

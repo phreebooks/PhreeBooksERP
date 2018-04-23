@@ -15,11 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-06-01
+ * @version    2.x Last Update: 2018-04-19
  * @filesource /lib/controller/module/bizuno/dashboards/company_links/company_links.php
- * 
  */
 
 namespace bizuno;
@@ -35,7 +34,7 @@ class company_links
 	
 	function __construct($settings)
     {
-		$this->security= getUserCache('security', 'profile', 0);
+		$this->security= 1;
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $defaults      = ['users'=>'-1','roles'=>'-1'];
         $this->settings= array_replace_recursive($defaults, $settings);
@@ -64,6 +63,7 @@ class company_links
 
 	public function render()
     {
+        $security = getUserCache('security', 'admin', false, 0);
 		$data = [
             $this->code.'_0' => ['label' => lang('title'),
 				'classes'=> ['easyui-validatebox'],
@@ -79,7 +79,7 @@ class company_links
             ];
 		$html  = '<div>';
 		$html .= '  <div id="'.$this->code.'_attr" style="display:none">';
-		if ($this->security > 1) {
+		if ($security > 1) {
 			$html .= '    <form id="'.$this->code.'Form" action="">';
 			$html .= '      <div style="white-space:nowrap">'.html5($this->code.'_0',      $data[$this->code.'_0']).'</div>';
 			$html .= '      <div style="white-space:nowrap">'.html5($this->code.'_1',      $data[$this->code.'_1']).'</div>';
@@ -94,7 +94,7 @@ class company_links
             foreach ($this->settings['data'] as $title => $hyperlink) {
                 $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"];
                 $html .= '  <div>';
-                if ($this->security > 3) { $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>'; }
+                if ($security > 2) { $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>'; }
                 $html .= '    <div style="min-height:16px;">'.viewFavicon($hyperlink, $title).' <a href="'.$hyperlink.'" target="_blank">'.$title.'</a></div>';
                 $html .= '  </div>';
                 $index++;
@@ -108,6 +108,7 @@ class company_links
 
 	public function save()
     {
+        if (getUserCache('security', 'admin', false, 0) < 2) { return msgAdd('Illegal Access!'); } 
 		$menu_id = clean('menuID', 'cmd', 'get');
 		$rmID    = clean('rID', 'integer', 'get');
 		$my_title= clean($this->code.'_0', 'text', 'post');

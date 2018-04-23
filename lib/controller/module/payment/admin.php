@@ -17,10 +17,8 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-01-30
-
+ * @version    2.x Last Update: 2018-04-19
  * @filesource /lib/controller/module/payment/admin.php
- * 
  */
 
 namespace bizuno;
@@ -72,7 +70,7 @@ class paymentAdmin
     {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
 		$data = adminStructure($this->moduleID, $this->settingsStructure(), $this->lang);
-		$data['tabs']['tabAdmin']['divs']['methods'] = ['order'=>10,'label'=>lang('payment_methods'),'attr'=>  ['module'=>$this->moduleID,'type'=>$this->structure['dirMethods']],
+		$data['tabs']['tabAdmin']['divs']['methods'] = ['order'=>10,'label'=>lang('payment_methods'),'attr'=>['module'=>$this->moduleID,'type'=>$this->structure['dirMethods']],
 			'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"];
 		$data['tabs']['tabAdmin']['divs']['settings']= ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminSettings.php"];
 		$layout = array_replace_recursive($layout, $data);
@@ -92,7 +90,6 @@ class paymentAdmin
      */
     public function install(&$layout=[])
     {
-//		require_once(BIZUNO_LIB."controller/module/bizuno/settings.php");
 		$bAdmin = new bizunoSettings();
 		foreach ($this->pmtMethods as $method) {
             $bAdmin->methodInstall($layout, ['module'=>'payment','type'=>'methods','method'=>$method], false);

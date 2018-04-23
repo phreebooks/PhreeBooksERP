@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-10
+ * @version    2.x Last Update: 2018-04-17
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
@@ -92,7 +92,7 @@ class bizunoApi
 			$test = "journal_id=12 AND purch_order_id='{$this->main['purch_order_id']}'";
 		}
 		$dup = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'id', $test);
-		if ($dup) { return msgAdd(sprintf(lang('err_gl_invoice_num_dup'), lang('reference'), $this->main['invoice_num'])); }
+		if ($dup) { return msgAdd(sprintf(lang('err_gl_invoice_num_dup'), lang('reference'), $jID==10 ? $this->main['invoice_num'] : $this->main['purch_order_id'])); }
         // Set some other main values to post, fill in defaults
 		$this->main['waiting'] = '1'; // force unshipped
         if ( empty($this->main['gl_acct_id'])) { $this->main['gl_acct_id'] = $this->defaultAR; }
@@ -411,11 +411,8 @@ class bizunoApi
         if (isset($pDetails['content']['sheets']) && sizeof($pDetails['content']['sheets']) > 0) { $product['PriceLevels'] = $pDetails['content']['sheets']; }
         $product['WeightUOM']   = getModuleCache('inventory', 'settings', 'general', 'weight_uom', 'LB');
         $product['DimensionUOM']= getModuleCache('inventory', 'settings', 'general', 'dim_uom', 'IN');
-        if (isset($product['sendImage']) && $product['sendImage']) { 
-            $this->setImage($product);
-        } else {
-            unset($product['Image']);
-        }
+        if (!empty($product['sendImage'])) { $this->setImage($product); }
+        else                               { unset($product['Image']); }
         $this->setAccessories($product);
         $this->setAttributes ($product);
         $request = [

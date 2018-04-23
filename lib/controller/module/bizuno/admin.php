@@ -105,6 +105,7 @@ class bizunoAdmin
 			'printed' => ['text'=>$this->lang['pf_proc_printed'], 'group'=>lang('text'),   'module'=>$this->moduleID,'function'=>'viewFormat'],
 			'neg'     => ['text'=>$this->lang['pf_proc_neg'],     'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
 			'n2wrd'   => ['text'=>$this->lang['pf_proc_n2wrd'],   'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
+			'null0'   => ['text'=>$this->lang['pf_proc_null0'],   'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
 			'rnd2d'   => ['text'=>$this->lang['pf_proc_rnd2d'],   'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
 			'currency'=> ['text'=>lang('currency'),               'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
 			'curLong' => ['text'=>lang('currency_long'),          'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
@@ -444,7 +445,7 @@ class bizunoAdmin
         $company['id'] = $company['primary_name'] = getUserCache('profile', 'biz_title');
         setModuleCache('bizuno', 'settings', 'company', $company);
 		msgLog(lang('user_login')." ".getUserCache('profile', 'email'));
-        portalWrite('business', ['date_last_visit'=>date('Y-m-d h:i:s')], 'update', "id='".getUserCache('profile', 'biz_id')."'");
+        portalWrite('business', ['title'=>$company['id'],'date_last_visit'=>date('Y-m-d h:i:s')], 'update', "id='".getUserCache('profile', 'biz_id')."'");
 		$layout = ['content'=>['action'=>'eval','actionData'=>"loadSessionStorage();"]];
 	}
 }

@@ -17,9 +17,8 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-08-27
+ * @version    2.0 Last Update: 2018-04-17
  * @filesource /lib/controller/module/inventory/prices/bySKU.php
- * 
  */
 
 namespace bizuno;
@@ -155,7 +154,7 @@ class bySKU extends inventoryPrices
                 $prices['price'] = isset($prices['price']) ? min($prices['price'], $levels['price']) : $levels['price'];
 			}
 			$temp = json_decode(dbGetValue(BIZUNO_DB_PREFIX."inventory_prices", 'settings', "id={$row['ref_id']}"), true);
-            if (!isset($prices['sheets'][$row['ref_id']])) { 
+            if (!isset($prices['sheets'][$row['ref_id']]) && $levels['price']) { // only add price sheet if a price was returned
                 $prices['sheets'][$row['ref_id']] = ['title'=>$this->lang['title'].' - '.(isset($temp['title']) ? $temp['title'] : ''),
                     'default'=> $values['cSheet']==$row['ref_id'] || ($values['iSheet'.$type]==$row['ref_id'] && $values['cSheet']==$values['iSheet'.$type]) ? 1 : 0,
                     'levels' => $levels['levels']];

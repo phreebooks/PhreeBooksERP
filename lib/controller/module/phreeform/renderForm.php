@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-05
+ * @version    2.x Last Update: 2018-04-23
  * @filesource /controller/module/phreeform/renderForm.php
  */
 
@@ -39,6 +39,7 @@ class PDF extends \TCPDF
 	var $NewPageGroup;   // variable indicating whether a new group was requested
 	var $PageGroups;     // variable containing the number of pages of the groups
 	var $CurrPageGroup;  // variable containing the alias of the current page group
+    protected $last_page_flag = false;
 
 	function __construct() {
 		global $report;
@@ -68,6 +69,7 @@ class PDF extends \TCPDF
     { // prints all static information on the page
 		global $report;
 		$tempValues = $report->FieldValues;
+        $this->tempValues = [];
 		foreach ($report->fieldlist as $key => $field) {
             // This flags an error for block types. Need to define as class for each level.
 //            msgDebug("\nWorking with key = $key and field ".print_r($field, true));
@@ -79,25 +81,28 @@ class PDF extends \TCPDF
             if (!isset($field->settings->color)) { $field->settings->color = $this->defaultColor; }
             if (!isset($field->settings->align)) { $field->settings->align = $this->defaultAlign; }
 			switch ($field->type) {
-				case "Data": 
-                    if (!isset($field->display)) { $field->display = 0; }
-					$field->settings->text = array_shift($tempValues); // fill the data to display
+				case 'Data':
+                    if (!isset($field->settings->display)) { $field->settings->display = 0; }
+                    $cellValue = array_shift($tempValues);
+					$field->settings->text = $cellValue; // fill the data to display
                     if (!isset($field->settings->processing)) { $field->settings->processing = ''; }
                     if (!isset($field->settings->formatting)) { $field->settings->formatting = ''; }
 					// some special processing if display on first or last page only
-					$report->fieldlist[$key]->settings->texttemp = $field->settings->text;
-                    if (($this->PageNo() <> 1 && $field->display == 1) || $field->display == 2) { $field->settings->text = ''; }
-				case "TBlk": // same operation as page number 
-				case "Text": 
-				case "CDta": 
-				case "CBlk":
+                    if ($field->settings->display==2) {
+                        $this->tempValues[] = $cellValue;
+                        break; 
+                    }
+				case 'TBlk': // same operation as page number 
+				case 'Text': 
+				case 'CDta': 
+				case 'CBlk':
                 case 'LtrTpl':
-				case "PgNum":   $this->FormText($field);    break;
-				case "Img":     $this->FormImage($field);   break;
-				case "ImgLink": $this->FormImgLink($field, array_shift($tempValues)); break;
-				case "Line":    $this->FormLine($field);    break;
-				case "Rect":    $this->FormRect($field);    break;
-				case "BarCode": $this->FormBarCode($field, array_shift($tempValues)); break;
+				case 'PgNum':   $this->FormText($field);    break;
+				case 'Img':     $this->FormImage($field);   break;
+				case 'ImgLink': $this->FormImgLink($field, array_shift($tempValues)); break;
+				case 'Line':    $this->FormLine($field);    break;
+				case 'Rect':    $this->FormRect($field);    break;
+				case 'BarCode': $this->FormBarCode($field, array_shift($tempValues)); break;
                 case 'Tbl':     if (!empty($field->settings->fieldname)) { array_shift($tempValues); }  break; // scrap field as this is not static but is in the data array
 				default: // do nothing
 			}
@@ -108,18 +113,32 @@ class PDF extends \TCPDF
      * Generates the footer data for forms, generally the totals
      * @global array $report - Complete $report structure with data
      */
-    function Footer()
+    public function Footer()
     { // Prints totals at end of last page
 		global $report;
 		foreach ($report->fieldlist as $field) {
-            if (!isset($field->settings->font))  { $field->settings->font  = $this->defaultFont; }
-            if (!isset($field->settings->size))  { $field->settings->size  = $this->defaultSize; }
-            if (!isset($field->settings->color)) { $field->settings->color = $this->defaultColor; }
-            if (!isset($field->settings->align)) { $field->settings->align = $this->defaultAlign; }
-            if ($field->type == 'Ttl' || ($field->type == 'Data' && $field->display == '2')) { $this->FormText($field); }
+            if (!isset($field->settings->display)){ $field->settings->display = 0; }
+            if (!isset($field->settings->font))   { $field->settings->font  = $this->defaultFont; }
+            if (!isset($field->settings->size))   { $field->settings->size  = $this->defaultSize; }
+            if (!isset($field->settings->color))  { $field->settings->color = $this->defaultColor; }
+            if (!isset($field->settings->align))  { $field->settings->align = $this->defaultAlign; }
+            if (!$this->last_page_flag && $field->settings->display=='2') {
+                $field->settings->text = lang('continued');
+                $this->FormText($field);
+            } elseif ($field->type=='Data' && $field->settings->display=='2') {
+                $field->settings->text = array_shift($this->tempValues);
+                $this->FormText($field);
+            } elseif ($field->type=='Ttl' && $field->settings->display=='2') {
+                $this->FormText($field);
+            }
+//            $this->FormText($field);
 		}
 	}
 
+    public function Close() {
+//        $this->last_page_flag = true;
+        parent::Close();
+    }
 	/**
      * Create a new page group; call this before calling AddPage()
      */
@@ -146,6 +165,16 @@ class PDF extends \TCPDF
 		return $this->CurrPageGroup;
 	}
 
+    protected function getPagePosition($display=0)
+    {
+        if (!$display) { return true; } // all pages
+        msgDebug("\nSetting display value with display = $display");
+        if ($display==1 && $this->GroupPageNo()==1) { return true; } // first page
+        if ($display==2 && $this->GroupPageNo()==$this->PageGroupAlias()) { msgDebug("returning true last page"); return true; } // last page
+        msgDebug("returning false, page ".$this->GroupPageNo()." of ".$this->PageGroupAlias());
+        return false;
+    }
+    
 	/**
      * Starts rending a page, static first then dynamic
      * @param char $orientation - page orientation
@@ -369,6 +398,7 @@ class PDF extends \TCPDF
 		$MaxRowHt  = 0; //track the tallest row to estimate page breaks
 		$HeadingHt = 0;
 		$this->y0 = $Params->ordinate;
+        $this->last_page_flag = false;
 		foreach ($Params->data as $index => $myrow) {
 			// See if we are at or near the end of the table box size
 			if (($this->y0 + $MaxRowHt) > $MaxBoxY) { // need a new page
@@ -392,7 +422,9 @@ class PDF extends \TCPDF
 			$FillThisRow = !$FillThisRow;
 		}
 		$this->DrawTableLines($Params, $HeadingHt); // draw the box and lines around the table
+        $this->last_page_flag = true;
 	}
+
     /**
      * Builds and places a single table row on the page.
      * @param array $Params - Field settings
@@ -400,7 +432,7 @@ class PDF extends \TCPDF
      * @param boolean $FillThisRow - used for alternating background color to easier identify rows
      * @param integer $FC - fill color (in decimal 0 - 255)
      * @param boolean $Heading - [default false] set to true to generate a heading at top of table
-     * @return integer - max row heigth used to control pagination and endof page position
+     * @return integer - max row height used to control pagination and end of page position
      */
 	public function ShowTableRow($Params, $myrow, $FillThisRow, $FC, $Heading = false) {
         if (!isset($Params->settings->hfshow)) { $Params->settings->hfshow = '0'; }

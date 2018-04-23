@@ -5,11 +5,11 @@ Tags: erp, accounting, bookkeeping, crm, quickbooks, woocommerce, e-commerce, ca
 License: GPL3
 License URI: https://www.gnu.org/licenses/gpl.html
 
-Bizuno Accounting, by PhreeSoft, is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform.
+Bizuno Accounting, by PhreeSoft Inc., is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform.
 
 == Description ==
 
-Bizuno Accounting, by PhreeSoft, is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform. Features include CRM, Customer account management, vendor management, full featured double-entry accounting, inventory control, financial transaction management an more. Features include:
+Bizuno Accounting, by PhreeSoft Inc., is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform. Features include CRM, Customer account management, vendor management, full featured double-entry accounting, inventory control, financial transaction management an more. Features include:
 
 * Multi-user and multi-Currency capability
 * Over 40 standard reports and PhreeForm report/form generator with user level lockout security
@@ -24,7 +24,7 @@ Bizuno Accounting, by PhreeSoft, is a full featured double-entry accounting/ERP 
 
 = Minimum Requirements =
 
-* PHP version 5.4 or greater (PHP 5.6 or greater is recommended, tested with PHP 7)
+* PHP   version 5.4 or greater (PHP 5.6 or greater is recommended, tested with PHP 7)
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
 
 1. Upload the file to your web site directory. PhreeBooks 5 can be installed in a subdirectory within your web site root directory.
@@ -35,8 +35,8 @@ Bizuno Accounting, by PhreeSoft, is a full featured double-entry accounting/ERP 
 
 == Upgrade Notice ==
 
-2018-04-15 - Release 5.0.1 - No action required, upgrade through the installed app or simply replace the files with the new version
-2018-04-10 - Initial Release to GitHub repository
+2018-04-23 - 5.0.1 - No database changes necessary, replace current files with new version
+2018-04-10 - 5.0.0 - Initial Release to GitHub repository
 
 == Frequently Asked Questions ==
 
@@ -51,7 +51,7 @@ Bizuno Accounting, by PhreeSoft, is a full featured double-entry accounting/ERP 
 == Changelog ==
 
 = 5.0.1 =
-2018-04-15 - Fixes for PHP 5.4, minor bug fixes, minor improvements
+2018-04-23 - Incorporate Bizuno library 2.1.2, bug installing with PHP 5.4
 = 5.0.0 =
 2018-04-10 - Initial Release (based on Bizuno library Revision 2.1.0)
 
