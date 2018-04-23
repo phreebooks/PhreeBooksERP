@@ -170,6 +170,7 @@ class bizunoBackup
     
     public function bizunoUpgradeGo(&$layout=[])
     {
+        msgTrap();
         $pathLocal= BIZUNO_DATA."temp/bizuno.zip";
         $bizID    = getUserCache('profile', 'biz_id');
         $bizUser  = getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_user');
@@ -187,8 +188,8 @@ class bizunoBackup
             @copy($source, $dest, $context);
             if (@mime_content_type($pathLocal) == 'text/plain') { // something went wrong
                 $msg = json_decode(file_get_contents($pathLocal), true);
-                if (is_array($msg)) { return msgAdd($msg['message']['error'][0]['text']); }
-                else                { return msgAdd("unknown Error: ".print_r($msg, true)); }
+                if (is_array($msg)) { return msgAdd("Unknown Exception: ".print_r($msg, true)); }
+                else                { return msgAdd("Unknown Error: ".print_r($msg, true)); }
             }
             if (file_exists($pathLocal) && $io->zipUnzip($pathLocal, BIZUNO_ROOT, false)) {
                 // see if an upgrade file is present, if so execute it and delete

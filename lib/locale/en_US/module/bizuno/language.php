@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-17
+ * @version    2.x Last Update: 2018-04-23
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -64,6 +64,7 @@ $lang = [
 	'roles_restrict' => 'Do not allow access through the www.bizuno.com portal. i.e. For internal use only, members of this role cannot access your business.',
 	'msg_module_delete_confirm' => 'Are you sure you want to un-install this module. All database data and files associated with this module will be lost!',
 	'msg_module_upgraded' => 'Successfully upgraded module %s to release %s',
+    'msg_upgrade_success' => 'The upgrade was successful! Press OK to close this message and log out of Bizuno to clear your cache.',
 	'msg_encryption_changed' => 'The encryption key has been changed.',
 	'msg_restore_confirm' => 'Warning! This operation will delete and re-write the database. Are you sure you want to continue?',
 	'msg_restore_success' => 'Restore complete! Press OK to complete the restore, log out and return to the welcome screen.',

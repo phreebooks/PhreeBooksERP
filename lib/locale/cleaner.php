@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-14
+ * @version    2.x Last Update: 2018-04-23
  * @filesource /locale/cleaner.php
  */
 
@@ -34,7 +34,6 @@ class cleaner
 	 */
 	function clean($idx, $processing='', $src='')
     {
-        global $currencies;
         switch ($src) {
             case 'cookie': $value = isset($_COOKIE[$idx]) ? $_COOKIE[$idx] : ''; break;
             case 'get':    $value = isset($_GET[$idx])    ? $_GET[$idx]    : ''; break;
@@ -64,8 +63,8 @@ class cleaner
             case 'db_string':return addslashes($value);
             case 'decimal':
             case 'double':
-            case 'email':    return preg_replace("/[^a-zA-Z0-9\-\_\.\,\@]/", '', $value);
             case 'float':    return $this->localeNumber($value, 'float', $default);
+            case 'email':    return !empty($value) ? preg_replace("/[^a-zA-Z0-9\-\_\.\,\@]/", '', $value) : $default;
             case 'filename': return preg_replace("/[^a-zA-Z0-9\-\_\.\/]/", '', $value);
             case 'implode':  return is_array($value) ? implode(';', $value) : $value;
             case 'integer':  return $this->localeNumber($value, 'integer', $default);

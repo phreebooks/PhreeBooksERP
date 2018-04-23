@@ -19,6 +19,17 @@ local.properties
 .settings/
 .loadpath
 .DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
 
 # External tool builders
 .externalToolBuilders/

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-09
+ * @version    2.x Last Update: 2018-04-23
  * @filesource /bizunoFS.php
  */
 
@@ -59,7 +59,6 @@ $fn      = BIZUNO_DATA.$parts[1];
 if (!file_exists($fn)) { 
     $fn = BIZUNO_ROOT . str_replace(BIZUNO_SRVR, '', BIZUNO_LOGO);
 }
-error_log("filesize = ".filesize($fn));
 header("Accept-Ranges: bytes");
 header("Content-Type: "  .getMimeType($fn));
 header("Content-Length: ".filesize($fn));
