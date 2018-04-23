@@ -162,7 +162,6 @@ class phreeformRender
      */
     public function render(&$layout=[])
     {
-        msgTrap();
         global $report;
         $data = [];
 		$rID      = clean('rID', 'integer', 'request'); // could come in as $_POST or $_GET

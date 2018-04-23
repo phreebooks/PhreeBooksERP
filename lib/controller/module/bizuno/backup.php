@@ -170,7 +170,6 @@ class bizunoBackup
     
     public function bizunoUpgradeGo(&$layout=[])
     {
-        msgTrap();
         $pathLocal= BIZUNO_DATA."temp/bizuno.zip";
         $bizID    = getUserCache('profile', 'biz_id');
         $bizUser  = getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_user');
