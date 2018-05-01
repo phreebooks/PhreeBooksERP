@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-05
+ * @version    2.x Last Update: 2018-04-27
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -204,7 +204,6 @@ class contactsMain
 				'sort' => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
 			'columns' => [
                 'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."contacts.id",      'attr'=>['hidden'=>true]],
-				'type'    => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."contacts.type",    'attr'=>['hidden'=>true], 'format'=>'contactType'],
 				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."contacts.inactive",'attr'=>['hidden'=>true]],
 				'attach'  => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."contacts.attach",  'attr'=>['hidden'=>true]],
 				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>60],
@@ -220,6 +219,8 @@ class contactsMain
 				'short_name'   => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX.'contacts.short_name',
 					'label' => pullTableLabel("contacts", 'short_name', $type),
 					'attr'  => ['width'=>100, 'sortable'=>true, 'resizable'=>true]],
+				'type'         => ['order'=>15, 'field'=>BIZUNO_DB_PREFIX."contacts.type", 'format'=>'contactType',
+                    'attr'  => ['width'=>240, 'sortable'=>true, 'resizable'=>true, 'hidden'=>true]],
 				'primary_name' => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX.'address_book.primary_name',
 					'label' => pullTableLabel("address_book", 'primary_name', $type),
 					'attr'  => ['width'=>240, 'sortable'=>true, 'resizable'=>true, 'hidden'=> in_array($type,['e','i'])?true:false]],
@@ -252,6 +253,7 @@ class contactsMain
 			$data['source']['actions']['mergeContact'] = ['order'=>20, 'html'=>  ['icon'=>'merge','events'=>  ['onClick'=>"jsonAction('contacts/main/merge&type=$type', 0);"]]];
 		} elseif (strlen($type)>1) { // search only certain types, all types are listed (i.e. cv)
 		    $data['source']['filters']['cType']['sql'] = BIZUNO_DB_PREFIX."contacts.type IN ('".implode("','", str_split($type))."')";
+//            $data['columns']['type']['attr']['hidden'] = false;
 		}
         if (getUserCache('profile', 'restrict_user', false, 0)) { // check for user restrictions
             $uID = getUserCache('profile', 'contact_id', false, 0);

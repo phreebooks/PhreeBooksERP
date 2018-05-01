@@ -17,16 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-05-14
-
+ * @version    2.x Last Update: 2018-04-27
  * @filesource /lib/view/module/contacts/divAddressShort.php
  */
 
 namespace bizuno;
 
-if (!defined('CONTACT_TYPE')) { define('CONTACT_TYPE', 'c'); }
-
 $defaults = [
+    'type'    => defined('CONTACT_TYPE') ? constant('CONTACT_TYPE') : 'c',
     'suffix'  => '',
     'search'  => true,
     'props'   => true,
@@ -57,14 +55,15 @@ if ($attr['required']) { foreach ($structure as $field => $props) {
 if (!$attr['search']) {
     $structure['contactSel'] = ['attr'=>['type'=>'hidden']];
 } else {
-    $structure['contactSel'] = ['label'=>lang('search'),'classes'=>['easyui-combogrid'],'attr'=>  ['data-options'=>"
+    $structure['contactSel'] = ['label'=>lang('search'),'classes'=>['easyui-combogrid'],'attr'=>['data-options'=>"
         width:130, panelWidth:750, delay:900, idField:'id', textField:'primary_name', mode: 'remote',
-        url:         '".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type=".($attr['drop']?'c':CONTACT_TYPE)."&store=".($attr['store']?'1':'0')."',
+        url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type=".($attr['drop']?'c':$attr['type'])."&store=".($attr['store']?'1':'0')."',
         onBeforeLoad:function (param) { var newValue = jq('#contactSel{$attr['suffix']}').combogrid('getValue'); if (newValue.length < 3) return false; },
         selectOnNavigation:false,
         onClickRow:  function (idx, row){ contactsDetail(row.id, '{$attr['suffix']}', '{$attr['fill']}'); },
         columns: [[{field:'id', hidden:true},
             {field:'short_name',  title:'".jsLang('contacts_short_name')."', width:100},
+            {field:'type',        hidden:".(strlen($attr['type'])>1?'false':'true').",title:'".jsLang('contacts_type')."', width:100},
             {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
             {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
             {field:'city',        title:'".jsLang('address_book_city')."', width:100},

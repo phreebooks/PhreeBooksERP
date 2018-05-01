@@ -362,12 +362,12 @@ class bizunoAdmin
                 'instBack'    => ['order'=>10,'icon'=>'close','label'=>lang('cancel'),'events'=>['onClick'=>"jq('#bizInstall').window('close');"]],
 				'instNext'    => ['order'=>20,'icon'=>'next', 'label'=>lang('next'),  'events'=>['onClick'=>"jq(this).removeClass('iconL-next').addClass('icon-blank'); installSave($bID);"]]]]],
 			'divs' => [
-                'toolbar'     => ['order'=>10, 'type'=>'toolbar','key' =>'tbInstall'],
-                'divFormStrt' => ['order'=>20, 'type'=>'html',   'html'=>'<div id="divInstall">'],
-				'divPBInfo'   => ['order'=>50, 'src' =>BIZUNO_LIB."view/module/bizuno/popupInstall.php"],
-                'divFormEnd'  => ['order'=>80, 'type'=>'html',   'html'=>"</div>"]],
+                'toolbar'     => ['order'=>10,'type'=>'toolbar','key' =>'tbInstall'],
+                'divFormStrt' => ['order'=>20,'type'=>'html',   'html'=>'<div id="divInstall">'],
+				'divPBInfo'   => ['order'=>50,'src' =>BIZUNO_LIB."view/module/bizuno/popupInstall.php"],
+                'divFormEnd'  => ['order'=>80,'type'=>'html',   'html'=>"</div>"]],
 			'fields' => [
-                'biz_title'   => ['attr'=>  ['value'=>getUserCache('profile', 'biz_title'), 'maxlength'=>'16']],
+                'biz_title'   => [                  'attr'=>['value'=>getUserCache('profile', 'biz_title'),'maxlength'=>'16']],
 				'biz_lang'    => ['values'=>$langs, 'attr'=>['type'=>'select', 'value'=>'en_US']],
 				'biz_currency'=> ['values'=>$crncy, 'attr'=>['type'=>'select', 'value'=>'USD']],
 				'biz_chart'   => ['values'=>$charts,'attr'=>['type'=>'select', 'value'=>'retailLLC']],

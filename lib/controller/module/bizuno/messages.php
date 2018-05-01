@@ -30,15 +30,6 @@ class bizunoMessages
 	function __construct()
     {
         $this->lang = getLang($this->moduleID);
-        // @todo - temp patch for installing new table
-        if (!dbTableExists(BIZUNO_DB_PREFIX.'phreemsg')) {
-            $tables = [];
-            require_once(BIZUNO_LIB.'controller/module/bizuno/install/tables.php');
-            $addTable = ['phreemsg'=>$tables['phreemsg']];
-            require_once(BIZUNO_LIB.'controller/module/bizuno/settings.php');
-            $patch = new bizunoSettings();
-            $patch->adminInstTables($addTable);
-        }
     }
     
 	/**
@@ -115,9 +106,13 @@ class bizunoMessages
 		$rID = clean('rID', 'integer', 'get');
         $row = dbGetRow(BIZUNO_DB_PREFIX.'phreemsg', "id=$rID");
         if (!$row) { return msgAdd('Bad data!'); }
-        $io = new io();
-        $response = $io->apiPhreeSoft('getSysMessage', ['msgID'=>$row['msg_id']]);
-        if (!$response || !isset($response['sysMsg'])) { $response = ['sysMsg'=>"Error communicating with PhreeSoft servers! Please check your account settings."]; }
+        if (!empty($row['body'])) { // message is here, just show it
+            $response['sysMsg'] = $row['body'];
+        } else { // go the PhreeSoft servers to try to retrieve it
+            $io = new io();
+            $response = $io->apiPhreeSoft('getSysMessage', ['msgID'=>$row['msg_id']]);
+            if (!$response || !isset($response['sysMsg'])) { $response = ['sysMsg'=>"Error communicating with PhreeSoft servers! Please check your account settings."]; }            
+        }
         msgDebug("\nReady to generate window with SysMessage: ".print_r($response, true));
         dbWrite(BIZUNO_DB_PREFIX.'phreemsg', ['status'=>'1'], 'update', "id=$rID"); // set status to read, lower new message count
         $quickBar = getUserCache('quickBar');

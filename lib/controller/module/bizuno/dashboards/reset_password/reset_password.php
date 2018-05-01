@@ -17,9 +17,8 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-06-01
+ * @version    2.x Last Update: 2018-05-01
  * @filesource /lib/controller/module/bizuno/dashboards/reset_password/reset_password.php
- * 
  */
 
 namespace bizuno;
@@ -53,7 +52,7 @@ class reset_password
 			'newPassrepeat'=> ['label'=>lang('password_confirm'),'attr'=>['type'=>'password','required'=>'1','size'=>'40'],'classes'=>['easyui-validatebox']],
 			'language'     => ['label'=>lang('language'), 'values'=>viewLanguages(),'attr'=>['type'=>'select']],
 			'image_title'  => ['label'=>getModuleCache('bizuno','properties', 'title'),'attr'=>['type'=>'img','src'=>BIZUNO_LOGO,'height'=>'50']],
-			'btnLost'      => ['attr'=>['type'=>'button','value'=>lang('reset')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"jq('#pwResetForm').submit();"]]];
+			'btnReset'     => ['attr'=>['type'=>'button','value'=>lang('reset')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"jq('#pwResetForm').submit();"]]];
 		$data['username']['attr']['value'] = clean('bizuno_user', 'text', 'cookie');
 		$data['language']['attr']['value'] = clean('bizuno_lang', 'text', 'cookie');
 		$html = '<div><!-- reset_password section -->
@@ -63,7 +62,7 @@ class reset_password
 			<p>'.html5('pass',  $data['password']).'</p>
 			<p>'.html5('NewPW',  $data['newPass']).'</p>
 			<p>'.html5('NewPWRP',$data['newPassrepeat']).'</p>
-			<div style="text-align:right">'.html5('btnLost', $data['btnLost']).'</div>
+			<div style="text-align:right">'.html5('btnReset', $data['btnReset']).'</div>
 			<div style="text-align:right">('.$portal[3].')</div>
 		</form>
 	</div>

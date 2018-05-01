@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-28
+ * @version    2.x Last Update: 2018-05-01
  * @filesource /portal/functions.php
  */
 
@@ -85,3 +85,5 @@ function portalWrite($table, $data=[], $action='insert', $parameters='')
 }
 
 function portalDelete($email='') { portalExecute("DELETE FROM ".BIZUNO_DB_PREFIX."users WHERE email='$email'"); }
+
+function portalUpdateBizID() { }

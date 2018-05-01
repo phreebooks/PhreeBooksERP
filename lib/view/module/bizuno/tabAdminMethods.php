@@ -17,17 +17,17 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-19
+ * @version    2.x Last Update: 2018-04-25
  * @filesource /lib/view/module/bizuno/tabAdminMethods.php
  */
 
 namespace bizuno;
 
-$module= isset($prop['settings']['module'])? $prop['settings']['module']: false;
-$type  = isset($prop['settings']['type'])  ? $prop['settings']['type']  : false;
+$module= isset($prop['settings']['module'])? $prop['settings']['module']:false;
+$type  = isset($prop['settings']['type'])  ? $prop['settings']['type']  :false;
 // set the buttons
-$data['btnMethodAdd']  = ['attr'=>  ['type'=>'button', 'value'=>lang('install')],'hidden'=>$data['security']> 1?false:true];
-$data['btnMethodDel']  = ['attr'=>  ['type'=>'button', 'value'=>lang('remove')], 'hidden'=>$data['security']==4?false:true];
+$data['btnMethodAdd']  = ['attr'=>['type'=>'button','value'=>lang('install')],'hidden'=>$data['security']> 1?false:true];
+$data['btnMethodDel']  = ['attr'=>['type'=>'button','value'=>lang('remove')], 'hidden'=>$data['security']==4?false:true];
 $data['btnMethodProp'] = ['icon'=>'settings','size'=>'large'];
 $data['settingSave']   = ['icon'=>'save',    'size'=>'large'];
 
@@ -58,7 +58,7 @@ foreach ($methods as $method => $settings) {
     } else {
         $output['body'] .= "</div>";
         $output['body'] .= '<div id="divMethod_'.$method.'" style="display:none;" class="layout-expand-over">';
-        $output['body'] .= html5("frmMethod_$method", ['attr'=>  ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=bizuno/settings/methodSettingsSave&module=$module&type=$type&method=$method"]]);
+        $output['body'] .= html5("frmMethod_$method", ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/methodSettingsSave&module=$module&type=$type&method=$method"]]);
         $structure = method_exists($clsMeth, 'settingsStructure') ? $clsMeth->settingsStructure() : [];
         foreach ($structure as $setting => $values) {
             $mult = isset($values['attr']['multiple']) ? '[]' : '';

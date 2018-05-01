@@ -17,8 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-04-02
-
+ * @version    2.x Last Update: 2018-04-27
  * @filesource /lib/view/module/phreebooks/divJournalDetail.php
  */
 
@@ -47,7 +46,7 @@ $output['body'] .= "</div>\n";
 // Billing Address
 $output['body'] .= '<div style="float:right;width:33%">'.lang('bill_to')."<br />\n";
 $addValues = $data['journal_main'];
-$settings['attr'] = ['suffix'=>'_b','search'=>true,'update'=>true,'validate'=>true];
+$settings['attr'] = ['type'=>'cve','suffix'=>'_b','search'=>true,'update'=>true,'validate'=>true];
 require (BIZUNO_LIB."view/module/contacts/divAddressShort.php");
 $output['body'] .= "</div>\n";
 $output['body'] .= "</div>\n";

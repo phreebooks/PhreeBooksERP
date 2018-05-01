@@ -17,14 +17,11 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-06-01
-
+ * @version    2.x Last Update: 2018-04-25
  * @filesource /locale/en_US/module/payment/methods/moneyorder/language.php
- * 
  */
 
 $lang     = [
     'title' => 'Check/Money Order',
     'description' => 'Payments via bank check, money order and other direct forms of payment not requiring a payment gateway.',
     'check_number' => 'Check Number'];
-

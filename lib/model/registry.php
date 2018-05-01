@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-10
+ * @version    2.x Last Update: 2018-04-25
  * @filesource /lib/model/registry.php
  */
 
@@ -249,7 +249,7 @@ final class bizRegistry
         $output  = [];
         $taxRates= dbGetMulti(BIZUNO_DB_PREFIX."tax_rates");
         foreach ($taxRates as $row) { // Needs to be auto indexed so the javascript doesn't break
-            if     ($row['inactive']) { $row['status'] = 2;} 
+            if     (!empty($row['inactive'])) { $row['status'] = 2;} 
             elseif ($row['start_date']>=$date || $row['end_date']<=$date) { $row['status'] = 1; }
             else   { $row['status'] = 0; }
             $row['rate'] = $row['tax_rate'];
@@ -384,15 +384,15 @@ final class bizRegistry
         if (!isset($structure['dirMethods']))    { $structure['dirMethods'] = []; }
         if (!is_array($structure['dirMethods'])) { $structure['dirMethods'] = [$structure['dirMethods']]; }
         $structure['dirMethods'][] = 'dashboards'; // auto-add dashboards
+        $methods = [];
         foreach ($structure['dirMethods'] as $folderID) {
             msgDebug("\ninitMethods is looking at module: {$structure['id']} and folder $folderID");
-            if (!file_exists($structure['path']."$folderID")) { continue; } 
-            $methods = scandir($structure['path']."$folderID");
-//            if (file_exists(BIZUNO_CUSTOM."{$structure['id']}/$folderID") && strpos($structure['path'], BIZUNO_CUSTOM) === false) {
-//                msgDebug("\ninitMethods is looking at customizations for module: {$structure['id']} and folder $folderID");
-//                $methods = array_merge($methods, scandir(BIZUNO_CUSTOM."{$structure['id']}/$folderID");
-                //need to also pass path to custom folder
-//            }
+            if (!file_exists($structure['path']."$folderID/")) { continue; } 
+            $this->methodRead($methods, $structure['path']."$folderID/");
+            if (defined('BIZUNO_CUSTOM') && $folderID <> 'dashboards') {
+                msgDebug("\ninitMethods is looking at customizations for module: {$structure['id']} and folder $folderID");
+                $this->methodRead($methods, BIZUNO_CUSTOM."{$structure['id']}/$folderID/");
+            }
             $this->cleanMissingMethods($structure['id'], $folderID, $methods);
             $this->initMethodList($structure, $folderID, $methods);
         }
@@ -410,43 +410,52 @@ final class bizRegistry
         global $bizunoMod;
         $module = $structure['id']; 
         msgDebug("\ninitMethodList is looking at number of methods = ".(sizeof($methods)-2));
-//      msgDebug("\ninitMethodList is looking at methods: ".print_r($methods, true));
-        foreach ($methods as $method) {
+        foreach ($methods as $method => $path) {
             if (in_array($method, ['.', '..'])) { continue; }
             $settings = getModuleCache($module, $folderID, $method);
             if (empty($settings['settings'])) { $settings['settings'] = []; }
             if ($folderID=='dashboards') { $settings['status'] = 1;} // all dashboards are loaded into cache and user decide which to enable and where
-            $path = $structure['path']."$folderID/$method/";
+            if (defined('BIZUNO_CUSTOM') && strpos($path, BIZUNO_CUSTOM) !== false) {
+                $bizID = getUserCache('profile', 'biz_id');
+                $myPath= str_replace(BIZUNO_DATA, '', BIZUNO_CUSTOM);
+                $url   = BIZUNO_URL_FS."&src=$bizID/{$myPath}$module/$folderID/$method/";
+            } else {
+                $url   = isset($structure['url']) ? "{$structure['url']}$folderID/$method/" : '';
+            }
             require_once("{$path}$method.php");
             $fqcn = "\\bizuno\\$method";
             $clsMeth = new $fqcn($settings['settings']);
+            $bizunoMod[$module][$folderID][$method] = [
+                'id'         => $method,
+                'title'      => $clsMeth->lang['title'],
+                'description'=> $clsMeth->lang['description'],
+                'path'       => $path,
+                'url'        => $url,
+                'status'     => 0];
             if (!empty($settings['status'])) {
-                $bizunoMod[$module][$folderID][$method] = [
-                    'id'         => $method,
-                    'title'      => $clsMeth->lang['title'],
-                    'description'=> $clsMeth->lang['description'],
+                $bizunoMod[$module][$folderID][$method] = array_replace_recursive($bizunoMod[$module][$folderID][$method], [
                     'status'     => 1,
-                    'path'       => $path,
-                    'url'        => isset($structure['url']) ? "{$structure['url']}$folderID/$method/" : '',
                     'acronym'    => isset($clsMeth->lang['acronym']) ? $clsMeth->lang['acronym']: $clsMeth->lang['title'],
                     'default'    => isset($clsMeth->settings['default']) && $clsMeth->settings['default'] ? 1 : 0,
                     'order'      => isset($clsMeth->settings['order']) ? $clsMeth->settings['order'] : 50,
-                    'settings'   => isset($clsMeth->settings) ? $clsMeth->settings : []];
-            } else {
-                $bizunoMod[$module][$folderID][$method] = [
-                    'id'         => $method,
-                    'title'      => $clsMeth->lang['title'],
-                    'description'=> $clsMeth->lang['description'],
-                    'path'       => $path,
-                    'url'        => "{$structure['url']}$folderID/$method/",
-                    'status'     => 0];
-                continue;
-            }
+                    'settings'   => isset($clsMeth->settings) ? $clsMeth->settings : []]);
+            } else { continue; }
             if (isset($clsMeth->structure)) { $this->setHooks($clsMeth->structure, $method, $path); }
             unset($bizunoMod[$module][$folderID][$method]['hooks']);
         }
-//        msgDebug("\ninitMethodList is setting = $module/$folderID with methods = ".print_r($bizunoMod[$module][$folderID], true));
         $bizunoMod[$module][$folderID] = sortOrder($bizunoMod[$module][$folderID], 'title');
+    }
+
+    public function methodRead(&$methods, $path)
+    {
+        $output = [];
+        if (!@is_dir($path)) { return $output; }
+        $temp = scandir($path);
+        foreach ($temp as $fn) {
+            if ($fn == '.' || $fn == '..') { continue; }
+            $methods[$fn] = "{$path}$fn/";
+        }
+        return $output;
     }
 
     /**
@@ -461,8 +470,9 @@ final class bizRegistry
         global $bizunoMod;
         if (!isset($bizunoMod[$module][$folderID]) || !is_array($methods)) { return; }
         $cache = array_keys($bizunoMod[$module][$folderID]);
+        $allMethods = array_keys($methods);
         foreach ($cache as $method) {
-            if (!in_array($method, $methods)) {
+            if (!in_array($method, $allMethods)) {
                 msgAdd("Module: $module, folder: $folderID, Deleting missing method: $method");
                 unset($bizunoMod[$module][$folderID][$method]);
             }

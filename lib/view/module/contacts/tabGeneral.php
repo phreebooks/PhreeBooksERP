@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-01-27
+ * @version    2.x Last Update: 2018-04-27
  * @filesource /lib/view/module/contacts/tabGeneral.php
  */
 
@@ -27,7 +27,7 @@ $output['body'] .= html5('id',  $data['fields']['contacts']['id']);
 $output['body'] .= html5('type',$data['fields']['contacts']['type']);
 $output['body'] .= "  <fieldset>\n";
 $output['body'] .= "  <legend>".lang('general')."</legend>\n";
-$output['body'] .= '<div style="float:right">Record ID: '.$data['fields']['contacts']['id']['attr']['value']."</div>"; // displays the contact idin the lower left corner of the general tab
+$output['body'] .= '<div style="float:right">Record ID: '.$data['fields']['contacts']['id']['attr']['value']."</div>"; // displays the contact id in the lower left corner of the general tab
 switch ($data['fields']['contacts']['type']['attr']['value']) {
 	case 'b':
 		$output['body'] .= "
@@ -128,9 +128,14 @@ switch ($data['fields']['contacts']['type']['attr']['value']) {
 $output['body'] .= "  </fieldset>\n";
 if ($data['fields']['contacts']['type']['attr']['value'] == 'i') { // show the combogrid for contact link
 	$linkID = isset($data['fields']['contacts']['rep_id']['attr']['value']) ? $data['fields']['contacts']['rep_id']['attr']['value'] : 0;
+    if ($linkID) {
+        $primary_name = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'primary_name', "ref_id=$linkID AND type='m'"); }
+    else { $primary_name = ''; }
 	$output['jsBody'][] = "
 jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textField:'primary_name',mode:'remote',
-	url:    '".BIZUNO_AJAX."&p=contacts/main/managerRows&rID=$linkID&type=cv',
+    url:    '".BIZUNO_AJAX."&p=contacts/main/managerRows&type=cv&store=0',
+    onBeforeLoad:function (param) { var newValue = jq('#rep_id').combogrid('getValue'); if (newValue.length < 3) return false; },
+    selectOnNavigation:false,
 	columns:[[{field:'id',hidden:true},
 		{field:'short_name',  title:'".pullTableLabel(BIZUNO_DB_PREFIX."contacts",    'short_name')."',  width:100},
 		{field:'type',        title:'".pullTableLabel(BIZUNO_DB_PREFIX."contacts",    'type')."',        width:100},
@@ -139,5 +144,5 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
 		{field:'city',        title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'city')."',        width:100},
 		{field:'postal_code', title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'postal_code')."', width:100}
 	]]
-});";
+}).combogrid('setValue', {id:'$linkID',primary_name:'$primary_name'});";
 }

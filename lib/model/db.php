@@ -399,6 +399,10 @@ function dbDump($filename='bizuno_backup', $dirWrite='', $dbTable='')
 	$dbName = $GLOBALS['dbBizuno']['name'];
 	$dbPath = BIZUNO_DATA.$dirWrite;
 	$dbFile = $filename.".sql.gz";
+    if (!$dbTable && BIZUNO_DB_PREFIX <> '') { // fetch table list (will be entire db if no prefix)
+        if (!$stmt= dbGetResult("SHOW TABLES FROM $dbName LIKE '".BIZUNO_DB_PREFIX."%'")) { return; }
+        if ( $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC)) { foreach ($rows as $row) { $dbTable .= array_shift($row).' '; } }
+    } 
     $cmd    = "mysqldump --opt -h $dbHost -u $dbUser -p$dbPass $dbName $dbTable | gzip > $dbPath$dbFile";
 	msgDebug("\n Executing command: $cmd");
     if (!function_exists('exec')) { msgAdd("php exec is disabled, the backup cannot be achieved this way!"); }

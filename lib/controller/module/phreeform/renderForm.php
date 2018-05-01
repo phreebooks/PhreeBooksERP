@@ -70,9 +70,9 @@ class PDF extends \TCPDF
 		global $report;
 		$tempValues = $report->FieldValues;
         $this->tempValues = [];
-		foreach ($report->fieldlist as $key => $field) {
+		foreach ($report->fieldlist as $field) {
             // This flags an error for block types. Need to define as class for each level.
-//            msgDebug("\nWorking with key = $key and field ".print_r($field, true));
+//            msgDebug("\nWorking with field ".print_r($field, true));
 //            msgDebug("\nTesting for object settings ".(is_object($field->settings)?'true':'false'));
             if (!isset($field->settings->font))  {
                 $field->settings->font  = isset($field->settings->hfont) ? $field->settings->hfont : $this->defaultFont;
@@ -128,7 +128,7 @@ class PDF extends \TCPDF
             } elseif ($field->type=='Data' && $field->settings->display=='2') {
                 $field->settings->text = array_shift($this->tempValues);
                 $this->FormText($field);
-            } elseif ($field->type=='Ttl' && $field->settings->display=='2') {
+            } elseif ($field->type=='Ttl') { // all totals are printed as the footer
                 $this->FormText($field);
             }
 //            $this->FormText($field);

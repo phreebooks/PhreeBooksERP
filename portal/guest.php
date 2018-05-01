@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-09
+ * @version    2.x Last Update: 2018-05-01
  * @filesource /portal/guest.php
  */
 
@@ -64,9 +64,9 @@ class guest
 		if (!$name = dbGetRow(BIZUNO_DB_PREFIX.'users', "email='$email'")) { return msgAdd($this->lang['wrong_email']); }
 		$password = randomValue(); //reset password
 		dbWrite(BIZUNO_DB_PREFIX.'users', ['pw_reset'=>time().":".$password], 'update', "email='$email'");
-		$link = BIZUNO_SRVR.'/index.php?lost=true';
-		$fromEmail= BIZUNO_SUPPORT_EMAIL;
-		$fromName = BIZUNO_SUPPORT_NAME;
+		$link = BIZUNO_SRVR.'index.php?lost=true';
+		$fromEmail= defined('BIZUNO_SUPPORT_EMAIL')? constant('BIZUNO_SUPPORT_EMAIL'): $this->guessAdmin();
+		$fromName = defined('BIZUNO_SUPPORT_NAME') ? constant('BIZUNO_SUPPORT_NAME') : 'Site Admin';
 		$subject  = $this->lang['email_sub_request'];
 		$body     = sprintf($this->lang['email_request_pass'], $name['email'], $link, $link, $password);
         require_once(BIZUNO_LIB."model/mail.php");
@@ -76,7 +76,7 @@ class guest
 	}
 
 	/**
-	 * Resets the password for the user, requires a generated password and a time limit of one hour.
+	 * Resets the password for the user, requires a generated password and a time limit of two days.
 	 * @param string $email
 	 * @param string $userPW
 	 * @return boolean
@@ -95,7 +95,7 @@ class guest
 		if (isset($passInfo[0]) && $passInfo[0] > time() && isset($passInfo[1]) && $passInfo[1] == $pass) {
 			$password = $this->passwordReset($newPW, $newPWRP);
 			if ($password) {
-				dbWrite(BIZUNO_DB_PREFIX.'users', ['biz_pass'=>$password, 'pw_reset'=>time()], 'update', "email='$email'");
+				dbWrite(BIZUNO_DB_PREFIX.'users', ['password'=>$password, 'pw_reset'=>''], 'update', "email='$email'");
                 $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 'actionData'=>"window.location='".BIZUNO_HOME."';"]]);
 			}
 		} else { return msgAdd($this->lang['wrong_code_time']); }
@@ -152,9 +152,9 @@ class guest
 		if (!$pID || $newUser) { // send welcome new user email
 			$fromEmail= getUserCache('profile', 'email');
 			$fromName = getUserCache('profile', 'title');
-            $bizTitle = getModuleCache('bizuno', 'settings', 'company', 'primary_name');
-            $link = BIZUNO_URL;
-            if (!$pID) { // send new user mail with temp password
+            $bizTitle = getModuleCache('bizuno','settings', 'company', 'primary_name');
+            $link = BIZUNO_SRVR.BIZUNO_HOME;
+            if (!$pData['password']) { // send new user mail with temp password
     			$portal['date_created']= date('Y-m-d H:i:s');
     			$password = randomValue();
     			$portal['pw_reset'] = time().":".$password;
@@ -220,5 +220,12 @@ class guest
         clearUserCache('profile', 'password');
         session_destroy();
         return true;
+    }
+    
+    private function guessAdmin()
+    {
+        $email = dbGetValue(BIZUNO_DB_PREFIX.'users', 'email', "password<>''"); // should be the first hit, which is the installing admin
+        if (!$email) { $email = 'admin@mysite.com'; }
+        return $email;
     }
 }

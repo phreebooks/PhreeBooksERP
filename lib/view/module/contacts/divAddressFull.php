@@ -18,9 +18,7 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-06-01
-
  * @filesource /lib/view/module/contacts/divAddressFull.php
- * 
  */
 
 namespace bizuno;

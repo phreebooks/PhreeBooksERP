@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-09
+ * @version    2.x Last Update: 2018-04-25
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -167,9 +167,7 @@ class bizunoSettings
                 'td'=>[
                     ['classes'=>[],'styles'=>[],'attr'=>['type'=>'th','value'=>lang('module')]],
                     ['classes'=>[],'styles'=>[],'attr'=>['type'=>'th','value'=>lang('description')]],
-                    ['classes'=>[],'styles'=>[],'attr'=>['type'=>'th','value'=>'&nbsp;']],
-                    ]],
-                ]],
+                    ['classes'=>[],'styles'=>[],'attr'=>['type'=>'th','value'=>'&nbsp;']]]]]],
             'tbody'=>['attr'=>['type'=>'tbody']]];
     }
 
@@ -301,6 +299,7 @@ class bizunoSettings
         if (!$module || !$subDir || !$method) { return msgAdd("Bad data installing method!"); }
 		msgDebug("\nInstalling method $method with methodDir = $subDir");
         $path = getModuleCache($module, 'properties', 'path')."$subDir/$method/$method.php";
+        if (file_exists(BIZUNO_CUSTOM."$module/$subDir/$method/$method.php")) { $path = BIZUNO_CUSTOM."$module/$subDir/$method/$method.php"; }
         require_once($path);
         $methSet = getModuleCache($module,$subDir,$method,'settings');
         $fqcn = "\\bizuno\\$method";
