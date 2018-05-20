@@ -1021,9 +1021,7 @@ final class html5 {
         $prop['attr']['type'] = 'a';
         $prop['classes'][] = 'easyui-linkbutton';
 //        $prop['styles']['cursor'] = 'pointer';
-        if (!isset($prop['attr']['href'])) {
-            $prop['attr']['href'] = '#';
-        }
+        if (!isset($prop['attr']['href'])) { $prop['attr']['href'] = '#'; }
         return $this->htmlElBoth($id, $prop);
     }
 
@@ -1032,8 +1030,21 @@ final class html5 {
     }
 
     public function inputCurrency($id, $prop) {
-        // number box with formatter as set in defaults
-        return $this->input($id, $prop);
+        $rateProp = ['attr' => ['size'=>12]];
+		if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
+			$prop['attr']['type'] = 'select';
+			$prop['values']       = viewDropdown(getModuleCache('phreebooks', 'currency', 'iso'), "code", "title");
+			unset($prop['attr']['size']);
+            if (empty($prop['func'])) { msgAdd('No function specified!'); $prop['func'] = 'ordersCurrency'; }
+            $this->jsReady[] = "jq('#$id').combobox({editable:false, onChange:function(newVal, oldVal){ {$prop['func']}(newVal, oldVal); } });";
+            $rateProp['attr']['value']= !empty($prop['excRate']) ? $prop['excRate'] : 1;
+            $rateProp['break']        = true;
+		} else { 
+            $prop['attr']['type']     = 'hidden';
+            $rateProp['attr']['type'] = 'hidden';
+            $rateProp['attr']['value']= 1;
+        }
+        return $this->render($id, $prop) . $this->input('currency_rate', $rateProp);
     }
 
     public function inputDate($id, $prop) {

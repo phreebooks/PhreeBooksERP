@@ -47,17 +47,11 @@ class main //extends controller
         $cleaner  = new cleaner();
         $html5    = new html5();
         $this->initDB();
-        msgDebug("\n initDB lang = ".getUserCache('profile','language'));
         $this->validateUser();
-        msgDebug("\n validateUser lang = ".getUserCache('profile','language'));
         $this->validateBusiness();
-        msgDebug("\n validateBusiness lang = ".getUserCache('profile','language'));
         $this->initBusiness();
-        msgDebug("\n initBusiness lang = ".getUserCache('profile','language'));
         $this->initUserCache();
-        msgDebug("\n initUserCache lang = ".getUserCache('profile','language'));
         $this->initModuleCache();
-        msgDebug("\n initModuleCache lang = ".getUserCache('profile','language'));
 		clean('p', ['format'=>'command','default'=>'bizuno/main/bizunoHome'], 'get');
         if (getUserCache('profile', 'biz_id', false, 0)) { // keep going
 		} elseif (!in_array($GLOBALS['bizunoModule'], ['bizuno'])) { // not logged in or not installed, restrict to parts of module bizuno
@@ -124,7 +118,6 @@ class main //extends controller
 
     private function initBusiness()
     {
-        global $bizunoUser;
         msgDebug("\nEntering initBusiness");
         if (!getUserCache('profile', 'biz_id')) { return; }
         msgDebug("\nReturning from initBusiness");
@@ -143,6 +136,7 @@ class main //extends controller
                 $bizunoUser = json_decode($usrData['settings'], true);
             } elseif (!$usrData) {
                 if (dbTableExists(BIZUNO_DB_PREFIX.'users')) { msgAdd("You do not have an account, please see your Bizuno administrator!"); }
+                unset($_GET['p']);
             }
             $bizunoLang = $this->loadBaseLang(getUserCache('profile', 'language')); // load the environment language file, includes module add-ons
             setlocale(LC_ALL, getUserCache('profile', 'language').'.UTF-8');

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-11
+ * @version    2.x Last Update: 2018-05-14
  * @filesource /lib/controller/module/phreebooks/currency.php
  */
 
@@ -216,13 +216,14 @@ class phreebooksCurrency
     public function setExcRate(&$layout=[])
     {
         $iso  = clean('excISO', 'text', 'post');
-        $rate = clean('excRate','float', 'post');
+        $rate = clean('excRate','float','post');
         $currencies = getModuleCache('phreebooks', 'currency', 'iso');
         if (empty($currencies[$iso])) { return msgAdd("The ISO submitted ($iso) is not one of your available currencies to update. It can be added in PhreeBooks Settings."); }
         $currencies[$iso]['value'] = $rate;
         setModuleCache('phreebooks', 'currency', 'iso', $currencies);
 		msgLog(lang('currency')." $iso ($rate) - ".lang('update'));
-        msgAdd("The new rate for $iso ($rate) has been saved!");
+        msgAdd("The new rate for $iso ($rate) has been saved!", 'success');
+        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"reloadSessionStorage();"]]);
     }
     
 	/**

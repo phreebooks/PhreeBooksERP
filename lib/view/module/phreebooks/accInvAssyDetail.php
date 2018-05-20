@@ -17,8 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-04-02
-
+ * @version    2.x Last Update: 2018-05-15
  * @filesource /lib/view/module/phreebooks/accInvAssyDetail.php
  */
 

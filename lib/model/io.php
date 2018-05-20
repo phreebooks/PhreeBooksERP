@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-10
+ * @version    2.x Last Update: 2018-05-20
  * @filesource /lib/model/io.php
  */
 
@@ -133,7 +133,7 @@ final class io
 	public function fileUpload()
     {
         msgDebug("\nSending with options = ".print_r($this->options, true));
-        require_once(BIZUNO_SRVR."apps/jquery-file-upload/server/php/UploadHandler.php");
+        require_once(BIZUNO_ROOT."apps/jquery-file-upload/server/php/UploadHandler.php");
 		$upload_handler = new \UploadHandler($this->options);
         msgDebug("\nBack with result = ".print_r($upload_handler, true));
 	}

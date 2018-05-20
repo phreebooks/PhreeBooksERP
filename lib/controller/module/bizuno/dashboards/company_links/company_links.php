@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-19
+ * @version    2.x Last Update: 2018-05-19
  * @filesource /lib/controller/module/bizuno/dashboards/company_links/company_links.php
  */
 
@@ -65,18 +65,15 @@ class company_links
     {
         $security = getUserCache('security', 'admin', false, 0);
 		$data = [
-            $this->code.'_0' => ['label' => lang('title'),
-				'classes'=> ['easyui-validatebox'],
+            $this->code.'_0' => ['label'=>lang('title'),'classes'=>['easyui-validatebox'],
 				'attr'   => ['type'=>'text', 'required'=>'true', 'size'=>30]],
-			$this->code.'_1' => ['label' => lang('url'),
-				'classes'=> ['easyui-validatebox'],
-				'attr'   => ['type'=>'text', 'required'=>'true', 'size'=>50]],
+			$this->code.'_1' => ['label'=>lang('url')." including http:// or https://",'classes'=>['easyui-validatebox'],
+				'attr'   => ['type'=>'text','required'=>'true', 'size'=>50]],
 			$this->code.'_button' => [
                 'attr'   => ['type'   => 'button', 'value' => lang('new')],
 				'styles' => ['cursor' => 'pointer'],
 				'events' => ['onClick'=> "dashboardAttr('$this->moduleID:$this->code', 0);"]],
-			'delete_icon' => ['icon'=>'trash', 'size'=>'small'],
-            ];
+			'delete_icon'=> ['icon'=>'trash', 'size'=>'small']];
 		$html  = '<div>';
 		$html .= '  <div id="'.$this->code.'_attr" style="display:none">';
 		if ($security > 1) {
@@ -93,15 +90,13 @@ class company_links
         if (!empty($this->settings['data'])) {
             foreach ($this->settings['data'] as $title => $hyperlink) {
                 $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"];
-                $html .= '  <div>';
+                $html .= '<div>';
                 if ($security > 2) { $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>'; }
-                $html .= '    <div style="min-height:16px;">'.viewFavicon($hyperlink, $title).' <a href="'.$hyperlink.'" target="_blank">'.$title.'</a></div>';
-                $html .= '  </div>';
+                $html .= '<div style="min-height:16px;">'.viewFavicon($hyperlink, $title).' <a href="'.$hyperlink.'" target="_blank">'.$title.'</a></div>';
+                $html .= '</div>';
                 $index++;
             }
-		} else {
-			$html .= '  <div>'.lang('no_results').'</div>'."\n";
-		}
+		} else { $html .= '  <div>'.lang('no_results').'</div>'."\n"; }
 		$html .= '</div><div style="min-height:4px;"> </div>'."\n";
 		return $html;
 	}

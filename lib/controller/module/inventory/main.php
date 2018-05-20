@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-17
+ * @version    2.x Last Update: 2018-05-15
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -71,7 +71,7 @@ class inventoryMain
 		$layout = array_replace_recursive($layout, viewMain(), [
             'pageTitle' => $title,
 			'divs'      => [
-                'submenu'   => ['order'=>10, 'type'=>'html','html'=>viewSubMenu('inventory')],
+                'submenu'=> ['order'=>10, 'type'=>'html','html'=>viewSubMenu('inventory')],
                 'invMgr'=> ['order'=>50, 'type'=>'accordion','key' =>'accInventory']],
 			'accordion' => ['accInventory'=>['divs'=>[
                 'divInventoryManager'=> ['order'=>30,'label'=>$title,'type'=>'datagrid','key'=>'manager'],
@@ -566,12 +566,10 @@ class inventoryMain
             $locked = false;
         }
 		$layout = array_replace_recursive($layout, ['type'=>'divHTML',
-			'divs'    => ['divVendGrid' => ['order'=>30,'type'=>'datagrid','key'=>'dgAssembly']],
+			'divs'    => ['divVendGrid'=> ['order'=>30,'type'=>'datagrid','key'=>'dgAssembly']],
 			'datagrid'=> ['dgAssembly' => $this->dgAssembly('dgAssembly', $locked)],
-            'jsHead'  => ['mgrBOMdata'=>$assemblyData]]);
-        if (!$locked) {
-            $layout['jsReady']['mgrBOM'] = "jq('#dgAssembly').edatagrid('addRow');";
-        }
+            'jsHead'  => ['mgrBOMdata' => $assemblyData]]);
+        if (!$locked) { $layout['jsReady']['mgrBOM'] = "jq('#dgAssembly').edatagrid('addRow');"; }
 	}
 
 	/**
@@ -581,18 +579,19 @@ class inventoryMain
      */
     public function managerBOMList(&$layout=[])
     {
+        msgTrap();
         if (!$security = validateSecurity('inventory', 'inv_mgr', 1)) { return; }
 		$skuID = clean('rID', 'integer', 'get');
         if (!$skuID) { return msgAdd("Cannot process assy list, no SKU ID provided!"); }
-		$result = dbGetMulti(BIZUNO_DB_PREFIX."inventory_assy_list", "ref_id=$skuID");
+		$result= dbGetMulti(BIZUNO_DB_PREFIX."inventory_assy_list", "ref_id=$skuID");
 		$total = 0;
 		foreach ($result as $key => $row) {
-			$result[$key]['qty_stock']   = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$row['sku']}'");
-			$result[$key]['qty_required']= $row['qty'];
+			$result[$key]['qty_stock']   = viewFormat(dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$row['sku']}'"), 'precise');
+			$result[$key]['qty_required']= viewFormat($row['qty'], 'precise');
 			$total += $row['qty'];
 		}
-		$footer = [['description'=>lang('total'), 'qty_required'=>$total]];
-		$layout = array_replace_recursive($layout, ['content'=>  ['total'=>sizeof($result), 'rows'=>$result, 'footer'=>$footer]]);
+		$footer = [['description'=>lang('total'), 'qty_required'=>viewFormat($total, 'precise')]];
+		$layout = array_replace_recursive($layout, ['content'=>['total'=>sizeof($result),'rows'=>$result,'footer'=>$footer]]);
 	}
 
 	/**
@@ -619,13 +618,13 @@ class inventoryMain
 				'onBeginEdit'=> "function(rowIndex, row) { curIndex = rowIndex; }",
 				'onDestroy'  => "function(rowIndex, row) { curIndex = undefined; }",
 				'onAdd'      => "function(rowIndex, row) { curIndex = rowIndex; }"],
-			'source' => ['actions' => ['newAssyItem'=>  ['order'=>10,'html'=>  ['icon'=>'add','size'=>'large','events'=>  ['onClick'=>"jq('#$name').edatagrid('addRow');"]]]]],
+			'source' => ['actions'=>['newAssyItem'=>['order'=>10,'html'=>['icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]]],
 			'columns' => [
-                'id'      => ['order'=>0, 'attr'=>  ['hidden'=>true]],
-				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>80],
+                'id'      => ['order'=>0, 'attr'=>['hidden'=>true]],
+				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>['width'=>80],
 					'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
 					'actions'=> [
-                        'trash'=>  ['icon'=>'trash','order'=>20,'size'=>'small','events'=>  ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jq('#$name').edatagrid('deleteRow', curIndex);"]]]],
+                        'trash'=>  ['icon'=>'trash','order'=>20,'size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jq('#$name').edatagrid('deleteRow', curIndex);"]]]],
 				'sku'=> ['order'=>30, 'label'=>lang('sku'),
 					'attr'  => ['width'=>150, 'sortable'=>true, 'resizable'=>true, 'align'=>'center'],
 					'events'=> ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
@@ -640,9 +639,9 @@ class inventoryMain
 					}}"]],
 				'description'=> ['order'=>40, 'label'=>lang('description'),
 					'attr' => ['width'=>280, 'editor'=>'text', 'sortable'=>true, 'resizable'=>true]],
-				'qty' => ['order'=>60, 'label'=>lang('qty_needed'), 'attr'=>  ['value'=>1,'width'=>90,'resizable'=>true,'align'=>'center'],
-					'events'=>  ['editor'=>"{type:'numberbox'}"]],
-				'qty_stock' => ['order'=>90,'label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>  ['width'=>90,'resizable'=>true,'align'=>'center']]]];
+				'qty'      => ['order'=>60, 'label'=>lang('qty_needed'), 'attr'=>['value'=>1,'width'=>90,'resizable'=>true,'align'=>'center'],
+					'events'=> ['editor'=>"{type:'numberbox'}"]],
+				'qty_stock' => ['order'=>90,'label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['width'=>90,'resizable'=>true,'align'=>'center']]]];
 		if ($locked) {
 			unset($data['columns']['action']);
 			unset($data['columns']['sku']['events']['editor']);

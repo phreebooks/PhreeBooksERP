@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-27
+ * @version    2.x Last Update: 2018-05-20
  * @filesource /lib/controller/module/bizuno/backup.php
  */
 
@@ -273,7 +273,7 @@ class bizunoBackup
         if (!$security = validateSecurity('bizuno', 'backup', 2)) { return; }
 		$io = new io();
 		$io->options = [
-            'script_url' => BIZUNO_SRVR."apps/jquery-file-upload/server/php/index.php",
+            'script_url' => BIZUNO_ROOT."apps/jquery-file-upload/server/php/index.php",
 			'upload_dir' => BIZUNO_DATA.$this->dirBackup,
 			'upload_url' => BIZUNO_AJAX.'&p=bizuno/backup/uploadRestore',
 			'param_name' => 'file_upload',

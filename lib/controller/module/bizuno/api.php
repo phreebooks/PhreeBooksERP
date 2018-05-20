@@ -64,6 +64,7 @@ class bizunoApi
      */
     protected function apiJournalEntry(&$layout, $order=[], $jID=0)
     {
+        msgTrap();
         msgDebug("\nWorking with submitted order = ".print_r($order, true));
         $this->itemTotal = 0;
 		$this->main = $this->item = $map = [];

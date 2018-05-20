@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-27
+ * @version    2.x Last Update: 2018-05-14
  * @filesource /lib/view/module/phreebooks/divJournalDetail.php
  */
 
@@ -28,7 +28,6 @@ $output['body'] .= html5('id',             $data['journal_main']['id']);
 $output['body'] .= html5('journal_id',     $data['journal_main']['journal_id']);
 $output['body'] .= html5('terminal_date',  ['attr'=>  ['type'=>'hidden']]);
 $output['body'] .= html5('currency',       $data['journal_main']['currency']);
-$output['body'] .= html5('currency_rate',  $data['journal_main']['currency_rate']);
 $output['body'] .= html5('recur_id',       $data['journal_main']['recur_id']);
 $output['body'] .= html5('recur_frequency',$data['recur_frequency']);
 $output['body'] .= html5('item_array',     $data['item_array']);

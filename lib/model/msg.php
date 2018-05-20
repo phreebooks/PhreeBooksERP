@@ -62,6 +62,7 @@ final class messageStack
             case 'info':    $this->error['info'][]   = ['text'=>$message, 'title'=>$title]; break;
             case 'success': $this->error['success'][]= ['text'=>$message]; break;
 		}
+        $this->debug("\nAdding to msgStack, level $level, msg: $message");
 		return true;
 	}
 

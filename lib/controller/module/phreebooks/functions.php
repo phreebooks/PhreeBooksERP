@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-19
+ * @version    2.x Last Update: 2018-05-04
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -603,6 +603,8 @@ function setNewFiscalYear($next_fy, $next_period, $next_start_date, $num_periods
 function buildChartOfAccountsHistory()
 {
 	if (!$max_period = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", "MAX(period) AS period", '', false)) {
+        msgTrap();
+        msgDebugWrite();
 		die ('table journal_periods is not set!');
 	}
 	$records = [];

@@ -19,7 +19,6 @@
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-10-28
  * @filesource /lib/view/module/phreebooks/divOrdersDetail.php
- * 
  */
 
 namespace bizuno;
@@ -68,8 +67,7 @@ $output['body'] .= html5('terminal_date', $data['journal_main']['terminal_date']
 $output['body'] .= html5('store_id',      $data['journal_main']['store_id']);
 if ($jID==12) { $output['body'] .= html5('sales_order_num',$data['journal_main']['sales_order_num'])."<br />"; }
 $output['body'] .= html5('rep_id',        $data['journal_main']['rep_id'])."<br />";
-$output['body'] .= html5('currency',      $data['journal_main']['currency'])."";
-$output['body'] .= html5('currency_rate', $data['journal_main']['currency_rate'])."";
+$output['body'] .= html5('currency',      $data['journal_main']['currency']);
 $output['body'] .= html5('closed',        $data['journal_main']['closed']);
 $output['body'] .= $data['journal_msg'];
 $output['body'] .= "</div>\n";
@@ -93,18 +91,16 @@ if ($shipStatus) { $settings['attr']['copy'] = true; }
 require (BIZUNO_LIB."view/module/contacts/divAddressShort.php");
 $output['body'] .= "</div>\n";
 
-if (!isset($data['journal_main']['contact_id_b']['attr']['value']) || !$data['journal_main']['contact_id_b']['attr']['value']) { // new order
+if (empty($data['journal_main']['contact_id_b']['attr']['value'])) { // new order
 	$output['jsBody'][] = "
   jq('#AddUpdate_b').prop('checked', true);
   var def_contact_gl_acct = '$default_gl';
   var def_contact_tax_id  = ".($default_tax_id ? $default_tax_id : 0).";";
 } else {
 	$cID  = $data['journal_main']['contact_id_b']['attr']['value'];
-	$defs = dbGetValue(BIZUNO_DB_PREFIX.'contacts', ['gl_account','tax_rate_id'], "id='$cID'");
+	$defs = dbGetValue(BIZUNO_DB_PREFIX.'contacts', ['gl_account','tax_rate_id'], "id=$cID");
 	$output['jsBody'][] = "
   var def_contact_gl_acct = '{$defs['gl_account']}';
   var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']).";";
 }
-if ($data['journal_main']['currency']['attr']['type'] <> 'hidden') {
-	$output['jsBody'][] = "jq('#currency').combobox({editable:false, onChange:function(newVal, oldVal){ ordersCurrency(newVal, oldVal); } });";
-}
+msgTrap();

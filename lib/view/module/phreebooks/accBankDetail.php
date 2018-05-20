@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-10-25
+ * @version    2.x Last Update: 2018-05-14
  * @filesource /lib/view/module/phreebooks/accBankDetail.php
  */
 
@@ -65,8 +65,7 @@ if ((isset($data['bulk']) && $data['bulk']) || (isset($data['journal_main']['con
 	$output['body'] .= html5('store_id',      $data['journal_main']['store_id'])."\n";
 	$output['body'] .= html5('rep_id',        $data['journal_main']['rep_id'])."<br />\n";
 	$output['body'] .= html5('terms_text',    $data['terms_text']).' '.html5('terms_edit', $data['terms_edit'])."<br />\n";
-	$output['body'] .= html5('currency',      $data['journal_main']['currency'])."\n";
-	$output['body'] .= html5('currency_rate', $data['journal_main']['currency_rate'])."\n";
+	$output['body'] .= html5('currency',      $data['journal_main']['currency']);
 	$output['body'] .= html5('closed',        $data['journal_main']['closed'])."\n";
 	$output['body'] .= html5('waiting',       $data['journal_main']['waiting'])."\n";
 	$output['body'] .= "</div>\n";
