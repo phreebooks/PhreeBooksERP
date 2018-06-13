@@ -23,7 +23,7 @@
 
 namespace bizuno;
 
-define('MODULE_BIZUNO_VERSION','2.1.4');
+define('MODULE_BIZUNO_VERSION','2.1.4'); // PhreeBooks R5.0.3
 
 ini_set('display_errors', true);
 error_reporting(E_ALL);
