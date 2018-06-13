@@ -19,7 +19,6 @@
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.0 Last Update: 2017-08-27
  * @filesource /lib/controller/module/phreebooks/totals/balance/balance.php
- * 
  */
 
 namespace bizuno;
@@ -51,7 +50,7 @@ class balance
     {
 		$this->fields = [
             'total_balance' => ['label'=>$this->lang['title'],//'classes'=>["easyui-numberbox"], // using numberbox causes errors on edit load
-		    'styles'=>  ['text-align'=>'right'], 'attr' => ['size'=>'15', 'value'=>0]],
+		    'styles' => ['text-align'=>'right'], 'attr' => ['size'=>'15', 'value'=>0]],
 		  'total_amount' => ['attr'=>  ['type'=>'hidden', 'value'=>0]],
           ];
 		$output['body'] .= '<div style="text-align:right">'."\n";

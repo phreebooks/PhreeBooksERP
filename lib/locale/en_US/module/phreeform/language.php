@@ -17,10 +17,8 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-03-13
-
+ * @version    2.x Last Update: 2018-06-06
  * @filesource /locale/en_US/module/phreeform/language.php
- * 
  */
 
 $lang = [
@@ -52,7 +50,7 @@ $lang = [
 	'msg_download_filename' => 'Download Filename Source:',
 	'msg_replace_existing' => 'Replace existing file, if present',
     // Error Messages
-    'err_pf_field_empty' => 'The Field has no information, this is a report build problem! Please eidt the report and verify all fields are valid. The field that failed is : ',
+    'err_pf_field_empty' => 'The Field has no information, this is a report build problem! Please edit the report and verify all fields are valid. The field that failed is : ',
     'err_rename_fail' => 'The report was not renamed, the proper id and/or title was not passed!',    
     'err_copy_fail' => 'The report was not copied, the proper id and/or title was not passed!',
     'err_group_empty' => 'No reports could be found in group: %s',

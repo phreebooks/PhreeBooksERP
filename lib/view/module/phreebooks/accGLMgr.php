@@ -19,17 +19,16 @@
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-11-09
  * @filesource /lib/view/module/phreebooks/accGLMgr.php
- * 
  */
 
 namespace bizuno;
 
-if (isset($data['values']['coa_blocked']) && !$data['values']['coa_blocked']) {
+if (isset($viewData['values']['coa_blocked']) && !$viewData['values']['coa_blocked']) {
 	$output['body'] .= "
-	<fieldset><legend>".$data['lang']['coa_import_title']."</legend><p>".$data['lang']['coa_import_desc']."</p>\n".
-	html5('sel_coa', $data['fields']['sel_coa']).
-	html5('btn_coa_pre', $data['fields']['btn_coa_pre']).html5('btn_coa_imp', $data['fields']['btn_coa_imp'])."<br /><br />".
-	html5('frmGlUpload', $data['form']['frmGlUpload']).html5('file_coa',$data['fields']['file_coa']).html5('btn_coa_upl',$data['fields']['btn_coa_upl'])."
+	<fieldset><legend>".$viewData['lang']['coa_import_title']."</legend><p>".$viewData['lang']['coa_import_desc']."</p>\n".
+	html5('sel_coa', $viewData['fields']['sel_coa']).
+	html5('btn_coa_pre', $viewData['fields']['btn_coa_pre']).html5('btn_coa_imp', $viewData['fields']['btn_coa_imp'])."<br /><br />".
+	html5('frmGlUpload', $viewData['forms']['frmGlUpload']).html5('file_coa',$viewData['fields']['file_coa']).html5('btn_coa_upl',$viewData['fields']['btn_coa_upl'])."
 	</form><br />
 	</fieldset>\n";
 	$output['jsBody'][] = "
@@ -52,8 +51,8 @@ function loadPreview() {
     });
 }";
 } else {
-	$output['body'] .= "<fieldset><legend>".$data['lang']['coa_import_title']."</legend><p>".$data['lang']['coa_import_blocked']."</p></fieldset>\n";
+	$output['body'] .= "<fieldset><legend>".$viewData['lang']['coa_import_title']."</legend><p>".$viewData['lang']['coa_import_blocked']."</p></fieldset>\n";
 }
 $output['body'] .= "<p>&nbsp;</p>\n";
-htmlDatagrid($output, $data, 'dgChart');
+htmlDatagrid($output, $viewData, 'dgChart');
 $output['jsBody'][] = "jq('#dgChart').datagrid('clientPaging');";

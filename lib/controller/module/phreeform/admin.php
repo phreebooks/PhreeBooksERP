@@ -50,13 +50,13 @@ class phreeformAdmin
     {
 		$data = ['general' => [
             'default_font'=> ['values'=>phreeformFonts(false), 'attr'=>  ['type'=>'select', 'value'=>'helvetica']],
-            'column_width'=> ['attr'=>  ['value'=>'25']],
-            'margin'      => ['attr'=>  ['value'=>'8']],
-            'title1'      => ['attr'=>  ['value'=>'%reportname%']],
-            'title2'      => ['attr'=>  ['value'=>$this->lang['phreeform_heading_2']]], // 'Report Generated %date%'
+            'column_width'=> ['attr'=>['value'=>'25']],
+            'margin'      => ['attr'=>['value'=>'8']],
+            'title1'      => ['attr'=>['value'=>'%reportname%']],
+            'title2'      => ['attr'=>['value'=>$this->lang['phreeform_heading_2']]], // 'Report Generated %date%'
             'paper_size'  => ['values'=>phreeformPages($this->lang), 'attr'=>  ['type'=>'select', 'value'=>'Letter:216:282']],
             'orientation' => ['values'=>phreeformOrientation($this->lang),'attr'=>  ['type'=>'select', 'value'=>'P']],
-            'truncate_len'=> ['attr'=>  ['value'=>'25']]]];
+            'truncate_len'=> ['attr'=>['value'=>'25']]]];
 		settingsFill($data, $this->moduleID);
 		return $data;
 	}

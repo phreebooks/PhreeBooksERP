@@ -18,13 +18,12 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2016-12-15
-
  * @filesource /lib/view/module/phreebooks/tabUsersSettings.php
  */
 
 namespace bizuno;
 
-$output['body'] .= html5('restrict_period',$data['fields']['restrict_period'])."<br />";
-$output['body'] .= html5('cash_acct',      $data['fields']['cash_acct'])."<br />";
-$output['body'] .= html5('ar_acct',        $data['fields']['ar_acct'])  ."<br />";
-$output['body'] .= html5('ap_acct',        $data['fields']['ap_acct']);
+$output['body'] .= html5('restrict_period',$viewData['fields']['restrict_period'])."<br />";
+$output['body'] .= html5('cash_acct',      $viewData['fields']['cash_acct'])."<br />";
+$output['body'] .= html5('ar_acct',        $viewData['fields']['ar_acct'])  ."<br />";
+$output['body'] .= html5('ap_acct',        $viewData['fields']['ap_acct']);

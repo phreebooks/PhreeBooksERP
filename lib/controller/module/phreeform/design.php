@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-06
+ * @version    2.x Last Update: 2018-06-05
  * @filesource /controller/module/phreeform/design.php
  */
 
@@ -81,18 +81,18 @@ class phreeformDesign
 			msgDebug("\nRead report: ".print_r($dbData['report'], true));
 		} else {
             $type= clean('type', 'cmd', 'get');
-			$dbData = ['id'=>0, 'title'=>'', 'mime_type'=>$type, 'security'=>'u:0;g:0', 'create_date'=>date('Y-m-d'), 'settings'=>'', 'report'=>$this->setNewReport($type)];
+			$dbData = ['id'=>0,'title'=>'','mime_type'=>$type,'security'=>'u:-1;g:-1','create_date'=>date('Y-m-d'),'settings'=>'','report'=>$this->setNewReport($type)];
 		}
 		$data   = [
             'pageTitle' => $this->lang['phreeform_title_edit'].' - '.($rID ? $dbData['title'] : lang('new')),
 			'reportType'=>$type,
-			'toolbar'   => ['tbEdit'=>  ['icons' => [
+			'toolbars'  => ['tbEdit'=>  ['icons' => [
                 'back'   => ['order'=>10, 'events'=>  ['onClick'=>"location.href='".BIZUNO_HOME."&p=phreeform/main/manager'"]],
 				'save'   => ['order'=>20, 'events'=>  ['onClick'=>"jq('#frmPhreeform').submit();"]],
 				'preview'=> ['order'=>30, 'events'=>  ['onClick'=>"jq('#xChild').val('print'); jq('#frmPhreeform').submit();"]],
 				'help'   => ['order'=>99, 'index' =>'']]]],
-			'form' => ['frmPhreeform' => ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreeform/design/save"]]],
-			'tabs' => ['tabPhreeForm' => ['divs'=>  [
+			'forms'     => ['frmPhreeform' => ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreeform/design/save"]]],
+			'tabs'      => ['tabPhreeForm' => ['divs'=>  [
                 'page'    => ['order'=>10, 'label'=>$this->lang['phreeform_title_page'],  'src'=>BIZUNO_LIB."view/module/phreeform/tabPage.php"],
 				'db'      => ['order'=>20, 'label'=>$this->lang['phreeform_title_db'],    'type'=>'datagrid', 'key'=>'tables'],
 				'fields'  => ['order'=>30, 'label'=>$this->lang['phreeform_title_field'], 'type'=>'datagrid', 'key'=>'fields'],
@@ -163,37 +163,37 @@ class phreeformDesign
             default:    $groups = getModuleCache('phreeform', 'rptGroups'); break; // default to report
         }
 		$data = [
-            'id'            => ['attr'=>  ['type'=>'hidden', 'value'=>isset($report->id)?$report->id:'0']],
+            'id'            => ['attr'=>['type'=>'hidden', 'value'=>isset($report->id)?$report->id:'0']],
 			'Title'         => ['label'=>lang('title'), 'attr'=>  ['size'=>64, 'maxlength'=>64, 'value'=>(isset($report->title) ? $report->title :'')]],
-			'Description'   => ['attr'=>  ['type'=>'textarea', 'cols'=>80, 'rows'=>4, 'value'=>(isset($report->description) ?$report->description :'')]],
+			'Description'   => ['attr'=>['type'=>'textarea', 'cols'=>80, 'rows'=>4, 'value'=>(isset($report->description) ?$report->description :'')]],
 			'SpecialClass'  => ['label'=>$this->lang['phreeform_special_class'], 'attr'=>  ['size'=>32, 'maxlength'=>32, 'value'=>(isset($report->special_class) ? $report->special_class :'')]],
-			'EmailSubject'  => ['attr'=>  ['width'=>60, 'value'=>isset($report->emailsubject)?$report->emailmessage:'']],
-			'EmailBody'     => ['attr'=>  ['type'=>'textarea', 'cols'=>80, 'rows'=>4, 'value'=>(isset($report->emailmessage)?$report->emailmessage:'')]],
-			'rptType'       => ['attr'=>  ['type'=>'hidden', 'value'=>isset($report->reporttype)?$report->reporttype:'rpt']],
+            'EmailSubject'  => ['attr'=>['width'=>60, 'value'=>isset($report->emailsubject)?$report->emailmessage:'']],
+			'EmailBody'     => ['attr'=>['type'=>'textarea', 'cols'=>80, 'rows'=>4, 'value'=>(isset($report->emailmessage)?$report->emailmessage:'')]],
+			'rptType'       => ['attr'=>['type'=>'hidden', 'value'=>isset($report->reporttype)?$report->reporttype:'rpt']],
 			'Serial'        => ['label'=>$this->lang['lbl_serial_form'], 'attr'=>  ['type'=>'checkbox']],
-			'Group'         => ['label'=>lang('group_list'), 'values'=>$groups, 'attr'=>  ['type'=>'select', 'value'=>$report->groupname]],
-			'DatePeriod'    => ['attr'=>  ['type'=>'radio']],
+			'Group'         => ['label'=>lang('group_list'), 'values'=>$groups,'attr'=>['type'=>'select', 'value'=>$report->groupname]],
+			'DatePeriod'    => ['attr'=>['type'=>'radio']],
 			'DateList'      => ['position'=>'after', 'attr'=>  ['type'=>'checkbox', 'value'=>(isset($report->datelist)?$report->datelist:'a')]],
-			'DateField'     => ['label'=>$this->lang['phreeform_date_field'], 'attr'=>  ['size'=>60, 'value'=>(isset($report->datefield)?$report->datefield:'')], 'events'=>  ['onClick'=>'comboFields(this);']],
+			'DateField'     => ['label'=>$this->lang['phreeform_date_field'], 'attr'=>['size'=>60, 'value'=>(isset($report->datefield)?$report->datefield:'')], 'events'=>  ['onClick'=>'comboFields(this);']],
 			'DateDefault'   => ['label'=>$this->lang['date_default_selected'],'values'=>$this->dateChoices, 'attr'=>  ['type'=>'select', 'value'=>(isset($report->datedefault) ? $report->datedefault : '')]],
-			'PrintedField'  => ['label'=>$this->lang['lbl_set_printed_flag'], 'attr'=>  ['size'=>32, 'value'=>(isset($report->setprintedfield)?$report->setprintedfield:'')],'events'=>  ['onClick'=>'comboFields(this);']],
-			'ContactLog'    => ['label'=>$this->lang['lbl_phreeform_contact'],'attr'=>  ['size'=>32, 'value'=>(isset($report->contactlog)     ?$report->contactlog:'')],     'events'=>  ['onClick'=>'comboFields(this);']],
+			'PrintedField'  => ['label'=>$this->lang['lbl_set_printed_flag'], 'attr'=>['size'=>32, 'value'=>(isset($report->setprintedfield)?$report->setprintedfield:'')],'events'=>  ['onClick'=>'comboFields(this);']],
+			'ContactLog'    => ['label'=>$this->lang['lbl_phreeform_contact'],'attr'=>['size'=>32, 'value'=>(isset($report->contactlog)     ?$report->contactlog:'')],     'events'=>  ['onClick'=>'comboFields(this);']],
 			'DefaultEmail'  => ['label'=>$this->lang['lbl_phreeform_email'],  'values'=>$this->emailChoices,'attr'=>  ['type'=>'select', 'value'=>(isset($report->defaultemail) ? $report->defaultemail : 'user')]],
-			'FormBreakField'=> ['label'=>$this->lang['page_break_field'],     'attr'=>  ['size'=>32, 'value'=>(isset($report->formbreakfield) ?$report->formbreakfield:'')], 'events'=>  ['onClick'=>'comboFields(this);']],
+			'FormBreakField'=> ['label'=>$this->lang['page_break_field'],     'attr'=>['size'=>32, 'value'=>(isset($report->formbreakfield) ?$report->formbreakfield:'')], 'events'=>  ['onClick'=>'comboFields(this);']],
 			'SkipNullField' => ['label'=>$this->lang['lbl_skip_null'],'attr'=>  ['size'=>32, 'value'=>(isset($report->skipnullfield)?$report->skipnullfield:'')], 'events'=>  ['onClick'=>'comboFields(this);']],
-			'FilenamePrefix'=> ['label'=>lang('prefix'),    'attr'=>  ['size'=>10, 'value'=>(isset($report->filenameprefix) ? $report->filenameprefix : '')]],
-			'FilenameField' => ['label'=>lang('fieldname'), 'attr'=>  ['size'=>32, 'value'=>(isset($report->filenamefield)?$report->filenamefield:'')], 'events'=>  ['onClick'=>'comboFields(this);']],
+			'FilenamePrefix'=> ['label'=>lang('prefix'),    'attr'=>['size'=>10, 'value'=>(isset($report->filenameprefix) ? $report->filenameprefix : '')]],
+			'FilenameField' => ['label'=>lang('fieldname'), 'attr'=>['size'=>32, 'value'=>(isset($report->filenamefield)?$report->filenamefield:'')], 'events'=>  ['onClick'=>'comboFields(this);']],
 			'BreakField'    => ['label'=>lang('phreeform_field_break'),'attr'=>  ['maxlength'=>64]],
 			'SecurityUsers' => ['values'=>listUsers(true, true, false),'attr'=>  ['type'=>'select', 'size'=>10, 'multiple'=>'multiple']],
 			'SecurityGroups'=> ['values'=>listRoles(true, false),'attr'=>  ['type'=>'select', 'size'=>10, 'multiple'=>'multiple']],
-			'SecUsersAll'   => ['label'=>lang('all_users'), 'attr'=>  ['type'=>'checkbox']],
-			'SecGroupsAll'  => ['label'=>lang('all_groups'),'attr'=>  ['type'=>'checkbox']],
-			'PageSize'      => ['label'=>$this->lang['phreeform_paper_size'],   'values'=>phreeformPages($this->lang),'attr'=>  ['type'=>'select',             'value'=>(isset($report->page->size)          ?$report->page->size           :'LETTER:216:279')]],
+			'SecUsersAll'   => ['label'=>lang('all_users'), 'attr'=>['type'=>'checkbox','checked'=>true]],
+			'SecGroupsAll'  => ['label'=>lang('all_groups'),'attr'=>['type'=>'checkbox','checked'=>true]],
+			'PageSize'      => ['label'=>$this->lang['phreeform_paper_size'],   'values'=>phreeformPages($this->lang),'attr'=>['type'=>'select',             'value'=>(isset($report->page->size)          ?$report->page->size           :'LETTER:216:279')]],
 			'PageOrient'    => ['label'=>$this->lang['phreeform_orientation'],  'values'=>phreeformOrientation($this->lang), 'attr'=>  ['type'=>'select',      'value'=>(isset($report->page->orientation)   ?$report->page->orientation    :'P')]],
-			'MarginTop'     => ['label'=>$this->lang['phreeform_margin_top'],   'styles'=>  ['text-align'=>'right'], 'attr'=>  ['size'=>'4', 'maxlength'=>'3', 'value'=>(isset($report->page->margin->top)   ?$report->page->margin->top    :'8')]],
-			'MarginBottom'  => ['label'=>$this->lang['phreeform_margin_bottom'],'styles'=>  ['text-align'=>'right'], 'attr'=>  ['size'=>'4', 'maxlength'=>'3', 'value'=>(isset($report->page->margin->bottom)?$report->page->margin->bottom :'8')]],
-			'MarginLeft'    => ['label'=>$this->lang['phreeform_margin_left'],  'styles'=>  ['text-align'=>'right'], 'attr'=>  ['size'=>'4', 'maxlength'=>'3', 'value'=>(isset($report->page->margin->left)  ?$report->page->margin->left   :'8')]],
-			'MarginRight'   => ['label'=>$this->lang['phreeform_margin_right'], 'styles'=>  ['text-align'=>'right'], 'attr'=>  ['size'=>'4', 'maxlength'=>'3', 'value'=>(isset($report->page->margin->right) ?$report->page->margin->right  :'8')]],
+			'MarginTop'     => ['label'=>$this->lang['phreeform_margin_top'],   'styles'=>  ['text-align'=>'right'], 'attr'=>['size'=>'4', 'maxlength'=>'3', 'value'=>(isset($report->page->margin->top)   ?$report->page->margin->top    :'8')]],
+			'MarginBottom'  => ['label'=>$this->lang['phreeform_margin_bottom'],'styles'=>  ['text-align'=>'right'], 'attr'=>['size'=>'4', 'maxlength'=>'3', 'value'=>(isset($report->page->margin->bottom)?$report->page->margin->bottom :'8')]],
+			'MarginLeft'    => ['label'=>$this->lang['phreeform_margin_left'],  'styles'=>  ['text-align'=>'right'], 'attr'=>['size'=>'4', 'maxlength'=>'3', 'value'=>(isset($report->page->margin->left)  ?$report->page->margin->left   :'8')]],
+			'MarginRight'   => ['label'=>$this->lang['phreeform_margin_right'], 'styles'=>  ['text-align'=>'right'], 'attr'=>['size'=>'4', 'maxlength'=>'3', 'value'=>(isset($report->page->margin->right) ?$report->page->margin->right  :'8')]],
 			'TextTruncate'  => ['label'=>$this->lang['truncate_fit'],   'attr'=>  ['type'=>'checkbox', 'checked'=>(isset($report->truncate) ?'1':'0')]],
 			'TotalOnly'     => ['label'=>$this->lang['show_total_only'],'attr'=>  ['type'=>'checkbox', 'checked'=>(isset($report->totalonly)?'1':'0')]],
 			'HeadingShow'   => ['attr'=>  ['type'=>'checkbox', 'checked'=>(isset($report->heading->show)                  ?'1':'0')]],
@@ -224,18 +224,21 @@ class phreeformDesign
 			'TotalFont'     => ['values'=>$selFont,  'attr'=>  ['type'=>'select', 'value'=>(isset($report->totals->font)  ?$report->totals->font :'helvetica')]],
 			'TotalSize'     => ['values'=>$selSize,  'attr'=>  ['type'=>'select', 'value'=>(isset($report->totals->size)  ?$report->totals->size :'10')]],
 			'TotalColor'    => ['classes'=>['easyui-color'], 'attr'=>  ['value'=>(isset($report->totals->color)           ?convertHex($report->totals->color):'#000000'), 'size'=>10]],
-			'TotalAlign'    => ['values'=>$selAlign, 'attr'=>  ['type'=>'select', 'value'=>(isset($report->totals->align) ?$report->totals->align:'L')]],
-            ];
+			'TotalAlign'    => ['values'=>$selAlign, 'attr'=>  ['type'=>'select', 'value'=>(isset($report->totals->align) ?$report->totals->align:'L')]]];
 		// set the checkboxes
         if (isset($report->serialform) && $report->serialform) { $data['Serial']['attr']['checked'] = 'checked'; }
 		// set up the security
 		$temp   = explode(";", $report->security);
 		$users  = substr($temp[0], 2);
 		$groups = substr($temp[1], 2);
-        if ($users == '-1') { $data['SecUsersAll']['attr']['checked']  = 'checked'; }
-          else { $data['SecurityUsers']['attr']['value']  = explode(":", $users); }
-        if ($groups == '-1') { $data['SecGroupsAll']['attr']['checked'] = 'checked'; }
-          else { $data['SecurityGroups']['attr']['value'] = explode(":", $groups); }
+        if ($users <> '-1') { 
+            unset($data['SecUsersAll']['attr']['checked']);
+            $data['SecurityUsers']['attr']['value']  = explode(":", $users);
+        }
+        if ($groups <> '-1') { 
+            unset($data['SecGroupsAll']['attr']['checked']);
+            $data['SecurityGroups']['attr']['value'] = explode(":", $groups);
+        }
 		$data['javascript']['dataTables'] = isset($report->tables)    ? formatDatagrid($report->tables,    'dataTables') : "var dataTables = [];\n";
 		$data['javascript']['dataFields'] = isset($report->fieldlist) ? formatDatagrid($report->fieldlist, 'dataFields') : "var dataFields = [];\n";
 		$data['javascript']['dataGroups'] = isset($report->grouplist) ? formatDatagrid($report->grouplist, 'dataGroups') : "var dataGroups = [];\n";
@@ -278,13 +281,13 @@ class phreeformDesign
 		msgDebug("\n\nDecrypted get object = ".print_r($report, true));
 		// security
 		$users = 'u:-1';
-        if (isset($request['user_all']) && $request['user_all']) { $users = 'u:-1'; }
-          elseif (!isset($request['users'])) { $users = 'u:0'; } // none
-          elseif ( isset($request['users']) && $request['users'][0] <> '')  { $users = 'u:'.implode(':', $request['users']); }
+        if     (!empty($request['user_all']))  { $users = 'u:-1'; }
+        elseif (!isset($request['users'])) { $users = 'u:0'; } // none
+        elseif ( isset($request['users']) && $request['users'][0] <> '')  { $users = 'u:'.implode(':', $request['users']); }
 		$groups = 'g:-1';
-        if       ( isset($request['group_all']) && $request['group_all']) { $groups = 'g:-1'; }
-          elseif (!isset($request['groups'])) { $groups = 'g:0'; } // none
-          elseif ( isset($request['groups']) && $request['groups'][0] <> '') { $groups = 'g:'.implode(':', $request['groups']); }
+        if     (!empty($request['group_all'])) { $groups = 'g:-1'; }
+        elseif (!isset($request['groups'])) { $groups = 'g:0'; } // none
+        elseif ( isset($request['groups']) && $request['groups'][0] <> '') { $groups = 'g:'.implode(':', $request['groups']); }
 		$report->security = "$users;$groups";
 		unset($report->user_all);
 		unset($report->group_all);
@@ -547,15 +550,15 @@ class phreeformDesign
         for ($i=1; $i<7; $i++) { $linePoints[] = ['id'=>$i,'text'=>$i]; }
 		$selFont = phreeformFonts();
 		$data = [
-            'title'  => lang('settings').(isset($settings->title) ? ' - '.$settings->title : ''),
-			'toolbar'=> ['tbFields' =>  ['icons' => [
+            'title'   => lang('settings').(isset($settings->title) ? ' - '.$settings->title : ''),
+			'toolbars'=> ['tbFields' =>  ['icons' => [
                 'fldClose'=> ['order'=> 10,'icon'=>'close','label'=>lang('close'),'events'=>['onClick'=>"jq('#dgFields').datagrid('enableDnd'); jq('#win_settings').window('close');"]],
 				'fldSave' => ['order'=> 20,'icon'=>'save', 'label'=>lang('save'), 'events'=>['onClick'=>"fieldIndex=$index; jq('#frmFieldSettings').submit();"]]]]],
-			'form'   => ['frmFieldSettings' => ['attr'=>  ['type'=>'form']]],
-			'divs'   => [
+			'forms'   => ['frmFieldSettings' => ['attr'=>  ['type'=>'form']]],
+			'divs'    => [
                 'toolbar'       => ['order'=>30, 'type'=>'toolbar', 'key'=>'tbFields'],
 				'field_settings'=> ['order'=>50, 'src'=>BIZUNO_LIB."view/module/phreeform/winFieldSettings.php"]],
-			'fields' => [
+			'fields'  => [
                 'index'      => ['attr'=>  ['type'=>'hidden', 'value'=>$index]],
 				'type'       => ['attr'=>  ['type'=>'hidden', 'value'=>$fData->type]],
 				'boxField'   => ['attr'=>  ['type'=>'hidden', 'value'=>'']],
@@ -604,18 +607,18 @@ class phreeformDesign
 				'width' => 1000],
             'lang'=> $this->lang];
 		// set some checkboxes
-        if (isset($settings->truncate)&& $settings->truncate){ $data['fields']['truncate']['attr']['checked']= 'checked'; }
-        if (isset($settings->totals)  && $settings->totals)  { $data['fields']['totals']['attr']['checked']  = 'checked'; }
-        if (isset($settings->bshow)   && $settings->bshow)   { $data['fields']['bshow']['attr']['checked']   = 'checked'; }
-        if (isset($settings->fshow)   && $settings->fshow)   { $data['fields']['fshow']['attr']['checked']   = 'checked'; }
-        if (isset($settings->hbshow)  && $settings->hbshow)  { $data['fields']['hbshow']['attr']['checked']  = 'checked'; }
-        if (isset($settings->hfshow)  && $settings->hfshow)  { $data['fields']['hfshow']['attr']['checked']  = 'checked'; }
-		if (isset($settings->img_file)) {
+        if (!empty($settings->truncate)) { $data['fields']['truncate']['attr']['checked']= 'checked'; }
+        if (!empty($settings->totals))   { $data['fields']['totals']['attr']['checked']  = 'checked'; }
+        if (!empty($settings->bshow))    { $data['fields']['bshow']['attr']['checked']   = 'checked'; }
+        if (!empty($settings->fshow))    { $data['fields']['fshow']['attr']['checked']   = 'checked'; }
+        if (!empty($settings->hbshow))   { $data['fields']['hbshow']['attr']['checked']  = 'checked'; }
+        if (!empty($settings->hfshow))   { $data['fields']['hfshow']['attr']['checked']  = 'checked'; }
+		if (!empty($settings->img_file)) {
 			$data['fields']['img_cur'] = ['attr'=>  ['type'=>'img', 'src'=>BIZUNO_URL_FS."&src=".getUserCache('profile', 'biz_id')."/images/$settings->img_file", 'height'=>'32']];
 			$data['fields']['img_file']['attr']['value'] = $settings->img_file;
 		}
 		if (in_array($fData->type, ['CBlk', 'LtrTpl', 'Tbl', 'TBlk', 'Ttl'])) {
-            if (!isset($settings->boxfield)) { $settings->boxfield = []; }
+            if (!isset($settings->boxfield)) { $settings->boxfield = (object)[]; }
 			msgDebug("\nWorking with box data = ".print_r($settings->boxfield, true));
 			$data['javascript']['dataFieldValues']= formatDatagrid($settings->boxfield, 'dataFieldValues');
 			$data['datagrid']['fields'] = $this->dgFieldValues('dgFieldValues', $fData->type);
@@ -809,41 +812,30 @@ class phreeformDesign
                 'title'       => $this->lang['filter_list'],
 				'toolbar'     => '#'.$name.'Toolbar',
 			    'singleSelect'=> true,
-				'idField'     => 'id',
-                ],
+				'idField'     => 'id'],
 			'events' => [
                 'data'         => 'dataFilters',
 				'onLoadSuccess'=>"function() { jq(this).datagrid('enableDnd'); }",
-				'onClickCell'  => "function(rowIndex) { if (icnAction=='trash') { jq('#$name').edatagrid('destroyRow', rowIndex); } icnAction = ''; }",
-                ],
+				'onClickCell'  => "function(rowIndex) { if (icnAction=='trash') { jq('#$name').edatagrid('destroyRow', rowIndex); } icnAction = ''; }"],
 			'source' => [
-                'actions' => [
-                    'new' => ['order'=>10, 'html'=>  ['icon'=>'add', 'size'=>'small', 'events'=>  ['onClick'=>"jq('#$name').edatagrid('addRow');"]]],
-                    ],
-                ],
+                'actions' => ['new'=>['order'=>10,'html'=>['icon'=>'add','size'=>'small','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]]],
 			'columns' => [
                 'action' => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>60],
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> [
                         'move' => ['icon'=>'move', 'size'=>'small','order'=>20],
-						'trash'=> ['icon'=>'trash','size'=>'small','order'=>50,'events'=>  ['onClick'=>"icnAction='trash';"]],
-                        ],
-                    ],
+						'trash'=> ['icon'=>'trash','size'=>'small','order'=>50,'events'=>  ['onClick'=>"icnAction='trash';"]]]],
 				'fieldname' => ['order'=>10, 'label' => lang('fieldname'), 'attr'=>  ['width'=>250, 'resizable'=>true], 
-					'events'=> ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getFields',valueField:'id',textField:'text'}}"],
-                    ],
+					'events'=> ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
 				'title'  => ['order'=>20, 'label' => lang('title'),'attr'=>  ['width'=>150, 'editor'=>'text', 'resizable'=>true]],
 				'visible'=> ['order'=>30, 'label' => lang('show'), 'attr'=>  ['width'=>120, 'resizable'=>true], 
 					'events'=> ['editor'=>"{type:'checkbox',options:{on:'1',off:''}}"]],
 				'type'   => ['order'=>40, 'label' => lang('type'), 'attr'=>  ['width'=>200, 'resizable'=>true], 
 					'events'=>  [
                         'editor'   =>"{type:'combobox',options:{editable:false,valueField:'id',textField:'text',data:filterTypes}}",
-						'formatter'=>"function(value,row){ return getTextValue(filterTypes, value); }"],
-                    ],
+						'formatter'=>"function(value,row){ return getTextValue(filterTypes, value); }"]],
 				'min'=> ['order'=>50, 'label'=>lang('min'), 'attr'=>  ['width'=>100, 'editor'=>'text', 'resizable'=>true]],
-				'max'=> ['order'=>60, 'label'=>lang('max'), 'attr'=>  ['width'=>100, 'editor'=>'text', 'resizable'=>true]],
-                ],
-            ];
+				'max'=> ['order'=>60, 'label'=>lang('max'), 'attr'=>  ['width'=>100, 'editor'=>'text', 'resizable'=>true]]]];
 	}
     
     /**
@@ -856,7 +848,7 @@ class phreeformDesign
         $report = new \StdClass;
         $report->reporttype = $type;
         $report->groupname = in_array($type, ['frm', 'lst']) ? "misc:misc" : "misc:$type";
-        $report->security = 'u:0;g:0';
+        $report->security = 'u:-1;g:-1';
         return $report;
     }
 

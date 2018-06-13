@@ -15,38 +15,36 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-01-15
-
+ * @version    2.x Last Update: 2018-06-12
  * @filesource /lib/view/module/bizuno/divBackup.php
- * 
  */
 
 namespace bizuno;
 
 $output['body'] .= '<div style="float:right;width:50%">'."\n";
-htmlDatagrid($output, $data, 'backup');
+htmlDatagrid($output, $viewData, 'backup');
 $output['body'] .= "</div>\n";
 // company data backup
 $output['body'] .= '
 <div style="width:50%">
     <fieldset><legend>'.lang('bizuno_backup').'</legend>
-    '.html5('frmBackup', $data['form']['frmBackup']).'
-        <p>'.$data['lang']['desc_backup'].'</p>
-        '.html5('incFiles', $data['fields']['incFiles']).'
-        <p><div style="text-align:right">'.html5('btnBackup', $data['fields']['btnBackup']).'</div></p>
+    '.html5('frmBackup', $viewData['forms']['frmBackup']).'
+        <p>'.$viewData['lang']['desc_backup'].'</p>
+        '.html5('incFiles', $viewData['fields']['incFiles']).'
+        <p><div style="text-align:right">'.html5('btnBackup', $viewData['fields']['btnBackup']).'</div></p>
     </form>
     </fieldset>
 </div>
 <div style="width:50%">
-    <fieldset><legend>'.$data['lang']['audit_log_backup'].'</legend>
-    <p>'.$data['lang']['audit_log_backup_desc'].'</p>
-    '.html5('btnAudit', $data['fields']['btnAudit']).'
+    <fieldset><legend>'.$viewData['lang']['audit_log_backup'].'</legend>
+    <p>'.$viewData['lang']['audit_log_backup_desc'].'</p>
+    '.html5('btnAudit', $viewData['fields']['btnAudit']).'
     <hr />
-    '.html5('frmAudit', $data['form']['frmAudit']).'
-        <p>'.$data['lang']['desc_audit_log_clean'].'</p>
-        '.html5('dateClean', $data['fields']['dateClean']).html5('btnClean', $data['fields']['btnClean']).'
+    '.html5('frmAudit', $viewData['forms']['frmAudit']).'
+        <p>'.$viewData['lang']['desc_audit_log_clean'].'</p>
+        '.html5('dateClean', $viewData['fields']['dateClean']).html5('btnClean', $viewData['fields']['btnClean']).'
     </form>
     </fieldset>
 </div>';

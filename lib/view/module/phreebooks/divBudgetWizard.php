@@ -18,25 +18,23 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-06-01
-
  * @filesource /lib/view/module/phreebooks/divBudgetWizard.php
- * 
  */
 
 namespace bizuno;
 
 $output['body'] .= "
 <fieldset>
-	<legend>".lang('wizard')."</legend>".html5('frmWizard',$data['forms']['frmWizard'])."
-	<p>".$data['lang']['phreebooks_budget_wizard_desc']."</p>
-	<p>".$data['lang']['budget_dest_fy']    .html5('destFY',    $data['fields']['destFY'])
-		.$data['lang']['budget_src_fy']     .html5('srcFY',     $data['fields']['srcFY'])
-		.$data['lang']['budget_using']      .html5('srcData',   $data['fields']['srcData'])
-		.$data['lang']['budget_adjust']     .html5('adjVal',    $data['fields']['adjVal'])
-		.lang('percent').'<br />'  .html5('avgVal',    $data['fields']['avgVal'])
-		.$data['lang']['budget_average']    .html5('btnSaveWiz',$data['fields']['btnSaveWiz'])."</p>
+	<legend>".lang('wizard')."</legend>".html5('frmWizard',$viewData['forms']['frmWizard'])."
+	<p>".$viewData['lang']['phreebooks_budget_wizard_desc']."</p>
+	<p>".$viewData['lang']['budget_dest_fy']    .html5('destFY',    $viewData['fields']['destFY'])
+		.$viewData['lang']['budget_src_fy']     .html5('srcFY',     $viewData['fields']['srcFY'])
+		.$viewData['lang']['budget_using']      .html5('srcData',   $viewData['fields']['srcData'])
+		.$viewData['lang']['budget_adjust']     .html5('adjVal',    $viewData['fields']['adjVal'])
+		.lang('percent').'<br />'  .html5('avgVal',    $viewData['fields']['avgVal'])
+		.$viewData['lang']['budget_average']    .html5('btnSaveWiz',$viewData['fields']['btnSaveWiz'])."</p>
 	<hr>
-	<p>".$data['lang']['build_next_fy_desc'].html5('btnNextFY', $data['fields']['btnNextFY'])."</p>
+	<p>".$viewData['lang']['build_next_fy_desc'].html5('btnNextFY', $viewData['fields']['btnNextFY'])."</p>
 	</form>
 </fieldset>\n";
 $output['jsBody'][] = "

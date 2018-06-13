@@ -63,7 +63,7 @@ class phreeformMain
 		}
 		$data = [
             'pageTitle'=> lang('reports'),
-			'toolbar'  => ['tbPhreeForm'=> ['icons' => [
+			'toolbars'  => ['tbPhreeForm'=> ['icons' => [
                 'mimeRpt' => ['order'=>30,'icon'=>'mimeTxt','hidden'=>($this->security>1)?false:true,'events'=>['onClick'=>"hrefClick('phreeform/design/edit&type=rpt', 0);"],
 					'label'=>$this->lang['new_report']],
 				'mimeFrm' => ['order'=>40,'icon'=>'mimeDoc','hidden'=>($this->security>1)?false:true,'events'=>['onClick'=>"hrefClick('phreeform/design/edit&type=frm', 0);"],
@@ -152,7 +152,7 @@ class phreeformMain
         $report['description'] = $details->description;
 		$data   = ['action'=>'divHTML', 'divID'=>'rightColumn',
             'divs' => ['divDetail' => ['order'=>50, 'src'=>BIZUNO_LIB."view/module/phreeform/divRptDetail.php"]],
-            'toolbar'  => ['tbDetail'=> ['hideLabels'=>true,'icons' => [
+            'toolbars'  => ['tbDetail'=> ['hideLabels'=>true,'icons' => [
                 'open'  => ['order'=>10,'events'=>['onClick'=>"winOpen('phreeformOpen', 'phreeform/render/open&rID=$rID');"]],
 				'edit'  => ['order'=>20,'hidden'=>($security>1)?false:true, 
                     'events'=>  ['onClick'=>"window.location.href='".BIZUNO_AJAX."&p=phreeform/design/edit&rID='+$rID;"]],

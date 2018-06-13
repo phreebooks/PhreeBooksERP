@@ -35,6 +35,7 @@ Bizuno Accounting, by PhreeSoft Inc., is a full featured double-entry accounting
 
 == Upgrade Notice ==
 
+2018-06-13 - 5.0.2 - No database changes, overwrite current files with new version
 2018-04-23 - 5.0.1 - No database changes necessary, replace current files with new version
 2018-04-10 - 5.0.0 - Initial Release to GitHub repository
 
@@ -50,6 +51,8 @@ Bizuno Accounting, by PhreeSoft Inc., is a full featured double-entry accounting
 
 == Changelog ==
 
+= 5.0.2 =
+2018-06-13 - Incorporate Bizuno library 2.1.4, bugs with portal and configuration paths
 = 5.0.1 =
 2018-04-23 - Incorporate Bizuno library 2.1.2, bug installing with PHP 5.4
 = 5.0.0 =

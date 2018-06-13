@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-05
+ * @version    2.x Last Update: 2018-05-29
  * @filesource /view/main.php
  */
 
@@ -196,6 +196,7 @@ function viewFormat($value, $format = '')
             return viewInvSales($value); // value passed should be the SKU
 		case 'lc':        return mb_strtolower($value);
 		case 'j_desc':    return isset($bizunoLang["journal_main_journal_id_$value"]) ? $bizunoLang["journal_main_journal_id_$value"] : $value;
+        case 'json':      return json_decode($value, true);
 		case 'neg':       return -$value;
 		case 'n2wrd':     require_once(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/functions.php");
 			return viewCurrencyToWords($value);
@@ -735,8 +736,8 @@ function adminStructure($module, $structure=[], $lang=[])
         'security'   => getUserCache('security', 'admin', false, 0),
 		'pageTitle'  => $title,
 		'statsModule'=> $module,
-		'toolbar'    => ['tbAdmin'=> ['icons'=>  ['save' => ['order'=>20, 'events'=>  ['onClick'=>"jq('#frmAdmin').submit();"]]]]],
-		'form'       => ['frmAdmin'=>  ['attr'=> ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=$module/admin/adminSave"]]],
+		'toolbars'   => ['tbAdmin'=> ['icons'=>  ['save' => ['order'=>20, 'events'=>  ['onClick'=>"jq('#frmAdmin').submit();"]]]]],
+		'forms'      => ['frmAdmin'=>  ['attr'=> ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=$module/admin/adminSave"]]],
 		'divs'       => [
             'heading'=> ['order'=>30,'type'=>'html','html'=>"<h1>".html5('',$iconBack)."$title</h1>"],
 			'main'   => ['order'=>50,'type'=>'tabs','key'=>'tabAdmin']]];
@@ -849,6 +850,41 @@ function htmlFindImage($settings, $height=32)
 }
 
 /**
+* This function builds the combo box editor HTML for the country list
+ * @return string set the editor structure
+ */
+function htmlComboContact($id, $props=[])
+{
+    $defaults = ['type'=>'c','store'=>false,'callback'=>'contactsDetail','opt1'=>'b','opt2'=>'']; // opt1=>suffux, opt2=>fill
+    $attr = array_replace($defaults, $props);
+    return html5($id, ['label'=>lang('search'),'classes'=>['easyui-combogrid'],'attr'=>['data-options'=>"
+        width:130, panelWidth:750, delay:900, idField:'id', textField:'primary_name', mode: 'remote',
+        url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type={$attr['type']}&store=".($attr['store']?'1':'0')."',
+        onBeforeLoad:function (param) { var newValue=jq('#$id').combogrid('getValue'); if (newValue.length < 3) { return false; } },
+        selectOnNavigation:false,
+        onClickRow:  function (idx, row){ {$attr['callback']}(row, '{$attr['opt1']}', '{$attr['opt2']}'); },
+        columns: [[{field:'id', hidden:true},{field:'email', hidden:true},
+            {field:'short_name',  title:'".jsLang('contacts_short_name')."', width:100},
+            {field:'type',        hidden:".(strlen($attr['type'])>1?'false':'true').",title:'".jsLang('contacts_type')."', width:100},
+            {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
+            {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
+            {field:'city',        title:'".jsLang('address_book_city')."', width:100},
+            {field:'state',       title:'".jsLang('address_book_state')."', width: 50},
+            {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
+            {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]]"]]);
+}
+
+/**
+* This function builds the combo box editor HTML for the country list
+ * @return string set the editor structure
+ */
+function htmlComboCountry($id, $value='')
+{
+	return html5($id, ['styles'=>['width'=>250],'classes'=>['easyui-combogrid'], 
+		'attr'=> ['type'=>'select', 'data-options'=>"data:bizDefaults.countries,width:150,panelWidth:300,value:'$value',idField:'iso3',textField:'title',columns:[[{field:'iso3',title:'".jsLang('code')."',width:60},{field:'title',title:'".jsLang('title')."',width:200}]]"]]);
+}
+
+/**
  * This function builds the combo box editor HTML for a datagrid to view GL Accounts
  * @return string set the editor structure
  */
@@ -870,16 +906,6 @@ jq('#$id').combogrid({
 		{field:'title',title:'".jsLang('title')."',width:200},
 		{field:'type',title:'" .jsLang('type') ."',width:180}]]
 });\n";
-}
-
-/**
-* This function builds the combo box editor HTML for the country list
- * @return string set the editor structure
- */
-function htmlComboCountry($id, $value='')
-{
-	return html5($id, ['styles'=>['width'=>250],'classes'=>['easyui-combogrid'], 
-		'attr'=> ['type'=>'select', 'data-options'=>"data:bizDefaults.countries,width:150,panelWidth:300,value:'$value',idField:'iso3',textField:'title',columns:[[{field:'iso3',title:'".jsLang('code')."',width:60},{field:'title',title:'".jsLang('title')."',width:200}]]"]]);
 }
 
 /**
@@ -933,6 +959,12 @@ function htmlAccordion(&$output, $prop, $idx=false)
         $prop = array_merge($prop['accordion'][$idx], ['id'=>$idx]);
     }
     $html5->layoutAccordion($output, $prop);
+}
+
+function htmlAddress(&$output, $prop)
+{
+    global $html5;
+    $html5->layoutAddress($output, $prop);
 }
 
 /**
@@ -1007,8 +1039,8 @@ function htmlToolbar(&$output, $prop, $idx=false)
 {
     global $html5;
     if ($idx) {  // legacy to old style
-        if (empty($prop['toolbar'][$idx])) { return; }
-        $prop = array_merge($prop['toolbar'][$idx], ['id'=>$idx]);
+        if (empty($prop['toolbars'][$idx])) { return; }
+        $prop = array_merge($prop['toolbars'][$idx], ['id'=>$idx]);
     }
     $html5->layoutToolbar($output, $prop);
 }

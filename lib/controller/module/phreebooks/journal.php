@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-08
+ * @version    2.x Last Update: 2018-06-07
  * @filesource /lib/controller/module/phreebooks/journal.php
  */
 
@@ -267,7 +267,7 @@ class journal
         if (!isset($this->main['primary_name_'.$type]) || $this->main['primary_name_'.$type] == '') { return true; }
 		$cID   = isset($this->main['contact_id_'.$type]) ? $this->main['contact_id_'.$type] : 0;
 		$aID   = isset($this->main['address_id_'.$type]) ? $this->main['address_id_'.$type] : 0;
-		$cType = in_array($this->main['journal_id'], [3,4,6,7]) ? 'v' : 'c';
+		$cType = in_array($this->main['journal_id'], [3,4,6,7,17,20,21]) ? 'v' : 'c';
         if ($aID) { $aType = dbGetValue(BIZUNO_DB_PREFIX."address_book", 'type', "address_id=$aID"); }
             else  { $aType = $type=='b' ? ($cID ? 'b' : 'm') : 's'; }
 		require_once(BIZUNO_LIB."controller/module/contacts/main.php");
@@ -314,7 +314,7 @@ class journal
             if ($this->main['id']) { $filter[] = "id<>{$this->main['id']}"; }
 			$dup = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id', implode(' AND ', $filter));
             if ($dup) { return msgAdd(sprintf(lang('err_gl_invoice_num_dup'), pullTableLabel(BIZUNO_DB_PREFIX."journal_main", 'invoice_num', '', $this->main['journal_id']), $this->main['invoice_num'])); }
-			msgDebug("specified ID but no dups, returning OK.");
+			msgDebug("\nspecified ID but no dups, returning OK.");
 		} else { // generate a new order/invoice value
 			switch ($this->main['journal_id']) { // select the field to fetch the next number
                 case  6: if (!$this->main['waiting']) { return msgAdd(lang('err_gl_invoice_num_empty')); }

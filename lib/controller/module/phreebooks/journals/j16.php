@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-06-01
+ * @version    2.x Last Update: 2018-05-24
 
  * @filesource /lib/controller/module/phreebooks/journals/j16.php
  * 
@@ -29,14 +29,81 @@ require_once(BIZUNO_LIB."controller/module/phreebooks/journals/common.php");
 
 class j16 extends jCommon
 {
+    protected $journalID = 16;
 
-	function __construct($main, $item)
+	function __construct($main=[], $item=[])
     {
 		parent::__construct();
         $this->main = $main;
 		$this->item = $item;
 	}
 
+/*******************************************************************************************************************/
+// START Edit Methods
+/*******************************************************************************************************************/
+    /**
+     * Pulls the data for the specified journal and populates the structure
+     * @param array $data - current working structure
+     * @param array $structure - table structures
+     * @param integer $rID - record id of the transaction to load from the database
+     */
+    public function getDataMain(&$data, $structure, $rID=0)
+    {
+        $dbMain = dbGetRow(BIZUNO_DB_PREFIX.'journal_main', "id='$rID'");
+        dbStructureFill($data['fields']['main'], $dbMain);
+        $data['items'] = dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id='$rID'");
+        $dbData = [];
+        if (sizeof($data['items']) > 0) { // calculate some form fields that are not in the db
+            foreach ($data['items'] as $key => $row) {
+                if ($row['gl_type'] <> 'adj') { continue; } // not an adjustment record
+                $values = dbGetRow(BIZUNO_DB_PREFIX."inventory", "sku='{$row['sku']}'");
+                $row['qty_stock'] = $values['qty_stock']-$row['qty'];
+                $row['balance']   = $values['qty_stock'];
+                $row['price']     = viewFormat($values['item_cost'], 'currency');
+                $dbData[$key]     = $row;
+            }
+        }
+        $map['debit_amount'] = ['type'=>'field','index'=>'total'];
+        $data['jsHead']['datagridData'] = formatDatagrid($dbData, 'datagridData', $structure['journal_item'], $map);
+    }
+    
+    /**
+     * Tailors the structure for the specific journal
+     * @param array $data - current working structure
+     * @param integer $rID - Database record id of the journal main record
+     * @param integer $security - Users security level
+     */
+    public function getDataItem(&$data, $rID=0, $cID=0, $security=0)
+    {
+        $data['datagrid']['item'] = $this->dgAdjust('dgJournalItem');
+        $data['itemDGSrc'] = BIZUNO_LIB."view/module/phreebooks/accInvAdjDetail.php";
+        unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
+        unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
+        unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
+        $isWaiting = isset($data['fields']['main']['waiting']['attr']['checked']) && $data['fields']['main']['waiting']['attr']['checked'] ? '1' : '0';
+        $data['fields']['main']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
+        $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
+            'props' => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'fields'=>$this->getProps($data)],
+            'totals'=> ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
+        $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
+    }
+
+    /**
+     * Configures the journal entry properties (other than address and items)
+     * @param array $data - current working structure
+     * @return array - List of fields to show with the structure
+     */
+    private function getProps($data)
+    {
+        return ['id'         => $data['fields']['main']['id'],
+            'journal_id'     => $data['fields']['main']['journal_id'],
+            'recur_id'       => $data['fields']['main']['recur_id'],
+            'recur_frequency'=> $data['recur_frequency'],
+            'item_array'     => $data['item_array'],
+            'invoice_num'    => array_merge(['break'=>true], $data['fields']['main']['invoice_num']),
+            'post_date'      => array_merge(['break'=>true], $data['fields']['main']['post_date']),
+            'store_id'       => array_merge(['break'=>true], $data['fields']['main']['store_id'])];
+    }
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
@@ -72,13 +139,13 @@ class j16 extends jCommon
      */
     public function getRepostData()
     {
-		msgDebug("\n  Checking for re-post records ... ");
+		msgDebug("\n  j16 - Checking for re-post records ... ");
         $out1 = [];
         $out2 = array_merge($out1, $this->getRepostInv());
         $out3 = array_merge($out2, $this->getRepostInvCOG());
 //      $out4 = array_merge($out3, $this->getRepostInvAsy());
         $out5 = array_merge($out3, $this->getRepostPayment());
-        msgDebug(" end Checking for Re-post.");
+        msgDebug("\n  j16 - End Checking for Re-post.");
         return $out5;
 	}
 
@@ -166,5 +233,68 @@ class j16 extends jCommon
     {
 		msgDebug("\n  Checking for closed entry. action = $action, returning with no action.");
 		return true;
+	}
+
+    /**
+     * Creates the datagrid structure for inventory adjustments line items
+     * @param string $name - DOM field name
+     * @return array - datagrid structure
+     */
+	private function dgAdjust($name)
+    {
+		$on_hand  = jsLang('inventory', 'qty_stock');
+		$on_order = jsLang('inventory', 'qty_po');
+        $store_id = getUserCache('profile', 'store_id', false, 0);
+		return [
+            'id'   => $name,
+			'type' => 'edatagrid',
+			'attr' => ['toolbar'=>"#{$name}Toolbar",'rownumbers'=>true,'singleSelect'=>true,'idField'=>'id'],
+			'events' => [
+                'data'         => "datagridData",
+				'onLoadSuccess'=> "function(row) { totalUpdate(); }",
+				'onClickCell'  => "function(rowIndex) {
+					switch (icnAction) {
+						case 'trash': jq('#$name').edatagrid('destroyRow', rowIndex); break;
+					}
+					icnAction = '';
+				}",
+				'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
+                'onBeforeEdit' => "function(rowIndex) {
+    var edtURL = jq(this).edatagrid('getColumnOption','sku');
+    edtURL.editor.options.url = '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID='+jq('#store_id').val();
+}",
+				'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
+				'onDestroy'    => "function(rowIndex) { totalUpdate(); curIndex = undefined; }",
+				'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
+			'source' => [
+                'actions' => ['newItem' =>['order'=>10,'html'=>['icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]]],
+			'columns'=> [
+                'id'         => ['order'=>0, 'attr'=>  ['hidden'=>true]],
+				'gl_account' => ['order'=>0, 'attr'=>  ['hidden'=>true]],
+				'unit_cost'  => ['order'=>0, 'attr'=>  ['editor'=>'text', 'hidden'=>true]],
+				'action'     => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>50],
+					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+					'actions'=> ['trash' => ['icon'=>'trash','order'=>20,'size'=>'small','events'=>  ['onClick'=>"icnAction='trash';"]]]],
+				'sku'=> ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true,'align'=>'center'],
+					'events'=>  ['editor'=>"{type:'combogrid',options:{
+						width: 150, panelWidth: 540, delay: 500, idField: 'sku', textField: 'sku', mode: 'remote',
+						url:        '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID=$store_id',
+						onClickRow: function (idx, data) { adjFill(data); },
+						columns:[[{field:'sku',              title:'".jsLang('sku')."',width:100},
+								  {field:'description_short',title:'".jsLang('description')."',width:200},
+								  {field:'qty_stock',        title:'$on_hand', align:'right',width:90},
+								  {field:'qty_po',           title:'$on_order',align:'right',width:90}]]
+					}}"]],
+				'qty_stock' => ['order'=>30,'label'=>$on_hand,'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
+					'events'=>  ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
+				'qty' => ['order'=>40,'label'=>lang('journal_item_qty', $this->journalID),'attr' =>['width'=>100,'resizable'=>true,'align'=>'center'],
+					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ adjCalc('qty'); } } }"]],
+				'balance' => ['order'=>50, 'label'=>lang('balance'),'styles'=>['text-align'=>'right'],
+					'attr' => ['width'=>100, 'disabled'=>true, 'resizable'=>true, 'align'=>'center'],
+					'events'=>  ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
+				'total' => ['order'=>60, 'label'=>lang('total'),'format'=>'currency',
+                    'attr'=>['width'=>120,'resizable'=>true,'align'=>'center'],
+					'events'=>['editor'=>"{type:'numberbox'}"]],
+				'description' => ['order'=>70,'label'=>lang('description'),'attr'=>['width'=>250,'editor'=>'text','resizable'=>true]]]];
 	}
 }

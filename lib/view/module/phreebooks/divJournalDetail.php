@@ -23,35 +23,3 @@
 
 namespace bizuno;
 
-$output['body'] .= "<!-- BOF: divJournalDetail -->\n";
-$output['body'] .= html5('id',             $data['journal_main']['id']);
-$output['body'] .= html5('journal_id',     $data['journal_main']['journal_id']);
-$output['body'] .= html5('terminal_date',  ['attr'=>  ['type'=>'hidden']]);
-$output['body'] .= html5('currency',       $data['journal_main']['currency']);
-$output['body'] .= html5('recur_id',       $data['journal_main']['recur_id']);
-$output['body'] .= html5('recur_frequency',$data['recur_frequency']);
-$output['body'] .= html5('item_array',     $data['item_array']);
-$output['body'] .= html5('followup',       ['attr'=>  ['type'=>'hidden']]);
-// Totals
-$output['body'] .= '<div style="float:right;width:33%">'."\n";
-foreach ($data['totals_methods'] as $methID) {
-	require_once(BIZUNO_LIB."controller/module/phreebooks/totals/$methID/$methID.php");
-    $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
-	$fqcn = "\\bizuno\\$methID";
-	$totals = new $fqcn($totSet);
-    $content = $totals->render($output, $data);
-}
-$output['body'] .= "</div>\n";
-// Billing Address
-$output['body'] .= '<div style="float:right;width:33%">'.lang('bill_to')."<br />\n";
-$addValues = $data['journal_main'];
-$settings['attr'] = ['type'=>'cve','suffix'=>'_b','search'=>true,'update'=>true,'validate'=>true];
-require (BIZUNO_LIB."view/module/contacts/divAddressShort.php");
-$output['body'] .= "</div>\n";
-$output['body'] .= "</div>\n";
-// Journal properties
-$output['body'] .= '<div style="width:33%">'."\n";
-$output['body'] .= html5('invoice_num',$data['journal_main']['invoice_num'])."<br />\n";
-$output['body'] .= html5('post_date',  $data['journal_main']['post_date'])."<br />\n";
-$output['body'] .= html5('store_id',   $data['journal_main']['store_id'])."\n";
-$output['body'] .= "</div>\n";

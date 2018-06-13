@@ -70,7 +70,7 @@ class paymentAdmin
     {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
 		$data = adminStructure($this->moduleID, $this->settingsStructure(), $this->lang);
-		$data['tabs']['tabAdmin']['divs']['methods'] = ['order'=>10,'label'=>lang('payment_methods'),'attr'=>['module'=>$this->moduleID,'type'=>$this->structure['dirMethods']],
+		$data['tabs']['tabAdmin']['divs']['methods'] = ['order'=>10,'label'=>lang('payment_methods'),'attr'=>['module'=>$this->moduleID,'path'=>$this->structure['dirMethods']],
 			'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"];
 		$data['tabs']['tabAdmin']['divs']['settings']= ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminSettings.php"];
 		$layout = array_replace_recursive($layout, $data);
@@ -92,7 +92,7 @@ class paymentAdmin
     {
 		$bAdmin = new bizunoSettings();
 		foreach ($this->pmtMethods as $method) {
-            $bAdmin->methodInstall($layout, ['module'=>'payment','type'=>'methods','method'=>$method], false);
+            $bAdmin->methodInstall($layout, ['module'=>'payment', 'path'=>'methods', 'method'=>$method], false);
         }
 	}
 }

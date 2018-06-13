@@ -92,9 +92,9 @@ class discount
                     $this->fields['totals_discount']['attr']['value'] = $row['credit_amount'] + $row['debit_amount'];
                 }
             }
-            $this->fields['totals_discount']['attr']['value'] = $data['journal_main']['discount']['attr']['value'];
+            $this->fields['totals_discount']['attr']['value'] = $data['fields']['main']['discount']['attr']['value'];
             if ($subtotal) {
-                $this->fields['totals_discount_pct']['attr']['value'] = 100 * $data['journal_main']['discount']['attr']['value'] / $subtotal;
+                $this->fields['totals_discount_pct']['attr']['value'] = 100 * $data['fields']['main']['discount']['attr']['value'] / $subtotal;
             } else {
                 $this->fields['totals_discount_pct']['attr']['value'] = 0;
             }

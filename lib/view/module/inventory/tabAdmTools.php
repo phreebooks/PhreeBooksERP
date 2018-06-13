@@ -24,22 +24,22 @@
 namespace bizuno;
 
 $output['body'] .= "
-<fieldset><legend>".$data['lang']['inv_tools_val_inv']."</legend>
-	<p>".$data['lang']['inv_tools_val_inv_desc']."</p>
+<fieldset><legend>".$viewData['lang']['inv_tools_val_inv']."</legend>
+	<p>".$viewData['lang']['inv_tools_val_inv_desc']."</p>
 	<table>
-		<thead><tr><th>".$data['lang']['inv_tools_repair_test']."</th><th>".$data['lang']['inv_tools_repair_fix']."</th></tr></thead>
-		<tbody><tr><td>".html5('', $data['fields']['btnHistTest'])."</td><td>".html5('', $data['fields']['btnHistFix'])."</td></tr></tbody>
+		<thead><tr><th>".$viewData['lang']['inv_tools_repair_test']."</th><th>".$viewData['lang']['inv_tools_repair_fix']."</th></tr></thead>
+		<tbody><tr><td>".html5('', $viewData['fields']['btnHistTest'])."</td><td>".html5('', $viewData['fields']['btnHistFix'])."</td></tr></tbody>
 	</table>
 </fieldset>
-<fieldset><legend>".$data['lang']['inv_tools_qty_alloc']."</legend>
-	<p>".$data['lang']['inv_tools_qty_alloc_desc']."</p>
-	<p>".html5('', $data['fields']['btnAllocFix'])."</p>
+<fieldset><legend>".$viewData['lang']['inv_tools_qty_alloc']."</legend>
+	<p>".$viewData['lang']['inv_tools_qty_alloc_desc']."</p>
+	<p>".html5('', $viewData['fields']['btnAllocFix'])."</p>
 </fieldset>
-<fieldset><legend>".$data['lang']['inv_tools_repair_so_po']."</legend>
-	<p>".$data['lang']['inv_tools_validate_so_po_desc']."</p>
-	<p>".html5('', $data['fields']['btnJournalFix'])."</p>
+<fieldset><legend>".$viewData['lang']['inv_tools_repair_so_po']."</legend>
+	<p>".$viewData['lang']['inv_tools_validate_so_po_desc']."</p>
+	<p>".html5('', $viewData['fields']['btnJournalFix'])."</p>
 </fieldset>
-<fieldset><legend>".$data['lang']['inv_tools_price_assy']."</legend>
-	<p>".$data['lang']['inv_tools_price_assy_desc']."</p>
-	<p>".html5('', $data['fields']['btnPriceAssy'])."</p>
+<fieldset><legend>".$viewData['lang']['inv_tools_price_assy']."</legend>
+	<p>".$viewData['lang']['inv_tools_price_assy_desc']."</p>
+	<p>".html5('', $viewData['fields']['btnPriceAssy'])."</p>
 </fieldset>\n";

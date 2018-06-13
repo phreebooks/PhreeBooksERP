@@ -30,15 +30,15 @@ $defaults = [
 ];
 $attr = isset($settings['attr']) ? array_replace($defaults, $settings['attr']) : $defaults;
 
-if (isset($data['attachPath'])) { // load the file list
+if (isset($viewData['attachPath'])) { // load the file list
 	$max_upload  = (int)(ini_get('upload_max_filesize'));
 	$max_post    = (int)(ini_get('post_max_size'));
 	$memory_limit= (int)(ini_get('memory_limit'));
 	$upload_mb   = min($max_upload, $max_post, $memory_limit);
-	$path        = $data['attachPath'].$data['attachPrefix'];
+	$path        = $viewData['attachPath'].$viewData['attachPrefix'];
 	$io          = new \bizuno\io();
     $rows        = $io->fileReadGlob($path);
-	$data['datagrid'][$attr['dgName']] = [
+	$viewData['datagrid'][$attr['dgName']] = [
         'id'   => $attr['dgName'],
 		'title'=> lang('attachments').' '.sprintf(lang('max_upload'), $upload_mb),
 		'attr' => [
@@ -59,5 +59,5 @@ if (isset($data['attachPath'])) { // load the file list
 			'title'=> ['order'=>10,'label'=>lang('filename'),'attr'=>['width'=>300,'resizable'=>true]],
 			'size' => ['order'=>20,'label'=>lang('size'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'center']],
 			'date' => ['order'=>30,'label'=>lang('date'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'center']]]];
-	htmlDatagrid($output, $data, $attr['dgName']);
+	htmlDatagrid($output, $viewData, $attr['dgName']);
 }

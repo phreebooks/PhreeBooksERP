@@ -96,23 +96,23 @@ class phreeformRender
 		$data  = [
             'type'     =>'html',
 			'pageTitle'=> $report->title,
-			'toolbar'  => ['tbOpen'=> ['icons' => [
+			'toolbars' => ['tbOpen'=> ['icons' => [
                 'close'   => ['order'=>10, 'events'=>  ['onClick'=>"self.close();"]],
 				'mimePdf' => ['order'=>30,'label'=>lang('pdf'),                   'events'=>  ['onClick'=>"jq('#fmt').val('pdf'); jq('#frmPhreeform').submit();"]],
 				'mimeHtml'=> ['order'=>40,'label'=>lang('html'),'hidden'=>$hidden,'events'=>  ['onClick'=>"jq('#fmt').val('html');jq('#frmPhreeform').submit();"]],
 				'mimeXls' => ['order'=>50,'label'=>lang('csv'),'hidden'=>$hidden, 'events'=>  ['onClick'=>"jq('#fmt').val('csv'); jq('#frmPhreeform').submit();"]],
 				'mimeXML' => ['order'=>60,'label'=>lang('xml'),'hidden'=>$hidden, 'events'=>  ['onClick'=>"jq('#fmt').val('xml'); jq('#frmPhreeform').submit();"]]]]],
-			'form'  => ['frmPhreeform'=>  ['classes'=>  ['fileDownloadForm'],'attr'=> ['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=phreeform/render/render".$extras]]],
-			'fields'=> [
-                'id'        => ['attr'=>  ['type'=>'hidden', 'value'=>$rID]],
-				'fromName'  => ['label'=>lang('from'),         'attr'=>  ['size'=>32,'value'=>$emailData['fromName']]],
-				'fromEmail' => ['label'=>lang('email'),        'attr'=>  ['size'=>64,'value'=>$emailData['fromEmail']]],
-				'toName'    => ['label'=>lang('to'),           'attr'=>  ['size'=>32,'value'=>$emailData['toName']]],
-				'toEmail'   => ['label'=>lang('email'),        'attr'=>  ['size'=>64,'value'=>$emailData['toEmail']]],
-				'CCName'    => ['label'=>lang('email_cc'),     'attr'=>  ['size'=>32]],
-				'CCEmail'   => ['label'=>lang('email'),        'attr'=>  ['size'=>64]],
-				'msgSubject'=> ['label'=>lang('email_subject'),'attr'=>  ['size'=>40,'value'=>$emailData['msgSubject']]],
-				'msgBody'   => ['label'=>lang('email_body'),   'attr'=>  ['type'=>'textarea','value'=>$emailData['msgBody'],'cols'=>'80','rows'=>'10']],
+			'forms'    => ['frmPhreeform'=>  ['classes'=>  ['fileDownloadForm'],'attr'=> ['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=phreeform/render/render".$extras]]],
+			'fields'   => [
+                'id'        => ['attr'=>['type'=>'hidden', 'value'=>$rID]],
+				'fromName'  => ['label'=>lang('from'),         'attr'=>['size'=>32,'value'=>$emailData['fromName']]],
+				'fromEmail' => ['label'=>lang('email'),        'attr'=>['size'=>64,'value'=>$emailData['fromEmail']]],
+				'toName'    => ['label'=>lang('to'),           'attr'=>['size'=>32,'value'=>$emailData['toName']]],
+				'toEmail'   => ['label'=>lang('email'),        'attr'=>['size'=>64,'value'=>$emailData['toEmail']]],
+				'CCName'    => ['label'=>lang('email_cc'),     'attr'=>['size'=>32]],
+				'CCEmail'   => ['label'=>lang('email'),        'attr'=>['size'=>64]],
+				'msgSubject'=> ['label'=>lang('email_subject'),'attr'=>['size'=>40,'value'=>$emailData['msgSubject']]],
+				'msgBody'   => ['label'=>lang('email_body'),   'attr'=>['type'=>'textarea','value'=>$emailData['msgBody'],'cols'=>'80','rows'=>'10']],
 				'reports'   => $reports],
 			'divs' => [
                 'toolbar'=> ['order'=>20,'type'=>'toolbar','key'=>'tbOpen'],
@@ -468,8 +468,10 @@ class phreeformRender
                 $data = [];
                 if (!empty($report->special_class) && method_exists($special_form, 'load_table_data')) {
                     $data = $special_form->load_table_data($TableObject->boxfield);
-                } elseif (!empty($TableObject->settings->fieldname)) {
-                    $data = ProcessData($report->FieldValues["d$key"], $TableObject->settings->processing);
+                } elseif (!empty($TableObject->settings->fieldname)) { // for field encoded data, typically json
+                    msgDebug("\nProcessing Data for table: ".print_r($report->FieldValues["d$key"], true));
+                    $vals = ProcessData($report->FieldValues["d$key"], $TableObject->settings->processing);
+                    $data = $this->setEncodedList($TableObject->settings->boxfield, $vals);
                 } else {
                     $tblField = $this->setFieldList($TableObject->settings->boxfield);
                     if (!$stmt = dbGetResult("SELECT $tblField $TrailingSQL")) { return msgAdd("Error selecting table data! See trace file.", 'trap'); }
@@ -981,5 +983,15 @@ class phreeformRender
         $output = []; // Build the fieldlist
         foreach ($fields as $idx => $entry) { $output[] = prefixTables($entry->fieldname)." AS r$idx"; }
         return implode(', ', $output);
+    }
+    
+    private function setEncodedList($boxfield, $rows)
+    {
+        foreach ($rows as $row) {
+            $output = [];
+            foreach ($boxfield as $entry) { $output[] = $row[$entry->fieldname]; }
+            $data[] = $output;
+        }
+        return $data;
     }
 }

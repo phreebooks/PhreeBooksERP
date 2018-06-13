@@ -30,7 +30,7 @@ $output['body'] .= '
   <td width="30%" valign="top">
     <a href="#" class="easyui-linkbutton" onClick="jq(\'#treePhreeform\').tree(\'expandAll\');">'  .lang('expand_all')  .'</a>
     <a href="#" class="easyui-linkbutton" onClick="jq(\'#treePhreeform\').tree(\'collapseAll\');">'.lang('collapse_all')."</a><br />";
-    htmlTree($output, $data, 'treePhreeform');
+    htmlTree($output, $viewData, 'treePhreeform');
 $output['body'] .= '  </td><td width="70%" valign="top"><fieldset><legend>'.lang('details').'</legend><div id="rightColumn">'."\n";
 require (BIZUNO_LIB."view/module/phreeform/divHomeDetail.php");
 $output['body'] .= "</div></fieldset></td></tr></table>\n";

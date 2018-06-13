@@ -23,70 +23,72 @@
 
 namespace bizuno;
 
-$inventory_type = $data['fields']['inventory_type']['attr']['value'];
-if ($data['fields']['inventory_type']['values'][$inventory_type]['gl_inv'] === false) {
-	$data['fields']['gl_inv']['attr']['type'] = 'hidden';
+$inventory_type = $viewData['fields']['inventory_type']['attr']['value'];
+if ($viewData['fields']['inventory_type']['values'][$inventory_type]['gl_inv'] === false) {
+	$viewData['fields']['gl_inv']['attr']['type'] = 'hidden';
 }
-if ($data['fields']['inventory_type']['values'][$inventory_type]['gl_cogs'] === false) {
-	$data['fields']['gl_cogs']['attr']['type'] = 'hidden';
+if ($viewData['fields']['inventory_type']['values'][$inventory_type]['gl_cogs'] === false) {
+	$viewData['fields']['gl_cogs']['attr']['type'] = 'hidden';
 }
-if (!isset($data['fields']['image_with_path']['attr']['value'])) { $data['fields']['image_with_path']['attr']['value'] = ''; }
+if (!isset($viewData['fields']['image_with_path']['attr']['value'])) { $viewData['fields']['image_with_path']['attr']['value'] = ''; }
 
 if (sizeof(getModuleCache('bizuno', 'stores')) > 1) {
 	$divStores = '<td rowspan="9" style="vertical-align:top;"><table style="border-style:none;"><thead class="tabs-header"><tr><th>'.lang('contacts_type_b')."</th><th>".lang('inventory_qty_stock').'</th></tr></thead><tbody>'."\n";
     foreach (getModuleCache('bizuno', 'stores') as $store) {
-        if (!isset($data['stores'][$store['id']]['stock'])) { $data['stores'][$store['id']]['stock'] = 0; }
-        $divStores .= "    <tr><td>{$store['text']}</td><td style=\"text-align:center\">{$data['stores'][$store['id']]['stock']}</td></tr>\n";
+        if (!isset($viewData['stores'][$store['id']]['stock'])) { $viewData['stores'][$store['id']]['stock'] = 0; }
+        $divStores .= "    <tr><td>{$store['text']}</td><td style=\"text-align:center\">{$viewData['stores'][$store['id']]['stock']}</td></tr>\n";
     }
 	$divStores .= "    </tbody></table></td>\n";
 } else { $divStores= ''; }
 
+$output['body'] .= html5('id',      $viewData['fields']['id']);
+$output['body'] .= html5('dg_assy', ['attr'=> ['type'=>'hidden']])."\n";
 $output['body'] .= "
 <table>
 	<tr>
-		<td>".html5('sku',      $data['fields']['sku']).html5('inactive', $data['fields']['inactive'])."</td>
-		<td>".html5('qty_stock',$data['fields']['qty_stock'])."</td>
-        <td>".html5('store_id', $data['fields']['store_id']) .'</td>
-		<td rowspan="5">'.html5('image_with_path', $data['fields']['image_with_path'])."</td>
+		<td>".html5('sku',      $viewData['fields']['sku']).html5('inactive', $viewData['fields']['inactive'])."</td>
+		<td>".html5('qty_stock',$viewData['fields']['qty_stock'])."</td>
+        <td>".html5('store_id', $viewData['fields']['store_id']) .'</td>
+		<td rowspan="5">'.html5('image_with_path', $viewData['fields']['image_with_path'])."</td>
 	</tr>
 	<tr>
-		<td>".html5('description_short',$data['fields']['description_short']).html5('where_used', $data['where_used'])."</td>
-		<td>".html5('qty_po',           $data['fields']['qty_po'])."</td>".
+		<td>".html5('description_short',$viewData['fields']['description_short']).html5('where_used', $viewData['where_used'])."</td>
+		<td>".html5('qty_po',           $viewData['fields']['qty_po'])."</td>".
         $divStores."
 	</tr>
 	<tr>
-		<td>".html5('qty_min',          $data['fields']['qty_min'])."</td>
-		<td>".html5('qty_alloc',        $data['fields']['qty_alloc'])."</td>
+		<td>".html5('qty_min',          $viewData['fields']['qty_min'])."</td>
+		<td>".html5('qty_alloc',        $viewData['fields']['qty_alloc'])."</td>
 	</tr>
 	<tr>
-		<td>".html5('qty_restock',      $data['fields']['qty_restock'])."</td>
-		<td>".html5('qty_so',           $data['fields']['qty_so'])."</td>
+		<td>".html5('qty_restock',      $viewData['fields']['qty_restock'])."</td>
+		<td>".html5('qty_so',           $viewData['fields']['qty_so'])."</td>
 	</tr>
 	<tr>
-		<td>".html5('lead_time',        $data['fields']['lead_time'])."</td>
-		<td>".html5('item_weight',      $data['fields']['item_weight']).' ('.getModuleCache('inventory', 'settings', 'general', 'weight_uom').')</td>
+		<td>".html5('lead_time',        $viewData['fields']['lead_time'])."</td>
+		<td>".html5('item_weight',      $viewData['fields']['item_weight']).' ('.getModuleCache('inventory', 'settings', 'general', 'weight_uom').')</td>
 	</tr>
 </table>
 <fieldset><legend>'.lang('details').' ('.lang('customers').')</legend>
 <table style="border-style:none;width:100%">
 	<tbody>
-		<tr><td colspan="2">'.html5('description_sales', $data['fields']['description_sales'])."</td></tr>
+		<tr><td colspan="2">'.html5('description_sales', $viewData['fields']['description_sales'])."</td></tr>
 		<tr>
-			<td>".html5('full_price', $data['fields']['full_price']).(sizeof(getModuleCache('phreebooks', 'currency', 'iso'))>1 ? ' ('.getUserCache('profile', 'currency', false, 'USD').')' : '');
-if (isset($data['fields']['id']['attr']['value']) && $data['fields']['id']['attr']['value']) { 
-    $output['body'] .= html5('show_prices_c', $data['show_prices_c']);
+			<td>".html5('full_price', $viewData['fields']['full_price']).(sizeof(getModuleCache('phreebooks', 'currency', 'iso'))>1 ? ' ('.getUserCache('profile', 'currency', false, 'USD').')' : '');
+if (isset($viewData['fields']['id']['attr']['value']) && $viewData['fields']['id']['attr']['value']) { 
+    $output['body'] .= html5('show_prices_c', $viewData['show_prices_c']);
 }
 $output['body'] .= "
 			</td>
-			<td>".html5('tax_rate_id_c',  $data['fields']['tax_rate_id_c'])."</td>
+			<td>".html5('tax_rate_id_c',  $viewData['fields']['tax_rate_id_c'])."</td>
 		</tr>
 		<tr>
-			<td>".(getModuleCache('inventory', 'prices') ? html5('price_sheet_c', $data['fields']['price_sheet_c']) : '&nbsp;')."</td>
+			<td>".(getModuleCache('inventory', 'prices') ? html5('price_sheet_c', $viewData['fields']['price_sheet_c']) : '&nbsp;')."</td>
 		</tr>
 	</tbody>
 </table>
 </fieldset>\n";
 
-$imgSrc = $data['fields']['image_with_path']['attr']['value'];
-$imgDir = dirname($data['fields']['image_with_path']['attr']['value']).'/';
+$imgSrc = $viewData['fields']['image_with_path']['attr']['value'];
+$imgDir = dirname($viewData['fields']['image_with_path']['attr']['value']).'/';
 $output['jsBody'][] = "imgManagerInit('image_with_path', '$imgSrc', '$imgDir', 'images/');";

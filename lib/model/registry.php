@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-25
+ * @version    2.x Last Update: 2018-06-09
  * @filesource /lib/model/registry.php
  */
 
@@ -324,7 +324,7 @@ final class bizRegistry
             $links = array_replace_recursive($links, $data['properties'][$menuID]);
             unset($bizunoMod[$module]['properties'][$menuID]);
         }
-        if ($menuID=='quickBar' && validateSecurity('bizuno', 'admin', 1)) {
+        if ($menuID=='quickBar' && validateSecurity('bizuno', 'admin', 1, false)) {
             $sysMsgs = dbGetMulti(BIZUNO_DB_PREFIX."phreemsg", "status='0'");
             if (sizeof($sysMsgs)) { $links['child']['sysMsg']['attr']['value'] = sizeof($sysMsgs); }
             if (!empty($this->addUpgrade) && (!defined('BIZUNO_HOST_UPGRADE') || !constant('BIZUNO_HOST_UPGRADE'))) {

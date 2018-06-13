@@ -18,7 +18,6 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-01-14
-
  * @filesource /lib/view/module/bizuno/tabProfileBizuno.php
  */
 
@@ -26,21 +25,21 @@ namespace bizuno;
 
 $output['body'] .= "
 <fieldset><legend>".lang('general')."</legend>".
-    html5('title', $data['fields']['title'])."<br />".
-    html5('email', $data['fields']['email'])."
+    html5('title', $viewData['fields']['title'])."<br />".
+    html5('email', $viewData['fields']['email'])."
 </fieldset>
 <fieldset><legend>".'Google Interface'."</legend>".
-    html5('gmail', $data['fields']['gmail'])."<br />".
-    html5('gzone', $data['fields']['gzone'])."
+    html5('gmail', $viewData['fields']['gmail'])."<br />".
+    html5('gzone', $viewData['fields']['gzone'])."
 </fieldset>
 <fieldset><legend>".lang('password_lost')."</legend>".
-    html5('password',        $data['fields']['password'])."<br />".
-    html5('password_new',    $data['fields']['password_new'])."<br />".
-    html5('password_confirm',$data['fields']['password_confirm'])."
+    html5('password',        $viewData['fields']['password'])."<br />".
+    html5('password_new',    $viewData['fields']['password_new'])."<br />".
+    html5('password_confirm',$viewData['fields']['password_confirm'])."
 </fieldset>
 <fieldset><legend>".lang('profile')."</legend>".
-    html5('theme', $data['fields']['theme']) ."<br />".
-    html5('colors',$data['fields']['colors'])."<br />".
-    html5('menu',  $data['fields']['menu'])  ."<br />".
-    html5('cols',  $data['fields']['cols'])."
+    html5('theme', $viewData['fields']['theme']) ."<br />".
+    html5('colors',$viewData['fields']['colors'])."<br />".
+    html5('menu',  $viewData['fields']['menu'])  ."<br />".
+    html5('cols',  $viewData['fields']['cols'])."
 </fieldset>\n";

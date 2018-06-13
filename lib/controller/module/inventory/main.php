@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-15
+ * @version    2.x Last Update: 2018-06-12
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -116,6 +116,55 @@ class inventoryMain
 	}
 
 	/**
+     * Generates the datagrid structure for managing bills of materials
+     * @param array $layout - structure coming in
+     * @return modified structure
+     */
+    public function managerBOM(&$layout=[])
+	{
+        if (!$security = validateSecurity('inventory', 'inv_mgr', 1, false)) { return; }
+		$rID  = clean('rID', 'integer', 'get');
+        if ($rID) {
+			$sku    = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku', "id=$rID");
+			$asyData= dbGetMulti(BIZUNO_DB_PREFIX."inventory_assy_list", "ref_id=$rID");
+            foreach ($asyData as $idx => $row) {
+                $asyData[$idx]['qty_stock'] = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$row['sku']}'");
+            }
+			$assemblyData = formatDatagrid($asyData, 'assyData');
+			$locked = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "sku='$sku'");
+		} else {
+            $assemblyData = "var assyData = ".json_encode(['total'=>0,'rows'=>  []]).";";
+            $locked = false;
+        }
+		$layout = array_replace_recursive($layout, ['type'=>'divHTML',
+			'divs'    => ['divVendGrid'=> ['order'=>30,'type'=>'datagrid','key'=>'dgAssembly']],
+			'datagrid'=> ['dgAssembly' => $this->dgAssembly('dgAssembly', $locked)],
+            'jsHead'  => ['mgrBOMdata' => $assemblyData]]);
+        if (!$locked) { $layout['jsReady']['mgrBOM'] = "jq('#dgAssembly').edatagrid('addRow');"; }
+	}
+
+	/**
+     * Lists the rows of a bill of materials
+     * @param array $layout - structure coming in
+     * @return modified structure
+     */
+    public function managerBOMList(&$layout=[])
+    {
+        if (!$security = validateSecurity('inventory', 'inv_mgr', 1)) { return; }
+		$skuID = clean('rID', 'integer', 'get');
+        if (!$skuID) { return msgAdd("Cannot process assy list, no SKU ID provided!"); }
+		$result= dbGetMulti(BIZUNO_DB_PREFIX."inventory_assy_list", "ref_id=$skuID");
+		$total = 0;
+		foreach ($result as $key => $row) {
+			$result[$key]['qty_stock']   = viewFormat(dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$row['sku']}'"), 'precise');
+			$result[$key]['qty_required']= viewFormat($row['qty'], 'precise');
+			$total += $row['qty'];
+		}
+		$footer = [['description'=>lang('total'), 'qty_required'=>viewFormat($total, 'precise')]];
+		$layout = array_replace_recursive($layout, ['content'=>['total'=>sizeof($result),'rows'=>$result,'footer'=>$footer]]);
+	}
+
+	/**
      * Inventory datagrid structure
      * @param string $name - DOM field name
      * @param string $filter - control to limit filtering by inventory type
@@ -153,22 +202,19 @@ class inventoryMain
                 'tables' => ['inventory' => ['table'=>BIZUNO_DB_PREFIX."inventory"]],
 				'search' => [BIZUNO_DB_PREFIX.'inventory.sku', 'description_short', 'description_purchase', 'description_sales', 'upc_code'],
 				'actions' => [
-                    'newInventory'=>  ['order'=>10, 'html'=>  ['icon'=>'new',  'events'=>  ['onClick'=>"accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', 0);"]]],
-					'clrSearch'   =>  ['order'=>50, 'html'=>  ['icon'=>'clear','events'=>  ['onClick'=>"jq('#f0').val('y'); jq('#search').val(''); ".$name."Reload();"]]],
-                    ],
+                    'newInventory'=>['order'=>10, 'html'=>['icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', 0);"]]],
+					'clrSearch'   =>['order'=>50, 'html'=>['icon'=>'clear','events'=>['onClick'=>"jq('#f0').val('y'); jq('#search').val(''); ".$name."Reload();"]]]],
 				'filters'=> [
                     'f0' => ['order'=>10, 'sql'=>$f0_value,
 						'html'  => ['label'=>lang('status'), 'values'=> $yes_no_choices, 'attr' => ['type'=>'select', 'value'=>$this->defaults['f0']]]],
-					'search' => ['order'=>90, 'html'=>  ['label'=>lang('search'),'attr' => ['value'=>$this->defaults['search']]]],
-                    ],
-				'sort' => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
-                ],
+					'search' => ['order'=>90,'html'=>['attr'=>['value'=>$this->defaults['search']]]]],
+				'sort' => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
 			'columns' => [
                 'id'            => ['order'=>0, 'field'=>'inventory.id',      'attr'=>['hidden'=>true]],
 				'inactive'      => ['order'=>0, 'field'=>'inventory.inactive','attr'=>['hidden'=>true]],
 				'attach'        => ['order'=>0, 'field'=>'attach',            'attr'=>['hidden'=>true]],
 				'inventory_type'=> ['order'=>0, 'field'=>'inventory_type',    'attr'=>['hidden'=>true]],
-				'action' => ['order'=>1, 'label'=>lang('action'),     'attr'=>['width'=>125],
+				'action' => ['order'=>1, 'label'=>lang('action'),'attr'=>['width'=>125],
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> [
                         'prices' => ['icon'=>'price', 'size'=>'small', 'order'=>20,
@@ -189,9 +235,7 @@ class inventoryMain
 				'qty_stock'        => ['order'=>30,'field'=>'qty_stock',        'label'=>pullTableLabel("inventory", 'qty_stock'),        'attr'=>['width'=> 80,'sortable'=>true,'resizable'=>true]],
 				'qty_po'           => ['order'=>40,'field'=>'qty_po',           'label'=>pullTableLabel("inventory", 'qty_po'),           'attr'=>['width'=> 80,'sortable'=>true,'resizable'=>true]],
 				'qty_so'           => ['order'=>50,'field'=>'qty_so',           'label'=>pullTableLabel("inventory", 'qty_so'),           'attr'=>['width'=> 80,'sortable'=>true,'resizable'=>true]],
-				'qty_alloc'        => ['order'=>60,'field'=>'qty_alloc',        'label'=>pullTableLabel("inventory", 'qty_alloc'),        'attr'=>['width'=> 80,'sortable'=>true,'resizable'=>true]],
-                ],
-            ];
+				'qty_alloc'        => ['order'=>60,'field'=>'qty_alloc',        'label'=>pullTableLabel("inventory", 'qty_alloc'),        'attr'=>['width'=> 80,'sortable'=>true,'resizable'=>true]]]];
 		switch ($filter) {
 			case 'stock': $data['source']['filters']['restrict'] = ['order'=>99, 'sql'=>"inventory_type in ('si','sr','ms','mi','ma')"]; break;
 			case 'assy':  $data['source']['filters']['restrict'] = ['order'=>99, 'sql'=>"inventory_type in ('ma')"]; break;
@@ -237,25 +281,48 @@ class inventoryMain
             ['id'=>'f', 'text'=>lang('inventory_cost_method_f')],
 			['id'=>'l', 'text'=>lang('inventory_cost_method_l')],
 			['id'=>'a', 'text'=>lang('inventory_cost_method_a')]];
-		$structure = dbLoadStructure(BIZUNO_DB_PREFIX."inventory");
 		$data = ['type'=>'divHTML',
-            'title' => lang('new'),
-			'divs' => ['divEdit' => ['order'=>50, 'src'=>BIZUNO_LIB."view/module/inventory/accDetail.php"]],
-			'toolbar'  => ['tbInventory'=>['icons'=>[
+            'title'  => lang('new'),
+			'divs'    => [
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbInventory'],
+                'heading'=> ['order'=>15,'type'=>'html','html'=>"<h1>".lang('new')."</h1>"],
+                'formBOF'=> ['order'=>20,'type'=>'form','key'=>'frmInventory'],
+                'tabs'   => ['order'=>50,'type'=>'tabs','key'=>'tabInventory'],
+                'formEOF'=> ['order'=>99,'type'=>'html', 'html'=>'</form>']],
+			'toolbars' => ['tbInventory'=>['icons'=>[
 				'save' => ['order'=>20,'hidden'=>$security >1?false:true,'events'=>  ['onClick'=>"jq('#frmInventory').submit();"]],
                 'new'  => ['order'=>40,'hidden'=>$security >1?false:true,'events'=>  ['onClick'=>"accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', 0);"]],
 				'trash'=> ['order'=>80,'hidden'=>$rID && $security==4?false:true,'events'=>  ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/main/delete', $rID);"]],
 				'help' => ['order'=>99,'index' =>$this->helpIndex]]]],
-			'tabs' => ['tabInventory'=> ['divs'=>  [
+			'tabs'   => ['tabInventory'=> ['divs'=>[
                 'general'=> ['order'=>10,'label'=>lang('general'), 'type'=>'divs', 'divs'=>[
                     'genMain'  => ['order'=>20, 'src'=>BIZUNO_LIB."view/module/inventory/tabGeneral.php"],
                     'genPB'    => ['order'=>60, 'src'=>BIZUNO_LIB."view/module/phreebooks/tabInvPhreebooks.php"],
                     'getAttach'=> ['order'=>80, 'src'=>BIZUNO_LIB."view/module/bizuno/divAttach.php",'attr'=>['delPath'=>"$this->moduleID/main/deleteAttach"]]]],
 				'history'=> ['order'=>30, 'label'=>lang('history'),'hidden'=>$rID?false:true,'type'=>'html', 'html'=>'',
 					'attr'=>  ["data-options"=>"href:'".BIZUNO_AJAX."&p=inventory/main/history&rID=$rID'"]]]]],
-			'form'   => ['frmInventory'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=inventory/main/save"]]],
-			'fields' => $structure,
-			'javascript'  => ['init'=>"var curIndex = undefined;\nvar invTypeMsg = [];"]];
+			'forms'  => ['frmInventory'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=inventory/main/save"]]],
+			'fields' => dbLoadStructure(BIZUNO_DB_PREFIX."inventory"),
+			'jsHead' => ['invHead' => "var curIndex = undefined;
+var invTypeMsg = [];
+icnAction= '';
+curIndex = 0;
+function preSubmit() {
+    if (jq('#dgAssembly').length) {
+        jq('#dgAssembly').edatagrid('saveRow');
+        var items = jq('#dgAssembly').datagrid('getData');
+        var serializedItems = JSON.stringify(items);
+        jq('#dg_assy').val(serializedItems);
+    }
+    if (jq('#dgVendors').length) {
+        jq('#dgVendors').edatagrid('saveRow');
+        var dgVal = jq('#dgVendors').datagrid('getData');
+        var invVendors = JSON.stringify(dgVal['rows'])
+        jq('#invVendors').val(invVendors);
+    }
+    return true;
+}"],
+            'jsReady' => ['invReady' => "ajaxForm('frmInventory');\njq('.products ul li:nth-child(3n+3)').addClass('last');"]];
 		// merge data with structure
 		$dbData = dbGetRow(BIZUNO_DB_PREFIX."inventory", "id='$rID'");
         dbStructureFill($data['fields'], $dbData);
@@ -263,7 +330,7 @@ class inventoryMain
 		if ($rID) {
 			$sku = $data['fields']['sku']['attr']['value'];
 			$locked = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "sku='$sku'"); // was inventory_history but if a SO exists will not lock sku field and can change
-            $data['title'] = $data['fields']['sku']['attr']['value'].' - '.$data['fields']['description_short']['attr']['value'];
+            $data['divs']['heading']['html'] = "<h1>".$data['fields']['sku']['attr']['value'].' - '.$data['fields']['description_short']['attr']['value']."</h1>";
         } else {
             $sku = '';
             $locked = false;
@@ -356,8 +423,13 @@ class inventoryMain
 		$_GET['rID'] = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'id', "sku='$sku'");
         compose('inventory', 'main', 'edit', $layout);
         unset($layout['tabs']['tabInventory']['divs']['general']['divs']['getAttach']);
-        unset($layout['toolbar']);
-		unset($layout['form']);
+        unset($layout['divs']['toolbar']);
+        unset($layout['divs']['formBOF']);
+        unset($layout['divs']['formEOF']);
+        unset($layout['toolbars']);
+		unset($layout['forms']);
+        unset($layout['jsHead']);
+        unset($layout['jsReady']);
 	}
 	
 	/**
@@ -544,56 +616,6 @@ class inventoryMain
         $io->attachDelete($layout, $this->moduleID, $pfxID='rID_');
     }
     
-	/**
-     * Generates the datagrid structure for managing bills of materials
-     * @param array $layout - structure coming in
-     * @return modified structure
-     */
-    public function managerBOM(&$layout=[])
-	{
-        if (!$security = validateSecurity('inventory', 'inv_mgr', 1, false)) { return; }
-		$rID  = clean('rID', 'integer', 'get');
-        if ($rID) {
-			$sku    = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku', "id=$rID");
-			$asyData= dbGetMulti(BIZUNO_DB_PREFIX."inventory_assy_list", "ref_id=$rID");
-            foreach ($asyData as $idx => $row) {
-                $asyData[$idx]['qty_stock'] = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$row['sku']}'");
-            }
-			$assemblyData = formatDatagrid($asyData, 'assyData');
-			$locked = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "sku='$sku'");
-		} else {
-            $assemblyData = "var assyData = ".json_encode(['total'=>0,'rows'=>  []]).";";
-            $locked = false;
-        }
-		$layout = array_replace_recursive($layout, ['type'=>'divHTML',
-			'divs'    => ['divVendGrid'=> ['order'=>30,'type'=>'datagrid','key'=>'dgAssembly']],
-			'datagrid'=> ['dgAssembly' => $this->dgAssembly('dgAssembly', $locked)],
-            'jsHead'  => ['mgrBOMdata' => $assemblyData]]);
-        if (!$locked) { $layout['jsReady']['mgrBOM'] = "jq('#dgAssembly').edatagrid('addRow');"; }
-	}
-
-	/**
-     * Lists the rows of a bill of materials
-     * @param array $layout - structure coming in
-     * @return modified structure
-     */
-    public function managerBOMList(&$layout=[])
-    {
-        msgTrap();
-        if (!$security = validateSecurity('inventory', 'inv_mgr', 1)) { return; }
-		$skuID = clean('rID', 'integer', 'get');
-        if (!$skuID) { return msgAdd("Cannot process assy list, no SKU ID provided!"); }
-		$result= dbGetMulti(BIZUNO_DB_PREFIX."inventory_assy_list", "ref_id=$skuID");
-		$total = 0;
-		foreach ($result as $key => $row) {
-			$result[$key]['qty_stock']   = viewFormat(dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$row['sku']}'"), 'precise');
-			$result[$key]['qty_required']= viewFormat($row['qty'], 'precise');
-			$total += $row['qty'];
-		}
-		$footer = [['description'=>lang('total'), 'qty_required'=>viewFormat($total, 'precise')]];
-		$layout = array_replace_recursive($layout, ['content'=>['total'=>sizeof($result),'rows'=>$result,'footer'=>$footer]]);
-	}
-
 	/**
      * Datagrid structure for assembly material lists
      * @param string $name - DOM field name

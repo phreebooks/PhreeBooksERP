@@ -22,10 +22,3 @@
  */
 
 namespace bizuno;
-
-htmlToolbar($output, $data, 'tbContacts');
-$output['body'] .= "<h1>".$data['title']."</h1>\n";
-if (isset($data['form']['frmContact'])) { $output['body'] .= "   ".html5('frmContact', $data['form']['frmContact'])."\n"; }
-htmlTabs($output, $data, 'tabContacts');
-if (isset($data['form']['frmContact'])) { $output['body'] .= "   </form>\n"; }
-$output['jsReady'][] = "ajaxForm('frmContact');";

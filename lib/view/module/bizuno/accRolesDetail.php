@@ -23,15 +23,15 @@
 
 namespace bizuno;
 
-htmlToolbar($output, $data, 'tbRoles');
+htmlToolbar($output, $viewData, 'tbRoles');
 $output['body'] .= "
-  ".html5('frmRoles',$data['form']['frmRoles'])."
-  ".html5('id',      $data['roles']['id'])."
-  ".html5('title',   $data['roles']['title'])."
-  ".html5('inactive',$data['roles']['inactive'])."<br />
-  ".html5('selFill', $data['fields']['selFill'])."<br />
-  ".html5('restrict',$data['roles']['restrict'])."\n";
-htmlTabs($output, $data, 'tabRoles');
+  ".html5('frmRoles',$viewData['forms']['frmRoles'])."
+  ".html5('id',      $viewData['roles']['id'])."
+  ".html5('title',   $viewData['roles']['title'])."
+  ".html5('inactive',$viewData['roles']['inactive'])."<br />
+  ".html5('selFill', $viewData['fields']['selFill'])."<br />
+  ".html5('restrict',$viewData['roles']['restrict'])."\n";
+htmlTabs($output, $viewData, 'tabRoles');
 $output['body'] .= "</form>";
 $output['jsBody'][] = "
 function autoFill() {

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-01-08
+ * @version    2.x Last Update: 2018-06-06
  * @filesource lib/view/theme/default/icons-default.php
  */
 
@@ -66,6 +66,7 @@ $icons = [
     'import'     => ['dir'=>'default','path'=>'format-indent-less.png'],
     'inv-adj'    => ['dir'=>'default','path'=>'inv-adjustment.png'],
     'inventory'  => ['dir'=>'default','path'=>'preferences-desktop-theme.png'],
+    'invoice'    => ['dir'=>'default','path'=>'applix.png'],
     'journal'    => ['dir'=>'default','path'=>'journal.png'],
     'locked'     => ['dir'=>'default','path'=>'system-lock-screen.png'],
     'logout'     => ['dir'=>'default','path'=>'system-log-out.png'],

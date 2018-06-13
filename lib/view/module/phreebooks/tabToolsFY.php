@@ -19,26 +19,25 @@
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-10-09
  * @filesource /lib/view/module/phreebooks/tabToolsFY.php
- * 
  */
 
 namespace bizuno;
 
 $output['body'] .= "
-<fieldset><legend>".$data['lang']['phreebooks_fiscal_years']."</legend>
-	<p>".html5('btnNewFy', $data['fields']['btnNewFy'])."</p>\n<p>".html5('btnCloseFy', $data['fields']['btnCloseFy'])."</p>
+<fieldset><legend>".$viewData['lang']['phreebooks_fiscal_years']."</legend>
+	<p>".html5('btnNewFy', $viewData['fields']['btnNewFy'])."</p>\n<p>".html5('btnCloseFy', $viewData['fields']['btnCloseFy'])."</p>
 </fieldset>
-<fieldset><legend>".$data['lang']['phreebooks_journal_periods']."</legend>
-	<p>".$data['lang']['msg_gl_fiscal_year_edit'].'</p>
-	<div id="fyCal" style="text-align:center">'.html5('fy', $data['fields']['fy']).html5('btnSaveFy', $data['fields']['btnSaveFy']).'
+<fieldset><legend>".$viewData['lang']['phreebooks_journal_periods']."</legend>
+	<p>".$viewData['lang']['msg_gl_fiscal_year_edit'].'</p>
+	<div id="fyCal" style="text-align:center">'.html5('fy', $viewData['fields']['fy']).html5('btnSaveFy', $viewData['fields']['btnSaveFy']).'
 	<table style="border-style:none;margin-left:auto;margin-right:auto;">
 		<thead class="panel-header">
 			<tr><th width="33%">'.lang('period').'</th><th width="33%">'.lang('start').'</th><th width="33%">'.lang('end')."</th></tr>
 		</thead>
 		<tbody>\n";
-foreach ($data['values']['periods'] as $period => $value) {
+foreach ($viewData['values']['periods'] as $period => $value) {
 	$output['body'] .= '    <tr><td style="text-align:center">'.$period."</td>";
-	if ($period > $data['values']['max_posted']) { // only allow changes if nothing has been posted above this period
+	if ($period > $viewData['values']['max_posted']) { // only allow changes if nothing has been posted above this period
 		$output['body'] .= '<td>'.html5("pStart[$period]",['attr'=>['type'=>'date','value'=>$value['start']]])."</td>"; // new Date(2012, 6, 1)
 		$output['jsBody'][] = "jq('#pStart_$period').datebox({required:true, onSelect:function(date){ var nDate = new Date(date.getFullYear(), date.getMonth(), date.getDate()-1); jq('#pEnd_".($period-1)."').datebox('setValue', nDate); } });\n";
 		$output['body'] .= '<td>'.html5("pEnd[$period]",  ['attr'=>['type'=>'date','value'=>$value['end']]])."</td>\n";

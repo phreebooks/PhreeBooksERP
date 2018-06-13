@@ -38,7 +38,7 @@ class contactsAdmin
 			'required'   => '1',
 			'attachPath' => 'data/contacts/uploads/',
 			'quickBar'   => ['child'=>['home'=>['child'=>[
-                'mgr_e'    => ['order'=>45,'label'=>lang('employees'),'icon'=>'employee','events'=>['onClick'=>"hrefClick('contacts/main/manager&type=e');"]]]]]],
+                'mgr_e' => ['order'=>45,'label'=>lang('employees'),'icon'=>'employee','events'=>['onClick'=>"hrefClick('contacts/main/manager&type=e');"]]]]]],
 			'menuBar'    => ['child'=>[
                 'customers'=> ['order'=>10,'label'=>lang('customers'),'group'=>'cust','icon'=>'sales','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=customers');"],'child'=>[
                     'mgr_c'=> ['order'=>10,'label'=>lang('contacts_type_c_mgr'),'icon'=>'users',  'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=c');"]],
@@ -47,12 +47,6 @@ class contactsAdmin
 				'vendors'  => ['order'=>20,'label'=>lang('vendors'),'group'=>'vend','icon'=>'purchase','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=vendors');"],'child'=>[
                     'mgr_v'=> ['order'=>20,'label'=>lang('contacts_type_v_mgr'),'icon'=>'users',  'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=v');"]],
                     'rpt_v'=> ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc','events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=vend');"]]]]]],
-			'crm_actions'=> [
-                'new' =>$this->lang['contacts_crm_new_call'],
-				'ret' =>$this->lang['contacts_crm_call_back'],
-				'flw' =>$this->lang['contacts_crm_follow_up'],
-				'lead'=>$this->lang['contacts_crm_new_lead'],
-				'inac'=>lang('inactive')],
 			'hooks' => ['phreebooks'=>['tools'=>[
                 'fyCloseHome'=> ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50],
                 'fyClose'    => ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50]]]],
@@ -60,6 +54,12 @@ class contactsAdmin
 		$this->phreeformProcessing = [
             'contactID'  => ['text'=>lang('contacts_short_name'),      'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
 			'contactName'=> ['text'=>lang('address_book_primary_name'),'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat']];
+        $this->crm_actions = [
+            'new' =>$this->lang['contacts_crm_new_call'],
+            'ret' =>$this->lang['contacts_crm_call_back'],
+            'flw' =>$this->lang['contacts_crm_follow_up'],
+            'lead'=>$this->lang['contacts_crm_new_lead'],
+            'inac'=>lang('inactive')];
 	}
 
 	/**
@@ -82,6 +82,12 @@ class contactsAdmin
 		return $data;
 	}
 
+    public function initialize()
+	{
+        setModuleCache('contacts', 'crm_actions', false, $this->crm_actions);
+		return true;
+	}
+	
 	/**
      * Builds the home menu for settings of the contacts module
      * @param array $layout - current working structure

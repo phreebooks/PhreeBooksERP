@@ -17,9 +17,8 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-08-27
+ * @version    2.0 Last Update: 2018-06-04
  * @filesource /lib/controller/module/phreebooks/totals/debitcredit/debitcredit.php
- * 
  */
 
 namespace bizuno;
@@ -54,9 +53,8 @@ class debitCredit
 		    'totals_credit'=> ['label'=>lang('total_credits'),
                 'styles'=>  ['text-align'=>'right'], 'attr' => ['size'=>'15', 'value'=>'0']]];
 		$output['body'] .= '<div style="text-align:right">'."
-	".html5('totals_debit', $this->fields['totals_debit'])."
-	".html5('totals_credit',$this->fields['totals_credit'])."
-</div>\n";
+	".html5('totals_debit', $this->fields['totals_debit'])."<br />
+	".html5('totals_credit',$this->fields['totals_credit'])."</div>\n";
         $output['jsHead'][] = "function totals_debitcredit() {
 	var debitAmount = 0;
 	var creditAmount= 0;

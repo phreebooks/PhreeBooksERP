@@ -15,12 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-06-01
-
+ * @version    2.x Last Update: 2018-05-30
  * @filesource /lib/controller/module/phreebooks/journals/j19.php
- * 
  */
 
 namespace bizuno;
@@ -30,13 +28,82 @@ require_once(BIZUNO_LIB."controller/module/phreebooks/journals/common.php");
 class j19 extends jCommon
 {
 
-	function __construct($main, $item)
+	function __construct($main=[], $item=[])
     {
 		parent::__construct();
         $this->main = $main;
 		$this->item = $item;
 	}
 
+/*******************************************************************************************************************/
+// START Edit Methods
+/*******************************************************************************************************************/
+    /**
+     * Pulls the data for the specified journal and populates the structure
+     * @param array $data - current working structure
+     * @param array $structure - table structures
+     * @param integer $rID - record id of the transaction to load from the database
+     */
+    public function getDataMain(&$data, $structure, $rID=0)
+    {
+    }
+    
+    /**
+     * Tailors the structure for the specific journal
+     * @param array $data - current working structure
+     * @param integer $rID - Database record id of the journal main record
+     * @param integer $security - Users security level
+     */
+    public function getDataItem(&$data, $rID=0, $cID=0, $security=0)
+    {
+        $data['datagrid']['item'] = $this->dgOrders('dgJournalItem', 'v');
+//        $data['itemDGSrc'] = BIZUNO_LIB."view/module/phreebooks/divOrdersDetail.php";
+        $data['fields']['main']['gl_acct_id']['attr']['value'] = getModuleCache('phreebooks', 'settings', 'customers', 'gl_receivables');
+        $data['fields']['main']['sales_order_num'] = ['label'=>pullTableLabel('journal_main','invoice_num','10'), 'attr'=>  ['type'=>'input', 'readonly'=>'readonly']];
+        $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
+            'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields']['main'], '_b'),
+                'settings'=>['suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false]],
+            'shipAD' => ['order'=>30,'type'=>'address','label'=>lang('ship_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_s'],'content'=>$this->cleanAddress($data['fields']['main'], '_s'),
+                'settings'=>['suffix'=>'_s','update'=>true,'validate'=>true,'drop'=>true]],
+            'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'fields'=>$this->getProps($data)],
+            'totals' => ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
+        $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
+    }
+
+    /**
+     * Configures the journal entry properties (other than address and items)
+     * @param array $data - current working structure
+     * @return array - List of fields to show with the structure
+     */
+    private function getProps($data)
+    {
+        $data['fields']['main']['sales_order_num'] = ['label'=>lang('journal_main_invoice_num_10'),'attr'=>['value'=>isset($this->soNum)?$this->soNum:'','readonly'=>'readonly']];
+        return [
+            'id'             => $data['fields']['main']['id'],
+            'journal_id'     => $data['fields']['main']['journal_id'],
+            'so_po_ref_id'   => $data['fields']['main']['so_po_ref_id'],
+            'terms'          => $data['fields']['main']['terms'],
+            'override_user'  => $data['override_user'],
+            'override_pass'  => $data['override_pass'],
+            'recur_id'       => $data['fields']['main']['recur_id'],
+            'recur_frequency'=> $data['recur_frequency'],
+            'item_array'     => $data['item_array'],
+            'xChild'         => ['attr'=>['type'=>'hidden']],
+            'xAction'        => ['attr'=>['type'=>'hidden']],
+            // Displayed
+            'purch_order_id' => array_merge(['break'=>true], $data['fields']['main']['purch_order_id']),
+            'terms_text'     => $data['terms_text'],
+            'terms_edit'     => array_merge(['break'=>true], $data['terms_edit']),
+            'invoice_num'    => array_merge(['break'=>true], $data['fields']['main']['invoice_num']),
+            'waiting'        => array_merge(['break'=>true], $data['fields']['main']['waiting']),
+            'post_date'      => array_merge(['break'=>true], $data['fields']['main']['post_date']),
+            'terminal_date'  => array_merge(['break'=>true], $data['fields']['main']['terminal_date']),
+            'store_id'       => array_merge(['break'=>true], $data['fields']['main']['store_id']),
+            'sales_order_num'=> $this->journalID==12 ? array_merge(['break'=>true], $data['fields']['main']['sales_order_num']) : ['attr'=>['type'=>'hidden']],
+            'rep_id'         => array_merge(['break'=>true], $data['fields']['main']['rep_id']),
+            'currency'       => array_merge(['break'=>true], $data['fields']['main']['currency']),
+            'closed'         => array_merge(['break'=>true], $data['fields']['main']['closed'])];
+    }
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
@@ -72,12 +139,12 @@ class j19 extends jCommon
      */
     public function getRepostData()
     {
-		msgDebug("\n  Checking for re-post records ... ");
+		msgDebug("\n  j19 - Checking for re-post records ... ");
         $out1 = [];
         $out2 = array_merge($out1, $this->getRepostInv());
         $out3 = array_merge($out2, $this->getRepostInvCOG());
         $out4 = array_merge($out3, $this->getRepostPayment());
-        msgDebug(" end Checking for Re-post.");
+        msgDebug("\n  j19 - End Checking for Re-post.");
         return $out4;
 	}
 

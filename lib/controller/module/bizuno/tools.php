@@ -56,7 +56,7 @@ class bizunoTools {
         $layout  = array_replace_recursive($layout, viewMain(), [
             'pageTitle'=> lang('support'),
 			'divs'     => ['tcktMain' =>['order'=>50,'src'=>BIZUNO_LIB."view/module/bizuno/divSptTicket.php"]],
-			'form'     => ['frmTicket'=>['attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=bizuno/tools/ticketSave",'enctype'=>"multipart/form-data"]]],
+			'forms'     => ['frmTicket'=>['attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=bizuno/tools/ticketSave",'enctype'=>"multipart/form-data"]]],
 			'fields'   => [
 				'ticketDate' => ['attr'  => ['type'=>'hidden', 'value'=>date('Y-m-d')]],
 				'ticketURL'  => ['attr'  => ['type'=>'hidden', 'value'=>$_SERVER['HTTP_HOST']]],
@@ -172,7 +172,7 @@ class bizunoTools {
 		$title = lang('bizuno_impexp');
 		$data = [
             'pageTitle'=> $title,
-			'toolbar'  =>['tbImpExp'=>['icons'=>['help'=>['order'=>99,'index'=>'']]]],
+			'toolbars' =>['tbImpExp'=>['icons'=>['help'=>['order'=>99,'index'=>'']]]],
 			'divs' => [
                 'submenu'=> ['order'=>10,'type'=>'html',   'html'=>viewSubMenu('tools')],
                 'toolbar'=> ['order'=>20,'type'=>'toolbar','key'=>'tbImpExp'],

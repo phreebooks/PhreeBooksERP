@@ -18,9 +18,7 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-06-01
-
  * @filesource /lib/view/module/bizuno/tabToolsCloseFY.php
- * 
  */
 
 namespace bizuno;
@@ -60,9 +58,9 @@ $html .= html5('phreebooks_skip', ['label' => 'Do not perform the pre-flight che
 // add the PhreeBooks tab  
 $title = getModuleCache('phreebooks', 'properties', 'title');
 $layout['tabs']['tabFyClose']['divs']['phreebooks'] = ['order'=>50,'label'=>$title,'type'=>'html','html'=>$html];
-$data['tabs']['tabFyClose']['divs'][$title] = ['order'=>0,'label'=>$title,'type'=>'html','html'=>$html];
+$viewData['tabs']['tabFyClose']['divs'][$title] = ['order'=>0,'label'=>$title,'type'=>'html','html'=>$html];
 // build the page
-htmlToolbar($output, $data, 'tbFyClose');
-$output['body'] .= '<div id="divCloseFY"><p>'.$data['lang']['fy_del_instr']."</p>\n";
-htmlTabs($output, $data, 'tabFyClose');
+htmlToolbar($output, $viewData, 'tbFyClose');
+$output['body'] .= '<div id="divCloseFY"><p>'.$viewData['lang']['fy_del_instr']."</p>\n";
+htmlTabs($output, $viewData, 'tabFyClose');
 $output['body'] .= '</div>';

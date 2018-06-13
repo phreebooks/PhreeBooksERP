@@ -294,7 +294,7 @@ class bizunoSettings
     {
         if (!$security=validateSecurity('bizuno', 'admin', 3)) { return; }
         $module = isset($attrs['module']) ? $attrs['module'] : clean('module','text', 'get');
-        $subDir = isset($attrs['type'])   ? $attrs['type']   : clean('type',  'text', 'get');
+        $subDir = isset($attrs['path'])   ? $attrs['path']   : clean('path',  'text', 'get');
         $method = isset($attrs['method']) ? $attrs['method'] : clean('method','text', 'get');
         if (!$module || !$subDir || !$method) { return msgAdd("Bad data installing method!"); }
 		msgDebug("\nInstalling method $method with methodDir = $subDir");

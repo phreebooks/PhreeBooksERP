@@ -119,17 +119,17 @@ class bizunoUsers
                     'users' => ['table'=>BIZUNO_DB_PREFIX."users", 'join'=>'',    'links'=>''],
 					'roles' => ['table'=>BIZUNO_DB_PREFIX."roles", 'join'=>'join','links'=>BIZUNO_DB_PREFIX."roles.id=".BIZUNO_DB_PREFIX."users.role_id"]],
 				'actions' => [
-                    'newUser'  => ['order'=>10, 'html'=>  ['icon'=>'new',  'events'=>  ['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', 0);"]]],
-					'clrSearch'=> ['order'=>50, 'html'=>  ['icon'=>'clear','events'=>  ['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]]],
+                    'newUser'  => ['order'=>10, 'html'=>  ['icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', 0);"]]],
+					'clrSearch'=> ['order'=>50, 'html'=>  ['icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]]],
 				'search' => [BIZUNO_DB_PREFIX."users.email", BIZUNO_DB_PREFIX."roles".'.title'],
 				'sort'   => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
 				'filters'=> [
-                    'f0' => ['order'=>10,'sql'=>$f0_value,'html' => ['label'=>lang('status'), 'values'=>$yes_no_choices, 'attr'=>  ['type'=>'select', 'value'=>$this->defaults['f0']]]],
-                    'search' => ['order'=>90, 'html'=>  ['label'=>lang('search'), 'attr'=>  ['value'=>$this->defaults['search']]]]]],
+                    'f0'     => ['order'=>10,'sql'=>$f0_value,'html' => ['label'=>lang('status'), 'values'=>$yes_no_choices, 'attr'=>  ['type'=>'select', 'value'=>$this->defaults['f0']]]],
+                    'search' => ['order'=>90,'html'=>['attr'=>['value'=>$this->defaults['search']]]]]],
 			'columns' => [
-                'admin_id'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."users.admin_id",'attr'=>  ['hidden'=>true]],
-				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."users.inactive",'attr'=>  ['hidden'=>true]],
-				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>100], 'events'=>  ['formatter'=>$name.'Formatter'],
+                'admin_id'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."users.admin_id",'attr'=>['hidden'=>true]],
+				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."users.inactive",'attr'=>['hidden'=>true]],
+				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>['width'=>100], 'events'=>['formatter'=>$name.'Formatter'],
 					'actions'=> [
 						'edit' => ['icon'=>'edit', 'size'=>'small', 'order'=>20,
 							'events'=>  ['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', idTBD);"]],
@@ -161,13 +161,13 @@ class bizunoUsers
         array_unshift($stores, ['id'=>-1, 'text'=>lang('all')]);
 		$data = ['type'=>'divHTML',
 			'divs'    => ['detail'=> ['order'=>10, 'src'=>BIZUNO_LIB."view/module/bizuno/accUsersDetail.php"]],
-			'toolbar' => ['tbUsers'=>  ['icons' => [
+			'toolbars'=> ['tbUsers'=>  ['icons' => [
 				'save'=> ['order'=>20,'hidden'=>$security>1?'0':'1',   'events'=>  ['onClick'=>"jq('#frmUsers').submit();"]],
                 'new' => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>  ['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".jsLang('details')."', 'bizuno/users/edit', 0);"]],
 				'help'=> ['order'=>99,'index' =>'']]]],
 			'tabs'=> ['tabUsers'=>  ['divs'=>  [
                 'general' => ['order'=>10,'label'=>lang('general'), 'src'=>BIZUNO_LIB."view/module/bizuno/tabUsersGeneral.php"]]]],
-			'form'  => ['frmUsers'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/users/save"]]],
+			'forms'  => ['frmUsers'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/users/save"]]],
 			'fields'=> dbLoadStructure(BIZUNO_DB_PREFIX."users"),
 			'text'  => ['pw_title' => $rID ? lang('password_lost') : lang('password')]];
 		// merge data with structure

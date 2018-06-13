@@ -91,11 +91,11 @@ class converge
 			'year'      => ['values'=>$exp['years'],              'break'=>true,'attr'=>  ['type'=>'select']],
 			'cvv'       => ['label'=>lang('payment_cvv'),                       'attr'=>  ['size'=>'5', 'maxlength'=>'4']]];
 		if (isset($values['method']) && $values['method']==$this->code 
-				&& isset($data['journal_main']['id']['attr']['value']) && $data['journal_main']['id']['attr']['value']) { // edit
+				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
 			$this->viewData['number']['attr']['value'] = isset($values['hint']) ? $values['hint'] : '****';
-			$invoice_num = $invoice_amex = $data['journal_main']['invoice_num']['attr']['value'];
-			$gl_account  = $data['journal_main']['gl_acct_id']['attr']['value'];
-			$discount_gl = $this->getDiscGL($data['journal_main']['id']['attr']['value']);
+			$invoice_num = $invoice_amex = $data['fields']['main']['invoice_num']['attr']['value'];
+			$gl_account  = $data['fields']['main']['gl_acct_id']['attr']['value'];
+			$discount_gl = $this->getDiscGL($data['fields']['main']['id']['attr']['value']);
             $show_s = false;  // since it's an edit, all adjustments need to be made at the gateway, this prevents duplicate charges when re-posting a transaction
             $show_c = false;
             $show_n = false;
@@ -107,7 +107,7 @@ class converge
 			$discount_gl = $this->settings['disc_gl_acct'];
             $show_n = true;
             $checked = 'n';
-            $cID = isset($data['journal_main']['contact_id_b']['attr']['value']) ? $data['journal_main']['contact_id_b']['attr']['value'] : 0;
+            $cID = isset($data['fields']['main']['contact_id_b']['attr']['value']) ? $data['fields']['main']['contact_id_b']['attr']['value'] : 0;
             if ($cID) { // find if stored values
                 $encrypt = new encryption();
                 $this->viewData['selCards']['values'] = $encrypt->viewCC('contacts', $cID);
@@ -363,8 +363,8 @@ $output['body'] .= '</div>
 
 	private function getDiscGL($data)
 	{
-		if (isset($data['journal_main'])) {
-            foreach ($data['journal_main'] as $row) {
+		if (isset($data['fields']['main'])) {
+            foreach ($data['fields']['main'] as $row) {
                 if ($row['gl_type'] == 'dsc') { return $row['gl_account']; }
             }
         }

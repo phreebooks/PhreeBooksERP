@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft inc.
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-02
+ * @version    2.x Last Update: 2018-06-07
  * @filesource /lib/controller/module/phreebooks/journals/j20.php
  */
 
@@ -27,13 +27,132 @@ require_once(BIZUNO_LIB."controller/module/phreebooks/journals/common.php");
 
 class j20 extends jCommon
 {
+    public $journalID = 20;
 
-	function __construct($main, $item)
+	function __construct($main=[], $item=[])
     {
 		parent::__construct();
         $this->main = $main;
 		$this->item = $item;
 	}
+
+/*******************************************************************************************************************/
+// START Edit Methods
+/*******************************************************************************************************************/
+    /**
+     * Pulls the data for the specified journal and populates the structure
+     * @param array $data - current working structure
+     * @param array $structure - table structures
+     * @param integer $rID - record id of the transaction to load from the database
+     */
+    public function getDataMain(&$data, $structure=[], $rID=0, $cID=0)
+    {
+        $content = $this->action=='bulk' ? jrnlGetBulkData() : jrnlGetPaymentData($rID, $cID);
+        if (sizeof($content['main']) > 0) { foreach ($content['main'] as $field => $value) { $data['fields']['main'][$field]['attr']['value'] = $value; } }
+        $data['items'] = (sizeof($content['items']) > 0) ? $content['items'] : [];
+    }
+
+    /**
+     * Tailors the structure for the specific journal
+     * @param array $data - current working structure
+     * @param integer $rID - Database record id of the journal main record
+     * @param integer $security - Users security level
+     */
+    public function getDataItem(&$data, $rID=0, $cID=0, $security=0)
+    {
+        msgDebug("\nEntering getDataItem with rID = $rID and cID = $cID and security = $security");
+        if ($cID || $this->action=='bulk') {
+            if (!$rID) { $data['fields']['main']['invoice_num']['attr']['value'] = dbGetValue(BIZUNO_DB_PREFIX."current_status", "next_ref_j20"); }
+            $data['fields']['main']['terminal_date']['attr']['type'] = 'hidden';
+            // pull out just the pmt rows to build datagrid
+            $dgData = [];
+            foreach ($data['items'] as $row) { if ($row['gl_type'] == 'pmt') { $dgData[] = $row; } }
+            $dgStructure= $this->action=='bulk' ? $this->dgBankingBulk('dgJournalItem', $this->journalID) : $this->dgBanking('dgJournalItem', $this->journalID);
+            $map['credit_amount']= ['type'=>'field', 'index'=>'amount'];
+            $data['jsHead']['datagridData'] = formatDatagrid($dgData, 'datagridData', $dgStructure['columns'], $map);
+            if ($rID || $cID || $this->action=='bulk') { $data['datagrid']['item'] = $dgStructure; }
+            if (isset($data['fields']['main']['waiting']['attr']['checked']) && $data['fields']['main']['waiting']['attr']['checked'] == 'checked') {
+                $data['fields']['main']['waiting']= ['attr'=>['type'=>'hidden','value'=>'1']];
+            } else {
+                $data['fields']['main']['waiting']= ['attr'=>['type'=>'hidden','value'=>'0']];
+            }
+            if (isset($data['fields']['main']['closed']['attr']['checked']) && $data['fields']['main']['closed']['attr']['checked'] == 'checked') {
+                $data['fields']['main']['closed']= ['attr'=>['type'=>'hidden','value'=>'1']];
+            } else {
+                $data['fields']['main']['closed']= ['attr'=>['type'=>'hidden','value'=>'0']];
+            }
+            $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
+                'billAddr'  => ['order'=>20,'type'=>'address', 'classes'=>['blockView'], 'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields']['main'], '_b'),
+                    'label'=>lang('bill_to'),'settings'=>['suffix'=>'_b','search'=>true,'copy'=>false,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false]],
+                'props'   => ['order'=>40,'type'=>'fields',  'classes'=>['blockView'], 'attr'=>['id'=>'pbProps'], 'fields'=>$this->getProps($data)],
+                'totals'  => ['order'=>50,'type'=>'totals',  'classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
+            $data['divs']['dgItems'] = ['order'=>60,'type'=>'datagrid','key'=>'item'];
+            $data['jsBody']['frmVal'] = "function preSubmit() {
+    var items = new Array();	
+    var dgData = jq('#dgJournalItem').datagrid('getData');
+    for (var i=0; i<dgData.rows.length; i++) if (dgData.rows[i]['checked']) items.push(dgData.rows[i]);
+    var serializedItems = JSON.stringify(items);
+    jq('#item_array').val(serializedItems);
+    if (!formValidate()) return false;
+    return true;
+}";
+            $data['jsReady']['divInit'] = "ajaxForm('frmJournal'); jq('#contactSel_b').next().find('input').focus();";
+            if ($this->action=='bulk') {
+                unset($data['toolbars']['tbPhreeBooks']['icons']['new']);
+                unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
+                unset($data['divs']['divDetail']['divs']['billAddr']);
+                $data['forms']['frmJournal']['attr']['action'] = BIZUNO_AJAX."&p=phreebooks/main/saveBulk&jID=$this->journalID";
+            }
+
+        } else {
+            unset($data['divs']['tbJrnl']);
+            $data['divs']['divDetail']  = ['order'=>50,'type'=>'html','html'=>html5('contactSel', ['label'=>lang('search')])];
+            $data['jsBody']['selVendor']= "jq('#contactSel').combogrid({width:120,panelWidth:500,delay:500,idField:'contact_id_b',textField:'primary_name_b',mode:'remote',
+    url:       '".BIZUNO_AJAX."&p=phreebooks/main/managerRowsBank&jID=".JOURNAL_ID."', 
+    onBeforeLoad:function (param) { var newValue = jq('#contactSel').combogrid('getValue'); if (newValue.length < 2) return false; },
+    onClickRow:function (idx, row) { journalEdit(".JOURNAL_ID.", 0, row.contact_id_b); },
+    columns:[[
+        {field:'contact_id_b',  hidden:true},
+        {field:'primary_name_b',title:'".jsLang('address_book_primary_name')."', width:200},
+        {field:'city_b',        title:'".jsLang('address_book_city')."', width:100},
+        {field:'state_b',       title:'".jsLang('address_book_state')."', width: 50},
+        {field:'total_amount',  title:'".jsLang('total')."', width:100, align:'right', formatter:function (value) {return formatCurrency(value);} }]]
+});
+if (jq('#contactSel').length) jq('#contactSel').next().find('input').focus();";            
+        }
+    }
+
+    /**
+     * Configures the journal entry properties (other than address and items)
+     * @param array $data - current working structure
+     * @return array - List of fields to show with the structure
+     */
+    private function getProps($data)
+    {
+        $data['fields']['main']['sales_order_num'] = ['label'=>lang('journal_main_invoice_num_10'),'attr'=>['value'=>isset($this->soNum)?$this->soNum:'','readonly'=>'readonly']];
+        return [
+            'id'             => $data['fields']['main']['id'],
+            'journal_id'     => $data['fields']['main']['journal_id'],
+            'so_po_ref_id'   => $data['fields']['main']['so_po_ref_id'],
+            'terms'          => $data['fields']['main']['terms'],
+            'override_user'  => $data['override_user'],
+            'override_pass'  => $data['override_pass'],
+            'recur_id'       => $data['fields']['main']['recur_id'],
+            'recur_frequency'=> $data['recur_frequency'],
+            'item_array'     => $data['item_array'],
+            'xChild'         => ['attr'=>['type'=>'hidden']],
+            'xAction'        => ['attr'=>['type'=>'hidden']],
+            // Displayed
+            'invoice_num'    => array_merge(['break'=>true], $data['fields']['main']['invoice_num']),
+            'post_date'      => array_merge(['break'=>true], $data['fields']['main']['post_date']),
+            'purch_order_id' => array_merge(['break'=>true], $data['fields']['main']['purch_order_id']),
+            'store_id'       => array_merge(['break'=>true], $data['fields']['main']['store_id']),
+            'rep_id'         => array_merge(['break'=>true], $data['fields']['main']['rep_id']),
+            'terms_text'     => $data['terms_text'],
+            'currency'       => array_merge(['break'=>true], $data['fields']['main']['currency']),
+            'closed'         => array_merge(['break'=>true], $data['fields']['main']['closed']),
+            'waiting'        => array_merge(['break'=>true], $data['fields']['main']['waiting'])];
+    }
 
 /*******************************************************************************************************************/
 // START Post Journal Function
@@ -70,7 +189,7 @@ class j20 extends jCommon
      */
     public function getRepostData()
     {
-		msgDebug("\n  Checking for re-post records ... end check for Re-post with no action.");
+		msgDebug("\n  j20 - Checking for re-post records ... end check for Re-post with no action.");
         return [];
 	}
 

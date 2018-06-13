@@ -23,34 +23,3 @@
 
 namespace bizuno;
 
-if (!empty($data['toolbar'])) { htmlToolbar($output, $data, 'tbInventory'); }
-$output['body'] .= "<h1>".$data['title']."</h1>\n";
-if (isset($data['form'])) {
-	$output['body'] .= html5('frmInventory', $data['form']['frmInventory'])."\n";
-	$output['body'] .= html5('dg_assy', ['attr'=> ['type'=>'hidden']])."\n";
-}
-$output['body'] .= html5('id', $data['fields']['id']);
-htmlTabs($output, $data, 'tabInventory');
-if (isset($data['form'])) {
-    $output['body'] .= "    </form>";
-	$output['jsBody'][] = "
-icnAction= '';
-curIndex = 0;
-function preSubmit() {
-    if (jq('#dgAssembly').length) {
-        jq('#dgAssembly').edatagrid('saveRow');
-        var items = jq('#dgAssembly').datagrid('getData');
-        var serializedItems = JSON.stringify(items);
-        jq('#dg_assy').val(serializedItems);
-    }
-    if (jq('#dgVendors').length) {
-        jq('#dgVendors').edatagrid('saveRow');
-        var dgVal = jq('#dgVendors').datagrid('getData');
-        var invVendors = JSON.stringify(dgVal['rows'])
-        jq('#invVendors').val(invVendors);
-    }
-    return true;
-}
-ajaxForm('frmInventory');
-jq('.products ul li:nth-child(3n+3)').addClass('last');";
-}

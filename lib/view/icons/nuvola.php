@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-01-08
+ * @version    2.x Last Update: 2018-06-06
  * @filesource /view/theme/nuvola/icons-nuvola.php
  */
 
@@ -65,6 +65,7 @@ $icons = [
     'import'     => ['dir'=>'nuvola','path'=>'kget_list.png'],
     'inv-adj'    => ['dir'=>'nuvola','path'=>'inv-adjustment.png'],
     'inventory'  => ['dir'=>'nuvola','path'=>'colors.png'],
+    'invoice'    => ['dir'=>'nuvola','path'=>'applix.png'],
     'journal'    => ['dir'=>'nuvola','path'=>'journal.png'],
     'lock'       => ['dir'=>'nuvola','path'=>'lock.png'],
     'locked'     => ['dir'=>'nuvola','path'=>'lock.png'],

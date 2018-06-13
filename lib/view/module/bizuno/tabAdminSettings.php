@@ -23,11 +23,11 @@
 
 namespace bizuno;
 
-htmlToolbar($output, $data, 'tbAdmin');
-if (isset($data['settings'])) {
-	$output['body'] .= "  ".html5('frmAdmin', $data['form']['frmAdmin'])."\n"; // put all the accordian tabs inside of a form
+htmlToolbar($output, $viewData, 'tbAdmin');
+if (isset($viewData['settings'])) {
+	$output['body'] .= "  ".html5('frmAdmin', $viewData['forms']['frmAdmin'])."\n"; // put all the accordian tabs inside of a form
 	$output['body'] .= '    <div class="easyui-accordion" style="width:auto;height:auto;">'."\n";
-	foreach ($data['settings'] as $category => $settings) {
+	foreach ($viewData['settings'] as $category => $settings) {
         $title = getModuleCache($category, 'properties', 'title', false, jsLang($category));
 		$output['body'] .= '      <div title="'.$title.'" style="padding:20px;">'."\n";
 		foreach ($settings as $key => $value) {
@@ -38,5 +38,5 @@ if (isset($data['settings'])) {
 	}
 	$output['body'] .= "    </div>\n";
 	$output['body'] .= "  </form>\n";
-	$output['jsReady'][]  = "ajaxForm('frmAdmin');";
+	$output['jsReady']['adminSettings']  = "ajaxForm('frmAdmin');";
 }

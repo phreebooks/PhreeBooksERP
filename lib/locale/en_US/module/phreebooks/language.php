@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-19
+ * @version    2.x Last Update: 2018-06-06
  * @filesource /locale/en_US/module/phreebooks/language.php
  */
 
@@ -89,7 +89,7 @@ $lang = [
 	'err_gl_xfr_same_store' => 'The source and destination store cannot be the same!',
     'err_dup_order' => 'Invoice %s is already present in Bizuno, it will be skipped!',
     'err_debits_credits_not_zero' => 'Error: The debits total must equal the credits total to post a general journal entry.',
-    'err_journal_delete' => 'This %s record cannot be deleted becasue there is a future transaction posted that is dependent on this record. The future transaction must be deleted first.',
+    'err_journal_delete' => 'This %s record cannot be deleted because there is a future transaction posted that is dependent on this record. The future transaction must be deleted first.',
     'err_total_not_match' => 'The calculated total of %s is not equal to the submitted total of %s, this is typically a tax calculation or rounding problem, please contact PhreeSoft for assistance!',
     // Buttons
     'title_gl_test' => 'Validate and Repair General Ledger Account Balances',
@@ -135,6 +135,8 @@ $lang = [
 	'pb_is_last_bdgt_ytd' => 'LY Budget YTD',
 	'fiscal_dates' => 'Fiscal Dates',
 	'desc_gl_db_purge' => 'Delete all Journal Entries (type \'purge\' in the text box and press purge button)<br />',
+    'set_invoice_num' => 'Set Invoice Number',
+    'enter_invoice_num' => 'Enter the Invoice number, the waiting flag will also be cleared.',
     // Currency
     'neg_prefix' => 'Negative Prefix',
 	'neg_suffix' => 'Negative Suffix',

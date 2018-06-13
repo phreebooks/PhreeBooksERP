@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-08
+ * @version    2.x Last Update: 2018-05-24
  * @filesource /lib/controller/module/phreebooks/journals/j14.php
  */
 
@@ -27,14 +27,124 @@ require_once(BIZUNO_LIB."controller/module/phreebooks/journals/common.php");
 
 class j14 extends jCommon
 {
+    protected $journalID = 14;
 
-	function __construct($main, $item)
+	function __construct($main=[], $item=[])
     {
 		parent::__construct();
         $this->main = $main;
 		$this->item = $item;
 	}
 
+/*******************************************************************************************************************/
+// START Edit Methods
+/*******************************************************************************************************************/
+    /**
+     * Pulls the data for the specified journal and populates the structure
+     * @param array $data - current working structure
+     * @param array $structure - table structures
+     * @param integer $rID - record id of the transaction to load from the database
+     */
+    public function getDataMain(&$data, $structure, $rID=0)
+    {
+        // handled later when rest of unique fields have been set
+    }
+
+    /**
+     * Tailors the structure for the specific journal
+     * @param array $data - current working structure
+     * @param integer $rID - Database record id of the journal main record
+     * @param integer $security - Users security level
+     */
+    public function getDataItem(&$data, $rID=0, $cID=0)
+    {
+        $data['datagrid']['item'] = $this->dgAssy('dgJournalItem'); // place different as this dg is on the right, not bottom
+        unset($data['fields']['item']['sku']['attr']['size']);
+        $data['fields']['item']['sku']['classes']['combogrid'] = 'easyui-combogrid';
+        $data['fields']['item']['sku']['attr']['data-options'] = "url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&filter=assy&clr=1&bID='+jq('#store_id').val(),
+            width:150, panelWidth:550, delay:500, idField:'sku', textField:'sku', mode:'remote',
+            onClickRow: function (id, data) { 
+                    jq('#description').val(data.description_short);
+                    jq('#qty').val('1');
+                    jq('#gl_account').val(data.gl_inv);
+                    jq('#gl_acct_id').val(data.gl_inv);
+                    jq('#qty_stock').val(data.qty_stock);
+                    jq('#dgJournalItem').datagrid({ url:'".BIZUNO_AJAX."&p=inventory/main/managerBOMList&rID='+data.id });
+                    jq('#dgJournalItem').datagrid('reload');
+                    assyUpdateBalance();
+                },
+            columns:[[
+                    {field:'sku',              title:'".jsLang('sku')."',                width:100},
+                    {field:'description_short',title:'".jsLang('description')."',        width:200},
+                    {field:'qty_stock',        title:'".jsLang('inventory_qty_stock')."',width:100,align:'right'},
+                    {field:'qty_po',           title:'".jsLang('inventory_qty_po')."',   width:100,align:'right'}]]";
+        unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
+        unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
+        unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
+        $data['fields']['main']['gl_acct_id'] = ['attr'=>['type'=>'hidden']];
+        $data['fields']['item']['gl_account']['attr']['type'] = 'hidden';
+        $data['fields']['item']['qty']['label']  = lang('qty_to_assemble');
+        $data['fields']['item']['qty']['events'] = ['onChange'=>"assyUpdateBalance()"];
+        $data['fields']['item']['qty']['styles'] = ['text-align'=>'right'];
+        $data['qty_stock']= ['label'=>pullTableLabel('inventory', 'qty_stock'), 'styles'=>['text-align'=>'right'], 'attr'=>['size'=>'10', 'readonly'=>'readonly']];
+        $data['balance']  = ['label'=>lang('balance'), 'styles'=>['text-align'=>'right'], 'attr'=>['size'=>'10', 'readonly'=>'readonly']];
+        $isWaiting = isset($data['fields']['main']['waiting']['attr']['checked']) && $data['fields']['main']['waiting']['attr']['checked'] ? '1' : '0';
+        $data['fields']['main']['waiting'] = ['attr'=>['type'=>'hidden', 'value'=>$isWaiting]];
+        if ($rID) { // merge the data
+            $dbData = dbGetRow(BIZUNO_DB_PREFIX.'journal_main', "id='$rID'");
+            $data['fields']['main']['id']['attr']['value']          = $rID;
+            $data['fields']['main']['store_id']['attr']['value']    = $dbData['store_id'];
+            $data['fields']['main']['post_date']['attr']['value']   = $dbData['post_date'];
+            $data['fields']['main']['invoice_num']['attr']['value'] = $dbData['invoice_num'];
+            $dbData = dbGetRow(BIZUNO_DB_PREFIX.'journal_item', "ref_id='$rID' AND gl_type='asy'");
+            $data['fields']['item']['gl_account']['attr']['value']  = $dbData['gl_account'];
+            $data['fields']['item']['sku']['attr']['value']         = $dbData['sku'];
+            $data['fields']['item']['qty']['attr']['value']         = $dbData['qty'];
+            $data['fields']['item']['trans_code']['attr']['value']  = $dbData['trans_code'];
+            $data['fields']['item']['description']['attr']['value'] = $dbData['description'];
+            $stock = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$dbData['sku']}'");
+            $data['qty_stock']['attr']['value'] = $stock - $dbData['qty'];
+            $data['balance']['attr']['value']   = $stock;
+        }
+        $data['divs']['divDetail']= ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
+            'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'], 'attr'=>['id'=>'pbProps'], 'fields'=>$this->getProps($data)],
+            'totals' => ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
+        $data['divs']['dgItems']  = ['order'=>60,'type'=>'datagrid','key'=>'item'];
+        $data['jsBody']['frmVal'] = "function preSubmit() {
+	var item = {sku:jq('#sku').combogrid('getValue'),qty:jq('#qty').val(),description:jq('#description').val(),total:0,gl_account:jq('#gl_account').val()};
+	var items = {total:1,rows:[item]};
+	var serializedItems = JSON.stringify(items);
+	jq('#item_array').val(serializedItems);
+	if (!formValidate()) return false;
+	return true;
+}";
+        $data['jsReady']['divInit'] = "ajaxForm('frmJournal'); jq('#sku').next().find('input').focus();";
+    }
+
+    /**
+     * Configures the journal entry properties (other than address and items)
+     * @param array $data - current working structure
+     * @return array - List of fields to show with the structure
+     */
+    private function getProps($data)
+    {
+        return ['id'     => $data['fields']['main']['id'],
+            'journal_id' => $data['fields']['main']['journal_id'],
+            'gl_account' => $data['fields']['item']['gl_account'],
+            'gl_acct_id' => $data['fields']['main']['gl_acct_id'],
+            'recur_id'   => $data['fields']['main']['recur_id'],
+            'item_array' => $data['item_array'],
+            'store_id'   => array_merge(['break'=>true], $data['fields']['main']['store_id']),
+            'sku'        => array_merge(['break'=>true], $data['fields']['item']['sku']),
+            'post_date'  => array_merge(['break'=>true], $data['fields']['main']['post_date']),
+            'trans_code' => array_merge(['break'=>true], $data['fields']['item']['trans_code']),
+            'description'=> array_merge(['break'=>true], $data['fields']['item']['description']),
+            'invoice_num'=> array_merge(['break'=>true], $data['fields']['main']['invoice_num']),
+            'qty_stock'  => array_merge(['break'=>true], $data['qty_stock']),
+            'qty'        => array_merge(['break'=>true], $data['fields']['item']['qty']),
+            'balance'    => array_merge(['break'=>true], $data['balance'])];
+    }
+    
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
@@ -70,13 +180,13 @@ class j14 extends jCommon
      */
     public function getRepostData()
     {
-		msgDebug("\n  Checking for re-post records ... ");
+		msgDebug("\n  j14 - Checking for re-post records ... ");
         $out1 = [];
         $out2 = array_merge($out1, $this->getRepostInv());
         $out3 = array_merge($out2, $this->getRepostInvCOG());
 //      $out4 = array_merge($out3, $this->getRepostInvAsy());
         $out5 = array_merge($out3, $this->getRepostPayment());
-        msgDebug(" end Checking for Re-post.");
+        msgDebug("\n  j14 - End Checking for Re-post.");
         return $out5;
 	}
 
@@ -167,5 +277,25 @@ class j14 extends jCommon
     {
 		msgDebug("\n  Checking for closed entry. action = $action, returning with no action.");
 		return true;
+	}
+
+    /**
+     * Creates the datagrid structure for inventory assembly line items
+     * @param string $name - DOM field name
+     * @return array - datagrid structure
+     */
+	private function dgAssy($name)
+    {
+		return ['id' => $name,
+			'attr'   => ['rownumbers'=>true,'showFooter'=>true,'pagination'=>false], // override bizuno default
+			'events' => [
+                'rowStyler'    => "function(index, row) { if (row.qty_stock-row.qty_required<0) return {class:'row-inactive'}; }",
+				'onLoadSuccess'=> "function(row) { jq('#$name').datagrid('fitColumns', true); }"],
+			'columns'=> [
+                'qty'          => ['order'=> 0,'attr' =>['hidden'=>true]],
+				'sku'          => ['order'=>20,'label'=>lang('sku'),         'attr'=>['width'=>100, 'align'=>'center']],
+				'description'  => ['order'=>30,'label'=>lang('description'), 'attr'=>['width'=>250]],
+				'qty_stock'    => ['order'=>40,'label'=>pullTableLabel('inventory','qty_stock'),'attr'=>['width'=>100, 'align'=>'center']],
+				'qty_required' => ['order'=>50,'label'=>lang('qty_required'),'attr'=>['width'=>100, 'align'=>'center']]]];
 	}
 }

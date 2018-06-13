@@ -131,7 +131,7 @@ ajaxForm('frmReconcile')";
                     html5('item_array', ['attr'=>['type'=>'hidden']]);
 		$data = [
             'pageTitle'=> lang('phreebooks_recon'),
-			'toolbar'  => ['tbRecon'=>['icons'=>['save'=>['order'=>40,'events'=>['onClick'=>"jq('#frmReconcile').submit();"]]]]],
+			'toolbars' => ['tbRecon'=>['icons'=>['save'=>['order'=>40,'events'=>['onClick'=>"jq('#frmReconcile').submit();"]]]]],
 			'datagrid' => ['manager'=>$this->tgReconcile($dgName)],
 			'divs'     => [
                 'submenu'  => ['order'=>10, 'type'=>'html', 'html'=>viewSubMenu('banking')],
@@ -139,8 +139,7 @@ ajaxForm('frmReconcile')";
 				'headRecon'=> ['order'=>40, 'type'=>'html',   'html'=>$htmlHead],
 				'dgRecon'  => ['order'=>60, 'label'=>lang('phreebooks_recon'), 'type'=>'datagrid', 'key'=>'manager'],
 				'footRecon'=> ['order'=>90, 'type'=>'html', 'html'=>'</form>']],
-            'javascript' => ['reconcile'=>$js],
-            ];
+            'javascript' => ['reconcile'=>$js]];
 		$layout = array_replace_recursive($layout, viewMain(), $data);
 	}
 

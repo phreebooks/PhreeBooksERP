@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-23
+ * @version    2.x Last Update: 2018-06-06
  * @filesource /controller/module/phreeform/renderForm.php
  */
 
@@ -71,6 +71,7 @@ class PDF extends \TCPDF
 		$tempValues = $report->FieldValues;
         $this->tempValues = [];
 		foreach ($report->fieldlist as $field) {
+            if (!isset($field->settings)) { $field->settings = (object)[]; }
             // This flags an error for block types. Need to define as class for each level.
 //            msgDebug("\nWorking with field ".print_r($field, true));
 //            msgDebug("\nTesting for object settings ".(is_object($field->settings)?'true':'false'));
@@ -387,6 +388,7 @@ class PDF extends \TCPDF
      * @param array $Params - field settings
      */
     function FormTable($Params) {
+        msgDebug("\nParams = ".print_r($Params, true));
         if (!isset($Params->settings->hfcolor)) { $Params->settings->hfcolor = $this->defaultColor; }
         if (!isset($Params->settings->fcolor))  { $Params->settings->fcolor  = $this->defaultColor; }
 		$hRGB = $Params->settings->hfcolor;
@@ -395,8 +397,8 @@ class PDF extends \TCPDF
 		$MaxBoxY = $Params->ordinate + $Params->height; // figure the max y position on page
 
 		$FillThisRow = false;
-		$MaxRowHt  = 0; //track the tallest row to estimate page breaks
-		$HeadingHt = 0;
+		$MaxRowHt = 0; //track the tallest row to estimate page breaks
+		$HeadingHt= 0;
 		$this->y0 = $Params->ordinate;
         $this->last_page_flag = false;
 		foreach ($Params->data as $index => $myrow) {
@@ -407,19 +409,19 @@ class PDF extends \TCPDF
 				$this->y0 = $Params->ordinate;
 				$this->SetLeftMargin($Params->abscissa);
 				$this->SetXY($Params->abscissa, $Params->ordinate);
-				$MaxRowHt  = $this->ShowTableRow($Params, $Params->data[0], true, $hFC, true); // new page heading
-				$HeadingHt = $MaxRowHt;
+				$MaxRowHt = $this->ShowTableRow($Params, $Params->data[0], true, $hFC, true); // new page heading
+				$HeadingHt= $MaxRowHt;
 			}
 			$this->SetLeftMargin($Params->abscissa);
 			$this->SetXY($Params->abscissa, $this->y0);
 			// fill in the data
 			if ($index == 0) { // its a heading line
-				$MaxRowHt  = $this->ShowTableRow($Params, $myrow, true, $hFC, true);
-				$HeadingHt = $MaxRowHt;
+				$MaxRowHt = $this->ShowTableRow($Params, $myrow, true, $hFC, true);
+				$HeadingHt= $MaxRowHt;
 			} else {
 				$MaxRowHt = $this->ShowTableRow($Params, $myrow, $FillThisRow, $FC);
 			}
-			$FillThisRow = !$FillThisRow;
+			$FillThisRow  = !$FillThisRow;
 		}
 		$this->DrawTableLines($Params, $HeadingHt); // draw the box and lines around the table
         $this->last_page_flag = true;

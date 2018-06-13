@@ -23,9 +23,9 @@
 
 namespace bizuno;
 
-htmlToolbar($output, $data, 'tbUsers');
-$output['body'] .= "<h1>{$data['pageTitle']}</h1>\n";
-$output['body'] .= "   ".html5('frmUsers', $data['form']['frmUsers']);
-htmlTabs($output, $data, 'tabUsers');
+htmlToolbar($output, $viewData, 'tbUsers');
+$output['body'] .= "<h1>{$viewData['pageTitle']}</h1>\n";
+$output['body'] .= "   ".html5('frmUsers', $viewData['forms']['frmUsers']);
+htmlTabs($output, $viewData, 'tabUsers');
 $output['body'] .= "   </form>\n";
 $output['jsBody'][] = "ajaxForm('frmUsers');";

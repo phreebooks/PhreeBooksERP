@@ -18,30 +18,29 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-04-14
-
  * @filesource /lib/view/module/phreebooks/tabAdminTax.php
  */
 
 namespace bizuno;
 
 $type = isset($prop['settings']) ? $prop['settings']['type'] : 'c';
-htmlToolbar($output, $data, 'tbTax');
+htmlToolbar($output, $viewData, 'tbTax');
 $output['body'] .= "
-".html5('frmTax'.$type,$data['form']['frmTax'.$type]).'
-	'.html5('id'.$type,$data['fields']['id'])  .'
+".html5('frmTax'.$type,$viewData['forms']['frmTax'.$type]).'
+	'.html5('id'.$type,$viewData['fields']['id'])  .'
 	'.html5('settings'.$type, ['attr'=> ['type'=>'hidden']]).'
 			<table>
 		<tbody>
 			<tr>
-				<td>'.html5('title'     .$type, $data['fields']['title'])     .'</td>
-                <td>'.html5('inactive'  .$type, $data['fields']['inactive'])  .'</td>
+				<td>'.html5('title'     .$type, $viewData['fields']['title'])     .'</td>
+                <td>'.html5('inactive'  .$type, $viewData['fields']['inactive'])  .'</td>
             </tr><tr>
-				<td>'.html5('start_date'.$type, $data['fields']['start_date']).'</td>
-				<td>'.html5('end_date'  .$type, $data['fields']['end_date'])  .'</td>
+				<td>'.html5('start_date'.$type, $viewData['fields']['start_date']).'</td>
+				<td>'.html5('end_date'  .$type, $viewData['fields']['end_date'])  .'</td>
 			</tr>
 		</tbody>
 	</table>';
-htmlDatagrid($output, $data, 'dgTaxVendors');
+htmlDatagrid($output, $viewData, 'dgTaxVendors');
 $output['body'] .= '</form>';
 
 $output['jsBody'][] = "ajaxForm('frmTax$type');

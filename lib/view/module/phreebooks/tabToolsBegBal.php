@@ -18,13 +18,12 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2016-12-23
-
  * @filesource /lib/view/module/phreebooks/tabToolsBegBal.php
  */
 
 namespace bizuno;
 
-$output['body'] .= html5('frmBegBal', $data['form']['frmBegBal'])."\n";
+$output['body'] .= html5('frmBegBal', $viewData['forms']['frmBegBal'])."\n";
 $output['body'] .= '
 <table style="border-style:none;margin-left:auto;margin-right:auto;">
  <thead class="panel-header">
@@ -37,18 +36,18 @@ $output['body'] .= '
   </tr>
  </thead>
  <tbody>'."\n";
-foreach ($data['values']['beg_bal'] as $glAcct => $values) {
+foreach ($viewData['values']['beg_bal'] as $glAcct => $values) {
 	$output ['body'] .= "  <tr>\n";
 	$output ['body'] .= '   <td align="center">'.$glAcct."</td>\n";
 	$output ['body'] .= "   <td>".$values['desc']."</td>\n";
 	$output ['body'] .= "   <td>".$values['desc_type']."</td>\n";
-	$data['fields']['bb_value']['attr']['value'] = $values['value'];
+	$viewData['fields']['bb_value']['attr']['value'] = $values['value'];
 	if ($values['asset']) {
-		$output ['body'] .= '<td style="text-align:center">'.html5("debits[$glAcct]", $data['fields']['bb_value'])."</td>\n";
+		$output ['body'] .= '<td style="text-align:center">'.html5("debits[$glAcct]", $viewData['fields']['bb_value'])."</td>\n";
 		$output ['body'] .= '<td style="background-color:#CCCCCC">&nbsp;</td>'."\n";
 	} else { // credit
 		$output ['body'] .= '<td style="background-color:#CCCCCC">&nbsp;</td>'."\n";
-		$output ['body'] .= '<td style="text-align:center">'.html5("credits[$glAcct]", $data['fields']['bb_value'])."</td>\n";
+		$output ['body'] .= '<td style="text-align:center">'.html5("credits[$glAcct]", $viewData['fields']['bb_value'])."</td>\n";
 	}
 	$output ['body'] .= "</tr>\n";
 }
@@ -57,13 +56,13 @@ $output ['body'] .= '
  <tfoot class="panel-header">
   <tr>
    <td colspan="3" align="right">'.lang('total').'</td>
-   <td style="text-align:right">'.html5('bb_debit_total',  $data['fields']['bb_debit_total']) .'</td>
-   <td style="text-align:right">'.html5('bb_credit_total', $data['fields']['bb_credit_total']).'</td>
+   <td style="text-align:right">'.html5('bb_debit_total',  $viewData['fields']['bb_debit_total']) .'</td>
+   <td style="text-align:right">'.html5('bb_credit_total', $viewData['fields']['bb_credit_total']).'</td>
   </tr>
   <tr>
    <td colspan="4" style="text-align:right">'.lang('balance').'</td>
-   <td style="text-align:right">'.html5('bb_balance_total', $data['fields']['bb_balance_total']).'</td>
-   <td colspan="4" style="text-align:right">'.html5('btnSaveBegBal', $data['fields']['btnSaveBegBal']).'</td>
+   <td style="text-align:right">'.html5('bb_balance_total', $viewData['fields']['bb_balance_total']).'</td>
+   <td colspan="4" style="text-align:right">'.html5('btnSaveBegBal', $viewData['fields']['btnSaveBegBal']).'</td>
   </tr>
  </tfoot>
 </table>'."\n";

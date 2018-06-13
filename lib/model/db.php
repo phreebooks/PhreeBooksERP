@@ -151,16 +151,17 @@ class db extends \PDO
 	public function loadStructure($table, $suffix='', $prefix='')
     {
 		$output = [];
-		$base_table = str_replace(BIZUNO_DB_PREFIX, '', $table);
+        if (!empty($GLOBALS['bizTables'][$table])) { return $GLOBALS['bizTables'][$table]; } // already loaded
 		if (!$oResult = $this->query("SHOW FULL COLUMNS FROM $table")) {
 			msgAdd("Failed loading structure for table: $table");
 			return [];
 		}
-		$result = $oResult->fetchAll();
-		$order = 1;
+		$base_table= str_replace(BIZUNO_DB_PREFIX, '', $table);
+		$result    = $oResult->fetchAll();
+		$order     = 1;
 		foreach ($result as $row) {
 			$comment = [];
-			if ($row['Comment']) {
+			if (!empty($row['Comment'])) {
 				$temp = explode(';', $row['Comment']);
 				foreach ($temp as $entry) {
 					$param = explode(':', $entry, 2);
@@ -183,8 +184,7 @@ class db extends \PDO
 				'order'  => isset($comment['order']) ? $comment['order'] : $order,
 				'label'  => isset($comment['label']) ? $comment['label'] : pullTableLabel($table, $row['Field'], $suffix),
 //				'classes'=> array('easyui-validatebox'),
-				'attr'   => $this->buildAttr($row, $comment),
-                ];
+				'attr'   => $this->buildAttr($row, $comment)];
             $output[$row['Field']]['format'] = isset($comment['format']) ? $comment['format'] : $output[$row['Field']]['attr']['type']; // db data type
 			if (in_array(substr($row['Type'], 0, 4), ["ENUM", "enum"])) {
 				$keys   = explode(',', str_replace(["ENUM", "enum", "(", ")", "'"], '', $row['Type']));
@@ -195,6 +195,7 @@ class db extends \PDO
 			}
 			$order++;
 		}
+        $GLOBALS['bizTables'][$table] = $output; // save structure globally
 		return $output;
 	}
 
@@ -407,7 +408,7 @@ function dbDump($filename='bizuno_backup', $dirWrite='', $dbTable='')
 	msgDebug("\n Executing command: $cmd");
     if (!function_exists('exec')) { msgAdd("php exec is disabled, the backup cannot be achieved this way!"); }
     $result = exec($cmd, $retValue);
-    chmod($dbPath.$dbFile, 0644);    
+    chmod($dbPath.$dbFile, 0644);
 }
 
 /**

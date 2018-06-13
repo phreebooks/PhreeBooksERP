@@ -18,7 +18,6 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-04-18
-
  * @filesource /lib/view/module/bizuno/divRestore.php
  */
 
@@ -34,15 +33,15 @@ $output['body'] .= '
  <tbody>
   <tr>
    <td colspan="2">'."\n";
-htmlDatagrid($output, $data, 'restore');
+htmlDatagrid($output, $viewData, 'restore');
 $output['body'] .= '
    </td>
   </tr>
  </tbody>
  <tfoot class="panel-header">
   <tr>
-   <td>'.lang('msg_io_upload_select').html5('file_upload', $data['content']['file_upload']).'</td>
-   <td style="text-align:right"><progress style="display:none"></progress>'.html5('btn_upload', $data['content']['btn_upload'])."</td>
+   <td>'.lang('msg_io_upload_select').html5('file_upload', $viewData['content']['file_upload']).'</td>
+   <td style="text-align:right"><progress style="display:none"></progress>'.html5('btn_upload', $viewData['content']['btn_upload'])."</td>
   </tr>
  </tfoot>
 </table>";

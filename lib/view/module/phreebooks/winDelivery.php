@@ -18,7 +18,6 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-06-01
-
  * @filesource /lib/view/module/phreebooks/winDelivery.php
  */
 
@@ -28,7 +27,7 @@ $output['body'] .= '
 <table style="border-collapse:collapse;width:100%;">
 	<thead><tr class="panel-header"><th>'.lang('qty')."</th><th>".lang('sku')."</th><th>".lang('description')."</th><th>".lang('date')."</th></tr></thead>
 	<tbody>";
-	foreach ($data['fields']['items'] as $row) {
+	foreach ($viewData['fields']['items'] as $row) {
 		$output['body'] .= "
 		<tr>
 			<td>".$row['qty']."</td><td>".$row['sku']."</td><td>".$row['description']."</td>
@@ -37,5 +36,5 @@ $output['body'] .= '
 	}
 $output['body'] .= '
 	</tbody>
-	<tfooter><tr><td colspan="4" style="text-align:right">'.html5('delSave', $data['fields']['delSave'])."</td></tr></tfooter>
+	<tfooter><tr><td colspan="4" style="text-align:right">'.html5('delSave', $viewData['fields']['delSave'])."</td></tr></tfooter>
 </table>\n";

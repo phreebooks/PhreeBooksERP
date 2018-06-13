@@ -54,9 +54,9 @@ class paypal_api
 		$this->viewData = ['ref_1'=> ['label'=>lang('journal_main_invoice_num_2'),'break'=>true, 'attr'=>  ['size'=>'19']]];
 		if (is_array($values) && isset($values[1]) && $values[1] == $this->code) {
 			$this->viewData['ref_1']['attr']['value'] = isset($values[2]) ? $values[2] : '';
-			$invoice_num = $data['journal_main']['invoice_num']['attr']['value'];
-			$gl_account  = $data['journal_main']['gl_acct_id']['attr']['value'];
-			$discount_gl = $this->getDiscGL($data['journal_main']['id']['attr']['value']);
+			$invoice_num = $data['fields']['main']['invoice_num']['attr']['value'];
+			$gl_account  = $data['fields']['main']['gl_acct_id']['attr']['value'];
+			$discount_gl = $this->getDiscGL($data['fields']['main']['id']['attr']['value']);
 		} else {
 			$invoice_num = $this->settings['prefix'].date('Ymd');
 			$gl_account  = $this->settings['cash_gl_acct'];

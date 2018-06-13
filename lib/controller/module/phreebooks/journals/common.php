@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-06
+ * @version    2.x Last Update: 2018-05-31
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -46,7 +46,7 @@ class jCommon
             if (!isset($row['item_ref_id']))   { $this->item[$key]['item_ref_id']  = 0; }
             if (!isset($row['debit_amount']))  { $this->item[$key]['debit_amount'] = 0; }
             if (!isset($row['credit_amount'])) { $this->item[$key]['credit_amount']= 0; }
-            if (!isset($row['trans_code']))    { $this->item[$key]['trans_code']   = ''; }
+            if (!isset($row['trans_code']))    { $this->item[$key]['trans_code']   = '';}
             if (!isset($row['serialize']))     { $this->item[$key]['serialize']    = 0; }
         }
     }
@@ -241,35 +241,10 @@ class jCommon
             $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_cogs_usage", "inventory_history_id=$id");
             foreach ($result as $row) {
                 if ($row['journal_main_id'] <> $this->main['id']) {
-                    msgDebug("\n    check for re post is queing for cogs usage id = " . $row['journal_main_id']);
+                    msgDebug("\n    getRepostInv is queing for cogs usage id = " . $row['journal_main_id']);
                     $mainRow = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['post_date', 'journal_id'], "id=".$row['journal_main_id']);
                     $idx = padRef($mainRow['post_date'], $row['journal_main_id'], $mainRow['journal_id']);
                     $output[$idx] = $row['journal_main_id'];
-                }
-            }
-        }
-        return $output;
-    }
-    
-    /**
-     * 
-     * @return type
-     */
-    protected function getRepostInvAvg()
-    {
-        $output = [];
-        $skus = [];
-        foreach ($this->item as $row) { if (isset($row['sku']) && $row['sku'] <> '') { $skus[] = $row['sku']; } }
-        if (sizeof($skus) > 0) {
-            $result = dbGetMulti(BIZUNO_DB_PREFIX."inventory", "sku IN ('".implode("', '", $skus)."') AND cost_method='a'");
-            $askus = [];
-            foreach ($result as $row) { $askus[] = $row['sku']; }
-            if (sizeof($askus) > 0) {
-                $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "sku IN ('".implode("', '", $askus)."') AND post_date>'{$this->main['post_date']}'");
-                foreach ($result as $row) {
-                    msgDebug("\n    check for re post is queing average cost id = ".$row['ref_id']);
-                    $idx = padRef($row['post_date'], $row['ref_id'], 8); // for average costing we need to keep the date sequence so make them all neutral
-                    $output[$idx] = $row['ref_id'];
                 }
             }
         }
@@ -293,7 +268,7 @@ class jCommon
                 foreach ($result as $owed) {
                     if ($working_qty >= $owed['qty']) { // repost this journal entry and remove the owed record since we will repost all the negative quantities necessary
                         if ($owed['journal_main_id'] <> $this->main['id']) { // prevent infinite loop
-                            msgDebug("\n    check for re post is queing for cogs owed, id = {$owed['journal_main_id']} to re-post.");
+                            msgDebug("\n    getRepostInvCOG is queing for cogs owed, id = {$owed['journal_main_id']} to re-post.");
                             $mainRow = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['post_date', 'journal_id'], "id=".$owed['journal_main_id']);
                             $idx = padRef($owed['post_date'], $owed['journal_main_id'], $mainRow['journal_id']); // owed will always be from sales
                             $output[$idx] = $owed['journal_main_id'];
@@ -379,7 +354,7 @@ class jCommon
         if (!$this->main['id']) { return $output; }
         $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "item_ref_id='{$this->main['id']}' AND gl_type='pmt'");
         foreach ($result as $row) {
-            msgDebug("\n    check for re post is queing id = " . $row['ref_id']);
+            msgDebug("\n    getRepostPayment is queing id = " . $row['ref_id']);
             $mainRow = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['post_date', 'journal_id'], "id=".$row['ref_id']);
             $idx = padRef($row['post_date'], $row['ref_id'], $mainRow['journal_id']);
             $output[$idx] = $row['ref_id'];
@@ -961,6 +936,26 @@ class jCommon
 		msgDebug("\n  Record ID: {$this->main['id']}".($closed ? " Closed Record ID: " : " Opened Record ID: ").$id);
 	}
 
+        /**
+     * Cleans and extracts the address from the journal main database row
+     * @param array $data - current working structure
+     * @param string $suffix - form field suffix to extract from
+     * @return array - cleaned address ready to render
+     */
+    protected function cleanAddress($data, $suffix='')
+    {
+        $addStruc= dbLoadStructure(BIZUNO_DB_PREFIX.'address_book');
+        $output  = [];
+        foreach (array_keys($addStruc) as $field) {
+            if (isset($data[$field.$suffix])) { 
+                $output[$field] = $data[$field.$suffix];
+                $output[$field]['label'] = $addStruc[$field]['label'];
+            }
+        }
+        $output['contact_id'] = !empty($data['contact_id'.$suffix]) ? $data['contact_id'.$suffix] : $addStruc['id'];
+        return $output;
+    }
+
 	/**
      * 
      * @param type $message
@@ -971,4 +966,233 @@ class jCommon
 		msgAdd($message);
         return false; // for testing purposes, this needs to be here
 	}
+    
+    /**
+     * Creates the datagrid structure for banking line items
+     * @param string $name - DOM field name
+     * @return array - datagrid structure
+     */
+	protected function dgBanking($name, $journalID=20) {
+		return [
+            'id'   => $name,
+			'type' => 'edatagrid',
+			'attr' => [
+                'pageSize'     => getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
+//				'idField'      => 'invoice_num', // if id field is not unique, breaks getChecked method
+				'rownumbers'   => true,
+				'checkOnSelect'=> false,
+				'selectOnCheck'=> false],
+			'events' => [
+                'data'         => 'datagridData',
+				'onLoadSuccess'=> "function(data){
+					for (var i=0; i<data.rows.length; i++) if (data.rows[i].checked) jq('#$name').datagrid('checkRow', i);
+					totalUpdate();
+				}",  
+				'onClickRow'  => "function(rowIndex) { curIndex = rowIndex; }",
+				'onBeginEdit' => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
+				'onCheck'     => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked: true} }); totalUpdate(); }",
+				'onCheckAll'  => "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('checkRow',i); }",
+				'onUncheck'   => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked:false} }); totalUpdate(); }",
+				'onUncheckAll'=> "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('uncheckRow',i); }",
+				'rowStyler'   => "function(idx, row) { if (row.waiting==1) { return {class:'journal-waiting'}; }}"],
+			'columns'=> [
+                'id'         => ['order'=> 0, 'attr' =>['hidden'=>'true']],
+				'ref_id'     => ['order'=> 0, 'attr' =>['hidden'=>'true']],
+				'gl_account' => ['order'=> 0, 'attr' =>['hidden'=>'true']],
+				'item_ref_id'=> ['order'=> 0, 'attr' =>['hidden'=>'true']],
+				'invoice_num'=> ['order'=>10, 'label'=>pullTableLabel('journal_main', 'invoice_num', '12'),
+					'attr' => ['width'=>100, 'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
+				'post_date'  => ['order'=>20, 'label'=>pullTableLabel('journal_main', 'post_date', '12'),
+					'attr' => ['type'=>'date', 'width'=>100, 'resizable'=>true, 'align'=>'center']],
+				'date_1'     => ['order'=>30, 'label'=>pullTableLabel('journal_item', 'date_1', $journalID),
+					'attr' => ['type'=>'date','width'=>100, 'resizable'=>true, 'align'=>'center']],
+				'description'=> ['order'=>40, 'label'=>lang('notes'), 'attr'=>  ['width'=>350,'resizable'=>true,'editor'=>'text']],
+				'amount'     => ['order'=>50, 'label'=>lang('amount_due'),
+					'attr' =>  ['type'=>'currency', 'width'=> 100,'resizable'=>true, 'align'=>'right']],
+				'discount'   => ['order'=>60, 'label'=>lang('discount'), 'styles'=>  ['text-align'=>'right'],
+					'attr' => ['width'=>100, 'resizable'=>true, 'align'=>'right'],
+					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('disc'); } } }",
+					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+				'total'      => ['order'=>70, 'label'=>lang('total'), 'styles'=>  ['text-align'=>'right'],
+					'attr'  => ['width'=>100, 'resizable'=>true, 'align'=>'right'],
+					'events'=> ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('direct'); } } }",
+					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+				'pay' => ['order'=>90, 'attr'=>  ['checkbox'=>true]], // was 'attr'=>array() for paying bills but breaks customer receipts
+            ]];
+	}
+
+    /**
+     * Creates the datagrid structure for banking bulk pay line items
+     * @param string $name - DOM field name
+     * @return array - datagrid structure
+     */
+    protected function dgBankingBulk($name, $journalID=20)
+    {
+		return ['id' => $name,
+			'type'   => 'edatagrid',
+			'attr'   => [
+                'pageSize'     => getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
+				'rownumbers'   => true,
+				'checkOnSelect'=> false,
+				'selectOnCheck'=> false,
+				'multiSort'    => true, // this is cool as it allows multiple columns to be sorted but may become confusing
+				'remoteSort'   => false],
+			'events' => [
+                'data'         => 'datagridData',
+				'onLoadSuccess'=> "function(data){
+					for (var i=0; i<data.rows.length; i++) if (data.rows[i].checked) jq('#$name').datagrid('checkRow', i);
+			        jq('#$name').datagrid('fitColumns');
+					totalUpdate();
+				}",
+				'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
+				'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
+				'onCheck'      => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked: true} }); totalUpdate(); }",
+				'onCheckAll'   => "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('checkRow',i); }",
+				'onUncheck'    => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked:false} }); totalUpdate(); }",
+				'onUncheckAll' => "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('uncheckRow',i); }",
+				'rowStyler'    => "function(idx, row) { if (row.waiting==1) { return {class:'journal-waiting'}; }}"],
+			'columns'=> [
+                'id'         => ['order'=>0, 'attr' =>  ['hidden'=>'true']],
+				'item_ref_id'=> ['order'=>0, 'attr' =>  ['hidden'=>'true']],
+				'contact_id' => ['order'=>0, 'attr' =>  ['hidden'=>'true']],
+				'inv_date' => ['order'=>10, 'label'=>pullTableLabel('journal_main', 'post_date', '12'),
+					'attr' => ['type'=>'date', 'width'=>100, 'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
+				'primary_name' => ['order'=>20, 'label'=>pullTableLabel('journal_main', 'primary_name_b', '12'),
+					'attr' => ['width'=>220, 'sortable'=>true, 'resizable'=>true]],
+				'inv_num'=> ['order'=>30, 'label'=>pullTableLabel('journal_main', 'invoice_num', '12'),
+					'attr' => ['width'=>120, 'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
+				'amount' => ['order'=>40, 'label'=>lang('amount_due'),
+					'attr' =>  ['type'=>'currency', 'width'=>100,'resizable'=>true, 'align'=>'right']],
+				'description'=> ['order'=>50, 'label'=>lang('notes'), 'attr'=>  ['width'=>220,'resizable'=>true,'editor'=>'text']],
+				'date_1' => ['order'=>60, 'label'=>pullTableLabel('journal_item', 'date_1', $journalID),
+					'attr' => ['type'=>'date', 'width'=>90, 'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
+				'discount'   => ['order'=>70, 'label'=>lang('discount'), 'styles'=>['text-align'=>'right'],
+					'attr' => ['width'=>80, 'resizable'=>true, 'align'=>'right'],
+					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('disc'); } } }",
+					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+				'total'      => ['order'=>80, 'label'=>lang('total'), 'styles'=>  ['text-align'=>'right'],
+					'attr'  => ['width'=>80, 'resizable'=>true, 'align'=>'right'],
+					'events'=> ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('direct'); } } }",
+					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+				'pay' => ['order'=>90, 'attr'=>  ['checkbox'=>true]]]];
+	}
+	
+	/**
+     * Creates the datagrid structure for customer/vendor order items
+     * @param string $name - DOM field name
+     * @param char $type - choices are c (customers) or v (vendors)
+     * @return array - datagrid structure
+     */
+	protected function dgOrders($name, $type) {
+		$on_hand    = pullTableLabel('inventory', 'qty_stock');
+		$gl_account = $type=='v' ? 'gl_inv'    : 'gl_sales';
+		$inv_field  = $type=='v' ? 'item_cost' : 'full_price';
+		$inv_title  = $type=='v' ? lang('cost'): lang('price');
+		$hideItemTax= true;
+        foreach ($this->totals as $methID) { if ($methID == 'tax_item') { $hideItemTax = false; } }
+		$data = ['id'=> $name,
+			'type'   => 'edatagrid',
+			'attr'   => [
+                'toolbar'     => "#{$name}Toolbar",
+				'rownumbers'  => true,
+				'idField'     => 'id',
+				'singleSelect'=> true,
+				'fitColumns'  => true],
+			'events' => [
+                'data'         => "datagridData",
+				'onLoadSuccess'=> "function(row) { totalUpdate(); }",
+				'onClickCell'  => "function(rowIndex) {
+					switch (icnAction) {
+						case 'trash':    jq('#$name').edatagrid('destroyRow', rowIndex); break;
+						case 'price':    inventoryGetPrice(rowIndex, '$type'); break;
+						case 'settings': inventoryProperties(rowIndex);        break;
+					}
+					icnAction = '';
+				}",
+//				'view'         => "detailview", //breaks edatagrid 'edit', may be a sequencing issue, otherwise reproduce on easyui website for them to look at
+				'onClickRow'   => "function(rowIndex, row) { curIndex = rowIndex; }",
+                'onBeforeEdit' => "function(rowIndex) {
+    var edtURL = jq(this).edatagrid('getColumnOption','sku');
+    edtURL.editor.options.url = '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&bID='+jq('#store_id').val();
+}",
+				'onBeginEdit'  => "function(rowIndex) { ordersEditing(rowIndex); }",
+				'onDestroy'    => "function(rowIndex) { totalUpdate(); curIndex = undefined; }",
+				'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
+			'source' => ['actions'=>['newItem'=>['order'=>10,'html'=>['icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]]],
+			'columns'=> [
+                'id'            => ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'ref_id'        => ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'item_ref_id'   => ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'pkg_length'    => ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'pkg_width'     => ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'pkg_height'    => ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'inventory_type'=> ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'item_weight'   => ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'qty_stock'     => ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'trans_code'    => ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'attach'        => ['order'=>0, 'attr'=>['hidden'=>'true', 'value'=>'0']],
+				'date_1'        => ['order'=>0, 'attr'=>['hidden'=>'true']],
+				'action'        => ['order'=>1, 'attr'=>['width'=>80], 'label'=>lang('action'),
+					'events'  => ['formatter'=>"function(value,row,index) { return {$name}Formatter(value,row,index); }"],
+					'actions' => [
+                        'trash'   => ['icon'=>'trash',   'order'=>20,'size'=>'small','events'=>  ['onClick'=>"icnAction='trash';"],
+							'display'=>"typeof row.item_ref_id==='undefined' || row.item_ref_id=='0' || row.item_ref_id==''"],
+						'price'   => ['icon'=>'price',   'order'=>40,'size'=>'small','events'=>  ['onClick'=>"icnAction='price';"]],
+						'settings'=> ['icon'=>'settings','order'=>60,'size'=>'small','events'=>  ['onClick'=>"icnAction='settings';"]]]],
+				'sku'=> ['order'=>30, 'label'=>pullTableLabel('journal_item', 'sku', $this->journalID),
+					'attr' => ['width'=>150, 'sortable'=>true, 'resizable'=>true, 'align'=>'center', 'value'=>''],
+					'events'=>  ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
+						width:150, panelWidth:550, delay:500, idField:'sku', textField:'sku', mode:'remote',
+                        onLoadSuccess: function () {
+                            var skuEditor = jq('#dgJournalItem').datagrid('getEditor', {index:curIndex,field:'sku'});
+                            var g = jq(skuEditor.target).combogrid('grid');
+                            var r=g.datagrid('getData');
+							if (r.rows.length==1) { var cbValue = jq(skuEditor.target).combogrid('getValue');
+                                if (!cbValue) { return; }
+								if (r.rows[0].sku==cbValue || r.rows[0].upc_code==cbValue) { 
+                                    jq(skuEditor.target).combogrid('hidePanel'); orderFill(r.rows[0], '$type');
+                                }
+							}
+						},
+						onClickRow: function (idx, data) { orderFill(data, '$type'); },
+						columns:[[{field:'sku', title:'".jsLang('sku')."', width:100},
+							{field:'description_short',title:'".jsLang('description')."', width:200},
+							{field:'qty_stock', title:'$on_hand', width:90,align:'right'},
+							{field:'$inv_field', title:'$inv_title', width:90,align:'right'},
+							{field:'$gl_account', hidden:true}, {field:'item_weight', hidden:true}]]}}"]],
+				'description' => ['order'=>40, 'label'=>lang('description'),'attr'=>['width'=>400,'editor'=>'text','resizable'=>true]],
+				'gl_account' => ['order'=>50, 'label'=>pullTableLabel('journal_item', 'gl_account', $this->journalID),
+					'attr'  => ['width'=>100, 'resizable'=>true, 'align'=>'center'],
+					'events'=>  ['editor'=>dgHtmlGLAcctData()]],
+				'tax_rate_id' => ['order'=>60, 'label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->type), 'hidden'=>$hideItemTax,
+					'attr'  =>  ['width'=>150, 'resizable'=>true, 'align'=>'center'],
+					'events'=>  ['editor'=>dgHtmlTaxData($name, 'tax_rate_id', $type, 'totalUpdate();'),
+					'formatter'=>"function(value,row){ return getTextValue(bizDefaults.taxRates.$type.rows, value); }"]],
+				'price' => ['order'=>70, 'label'=>lang('price'), 'format'=>'currency',
+					'attr'  => ['width'=>80, 'resizable'=>true, 'align'=>'right'],
+					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('price'); } } }",
+					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+				'total' => ['order'=>80, 'label'=>lang('total'), 'format'=>'currency',
+					'attr' => ['width'=>80, 'resizable'=>true, 'align'=>'right', 'value'=>'0'],
+					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('total'); } } }",
+					'formatter'=>"function(value,row){ return formatCurrency(value); }"]]]];
+		switch ($this->journalID) {
+			case  3: $qty1 = lang('qty');      $qty2 = lang('received'); $ord1 = 20; $ord2 = 25; break;
+			case  4: $qty1 = lang('qty');      $qty2 = lang('received'); $ord1 = 20; $ord2 = 25; break;
+			case  6: $qty1 = lang('received'); $qty2 = lang('balance');  $ord1 = 25; $ord2 = 20; break;
+			case  7: $qty1 = lang('returned'); $qty2 = lang('balance');  $ord1 = 25; $ord2 = 20; break;
+			case  9: $qty1 = lang('qty');      $qty2 = lang('invoiced'); $ord1 = 20; $ord2 = 25; break;
+			case 10: $qty1 = lang('qty');      $qty2 = lang('invoiced'); $ord1 = 20; $ord2 = 25; break;
+			default:
+			case 12: $qty1 = lang('qty');      $qty2 = lang('balance');  $ord1 = 25; $ord2 = 20; break;
+			case 13: $qty1 = lang('returned'); $qty2 = lang('shipped');  $ord1 = 25; $ord2 = 20; break;
+			case 19: $qty1 = lang('qty');      $qty2 = lang('balance');  $ord1 = 25; $ord2 = 20; break;
+			case 21: $qty1 = lang('qty');      $qty2 = lang('balance');  $ord1 = 25; $ord2 = 20; break;
+		}
+		$data['columns']['qty'] = ['order'=>$ord1, 'label'=>$qty1, 'attr'=>  ['value'=>1,'width'=>80,'resizable'=>true,'align'=>'center'],
+			'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('qty'); } } }"]];
+		$data['columns']['bal'] = ['order'=>$ord2, 'label'=>$qty2,
+			'attr' => ['width'=>80,'resizable'=>true,'align'=>'center','hidden'=>($this->rID || $this->action=='inv')?false:true]];
+		return $data;
+    }
 }

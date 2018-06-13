@@ -63,9 +63,9 @@ class paymentMain
     jq('#payment_year').val('".date('Y')."');
     jq('#payment_cvv').val('');\n}\n";
         $data = ['type'=>'divHTML',
-			'toolbar'   => ['tbPayment'=>['icons'=>[
-                    'pmtNew' => ['order'=> 10, 'icon'=>'new', 'events'=>['onClick'=>"paymentNew();"]],
-                    'pmtSave'=> ['order'=> 20, 'icon'=>'save','events'=>['onClick'=>"divSubmit('payment/main/save&rID=$rID', 'frmPayment');"]]]]],
+			'toolbars'  => ['tbPayment'=>['icons'=>[
+                    'pmtNew' => ['order'=>10,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"paymentNew();"]],
+                    'pmtSave'=> ['order'=>20,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"divSubmit('payment/main/save&rID=$rID', 'frmPayment');"]]]]],
 			'divs'      => ['pmtMgr' => ['order'=>50, 'src'=>BIZUNO_LIB."view/module/payment/accPmtManager.php"]],
             'jsHead'    => ['manager'=>$js],
 			'datagrid'  => ['dgPayment'=> $this->dgPayment('dgPayment', $rID, $security)],

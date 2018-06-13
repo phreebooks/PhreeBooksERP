@@ -18,24 +18,23 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2016-09-10
-
  * @filesource /lib/view/module/payment/accPmtManager.php
  */
 
 namespace bizuno;
 
 if (getUserCache('profile', 'admin_encrypt')) {
-    htmlDatagrid($output, $data, 'dgPayment');
+    htmlDatagrid($output, $viewData, 'dgPayment');
     $output['body'] .= '<div id="frmPayment" style="width:50%">'."\n";
-    $output['body'] .= html5('payment_id', $data['fields']['payment_id']);
+    $output['body'] .= html5('payment_id', $viewData['fields']['payment_id']);
     $output['body'] .= " <fieldset><legend>".lang('payment_new')."</legend>\n";
-    htmlToolbar($output, $data, 'tbPayment');
+    htmlToolbar($output, $viewData, 'tbPayment');
     $output['body'] .= '    <table style="border-style:none;margin-left:auto;margin-right:auto;">'."\n";
     $output['body'] .= '     <tbody>'."\n";
-    $output['body'] .= "	  <tr><td>".html5('payment_name',$data['fields']['payment_name'])."</td></tr>\n";
-    $output['body'] .= "	  <tr><td>".html5('payment_num', $data['fields']['payment_num'])."</td></tr>\n";
-    $output['body'] .= "	  <tr><td>".html5('payment_mon', $data['fields']['payment_mon']).html5('payment_year',$data['fields']['payment_year'])."</td></tr>\n";
-    $output['body'] .= "	  <tr><td>".html5('payment_cvv', $data['fields']['payment_cvv'])."</td></tr>\n";
+    $output['body'] .= "	  <tr><td>".html5('payment_name',$viewData['fields']['payment_name'])."</td></tr>\n";
+    $output['body'] .= "	  <tr><td>".html5('payment_num', $viewData['fields']['payment_num'])."</td></tr>\n";
+    $output['body'] .= "	  <tr><td>".html5('payment_mon', $viewData['fields']['payment_mon']).html5('payment_year',$viewData['fields']['payment_year'])."</td></tr>\n";
+    $output['body'] .= "	  <tr><td>".html5('payment_cvv', $viewData['fields']['payment_cvv'])."</td></tr>\n";
     $output['body'] .= "	 </tbody>\n";
     $output['body'] .= "    </table>\n";
     $output['body'] .= " </fieldset>\n";

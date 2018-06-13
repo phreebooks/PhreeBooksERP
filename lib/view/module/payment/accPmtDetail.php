@@ -27,29 +27,29 @@ namespace bizuno;
 $output['body'] .= " <fieldset>\n";
 $output['body'] .= "  <legend>".lang('payment_method')."</legend>\n";
 // if we have data, see what the stored values are to set defaults
-$dataValues= [];
-$dispFirst = $data['fields']['selMethod']['attr']['value'] = $data['journal_main']['method_code']['attr']['value'];
+$viewDataValues= [];
+$dispFirst = $viewData['fields']['selMethod']['attr']['value'] = $viewData['fields']['main']['method_code']['attr']['value'];
 
-if (isset($data['items'])) { foreach ($data['items'] as $row) { // fill in the data if available
+if (isset($viewData['items'])) { foreach ($viewData['items'] as $row) { // fill in the data if available
 	$props = explode(";", $row['description']);
 	foreach ($props as $val) {
 		$tmp = explode(":", $val);
-		$dataValues[$tmp[0]] = isset($tmp[1]) ? $tmp[1] : '';
+		$viewDataValues[$tmp[0]] = isset($tmp[1]) ? $tmp[1] : '';
 	}
 	if (!isset($row['id']) || !$row['id']) { // insert
-		$txID = dbGetValue(BIZUNO_DB_PREFIX."journal_item", array('description','trans_code'), "ref_id='{$data['items'][0]['item_ref_id']}' AND gl_type='ttl'");
+		$txID = dbGetValue(BIZUNO_DB_PREFIX."journal_item", array('description','trans_code'), "ref_id='{$viewData['items'][0]['item_ref_id']}' AND gl_type='ttl'");
 		$props = !empty($txID['description']) ? explode(";", $txID['description']) : [];
 		foreach ($props as $val) {
 			$tmp = explode(":", $val);
-			$dataValues[$tmp[0]] = isset($tmp[1]) ? $tmp[1] : '';
+			$viewDataValues[$tmp[0]] = isset($tmp[1]) ? $tmp[1] : '';
 		}
-		$dataValues['id']        = $row['item_ref_id'];
-		$dataValues['trans_code']= !empty($txID['trans_code']) ? $txID['trans_code'] : '';
-		$dataValues['total']     = !empty($row['total']) ? $row['total'] : 0;
+		$viewDataValues['id']        = $row['item_ref_id'];
+		$viewDataValues['trans_code']= !empty($txID['trans_code']) ? $txID['trans_code'] : '';
+		$viewDataValues['total']     = !empty($row['total']) ? $row['total'] : 0;
 	}
 } }
 // set the pull down for which method, onChange execute javascript function to load defaults
-$output['body'] .= html5('method_code', $data['fields']['selMethod']);
+$output['body'] .= html5('method_code', $viewData['fields']['selMethod']);
 $methods = sortOrder(getModuleCache('payment', 'methods'));
 foreach ($methods as $method => $settings) {
     if (isset($settings['status']) && $settings['status']) { // load the div for each method
@@ -64,7 +64,7 @@ foreach ($methods as $method => $settings) {
         $pmtSet = getModuleCache('payment','methods',$method,'settings');
         $fqcn = "\\bizuno\\$method";
         $temp = new $fqcn($pmtSet);
-        $temp->render($output, $data, $dataValues, $dispFirst);
+        $temp->render($output, $viewData, $viewDataValues, $dispFirst);
         $output['body'] .= "</div>\n";
     }
 }

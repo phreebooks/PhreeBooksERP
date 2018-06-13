@@ -24,11 +24,11 @@
 namespace bizuno;
 
 $output['body'] .= "
-<fieldset><legend>".$data['lang']['close_j9_title']."</legend>
-    <p>".$data['lang']['close_j9_desc']."</p>
-    <p>".$data['lang']['close_j9_label'].' '.html5('dateJ9Close', $data['fields']['dateJ9Close']).html5('btnJ9Close', $data['fields']['btnJ9Close']).'</p>
+<fieldset><legend>".$viewData['lang']['close_j9_title']."</legend>
+    <p>".$viewData['lang']['close_j9_desc']."</p>
+    <p>".$viewData['lang']['close_j9_label'].' '.html5('dateJ9Close', $viewData['fields']['dateJ9Close']).html5('btnJ9Close', $viewData['fields']['btnJ9Close']).'</p>
 </fieldset>
-<fieldset><legend>'.$data['lang']['sync_attach_title']."</legend>
-    <p>".$data['lang']['sync_attach_desc']."</p>
-    <p>".html5('btnSyncAttach', $data['fields']['btnSyncAttach']).'</p>
+<fieldset><legend>'.$viewData['lang']['sync_attach_title']."</legend>
+    <p>".$viewData['lang']['sync_attach_desc']."</p>
+    <p>".html5('btnSyncAttach', $viewData['fields']['btnSyncAttach']).'</p>
 </fieldset>';

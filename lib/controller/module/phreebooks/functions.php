@@ -281,8 +281,9 @@ function isBlankRow($row, $testList=[])
  * @param integer $cID - table: contact field: id, doesn't matter if rID != 0, will be contact id for new entries
  * @return array $output - journal_main, journal_item values if rID; contact info, open invoices if cID 
  */
-function jrnlGetPaymentData($rID=0, $cID=0, $preChecked=[])
+function jrnlGetPaymentData($rID=0, $cID=0)
 {
+    $preChecked= (array)explode(":", clean('iID', 'text', 'get'));
 	$output = ['main'=>[],'items'=>[]];
 	$itemIdx = 0;
 	if ($rID > 0) { // pull posted record info

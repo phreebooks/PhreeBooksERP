@@ -23,13 +23,13 @@
 
 namespace bizuno;
 
-htmlToolbar($output, $data['toolbar']['tbDetail']);
+htmlToolbar($output, $viewData['toolbars']['tbDetail']);
 $output['body'] .= "
-  <h1>".$data['report']['title']."</h1>
-  <fieldset>".$data['report']['description']."</fieldset>
+  <h1>".$viewData['report']['title']."</h1>
+  <fieldset>".$viewData['report']['description']."</fieldset>
   <div>
-    ".lang('id').": {$data['report']['id']}<br />
-    ".lang('type').": {$data['report']['mime_type']}<br />
-    ".lang('create_date').": ".viewFormat($data['report']['create_date'], 'date')."<br />
-    ".lang('last_update').': '.viewFormat($data['report']['last_update'], 'date')."<br />
+    ".lang('id').": {$viewData['report']['id']}<br />
+    ".lang('type').": {$viewData['report']['mime_type']}<br />
+    ".lang('create_date').": ".viewFormat($viewData['report']['create_date'], 'date')."<br />
+    ".lang('last_update').': '.viewFormat($viewData['report']['last_update'], 'date')."<br />
   </div>\n";

@@ -38,7 +38,7 @@ $defaults = [
     'fill'    => 'none',
 ];
 $attr      = isset($settings['attr']) ? array_replace($defaults, $settings['attr']) : $defaults;
-$structure = $data['fields']['address_book'];
+$structure = $viewData['fields']['address_book'];
 unset($structure['country']['label']);
 $structure['email']['attr']['size'] = 32; // keep this from overlapping with other divs
 // merge values if present
@@ -120,7 +120,7 @@ $output['body'] .= "  </div>\n";
 $output['body'] .= "</div>\n";
 
 $output['jsBody'][] = "
-var addressVals{$attr['suffix']} = ".(isset($data['address'][$attr['suffix']]) ? $data['address'][$attr['suffix']] : "[]").";
+var addressVals{$attr['suffix']} = ".(isset($viewData['address'][$attr['suffix']]) ? $viewData['address'][$attr['suffix']] : "[]").";
 jq('#addressSel{$attr['suffix']}').combogrid({
 	width:     150,
 	panelWidth:750,
@@ -139,7 +139,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({
 	]]
 });";
 // show the address drop down if values are present
-if (isset($data['address'][$attr['suffix']])) { 
+if (isset($viewData['address'][$attr['suffix']])) { 
     $output['jsReady'][] = "jq('#addressDiv{$attr['suffix']}').show();";
 }
 $output['jsReady'][] = "setInnerLabels(addressFields, '".$attr['suffix']."');";

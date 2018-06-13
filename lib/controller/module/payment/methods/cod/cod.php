@@ -53,10 +53,10 @@ class cod
 	public function render(&$output, $data, $values=[], $dispFirst=false)
 	{
 		if (isset($values['method']) && $values['method']==$this->code 
-				&& isset($data['journal_main']['id']['attr']['value']) && $data['journal_main']['id']['attr']['value']) { // edit
-			$invoice_num = $data['journal_main']['invoice_num']['attr']['value'];
-			$gl_account  = $data['journal_main']['gl_acct_id']['attr']['value'];
-			$discount_gl = $this->getDiscGL($data['journal_main']['id']['attr']['value']);
+				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
+			$invoice_num = $data['fields']['main']['invoice_num']['attr']['value'];
+			$gl_account  = $data['fields']['main']['gl_acct_id']['attr']['value'];
+			$discount_gl = $this->getDiscGL($data['fields']['main']['id']['attr']['value']);
 		} else {
 			$invoice_num = $this->settings['prefix'].date('Ymd');
 			$gl_account  = $this->settings['cash_gl_acct'];

@@ -24,16 +24,16 @@
 
 namespace bizuno;
 
-$output['body'] .= html5('frmPhreeform',$data['form']['frmPhreeform'])
-.html5('id',          $data['fields']['id'])
-.html5('reporttype',  $data['fields']['rptType'])
-.html5('tables',      ['attr'=>  ['type'=>'hidden']])
-.html5('fieldlist',   ['attr'=>  ['type'=>'hidden']])
-.html5('grouplist',   ['attr'=>  ['type'=>'hidden']])
-.html5('sortlist',    ['attr'=>  ['type'=>'hidden']])
-.html5('filterlist',  ['attr'=>  ['type'=>'hidden']])
-.html5('xChild',      ['attr'=>  ['type'=>'hidden']]);
-htmlTabs($output, $data, 'tabPhreeForm'); // htmlTabs must stand alone as it modifies $data
+$output['body'] .= html5('frmPhreeform',$viewData['forms']['frmPhreeform'])
+.html5('id',          $viewData['fields']['id'])
+.html5('reporttype',  $viewData['fields']['rptType'])
+.html5('tables',      ['attr'=>['type'=>'hidden']])
+.html5('fieldlist',   ['attr'=>['type'=>'hidden']])
+.html5('grouplist',   ['attr'=>['type'=>'hidden']])
+.html5('sortlist',    ['attr'=>['type'=>'hidden']])
+.html5('filterlist',  ['attr'=>['type'=>'hidden']])
+.html5('xChild',      ['attr'=>['type'=>'hidden']]);
+htmlTabs($output, $viewData, 'tabPhreeForm'); // htmlTabs must stand alone as it modifies $viewData
 $output['body'] .= '</form>';
 $output['jsBody'][] = "
 function preSubmit() {

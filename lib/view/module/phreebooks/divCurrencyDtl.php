@@ -22,35 +22,34 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-06-01
-
  * @filesource /lib/view/module/phreebooks/divCurrencyDtl.php
  */
 
 namespace bizuno;
 
-htmlToolbar($output, $data, 'tbCurrency');
-$output['body'] .= html5('frmCurrency', $data['form']['frmCurrency'])."
+htmlToolbar($output, $viewData, 'tbCurrency');
+$output['body'] .= html5('frmCurrency', $viewData['forms']['frmCurrency'])."
  <fieldset><legend>".lang('settings')."</legend>
   <table>
    <tbody>
     <tr>
-     <td>".html5('title',  $data['fields']['title'])  .html5('is_def', $data['fields']['is_def'])  ."</td>
-     <td>".html5('xrate',  $data['fields']['xrate']) ."</td>
-     <td>".html5('code',   $data['fields']['code'])   ."</td>
+     <td>".html5('title',  $viewData['fields']['title'])  .html5('is_def', $viewData['fields']['is_def'])  ."</td>
+     <td>".html5('xrate',  $viewData['fields']['xrate']) ."</td>
+     <td>".html5('code',   $viewData['fields']['code'])   ."</td>
     </tr>
     <tr>
-     <td>".html5('dec_len',$data['fields']['dec_len'])."</td>
-     <td>".html5('dec_pt', $data['fields']['dec_pt']) ."</td>
-     <td>".html5('sep',    $data['fields']['sep'])    ."</td>
+     <td>".html5('dec_len',$viewData['fields']['dec_len'])."</td>
+     <td>".html5('dec_pt', $viewData['fields']['dec_pt']) ."</td>
+     <td>".html5('sep',    $viewData['fields']['sep'])    ."</td>
     </tr>
     <tr>
-     <td>".html5('prefix', $data['fields']['prefix']) ."</td>
-     <td>".html5('suffix', $data['fields']['suffix']) ."</td>
+     <td>".html5('prefix', $viewData['fields']['prefix']) ."</td>
+     <td>".html5('suffix', $viewData['fields']['suffix']) ."</td>
      <td>&nbsp</td>
      </tr>
     <tr>
-     <td>".html5('pfxneg', $data['fields']['pfxneg']) ."</td>
-     <td>".html5('sfxneg', $data['fields']['sfxneg']) ."</td>
+     <td>".html5('pfxneg', $viewData['fields']['pfxneg']) ."</td>
+     <td>".html5('sfxneg', $viewData['fields']['sfxneg']) ."</td>
      <td>&nbsp</td>
      </tr>
    </tbody>
@@ -61,10 +60,10 @@ $output['body'] .= html5('frmCurrency', $data['form']['frmCurrency'])."
   <table>
    <tbody>
     <tr>
-     <td>".html5('gl_type_0',  $data['fields']['gl_type_0']) ."</td>
-	 <td>".html5('gl_type_20', $data['fields']['gl_type_20'])."</td>
-	 <td>".html5('gl_type_30', $data['fields']['gl_type_30'])."</td>
-	 <td>".html5('gl_type_40', $data['fields']['gl_type_40'])."</td>
+     <td>".html5('gl_type_0',  $viewData['fields']['gl_type_0']) ."</td>
+	 <td>".html5('gl_type_20', $viewData['fields']['gl_type_20'])."</td>
+	 <td>".html5('gl_type_30', $viewData['fields']['gl_type_30'])."</td>
+	 <td>".html5('gl_type_40', $viewData['fields']['gl_type_40'])."</td>
 	</tr>
    </tbody>
   </table>

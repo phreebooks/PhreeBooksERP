@@ -22,26 +22,3 @@
  */
 
 namespace bizuno;
-
-htmlToolbar($output, $data, 'tbPhreeBooks');
-$output['body'] .= "   ".html5('frmJournal', $data['form']['frmJournal'])."\n";
-if (isset($data['itemDGSrc'])) { require ($data['itemDGSrc']); }
-if (isset($data['datagrid']['item'])) {
-	$output['body'] .= '<div style="clear:both">'."\n";
-	htmlDatagrid($output, $data, 'item');
-	$output['body'] .= '</div>'."\n";
-}
-
-$output['jsBody'][]  = "function preSubmit() {
-    jq('#dgJournalItem').edatagrid('saveRow');
-    totalUpdate();
-    var items = jq('#dgJournalItem').datagrid('getData');
-    jq('#item_array').val(JSON.stringify(items));
-    if (!formValidate()) return false;
-    return true;
-}
-ajaxForm('frmJournal');\n";
-if (isset($data['journal_main']['id']['attr']['value']) && $data['journal_main']['id']['attr']['value']) { // edit
-	$output['jsBody'][] = "jq('#spanContactProps_b').show();";
-}
-$output['jsBody'][] = "jq(document).ready(function() { jq('#dgJournalItem').edatagrid('addRow'); jq('#contactSel_b').next().find('input').focus(); });";

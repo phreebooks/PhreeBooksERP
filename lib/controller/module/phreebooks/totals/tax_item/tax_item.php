@@ -111,7 +111,7 @@ class tax_item
     
     public function jsTotal($data=[])
     {
-		$jID = $data['journal_main']['journal_id']['attr']['value'];
+		$jID = $data['fields']['main']['journal_id']['attr']['value'];
 		$type= in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
 		$row = "<tr><td>".html5('totals_tax_item_text[]',$this->fields['totals_tax_item_text'])."</td>";
 //		$row.= "<td>"    .html5('totals_tax_item_gl[]',  $this->fields['totals_tax_item_gl'])  ."</td>";

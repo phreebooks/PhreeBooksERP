@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-10
+ * @version    2.x Last Update: 2018-06-06
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -96,6 +96,7 @@ class bizunoAdmin
                 'vend:lblv'=> ['type'=>'dir', 'title'=>'label'],
                 'vend:stmt'=> ['type'=>'dir', 'title'=>'statement']]]];
 		$this->phreeformProcessing = [
+            'json'    => ['text'=>$this->lang['pf_proc_json'],    'group'=>lang('tools'),  'module'=>$this->moduleID,'function'=>'viewFormat'],
             'today'   => ['text'=>lang('today'),                  'group'=>lang('date'),   'module'=>$this->moduleID,'function'=>'viewFormat']];
 		$this->phreeformFormatting = [
             'uc'      => ['text'=>$this->lang['pf_proc_uc'],      'group'=>lang('text'),   'module'=>$this->moduleID,'function'=>'viewFormat'],
@@ -229,7 +230,7 @@ class bizunoAdmin
 				'tools'   => ['order'=>50,'label'=>lang('tools'),     'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminTools.php"],
 				'tabDBs'  => ['order'=>60,'label'=>lang('dashboards'),'settings'=>['module'=>$this->moduleID,'type'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
 				'stats'   => ['order'=>99,'label'=>lang('statistics'),'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminStats.php"]]]],
-			'form'  => ['frmReference'=> ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/statusSave"]]],
+			'forms'  => ['frmReference'=> ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/statusSave"]]],
             'lang'  => $this->lang,
             'divs'  => ['footerLogo'  =>['order'=>99,'type'=>'html','html'=>'<div id="imdtl_company_logo"></div>']],
             'jsBody'=> ['company_logo'=>"imgManagerInit('company_logo', '$imgSrc', '$imgDir', 'images/');"]];
@@ -358,7 +359,7 @@ class bizunoAdmin
 		$year  = date('Y');
         for ($i=2; $i>=0; $i--) { $years[] = ['id'=>$year - $i, 'text'=>$year - $i]; }
 		$layout = array_replace_recursive($layout, [
-            'toolbar' => ['tbInstall'=>  ['icons'=> [
+            'toolbars' => ['tbInstall'=>  ['icons'=> [
                 'instBack'    => ['order'=>10,'icon'=>'close','label'=>lang('cancel'),'events'=>['onClick'=>"jq('#bizInstall').window('close');"]],
 				'instNext'    => ['order'=>20,'icon'=>'next', 'label'=>lang('next'),  'events'=>['onClick'=>"jq(this).removeClass('iconL-next').addClass('icon-blank'); installSave($bID);"]]]]],
 			'divs' => [

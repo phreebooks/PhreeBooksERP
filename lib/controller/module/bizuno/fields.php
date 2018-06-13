@@ -154,12 +154,12 @@ class bizunoFields
 		]);
 		$checkboxes = viewKeyDropdown(['0'=>lang('unchecked'),'1'=>lang('checked')]);
 		$data = ['type'=>'divHTML',
-			'divs'   => ['detail' => ['order'=>10, 'src'=>BIZUNO_LIB."view/module/bizuno/accFieldDetail.php"]],
-			'toolbar'=> ['tbField'=>  ['icons' => [
+			'divs'    => ['detail' => ['order'=>10, 'src'=>BIZUNO_LIB."view/module/bizuno/accFieldDetail.php"]],
+			'toolbars'=> ['tbField'=>  ['icons' => [
                 'new'  => ['order'=>20,'events'=>  ['onClick'=>"accordionEdit('accFields', 'dgFields', 'divFieldDetail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', 0);"]],
 				'save' => ['order'=>40,'events'=>  ['onClick'=>"jq('#frmField').submit();"]]]]],
-			'form' => ['frmField'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/fields/save"]]],
-			'fields' => [
+			'forms'    => ['frmField'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/fields/save"]]],
+			'fields'  => [
                 'module'		  => ['attr'=>  ['type'=>'hidden','value'=>$module]],
 				'table'			  => ['attr'=>  ['type'=>'hidden','value'=>$table]],
 				'id'			  => ['attr'=>  ['type'=>'hidden','value'=>$field]], // holds old_field_name

@@ -1,11 +1,7 @@
 <?php
 /*
- * 2008-2018 PhreeSoft
+ * View for inventory history
  *
- * 
- *
- * PHP version 5
-
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
  * that is bundled with this package in the file LICENSE.TXT.
@@ -21,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-09-06
+ * @version    2.0 Last Update: 2018-06-09
  * @filesource /lib/view/module/inventory/tabHistory.php
  */
 
@@ -31,9 +27,9 @@ $hide_cost = validateSecurity('phreebooks', "j6_mgr", 1, false) ? false : true;
 
 $output['body'] .= "
 <fieldset><legend>".lang('history')."</legend>
-    <p>".html5('', $data['history']['create']) ."<br />"
-        .html5('', $data['history']['update']) ."<br />"
-        .html5('', $data['history']['journal']).'
+    <p>".html5('', $viewData['history']['create']) ."<br />"
+        .html5('', $viewData['history']['update']) ."<br />"
+        .html5('', $viewData['history']['journal']).'
     </p>
 </fieldset>
 <table style="border-collapse:collapse;width:100%">
@@ -44,10 +40,10 @@ $output['body'] .= "
             <table style="width:100%">
                 <thead class="panel-header"><tr><th>&nbsp;</th><th>'.lang('journal_main_journal_id_6')."</th><th>".lang('journal_main_journal_id_12')."</th></tr></thead>
                 <tbody>
-                    <tr><td>".$data['lang']['01month'].'</td><td style="text-align:center;">'.$data['history']['01purch'].'</td><td style="text-align:center;">'.$data['history']['01sales']."</td></tr>
-                    <tr><td>".$data['lang']['03month'].'</td><td style="text-align:center;">'.$data['history']['03purch'].'</td><td style="text-align:center;">'.$data['history']['03sales']."</td></tr>
-                    <tr><td>".$data['lang']['06month'].'</td><td style="text-align:center;">'.$data['history']['06purch'].'</td><td style="text-align:center;">'.$data['history']['06sales']."</td></tr>
-                    <tr><td>".$data['lang']['12month'].'</td><td style="text-align:center;">'.$data['history']['12purch'].'</td><td style="text-align:center;">'.$data['history']['12sales'].'</td></tr>
+                    <tr><td>".$viewData['lang']['01month'].'</td><td style="text-align:center;">'.$viewData['history']['01purch'].'</td><td style="text-align:center;">'.$viewData['history']['01sales']."</td></tr>
+                    <tr><td>".$viewData['lang']['03month'].'</td><td style="text-align:center;">'.$viewData['history']['03purch'].'</td><td style="text-align:center;">'.$viewData['history']['03sales']."</td></tr>
+                    <tr><td>".$viewData['lang']['06month'].'</td><td style="text-align:center;">'.$viewData['history']['06purch'].'</td><td style="text-align:center;">'.$viewData['history']['06sales']."</td></tr>
+                    <tr><td>".$viewData['lang']['12month'].'</td><td style="text-align:center;">'.$viewData['history']['12purch'].'</td><td style="text-align:center;">'.$viewData['history']['12sales'].'</td></tr>
                 </tbody>
             </table>
         </td>
@@ -59,14 +55,14 @@ $output['body'] .= "
         </td>
     </tr>
 </table>';
-if ($data['history']['id']) { $output['body'] .= lang('id').': '.$data['history']['id']; }
+if ($viewData['history']['id']) { $output['body'] .= lang('id').': '.$viewData['history']['id']; }
 $output['body'] .= "<!-- EOF tab ".lang('history')." -->\n";
 
 $js = "
-    var dataPO = " .json_encode($data['history']['open_po']).";
-    var dataSO = " .json_encode($data['history']['open_so']).";
-    var dataJ6 = " .json_encode($data['history']['purchases']).";
-    var dataJ12 = ".json_encode($data['history']['sales']).";
+    var dataPO = " .json_encode($viewData['history']['open_po']).";
+    var dataSO = " .json_encode($viewData['history']['open_so']).";
+    var dataJ6 = " .json_encode($viewData['history']['purchases']).";
+    var dataJ12 = ".json_encode($viewData['history']['sales']).";
     function dgPurchaseOrdersFormatter(value, row, index) {
       var text = '<span type=\"span\" title=\"Edit\" onClick=\"tabOpen(\'_blank\', \'phreebooks/main/manager&rID=idTBD\');\" class=\"icon-edit\" style=\"border:0;display:inline-block;vertical-align:middle;height:16px;min-width:16px;cursor:pointer\"></span>&nbsp;';
       text += '<span type=\"span\" title=\"Fill\" onClick=\"tabOpen(\'_blank\', \'phreebooks/main/manager&rID=idTBD&jID=6&bizAction=inv\');\" class=\"icon-purchase\" style=\"border:0;display:inline-block;vertical-align:middle;height:16px;min-width:16px;cursor:pointer\"></span>&nbsp;';

@@ -205,41 +205,41 @@ class phreebooksAdmin {
      */
     public function adminHome(&$layout = []) {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
-        require_once(BIZUNO_LIB . "controller/module/phreebooks/currency.php");
+        require_once(BIZUNO_LIB."controller/module/phreebooks/currency.php");
         $currency = new phreebooksCurrency();
         $data = [
             'tabs' => ['tabAdmin' => ['divs' => [
-                'settings'   => ['order' => 10, 'label' => lang('settings'), 'src' => BIZUNO_LIB . "view/module/bizuno/tabAdminSettings.php"],
-                'tabGL'      => ['order' => 20, 'label' => lang('phreebooks_chart_of_accts'), 'type' => 'html', 'html' => '',
-                    'attr' => ["data-options" => "href:'" . BIZUNO_AJAX . "&p=phreebooks/chart/manager'"]],
-                'tabCurrency'=> ['order' => 30, 'label' => lang('currencies'), 'type' => 'html', 'html' => '',
-                    'attr' => ["data-options" => "href:'" . BIZUNO_AJAX . "&p=phreebooks/currency/manager'"]],
-                'tabTaxc'    => ['order' => 40, 'label' => pullTableLabel('inventory', 'tax_rate_id', 'c'), 'type' => 'html', 'html' => '',
-                    'attr' => ["data-options" => "href:'" . BIZUNO_AJAX . "&p=phreebooks/tax/manager&type=c'"]],
-                'tabTaxv'    => ['order' => 50, 'label' => pullTableLabel('inventory', 'tax_rate_id', 'v'), 'type' => 'html', 'html' => '',
-                    'attr' => ["data-options" => "href:'" . BIZUNO_AJAX . "&p=phreebooks/tax/manager&type=v'"]],
-                'tabTotals'  => ['order' => 60, 'label' => lang('totals'), 'attr' => ['module' => $this->moduleID, 'type' => $this->structure['dirMethods']], 'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
-                'tabDBs'     => ['order' => 70, 'label' => lang('dashboards'), 'attr'=>['module'=>$this->moduleID, 'type'=>'dashboards'], 'src' => BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
-                'tabFY'      => ['order' => 80, 'label' => lang('fiscal_calendar'), 'type'=>'html', 'html'=>'',
-                    'attr' => ["data-options" => "href:'" . BIZUNO_AJAX . "&p=phreebooks/admin/managerFY'"]],
-                'tabTools'   => ['order' => 90, 'label' => $this->lang['journal_tools'],'src'=>BIZUNO_LIB."view/module/phreebooks/tabJournalTools.php"]]]],
-            'datagrid' => ['dgCurrency' => $currency->dgCurrency('dgCurrency', $security)],
-            'form' => ['frmCurrency' => ['attr' => ['type' => 'form', 'action' => BIZUNO_AJAX."&p=phreebooks/currency/save"]]],
+                'settings'   => ['order'=>10,'label'=>lang('settings'), 'src' => BIZUNO_LIB . "view/module/bizuno/tabAdminSettings.php"],
+                'tabGL'      => ['order'=>20,'label'=>lang('phreebooks_chart_of_accts'), 'type' => 'html', 'html' => '',
+                    'attr' => ["data-options" => "href:'" . BIZUNO_AJAX."&p=phreebooks/chart/manager'"]],
+                'tabCurrency'=> ['order'=>30,'label'=>lang('currencies'), 'type' => 'html', 'html' => '',
+                    'attr' => ["data-options" => "href:'" . BIZUNO_AJAX."&p=phreebooks/currency/manager'"]],
+                'tabTaxc'    => ['order'=>40,'label'=> pullTableLabel('inventory', 'tax_rate_id', 'c'), 'type' => 'html', 'html' => '',
+                    'attr' => ["data-options" => "href:'" . BIZUNO_AJAX."&p=phreebooks/tax/manager&type=c'"]],
+                'tabTaxv'    => ['order'=>50,'label'=> pullTableLabel('inventory', 'tax_rate_id', 'v'), 'type' => 'html', 'html' => '',
+                    'attr' => ["data-options" => "href:'" . BIZUNO_AJAX."&p=phreebooks/tax/manager&type=v'"]],
+                'tabTotals'  => ['order'=>60,'label'=>lang('totals'),    'attr'=>['module'=>$this->moduleID,'path'=>$this->structure['dirMethods']],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
+                'tabDBs'     => ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'type'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
+                'tabFY'      => ['order'=>80,'label'=>lang('fiscal_calendar'),'type'=>'html','html'=>'',
+                    'attr' => ["data-options" => "href:'" . BIZUNO_AJAX."&p=phreebooks/admin/managerFY'"]],
+                'tabTools'   => ['order'=>90, 'label' => $this->lang['journal_tools'],'src'=>BIZUNO_LIB."view/module/phreebooks/tabJournalTools.php"]]]],
+            'datagrid' => ['dgCurrency'=>$currency->dgCurrency('dgCurrency', $security)],
+            'forms' => ['frmCurrency'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/save"]]],
             'fields' => [
                 // General Journal
-                'repost' => ['position' => 'after', 'attr' => ['type' => 'checkbox']], // label comes later
-                'repost_begin' => ['attr' => ['type' => 'date', 'value' => date('Y-m-d')]],
-                'repost_end' => ['attr' => ['type' => 'date', 'value' => date('Y-m-d')]],
-                'btn_repost' => ['icon' => 'save', 'size' => 'large', 'events' => ['onClick' => "divSubmit('phreebooks/tools/glRepostBulk', 'glRepost');"]],
+                'repost'      => ['position'=>'after','attr'=>['type'=>'checkbox']], // label comes later
+                'repost_begin'=> ['attr'=>['type'=>'date','value'=>date('Y-m-d')]],
+                'repost_end'  => ['attr'=>['type'=>'date','value'=>date('Y-m-d')]],
+                'btn_repost'  => ['icon'=>'save','size'=>'large','events'=>['onClick'=>"divSubmit('phreebooks/tools/glRepostBulk', 'glRepost');"]],
                 // Misc tools
-                'btnRepairGL' => ['attr' => ['type' => 'button', 'value' => lang('start')], 'events' => ['onClick' => "jsonAction('phreebooks/tools/glRepair');"]],
-                'btnPruneCogs' => ['attr' => ['type' => 'button', 'value' => lang('start')], 'events' => ['onClick' => "jsonAction('phreebooks/tools/pruneCogs');"]],
-                'purge_db' => ['styles' => ["text-align" => "right"], 'attr' => ['size' => "7"]],
-                'btn_purge' => ['attr' => ['type' => 'button', 'value' => $this->lang['phreebooks_purge_db_journal']],
-                    'events' => ['onClick' => "if (confirm('" . $this->lang['msg_gl_db_purge_confirm'] . "')) jsonAction('phreebooks/tools/glPurge', 0, jq('#purge_db').val());"]],
-                'dateAtchCln' => ['label' => lang(''), 'classes' => ['easyui-datebox'], 'attr' => ['value' => viewDate(localeCalculateDate(date('Y-m-d'), 0, -3))]],
-                'btnAtchCln' => ['attr' => ['type' => 'button', 'value' => lang('start')],
-                    'events' => ['onClick' => "if (confirm('" . $this->lang['pb_attach_clean_confirm'] . "')) jsonAction('phreebooks/tools/cleanAttach', 0, jq('#dateAtchCln').datebox('getValue'));"]],
+                'btnRepairGL' => ['attr'=>['type'=>'button','value'=>lang('start')],'events'=>['onClick'=>"jsonAction('phreebooks/tools/glRepair');"]],
+                'btnPruneCogs'=> ['attr'=>['type'=>'button','value'=>lang('start')],'events'=>['onClick'=>"jsonAction('phreebooks/tools/pruneCogs');"]],
+                'purge_db'    => ['styles'=>["text-align"=>"right"],'attr'=>['size'=>"7"]],
+                'btn_purge'   => ['attr'=>['type'=>'button', 'value'=>$this->lang['phreebooks_purge_db_journal']],
+                    'events' => ['onClick'=>"if (confirm('".$this->lang['msg_gl_db_purge_confirm']."')) jsonAction('phreebooks/tools/glPurge', 0, jq('#purge_db').val());"]],
+                'dateAtchCln' => ['label'=>lang(''), 'classes'=>['easyui-datebox'], 'attr'=>['value'=>viewDate(localeCalculateDate(date('Y-m-d'), 0, -3))]],
+                'btnAtchCln'  => ['attr'=> ['type' => 'button', 'value' => lang('start')],
+                    'events' => ['onClick'=>"if (confirm('".$this->lang['pb_attach_clean_confirm']."')) jsonAction('phreebooks/tools/cleanAttach', 0, jq('#dateAtchCln').datebox('getValue'));"]],
             ],
             'javascript' => ['dataCurrency' => "var dataCurrency = " . json_encode(array_values(getModuleCache('phreebooks', 'currency', 'iso'))) . ";\n"],
             'lang' => $this->lang,
@@ -325,7 +325,7 @@ var tab=jq('#tabAdmin').tabs('getSelected'); tab.panel( 'refresh', '".BIZUNO_AJA
     public function install(&$layout = []) {
         $bAdmin = new bizunoSettings();
         foreach ($this->totalMethods as $method) {
-            $bAdmin->methodInstall($layout, ['module' => 'phreebooks', 'type' => 'totals', 'method' => $method], false);
+            $bAdmin->methodInstall($layout, ['module'=>'phreebooks', 'path'=>'totals', 'method'=>$method], false);
         }
     }
 

@@ -44,15 +44,65 @@ class bizunoMain
     {
         $defMenu= getUserCache('profile', 'admin_id', false, 0) ? 'home' : 'portal';
         $menu_id= clean('menuID', ['format'=>'text','default'=>$defMenu], 'get');
+        $opts = '';
+        if (clean('lost',   'cmd','get') == 'true') { $opts .= '&lost=true'; }
+        if (clean('newuser','cmd','get') == 'true') { $opts .= '&newuser=true'; }
 		$cols   = getUserCache('profile', 'columns', false, 3);
 		$title  = getModuleCache('bizuno', 'settings', 'company', 'primary_name', getUserCache('profile', 'biz_title'));
-		$layout = array_replace_recursive(viewMain(), [
+        $data = [
             'pageTitle'=> "$title - ".getModuleCache('bizuno', 'properties', 'title'),
-			'menu_id'  => $menu_id,
-			'divs'     => ['dashboard'=>['order'=>50,'type'=>'template','src'=>BIZUNO_LIB."view/module/bizuno/divDashboard.php"]],
-            'lang'     =>['msg_add_dashboards'=>$this->lang['msg_add_dashboards']]]);
+            'jsBody'   => ['jsHome'=>"var menuID = '$menu_id'; var panels = new Array();
+function getPanelOptions(id) {
+	for (var i=0; i<panels.length; i++) if (panels[i].id == id) return panels[i];
+	return undefined;
+}
+function getPortalState(){
+	var aa = [];
+	for (var columnIndex=0; columnIndex<$cols; columnIndex++){
+		var cc = [];
+		var panels = jq('#dashboard').portal('getPanels', columnIndex);
+		for (var i=0; i<panels.length; i++) cc.push(panels[i].attr('id'));
+		aa.push(cc.join(','));
 	}
-	
+	return aa.join(':');
+}
+function addPanels(json) {
+	if (json.message) displayMessage(json.message);
+	for (var i=0; i<json.Dashboard.length; i++) { panels.push(json.Dashboard[i]); }
+	var portalState = json.State;
+	var columns     = portalState.split(':');
+	for (var columnIndex=0; columnIndex<columns.length; columnIndex++){
+		var cc = columns[columnIndex].split(',');
+		for (var j=0; j<cc.length; j++) {
+			var options = getPanelOptions(cc[j]);
+			if (options) {
+				var p = jq('<div></div>').attr('id',options.id).appendTo('body');
+                var panelHref = options.href;
+                options.href = '';
+				p.panel(options);
+				p.panel({ href:panelHref,onBeforeClose:function() { if (confirm('".jsLang('msg_confirm_delete')."')) { dashboardDelete(this); } else { return false } } });
+				jq('#dashboard').portal('add',{ panel:p, columnIndex:columnIndex });
+			}
+		}
+	}
+}"],
+            'jsReady'  => ['dashInit'=> "jq('#dashboard').portal({border:false,onStateChange:function(){
+        var state = getPortalState();
+        jq.ajax({ url:'".BIZUNO_AJAX."&p=bizuno/dashboard/organize&menuID='+menuID+'&state='+state });
+    }
+});
+jq.ajax({ url: '".BIZUNO_AJAX."&p=bizuno/dashboard/render$opts&menuID='+menuID, success: addPanels });"]];
+
+        if ($menu_id <> 'portal') {
+            $linkDash = ['attr'=>['type'=>'a','value'=>$this->lang['msg_add_dashboards'],'href'=>BIZUNO_HOME.'&p=bizuno/dashboard/manager&menuID='.$menu_id]];
+            $data['divs']['tbDash'] = ['order'=>10,'classes'=>['datagrid-toolbar'],'styles'=>['min-height'=>'32px'],'attr'=>['id'=>'tbDash'],'type'=>'html','html'=>html5('', $linkDash)];
+        }
+        $width = round(100/$cols, 0);
+        $html = '';
+        for ($i=0; $i<$cols; $i++) { $html .= '<div style="width:'.$width.'%"></div>'; }
+        $data['divs']['bodyDash'] = ['order'=>50,'styles'=>['clear'=>'both'],'attr'=>['id'=>'dashboard'],'type'=>'html','html'=>$html];
+        $layout = array_replace_recursive(viewMain(), $data);
+	}
 	/**
      * Used to refresh session timer to keep log in alive. Forces log out after 8 hours if no user actions are detected.
      */

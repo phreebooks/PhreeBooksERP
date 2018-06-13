@@ -59,26 +59,44 @@ final class html5 {
      */
     public function buildDiv(&$output, $prop) {
         global $viewData;
+        $closeDiv = false;
         if (!empty($prop['hidden'])) { return '';}
         if ( empty($prop['type']))   { $prop['type'] = 'template'; } // default
+        if (!empty($prop['attr'])) { 
+            $prop['attr']['type'] = 'div';
+            $output['body'] .= $this->render(!empty($prop['attr']['id'])?$prop['attr']['id']:'', $prop);
+            $closeDiv = true;
+        }
         switch ($prop['type']) {
             case 'accordion':
                 if (isset($prop['key'])) {  // legacy to old style
-                    $prop = array_merge($viewData['accordion'][$prop['key']], ['id' => $prop['key']]);
+                    $prop = array_merge($viewData['accordion'][$prop['key']], ['id'=>$prop['key']]);
                 }
                 $this->layoutAccordion($output, $prop);
                 break;
+            case 'address':
+                $this->layoutAddress($output, $prop); break;
             case 'datagrid':
-                if (isset($prop['key'])) {  // legacy to old style
-                    $prop['el'] = $viewData['datagrid'][$prop['key']];
-                }
+                if (isset($prop['key'])) { $prop['el'] = $viewData['datagrid'][$prop['key']]; } // legacy to old style
                 $this->layoutDatagrid($output, $prop['el']);
                 break;
-            case 'divs': $this->buildDivs($output, $prop);
+            case 'divs': $this->buildDivs($output, $prop); break;
+            case 'fields':
+                if (!empty($prop['label'])) { $output['body'] .= $prop['label']."<br />"; }
+                sortOrder($prop);
+                foreach ($prop['fields'] as $key => $attr) { $output['body'] .= $this->render($key, $attr); }
                 break;
-            case 'html': $output['body'] .= $prop['html'] . "\n";
-                break;
-            case 'menu': $this->menu($output, $prop);
+            case 'form': $output['body'] .= $this->render($prop['key'], $viewData['forms'][$prop['key']]); break;
+            case 'html': $output['body'] .= $prop['html']."\n"; break;
+            case 'menu': $this->menu($output, $prop); break;
+            case 'payments':
+                foreach ($viewData['payment_methods'] as $methID) {
+                    require_once(BIZUNO_LIB."controller/module/payment/methods/$methID/$methID.php");
+                    $totSet = getModuleCache('payment','methods',$methID,'settings');
+                    $fqcn = "\\bizuno\\$methID";
+                    $totals = new $fqcn($totSet);
+                    $totals->render($output, $viewData);
+                }
                 break;
             case 'table':
                 if (isset($prop['key'])) {  // legacy to old style
@@ -89,15 +107,24 @@ final class html5 {
                 break;
             case 'tabs':
                 if (isset($prop['key'])) {  // legacy to old style
-                    $prop = array_merge($viewData['tabs'][$prop['key']], ['id' => $prop['key']]);
+                    $prop = array_merge($viewData['tabs'][$prop['key']], ['id'=>$prop['key']]);
                 }
                 $this->layoutTab($output, $prop);
                 break;
             case 'toolbar':
                 if (isset($prop['key'])) {  // legacy to old style
-                    $prop = array_merge($viewData['toolbar'][$prop['key']], ['id' => $prop['key']]);
+                    $prop = array_merge($viewData['toolbars'][$prop['key']], ['id' => $prop['key']]);
                 }
                 $this->layoutToolbar($output, $prop);
+                break;
+            case 'totals':
+                foreach ($viewData['totals_methods'] as $methID) {
+                    require_once(BIZUNO_LIB."controller/module/phreebooks/totals/$methID/$methID.php");
+                    $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
+                    $fqcn = "\\bizuno\\$methID";
+                    $totals = new $fqcn($totSet);
+                    $totals->render($output, $viewData);
+                }
                 break;
             case 'tree':
                 if (isset($prop['key'])) {  // legacy to old style
@@ -108,7 +135,6 @@ final class html5 {
             default:
             case 'template': // set some variables if needed
 //                msgDebug("\ntemplate for buildDiv = ".print_r($prop, true));
-                $data = $viewData; // for legacy
                 if (!isset($prop['settings']) && isset($prop['attr'])) {
                     $prop['settings'] = $prop['attr'];
                 } // for legacy
@@ -117,23 +143,15 @@ final class html5 {
                 }
                 break;
         }
+        if ($closeDiv) { $output['body'] .= "</div>"; }
     }
 
     public function render($id = '', $prop = []) {
-        if (!isset($prop['attr']['type'])) {
-            $prop['attr']['type'] = 'text';
-        } // assume text if no type
+    if (!is_array($prop)) { return msgAdd("received string as array for field $id"); }
+        if (empty($prop['attr']['type'])) { $prop['attr']['type'] = 'text'; } // assume text if no type
         $field = '';
-        if (isset($prop['hidden']) && $prop['hidden']) {
-            return $field;
-        }
-        if (!is_array($prop)) {
-            msgAdd('Error with properties for field: ' . $id);
-            return $field;
-        }
-        if (isset($prop['icon'])) {
-            return $this->menuIcon($id, $prop);
-        }
+        if (isset($prop['hidden']) && $prop['hidden']) { return $field; }
+        if (isset($prop['icon'])) { return $this->menuIcon($id, $prop); }
         switch ($prop['attr']['type']) {
             case 'a':
             case 'address':
@@ -149,6 +167,7 @@ final class html5 {
             case 'h4':
             case 'h5':
             case 'h6':
+            case 'label':
             case 'p':
             case 'span':
             case 'u': return $this->htmlElBoth($id, $prop);
@@ -315,6 +334,7 @@ final class html5 {
     /*     * *************************** Headings ***************** */
 
     // H1-H6
+
     /*     * *************************** Tables ***************** */
     public function div() {
         $field .= '<' . $prop['attr']['type'];
@@ -574,6 +594,115 @@ final class html5 {
     }
 
     /**
+     * 
+     * @param type $output
+     * @param type $props
+     */
+    public function layoutAddress(&$output, $props) {
+        $defaults = ['type'=>defined('CONTACT_TYPE') ? constant('CONTACT_TYPE') : 'c',
+            'format'=>'short','suffix'  =>'',   'search'=>false,  'props'=>true,'clear'=>true, 'copy'=>false,
+            'update'=>false,  'validate'=>false,'required'=>false,'store'=>true,'drop' =>false,'fill'=>'none','notes'=>false];
+        $attr      = array_replace($defaults, $props['settings']);
+        $structure = $props['content'];
+        if ($attr['format'] != 'long') { unset($structure['country']['label']); }
+        $structure['email']['attr']['size'] = 32; // keep this from overlapping with other divs
+        if (!empty($attr['required'])) { foreach (array_keys($structure) as $field) {
+            if (getModuleCache('contacts', 'settings', 'address_book', $field)) { $structure[$field]['attr']['required'] = 1; }
+        } }
+        if (!$attr['search']) { $structure['contactSel'] = ['attr'=>['type'=>'hidden']]; }
+        else {
+            $structure['contactSel'] = ['classes'=>['easyui-combogrid'],'attr'=>['data-options'=>"
+                width:130, panelWidth:750, delay:900, idField:'id', textField:'primary_name', mode: 'remote',iconCls: 'icon-search', hasDownArrow: false,
+                url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type=".($attr['drop']?'c':$attr['type'])."&store=".($attr['store']?'1':'0')."',
+                onBeforeLoad:function (param) { var newValue = jq('#contactSel{$attr['suffix']}').combogrid('getValue'); if (newValue.length < 3) return false; },
+                selectOnNavigation:false,
+                onClickRow:  function (idx, row){ contactsDetail(row.id, '{$attr['suffix']}', '{$attr['fill']}'); },
+                columns: [[{field:'id', hidden:true},
+                    {field:'short_name',  title:'".jsLang('contacts_short_name')."', width:100},
+                    {field:'type',        hidden:".(strlen($attr['type'])>1?'false':'true').",title:'".jsLang('contacts_type')."', width:100},
+                    {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
+                    {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
+                    {field:'city',        title:'".jsLang('address_book_city')."', width:100},
+                    {field:'state',       title:'".jsLang('address_book_state')."', width: 50},
+                    {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
+                    {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]]"]];
+        }
+        // build pull down selection
+        if (!empty($props['label'])) { $output['body'] .= "<label>".$props['label']."</label><br />\n"; }
+        if ($attr['clear']) { $output['body'] .= ' '.html5('', ['icon'=>'clear','size'=>'small','events'=>['onClick'=>"addressClear('{$attr['suffix']}')"]])."\n"; }
+        if ($attr['validate'] && getModuleCache('extShipping', 'properties', 'status')) {
+            $output['body'] .= ' '.html5('', ['icon'=>'truck','size'=>'small','label'=>lang('validate_address'),'events'=>  ['onClick'=>"shippingValidate('{$attr['suffix']}');"]])."\n";
+        }
+        if ($attr['copy']) {
+            $src = explode(':', $attr['copy']);
+            if (empty($src[1])) { $src = ['_b', '_s']; } // defaults
+            $output['body'] .= ' '.html5('',['icon'=>'copy','size'=>'small','events'=>['onClick'=>"addressCopy('{$src[0]}', '{$src[1]}')"]])."\n";
+        }
+        $output['body'] .= "<br />\n";
+
+        $output['body'] .= '<div id="contactDiv'.$attr['suffix'].'"'.($attr['drop']?' style="display:none"':'').'>'."\n";
+        $output['body'] .= html5('contactSel'.$attr['suffix'], $structure['contactSel']);
+        $output['body'] .= '<span id="spanContactProps'.$attr['suffix'].'" style="display:none">&nbsp;';
+        if ($attr['props']) { $output['body'] .= html5('contactProps'.$attr['suffix'], ['icon'=>'settings', 'size'=>'small',
+            'events' => ['onClick'=>"windowEdit('contacts/main/properties&rID='+jq('#contact_id{$attr['suffix']}').val(), 'winContactProps', '".jsLang('details')."', 1000, 600);"]]);
+        }
+        $output['body'] .= '</span></div>';
+
+        // Address select (hidden by default)
+        $output['body'] .= '  <div id="addressDiv'.$attr['suffix'].'" style="display:none">'.html5('addressSel'.$attr['suffix'], ['attr'=>['type'=>'text']])."</div>\n";
+        $output['jsBody']['addrCombo'.$attr['suffix']] = "
+        var addressVals{$attr['suffix']} = ".(isset($data['address'][$attr['suffix']]) ? $data['address'][$attr['suffix']] : "[]").";";
+        $output['jsReady']['addrCombo'.$attr['suffix']] = "jq('#addressSel{$attr['suffix']}').combogrid({
+            width:     150,
+            panelWidth:750,
+            data:      addressVals{$attr['suffix']},
+            idField:   'id',
+            textField: 'primary_name',
+            onSelect:  function (id, data){ addressFill(data, '{$attr['suffix']}'); },
+            columns:   [[
+                {field:'address_id', hidden:true},
+                {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
+                {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
+                {field:'city',        title:'".jsLang('address_book_city')."', width:100},
+                {field:'state',       title:'".jsLang('address_book_state')."', width: 50},
+                {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
+                {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]]
+        });";
+        // show the address drop down if values are present
+        if (isset($data['address'][$attr['suffix']])) { $output['jsReady'][] = "jq('#addressDiv{$attr['suffix']}').show();"; }
+        // Options Bar
+        if ($attr['update']) { $output['body'] .= html5('AddUpdate'.$attr['suffix'], ['label'=>lang('add_update'),'attr'=>['type'=>'checkbox']])."<br />\n"; }
+        if ($attr['drop']) {
+            $drop_attr = ['type'=>'checkbox'];
+            if (isset($structure['drop_ship']['attr']['checked'])) { $drop_attr['checked'] = 'checked'; }
+            $output['body'] .= html5('drop_ship'.$attr['suffix'], ['label'=>lang('drop_ship'), 'attr'=>$drop_attr,
+                'events' => ['onClick'=>"jq('#contactDiv{$attr['suffix']}').toggle();"]])."\n";
+        }
+        $output['body'] .= "<br />\n";
+        // Address fields
+        $output['body'] .= '  <div class="inner-labels">'."\n";
+        if (isset($structure['contact_id'])) { $output['body'] .= html5('contact_id'.$attr['suffix'], $structure['contact_id'])."\n"; }
+        $output['body'] .= html5('address_id'.$attr['suffix'],  $structure['address_id'])."\n";
+        $output['body'] .= html5('primary_name'.$attr['suffix'],$structure['primary_name'])."<br />\n";
+        $output['body'] .= html5('contact'.$attr['suffix'],     $structure['contact'])."<br />\n";
+        $output['body'] .= html5('address1'.$attr['suffix'],    $structure['address1'])."<br />\n";
+        $output['body'] .= html5('address2'.$attr['suffix'],    $structure['address2'])."<br />\n";
+        $output['body'] .= html5('city'.$attr['suffix'],        $structure['city'])."<br />\n";
+        $output['body'] .= html5('state'.$attr['suffix'],       $structure['state'])."<br />\n";
+        $output['body'] .= html5('postal_code'.$attr['suffix'], $structure['postal_code'])."<br />\n";
+        $output['body'] .= htmlComboCountry('country'.$attr['suffix'],$structure['country']['attr']['value'])."<br />\n";
+        $output['body'] .= html5('telephone1'.$attr['suffix'],  $structure['telephone1'])."<br />\n";
+        if (!empty($structure['telephone2'])) { $output['body'] .= html5('telephone2'.$attr['suffix'],  $structure['telephone2'])."<br />\n"; }
+        if (!empty($structure['telephone3'])) { $output['body'] .= html5('telephone3'.$attr['suffix'],  $structure['telephone3'])."<br />\n"; }
+        if (!empty($structure['telephone4'])) { $output['body'] .= html5('telephone4'.$attr['suffix'],  $structure['telephone4'])."<br />\n"; }
+        $output['body'] .= html5('email'.$attr['suffix'],       $structure['email'])."<br />\n";
+        if (!empty($structure['website'])) { $output['body'] .= html5('website'.$attr['suffix'],  $structure['website'])."<br />\n"; }
+        if ($attr['notes']) { $output['body'] .= html5('email'.$attr['suffix'],$structure['email']); }
+        $output['body'] .= "  </div>\n";
+        $output['jsReady']['addrDiv'.$attr['suffix']] = "setInnerLabels(addressFields, '".$attr['suffix']."');";
+    }
+
+    /**
      * This function builds the HTML (and JavaScript) content to render a jQuery easyUI datagrid
      * @param array $output - running HTML string to render the page
      * @param string $data - The structure source data to pull from
@@ -630,9 +759,7 @@ final class html5 {
                         $right .= $this->render($key, $value['html']);
                     }
                 }
-                if ($right) {
-                    $output['body'] .= '<div style="float:right;">' . $right . "</div>\n";
-                }
+                if ($right) { $output['body'] .= '<div style="float:right;">' . $right . "</div>\n"; }
                 // now the left aligned
                 foreach ($prop['source']['actions'] as $key => $value) {
                     if ((!isset($value['hidden']) || !$value['hidden']) && (!isset($value['align']) || $value['align'] == 'left')) {
@@ -641,12 +768,17 @@ final class html5 {
                 }
             }
             if (isset($prop['source']['filters'])) {
+                if (!empty($prop['source']['filters']['search'])) {
+                    $output['body'] .= $this->render('search', $prop['source']['filters']['search']['html']);
+                    unset($prop['source']['filters']['search']);                    
+                }
+                $output['body'] .= '      <a href="#" onClick="' . $prop['id'] . 'Reload();" class="easyui-linkbutton" data-options="iconCls:\'icon-search\'">' . lang('search') . "</a>\n";
                 foreach ($prop['source']['filters'] as $key => $value) {
                     if (!isset($value['hidden']) || !$value['hidden']) {
+                        if (!isset($value['break']) || $value['break']) { $output['body'] .= "<br />"; }
                         $output['body'] .= $this->render($key, $value['html']);
                     }
                 }
-                $output['body'] .= '      <a href="#" onClick="' . $prop['id'] . 'Reload();" class="easyui-linkbutton" data-options="iconCls:\'icon-search\'">' . lang('search') . "</a>\n";
             }
             $output['body'] .= "  </div>\n";
             $output['body'] .= "</div>\n";
@@ -797,11 +929,11 @@ final class html5 {
             if (!empty($tabDiv['icon'])) {
                 $tabDiv['attr']['iconCls'] = "icon-{$tabDiv['icon']}";
             }
-            $output['body'] .= "<!-- Begin tab " . $tabDiv['attr']['title'] . " -->\n<div " . $this->addAttrs($tabDiv) . ">\n";
+            $output['body'] .= "<!-- Begin tab $tabID -->\n";
             $this->buildDiv($output, $tabDiv);
-            $output['body'] .= "</div>\n<!-- End tab " . $tabDiv['attr']['title'] . " -->\n";
+            $output['body'] .= "<!-- End tab $tabID -->\n";
         }
-        $output['body'] .= "    </div><!-- End tab group {$prop['id']} -->\n";
+        $output['body'] .= "</div><!-- End tab group {$prop['id']} -->\n";
     }
 
     /**
@@ -929,23 +1061,21 @@ final class html5 {
 
     public function inputTextarea($id, $prop) {
         $this->addID($id, $prop);
+        if (empty($prop['attr']['rows'])) { $prop['attr']['rows'] = 20; }
+        if (empty($prop['attr']['cols'])) { $prop['attr']['cols'] = 60; }
         $content = '';
         $field = $this->addLabelFirst($id, $prop);
         $field .= '<textarea';
         foreach ($prop['attr'] as $key => $value) {
-            if (in_array($key, ['type', 'maxlength'])) {
-                continue;
-            }
-            if ($key == 'value') {
-                $content = $value;
-                continue;
-            }
+            if (in_array($key, ['type', 'maxlength'])) { continue; }
+            if ($key == 'value') { $content = $value; continue; }
             $field .= ' ' . $key . '="' . str_replace('"', '&quot;', $value) . '"';
         }
         $field .= ">" . htmlspecialchars($content) . "</textarea>\n";
-        $field .= $this->render('', ['icon' => 'edit', 'size' => 'small', 'label' => lang('edit'), 'events' => ['onClick' => "tinymceInit('$id');"]]);
+        $field .= $this->render('', ['icon'=>'edit', 'size'=>'small', 'label'=>lang('edit'), 'events'=>['onClick'=>"tinymceInit('$id');"]]);
         $field .= $this->addLabelLast($id, $prop);
         $this->jsBody['tinyMCE'] = "jq.cachedScript('" . self::htmlEditor . "');";
+        if (!empty($prop['break'])) { $field .= '<br />'; }
         return $field;
     }
 
@@ -956,12 +1086,8 @@ final class html5 {
         $value = isset($prop['attr']['value']) ? (array)$prop['attr']['value'] : []; // needs to be isset, cannot be empty
         unset($prop['attr']['type']);
         unset($prop['attr']['value']);
-        if (!empty($prop['js'])) {
-            $this->jsBody[] = $prop['js'];
-        } // old way
-        if (!empty($prop['jsBody'])) {
-            $this->jsBody[] = $prop['jsBody'];
-        } // new way
+        if (!empty($prop['js']))     { $this->jsBody[] = $prop['js']; } // old way
+        if (!empty($prop['jsBody'])) { $this->jsBody[] = $prop['jsBody']; } // new way
         // style it
 //        $prop['classes']['combo'] = "easyui-combo";
 //        $prop['attr']['data-options'] = "editable:false";
@@ -992,12 +1118,9 @@ final class html5 {
     }
 
     public function inputRadio($id, $prop) {
-        if (empty($prop['attr']['checked'])) {
-            unset($prop['attr']['checked']);
-        }
-        if (empty($prop['attr']['selected'])) {
-            unset($prop['attr']['selected']);
-        }
+        if (empty($prop['attr']['checked'])) { unset($prop['attr']['checked']);  }
+        if (empty($prop['attr']['selected'])){ unset($prop['attr']['selected']); }
+        $prop['position'] = 'after';
         return $this->input($id, $prop);
     }
 
@@ -1006,13 +1129,10 @@ final class html5 {
     }
 
     public function inputCheckbox($id, $prop) {
-        if (empty($prop['attr']['checked'])) {
-            unset($prop['attr']['checked']);
-        }
+        if (empty($prop['attr']['checked'])) { unset($prop['attr']['checked']); }
 //        $prop['classes'][] = 'easyui-switchbutton';
 //        $prop['attr']['data-options'] = "onText:'".jsLang('yes')."',offText:'".jsLang('no')."'";
         // convert html events to easyui events
-
         return $this->input($id, $prop);
     }
 
@@ -1035,8 +1155,11 @@ final class html5 {
 			$prop['attr']['type'] = 'select';
 			$prop['values']       = viewDropdown(getModuleCache('phreebooks', 'currency', 'iso'), "code", "title");
 			unset($prop['attr']['size']);
-            if (empty($prop['func'])) { msgAdd('No function specified!'); $prop['func'] = 'ordersCurrency'; }
-            $this->jsReady[] = "jq('#$id').combobox({editable:false, onChange:function(newVal, oldVal){ {$prop['func']}(newVal, oldVal); } });";
+            if (!empty($prop['func'])) { 
+                $this->jsReady[] = "jq('#$id').combobox({editable:false, onChange:function(newVal, oldVal){ {$prop['func']}(newVal, oldVal); } });";                
+            } else {
+                $this->jsReady[] = "jq('#$id').combobox({editable:false});";
+            }
             $rateProp['attr']['value']= !empty($prop['excRate']) ? $prop['excRate'] : 1;
             $rateProp['break']        = true;
 		} else { 
@@ -1044,7 +1167,9 @@ final class html5 {
             $rateProp['attr']['type'] = 'hidden';
             $rateProp['attr']['value']= 1;
         }
-        return $this->render($id, $prop) . $this->input('currency_rate', $rateProp);
+        $output = $this->render($id, $prop) ;
+        if (!empty($prop['func'])) { $output .= $this->input('currency_rate', $rateProp); }
+        return $output;
     }
 
     public function inputDate($id, $prop) {
@@ -1136,76 +1261,51 @@ final class html5 {
         foreach ($prop['attr'] as $key => $value) {
             $field .= ' ' . $key . '="' . str_replace('"', '\"', $value) . '"'; // was str_replace('"', '&quot;', $value)
         }
-        if (!empty($prop['classes'])) {
-            $field .= $this->addClasses($prop['classes']);
-        }
-        if (!empty($prop['styles'])) {
-            $field .= $this->addStyles($prop['styles']);
-        }
-        if (!empty($prop['events'])) {
-            $field .= $this->addEvents($prop['events']);
-        }
+        if (!empty($prop['classes'])) { $field .= $this->addClasses($prop['classes']); }
+        if (!empty($prop['styles']))  { $field .= $this->addStyles($prop['styles']); }
+        if (!empty($prop['events']))  { $field .= $this->addEvents($prop['events']); }
         return $field;
     }
 
     private function addClasses($arrClasses = []) {
-        if (!is_array($arrClasses)) {
-            $arrClasses = [$arrClasses];
-        }
+        if (!is_array($arrClasses)) { $arrClasses = [$arrClasses]; }
         return ' class="' . implode(' ', $arrClasses) . '"';
     }
 
     private function addEvents($arrEvents = []) {
-        if (!is_array($arrEvents)) {
-            $arrEvents = [$arrEvents];
-        }
+        if (!is_array($arrEvents)) { $arrEvents = [$arrEvents]; }
         $output = '';
-        foreach ($arrEvents as $key => $value) {
-            $output .= ' ' . $key . '="' . str_replace('"', '\"', $value) . '"';
-        }
+        foreach ($arrEvents as $key => $value) { $output .= ' ' . $key . '="' . str_replace('"', '\"', $value) . '"'; }
         return $output;
     }
 
     private function addID($id = '', &$prop = []) {
-        if ($id && !isset($prop['attr']['name'])) {
-            $prop['attr']['name'] = $id;
-        }
-        // set element id
-        if (isset($prop['attr']['id'])) {
-            
-        } // use it
-        elseif (strpos($id, '[]')) {
-            unset($prop['attr']['id']);
-        } // don't show id attribute if generic array
+        if ($id && !isset($prop['attr']['name'])) { $prop['attr']['name'] = $id; }
+        if (isset($prop['attr']['id'])) { } // use it
+        elseif (strpos($id, '[]'))      { unset($prop['attr']['id']); } // don't show id attribute if generic array
         elseif ($id) {
             $prop['attr']['id'] = str_replace('[', '_', $id); // clean up for array inputs causing html errors
             $prop['attr']['id'] = str_replace(']', '', $prop['attr']['id']);
         }
-        if (isset($prop['attr']['required']) && $prop['attr']['required']) {
-            $prop['classes'][] = 'easyui-validatebox';
-        }
+        if (isset($prop['attr']['required']) && $prop['attr']['required']) { $prop['classes'][] = 'easyui-validatebox'; }
     }
 
     private function addLabelFirst($id, $prop) {
-        if (!$id) {
-            return '';
-        }
-        if (isset($prop['label']) && $prop['attr']['type'] <> 'hidden' && !isset($prop['position'])) {
-            $field = '<label for="' . $id . '">' . $prop['label'] . '</label>&nbsp;';
-        } else {
-            $field = '';
+        $field = '';
+//      if (!$id)                  { return $field; }
+        if (empty($prop['label'])) { return $field; }
+        if ($prop['attr']['type'] <> 'hidden' && empty($prop['position'])) {
+            return '<label for="'.$id.'" class="fldLabel" style="vertical-align:top">'.$prop['label'].'</label>&nbsp;';
         }
         return $field;
     }
 
     private function addLabelLast($id, $prop) {
-        if (!$id) {
-            return '';
-        }
-        if (isset($prop['label']) && $prop['attr']['type'] <> 'hidden' && isset($prop['position']) && $prop['position'] == 'after') {
-            $field = '<label for="' . $id . '">' . $prop['label'] . '</label>';
-        } else {
-            $field = '';
+        $field = '';
+//      if (!$id)                  { return $field; }
+        if (empty($prop['label'])) { return $field; }
+        if ($prop['attr']['type']<>'hidden' && isset($prop['position']) && $prop['position'] == 'after') {
+            $field = '<label for="'.$id.'" class="fldLabel" style="vertical-align:top">'.$prop['label'].'</label>';
         }
         return $field;
     }

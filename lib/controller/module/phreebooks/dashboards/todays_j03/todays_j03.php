@@ -19,7 +19,6 @@
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-12-07
  * @filesource /lib/controller/module/phreebooks/dashboards/todays_j03/todays_j03.php
- * 
  */
 
 namespace bizuno;

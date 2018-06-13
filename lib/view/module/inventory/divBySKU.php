@@ -24,16 +24,16 @@
 
 namespace bizuno;
 
-$code = $data['values']['pricesCode'];
+$code = $viewData['values']['pricesCode'];
 
-$output['body'] .= "<h2>".$data['lang']['title']."</h2><p>";
+$output['body'] .= "<h2>".$viewData['lang']['title']."</h2><p>";
 $output['body'] .= html5('item'.$code, ['attr'=>['type'=>'hidden']]);
-$output['body'] .= html5('id'  .$code, $data['fields']['id']);
-if ($data['values']['inInventory']) { // we're in the inventory form, hide inventory_id field and set to current form value
+$output['body'] .= html5('id'  .$code, $viewData['fields']['id']);
+if ($viewData['values']['inInventory']) { // we're in the inventory form, hide inventory_id field and set to current form value
     $output['body'] .= html5('inventory_id'.$code, ['attr'=>  ['type'=>'hidden']]);
     $output['jsBody'][]  = "jq('#inventory_id$code').val(jq('#id').val());";
 } else {
-    $output['body'] .= html5('inventory_id'.$code, $data['fields']['inventory_id'])."<br />";
+    $output['body'] .= html5('inventory_id'.$code, $viewData['fields']['inventory_id'])."<br />";
     $output['jsBody'][]  = "
 var rID = jq('#inventory_id$code').val();
 jq('#inventory_id$code').combogrid({ width:250, panelWidth:350, delay:500, idField:'id', textField:'description_short', mode:'remote',
@@ -42,15 +42,15 @@ jq('#inventory_id$code').combogrid({ width:250, panelWidth:350, delay:500, idFie
 	columns:   [[{field:'sku',title:'".jsLang('sku')."',width:100},{field:'description_short',title:'".jsLang('description')."',width:200}]]
 });";
 }
-$output['body'] .= html5('ref_id'  .$code, $data['fields']['ref_id']);
-$output['body'] .= html5('currency'.$code, $data['fields']['currency']);
+$output['body'] .= html5('ref_id'  .$code, $viewData['fields']['ref_id']);
+$output['body'] .= html5('currency'.$code, $viewData['fields']['currency']);
 $output['body'] .= "</p>";
 
 $output['jsBody'][] = "
-var dgPricesSetData = ".json_encode($data['values']['prices']).";
-var qtySource= ".json_encode(viewKeyDropdown($data['values']['qtySource'])).";
-var qtyAdj   = ".json_encode(viewKeyDropdown($data['values']['qtyAdj'])).";
-var qtyRnd   = ".json_encode(viewKeyDropdown($data['values']['qtyRnd'])).";
+var dgPricesSetData = ".json_encode($viewData['values']['prices']).";
+var qtySource= ".json_encode(viewKeyDropdown($viewData['values']['qtySource'])).";
+var qtyAdj   = ".json_encode(viewKeyDropdown($viewData['values']['qtyAdj'])).";
+var qtyRnd   = ".json_encode(viewKeyDropdown($viewData['values']['qtyRnd'])).";
 function preSubmitPrices() {
 	jq('#dgPricesSet').edatagrid('saveRow');
 	var items = jq('#dgPricesSet').datagrid('getData');
@@ -58,4 +58,4 @@ function preSubmitPrices() {
 	jq('#item$code').val(serializedItems);
 	return true;
 }";
-htmlDatagrid($output, $data, 'dgPricesSet');
+htmlDatagrid($output, $viewData, 'dgPricesSet');

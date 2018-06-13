@@ -17,30 +17,31 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-25
+ * @version    2.x Last Update: 2018-06-13
  * @filesource /lib/view/module/bizuno/tabAdminMethods.php
  */
 
 namespace bizuno;
 
-$module= isset($prop['settings']['module'])? $prop['settings']['module']:false;
-$type  = isset($prop['settings']['type'])  ? $prop['settings']['type']  :false;
+$module = isset($prop['settings']['module'])? $prop['settings']['module']: false;
+$dirMeth= isset($prop['settings']['path'])  ? $prop['settings']['path']  : false;
 // set the buttons
-$data['btnMethodAdd']  = ['attr'=>['type'=>'button','value'=>lang('install')],'hidden'=>$data['security']> 1?false:true];
-$data['btnMethodDel']  = ['attr'=>['type'=>'button','value'=>lang('remove')], 'hidden'=>$data['security']==4?false:true];
-$data['btnMethodProp'] = ['icon'=>'settings','size'=>'large'];
-$data['settingSave']   = ['icon'=>'save',    'size'=>'large'];
+$viewData['btnMethodAdd']  = ['attr'=>['type'=>'button','value'=>lang('install')],'hidden'=>$viewData['security']> 1?false:true];
+$viewData['btnMethodDel']  = ['attr'=>['type'=>'button','value'=>lang('remove')], 'hidden'=>$viewData['security']==4?false:true];
+$viewData['btnMethodProp'] = ['icon'=>'settings','size'=>'large'];
+$viewData['settingSave']   = ['icon'=>'save',    'size'=>'large'];
 
 $output['body'] .= '<table style="border-collapse:collapse;width:100%">'."\n";
 $output['body'] .= ' <thead class="panel-header">'."\n";
-if ($type == 'dashboards') { // special case for dashboards
+if ($dirMeth == 'dashboards') { // special case for dashboards
     $output['body'] .= "  <tr><th>&nbsp;</th><th>".lang('dashboard')."</th><th>".lang('description')."</th><th>".lang('action')."</th></tr>\n";
 } else {
     $output['body'] .= "  <tr><th>&nbsp;</th><th>".lang('method')."</th><th>".lang('description')."</th><th>".lang('action')."</th></tr>\n";
 }
 $output['body'] .= " </thead>\n";
 $output['body'] .= " <tbody>\n";
-$methods = $module ? getModuleCache($module, $type) : [];
+$methods = $module ? getModuleCache($module, $dirMeth) : [];
+msgDebug("\nprop = ".print_r($prop, true));
 foreach ($methods as $method => $settings) {
     require_once("{$settings['path']}$method.php");
     if (empty($settings['settings'])) { $settings['settings'] = []; }
@@ -51,32 +52,32 @@ foreach ($methods as $method => $settings) {
     $output['body'] .= '    <td valign="top">'.htmlFindImage($settings, "32")."</td>\n";
     $output['body'] .= '    <td valign="top" '.($settings['status'] ? ' style="background-color:lightgreen"' : '').">".$settings['title'].'</td>';
     $output['body'] .= "    <td><div>".$settings['description'];
-    if ($type <> 'dashboards' && !$settings['status'] && $data['security'] > 1) {
+    if ($dirMeth <> 'dashboards' && !$settings['status'] && $viewData['security'] > 1) {
         $output['body'] .= "</div></td>\n";
-        $data['btnMethodAdd']['events']['onClick'] = "jsonAction('bizuno/settings/methodInstall&module=$module&type=$type&method=$method');";
-        $output['body'] .= '    <td valign="top" style="text-align:right;">'.html5('install_'.$method, $data['btnMethodAdd'])."</td>\n";
+        $viewData['btnMethodAdd']['events']['onClick'] = "jsonAction('bizuno/settings/methodInstall&module=$module&path=$dirMeth&method=$method');";
+        $output['body'] .= '    <td valign="top" style="text-align:right;">'.html5('install_'.$method, $viewData['btnMethodAdd'])."</td>\n";
     } else {
         $output['body'] .= "</div>";
         $output['body'] .= '<div id="divMethod_'.$method.'" style="display:none;" class="layout-expand-over">';
-        $output['body'] .= html5("frmMethod_$method", ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/methodSettingsSave&module=$module&type=$type&method=$method"]]);
+        $output['body'] .= html5("frmMethod_$method", ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/methodSettingsSave&module=$module&type=$dirMeth&method=$method"]]);
         $structure = method_exists($clsMeth, 'settingsStructure') ? $clsMeth->settingsStructure() : [];
         foreach ($structure as $setting => $values) {
             $mult = isset($values['attr']['multiple']) ? '[]' : '';
             if (isset($values['attr']['multiple'])) { $values['attr']['value'] = explode(':', $values['attr']['value']); }
             $output['body'] .= html5($method.'_'.$setting.$mult, $values)."<br />\n";
         }
-        $data['settingSave']['events']['onClick'] = "jq('#frmMethod_".$method."').submit();";
-        $output['body'] .= '<div style="text-align:right">'.html5('imgMethod_'.$method, $data['settingSave']).'</div>';
+        $viewData['settingSave']['events']['onClick'] = "jq('#frmMethod_".$method."').submit();";
+        $output['body'] .= '<div style="text-align:right">'.html5('imgMethod_'.$method, $viewData['settingSave']).'</div>';
         $output['body'] .= "</form></div>";
         $output['jsBody'][]  = "ajaxForm('frmMethod_$method');";
         $output['body'] .= "</td>\n";
         $output['body'] .= '<td valign="top" nowrap="nowrap" style="text-align:right;">' . "\n";
-        $data['btnMethodDel']['events']['onClick'] = "if (confirm('".lang('msg_method_delete_confirm')."')) jsonAction('bizuno/settings/methodRemove&module=$module&type=$type&method=$method');";
-        if ($data['security'] == 4 && $type <> 'dashboards' && (!isset($clsMeth->required) || !$clsMeth->required)) { 
-            $output['body'] .= html5('remove_'.$method, $data['btnMethodDel']) . "\n";
+        $viewData['btnMethodDel']['events']['onClick'] = "if (confirm('".lang('msg_method_delete_confirm')."')) jsonAction('bizuno/settings/methodRemove&module=$module&type=$dirMeth&method=$method');";
+        if ($viewData['security'] == 4 && $dirMeth <> 'dashboards' && (!isset($clsMeth->required) || !$clsMeth->required)) { 
+            $output['body'] .= html5('remove_'.$method, $viewData['btnMethodDel']) . "\n";
         }
-        $data['btnMethodProp']['events']['onClick'] = "jq('#divMethod_".$method."').toggle('slow');";
-        $output['body'] .= html5('prop_'.$method, $data['btnMethodProp'])."\n";
+        $viewData['btnMethodProp']['events']['onClick'] = "jq('#divMethod_".$method."').toggle('slow');";
+        $output['body'] .= html5('prop_'.$method, $viewData['btnMethodProp'])."\n";
         $output['body'] .= "</td>\n";
     }
     $output['body'] .= "  </tr>\n";

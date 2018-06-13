@@ -135,8 +135,8 @@ class inventoryPrices
                     'newPrices'  => ['order'=>10,'html'=>['icon'=>'new',  'events'=>['onClick'=>"windowEdit('inventory/prices/add&type=$type".($mod?"&mod=$mod":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":'')."','winNewPrice','".jsLang('inventory_prices_method')."',400,200);"]]],
 					'clrPrices'  => ['order'=>50,'html'=>['icon'=>'clear','events'=>['onClick'=>"jq('#priceSearch').val(''); ".$name."Reload();"]]]],
 				'filters'=> [
-                    'priceSearch'=> ['order'=>90,'html'=>['label'=>lang('search'),'attr' => ['value'=>$this->defaults['search']]]],
-					'priceType'  => ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."inventory_prices.contact_type='$type'"]],
+                    'searchPrice'=> ['order'=>90,'html'=>['attr'=>['value'=>$this->defaults['search']]]],
+					'typePrice'  => ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."inventory_prices.contact_type='$type'"]],
 				'sort' => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
 			'footnotes'=> ['codes'=>lang('color_codes').': <span class="row-default">'.lang('default').'</span>'],
 			'columns'  => [
@@ -244,12 +244,12 @@ class inventoryPrices
             $settings = ['attr'=>'', 'title'=>''];
 		}
 		$data = ['type'=>'divHTML',
-			'divs'   => ['tbPrices'=>['order'=> 1, 'type'=>'toolbar','key'=>'tbPrices']],
-			'toolbar'=> ['tbPrices'=>['icons'=>[
+			'divs'    => ['tbPrices'=>['order'=> 1, 'type'=>'toolbar','key'=>'tbPrices']],
+			'toolbars'=> ['tbPrices'=>['icons'=>[
                 'save' => ['order'=>40,'hidden'=>$security>1?false:true,
 					'events'=>['onClick'=>"if (preSubmitPrices()) divSubmit('inventory/prices/save&type=$this->type&mID=$mID', 'divPricesSet');"]]]]],
-			'fields' => dbLoadStructure(BIZUNO_DB_PREFIX."inventory_prices"),
-            'values' => [
+			'fields'  => dbLoadStructure(BIZUNO_DB_PREFIX."inventory_prices"),
+            'values'  => [
                 'qtySource' => $this->qtySource,
                 'qtyAdj' => $this->qtyAdj,
                 'qtyRnd' => $this->qtyRnd]];

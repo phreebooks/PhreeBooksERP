@@ -24,16 +24,16 @@
 namespace bizuno;
 
 $output['body'] .= '
-<p>'.$data['text']['intro'].'</p>
+<p>'.$viewData['text']['intro'].'</p>
 <div id="divInstall">
 <table style="border-collapse:collapse;width:100%">
 	<thead class="panel-header"><tr><th colspan="2">&nbsp;</th></tr></thead>
 	<tbody>
-		<tr><td>'.$data['text']['biz_title']   .'</td><td>'.html5('biz_title',   $data['fields']['biz_title']).'</td></tr>
-		<tr><td>'.$data['text']['biz_lang']    .'</td><td>'.html5('biz_lang',    $data['fields']['biz_lang']).'</td></tr>
-		<tr><td>'.$data['text']['biz_currency'].'</td><td>'.html5('biz_currency',$data['fields']['biz_currency']).'</td></tr>
-		<tr><td>'.$data['text']['biz_chart']   .'</td><td>'.html5('biz_chart',   $data['fields']['biz_chart']).'</td></tr>
-		<tr><td>'.$data['text']['biz_fy']      .'</td><td>'.html5('biz_fy',      $data['fields']['biz_fy']).'</td></tr>
+		<tr><td>'.$viewData['text']['biz_title']   .'</td><td>'.html5('biz_title',   $viewData['fields']['biz_title']).'</td></tr>
+		<tr><td>'.$viewData['text']['biz_lang']    .'</td><td>'.html5('biz_lang',    $viewData['fields']['biz_lang']).'</td></tr>
+		<tr><td>'.$viewData['text']['biz_currency'].'</td><td>'.html5('biz_currency',$viewData['fields']['biz_currency']).'</td></tr>
+		<tr><td>'.$viewData['text']['biz_chart']   .'</td><td>'.html5('biz_chart',   $viewData['fields']['biz_chart']).'</td></tr>
+		<tr><td>'.$viewData['text']['biz_fy']      .'</td><td>'.html5('biz_fy',      $viewData['fields']['biz_fy']).'</td></tr>
 	</tbody>
 </table>
 </div>';

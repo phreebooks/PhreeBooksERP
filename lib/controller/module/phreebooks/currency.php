@@ -82,12 +82,12 @@ class phreebooksCurrency
 		$values = getModuleCache('phreebooks', 'currency', 'iso', $iso, $this->currencySettings($iso));
         if ($iso == getUserCache('profile', 'currency')) { $values['value'] = 1; }
 		$data = ['type'=>'divHTML',
-			'divs'    => ['divCurrencyDetail'=>  ['order'=>10,'src'=>BIZUNO_LIB."view/module/phreebooks/divCurrencyDtl.php"]],
-			'toolbar' => ['tbCurrency'=>  ['icons' => [
+			'divs'     => ['divCurrencyDetail'=>  ['order'=>10,'src'=>BIZUNO_LIB."view/module/phreebooks/divCurrencyDtl.php"]],
+			'toolbars' => ['tbCurrency'=>  ['icons' => [
                 "currencySave" => ['order'=>10,'icon'=>'save','label'=>lang('save'),
 					'events'=>  ['onClick'=>"jq('body').addClass('loading'); jq('#frmCurrency').submit();"]]]]],
-			'form'    => ['frmCurrency'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/save"]]],
-			'fields' => [
+			'forms'    => ['frmCurrency'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/save"]]],
+			'fields'   => [
                 'is_def' => ['label'=>lang('default'),   'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getUserCache('profile', 'currency', false, 'USD')==$iso?true:false]],
 				'code'   => ['label'=>lang('code'),      'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']],
                 'xrate'  => ['label'=>lang('exc_rate'),  'attr'=>['value'=>$values['value']]],

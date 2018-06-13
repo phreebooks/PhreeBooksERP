@@ -28,11 +28,11 @@ namespace bizuno;
 // build the date checkboxes
 $dateList = '<tr>';
 $cnt = 0;
-foreach ($data['structure']['selDate'] as $value) {
-	$cbHTML = $data['fields']['DateList'];
+foreach ($viewData['structure']['selDate'] as $value) {
+	$cbHTML = $viewData['fields']['DateList'];
 	$cbHTML['label']         = $value['text'];
 	$cbHTML['attr']['value'] = $value['id'];
-	if (strpos($data['fields']['DateList']['attr']['value'], $value['id']) !== false) {
+	if (strpos($viewData['fields']['DateList']['attr']['value'], $value['id']) !== false) {
         $cbHTML['attr']['checked'] = 'checked';
     }
     $dateList .= '<td>'.html5('datelist[]', $cbHTML).'</td>';
@@ -41,34 +41,34 @@ if ($cnt > 2) { $cnt=0; $dateList .= "</tr><tr>\n"; } // set for 3 columns
 }
 $dateList .= "</tr>\n";
 $output['body'] .= '<table style="border-style:none;width:100%">'."\n";
-$output['body'] .= '  <thead class="panel-header"><tr><th colspan="3">'.$data['lang']['phreeform_date_info']."</th></tr></thead>\n";
+$output['body'] .= '  <thead class="panel-header"><tr><th colspan="3">'.$viewData['lang']['phreeform_date_info']."</th></tr></thead>\n";
 $output['body'] .= '  <tbody>'."\n";
-$data['fields']['DatePeriod']['attr']['value'] = 'p';
-if ($data['fields']['DateList']['attr']['value'] == 'z') {
-	$data['fields']['DatePeriod']['attr']['checked'] = 'checked';
+$viewData['fields']['DatePeriod']['attr']['value'] = 'p';
+if ($viewData['fields']['DateList']['attr']['value'] == 'z') {
+	$viewData['fields']['DatePeriod']['attr']['checked'] = 'checked';
 } else {
-	unset($data['fields']['DatePeriod']['attr']['checked']);
+	unset($viewData['fields']['DatePeriod']['attr']['checked']);
 }
-$output['body'] .= '	<tr><td colspan="3">'.html5('DatePeriod', $data['fields']['DatePeriod']).' '.$data['lang']['use_periods']."</td></tr>\n";
+$output['body'] .= '	<tr><td colspan="3">'.html5('DatePeriod', $viewData['fields']['DatePeriod']).' '.$viewData['lang']['use_periods']."</td></tr>\n";
 $output['body'] .= '	<tr><td colspan="3">'."<hr></td></tr>\n";
-$data['fields']['DatePeriod']['attr']['value'] = 'd';
-if ($data['fields']['DateList']['attr']['value'] != 'z') {
-	$data['fields']['DatePeriod']['attr']['checked'] = 'checked';
+$viewData['fields']['DatePeriod']['attr']['value'] = 'd';
+if ($viewData['fields']['DateList']['attr']['value'] != 'z') {
+	$viewData['fields']['DatePeriod']['attr']['checked'] = 'checked';
 } else {
-	unset($data['fields']['DatePeriod']['attr']['checked']);
+	unset($viewData['fields']['DatePeriod']['attr']['checked']);
 }
-$output['body'] .= '	<tr><td colspan="3">'.html5('DatePeriod', $data['fields']['DatePeriod']).' '.$data['lang']['phreeform_date_list']."</td></tr>\n";
+$output['body'] .= '	<tr><td colspan="3">'.html5('DatePeriod', $viewData['fields']['DatePeriod']).' '.$viewData['lang']['phreeform_date_list']."</td></tr>\n";
 $output['body'] .= $dateList."\n";
-$output['body'] .= '	<tr><td colspan="2">'.html5('datedefault', $data['fields']['DateDefault'])."</td>\n";
-$output['body'] .= "	    <td>".html5('datefield', $data['fields']['DateField'])."</td></tr>\n";
+$output['body'] .= '	<tr><td colspan="2">'.html5('datedefault', $viewData['fields']['DateDefault'])."</td>\n";
+$output['body'] .= "	    <td>".html5('datefield', $viewData['fields']['DateField'])."</td></tr>\n";
 $output['body'] .= "  </tbody>\n";
 $output['body'] .= "</table>\n";
-if (isset($data['notes'])) $output['body'] .= '<u><b>'.lang('notes').'</b></u>'.$data['notes'];
-if ($data['reportType'] == 'rpt') {
+if (isset($viewData['notes'])) $output['body'] .= '<u><b>'.lang('notes').'</b></u>'.$viewData['notes'];
+if ($viewData['reportType'] == 'rpt') {
 	$output['body'] .= "  <p>&nbsp;</p>\n";
-	htmlDatagrid($output, $data, 'groups');
+	htmlDatagrid($output, $viewData, 'groups');
 }
 $output['body'] .= "  <p>&nbsp;</p>\n";
-htmlDatagrid($output, $data, 'sort');
+htmlDatagrid($output, $viewData, 'sort');
 $output['body'] .= "  <p>&nbsp;</p>\n";
-htmlDatagrid($output, $data, 'filters');
+htmlDatagrid($output, $viewData, 'filters');

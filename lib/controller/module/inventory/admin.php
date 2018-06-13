@@ -131,7 +131,7 @@ class inventoryAdmin
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
         $data = [
             'tabs' => ['tabAdmin'=> ['divs'=>  [
-                'prices' => ['order'=>10,'label'=>lang('prices'), 'attr'=>['module'=>$this->moduleID,'type'=>$this->structure['dirMethods']],
+                'prices' => ['order'=>10,'label'=>lang('prices'), 'attr'=>['module'=>$this->moduleID,'path'=>$this->structure['dirMethods']],
                     'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
                 'settings'=> ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminSettings.php"],
 				'fields'  => ['order'=>60,'label'=>lang('extra_fields'),'type'=>'html', 'html'=>'',
@@ -166,7 +166,7 @@ class inventoryAdmin
     {
 		$bAdmin = new bizunoSettings();
         foreach ($this->invMethods as $method) {
-            $bAdmin->methodInstall($layout, ['module'=>'inventory','type'=>'prices', 'method'=>$method], false);
+            $bAdmin->methodInstall($layout, ['module'=>'inventory', 'path'=>'prices', 'method'=>$method], false);
         }
 	}
 

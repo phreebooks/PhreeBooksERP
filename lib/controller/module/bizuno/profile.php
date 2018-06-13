@@ -60,8 +60,8 @@ class bizunoProfile
 		$title = lang('bizuno_profile');
 		$data = [
             'pageTitle' => $title,
-			'toolbar'   => ['tbProfile'=>  ['icons'=>  ['save'=>  ['order'=>40,'events'=>  ['onClick'=>"jq('#frmProfile').submit();"]]]]],
-			'form'      => ['frmProfile'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/profile/save"]]],
+			'toolbars'  => ['tbProfile'=>  ['icons'=>  ['save'=>  ['order'=>40,'events'=>  ['onClick'=>"jq('#frmProfile').submit();"]]]]],
+			'forms'      => ['frmProfile'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/profile/save"]]],
 			'divs'      => [
                 'toolbar'=> ['order'=> 5, 'type'=>'toolbar','key' =>'tbProfile'],
 				'heading'=> ['order'=>10, 'type'=>'html',   'html'=>"<h1>$title</h1>\n"],
@@ -72,7 +72,7 @@ class bizunoProfile
 				'reminders'=> ['order'=>50,'label'=>$this->lang['reminders'],'type'=>'html','html'=>'','attr'=>  ["data-options"=>"href:'".BIZUNO_AJAX."&p=bizuno/profile/reminderManager&uID=".getUserCache('profile', 'admin_id', false, 0)."'"]]]]],
             'javascript'=> ['jsProfile'=>"ajaxForm('frmProfile');"],
 			'fields'=> dbLoadStructure(BIZUNO_DB_PREFIX."users")];
-		$data['divs']['frmProfile'] = ['order'=>10, 'type'=>'html', 'html'=>html5('frmProfile', $data['form']['frmProfile'])];
+		$data['divs']['frmProfile'] = ['order'=>10, 'type'=>'html', 'html'=>html5('frmProfile', $data['forms']['frmProfile'])];
 		// merge data with structure
 		$dbData = dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id='$rID'");
 		$settings = json_decode($dbData['settings'], true)['profile'];
@@ -179,7 +179,7 @@ class bizunoProfile
 			'divs' => [
                 'toolbar'    => ['order'=> 5, 'type'=>'toolbar','key' =>'tbReminder'],
                 'divReminder'=> ['order'=>10,'src'=>BIZUNO_LIB."view/module/bizuno/accProfileReminder.php"]],
-			'toolbar' => ['tbReminder'=>['icons' => [
+			'toolbars' => ['tbReminder'=>['icons' => [
                 'reminderSave' => ['order'=>10,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"divSubmit('bizuno/profile/reminderSave', 'divReminder');"]]]]],
 			'fields' => [
 				'title'    => ['label'=>lang('title'), 'attr'=>['value'=>'']],

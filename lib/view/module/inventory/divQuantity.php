@@ -24,23 +24,23 @@
 
 namespace bizuno;
 
-$code = $data['values']['pricesCode'];
+$code = $viewData['values']['pricesCode'];
 $defAttr= ['label'=>lang('default'), 'attr'=>  ['type'=>'checkbox', 'value'=>1]];
-if (isset($data['values']['settings']['default']) && $data['values']['settings']['default']) { $defAttr['attr']['checked'] = 'checked'; }
+if (isset($viewData['values']['settings']['default']) && $viewData['values']['settings']['default']) { $defAttr['attr']['checked'] = 'checked'; }
 
-$output['body'] .= "<h2>".$data['lang']['title']."</h2><p>";
-$output['body'] .= html5('id'      .$code, $data['fields']['id']);
+$output['body'] .= "<h2>".$viewData['lang']['title']."</h2><p>";
+$output['body'] .= html5('id'      .$code, $viewData['fields']['id']);
 $output['body'] .= html5('item'    .$code, ['attr' =>  ['type'=>'hidden']]);
-$output['body'] .= html5('title'   .$code, $data['fields']['title']);
-$output['body'] .= html5('currency'.$code, $data['fields']['currency']);
+$output['body'] .= html5('title'   .$code, $viewData['fields']['title']);
+$output['body'] .= html5('currency'.$code, $viewData['fields']['currency']);
 $output['body'] .= html5('default' .$code, $defAttr);
 $output['body'] .= "</p>";
 
 $output['jsBody'][] = "
-var dgPricesSetData = ".json_encode($data['values']['prices']).";
-var qtySource= ".json_encode(viewKeyDropdown($data['values']['qtySource'])).";
-var qtyAdj   = ".json_encode(viewKeyDropdown($data['values']['qtyAdj'])).";
-var qtyRnd   = ".json_encode(viewKeyDropdown($data['values']['qtyRnd'])).";
+var dgPricesSetData = ".json_encode($viewData['values']['prices']).";
+var qtySource= ".json_encode(viewKeyDropdown($viewData['values']['qtySource'])).";
+var qtyAdj   = ".json_encode(viewKeyDropdown($viewData['values']['qtyAdj'])).";
+var qtyRnd   = ".json_encode(viewKeyDropdown($viewData['values']['qtyRnd'])).";
 function preSubmitPrices() {
 	jq('#dgPricesSet').edatagrid('saveRow');
 	var items = jq('#dgPricesSet').datagrid('getData');
@@ -48,4 +48,4 @@ function preSubmitPrices() {
 	jq('#item$code').val(serializedItems);
 	return true;
 }";
-htmlDatagrid($output, $data, 'dgPricesSet');
+htmlDatagrid($output, $viewData, 'dgPricesSet');

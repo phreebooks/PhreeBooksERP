@@ -1128,7 +1128,7 @@
 </Locale>
 <Locale>
 	<Country><Title>Tanzania, United Republic of</Title><ISO2>TZ</ISO2><ISO3>TZA</ISO3></Country>
-	<Currency></Currency>
+	<Currency><ISO>TZS</ISO><Title>Tanzanian shilling</Title><Prefix>TSh</Prefix><Suffix></Suffix><SymbolDecimal>/</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
 	<Format></Format>
 </Locale>
 <Locale>

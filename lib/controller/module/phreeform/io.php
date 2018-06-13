@@ -45,10 +45,10 @@ class phreeformIo
 		$selLangs = [['id'=>'en_US', 'text'=>lang('language_title')]];
 		$data     = [
             'pageTitle'=> lang('import'),
-            'toolbar'  => ['tbImport' => ['icons' => [
+            'toolbars' => ['tbImport' => ['icons' => [
                 'back' => ['order'=>10, 'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=phreeform/main/manager'"]]]]],
-		    'form' => ['frmImport' => ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreeform/io/importReport"]]],
-		    'divs' => [
+		    'forms'    => ['frmImport' => ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreeform/io/importReport"]]],
+		    'divs'     => [
                 'toolbar'=> ['order'=>20, 'type'=>'toolbar', 'key'=>'tbImport'],
                 'heading'=> ['type'=>'html','order'=>30, 'html'=>"<h1>".$this->lang['phreeform_import']."</h1>\n"],
                 'body'   => ['order'=>50, 'label'=>$this->lang['phreeform_title_edit'], 'src'=>BIZUNO_LIB."view/module/phreeform/divRptImport.php"]],

@@ -15,16 +15,15 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0.x Last Update: 2017-08-28
+ * @version    2.0 Last Update: 2018-06-10
  * @filesource /lib/controller/module/phreebooks/dashboards/new_cust/new_cust.php
- * 
  */
 
 namespace bizuno;
 
-define('DASHBOARD_NEW_CUST_VERSION','1.0');
+define('DASHBOARD_NEW_CUST_VERSION','2.0');
 
 class new_cust
 {
@@ -58,9 +57,9 @@ class new_cust
     data.addColumn('string', ' ');
     data.addColumn('number', ' ');
     data.addRows([
-      ['".lang('today')."',    ".$this->getTotals('c')."],
-      ['".lang('dates_wtd')."',".$this->getTotals('e')."],
-      ['".lang('dates_mtd')."',".$this->getTotals('g')."]
+      ['".jslang('today')."',    ".$this->getTotals('c')."],
+      ['".jslang('dates_wtd')."',".$this->getTotals('e')."],
+      ['".jslang('dates_mtd')."',".$this->getTotals('g')."]
     ]);
     data.setColumnProperties(0, {style:'font-style:bold;font-size:22px;text-align:center'});
     var table = new google.visualization.Table(document.getElementById('{$this->code}_chart'));
@@ -74,7 +73,9 @@ google.charts.setOnLoadCallback(chart{$this->code});\n";
     private function getTotals($range='c')
     {
         $dates = phreeformSQLDate($range, 'first_date');
-        if (!$stmt = dbGetResult("SELECT COUNT(*) AS count FROM ".BIZUNO_DB_PREFIX."contacts WHERE type='c' AND ".$dates['sql'])) { return msgAdd(lang('err_bad_sql')); }
+        if (!$stmt = dbGetResult("SELECT COUNT(*) AS count FROM ".BIZUNO_DB_PREFIX."contacts WHERE type='c' AND ".$dates['sql'])) { 
+            return msgAdd(lang('err_bad_sql'));
+        }
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         return !empty($result['count']) ? $result['count'] : 0;
     }

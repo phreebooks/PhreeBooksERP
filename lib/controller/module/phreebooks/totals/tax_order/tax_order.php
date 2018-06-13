@@ -93,7 +93,7 @@ class tax_order
             'totals_tax_order_gl'  => ['label'=>lang('gl_account'), 'attr'=>  ['type'=>'text', 'value'=>'glTBD','size'=>'5','readonly'=>'readonly']],
             'totals_tax_order_amt' => ['attr'=>  ['value'=>'amtTBD','size'=>'15','style'=>'text-align:right','readonly'=>'readonly']],
             'totals_tax_order_opt' => ['icon'=>'settings', 'size'=>'small','events'=> ['onClick'=>"jq('#phreebooks_totals_tax_order').toggle('slow');"]]];
-        $jID  = $data['journal_main']['journal_id']['attr']['value'];
+        $jID  = $data['fields']['main']['journal_id']['attr']['value'];
 		$type = in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
 		$hide = $this->hidden ? ';display:none' : '';
         $output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
@@ -152,7 +152,7 @@ function totals_tax_order(begBalance) {
 }
 jq('#tax_rate_id').combogrid({
 	data:       bizDefaults.taxRates.$type.rows,
-    value:      '".$data['journal_main']['tax_rate_id']['attr']['value']."',
+    value:      '".$data['fields']['main']['tax_rate_id']['attr']['value']."',
 	width:      120,
 	panelWidth: 210,
 	idField:   'id',

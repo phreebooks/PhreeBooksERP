@@ -118,7 +118,7 @@ class phreebooksTax
                     "blkTax$type" => ['order'=>80,'html'=>['icon'=>'merge','events'=>['onClick'=>"jsonAction('phreebooks/tax/bulkChange&type=$type', 0);"]]]],
 				'filters'=> [
                     "f0_$type"    => ['order'=>10, 'sql'=>$f0_value,'html'=>['label'=>lang('status'),'values'=>$statusValues,'attr'=>['type'=>'select','value'=>$this->defaults['f0_'.$type]]]],
-                    "search$type" => ['order'=>90, 'html'=>  ['label'=>lang('search'),'attr'=>['value'=>$this->defaults['search']]]],
+                    "search$type" => ['order'=>90, 'html'=>  ['attr'=>['value'=>$this->defaults['search']]]],
 					"type$type"   => ['order'=>99, 'hidden'=>true, 'sql'=>"type='$type'"]],
 				'sort' => ['s0'   => ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
 				'footnotes' => ['status'=>lang('status').':
@@ -224,10 +224,10 @@ class phreebooksTax
 		$struc['end_date']['classes']['datebox']  = 'easyui-datebox';
 		$data = ['type'=>'divHTML',
 			'divs'    => ['detail'=>['order'=>10,'settings'=>['type'=>$type],'src'=>BIZUNO_LIB."view/module/phreebooks/tabAdminTax.php"]],
-			'toolbar' => ['tbTax' =>['icons' => [
+			'toolbars'=> ['tbTax' =>['icons' => [
 				"taxSave$type" => ['order'=>20,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"taxPreSubmit$type('$type'); jq('#frmTax$type').submit();"]],
                 "taxNew$type"  => ['order'=>40,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"accordionEdit('accTax$type','dgTax$type','divTax{$type}Detail','".jsLang('details')."', 'phreebooks/tax/edit&type=$type', 0);"]]]]],
-			'form'    => ["frmTax$type"=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/tax/save&type=$type"]]],
+			'forms'   => ["frmTax$type"=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/tax/save&type=$type"]]],
 			'datagrid'=> ['dgTaxVendors' => $this->dgTaxVendors("dgTaxVendors$type", $type, $rates)],
 			'fields'  => $struc];
 		$layout = array_replace_recursive($layout, $data);

@@ -66,7 +66,7 @@ class bizunoImage
 				'frmEnd'    => ['order'=>30,'type'=>'html',   'html'=>'</form>'],
 				'frmImgFlds'=> ['order'=>40,'type'=>'html',   'html'=>$frmImgFields],
 				'images'    => ['order'=>50,'type'=>'html',   'html'=>$this->managerRows($path, $search, $target)]],
-			'toolbar'=> ['tbImgMgr'=> ['icons' => [
+			'toolbars'=> ['tbImgMgr'=> ['icons' => [
                 'imgClose'  => ['order'=> 10,'icon'=>'close',  'label'=>lang('close'),  'events'=>['onClick'=>"jq('#winImgMgr').window('close');"]],
 				'imgParent' => ['order'=> 20,'icon'=>'up',     'label'=>lang('up'),     'events'=>['onClick'=>"imgAction('parent');"]],
 				'imgRefresh'=> ['order'=> 30,'icon'=>'refresh','label'=>lang('refresh'),'events'=>['onClick'=>"imgAction('refresh');"]],

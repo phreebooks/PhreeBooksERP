@@ -25,35 +25,35 @@ namespace bizuno;
 
 $output['body'] .= "
 <fieldset><legend>".lang('general')."</legend>".
-	html5('admin_id',      $data['fields']['admin_id']).
-	html5('email',         $data['fields']['email']).
-	html5('inactive',      $data['fields']['inactive'])."<br />".
-	html5('title',         $data['fields']['title'])."<br />".
-	html5('role_id',       $data['fields']['role_id'])."<br />".
-	html5('contact_id',    $data['fields']['contact_id'])."<br />".
-	html5('store_id',      $data['fields']['store_id'])."<br />".
-	html5('restrict_store',$data['fields']['restrict_store'])."<br />".
-    html5('restrict_user' ,$data['fields']['restrict_user']).
+	html5('admin_id',      $viewData['fields']['admin_id']).
+	html5('email',         $viewData['fields']['email']).
+	html5('inactive',      $viewData['fields']['inactive'])."<br />".
+	html5('title',         $viewData['fields']['title'])."<br />".
+	html5('role_id',       $viewData['fields']['role_id'])."<br />".
+	html5('contact_id',    $viewData['fields']['contact_id'])."<br />".
+	html5('store_id',      $viewData['fields']['store_id'])."<br />".
+	html5('restrict_store',$viewData['fields']['restrict_store'])."<br />".
+    html5('restrict_user' ,$viewData['fields']['restrict_user']).
 "</fieldset>
 <fieldset><legend>".lang('profile')."</legend>\n".
-	html5('theme', $data['fields']['theme']) ."<br />".
-	html5('colors',$data['fields']['colors'])."<br />".
-	html5('menu',  $data['fields']['menu'])  ."<br />".
-	html5('cols',  $data['fields']['cols'])."
+	html5('theme', $viewData['fields']['theme']) ."<br />".
+	html5('colors',$viewData['fields']['colors'])."<br />".
+	html5('menu',  $viewData['fields']['menu'])  ."<br />".
+	html5('cols',  $viewData['fields']['cols'])."
 </fieldset>
 ";
 include (BIZUNO_LIB."view/module/bizuno/divAttach.php");
 
 $output['jsBody'][] = "
 jq('#contact_id').combogrid({
-	value:      '{$data['fields']['contact_id']['attr']['value']}',
+	value:      '{$viewData['fields']['contact_id']['attr']['value']}',
     width:       130,
 	panelWidth:  322,
 	delay:       900,
 	idField:     'id',
 	textField:   'primary_name',
 	mode:        'remote',
-	url:         '".BIZUNO_AJAX."&p=contacts/main/managerRows&type=e&rID={$data['fields']['contact_id']['attr']['value']}',
+	url:         '".BIZUNO_AJAX."&p=contacts/main/managerRows&type=e&rID={$viewData['fields']['contact_id']['attr']['value']}',
 	onBeforeLoad:function (param) { var newValue=jq('#contact_id').combogrid('getValue'); if (newValue.length<1 || newValue == '0') return false; },
 	columns:     [[
 		{field:'id',          hidden:true},

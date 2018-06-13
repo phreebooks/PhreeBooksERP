@@ -55,7 +55,7 @@ function chartRefresh() {
 			'accordion'=> ['accGL'=>  ['divs'=>  [
                 'divGLManager'=> ['order'=>30,'label'=>lang('phreebooks_chart_of_accts'),'src'=>BIZUNO_LIB."view/module/phreebooks/accGLMgr.php"],
 				'divGLDetail' => ['order'=>70,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;'],]]],
-			'form'     => ['frmGlUpload'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/chart/upload"]]],
+			'forms'     => ['frmGlUpload'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/chart/upload"]]],
 			'datagrid' => ['dgChart'=>$this->dgChart('dgChart', $security)],
 			'fields'   => [
                 'sel_coa'     => ['values'=>$charts, 'attr'=>  ['type'=>'select', 'size'=>10]],
@@ -98,10 +98,10 @@ function chartRefresh() {
         if ($rID) { $val = getModuleCache('phreebooks', 'chart', 'accounts')[$rID]; }
 		$data = ['type'=>'divHTML',
 			'divs'    => ['detail'=>  ['order'=>10,'src'=>BIZUNO_LIB."view/module/phreebooks/accGLEdit.php"]],
-			'toolbar' => ['tbGL'=>  ['icons' => [
+			'toolbars'=> ['tbGL'=>  ['icons' => [
                 "glSave" => ['order'=>10,'icon'=>'save','events'=>  ['onClick'=>"jq('#frmGLEdit').submit();"]],
 				"glNew"  => ['order'=>20,'icon'=>'new', 'events'=>  ['onClick'=>"accordionEdit('accGL', 'dgChart', 'divGLDetail', '".lang('details')."', 'phreebooks/chart/edit', 0);"]]]]],
-			'form'    => ['frmGLEdit'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/chart/save"]]],
+			'forms'   => ['frmGLEdit'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/chart/save"]]],
 			'fields'  => [
                 'gl_previous' => ['label'=>lang('gl_account'),'attr'=>  ['readonly'=>'readonly', 'value'=>isset($val['id'])?$val['id']:'']],
 				'gl_account'  => ['label'=>$this->lang['new_gl_account']],

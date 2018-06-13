@@ -27,23 +27,23 @@ $output['body'] .= '
 <!-- ticketMain -->
 <p>&nbsp;</p>
 <p>&nbsp;</p>
-'.html5('frmTicket', $data['form']['frmTicket']).'
-'.html5('ticketDate',$data['fields']['ticketDate']).'
-'.html5('ticketURL', $data['fields']['ticketURL']).'
+'.html5('frmTicket', $viewData['forms']['frmTicket']).'
+'.html5('ticketDate',$viewData['fields']['ticketDate']).'
+'.html5('ticketURL', $viewData['fields']['ticketURL']).'
     <table style="width:600px;border-collapse:collapse;margin-left:auto;margin-right:auto;">
         <thead class="panel-header"><tr><th colspan="2" style="width:100px">'.lang('support').'</th></tr></thead>
         <tbody>
-            <tr><td colspan="2">'.$data['lang']['ticket_desc'].'</td></tr>
-            <tr><td>'.lang('reason')                   ."</td><td>".html5('selReason',  $data['fields']['selReason'])  .'</td></tr>
-            <tr><td>'.lang('Machine')                  ."</td><td>".html5('selMachine', $data['fields']['selMachine']) .'</td></tr>
-            <tr><td>'.lang('OS')                       ."</td><td>".html5('selOS',      $data['fields']['selOS'])      .'</td></tr>
-            <tr><td>'.lang('address_book_primary_name')."</td><td>".html5('ticketUser', $data['fields']['ticketUser']) .'</td></tr>
-            <tr><td>'.lang('email')                    ."</td><td>".html5('ticketEmail',$data['fields']['ticketEmail']).'</td></tr>
-            <tr><td>'.lang('telephone')                ."</td><td>".html5('ticketPhone',$data['fields']['ticketPhone']).'</td></tr>
-            <tr><td>'.lang('description')              ."</td><td>".html5('ticketDesc', $data['fields']['ticketDesc']) .'</td></tr>
-            <tr><td colspan="2">'.$data['lang']['ticket_attachment'].'</td></tr>
-            <tr><td>'.lang('attachment')               .'</td><td>'.html5('ticketFile', $data['fields']['ticketFile']) .'</td></tr>
-            <tr><td colspan="2" style="text-align:center">'.html5('btnSubmit', $data['fields']['btnSubmit']).'</td></tr>
+            <tr><td colspan="2">'.$viewData['lang']['ticket_desc'].'</td></tr>
+            <tr><td>'.lang('reason')                   ."</td><td>".html5('selReason',  $viewData['fields']['selReason'])  .'</td></tr>
+            <tr><td>'.lang('Machine')                  ."</td><td>".html5('selMachine', $viewData['fields']['selMachine']) .'</td></tr>
+            <tr><td>'.lang('OS')                       ."</td><td>".html5('selOS',      $viewData['fields']['selOS'])      .'</td></tr>
+            <tr><td>'.lang('address_book_primary_name')."</td><td>".html5('ticketUser', $viewData['fields']['ticketUser']) .'</td></tr>
+            <tr><td>'.lang('email')                    ."</td><td>".html5('ticketEmail',$viewData['fields']['ticketEmail']).'</td></tr>
+            <tr><td>'.lang('telephone')                ."</td><td>".html5('ticketPhone',$viewData['fields']['ticketPhone']).'</td></tr>
+            <tr><td>'.lang('description')              ."</td><td>".html5('ticketDesc', $viewData['fields']['ticketDesc']) .'</td></tr>
+            <tr><td colspan="2">'.$viewData['lang']['ticket_attachment'].'</td></tr>
+            <tr><td>'.lang('attachment')               .'</td><td>'.html5('ticketFile', $viewData['fields']['ticketFile']) .'</td></tr>
+            <tr><td colspan="2" style="text-align:center">'.html5('btnSubmit', $viewData['fields']['btnSubmit']).'</td></tr>
         </tbody>
     </table>
 </form>';

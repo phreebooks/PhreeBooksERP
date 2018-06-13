@@ -55,7 +55,8 @@ class main //extends controller
 		clean('p', ['format'=>'command','default'=>'bizuno/main/bizunoHome'], 'get');
         if (getUserCache('profile', 'biz_id', false, 0)) { // keep going
 		} elseif (!in_array($GLOBALS['bizunoModule'], ['bizuno'])) { // not logged in or not installed, restrict to parts of module bizuno
-            exit("Bad request!"); // or redirect to homepage???
+            $_GET['p'] = '';
+            clean('p', ['format'=>'command','default'=>'bizuno/main/bizunoHome'], 'get');
         }
         msgDebug("\n compose lang = ".getUserCache('profile','language'));
         compose($GLOBALS['bizunoModule'], $GLOBALS['bizunoPage'], $GLOBALS['bizunoMethod'], $this->layout);

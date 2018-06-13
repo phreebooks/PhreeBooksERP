@@ -125,8 +125,8 @@ class shipping
                 }
             }
 		}
-		if (isset($data['journal_main']['method_code']['attr']['value']) && $data['journal_main']['method_code']['attr']['value']) {
-			$this->fields['method_code']['attr']['value']= $data['journal_main']['method_code']['attr']['value'];
+		if (isset($data['fields']['main']['method_code']['attr']['value']) && $data['fields']['main']['method_code']['attr']['value']) {
+			$this->fields['method_code']['attr']['value']= $data['fields']['main']['method_code']['attr']['value'];
 		}
 		$hide = $this->hidden ? ';display:none' : '';
 		$output['body'] .= '<div style="clear:both;text-align:right'.$hide.'">'."\n";
@@ -150,7 +150,7 @@ class shipping
     {
         // @todo Deprecate the taxShipping setting from extShipping, s/b set at PhreeBooks settings
         $taxShipping= getModuleCache('phreebooks', 'settings', 'general', 'shipping_taxed') ? 1 : 0;
-        $jID        = $data['journal_main']['journal_id']['attr']['value'];
+        $jID        = $data['fields']['main']['journal_id']['attr']['value'];
         $type       = in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
         return "function totals_shipping(begBalance) {
 	var newBalance = begBalance;

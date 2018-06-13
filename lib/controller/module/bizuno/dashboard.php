@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-03-28
+ * @version    2.x Last Update: 2018-06-11
  * @filesource /lib/controller/module/bizuno/dashboard.php
  */
 
@@ -44,17 +44,16 @@ class bizunoDashboard
             'title'  => lang('dashboards'),
 			'menu_id'=> $menu_id,
 			'divs'   => [
-                'toolbar'  => ['order'=>10,'type'=>'toolbar','key'=>'tbDashBoard'],
-				'frmDash'  => ['order'=>15,'type'=>'html',   'html'=>html5('frmDashboard', ['attr'=>  ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=bizuno/dashboard/save&menuID=$menu_id"]])],
-				'heading'  => ['order'=>30,'type'=>'html',   'html'=>"<h1>$title</h1>"],
-				'adminSet' => ['order'=>50,'type'=>'tabs',   'key'=>'tabSettings'],
-				'footer'   => ['order'=>99,'type'=>'html',   'html'=>"</form>"]],
-            'javascript' => ['jsForm'=>"ajaxForm('frmDashboard');"],
-			'tabs'   => ['tabSettings'=> ['attr'=>['tabPosition'=>'left']]],
-			'toolbar'=> ['tbDashBoard'=> ['icons' => [
+                'toolbar' => ['order'=>10,'type'=>'toolbar','key'=>'tbDashBoard'],
+				'frmDash' => ['order'=>15,'type'=>'html',   'html'=>html5('frmDashboard', ['attr'=>  ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=bizuno/dashboard/save&menuID=$menu_id"]])],
+				'heading' => ['order'=>30,'type'=>'html',   'html'=>"<h1>$title</h1>"],
+				'adminSet'=> ['order'=>50,'type'=>'tabs',   'key'=>'tabSettings'],
+				'footer'  => ['order'=>99,'type'=>'html',   'html'=>"</form>"]],
+            'jsReady' => ['jsForm'=>"ajaxForm('frmDashboard');"],
+			'tabs'    => ['tabSettings'=> ['attr'=>['tabPosition'=>'left']]],
+			'toolbars'=> ['tbDashBoard'=> ['icons' => [
                 'cancel'=> ['order'=> 10, 'events'=>  ['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/main/bizunoHome&menuID=$menu_id'"]],
-                'save'  => ['order'=> 20, 'events'=>  ['onClick'=>"jq('#frmDashboard').submit();"]]]]],
-            ];
+                'save'  => ['order'=> 20, 'events'=>  ['onClick'=>"jq('#frmDashboard').submit();"]]]]]];
 		$order  = 1;
 		$header = '<table style="border-collapse:collapse;width:100%">'."\n".' <thead class="panel-header">'."\n";
 		$header.= "  <tr><th>".lang('active')."</th><th>".lang('title')."</th><th>".lang('description')."</th></tr>\n</thead>\n <tbody>\n";

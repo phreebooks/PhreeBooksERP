@@ -94,39 +94,33 @@ class bizunoRoles
 			'page'   => $this->defaults['page'],
 			'events' => [
                 'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; }}",
-				'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', rowData.id); }",
-                ],
+				'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', rowData.id); }"],
 			'attr'   => ['type' =>'table',
 				'url'         => BIZUNO_AJAX."&p=bizuno/roles/managerRows",
 				'toolbar'     => '#'.$name.'Toolbar',
 				'pageSize'    => getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField'     => 'id',
-                ],
+				'idField'     => 'id'],
 			'source' => [
-                'tables' => ['roles'=>  ['table'=>BIZUNO_DB_PREFIX."roles"]],
+                'tables' => ['roles'=>['table'=>BIZUNO_DB_PREFIX."roles"]],
 				'actions' => [
-                    'newRole'  => ['order'=>10, 'html'=>  ['icon'=>'new',  'events'=>  ['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', 0);"]]],
-					'clrSearch'=> ['order'=>50, 'html'=>  ['icon'=>'clear','events'=>  ['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]],
-                    ],
+                    'newRole'  => ['order'=>10, 'html'=>['icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', 0);"]]],
+					'clrSearch'=> ['order'=>50, 'html'=>['icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]]],
 				'search' => [BIZUNO_DB_PREFIX."roles".'.title'],
 				'sort'   => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
-				'filters'=> ['search' => ['order'=>'90', 'html'=>  ['label'=>lang('search'), 'attr'=>  ['value'=>$this->defaults['search']]]]],
-                ],
+				'filters'=> ['search' => ['order'=>'90', 'html'=>['attr'=>['value'=>$this->defaults['search']]]]]],
 			'columns' => [
-                'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.id",      'attr'=>  ['hidden'=>true]],
-				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.inactive",'attr'=>  ['hidden'=>true]],
-				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>150], 'events'=>  ['formatter'=>$name.'Formatter'],
+                'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.id",      'attr'=>['hidden'=>true]],
+				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.inactive",'attr'=>['hidden'=>true]],
+				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>['width'=>150], 'events'=>['formatter'=>$name.'Formatter'],
 					'actions'=> [
 						'edit' => ['icon'=>'edit', 'size'=>'small', 'order'=>20,
 							'events'=>  ['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', idTBD);"]],
 						'copy' => ['icon'=>'copy', 'size'=>'small', 'order'=>40,
 							'events'=> ['onClick' => "var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/roles/copy', idTBD, title);"]],
 						'delete' => ['icon'=>'trash', 'size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
-							'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/roles/delete', idTBD);"]]],
-                    ],
+							'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/roles/delete', idTBD);"]]]],
 				'title'=> ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."roles.title", 'label'=>pullTableLabel(BIZUNO_DB_PREFIX."roles", 'title'),
-					'attr' => ['width'=>100, 'sortable'=>true, 'resizable'=>true]]],
-            ];
+					'attr' => ['width'=>100, 'sortable'=>true, 'resizable'=>true]]]];
 	}
 
 	/**
@@ -147,13 +141,13 @@ class bizunoRoles
 			['id'=>'3', 'text'=>lang('edit')],
 			['id'=>'4', 'text'=>lang('full')]];
 		$data = ['type'=>'divHTML',
-			'divs'   => ['detail'=> ['order'=>10, 'src'=>BIZUNO_LIB."view/module/bizuno/accRolesDetail.php"]],
-			'toolbar'=> ['tbRoles'=>  ['icons' => [
+			'divs'    => ['detail'=> ['order'=>10, 'src'=>BIZUNO_LIB."view/module/bizuno/accRolesDetail.php"]],
+			'toolbars'=> ['tbRoles'=>  ['icons' => [
 				'save' => ['order'=>20,'hidden'=>$security>1?'0':'1',   'events'=>['onClick'=>"jq('#frmRoles').submit();"]],
                 'new'  => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"accordionEdit('accRoles','dgRoles','divRolesDetail','".jsLang('details')."','bizuno/roles/edit', 0);"]],
 				'help' => ['order'=>99,'index' =>'']]]],
 			'tabs'  => ['tabRoles'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]]],
-			'form'  => ['frmRoles'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/roles/save"]]],
+			'forms' => ['frmRoles'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/roles/save"]]],
 			'fields'=> [
                 'selFill' => ['label'=>$this->lang['desc_security_fill'],'values'=>$securityChoices,'events'=>['onChange'=>"autoFill();"],'attr'=>['type'=>'select']]]];
 		$dbData = dbGetRow(BIZUNO_DB_PREFIX."roles", "id='$rID'");

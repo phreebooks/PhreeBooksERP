@@ -17,11 +17,17 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-02
+ * @version    2.x Last Update: 2018-05-29
  * @filesource lib/controller/functions.php
  */
 
 namespace bizuno;
+
+/**
+ * Should eventually replace all calls to msgDebugWrite but need way to set file name first.
+ */
+//function bizShutdown() { msgTrap(); msgDebugWrite(); }
+//register_shutdown_function("\\bizuno\\bizShutdown"); 
 
 /**
  * Composer gathers the module and mods, sorts them and executes in sequence.
@@ -109,8 +115,11 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 
 function myExceptionHandler($e)
 {
-    error_log("Fatal Error, message returned: ".$e->getMessage());
-    exit("Program Exception! Please fill out a support ticket with the details that got you here.");
+    msgDebugWrite();
+    if (!defined('BIZUNO_DEBUG') || !constant('BIZUNO_DEBUG')) {
+        error_log("Fatal Error, message returned: ".$e->getMessage());
+        exit("Program Exception! Please fill out a support ticket with the details that got you here.");
+    }
 }
 /**
  * Retrieves a value from the user cache

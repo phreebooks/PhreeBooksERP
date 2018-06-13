@@ -23,13 +23,3 @@
  */
 
 namespace bizuno;
-
-$output['body'] .= html5('first_date', $data['fields']['first_date'])." ";
-$output['body'] .= html5('last_update', $data['fields']['last_update'])."<br />";
-$output['body'] .= '  <div style="float:right;width:50%;">'."\n";
-htmlDatagrid($output, $data, 'inv');
-$output['body'] .= "  </div>\n";
-$output['body'] .= '  <div style="width:49%;">'."\n";
-htmlDatagrid($output, $data, 'po_so');
-$output['body'] .= "  </div>\n";
-

@@ -18,17 +18,16 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-06-01
-
  * @filesource /lib/view/module/bizuno/accProfileReminder.php
  */
 
 namespace bizuno;
 
 $output['body'] .= '
-<div id="divReminder"><fieldset><legend>'.$data['lang']['reminder_title'].'</legend>
-    <p>'.$data['lang']['reminder_desc'].'</p>
-    <p>'.html5('title',    $data['fields']['title']).'</p>
-    <p>'.html5('dateStart',$data['fields']['dateStart']).'</p>
-    <p>'.html5('recur',    $data['fields']['recur']) .'</p>
+<div id="divReminder"><fieldset><legend>'.$viewData['lang']['reminder_title'].'</legend>
+    <p>'.$viewData['lang']['reminder_desc'].'</p>
+    <p>'.html5('title',    $viewData['fields']['title']).'</p>
+    <p>'.html5('dateStart',$viewData['fields']['dateStart']).'</p>
+    <p>'.html5('recur',    $viewData['fields']['recur']) .'</p>
 </fieldset></div>';
 $output['jsBody'][] = "ajaxForm('frmReminder');";

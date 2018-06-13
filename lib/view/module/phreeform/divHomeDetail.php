@@ -25,18 +25,18 @@
 
 namespace bizuno;
 
-$output['body'] .= '<div style="float:right;width:50%"><h3>'.$data['lang']['msg_recently_added_docs']."</h3>";
-foreach ($data['values']['recent'] as $report) {
+$output['body'] .= '<div style="float:right;width:50%"><h3>'.$viewData['lang']['msg_recently_added_docs']."</h3>";
+foreach ($viewData['values']['recent'] as $report) {
     $output['body'] .= '<div><a href="#" onClick="jsonAction(\'phreeform/main/detailReport\', '.$report['id'].');">';
     $output['body'] .= html5('', ['icon'=>viewMimeIcon($report['mime_type']), 'size'=>'small', 'label'=>$report['title']]);
     $output['body'] .= ' '.$report['title']."</a></div>\n";
 }
-if (sizeof($data['values']['recent']) == 0) { $output['body'] .= lang('msg_no_documents'); }
+if (sizeof($viewData['values']['recent']) == 0) { $output['body'] .= lang('msg_no_documents'); }
 $output['body'] .= '</div><div style="width:50%"><h3>'.lang('my_documents')."</h3>";
-foreach ($data['values']['mine'] as $report) {
+foreach ($viewData['values']['mine'] as $report) {
     $output['body'] .= '<div><a href="#" onClick="jsonAction(\'phreeform/main/detailReport\', '.$report['id'].');">';
     $output['body'] .= html5('', ['icon'=>viewMimeIcon($report['mime_type']), 'size'=>'small', 'label'=>$report['title']]);
     $output['body'] .= ' '.$report['title']."</a></div>\n";
 }
-if (sizeof($data['values']['mine']) == 0) { $output['body'] .= lang('msg_no_documents'); }
+if (sizeof($viewData['values']['mine']) == 0) { $output['body'] .= lang('msg_no_documents'); }
 $output['body'] .= "</div>\n";

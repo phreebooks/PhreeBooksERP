@@ -105,6 +105,7 @@ $lang = [
     'wrong_code_time' => "This is the wrong code or time expired.",
     'password_changed' => 'Your password has been successfully changed.',
     // PhreeForm processing/separators
+    'pf_proc_json' => 'JSON Decode',
     'pf_proc_neg' => 'Negate',
 	'pf_proc_lc' => 'Lowercase',
 	'pf_proc_uc' => 'Uppercase',

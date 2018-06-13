@@ -35,7 +35,30 @@ class phreebooksTools
         $this->dirUploads = 'data/phreebooks/uploads';
 	}
 
-	/**
+    public function jrnlData(&$layout=[])
+    {
+        $total_v= $total_c= 0;
+        $output = [];
+//      $code   = clean('code', 'text', 'get'); // not used yet // 6_12 : dashbaord summary_6_12
+        $range  = clean('range','cmd',  'get');
+        require_once(BIZUNO_LIB.'controller/module/phreebooks/dashboards/summary_6_12/summary_6_12.php');
+        $fqdn   = "\\bizuno\\summary_6_12";
+        $dash   = new $fqdn();
+        $data   = $dash->dataSales($range);
+        $raw[] = [jslang('Date'), jsLang('purchases'), jsLang('sales')];
+        foreach ($data as $date => $values) {
+            $total_v += $values['v'];
+            $total_c += $values['c'];
+            $raw[] = [viewFormat($date, 'date'), viewFormat($values['v'],'currency'), viewFormat($values['c'],'currency')];
+        }
+        $raw[] = [jslang('total'), viewFormat($total_v,'currency'), viewFormat($total_c,'currency')];
+        if (sizeof($raw) < 2) { return msgAdd('There are no sales this period!'); }
+        foreach ($raw as $row) { $output[] = '"'.implode('","', $row).'"'; }
+		$io = new io();
+		$io->download('data', implode("\n", $output), "JournalData-".date('Y-m-d').".csv");
+    }
+
+    /**
 	 * This function adds a fiscal year to the books, it defaults to a 12 period year starting on the next available date
      * @param array $layout - Structure coming in
      * @return modified $layout
@@ -138,10 +161,10 @@ class phreebooksTools
 		$fy = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", 'fiscal_year', '', false);
         $this->lang['fy_del_instr'] = sprintf($this->lang['fy_del_instr'], $fy);
 		$layout = array_replace_recursive($layout, ['type'=>'divHTML',
-			'divs'   => ['fyClose'   =>['order'=>10, 'src'=>BIZUNO_LIB."view/module/phreebooks/tabToolsCloseFY.php"]],
-			'toolbar'=> ['tbFyClose' =>['icons'=>['start'=>['order'=>10,'title'=>lang('Start'),'icon'=>'next','type'=>'menu','events'=>['onClick'=>"divSubmit('phreebooks/tools/fyClose', 'divCloseFY');"]]]]],
-			'tabs'   => ['tabFyClose'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]]],
-            'lang' => $this->lang]);
+			'divs'    => ['fyClose'   =>['order'=>10, 'src'=>BIZUNO_LIB."view/module/phreebooks/tabToolsCloseFY.php"]],
+			'toolbars'=> ['tbFyClose' =>['icons'=>['start'=>['order'=>10,'title'=>lang('Start'),'icon'=>'next','type'=>'menu','events'=>['onClick'=>"divSubmit('phreebooks/tools/fyClose', 'divCloseFY');"]]]]],
+			'tabs'    => ['tabFyClose'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]]],
+            'lang'    => $this->lang]);
     }
 
 	/**

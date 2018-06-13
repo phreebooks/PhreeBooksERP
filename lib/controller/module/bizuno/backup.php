@@ -45,7 +45,7 @@ class bizunoBackup
         if (!$security = validateSecurity('bizuno', 'backup', 1)) { return; }
 		$data = [
             'pageTitle'=> lang('bizuno_backup'),
-			'toolbar'  => ['tbBackup' => ['icons' => [
+			'toolbars' => ['tbBackup' => ['icons' => [
                 'restore'=> ['order'=>20, 'hidden'=>$security==4?false:true, 'events'=>  ['onClick'=>"hrefClick('bizuno/backup/managerRestore');"]],
 				'help'   => ['order'=>99, 'index'=>'']]]],
 			'divs' => [
@@ -53,11 +53,11 @@ class bizunoBackup
                 'toolbar'=> ['order'=>20,'type'=>'toolbar','key'=>'tbBackup'],
 				'heading'=> ['order'=>30,'type'=>'html',   'html'=>"<h1>".lang('bizuno_backup')."</h1>\n"],
 				'backup' => ['order'=>50,'src'=>BIZUNO_LIB."view/module/bizuno/divBackup.php"]],
-			'form'   => [
+			'forms'  => [
                 'frmBackup'=> ['attr'=>  ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=bizuno/backup/save"]],
 				'frmAudit' => ['attr'=>  ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=bizuno/backup/cleanAudit"]]],
 			'fields' => [
-                'incFiles' => ['label'=>$this->lang['desc_backup_all'], 'position'=>'after', 'attr'=>  ['type'=>'checkbox', 'value'=>'all']],
+                'incFiles' => ['label'=>$this->lang['desc_backup_all'], 'position'=>'after', 'attr'=>['type'=>'checkbox', 'value'=>'all']],
 				'btnBackup'=> ['icon'=>'backup', 'size'=>'large','label'=>lang('go'), 'events'=> ['onClick'=>"jq('body').addClass('loading'); jq('#frmBackup').submit();"]],
 				'btnAudit' => ['icon'=>'backup', 'size'=>'large','label'=>lang('go'), 'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('bizuno/backup/saveAudit');"]],
 				'dateClean'=> ['attr'=>  ['type'=>'date', 'value'=>localeCalculateDate(date('Y-m-d'), 0, -1)]],
@@ -93,7 +93,7 @@ class bizunoBackup
         dbDump("bizuno-".date('Ymd-His'), $this->dirBackup);
         msgLog($this->lang['msg_backup_success']);
 		msgAdd($this->lang['msg_backup_success'], 'success');
-		$layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"jq('#dgBackup').datagrid('reload');"]]);
+		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#dgBackup').datagrid('reload');"]]);
 	}
 	
 	/**
@@ -161,10 +161,10 @@ class bizunoBackup
         $html .= html5('', $btnUpgrade);
         $html .= "</fieldset>";
         $data = ['pageTitle'=> lang('bizuno_upgrade'),
-			'toolbar'=> ['tbUpgrade'=>['icons'=>['cancel'=>['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/backup/manager'"]]]]],
-			'divs'   => [
-                'toolbar'=> ['order'=>20,'type'=>'toolbar','key'=>'tbUpgrade'],
-				'content'=> ['order'=>50,'type'=>'html',   'html'=>$html]]];
+			'toolbars'=> ['tbUpgrade'=>['icons'=>['cancel'=>['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/backup/manager'"]]]]],
+			'divs'    => [
+                'toolbars'=> ['order'=>20,'type'=>'toolbar','key'=>'tbUpgrade'],
+				'content' => ['order'=>50,'type'=>'html',   'html'=>$html]]];
 		$layout = array_replace_recursive($layout, viewMain(), $data);
     }
     
@@ -217,7 +217,7 @@ class bizunoBackup
         if (!$security = validateSecurity('bizuno', 'backup', 4)) { return; }
 		$data = [
             'pageTitle'=> lang('bizuno_restore'),
-			'toolbar'  => ['tbRestore' => ['icons' => [
+			'toolbars'  => ['tbRestore' => ['icons' => [
                 'cancel'=> ['order'=>10, 'events'=>  ['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/backup/manager'"]]]]],
 			'divs'     => [
                 'toolbar'=> ['type'=>'toolbar', 'order'=>20, 'key'=>'tbRestore'],

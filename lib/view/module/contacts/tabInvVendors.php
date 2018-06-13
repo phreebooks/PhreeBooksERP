@@ -24,30 +24,30 @@
 
 namespace bizuno;
 
-$inventory_type = $data['fields']['inventory_type']['attr']['value'];
+$inventory_type = $viewData['fields']['inventory_type']['attr']['value'];
 $output['body'] .= '
 <fieldset><legend>'.lang('details').' ('.lang('vendors').')</legend>
 <table style="border-style:none;width:100%">
 	<tbody>
 		<tr>
-			<td colspan="2">'.html5('description_purchase', $data['fields']['description_purchase'])."</td>
+			<td colspan="2">'.html5('description_purchase', $viewData['fields']['description_purchase'])."</td>
 		</tr>\n";
 if (validateSecurity('inventory', 'prices_v', 1, false)) {
-    $output['body'] .= "      <tr><td>".html5('item_cost',     $data['fields']['item_cost']).(sizeof(getModuleCache('phreebooks', 'currency', 'iso'))>1 ? ' ('.getUserCache('profile', 'currency', false, 'USD').')' : '');
-    if (isset($data['fields']['id']['attr']['value']) && $data['fields']['id']['attr']['value']) { 
-        $output['body'] .= html5('show_prices_v', $data['show_prices_v']);   
+    $output['body'] .= "      <tr><td>".html5('item_cost',     $viewData['fields']['item_cost']).(sizeof(getModuleCache('phreebooks', 'currency', 'iso'))>1 ? ' ('.getUserCache('profile', 'currency', false, 'USD').')' : '');
+    if (isset($viewData['fields']['id']['attr']['value']) && $viewData['fields']['id']['attr']['value']) { 
+        $output['body'] .= html5('show_prices_v', $viewData['show_prices_v']);   
     }
-    if (isset($data['fields']['id']['attr']['value']) && $data['fields']['id']['attr']['value'] && in_array($inventory_type, array('ma', 'sa'))) {
-        $output['body'] .= html5('assy_cost', $data['assy_cost']);
+    if (isset($viewData['fields']['id']['attr']['value']) && $viewData['fields']['id']['attr']['value'] && in_array($inventory_type, array('ma', 'sa'))) {
+        $output['body'] .= html5('assy_cost', $viewData['assy_cost']);
     }
-    $output['body'] .= "</td><td>".html5('tax_rate_id_v', $data['fields']['tax_rate_id_v'])."</td></tr>";
+    $output['body'] .= "</td><td>".html5('tax_rate_id_v', $viewData['fields']['tax_rate_id_v'])."</td></tr>";
 }
 if (validateSecurity('inventory', 'prices_v', 1, false)) {
-    $output['body'] .= "<tr><td>".(sizeof(getModuleCache('inventory', 'prices')) ? html5('price_sheet_v', $data['fields']['price_sheet_v']) : '&nbsp;')."</td>";
+    $output['body'] .= "<tr><td>".(sizeof(getModuleCache('inventory', 'prices')) ? html5('price_sheet_v', $viewData['fields']['price_sheet_v']) : '&nbsp;')."</td>";
 } else {
     $output['body'] .= "<tr><td>&nbsp;</td>";
 }
-$output['body'] .= "<td>".html5('vendor_id', $data['fields']['vendor_id'])."</td></tr>
+$output['body'] .= "<td>".html5('vendor_id', $viewData['fields']['vendor_id'])."</td></tr>
 	</tbody>
 </table>
 </fieldset>\n";

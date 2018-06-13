@@ -23,16 +23,16 @@
 
 namespace bizuno;
 
-htmlToolbar($output, $data, 'tbGL');
+htmlToolbar($output, $viewData, 'tbGL');
 $output['body'] .= '
-'.html5('frmGLEdit', $data['form']['frmGLEdit']).'
-  '.html5('gl_account', $data['fields']['gl_account']).'
-  '.html5('gl_inactive',$data['fields']['gl_inactive']).'
-  '.html5('gl_previous',$data['fields']['gl_previous']).'<br />
-  '.html5('gl_desc',    $data['fields']['gl_desc']).'<br />
-  '.html5('gl_type',    $data['fields']['gl_type']).'<br />
-  '.html5('gl_cur',     $data['fields']['gl_cur']).'<br />
-  '.html5('gl_header',  $data['fields']['gl_header']).'
-  '.html5('gl_parent',  $data['fields']['gl_parent']).'
+'.html5('frmGLEdit', $viewData['forms']['frmGLEdit']).'
+  '.html5('gl_account', $viewData['fields']['gl_account']).'
+  '.html5('gl_inactive',$viewData['fields']['gl_inactive']).'
+  '.html5('gl_previous',$viewData['fields']['gl_previous']).'<br />
+  '.html5('gl_desc',    $viewData['fields']['gl_desc']).'<br />
+  '.html5('gl_type',    $viewData['fields']['gl_type']).'<br />
+  '.html5('gl_cur',     $viewData['fields']['gl_cur']).'<br />
+  '.html5('gl_header',  $viewData['fields']['gl_header']).'
+  '.html5('gl_parent',  $viewData['fields']['gl_parent']).'
 </form>';
 $output['jsBody'][] = "ajaxForm('frmGLEdit');";

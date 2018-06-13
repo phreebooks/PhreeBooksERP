@@ -17,20 +17,19 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-08-22
+ * @version    2.x Last Update: 2018-06-05
  * @filesource /lib/controller/module/bizuno/install/phreeform.php
- * 
  */
 
 $phreeform = [
-    'misc' => ['title'=>'misc', 'folders'=>  [
+    'misc' => ['title'=>'misc',      'folders'=>[
         'misc:rpt' => ['type'=>'dir', 'title'=>'reports'],
 		'misc:misc'=> ['type'=>'dir', 'title'=>'forms']]],
-	'bnk'  => ['title'=>'banking', 'folders'=>  [
+	'bnk'  => ['title'=>'banking',   'folders'=>[
         'bnk:rpt'  => ['type'=>'dir', 'title'=>'reports'],
 		'bnk:j18'  => ['type'=>'dir', 'title'=>'bank_deposit'],
 		'bnk:j20'  => ['type'=>'dir', 'title'=>'bank_check']]],
-	'cust' => ['title'=>'customers', 'folders'=>  [
+	'cust' => ['title'=>'customers', 'folders'=>[
         'cust:rpt' => ['type'=>'dir', 'title'=>'reports'],
 		'cust:j9'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_9'],
 		'cust:j10' => ['type'=>'dir', 'title'=>'journal_main_journal_id_10'],
@@ -40,13 +39,13 @@ $phreeform = [
         'cust:lblc'=> ['type'=>'dir', 'title'=>'label'],
 		'cust:ltr' => ['type'=>'dir', 'title'=>'letter'],
 		'cust:stmt'=> ['type'=>'dir', 'title'=>'statement']]],
-	'gl'   => ['title'=>'general_ledger', 'folders'=>  [
+	'gl'   => ['title'=>'general_ledger', 'folders'=>[
         'gl:rpt'   => ['type'=>'dir', 'title'=>'reports', 'type'=>'dir']]],
-	'hr'   => ['title'=>'employees', 'folders'=> [
+	'hr'   => ['title'=>'employees', 'folders'=>[
         'hr:rpt'   => ['type'=>'dir', 'title'=>'reports']]],
-	'inv'  => ['title'=>'inventory', 'folders'=>  [
+	'inv'  => ['title'=>'inventory', 'folders'=>[
         'inv:rpt'  => ['type'=>'dir', 'title'=>'reports']]],
-	'vend' => ['title'=>'vendors', 'folders'=>  [
+	'vend' => ['title'=>'vendors',   'folders'=>[
         'vend:rpt' => ['type'=>'dir', 'title'=>'reports'],
 		'vend:j3'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_3'],
 		'vend:j4'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_4'],

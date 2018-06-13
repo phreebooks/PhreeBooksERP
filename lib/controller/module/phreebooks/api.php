@@ -48,7 +48,7 @@ class phreebooksApi
     {
 		$layout = array_replace_recursive($layout, [
 			'tabs'=>['tabImpExp'=>['divs'=>['begBal'=>['order'=>90,'label'=>lang('beginning_balances'),'src'=>BIZUNO_LIB."view/module/phreebooks/tabToolsBegBal.php"]]]],
-			'form'=>[
+			'forms'=>[
                 'frmBegBal'=> ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/begBalSave"]],
 				'frmImpInv'=> ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=inv"]],
 				'frmImpJ4' => ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j4"]],
@@ -104,19 +104,19 @@ class phreebooksApi
  <p>'.$this->lang['desc_import_journal'].'</p>
  <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
   <tbody>
-   <tr><td>'.$this->lang['phreebooks_import_inv']."</td><td>".html5('frmImpInv',$data['form']['frmImpInv']).
+   <tr><td>'.$this->lang['phreebooks_import_inv']."</td><td>".html5('frmImpInv',$data['forms']['frmImpInv']).
     html5('import_inv',$data['fields']['import_inv']).html5('btn_inv',$data['fields']['btn_inv']).'</form></td></tr>
    <tr><td colspan="2"><hr /></td></tr>
-   <tr><td>'.$this->lang['phreebooks_import_po'] ."</td><td>".html5('frmImpJ4',$data['form']['frmImpJ4']).
+   <tr><td>'.$this->lang['phreebooks_import_po'] ."</td><td>".html5('frmImpJ4',$data['forms']['frmImpJ4']).
     html5('import_j4', $data['fields']['import_j4']) .html5('btn_j4', $data['fields']['btn_j4']) .'</form></td></tr>
    <tr><td colspan="2"><hr /></td></tr>
-   <tr><td>'.$this->lang['phreebooks_import_ap'] ."</td><td>".html5('frmImpJ6',$data['form']['frmImpJ6']).
+   <tr><td>'.$this->lang['phreebooks_import_ap'] ."</td><td>".html5('frmImpJ6',$data['forms']['frmImpJ6']).
     html5('import_j6', $data['fields']['import_j6']) .html5('btn_j6', $data['fields']['btn_j6']) .'</form></td></tr>
    <tr><td colspan="2"><hr /></td></tr>
-   <tr><td>'.$this->lang['phreebooks_import_so'] ."</td><td>".html5('frmImpJ10',$data['form']['frmImpJ10']).
+   <tr><td>'.$this->lang['phreebooks_import_so'] ."</td><td>".html5('frmImpJ10',$data['forms']['frmImpJ10']).
     html5('import_j10',$data['fields']['import_j10']).html5('btn_j10',$data['fields']['btn_j10']).'</form></td></tr>
    <tr><td colspan="2"><hr /></td></tr>
-   <tr><td>'.$this->lang['phreebooks_import_ar'] ."</td><td>".html5('frmImpJ12',$data['form']['frmImpJ12']).
+   <tr><td>'.$this->lang['phreebooks_import_ar'] ."</td><td>".html5('frmImpJ12',$data['forms']['frmImpJ12']).
     html5('import_j12',$data['fields']['import_j12']).html5('btn_j12',$data['fields']['btn_j12']).'</form></td></tr>
   </tbody>
  </table>

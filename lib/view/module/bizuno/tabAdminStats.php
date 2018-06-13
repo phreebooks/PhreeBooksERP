@@ -18,25 +18,24 @@
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2017-02-14
-
  * @filesource /lib/view/module/bizuno/tabAdminStats.php
  */
 
 namespace bizuno;
 
 $output['body'] .= "
-<fieldset> <!-- db table stats --><legend>".$data['lang']['table_stats'].'</legend>
+<fieldset> <!-- db table stats --><legend>".$viewData['lang']['table_stats'].'</legend>
     <table style="border-style:none;width:100%">
     <thead class="panel-header">
         <tr><th>'.lang('table')."</th>
-        <th>".$data['lang']['db_engine']."</th>
-        <th>".$data['lang']['db_rows']."</th>
-        <th>".$data['lang']['db_collation']."</th>
+        <th>".$viewData['lang']['db_engine']."</th>
+        <th>".$viewData['lang']['db_rows']."</th>
+        <th>".$viewData['lang']['db_collation']."</th>
         <th>".lang('size')."</th>
-        <th>".$data['lang']['db_next_id'].'</th></tr>
+        <th>".$viewData['lang']['db_next_id'].'</th></tr>
     </thead>
     <tbody>';
-foreach ($data['fields']['stats'] as $table) {
+foreach ($viewData['fields']['stats'] as $table) {
 	$output['body'] .= "
     <tr>
         <td>". $table['Name']."</td>
@@ -51,4 +50,4 @@ $output['body'] .= "
     </tbody>
     </table>
 </fieldset>\n";
-if (isset($data['statsSrc'])) {	include($data['statsSrc']); } // include any extra stats content
+if (isset($viewData['statsSrc'])) {	include($viewData['statsSrc']); } // include any extra stats content
