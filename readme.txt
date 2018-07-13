@@ -5,11 +5,11 @@ Tags: erp, accounting, bookkeeping, crm, quickbooks, woocommerce, e-commerce, ca
 License: GPL3
 License URI: https://www.gnu.org/licenses/gpl.html
 
-Bizuno Accounting, by PhreeSoft Inc., is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform.
+Bizuno Accounting, by PhreeSoft, Inc., is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform.
 
 == Description ==
 
-Bizuno Accounting, by PhreeSoft Inc., is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform. Features include CRM, Customer account management, vendor management, full featured double-entry accounting, inventory control, financial transaction management an more. Features include:
+Bizuno Accounting, by PhreeSoft, Inc., is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform. Features include CRM, Customer account management, vendor management, full featured double-entry accounting, inventory control, financial transaction management an more. Features include:
 
 * Multi-user and multi-Currency capability
 * Over 40 standard reports and PhreeForm report/form generator with user level lockout security
@@ -35,6 +35,8 @@ Bizuno Accounting, by PhreeSoft Inc., is a full featured double-entry accounting
 
 == Upgrade Notice ==
 
+2018-06-13 - 5.0.4 - No database changes, overwrite current files with new version
+2018-06-13 - 5.0.2 - No database changes, overwrite current files with new version
 2018-06-13 - 5.0.2 - No database changes, overwrite current files with new version
 2018-04-23 - 5.0.1 - No database changes necessary, replace current files with new version
 2018-04-10 - 5.0.0 - Initial Release to GitHub repository
@@ -51,6 +53,8 @@ Bizuno Accounting, by PhreeSoft Inc., is a full featured double-entry accounting
 
 == Changelog ==
 
+= 5.0.4 =
+2018-07-12 - Incorporate Bizuno library 2.1.5, bugs with portal and configuration paths
 = 5.0.2 =
 2018-06-13 - Incorporate Bizuno library 2.1.4, bugs with portal and configuration paths
 = 5.0.1 =
