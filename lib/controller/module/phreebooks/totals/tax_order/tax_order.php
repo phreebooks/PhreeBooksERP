@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.X Last Update: 2018-03-28
+ * @version    2.X Last Update: 2018-06-14
  * @filesource /controller/module/phreebooks/totals/tax_order/tax_order.php
  */
 
@@ -87,7 +87,7 @@ class tax_order
 	public function render(&$output, $data=[])
     {
 		$this->fields = [
-            'totals_tax_order'     => ['label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->cType).' '.$this->lang['extra_title'], 'format'=>'currency','attr'=>['size'=>'15','value'=>'0','style'=>'text-align:right','readonly'=>'readonly']],
+            'totals_tax_order'     => ['label'=>pullTableLabel('journal_main','tax_rate_id',$this->cType).' '.$this->lang['extra_title'],'format'=>'currency','attr'=>['size'=>'15','value'=>'0','style'=>'text-align:right','readonly'=>'readonly']],
             'tax_rate_id'          => [], // drop down tax rate selection
             'totals_tax_order_text'=> ['attr'=>  ['value'=>'textTBD','size'=>'16','readonly'=>'readonly']],
             'totals_tax_order_gl'  => ['label'=>lang('gl_account'), 'attr'=>  ['type'=>'text', 'value'=>'glTBD','size'=>'5','readonly'=>'readonly']],
@@ -96,18 +96,18 @@ class tax_order
         $jID  = $data['fields']['main']['journal_id']['attr']['value'];
 		$type = in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
 		$hide = $this->hidden ? ';display:none' : '';
-        $output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
-		$output['body'] .= html5('',                $this->fields['totals_tax_order_opt']);
-		$output['body'] .= html5('totals_tax_order',$this->fields['totals_tax_order'])."<br />";
+        $output['body'] .= '<div style="text-align:right'.$hide.'">';
+		$output['body'] .= html5('totals_tax_order',$this->fields['totals_tax_order']);
+		$output['body'] .= html5('',                $this->fields['totals_tax_order_opt'])."<br />";
         $output['body'] .= html5('tax_rate_id',     $this->fields['tax_rate_id']);
-		$output['body'] .= "</div>\n";
-		$output['body'] .= '<div id="phreebooks_totals_tax_order" style="display:none" class="layout-expand-over">'."\n";
-		$output['body'] .= '  <table id="tableTaxOrder"></table>'."\n";
-		$output['body'] .= "</div>\n";
+		$output['body'] .= "</div>";
+		$output['body'] .= '<div id="phreebooks_totals_tax_order" style="display:none" class="layout-expand-over">';
+		$output['body'] .= '  <table id="tableTaxOrder"></table>';
+		$output['body'] .= "</div>";
 
 		$temp = "<tr><td>".html5('totals_tax_order_text[]',$this->fields['totals_tax_order_text'])."</td>";
-		$temp.= "<td>".html5('totals_tax_order_gl[]',  $this->fields['totals_tax_order_gl'])."</td>";
-		$temp.= "<td>".html5('totals_tax_order_amt[]', $this->fields['totals_tax_order_amt'])."</td></tr>";
+		$temp.= "<td>"    .html5('totals_tax_order_gl[]',  $this->fields['totals_tax_order_gl'])  ."</td>";
+		$temp.= "<td>"    .html5('totals_tax_order_amt[]', $this->fields['totals_tax_order_amt']) ."</td></tr>";
 		$row  = str_replace("\n", "", $temp);
         $output['jsHead'][] = "
 var taxOrderTD = '".str_replace("'", "\'", $row)."';

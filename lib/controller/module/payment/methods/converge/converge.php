@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2018-02-09
  * @filesource /lib/controller/module/payment/methods/converge.php
@@ -82,14 +82,14 @@ class converge
 		msgDebug("\nWorking with values = ".print_r($values, true));
 		$exp = pullExpDates();
 		$this->viewData = [
-            'trans_code'=> ['attr'=>  ['type'=>'hidden']],
-			'selCards'  => ['label'=>lang('payment_stored_cards'),'break'=>true,'attr'=>  ['type'=>'select'],  'events'=>  ['onChange'=>"convergeRefNum('stored');"]],
-			'save'      => ['label'=>lang('save'),                'break'=>true,'attr'=>  ['type'=>'checkbox', 'value'=>'1']],
-			'name'      => ['label'=>lang('payment_name') ,       'break'=>true,'attr'=>  ['size'=>'24']],
-			'number'    => ['label'=>lang('payment_number'),      'break'=>true,'attr'=>  ['size'=>'19'], 'events'=>  ['onChange'=>"convergeRefNum('number');"]],
-			'month'     => ['label'=>lang('payment_expiration'),  'values'=>$exp['months'],'attr'=>  ['type'=>'select']],
-			'year'      => ['values'=>$exp['years'],              'break'=>true,'attr'=>  ['type'=>'select']],
-			'cvv'       => ['label'=>lang('payment_cvv'),                       'attr'=>  ['size'=>'5', 'maxlength'=>'4']]];
+            'trans_code'=> ['attr'=>['type'=>'hidden']],
+			'selCards'  => ['attr'=>['type'=>'select'],'events'=>['onChange'=>"convergeRefNum('stored');"]],
+			'save'      => ['label'=>lang('save'),              'break'=>true,'attr'=>['type'=>'checkbox','value'=>'1']],
+			'name'      => ['label'=>lang('payment_name') ,     'break'=>true,'attr'=>['size'=>'24']],
+			'number'    => ['label'=>lang('payment_number'),    'break'=>true,'attr'=>['size'=>'19'],     'events'=>['onChange'=>"convergeRefNum('number');"]],
+			'month'     => ['label'=>lang('payment_expiration'),'values'=>$exp['months'],'attr'=>['type'=>'select']],
+			'year'      => ['values'=>$exp['years'],            'break'=>true,'attr'=>['type'=>'select']],
+			'cvv'       => ['label'=>lang('payment_cvv'),                     'attr'=>['size'=>'5', 'maxlength'=>'4']]];
 		if (isset($values['method']) && $values['method']==$this->code 
 				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
 			$this->viewData['number']['attr']['value'] = isset($values['hint']) ? $values['hint'] : '****';
@@ -113,11 +113,11 @@ class converge
                 $this->viewData['selCards']['values'] = $encrypt->viewCC('contacts', $cID);
                 if (sizeof($this->viewData['selCards']['values']) == 0) {
                     $this->viewData['selCards']['hidden'] = true;
-                    $show_s = false;
+                    $show_s      = false;
                 } else {
-                    $checked = 's';
-                    $show_s = true;
-                    $first_prefix = $this->viewData['selCards']['values'][0]['text'];
+                    $checked     = 's';
+                    $show_s      = true;
+                    $first_prefix= $this->viewData['selCards']['values'][0]['text'];
                     $invoice_num = substr($first_prefix, 0, 2)=='37' ? $invoice_amex : $invoice_num;
                 }
             } else { $show_s = false; }
@@ -159,7 +159,7 @@ if ($show_c) {
 	$output['body'] .= html5($this->code.'trans_code',$this->viewData['trans_code']).sprintf(lang('msg_capture_payment'), viewFormat($values['total'],'currency'));
 }
 $output['body'] .= '</div><div id="div'.$this->code.'s"'.(!$show_c?'':'style=" display:none"').'>';
-if ($show_s) { $output['body'] .= html5($this->code.'selCards', $this->viewData['selCards']); }
+if ($show_s) { $output['body'] .= lang('payment_stored_cards').'<br />'.html5($this->code.'selCards', $this->viewData['selCards']); }
 $output['body'] .= '</div>
 <div id="div'.$this->code.'n"'.(!$show_c&&!$show_s?'':'style=" display:none"').'>'.
 	html5($this->code.'_save',  $this->viewData['save']).

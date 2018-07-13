@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-07
+ * @version    2.x Last Update: 2018-06-18
  * @filesource /lib/controller/module/phreebooks/journal.php
  */
 
@@ -274,7 +274,7 @@ class journal
 		$contact = new contactsMain(); // should not need to pass variables
 		$_POST['id_'.$type]    = $this->main['id_'.$type]    = $cID; // map the journal fields to contact fields
 		$_POST['terms_'.$type] = $this->main['terms_'.$type] = $this->main['terms'];
-		$_POST['rep_id_'.$type] = $this->main['rep_id']; // map the rep ID
+		$_POST['rep_id_'.$type] = !empty($this->main['rep_id']) ? $this->main['rep_id'] : ''; // map the rep ID
 		msgDebug("\nAdding/updating contact with this->main = ".print_r($this->main, true));
 		$success = $contact->dbContactSave($cType, "_$type");
         if (!$success) { return; } // record creation failed (permission, problem, etc), stop here

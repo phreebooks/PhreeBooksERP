@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-01-10
+ * @version    2.x Last Update: 2018-06-14
  * @filesource /lib/controller/module/phreebooks/totals/tax_other/tax_other.php
  */
 
@@ -86,13 +86,13 @@ class tax_other
         } }
 		$hide = $this->hidden ? ';display:none' : '';
 		$output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
-		$output['body'] .= html5('totals_tax_other_id', $this->fields['totals_tax_other_id'])."\n";
-		$output['body'] .= html5('',                    $this->fields['totals_tax_other_opt'])."\n";
-		$output['body'] .= html5('totals_tax_other',    $this->fields['totals_tax_other']) ."\n";
-		$output['body'] .= "</div>\n";
-		$output['body'] .= '<div id="phreebooks_totals_tax_other" style="display:none" class="layout-expand-over">'."\n";
-		$output['body'] .= html5('totals_tax_other_gl', $this->fields['totals_tax_other_gl'])."\n";
-		$output['body'] .= "</div>\n";
+		$output['body'] .= html5('totals_tax_other_id', $this->fields['totals_tax_other_id']);
+		$output['body'] .= html5('totals_tax_other',    $this->fields['totals_tax_other']);
+		$output['body'] .= html5('',                    $this->fields['totals_tax_other_opt']);
+		$output['body'] .= "</div>";
+		$output['body'] .= '<div id="phreebooks_totals_tax_other" style="display:none" class="layout-expand-over">';
+		$output['body'] .= html5('totals_tax_other_gl', $this->fields['totals_tax_other_gl']);
+		$output['body'] .= "</div>";
         $output['jsHead'][] = "function totals_tax_other(begBalance) {
 	var newBalance = begBalance;
     var salesTax = cleanCurrency(jq('#totals_tax_other').val());

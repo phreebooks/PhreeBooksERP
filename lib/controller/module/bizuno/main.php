@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-06
+ * @version    2.x Last Update: 2018-06-14
  * @filesource /lib/controller/module/bizuno/main.php
  * 
  * @todo BUG - 
@@ -47,7 +47,7 @@ class bizunoMain
         $opts = '';
         if (clean('lost',   'cmd','get') == 'true') { $opts .= '&lost=true'; }
         if (clean('newuser','cmd','get') == 'true') { $opts .= '&newuser=true'; }
-		$cols   = getUserCache('profile', 'columns', false, 3);
+		$cols   = getUserCache('profile', 'cols', false, 3);
 		$title  = getModuleCache('bizuno', 'settings', 'company', 'primary_name', getUserCache('profile', 'biz_title'));
         $data = [
             'pageTitle'=> "$title - ".getModuleCache('bizuno', 'properties', 'title'),
@@ -86,12 +86,24 @@ function addPanels(json) {
 		}
 	}
 }"],
-            'jsReady'  => ['dashInit'=> "jq('#dashboard').portal({border:false,onStateChange:function(){
+            'jsReady' => ['initDash'=> "jq('#dashboard').portal({border:false,onStateChange:function(){
         var state = getPortalState();
         jq.ajax({ url:'".BIZUNO_AJAX."&p=bizuno/dashboard/organize&menuID='+menuID+'&state='+state });
     }
 });
 jq.ajax({ url: '".BIZUNO_AJAX."&p=bizuno/dashboard/render$opts&menuID='+menuID, success: addPanels });"]];
+/*
+window.onresize = function(){ location.reload(); }
+$(function() {
+    $.post('some_script.php', { width: screen.width, height:screen.height }, function(json) {
+        if(json.outcome == 'success') {
+            // do something with the knowledge possibly?
+        } else {
+            alert('Unable to let PHP know what the screen resolution is!');
+        }
+    },'json');
+});
+*/
 
         if ($menu_id <> 'portal') {
             $linkDash = ['attr'=>['type'=>'a','value'=>$this->lang['msg_add_dashboards'],'href'=>BIZUNO_HOME.'&p=bizuno/dashboard/manager&menuID='.$menu_id]];

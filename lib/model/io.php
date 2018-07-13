@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-23
+ * @version    2.x Last Update: 2018-06-18
  * @filesource /lib/model/io.php
  */
 
@@ -31,7 +31,7 @@ final class io
     
 	function __construct()
     {
-		$this->myFolder    = defined('BIZUNO_DATA') ? BIZUNO_ROOT.BIZUNO_DATA : '';
+		$this->myFolder    = defined('BIZUNO_DATA') ? BIZUNO_DATA : '';
         $this->max_count   = 200; // max 300 to work with BigDump based restore sript
 		$this->db_filename = 'db-'.date('Ymd');
 		$this->source_dir  = '';

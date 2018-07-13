@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2018-04-17
+ * @version    2.x Last Update: 2018-06-18
  * @filesource /lib/controller/module/inventory/prices/byContact.php
  */
 
@@ -73,7 +73,7 @@ class byContact extends inventoryPrices
 		$rID  = clean('rID', 'integer', 'get');
 		$type = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID");
         if (!$security = validateSecurity('inventory', 'prices_'.$type, 4, false)) { return; }
-        if ($rID && sizeof($layout['dbAction']) > 0) { 
+        if ($rID && !empty($layout['dbAction'])) { 
             $layout['dbAction']['price_byContact'] = "DELETE FROM ".BIZUNO_DB_PREFIX."inventory_prices WHERE contact_id=$rID";
         }
 	}

@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-23
+ * @version    2.x Last Update: 2018-07-01
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -723,17 +723,19 @@ class phreeformRender
      */
     private function BuildSQL($report)
     { // for reports only
-        $strField = [];
+        $displayed = $hidden = [];
         $index = 0;
         for ($i = 0; $i < sizeof($report->fieldlist); $i++) {
-            if (isset($report->fieldlist[$i]->visible) && $report->fieldlist[$i]->visible) {
-                $strField[] = prefixTables($report->fieldlist[$i]->fieldname) . " AS c" . $index;
+            if (!empty($report->fieldlist[$i]->visible)) {
+                $displayed[] = prefixTables($report->fieldlist[$i]->fieldname) . " AS c" . $index;
                 $index++;
+            } else {
+                $hidden[] = prefixTables($report->fieldlist[$i]->fieldname);
             }
         }
-        if (!$strField) { return ['level' => 'error', 'message' => lang('PHREEFORM_NOROWS')]; }
-        $strField = implode(', ', $strField);
-
+        if (empty($displayed)) { return ['level'=>'error','message'=>lang('PHREEFORM_NOROWS')]; }
+        $displayed = array_merge($displayed, $hidden); // add the hidden rows at end for processing
+        $strField = implode(', ', $displayed);
         $filterdesc = lang('filters').': ';
         //fetch the groupings and build first level of SORT BY string (for sub totals)
         $strGroup = NULL;
@@ -798,7 +800,7 @@ class phreeformRender
     { // for html reports only
         require_once(BIZUNO_LIB."controller/module/phreeform/renderHTML.php");
         $html = new HTML($data, $report);
-        return ['content'=>  ['action'=>'divHTML', 'divID'=>'bodyCenter', 'html'=>$html->output]];
+        return ['content'=>['action'=>'divHTML','divID'=>'bodyCenter','html'=>$html->output]];
     }
 
     /**

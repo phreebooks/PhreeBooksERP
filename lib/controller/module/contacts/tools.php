@@ -191,7 +191,7 @@ class contactsTools
         $result = dbGetMulti(BIZUNO_DB_PREFIX.'contacts', $crit, '', ['id','short_name'], $blockSize);
         $count = 0;
         foreach ($result as $row) {
-            $rID = $row['id']; // set the higest rID for next iteration
+            $rID = $row['id']; // set the highest rID for next iteration
             $exists = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'id', "contact_id_b={$row['id']} OR contact_id_s={$row['id']}");
             if (!$exists) {
                 $msg[] = "Deleting contact id={$row['id']}, {$row['short_name']}";

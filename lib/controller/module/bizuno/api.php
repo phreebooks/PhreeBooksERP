@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-17
+ * @version    2.x Last Update: 2018-06-19
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
@@ -64,7 +64,6 @@ class bizunoApi
      */
     protected function apiJournalEntry(&$layout, $order=[], $jID=0)
     {
-        msgTrap();
         msgDebug("\nWorking with submitted order = ".print_r($order, true));
         $this->itemTotal = 0;
 		$this->main = $this->item = $map = [];

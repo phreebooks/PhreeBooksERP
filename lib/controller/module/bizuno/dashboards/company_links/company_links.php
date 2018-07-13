@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-19
+ * @version    2.x Last Update: 2018-06-18
  * @filesource /lib/controller/module/bizuno/dashboards/company_links/company_links.php
  */
 
@@ -115,6 +115,7 @@ class company_links
         if (!isset($settings['data'])) { unset($settings['users']); unset($settings['roles']); $settings=['data'=>$settings]; } // OLD WAY
         if ($rmID) { array_splice($settings['data'], $rmID-1, 1); }
         else       { $settings['data'][$my_title] = $my_url; }
+        ksort($settings['data'], SORT_LOCALE_STRING | SORT_FLAG_CASE);
 		dbWrite(BIZUNO_DB_PREFIX."users_profiles", ['settings'=>json_encode($settings)], 'update', "dashboard_id='$this->code'");
 		return $result['id'];
 	}

@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-12
+ * @version    2.x Last Update: 2018-07-03
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -847,7 +847,8 @@ function preSubmit() {
 		$output = [];
 		foreach ($result as $row) {
 			$inv = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['sku', 'description_short'], "id={$row['ref_id']}");
-			$output[] = ['qty'=>$row['qty'], 'sku'=>$inv['sku'], 'desc'=>$inv['description_short']];
+            if (!$inv) { $this->cleanOrphan($row['ref_id']); }
+            else       { $output[] = ['qty'=>$row['qty'], 'sku'=>$inv['sku'], 'desc'=>$inv['description_short']]; }
 		}
 		$temp = [];
         foreach ($output as $key => $value) { $temp[$key] = $value['sku']; }
@@ -875,4 +876,15 @@ function preSubmit() {
         if (sizeof($shortages) > 1) { msgAdd(implode("<br />", $shortages), 'caution'); }
         else { msgAdd($this->lang['msg_inv_assy_stock_good'], 'success'); }
 	}
+
+    /**
+     * Cleans up the linked inventory database tables if the inventory record is not present
+     * @param integer $rID - record ID of the missing inventory item
+     * @return null
+     */
+    private function cleanOrphan($rID=0) {
+        if (!$rID) { return; }
+		dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."inventory_prices WHERE inventory_id='$rID'");
+		dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."inventory_assy_list WHERE ref_id='$rID'");
+    }
 }

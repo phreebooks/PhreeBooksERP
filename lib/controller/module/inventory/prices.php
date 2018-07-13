@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-17
+ * @version    2.x Last Update: 2018-06-19
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -81,7 +81,7 @@ class inventoryPrices
 		$cID  = clean('cID','integer',  'get');
 		$iID  = clean('iID','integer',  'get');
         if (!$security = validateSecurity('inventory', 'prices_'.$this->type, 1)) { return; }
-		$_POST['search'] = getSearch('priceSearch');
+		$_POST['search'] = getSearch('searchPrice');
 		msgDebug("\n ready to build prices datagrid, security = $security");
 		$structure = $this->dgPrices('dgPricesMgr', $this->type, $security, $mID, $cID, $iID);
 		$layout = array_replace_recursive($layout, ['type'=>'datagrid', 'structure'=>$structure]);
@@ -128,16 +128,16 @@ class inventoryPrices
 				'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; } if (row.default==1) { return {class:'row-default'}; } }"],
 			'source' => [
                 'tables' => [
-                    'prices'  => ['table'=>BIZUNO_DB_PREFIX."inventory_prices"],
-                    'contacts'=> ['table'=>BIZUNO_DB_PREFIX."contacts",'join'=>'LEFT JOIN','links'=>BIZUNO_DB_PREFIX."inventory_prices.contact_id=".BIZUNO_DB_PREFIX."contacts.id"]],
-				'search' => ['settings', 'method', 'currency'],
+                    'prices'   => ['table'=>BIZUNO_DB_PREFIX."inventory_prices"],
+                    'inventory'=> ['table'=>BIZUNO_DB_PREFIX."inventory",'join'=>'JOIN','links'=>BIZUNO_DB_PREFIX."inventory_prices.inventory_id=".BIZUNO_DB_PREFIX."inventory.id"]],
+				'search' => ['settings', 'method', 'sku', 'description_short', 'description_purchase', 'description_sales'],
 				'actions'=> [
-                    'newPrices'  => ['order'=>10,'html'=>['icon'=>'new',  'events'=>['onClick'=>"windowEdit('inventory/prices/add&type=$type".($mod?"&mod=$mod":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":'')."','winNewPrice','".jsLang('inventory_prices_method')."',400,200);"]]],
-					'clrPrices'  => ['order'=>50,'html'=>['icon'=>'clear','events'=>['onClick'=>"jq('#priceSearch').val(''); ".$name."Reload();"]]]],
+                    'newPrices'=> ['order'=>10,'html'=>['icon'=>'new',  'events'=>['onClick'=>"windowEdit('inventory/prices/add&type=$type".($mod?"&mod=$mod":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":'')."','winNewPrice','".jsLang('inventory_prices_method')."',400,200);"]]],
+					'clrPrices'=> ['order'=>50,'html'=>['icon'=>'clear','events'=>['onClick'=>"jq('#searchPrice').val(''); ".$name."Reload();"]]]],
 				'filters'=> [
-                    'searchPrice'=> ['order'=>90,'html'=>['attr'=>['value'=>$this->defaults['search']]]],
-					'typePrice'  => ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."inventory_prices.contact_type='$type'"]],
-				'sort' => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
+                    'search'   => ['order'=>90,'html'  =>['attr'=>['id'=>'searchPrice','value'=>$this->defaults['search']]]],
+					'typePrice'=> ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."inventory_prices.contact_type='$type'"]],
+				'sort' => ['s0' => ['order'=>10,'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
 			'footnotes'=> ['codes'=>lang('color_codes').': <span class="row-default">'.lang('default').'</span>'],
 			'columns'  => [
                 'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.id',      'attr'=>['hidden'=>true]],
@@ -152,19 +152,19 @@ class inventoryPrices
 							'events'=> ['onClick'=>"var title=prompt('".lang('msg_entry_copy')."'); if (title!=null) jsonAction('inventory/prices/copy', idTBD, title);"]],
 						'trash'=> ['icon'=>'trash', 'size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
 							'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/prices/delete', idTBD);"]]]],
-				'title'      => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.settings',     'label'=>lang('title'),    'format'=>'setng:title',
+				'title'      => ['order'=>10, 'field'=>'settings:title',   'label'=>lang('title'),
 					'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
-				'method'     => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.method',       'label'=>lang('method'),
+				'method'     => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.method',     'label'=>lang('method'),
 					'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
-				'ref_id'     => ['order'=>30, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.ref_id',       'label'=>lang('reference'),'format'=>'dbVal;'.BIZUNO_DB_PREFIX.'inventory_prices;settings:title;id',
+				'ref_id'     => ['order'=>30, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.ref_id',     'label'=>lang('reference'),'format'=>'dbVal;'.BIZUNO_DB_PREFIX.'inventory_prices;settings:title;id',
 					'attr'=>  ['width'=>80, 'sortable'=>true, 'resizable'=>true]],
-				'contact_id' => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.contact_id',   'label'=>lang('address_book_primary_name'),'format'=>'contactName',
+				'contact_id' => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.contact_id', 'label'=>lang('address_book_primary_name'),'format'=>'contactName',
 					'attr'=>  ['width'=>175, 'sortable'=>true, 'resizable'=>true]],
-				'inventory_id'=> ['order'=>50, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inventory_id','label'=>lang('description'),'format'=>'dbVal;inventory;description_short;id',
+				'inventory_id'=> ['order'=>50, 'field'=>BIZUNO_DB_PREFIX.'inventory.description_short','label'=>lang('description'),
 					'attr'=>  ['width'=>175, 'sortable'=>true, 'resizable'=>true]],
-				'currency'   => ['order'=>60, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.currency',     'label'=>lang('currency'),
+				'currency'   => ['order'=>60, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.currency',   'label'=>lang('currency'),
 					'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
-				'last_update'=> ['order'=>70, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.settings',     'label'=>lang('last_update'),'format'=>'setng:last_update',
+				'last_update'=> ['order'=>70, 'field'=>'settings:last_update',   'label'=>lang('last_update'),'format'=>'date',
 					'attr'=>  ['width'=>70, 'sortable'=>true, 'resizable'=>true]]]];
         $cList  = $iList = [];
         $search = addslashes($this->defaults['search']);
@@ -175,13 +175,13 @@ class inventoryPrices
             $data['source']['filters']['cID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"contact_id=$cID"];
         } elseif ($this->defaults['search']) { // see if searching within contact
             $contacts = dbGetMulti(BIZUNO_DB_PREFIX."address_book", "primary_name LIKE '%$search%'", "primary_name {$this->defaults['order']}", ['ref_id']);
-            if (sizeof($contacts)) { foreach ($contacts as $cID) { $cList[] = $cID['ref_id']; } }
+            foreach ($contacts as $cID) { $cList[] = $cID['ref_id']; }
         }
         if ($iID) { 
             $data['source']['filters']['iID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"inventory_id=$iID"];
         } elseif ($this->defaults['search']) {
             $inventory = dbGetMulti(BIZUNO_DB_PREFIX."inventory", "description_short LIKE '%$search%'", "description_short {$this->defaults['order']}", ['id']);
-            if (sizeof($inventory)) { foreach ($inventory as $iID) { $iList[] = $iID['id']; } }
+            foreach ($inventory as $iID) { $iList[] = $iID['id']; }
         }
         if (sizeof($cList) && sizeof($iList)) {
             $data['source']['filters']['addSrch'] = ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."inventory_prices.contact_id IN (".implode(',',$cList).") OR inventory_prices.inventory_id IN (".implode(',',$iList).")"];
@@ -189,8 +189,11 @@ class inventoryPrices
             $data['source']['filters']['addSrch'] = ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."inventory_prices.contact_id IN (".implode(',',$cList).")"];
         } elseif (sizeof($iList)) {
             $data['source']['filters']['addSrch'] = ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."inventory_prices.inventory_id IN (".implode(',',$iList).")"];
-        } elseif ($search) {
-            $data['source']['filters']['addSrch'] = ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."inventory_prices.contact_id IN () OR inventory_prices.inventory_id IN ()"];            
+        } elseif (!$search) { // not in contacts or inventory managers, must be prices manager by contact type and not searching (or method quantity goes away)
+            unset($data['source']['tables']['inventory']);
+            $data['source']['search'] = ['settings', 'method', 'sku', 'description_short', 'description_purchase', 'description_sales'];
+            $data['columns']['inventory_id']['field'] = BIZUNO_DB_PREFIX.'inventory_prices.inventory_id';
+            $data['columns']['inventory_id']['format']= 'dbVal;inventory;description_short;id';
         }
 		return $data;
 	}
@@ -381,12 +384,14 @@ class inventoryPrices
      */
     public function quote(&$layout=[], $cost=0, $full=0)
     {
+        $iSec = validateSecurity('inventory', 'prices_'.$this->type, 1, false);
+        $pSec = $this->type=='v' ? validateSecurity('phreebooks', 'j6_mgr', 1, false) : validateSecurity('phreebooks', 'j12_mgr', 1, false);
+        if (!$security = max($iSec, $pSec)) { return msgAdd(lang('err_no_permission')." [".'prices_'.$this->type." OR jX_mgr]");; }
         $cID = clean('cID', 'integer','get'); // contact ID
         $iID = clean('rID', 'integer','get'); // inventory id
         $sku = clean('sku', 'text',   'get');
         $UPC = clean('upc', 'text',   'get');  // inventory UPC Code
         $qty = clean('qty', ['format'=>'float', 'default'=>1], 'get'); // quantity purchased, assume 1
-        if (!$security = validateSecurity('inventory', 'prices_'.$this->type, 1)) { return; }
 		if ($cID) {
 			$contact = dbGetValue(BIZUNO_DB_PREFIX.'contacts', ['type', 'price_sheet'], "id=$cID");
 		} else {
@@ -410,8 +415,8 @@ class inventoryPrices
 		}
         if (!$contact['price_sheet']) { $contact['price_sheet'] = $inv['price_sheet_c']; } // if not set, set to inventory default
 		$values = [
-            'iID'=>$inv['id'],'iSheetc'=>$inv['price_sheet_c'], 'iSheetv'=>$inv['price_sheet_v'], 'iCost'=>$inv['item_cost'], 'iList'=>$inv['full_price'],
-			'cID'=>$cID,      'cSheet'=>$contact['price_sheet'],'cType'=>$contact['type'],  
+            'iID'=>$inv['id'],'iSheetc'=>$inv['price_sheet_c'],  'iSheetv'=>$inv['price_sheet_v'], 'iCost'=>$inv['item_cost'], 'iList'=>$inv['full_price'],
+			'cID'=>$cID,      'cSheet' =>$contact['price_sheet'],'cType'=>$contact['type'],  
 			'qty'=>abs($qty)]; // to properly handle negative sales/purchases and still get pricing based on method
 		msgDebug("\nFinding pricing with qty = $qty and values = ".print_r($values, true));
 		$prices = [];
@@ -544,47 +549,40 @@ class inventoryPrices
      * @return array - datagrid structure
      */
     protected function datagridQuantity($name) {
-		$data = [
+		return [
             'id'   => $name,
 			'type' => 'edatagrid',
 			'attr' => [
-                'toolbar'     => '#'.$name.'Toolbar',
-				'rownumbers'  => true,
-                ],
+                'toolbar'   => '#'.$name.'Toolbar',
+				'rownumbers'=> true],
 			'events' => [
                 'data'         => $name.'Data',
 				'onLoadSuccess'=> "function(row) { var rows=jq('#$name').edatagrid('getData'); if (rows.total == 0) jq('#$name').edatagrid('addRow'); }",
-				'onClickRow'   => "function(rowIndex) { jq('#$name').edatagrid('editRow', rowIndex); }",
-                ],
-			'source' => [
-                'actions' => ['new'=>  ['order'=>10, 'html'=>  ['icon'=>'add','size'=>'large','events'=>  ['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
-                ],
+				'onClickRow'   => "function(rowIndex) { jq('#$name').edatagrid('editRow', rowIndex); }"],
+			'source' => ['actions'=>['new'=>['order'=>10,'html'=>['icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]]],
 			'columns'=> [
-                'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>80],
-					'actions'=> ['trash'=>  ['icon'=>'trash','order'=>20,'size'=>'small','events'=>  ['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]],
+                'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>['width'=>80],
+					'actions'=> ['trash'=>  ['icon'=>'trash','order'=>20,'size'=>'small','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]],
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"]],
-				'qty'     => ['order'=>10, 'label'=>lang('qty'), 'attr'=>  ['width'=>80, 'align'=>'right'],
+				'qty'     => ['order'=>10, 'label'=>lang('qty'), 'attr'=>['width'=>80, 'align'=>'right'],
 					'events'=>  ['editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
-				'source'  => ['order'=>20, 'label'=>lang('source'), 'attr'=>  ['width'=>150, 'sortable'=>true, 'resizable'=>true, 'align'=>'center'],
-					'events'=>  ['formatter'=>"function(value){ return getTextValue(qtySource, value); }",
+				'source'  => ['order'=>20, 'label'=>lang('source'), 'attr'=>['width'=>150, 'sortable'=>true, 'resizable'=>true, 'align'=>'center'],
+					'events' => ['formatter'=>"function(value){ return getTextValue(qtySource, value); }",
 						'editor'=>"{type:'combobox',options:{valueField:'id',textField:'text',data:qtySource,value:'1'}}"]],
-				'adjType' => ['order'=>30, 'label'=>lang('adjustment'),'attr' => ['width'=>150],
-					'events'=>  ['formatter'=>"function(value){ return getTextValue(qtyAdj, value); }",
+				'adjType' => ['order'=>30, 'label'=>lang('adjustment'),'attr' =>['width'=>150],
+					'events' => ['formatter'=>"function(value){ return getTextValue(qtyAdj, value); }",
 						'editor'=>"{type:'combobox',options:{valueField:'id',textField:'text',data:qtyAdj}}"]],
-				'adjValue'=> ['order'=>40, 'label'=>$this->lang['adj_value'], 'attr'=>  ['width'=>100, 'align'=>'center', 'size'=>'10'],
-					'events'=>  ['editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
-				'rndType' => ['order'=>50, 'label'=>lang('rounding'),'attr' => ['width'=>150],
-					'events'=>  ['formatter'=>"function(value){ return getTextValue(qtyRnd, value); }",
+				'adjValue'=> ['order'=>40, 'label'=>$this->lang['adj_value'], 'attr'=>['width'=>100, 'align'=>'center', 'size'=>'10'],
+					'events' => ['editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
+				'rndType' => ['order'=>50, 'label'=>lang('rounding'),'attr' =>['width'=>150],
+					'events' => ['formatter'=>"function(value){ return getTextValue(qtyRnd, value); }",
 						'editor'=>"{type:'combobox',options:{valueField:'id',textField:'text',data:qtyRnd}}"]],
-				'rndValue'=> ['order'=>60, 'label'=>$this->lang['rnd_value'], 'attr'=>  ['width'=>100, 'align'=>'center', 'size'=>'10'],
-					'events'=>  ['editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
-				'price'   => ['order'=>70, 'label'=>lang('price'), 'attr'=>  ['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10'],
-					'events'=>  ['formatter'=>"function(value,row){ return formatCurrency(value); }",
+				'rndValue'=> ['order'=>60, 'label'=>$this->lang['rnd_value'], 'attr'=>['width'=>100, 'align'=>'center', 'size'=>'10'],
+					'events' => ['editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
+				'price'   => ['order'=>70, 'label'=>lang('price'), 'attr'=>['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10'],
+					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }",
 						'editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
-				'margin'  => ['order'=>80, 'label'=>lang('margin'),'attr'=>  ['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10']],
-                ],
-            ];
-		return $data;
+				'margin'  => ['order'=>80, 'label'=>lang('margin'),'attr'=>['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10']]]];
 	}
     
     /**

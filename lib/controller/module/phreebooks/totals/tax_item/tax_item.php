@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-28
+ * @version    2.x Last Update: 2018-06-14
  * @filesource /controller/module/phreebooks/totals/tax_item/tax_item.php
  */
 
@@ -99,13 +99,13 @@ class tax_item
 	public function render(&$output, $data=[])
     {
 		$hide = $this->hidden ? ';display:none' : '';
-        $output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
-		$output['body'] .= html5('',               $this->fields['totals_tax_item_opt']);
+        $output['body'] .= '<div style="text-align:right'.$hide.'">';
 		$output['body'] .= html5('totals_tax_item',$this->fields['totals_tax_item']);
-		$output['body'] .= "</div>\n";
-		$output['body'] .= '<div id="phreebooks_totals_tax_item" style="display:none" class="layout-expand-over">'."\n";
-		$output['body'] .= '<table id="tableTaxItem"></table>'."\n";
-		$output['body'] .= "</div>\n";
+		$output['body'] .= html5('',               $this->fields['totals_tax_item_opt']);
+		$output['body'] .= "</div>";
+		$output['body'] .= '<div id="phreebooks_totals_tax_item" style="display:none" class="layout-expand-over">';
+		$output['body'] .= '<table id="tableTaxItem"></table>';
+		$output['body'] .= "</div>";
         $output['jsHead'][] = $this->jsTotal($data);
 	}
     

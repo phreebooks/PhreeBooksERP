@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-12-11
+ * @version    2.x Last Update: 2018-07-10
  * @filesource lib/controller/module/bizuno/profile.php
  */
 
@@ -61,7 +61,7 @@ class bizunoProfile
 		$data = [
             'pageTitle' => $title,
 			'toolbars'  => ['tbProfile'=>  ['icons'=>  ['save'=>  ['order'=>40,'events'=>  ['onClick'=>"jq('#frmProfile').submit();"]]]]],
-			'forms'      => ['frmProfile'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/profile/save"]]],
+			'forms'     => ['frmProfile'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/profile/save"]]],
 			'divs'      => [
                 'toolbar'=> ['order'=> 5, 'type'=>'toolbar','key' =>'tbProfile'],
 				'heading'=> ['order'=>10, 'type'=>'html',   'html'=>"<h1>$title</h1>\n"],
@@ -71,7 +71,7 @@ class bizunoProfile
                 'general'  => ['order'=>10,'label'=>lang('general'), 'src'=>BIZUNO_LIB."view/module/bizuno/tabProfileBizuno.php"],
 				'reminders'=> ['order'=>50,'label'=>$this->lang['reminders'],'type'=>'html','html'=>'','attr'=>  ["data-options"=>"href:'".BIZUNO_AJAX."&p=bizuno/profile/reminderManager&uID=".getUserCache('profile', 'admin_id', false, 0)."'"]]]]],
             'javascript'=> ['jsProfile'=>"ajaxForm('frmProfile');"],
-			'fields'=> dbLoadStructure(BIZUNO_DB_PREFIX."users")];
+			'fields'    => dbLoadStructure(BIZUNO_DB_PREFIX."users")];
 		$data['divs']['frmProfile'] = ['order'=>10, 'type'=>'html', 'html'=>html5('frmProfile', $data['forms']['frmProfile'])];
 		// merge data with structure
 		$dbData = dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id='$rID'");
@@ -119,7 +119,7 @@ class bizunoProfile
             if ($pw_enc) { portalWrite('users', ['biz_pass' => $pw_enc], 'update', "biz_user='$email'"); }
 		}
 		msgLog(lang('bizuno_profile')." - ".lang('update')." $email");
-		$data = ['content'=>  ['action'=>'href', 'link'=>BIZUNO_HOME."&p=bizuno/profile/edit"]];
+		$data = ['content'=>['action'=>'href','link'=>BIZUNO_HOME."&p=bizuno/profile/edit"]];
         $layout = array_replace_recursive($layout, $data);
 	}
 

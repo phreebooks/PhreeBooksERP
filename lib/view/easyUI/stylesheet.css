@@ -21,7 +21,7 @@
  */
 
 a, div, body, html, table{ font:normal normal 12px Verdana; }
-body			 { background-color:#ffffff; margin:0; }
+body                     { background-color:#ffffff; margin:0; }
 h1                       { width:auto; clear:both; color:#003080; font-size:16px; font-variant:small-caps; font-weight:bold; background-color:transparent; padding:4px; }
 h2                       { width:auto; clear:both; color:#003080; font-size:14px; font-variant:small-caps; font-weight:bold; background-color:transparent; padding:2px; }
 p                        { line-height: 1.5em; margin: 0px 0px 1em; padding: 0px; }
@@ -37,8 +37,9 @@ th                       { text-align:center; font-weight:bold;}
 body.loading             { overflow: hidden; }
 body.loading .modal      { display:block; }
 .areaView                { display:block; width:100%; position:relative; }
-.blockView               { display:inline-block; position:relative; vertical-align:top; width:225; margin:3px; } /* border:solid 1px red; */
-.blockViewR              { display:inline-block; position:relative; vertical-align:top; width:225; margin:3px; text-align:right; } /* border:solid 1px red; */
+.blockView               { display:inline-block; position:relative; vertical-align:top; min-width:225px; margin:3px; } /* border:solid 1px red; */
+.blockViewR              { display:inline-block; position:relative; vertical-align:top; min-width:225px; margin:3px; text-align:right; } /* border:solid 1px red; */
+.menuHide                { display:none; }
 .fldLabel                { }
 .journal-waiting         { background-color:#FFFF00; }
 .row-inactive            { background-color:#6293BB; }

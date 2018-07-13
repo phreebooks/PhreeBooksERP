@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-11
+ * @version    2.x Last Update: 2018-07-10
  * @filesource /lib/controller/module/bizuno/dashboard.php
  */
 
@@ -94,14 +94,15 @@ class bizunoDashboard
 	}
 
 	/**
-     * Stores the dashboard placement on a given menu in the users profile
+     * Saves state after user moves dashboards on home screen. Stores the dashboard placement on a given menu in the users profile
      */
-    public function organize() 
-    { // saves state after user moves dashboards on home screen
+    public function organize()
+    {
 		$menu_id = clean('menuID', 'text', 'get');
 		$state   = clean('state',  'text', 'get');
 		$columns = explode(':', $state);
-		for ($col = 0; $col < getUserCache('profile', 'columns', false, 3); $col++) {
+        msgDebug("\nNum columns = ".getUserCache('profile', 'cols', false, 3));
+		for ($col = 0; $col < getUserCache('profile', 'cols', false, 3); $col++) {
             if (strlen($columns[$col]) == 0) { continue; }
 			$rows = explode(',', $columns[$col]);
 			for ($row = 0; $row < count($rows); $row++) { // write the row, column
@@ -255,7 +256,7 @@ class bizunoDashboard
                 'href'       => BIZUNO_AJAX.'&p=bizuno/dashboard/settings&dID='.$values['dashboard_id'].'&mID='.$values['module_id'].'&menu='.$menu_id];
         }
         msgDebug("\nList dashboards for menu ID = $menu_id is: ".print_r($dashboard, true));
-        for ($i = 0; $i < getUserCache('profile', 'columns', false, 3); $i++) { $state[] = isset($temp[$i]) && is_array($temp[$i]) ? implode(',', $temp[$i]) : ''; }
+        for ($i = 0; $i < getUserCache('profile', 'cols', false, 3); $i++) { $state[] = isset($temp[$i]) && is_array($temp[$i]) ? implode(',', $temp[$i]) : ''; }
         return ['Dashboard'=>$dashboard, 'State'=>implode(':', $state)];
     }
 

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-25
+ * @version    2.x Last Update: 2018-06-28
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -45,7 +45,7 @@ class bizunoSettings
     {
         if (!$security = validateSecurity('bizuno', 'admin', 2)) { return; }
         $focus   = clean('cat', ['format'=>'text', 'default'=>'bizuno'], 'get');
-        $io = new io();
+        $io      = new io();
         $libMods = $io->apiPhreeSoft('getMyExtensions'); // pull the master list/subscribed list of modules from phreesoft.com
         if (!$libMods || !isset($libMods['extensions'])) { $libMods = ['extensions'=>[]]; }
         $modules = array_replace_recursive($libMods['extensions'], $this->getLocal()); // merge in the loaded/custom modules
@@ -68,7 +68,10 @@ class bizunoSettings
 					$required = getModuleCache($module_id, 'properties', 'required', false, false) ? true : false;
                     $modActive = 1;
                     $modStatus = '';
-					if (isset($settings['settings']) && $settings['settings']) { // check to see if the module has admin settings
+                    $hasDashboards = getModuleCache($module_id, 'dashboards') ? 1 : 0;
+                    $props = getModuleCache($module_id, 'properties');
+                    msgDebug("\nproperties = ".print_r($props, true));
+					if (!empty($settings['settings']) || $hasDashboards || !empty($props['dirMethods'])) { // check to see if the module has admin settings
                         $modStatus .= html5("prop_$module_id", ['icon'=>'settings', 'size'=>'large',
                            'events'=>['onClick'=>"location.href='".$this->BIZUNO_HOME."&p=$module_id/admin/adminHome'"]]);
 					}
@@ -197,33 +200,42 @@ class bizunoSettings
         }
         if (!$module || !$path) { return msgAdd("Error installing module: unknown. No name/path passed!"); }
         $installed = dbGetValue(BIZUNO_DB_PREFIX.'configuration', 'config_value',  "config_key='$module'");
-        if ($installed) { return msgAdd(sprintf($this->lang['err_install_module_exists'], $module), 'caution'); }
-        $path = rtrim($path, '/') . '/';
-		msgDebug("\n\nInstalling module: $module at path: $path");
-        if (!file_exists("{$path}admin.php")) { return msgAdd(sprintf("There was an error finding file %s", "{$path}admin.php")); }
-		require_once("{$path}admin.php");
-		$fqcn = "\\bizuno\\{$module}Admin";
-		$adm = new $fqcn();
-        $bizunoMod[$module]['settings']            = isset($adm->settings) ? $adm->settings : [];
-		$bizunoMod[$module]['properties']          = $adm->structure;
-        $bizunoMod[$module]['properties']['id']    = $module;
-        $bizunoMod[$module]['properties']['title'] = $adm->lang['title'];
-        $bizunoMod[$module]['properties']['status']= getModuleCache($module, 'properties', 'version');
-        $bizunoMod[$module]['properties']['path']  = $path;
-        $this->adminInstDirs($adm);
-        if (isset($adm->tables)) { $this->adminInstTables($adm->tables); }
-        $this->adminAddRptDirs($adm);
-		$this->adminAddRpts($module=='bizuno' ? BIZUNO_LIB : $path);
-        if (method_exists($adm, 'install')) { $adm->install(); }
-        if (isset($adm->notes)) { $this->notes = array_merge($this->notes, $adm->notes); }
-        // create the initial configuration table record
-        dbWrite(BIZUNO_DB_PREFIX.'configuration', ['config_key'=>$module, 'config_value'=>json_encode($bizunoMod[$module])]);
-		msgLog  ("Installed module: $module");
-		msgDebug("\n Installed module: $module");
-        if (isset($msgStack->error['error']) && sizeof($msgStack->error['error']) > 0) { return; }
+        if ($installed) {
+            $settings = json_decode($installed, true);
+            if (!$settings['properties']['status']) {
+                $settings['properties']['status'] = 1;
+                $bizunoMod[$module] = $settings;
+                dbWrite(BIZUNO_DB_PREFIX.'configuration', ['config_value'=>json_encode($settings)], 'update', "config_key='$module'");
+                msgAdd("Extension $module has been reactivated!");
+            } else { return msgAdd(sprintf($this->lang['err_install_module_exists'], $module), 'caution'); }
+        } else {
+            $path = rtrim($path, '/') . '/';
+            msgDebug("\n\nInstalling module: $module at path: $path");
+            if (!file_exists("{$path}admin.php")) { return msgAdd(sprintf("There was an error finding file %s", "{$path}admin.php")); }
+            require_once("{$path}admin.php");
+            $fqcn = "\\bizuno\\{$module}Admin";
+            $adm = new $fqcn();
+            $bizunoMod[$module]['settings']            = isset($adm->settings) ? $adm->settings : [];
+            $bizunoMod[$module]['properties']          = $adm->structure;
+            $bizunoMod[$module]['properties']['id']    = $module;
+            $bizunoMod[$module]['properties']['title'] = $adm->lang['title'];
+            $bizunoMod[$module]['properties']['status']= getModuleCache($module, 'properties', 'version');
+            $bizunoMod[$module]['properties']['path']  = $path;
+            $this->adminInstDirs($adm);
+            if (isset($adm->tables)) { $this->adminInstTables($adm->tables); }
+            $this->adminAddRptDirs($adm);
+            $this->adminAddRpts($module=='bizuno' ? BIZUNO_LIB : $path);
+            if (method_exists($adm, 'install')) { $adm->install(); }
+            if (isset($adm->notes)) { $this->notes = array_merge($this->notes, $adm->notes); }
+            // create the initial configuration table record
+            dbWrite(BIZUNO_DB_PREFIX.'configuration', ['config_key'=>$module, 'config_value'=>json_encode($bizunoMod[$module])]);
+            msgLog  ("Installed module: $module");
+            msgDebug("\n Installed module: $module");
+            if (isset($msgStack->error['error']) && sizeof($msgStack->error['error']) > 0) { return; }
+        }
         dbClearCache(getUserCache('profile','email'));
         $cat    = getModuleCache($module, 'properties', 'category', false, 'bizuno');
-		$layout = array_replace_recursive($layout, ['content'=>  ['rID'=>$module, 'action'=>'href', 'link'=>$this->BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]]);
+		$layout = array_replace_recursive($layout, ['content'=>['rID'=>$module,'action'=>'href','link'=>$this->BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]]);
 	}
 
 	/**

@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-23
+ * @version    2.x Last Update: 2018-07-01
  * @filesource /controller/module/phreeform/functions.php
  */
 
@@ -678,6 +678,7 @@ function BuildDataArray($sql, $report)
 	$GrpWorking = false;
 	$OutputArray= [];
 	foreach ($result as $myrow) { // Check to see if a total row needs to be displayed
+        $report->currentRow = $myrow; // save the current row for processing
 		$report->currentValues = false; // reset the stored processing values to save sql's
 		if (isset($GrpField) && $GrpField) { // we're checking for group totals, see if this group is complete
 			if (($myrow[$GrpField] <> $GrpWorking) && $GrpWorking !== false) { // it's a new group so print totals

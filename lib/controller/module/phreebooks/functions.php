@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-04
+ * @version    2.x Last Update: 2018-07-01
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -94,9 +94,9 @@ function processPhreeBooks($value, $format = '')
 			break;
         // ************ Bank Processing *******************
         case 'bnkReg':
-            $rID = intval($value);
-			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id=$rID");
-			return in_array($main['journal_id'], [7,13,18,19,20,21]) ? -$main['total_amount'] : $main['total_amount'];
+            msgDebug("\nbnkReg processing working with currentRow = ".print_r($report->currentRow, true));
+            if (!empty($report->currentRow['journal_id']) && in_array($report->currentRow['journal_id'], [7,13,18,19,20,21])) { $value = -$value; }
+			return $value;
         // ************ Income Statement Processing *******************
 		case 'isCur':  return $report->currentValues['amount'];       // income_statement current period
 		case 'isYtd':  return $report->currentValues['amount_ytd'];   // income_statement year to date
@@ -604,7 +604,7 @@ function setNewFiscalYear($next_fy, $next_period, $next_start_date, $num_periods
 function buildChartOfAccountsHistory()
 {
 	if (!$max_period = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", "MAX(period) AS period", '', false)) {
-        msgTrap();
+        msgDebug("\nBuilding chart of accounts history", 'trap');
         msgDebugWrite();
 		die ('table journal_periods is not set!');
 	}

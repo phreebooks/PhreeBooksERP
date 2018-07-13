@@ -15,11 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-11-01
+ * @version    2.x Last Update: 2018-06-14
  * @filesource /controller/module/phreebooks/totals/total/total.php
- * 
  */
 
 namespace bizuno;
@@ -123,8 +122,8 @@ class total
 		$output['body'] .= html5('totals_total_id',  $this->fields['totals_total_id']);
 		$output['body'] .= html5('totals_total_desc',$this->fields['totals_total_desc']);
 		$output['body'] .= html5('totals_total_txid',$this->fields['totals_total_txid']);
-		$output['body'] .= html5('',                 $this->fields['totals_total_opt']);
 		$output['body'] .= html5('total_amount',     $this->fields['total_amount']);
+		$output['body'] .= html5('',                 $this->fields['totals_total_opt']);
 		$output['body'] .= "</div>\n";
 		$output['body'] .= '<div id="totals_total_div" style="display:none" class="layout-expand-over">'."\n";
 		$output['body'] .= html5('gl_acct_id',       $this->fields['gl_acct_id'])."\n";

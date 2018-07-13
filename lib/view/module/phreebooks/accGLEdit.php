@@ -26,8 +26,8 @@ namespace bizuno;
 htmlToolbar($output, $viewData, 'tbGL');
 $output['body'] .= '
 '.html5('frmGLEdit', $viewData['forms']['frmGLEdit']).'
-  '.html5('gl_account', $viewData['fields']['gl_account']).'
-  '.html5('gl_inactive',$viewData['fields']['gl_inactive']).'
+  '.html5('gl_account', $viewData['fields']['gl_account']).'<br />
+  '.html5('gl_inactive',$viewData['fields']['gl_inactive']).'<br />
   '.html5('gl_previous',$viewData['fields']['gl_previous']).'<br />
   '.html5('gl_desc',    $viewData['fields']['gl_desc']).'<br />
   '.html5('gl_type',    $viewData['fields']['gl_type']).'<br />

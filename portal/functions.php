@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-01
+ * @version    2.x Last Update: 2018-07-12
  * @filesource /portal/functions.php
  */
 
@@ -81,7 +81,9 @@ function portalExecute($sql)
 function portalWrite($table, $data=[], $action='insert', $parameters='') 
 {
     if ('business'==$table) { return; }
-    return dbWrite(BIZUNO_DB_PREFIX.$table, $data, $action, $parameters);
+    $params = str_replace('biz_user', 'email', $parameters);
+    if (!empty($data['biz_pass'])) { $data['password'] = $data['biz_pass']; unset($data['biz_pass']); }
+    return dbWrite(BIZUNO_DB_PREFIX.$table, $data, $action, $params);
 }
 
 function portalDelete($email='') { portalExecute("DELETE FROM ".BIZUNO_DB_PREFIX."users WHERE email='$email'"); }

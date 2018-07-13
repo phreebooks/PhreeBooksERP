@@ -15,12 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-06-01
-
+ * @version    2.x Last Update: 2018-07-09
  * @filesource /lib/model/encrypter.php
- * 
  */
 
 namespace bizuno;
@@ -185,18 +183,27 @@ final class encryption {
 
     /**
      * Gets the Credit Cart display information for a customer.
-     * @param unknown $module the module that the credit cart information you want to return. (i.e. contacts)
-     * @param string $ref_1 The ref_1 information (i.e. contact_id)
-     * @return multitype:multitype:number Ambigous <string, string>  multitype:string Ambigous <> outputs template view data.
+     * @param string $module - The module that the credit cart information you want to return. (i.e. contacts)
+     * @param string $ref_1 - The ref_1 information (i.e. contact_id)
+     * @return array - select view data with stored credit cards.
      */
     public function viewCC($module, $ref_1=false)
     {
         $criteria = "module='$module'";
+        $secure = getUserCache('profile', 'admin_encrypt');
         if ($ref_1) { $criteria .= " AND ref_1='$ref_1'"; }
         $cc_value = dbGetMulti(BIZUNO_DB_PREFIX.'data_security', $criteria);
         msgDebug("\nPulling stored Credit Card data with criteria = $criteria resulting in ".sizeof($cc_value)." records.");
         $output = [];
-        foreach ($cc_value as $row) { $output[] = ['id'=>$row['id'], 'text'=>$row['hint'].' - '.viewDate($row['exp_date'])]; }
+        foreach ($cc_value as $row) {
+            $text = '';
+            if ($secure) {
+                $encVal = $this->decrypt(getUserCache('profile', 'admin_encrypt'), $row['enc_value']);
+                $values = explode(':', $encVal);
+                $text = !empty($values[0]) ? $values[0].': ' : '';
+            }
+            $output[] = ['id'=>$row['id'], 'text'=>$text.$row['hint'].' - '.viewDate($row['exp_date'])];
+        }
         return $output;
     }
 

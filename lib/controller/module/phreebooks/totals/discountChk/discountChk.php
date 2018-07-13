@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-11-01
+ * @version    2.x Last Update: 2018-06-21
  * @filesource /lib/controller/module/phreebooks/totals/discountChk/discountChk.php
  */
 
@@ -101,13 +101,13 @@ class discountChk
 				$this->fields['totals_discount_gl']['attr']['value'] = $row['gl_account'];
 			}
         } }
-		$output['body'] .= '<div style="text-align:right">'."\n";
-		$output['body'] .= html5('',                   $this->fields['totals_discount_opt'])."\n";
-		$output['body'] .= html5('totals_discount',    $this->fields['totals_discount']) ."\n";
-		$output['body'] .= "</div>\n";
-		$output['body'] .= '<div id="phreebooks_totals_discount" style="display:none" class="layout-expand-over">'."\n";
-		$output['body'] .= html5('totals_discount_gl', $this->fields['totals_discount_gl'])."\n";
-		$output['body'] .= "</div>\n";
+		$output['body'] .= '<div style="text-align:right">';
+		$output['body'] .= html5('totals_discount',    $this->fields['totals_discount']);
+		$output['body'] .= html5('',                   $this->fields['totals_discount_opt']);
+		$output['body'] .= "</div>";
+		$output['body'] .= '<div id="phreebooks_totals_discount" style="display:none" class="layout-expand-over">';
+		$output['body'] .= html5('totals_discount_gl', $this->fields['totals_discount_gl']);
+		$output['body'] .= "</div>";
         $output['jsHead'][] = "function totals_discountChk(begBalance) {
     var totalDisc = 0;
     var rowData = jq('#dgJournalItem').datagrid('getData');

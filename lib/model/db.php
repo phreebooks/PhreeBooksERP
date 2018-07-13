@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-29
+ * @version    2.x Last Update: 2018-06-29
  * @filesource /lib/model/db.php
  */
 
@@ -646,19 +646,19 @@ function dbLoadStructure($table, $suffix='', $prefix='')
  * @param array $structure - database table structure
  * @param array $data - database data row to fill attr['value']
  */
-function dbStructureFill(&$structure, $data=[])
+function dbStructureFill(&$structure, $data=[], $suffix='')
 {
     if (!is_array($data)) { return; }
 	foreach ($structure as $field => $values) {
         if (!isset($values['attr']['type'])) { $values['attr']['type'] = 'text'; }
 		switch ($values['attr']['type']) {
             case 'checkbox': 
-                if (isset($data[$field])) { // only adjust if the field is present, prevents clearing flag if field is not part of merge
-                    if ($data[$field]) { $structure[$field]['attr']['checked'] = 'checked'; } else { unset($structure[$field]['attr']['checked']); }
+                if (isset($data[$field.$suffix])) { // only adjust if the field is present, prevents clearing flag if field is not part of merge
+                    if ($data[$field.$suffix]) { $structure[$field]['attr']['checked'] = 'checked'; } else { unset($structure[$field]['attr']['checked']); }
                 }
                 break;
 			default:         
-                $structure[$field]['attr']['value'] = isset($data[$field]) ? $data[$field] : '';
+                $structure[$field]['attr']['value'] = isset($data[$field.$suffix]) ? $data[$field.$suffix] : '';
 		}
 	}
 }

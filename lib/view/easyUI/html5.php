@@ -16,9 +16,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-06
+ * @version    2.x Last Update: 2018-06-19
  * @filesource /view/easyUI/html5.php
  */
 
@@ -31,8 +31,8 @@ final class html5 {
 
     private $pageT = '50';  // page layout minimum pixel height
     private $pageB = '35';
-    private $pageL = '200';
-    private $pageR = '200';
+    private $pageL = '175';
+    private $pageR = '175';
     public $jsHead = [];
     public $jsBody = [];
     public $jsReady= [];
@@ -392,14 +392,18 @@ final class html5 {
         if (empty($prop['data']['child'])) { return; }
         $prop['attr']['type'] = 'div';
         $prop['data']['attr']['type'] = 'div';
+//        $prop['classes'][] = 'menuHide';
         if (empty($prop['size'])) { $prop['size'] = 'small'; }
-        $orient = in_array($prop['region'], ['east', 'left', 'right', 'west']) ? 'v' : 'h';
+        $orient    = in_array($prop['region'], ['east', 'left', 'right', 'west']) ? 'v' : 'h';
         $hideLabel = !empty($prop['hideLabels']) ? true : false;
         $hideBorder= !empty($prop['hideBorder']) ? true : false;
-        $output['body'] .= $this->htmlElOpen('', $prop);
-        if ($orient == 'v') { $output['body'] .= '  <div class="easyui-menu" data-options="inline:true" style="width:100%">'; }
+        if ($orient == 'v') { 
+            $prop['classes'][] = 'easyui-menu';
+            $prop['attr']['data-options'] = 'inline:true';
+        } //" data-options="inline:true">'; }
+        $output['body'] .= $this->htmlElOpen('', $prop)."\n";
         $output['body'] .= $this->menuChild($prop['data']['child'], $prop['size'], $orient, $hideLabel, $hideBorder);
-        if ($orient == 'v') { $output['body'] .= "  </div>\n"; }
+//        if ($orient == 'v') { $output['body'] .= "  </div>\n"; }
         $output['body'] .= "</div>\n";
     }
 
@@ -428,7 +432,11 @@ final class html5 {
             }
             if (empty($submenu['attr']['id'])) { $submenu['attr']['id'] = $subid; }
             if ($orient == 'h') {
-                $submenu['classes'][] = !empty($submenu['child']) ? 'easyui-splitbutton' : 'easyui-linkbutton';
+                if (empty($submenu['child'])) {
+                    $submenu['classes'][] = 'easyui-linkbutton';
+                } else {
+                    $submenu['classes'][] = 'easyui-splitbutton';
+                }
                 $options[] = "plain:false";
             }
             if (isset($submenu['popup'])) {
@@ -526,9 +534,7 @@ final class html5 {
         }
         $compass = ['north', 'west', 'center', 'east', 'south'];
         foreach ($compass as $region) {
-            if (empty($dim[$region])) {
-                continue;
-            }
+            if (empty($dim[$region])) { continue; }
             switch ($region) {
                 case 'north': $divID = 'bodyNorth';
                     $opts = "region:'north',border:false,style:{borderWidth:0},minHeight:" . ($dim[$region]['height'] ? $dim[$region]['height'] : $this->pageT);
@@ -612,7 +618,7 @@ final class html5 {
         if (!$attr['search']) { $structure['contactSel'] = ['attr'=>['type'=>'hidden']]; }
         else {
             $structure['contactSel'] = ['classes'=>['easyui-combogrid'],'attr'=>['data-options'=>"
-                width:130, panelWidth:750, delay:900, idField:'id', textField:'primary_name', mode: 'remote',iconCls: 'icon-search', hasDownArrow: false,
+                width:130, panelWidth:750, delay:900, idField:'id', textField:'primary_name', mode: 'remote',iconCls: 'icon-search', hasDownArrow:false,
                 url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type=".($attr['drop']?'c':$attr['type'])."&store=".($attr['store']?'1':'0')."',
                 onBeforeLoad:function (param) { var newValue = jq('#contactSel{$attr['suffix']}').combogrid('getValue'); if (newValue.length < 3) return false; },
                 selectOnNavigation:false,
@@ -631,7 +637,7 @@ final class html5 {
         if (!empty($props['label'])) { $output['body'] .= "<label>".$props['label']."</label><br />\n"; }
         if ($attr['clear']) { $output['body'] .= ' '.html5('', ['icon'=>'clear','size'=>'small','events'=>['onClick'=>"addressClear('{$attr['suffix']}')"]])."\n"; }
         if ($attr['validate'] && getModuleCache('extShipping', 'properties', 'status')) {
-            $output['body'] .= ' '.html5('', ['icon'=>'truck','size'=>'small','label'=>lang('validate_address'),'events'=>  ['onClick'=>"shippingValidate('{$attr['suffix']}');"]])."\n";
+            $output['body'] .= ' '.html5('', ['icon'=>'truck','size'=>'small','label'=>lang('validate_address'),'events'=>['onClick'=>"shippingValidate('{$attr['suffix']}');"]])."\n";
         }
         if ($attr['copy']) {
             $src = explode(':', $attr['copy']);
@@ -650,8 +656,7 @@ final class html5 {
 
         // Address select (hidden by default)
         $output['body'] .= '  <div id="addressDiv'.$attr['suffix'].'" style="display:none">'.html5('addressSel'.$attr['suffix'], ['attr'=>['type'=>'text']])."</div>\n";
-        $output['jsBody']['addrCombo'.$attr['suffix']] = "
-        var addressVals{$attr['suffix']} = ".(isset($data['address'][$attr['suffix']]) ? $data['address'][$attr['suffix']] : "[]").";";
+        $output['jsBody']['addrCombo'.$attr['suffix']] = "var addressVals{$attr['suffix']} = ".(isset($data['address'][$attr['suffix']]) ? $data['address'][$attr['suffix']] : "[]").";";
         $output['jsReady']['addrCombo'.$attr['suffix']] = "jq('#addressSel{$attr['suffix']}').combogrid({
             width:     150,
             panelWidth:750,
@@ -1081,9 +1086,9 @@ final class html5 {
 
     public function inputSelect($id, $prop) {
         $this->addID($id, $prop);
-        $first = $this->addLabelFirst($id, $prop);
+        $first= $this->addLabelFirst($id, $prop);
         $last = $this->addLabelLast($id, $prop);
-        $value = isset($prop['attr']['value']) ? (array)$prop['attr']['value'] : []; // needs to be isset, cannot be empty
+        $value= isset($prop['attr']['value']) ? (array)$prop['attr']['value'] : []; // needs to be isset, cannot be empty
         unset($prop['attr']['type']);
         unset($prop['attr']['value']);
         if (!empty($prop['js']))     { $this->jsBody[] = $prop['js']; } // old way
@@ -1305,7 +1310,8 @@ final class html5 {
 //      if (!$id)                  { return $field; }
         if (empty($prop['label'])) { return $field; }
         if ($prop['attr']['type']<>'hidden' && isset($prop['position']) && $prop['position'] == 'after') {
-            $field = '<label for="'.$id.'" class="fldLabel" style="vertical-align:top">'.$prop['label'].'</label>';
+            $styles = "vertical-align:top;" . in_array($prop['attr']['type'], ['checkbox','radio'])? 'min-width:60px;' : '';
+            $field = '<label for="'.$id.'" class="fldLabel" style="'.$styles.'">'.$prop['label'].'</label>';
         }
         return $field;
     }

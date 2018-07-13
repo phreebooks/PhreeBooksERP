@@ -15,12 +15,11 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
  * @filesource lib/locale/en_US/module/phreebooks/dashboards/open_j09/language.php
- * 
  */
 
 $lang = [
     'title'      => 'Open Quotes',
-    'description'=> 'Lists open custoemr Quotes. A link to review each entry in a separate window is also provided. Settings are available for enhanced security and control.'];
+    'description'=> 'Lists open customer Quotes. A link to review each entry in a separate window is also provided. Settings are available for enhanced security and control.'];

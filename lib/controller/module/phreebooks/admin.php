@@ -16,9 +16,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-19
+ * @version    2.x Last Update: 2018-07-02
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -219,7 +219,7 @@ class phreebooksAdmin {
                 'tabTaxv'    => ['order'=>50,'label'=> pullTableLabel('inventory', 'tax_rate_id', 'v'), 'type' => 'html', 'html' => '',
                     'attr' => ["data-options" => "href:'" . BIZUNO_AJAX."&p=phreebooks/tax/manager&type=v'"]],
                 'tabTotals'  => ['order'=>60,'label'=>lang('totals'),    'attr'=>['module'=>$this->moduleID,'path'=>$this->structure['dirMethods']],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
-                'tabDBs'     => ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'type'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
+                'tabDBs'     => ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
                 'tabFY'      => ['order'=>80,'label'=>lang('fiscal_calendar'),'type'=>'html','html'=>'',
                     'attr' => ["data-options" => "href:'" . BIZUNO_AJAX."&p=phreebooks/admin/managerFY'"]],
                 'tabTools'   => ['order'=>90, 'label' => $this->lang['journal_tools'],'src'=>BIZUNO_LIB."view/module/phreebooks/tabJournalTools.php"]]]],
@@ -237,7 +237,7 @@ class phreebooksAdmin {
                 'purge_db'    => ['styles'=>["text-align"=>"right"],'attr'=>['size'=>"7"]],
                 'btn_purge'   => ['attr'=>['type'=>'button', 'value'=>$this->lang['phreebooks_purge_db_journal']],
                     'events' => ['onClick'=>"if (confirm('".$this->lang['msg_gl_db_purge_confirm']."')) jsonAction('phreebooks/tools/glPurge', 0, jq('#purge_db').val());"]],
-                'dateAtchCln' => ['label'=>lang(''), 'classes'=>['easyui-datebox'], 'attr'=>['value'=>viewDate(localeCalculateDate(date('Y-m-d'), 0, -3))]],
+                'dateAtchCln' => ['label'=>lang(''), 'classes'=>['easyui-datebox'], 'attr'=>['value'=>viewDate(localeCalculateDate(date('Y-m-d'), 0, -4))]],
                 'btnAtchCln'  => ['attr'=> ['type' => 'button', 'value' => lang('start')],
                     'events' => ['onClick'=>"if (confirm('".$this->lang['pb_attach_clean_confirm']."')) jsonAction('phreebooks/tools/cleanAttach', 0, jq('#dateAtchCln').datebox('getValue'));"]],
             ],

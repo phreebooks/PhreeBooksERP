@@ -15,11 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-11-09
+ * @version    2.x Last Update: 2018-07-01
  * @filesource /lib/controller/module/phreebooks/chart.php
- * 
  */
 
 namespace bizuno;
@@ -99,18 +98,18 @@ function chartRefresh() {
 		$data = ['type'=>'divHTML',
 			'divs'    => ['detail'=>  ['order'=>10,'src'=>BIZUNO_LIB."view/module/phreebooks/accGLEdit.php"]],
 			'toolbars'=> ['tbGL'=>  ['icons' => [
-                "glSave" => ['order'=>10,'icon'=>'save','events'=>  ['onClick'=>"jq('#frmGLEdit').submit();"]],
-				"glNew"  => ['order'=>20,'icon'=>'new', 'events'=>  ['onClick'=>"accordionEdit('accGL', 'dgChart', 'divGLDetail', '".lang('details')."', 'phreebooks/chart/edit', 0);"]]]]],
-			'forms'   => ['frmGLEdit'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/chart/save"]]],
+                "glSave"=> ['order'=>10,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"jq('#frmGLEdit').submit();"]],
+				"glNew" => ['order'=>20,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"accordionEdit('accGL', 'dgChart', 'divGLDetail', '".lang('details')."', 'phreebooks/chart/edit', 0);"]]]]],
+			'forms'   => ['frmGLEdit'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/chart/save"]]],
 			'fields'  => [
-                'gl_previous' => ['label'=>lang('gl_account'),'attr'=>  ['readonly'=>'readonly', 'value'=>isset($val['id'])?$val['id']:'']],
-				'gl_account'  => ['label'=>$this->lang['new_gl_account']],
-				'gl_inactive' => ['label'=>lang('inactive'), 'attr'=>  ['type'=>'checkbox']],
-				'gl_desc'     => ['label'=>lang('title'), 'attr'=>['size'=>60, 'value'=>isset($val['title'])?$val['title']:'']],
-				'gl_type'     => ['label'=>lang('type'),    'values'=>selGLTypes(),'attr'=>['type'=>'select', 'value'=>isset($val['type'])? $val['type']:'']],
-				'gl_cur'      => ['label'=>lang('currency'),'values'=>$currencies, 'attr'=>['type'=>'select', 'value'=>isset($val['cur']) ? $val['cur'] :'']],
-				'gl_header'   => ['label'=>lang('heading'), 'attr'=>  ['type'=>'checkbox']],
-				'gl_parent'   => ['label'=>$this->lang['primary_gl_acct'], 'jsBody'=>htmlComboGL('gl_parent'), 'attr'=>['value'=>isset($val['parent'])?$val['parent']:'']]]];
+                'gl_previous'=> ['label'=>lang('gl_account'),'attr'=>['readonly'=>'readonly', 'value'=>isset($val['id'])?$val['id']:'']],
+				'gl_account' => ['label'=>$this->lang['new_gl_account']],
+				'gl_inactive'=> ['label'=>lang('inactive'),  'attr'=>['type'=>'checkbox']],
+				'gl_desc'    => ['label'=>lang('title'),     'attr'=>['size'=>60, 'value'=>isset($val['title'])?$val['title']:'']],
+				'gl_type'    => ['label'=>lang('type'),    'values'=>selGLTypes(),'attr'=>['type'=>'select', 'value'=>isset($val['type'])? $val['type']:'']],
+				'gl_cur'     => ['label'=>lang('currency'),'values'=>$currencies, 'attr'=>['type'=>'select', 'value'=>isset($val['cur']) ? $val['cur'] :'']],
+				'gl_header'  => ['label'=>lang('heading'),   'attr'=>['type'=>'checkbox']],
+				'gl_parent'  => ['label'=>$this->lang['primary_gl_acct'], 'jsBody'=>htmlComboGL('gl_parent'), 'attr'=>['value'=>isset($val['parent'])?$val['parent']:'']]]];
         if (!$rID) { $data['fields']['gl_previous']['attr']['type'] = 'hidden'; }
         if (isset($val['inactive'])&& $val['inactive']) { $data['fields']['gl_inactive']['attr']['checked']= 'checked'; }
         if (isset($val['heading']) && $val['heading'])  { $data['fields']['gl_header']['attr']['checked']  = 'checked'; }

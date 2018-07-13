@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-09
+ * @version    2.x Last Update: 2018-06-28
  * @filesource /lib/controller/module/contacts/admin.php
  */
 
@@ -102,7 +102,7 @@ class contactsAdmin
                 'settings'=> ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminSettings.php"],
 				'fields'  => ['order'=>50,'label'=>lang('extra_fields'),'type'=>'html', 'html'=>'',
                     'attr'=> ["data-options"=>"href:'".BIZUNO_AJAX."&p=bizuno/fields/manager&module=$this->moduleID&table=contacts'"]],
-                'tabDBs'  => ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'type'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
+                'tabDBs'  => ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
 				'tools'   => ['order'=>80,'label'=>lang('tools'),   'src'=>BIZUNO_LIB."view/module/contacts/tabSettingsTools.php"]]]],
 			'fields' => [
                 'dateJ9Close'=> ['label'=>'','classes'=>['easyui-datebox'], 'attr'=>['data-options'=>"{value:'$clnDefault'}"]],

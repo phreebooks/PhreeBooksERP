@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-06
+ * @version    2.x Last Update: 2018-06-28
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -43,7 +43,8 @@ class bizunoAdmin
                     'attr'=>['id'=>'sysMsg'],'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
 				'encrypt'    => ['order'=>60,'label'=>lang('bizuno_encrypt_enable'),'icon'=>'encrypt-off','required'=>true,'hideLabel'=>true,'attr'=>['id'=>'ql_encrypt'],
                     'events' => ['onClick'=>"windowEdit('bizuno/main/encryptionForm','winEncrypt','".jsLang('bizuno_encrypt_enable')."',400,150)"]],
-                'home'       => ['order'=>99,'label'=>lang('bizuno_company'),'icon'=>'home','events'=>['onClick'=>"hrefClick('');"],'child'=>[
+				'newTab'     => ['order'=>95,'label'=>lang('new_tab'), 'icon'=>'add','required'=>true,'hideLabel'=>true,'events'=>['onClick'=>"tabOpen('', '');"]],
+                'home'       => ['order'=>90,'label'=>lang('bizuno_company'),'icon'=>'employee','events'=>['onClick'=>"hrefClick('');"],'child'=>[
                     'admin'  => ['order'=>10,'label'=>lang('settings'),'icon'=>'settings','events'=>['onClick'=>"hrefClick('bizuno/settings/manager');"]],
                     'profile'=> ['order'=>20,'label'=>lang('profile'), 'icon'=>'profile','events'=>['onClick'=>"hrefClick('bizuno/profile/edit');"]],
                     'roles'  => ['order'=>30,'label'=>lang('roles'),   'icon'=>'roles',  'events'=>['onClick'=>"hrefClick('bizuno/roles/manager');"]],
@@ -228,7 +229,7 @@ class bizunoAdmin
                 'settings'=> ['order'=>20,'label'=>lang('settings'),  'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminSettings.php"],
 				'tabs'    => ['order'=>40,'label'=>lang('extra_tabs'),'type'=>'html','html'=>'','attr'=>  ["data-options"=>"href:'".BIZUNO_AJAX."&p=bizuno/tabs/manager'"]],//
 				'tools'   => ['order'=>50,'label'=>lang('tools'),     'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminTools.php"],
-				'tabDBs'  => ['order'=>60,'label'=>lang('dashboards'),'settings'=>['module'=>$this->moduleID,'type'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
+				'tabDBs'  => ['order'=>60,'label'=>lang('dashboards'),'settings'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
 				'stats'   => ['order'=>99,'label'=>lang('statistics'),'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminStats.php"]]]],
 			'forms'  => ['frmReference'=> ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/statusSave"]]],
             'lang'  => $this->lang,

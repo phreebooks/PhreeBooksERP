@@ -15,11 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-08-27
+ * @version    2.x Last Update: 2018-06-14
  * @filesource /lib/controller/module/phreebooks/totals/fee_order/fee_order.php
- * 
  */
 
 namespace bizuno;
@@ -63,8 +62,7 @@ class fee_order
 			'debit_amount' => in_array(JOURNAL_ID, [9,10,12,13,19]) ? $fee_order : 0,
 			'credit_amount'=> in_array(JOURNAL_ID, [3, 4, 6, 7,21]) ? $fee_order : 0,
 			'gl_account'   => isset($request['totals_fee_order_gl']) ? $request['totals_fee_order_gl'] : $this->settings['gl_account'],
-			'post_date'    => $main['post_date'],
-            ];
+			'post_date'    => $main['post_date']];
 //		$main['fee_order'] = $fee_order; // there is no place in the main to put this, negative discount?
 		$begBal += $fee_order;
 		msgDebug("\nDiscount is returning balance = ".$begBal);
@@ -97,8 +95,8 @@ class fee_order
 		$output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
 		$output['body'] .= html5('totals_fee_order_id', $this->fields['totals_fee_order_id'])."\n";
 		$output['body'] .= html5('totals_fee_order_pct',$this->fields['totals_fee_order_pct'])."\n";
-		$output['body'] .= html5('',                    $this->fields['totals_fee_order_opt'])."\n";
 		$output['body'] .= html5('totals_fee_order',    $this->fields['totals_fee_order']) ."\n";
+		$output['body'] .= html5('',                    $this->fields['totals_fee_order_opt'])."\n";
 		$output['body'] .= "</div>\n";
 		$output['body'] .= '<div id="phreebooks_totals_fee_order" style="display:none" class="layout-expand-over">'."\n";
 		$output['body'] .= html5('totals_fee_order_gl', $this->fields['totals_fee_order_gl'])."\n";

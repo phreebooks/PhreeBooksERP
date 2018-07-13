@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
  * @version    2.x Last Update: 2018-05-29
  * @filesource /view/main.php
@@ -341,9 +341,11 @@ function viewFormat($value, $format = '')
         if ($result===false) { return '0'; }
 		return sizeof($result) > 0 ? '1' : '0';
 	} elseif (substr($format, 0, 5) == 'setng') {
-        $tmp = explode(':', $format, 2); // $format = setng:key
+        $tmp = explode(':', $format, 3); // $format = setng:key:viewFormat
 		$settings = json_decode($value, true); 
-        if (isset($settings[$tmp[1]]) && !is_array($settings[$tmp[1]])) { return $settings[$tmp[1]]; }
+        if (isset($settings[$tmp[1]]) && !is_array($settings[$tmp[1]])) { 
+            return !empty($tmp[2]) ? viewFormat($settings[$tmp[1]], $tmp[2]) : $settings[$tmp[1]];
+        }
         return '-';
 	} elseif (substr($format, 0, 5) == 'cache') {
 		$tmp = explode(':', $format); // $format = cache:module:index
@@ -724,7 +726,7 @@ function viewMain()
  * Generates the main view for modules settings and properties. If the module has settings, the structure will be generated here as well
  * @param string $module - Module ID
  * @param array $structure - Current working structure, Typically will be empty array
- * @param string $title - Page title, will auto generate one if no title passed
+ * @param string $lang - 
  * @return array - Newly formed layout
  */
 function adminStructure($module, $structure=[], $lang=[])

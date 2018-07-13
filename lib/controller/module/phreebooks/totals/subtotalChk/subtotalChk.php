@@ -15,11 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-08-27
+ * @version    2.x Last Update: 2018-06-14
  * @filesource /controller/module/phreebooks/totals/subtotalChk/subtotalChk.php
- * 
  */
 
 namespace bizuno;
@@ -41,9 +40,9 @@ class subtotalChk {
     public function settingsStructure()
     {
         return [
-            'gl_type'   => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
-            'journals'  => ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
-            'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
+            'gl_type' => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
+            'journals'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
+            'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
 	}
 
 	public function render(&$output)

@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-31
+ * @version    2.x Last Update: 2018-06-14
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -1160,21 +1160,21 @@ class jCommon
 							{field:'qty_stock', title:'$on_hand', width:90,align:'right'},
 							{field:'$inv_field', title:'$inv_title', width:90,align:'right'},
 							{field:'$gl_account', hidden:true}, {field:'item_weight', hidden:true}]]}}"]],
-				'description' => ['order'=>40, 'label'=>lang('description'),'attr'=>['width'=>400,'editor'=>'text','resizable'=>true]],
-				'gl_account' => ['order'=>50, 'label'=>pullTableLabel('journal_item', 'gl_account', $this->journalID),
-					'attr'  => ['width'=>100, 'resizable'=>true, 'align'=>'center'],
-					'events'=>  ['editor'=>dgHtmlGLAcctData()]],
-				'tax_rate_id' => ['order'=>60, 'label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->type), 'hidden'=>$hideItemTax,
-					'attr'  =>  ['width'=>150, 'resizable'=>true, 'align'=>'center'],
-					'events'=>  ['editor'=>dgHtmlTaxData($name, 'tax_rate_id', $type, 'totalUpdate();'),
+				'description'  => ['order'=>40, 'label'=>lang('description'),'attr'=>['width'=>400,'editor'=>'text','resizable'=>true]],
+				'gl_account'   => ['order'=>50, 'label'=>pullTableLabel('journal_item', 'gl_account', $this->journalID),
+					'attr'     => ['width'=>100, 'resizable'=>true, 'align'=>'center'],
+					'events'   => ['editor'=>dgHtmlGLAcctData()]],
+				'tax_rate_id'  => ['order'=>60, 'label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->type), 'hidden'=>$hideItemTax,
+					'attr'     => ['width'=>150, 'resizable'=>true, 'align'=>'center'],
+					'events'   => ['editor'=>dgHtmlTaxData($name, 'tax_rate_id', $type, 'totalUpdate();'),
 					'formatter'=>"function(value,row){ return getTextValue(bizDefaults.taxRates.$type.rows, value); }"]],
-				'price' => ['order'=>70, 'label'=>lang('price'), 'format'=>'currency',
-					'attr'  => ['width'=>80, 'resizable'=>true, 'align'=>'right'],
-					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('price'); } } }",
+				'price'        => ['order'=>70, 'label'=>lang('price'), 'format'=>'currency',
+					'attr'     => ['width'=>80, 'resizable'=>true, 'align'=>'right'],
+					'events'   => ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('price'); } } }",
 					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'total' => ['order'=>80, 'label'=>lang('total'), 'format'=>'currency',
-					'attr' => ['width'=>80, 'resizable'=>true, 'align'=>'right', 'value'=>'0'],
-					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('total'); } } }",
+				'total'        => ['order'=>80, 'label'=>lang('total'), 'format'=>'currency',
+					'attr'     => ['width'=>80, 'resizable'=>true, 'align'=>'right', 'value'=>'0'],
+					'events'   => ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('total'); } } }",
 					'formatter'=>"function(value,row){ return formatCurrency(value); }"]]]];
 		switch ($this->journalID) {
 			case  3: $qty1 = lang('qty');      $qty2 = lang('received'); $ord1 = 20; $ord2 = 25; break;
@@ -1193,6 +1193,11 @@ class jCommon
 			'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('qty'); } } }"]];
 		$data['columns']['bal'] = ['order'=>$ord2, 'label'=>$qty2,
 			'attr' => ['width'=>80,'resizable'=>true,'align'=>'center','hidden'=>($this->rID || $this->action=='inv')?false:true]];
+        // restrict prices if not allowed
+        if (!validateSecurity('inventory', 'prices_'.$type, 2, false)) { // dis-allow editing of price columns
+            $data['columns']['price']['events']['editor'] = "{type:'numberbox',options:{readonly:true }}";
+            $data['columns']['total']['events']['editor'] = "{type:'numberbox',options:{readonly:true }}";
+        }
 		return $data;
     }
 }

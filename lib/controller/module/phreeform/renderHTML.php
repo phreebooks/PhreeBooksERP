@@ -15,12 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-03-13
-
+ * @version    2.x Last Update: 2018-07-01
  * @filesource /controller/module/phreeform/renderHTML.php
- * 
  */
 
 namespace bizuno;
@@ -125,8 +123,8 @@ class HTML
 		// Fetch the column break array and alignment array
 		foreach ($report->fieldlist as $value) {
 			if (isset($value->visible) && $value->visible) {
-				$ColBreak[] = (isset($value->break) && $value->break) ? true : false;
-				$align[]    = isset($value->align) ? $value->align : '';
+				$ColBreak[] = !empty($value->break) ? true : false;
+				$align[]    =  isset($value->align) ? $value->align : '';
 			}
 		}
 		// Ready to draw the column data

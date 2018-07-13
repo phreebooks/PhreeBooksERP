@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-11
+ * @version    2.x Last Update: 2018-06-28
  * @filesource /locale/cleaner.php
  */
 
@@ -528,6 +528,25 @@ function localeDueDate($post_date, $terms_encoded=0, $type='c')
 	}
 	$result['credit_limit'] = isset($terms[4]) ? $terms[4] : 1000;
 	return $result;
+}
+
+/**
+ * Calculates a date in db format into the future, day, week, month, quarter or year
+ * @param type $dateStart - base date in db format
+ * @param type $freq - [default: m (month)] future time period, d, w, m , q, or y 
+ * @return type
+ */
+function localePeriodicDate($dateStart, $freq='m')
+{
+    switch ($freq) {
+        case 'd': $offD = 1; $offM = 0; $offY = 0; break;
+        case 'w': $offD = 7; $offM = 0; $offY = 0; break;
+        default:
+        case 'm': $offD = 0; $offM = 1; $offY = 0; break;
+        case 'q': $offD = 0; $offM = 3; $offY = 0; break;
+        case 'y': $offD = 0; $offM = 0; $offY = 1; break;
+    }
+    return localeCalculateDate($dateStart, $offD, $offM, $offY);
 }
 
 /**

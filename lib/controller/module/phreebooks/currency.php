@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-14
+ * @version    2.x Last Update: 2018-07-01
  * @filesource /lib/controller/module/phreebooks/currency.php
  */
 
@@ -77,7 +77,7 @@ class phreebooksCurrency
     public function edit(&$layout=[])
 	{
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
-		$iso   = clean('iso', ['format'=>'text', 'default'=>'USD'], 'get');
+		$iso = clean('iso', ['format'=>'text', 'default'=>'USD'], 'get');
         if (!$iso) { return; }
 		$values = getModuleCache('phreebooks', 'currency', 'iso', $iso, $this->currencySettings($iso));
         if ($iso == getUserCache('profile', 'currency')) { $values['value'] = 1; }
@@ -88,19 +88,17 @@ class phreebooksCurrency
 					'events'=>  ['onClick'=>"jq('body').addClass('loading'); jq('#frmCurrency').submit();"]]]]],
 			'forms'    => ['frmCurrency'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/save"]]],
 			'fields'   => [
-                'is_def' => ['label'=>lang('default'),   'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getUserCache('profile', 'currency', false, 'USD')==$iso?true:false]],
-				'code'   => ['label'=>lang('code'),      'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']],
-                'xrate'  => ['label'=>lang('exc_rate'),  'attr'=>['value'=>$values['value']]],
-				'title'  => ['label'=>lang('title'),     'attr'=>['value'=>$values['title']]],
-				'prefix' => ['label'=>lang('prefix'),    'attr'=>['value'=>$values['prefix']]],
-				'suffix' => ['label'=>lang('suffix'),    'attr'=>['value'=>$values['suffix']]],
+                'is_def' => ['label'=>lang('default'),  'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getUserCache('profile', 'currency', false, 'USD')==$iso?true:false]],
+				'code'   => ['label'=>lang('code'),     'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']],
+                'xrate'  => ['label'=>lang('exc_rate'), 'attr'=>['value'=>$values['value']]],
+				'title'  => ['label'=>lang('title'),    'attr'=>['value'=>$values['title']]],
+				'prefix' => ['label'=>lang('prefix'),   'attr'=>['value'=>$values['prefix']]],
+				'suffix' => ['label'=>lang('suffix'),   'attr'=>['value'=>$values['suffix']]],
 				'dec_pt' => ['label'=>$this->lang['dec_point'], 'attr'=>['value'=>$values['dec_pt']]],
-				'sep'    => ['label'=>lang('separator'), 'attr'=>['value'=>$values['sep']]],
+				'sep'    => ['label'=>lang('separator'),'attr'=>['value'=>$values['sep']]],
 				'dec_len'=> ['label'=>$this->lang['dec_length'],'attr'=>['value'=>$values['dec_len']]],
 				'pfxneg' => ['label'=>$this->lang['neg_prefix'],'attr'=>['value'=>isset($values['pfxneg']) ? $values['pfxneg'] : '-']],
-				'sfxneg' => ['label'=>$this->lang['neg_suffix'],'attr'=>['value'=>isset($values['sfxneg']) ? $values['sfxneg'] : '']],
-                ],
-            ];
+				'sfxneg' => ['label'=>$this->lang['neg_suffix'],'attr'=>['value'=>isset($values['sfxneg']) ? $values['sfxneg'] : '']]]];
 		$layout = array_replace_recursive($layout, $data);
 	}
 
@@ -254,18 +252,13 @@ class phreebooksCurrency
 				'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accCurrency', 'dgCurrency', 'accCurrencyDtl', '".lang('details')."', 'phreebooks/currency/edit&iso='+rowData.code); }",
 				'onClickRow'   => "function(rowIndex, rowData) { selectedCurrency = rowData.code; }",
 				'rowStyler'    => "function(index, row) { if (row.code=='".getUserCache('profile', 'currency', false, 'USD')."') { return {class:'row-default'}; }}"],
-			'source' => [
-                'actions'=> [
-                    'currencyNew'   => ['order'=>10,'html'=>  ['icon'=>'new',
-						'events'=>  ['onClick'=>"jsonAction('phreebooks/currency/add');"]]],
-					'currencyUpdate'=> ['order'=>80,'html'=>  ['icon'=>'update',
-						'events'=>  ['onClick'=>"jq('body').addClass('loading'); jsonAction('phreebooks/currency/update');"]]]]],
+			'source' => ['actions'=>['currencyNew'=>['order'=>10,'html'=>['icon'=>'new',
+                'events'=>['onClick'=>"jsonAction('phreebooks/currency/add');"]]]]],
 			'columns'=> [
                 'action' => ['order'=> 1, 'label'=>lang('action'), 'attr'=>  ['width'=>50],
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
-					'actions'=> [
-                        'delete'=> ['icon'=>'trash','size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
-							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/currency/delete', indexTBD, jq('#$name').datagrid('getRows')[indexTBD]['code']);"]]]],
+					'actions'=> ['delete'=>['icon'=>'trash','size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
+						'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/currency/delete', indexTBD, jq('#$name').datagrid('getRows')[indexTBD]['code']);"]]]],
 				'code'   => ['order'=>10,'label'=>lang('code'),             'attr'=>['width'=> 50,'resizable'=>true]],
 				'title'  => ['order'=>20,'label'=>lang('title'),            'attr'=>['width'=>200,'resizable'=>true]],
 				'value'  => ['order'=>30,'label'=>lang('exc_rate'),         'attr'=>['width'=>100,'resizable'=>true]],

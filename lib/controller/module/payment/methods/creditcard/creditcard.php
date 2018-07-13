@@ -15,11 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-08-27
+ * @version    2.x Last Update: 2018-07-09
  * @filesource /lib/controller/module/payment/methods/creditcard.php
- *
  */
 
 namespace bizuno;
@@ -58,13 +57,13 @@ class creditcard
 		msgDebug("\nWorking with values = ".print_r($values, true));
 		$exp = pullExpDates();
 		$this->viewData = [
-			'selCards'  => ['label'=>lang('payment_stored_cards'),'break'=>true,'attr'=>  ['type'=>'select'],  'events'=>  ['onChange'=>"creditcardRefNum('stored');"]],
-			'save'      => ['label'=>lang('save'),                'break'=>true,'attr'=>  ['type'=>'checkbox', 'value'=>'1']],
-			'name'      => ['label'=>lang('payment_name') ,       'break'=>true,'attr'=>  ['size'=>'24']],
-			'number'    => ['label'=>lang('payment_number'),      'break'=>true,'attr'=>  ['size'=>'19'], 'events'=>  ['onChange'=>"creditcardRefNum('number');"]],
+			'selCards'  => ['attr'=>['type'=>'select'],'events'=>['onChange'=>"creditcardRefNum('stored');"]],
+			'save'      => ['label'=>lang('save'),                'break'=>true,'attr'=>['type'=>'checkbox', 'value'=>'1']],
+			'name'      => ['label'=>lang('payment_name') ,       'break'=>true,'attr'=>['size'=>'24']],
+			'number'    => ['label'=>lang('payment_number'),      'break'=>true,'attr'=>['size'=>'19'], 'events'=>['onChange'=>"creditcardRefNum('number');"]],
 			'month'     => ['label'=>lang('payment_expiration'),  'values'=>$exp['months'],'attr'=>  ['type'=>'select']],
-			'year'      => ['values'=>$exp['years'], 'break'=>true,'attr'=>  ['type'=>'select']],
-			'cvv'       => ['label'=>lang('payment_cvv'),                       'attr'=>  ['size'=>'5', 'maxlength'=>'4']]];
+			'year'      => ['values'=>$exp['years'], 'break'=>true,'attr'=>['type'=>'select']],
+			'cvv'       => ['label'=>lang('payment_cvv'),          'attr'=>['size'=>'5', 'maxlength'=>'4']]];
 		if (isset($values['method']) && $values['method']==$this->code 
 				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
 			$this->viewData['number']['attr']['value'] = isset($values['hint']) ? $values['hint'] : '****';
@@ -121,7 +120,7 @@ html5($this->code.'_action', ['label'=>lang('new'),    'hidden'=>($show_n?false:
 html5($this->code.'_action', ['label'=>$this->lang['at_creditcard'],                    'attr'=>['type'=>'radio','value'=>'w','checked'=>$checked=='w'?true:false],
 	'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').hide();"]]).'<br />';
 $output['body'] .= '<div id="div'.$this->code.'s">';
-if ($show_s) { $output['body'] .= html5($this->code.'selCards', $this->viewData['selCards']); }
+if ($show_s) { $output['body'] .= lang('payment_stored_cards').'<br />'.html5($this->code.'selCards', $this->viewData['selCards']); }
 $output['body'] .= '</div>
 <div id="div'.$this->code.'n"'.(!$show_s?'':'style=" display:none"').'>'.
 	html5($this->code.'_save',  $this->viewData['save']).

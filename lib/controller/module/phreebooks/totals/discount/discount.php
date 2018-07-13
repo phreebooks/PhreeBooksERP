@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-09-06
+ * @version    2.x Last Update: 2018-06-14
  * @filesource /lib/controller/module/phreebooks/totals/discount/discount.php
  */
 
@@ -61,8 +61,7 @@ class discount
 		    'debit_amount' => in_array($this->jID, [9,10,12,13,19]) ? $discount : 0,
 		    'credit_amount'=> in_array($this->jID, [3, 4, 6, 7,21]) ? $discount : 0,
 		    'gl_account'   => isset($request['totals_discount_gl']) ? $request['totals_discount_gl'] : $this->settings['gl_account'],
-		    'post_date'    => $main['post_date'],
-            ];
+		    'post_date'    => $main['post_date']];
 		$main['discount'] = $discount;
 		$begBal -= $discount;
 		msgDebug("\nDiscount is returning balance = ".$begBal);
@@ -103,8 +102,8 @@ class discount
 		$output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
 		$output['body'] .= html5('totals_discount_id', $this->fields['totals_discount_id'])."\n";
 		$output['body'] .= html5('totals_discount_pct',$this->fields['totals_discount_pct'])."\n";
-		$output['body'] .= html5('',                   $this->fields['totals_discount_opt'])."\n";
 		$output['body'] .= html5('totals_discount',    $this->fields['totals_discount']) ."\n";
+		$output['body'] .= html5('',                   $this->fields['totals_discount_opt'])."\n";
 		$output['body'] .= "</div>\n";
 		$output['body'] .= '<div id="phreebooks_totals_discount" style="display:none" class="layout-expand-over">'."\n";
 		$output['body'] .= html5('totals_discount_gl', $this->fields['totals_discount_gl'])."\n";

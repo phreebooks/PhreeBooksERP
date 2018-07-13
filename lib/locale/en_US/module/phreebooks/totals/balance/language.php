@@ -25,5 +25,5 @@
 
 $lang = [
     'title'      => 'Debit/Credit Difference',
-    'description'=> 'This method calculates the total difference between the total debits and credits for general journal entries. This method is only used on General ledger transactions and should be the higest ordered total method.'];
+    'description'=> 'This method calculates the total difference between the total debits and credits for general journal entries. This method is only used on General ledger transactions and should be the highest ordered total method.'];
 

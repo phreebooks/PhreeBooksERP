@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-29
+ * @version    2.x Last Update: 2018-07-10
  * @filesource lib/controller/functions.php
  */
 
@@ -81,7 +81,7 @@ function compose($module, $page, $method, &$layout=[])
 function mergeHooks($module, $page, $method)
 {
     $thisHooks = getModuleCache($module, 'hooks', $page, $method, []);
-//    msgDebug("\nthisHooks for module: $module contains: ".print_r($thisHooks, true));
+//  msgDebug("\nthisHooks for module: $module contains: ".print_r($thisHooks, true));
     // add in the primary method
     $thisHooks[$module] = ['order'=>0,'path'=>getModuleCache($module, 'properties', 'path'),'page'=>$page,'class'=>$module.ucfirst($page),'method'=>$method]; // put primary method at 0
     $output = sortOrder($thisHooks); // sort them all up
@@ -115,12 +115,14 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 
 function myExceptionHandler($e)
 {
-    msgDebugWrite();
-    if (!defined('BIZUNO_DEBUG') || !constant('BIZUNO_DEBUG')) {
-        error_log("Fatal Error, message returned: ".$e->getMessage());
-        exit("Program Exception! Please fill out a support ticket with the details that got you here.");
+    if (defined('BIZUNO_DEBUG') && constant('BIZUNO_DEBUG')===true) {
+//        msgTrap();
+//        msgDebugWrite();
     }
+    error_log("Fatal Error, message returned: ".$e->getMessage());
+    exit("Program Exception! Please fill out a support ticket with the details that got you here.");
 }
+
 /**
  * Retrieves a value from the user cache
  * @global array $bizunoUser - User Cache

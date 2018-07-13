@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-08-27
+ * @version    2.x Last Update: 2018-06-14
  * @filesource /lib/controller/module/phreebooks/totals/shipping/shipping.php
  */
 
@@ -93,11 +93,10 @@ class shipping
         }
 		$this->fields = [
             'totals_shipping_id' => ['label'=>'', 'attr'=>  ['type'=>'hidden']],
-            'totals_shipping_gl' => ['label'=>lang('gl_account'), 'jsBody'=>htmlComboGL('totals_shipping_gl'), 'position'=>'after',
-                'attr' =>['size'=>'10', 'value'=>$this->settings['gl_account']]],
-            'totals_shipping_bill_type' => ['values'=>viewKeyDropdown($billingTypes), 'attr'=>  ['type'=>'select']],
-            'totals_shipping_bill_acct' => ['label'=>lang('account'), 'events'=>['onChange'=>"jq('#totals_shipping_bill_type').val('3rdparty');"]],
-            'totals_shipping_resi'=> ['label'=>lang('residential_address'),'position'=>'after','attr'=>['type'=>'checkbox', 'value'=>'1']],
+            'totals_shipping_gl' => ['label'=>lang('gl_account'), 'jsBody'=>htmlComboGL('totals_shipping_gl'),'attr' =>['size'=>'10','value'=>$this->settings['gl_account']]],
+            'totals_shipping_bill_type' => ['label'=>$this->lang['ship_bill_to'], 'values'=>viewKeyDropdown($billingTypes),'attr'=>['type'=>'select']],
+            'totals_shipping_bill_acct' => ['label'=>$this->lang['ship_bill_acct_num'],'events'=>['onChange'=>"jq('#totals_shipping_bill_type').val('3rdparty');"]],
+            'totals_shipping_resi'=> ['label'=>lang('residential_address'),'attr'=>['type'=>'checkbox', 'value'=>'1']],
             'totals_shipping_opt' => ['icon'=>'settings', 'size'=>'small','events'=> ['onClick'=>"jq('#totals_shipping_div').toggle('slow');"]],
             'method_code' => ['label'=>'', 'values'=>$choices, 'attr'=>  ['type'=>'select']],
             'totals_shipping_est' =>['attr'=>['type'=>'button','value'=>lang('rate_quote')],'events'=>['onClick'=>"shippingEstimate(".JOURNAL_ID.");"]],
@@ -129,20 +128,20 @@ class shipping
 			$this->fields['method_code']['attr']['value']= $data['fields']['main']['method_code']['attr']['value'];
 		}
 		$hide = $this->hidden ? ';display:none' : '';
-		$output['body'] .= '<div style="clear:both;text-align:right'.$hide.'">'."\n";
-		$output['body'] .= html5('totals_shipping_id',$this->fields['totals_shipping_id'])."\n";
-		$output['body'] .= html5('',                  $this->fields['totals_shipping_est'])."\n";
-		$output['body'] .= html5('',                  $this->fields['totals_shipping_opt'])."\n";
-		$output['body'] .= html5('freight',           $this->fields['freight']) ."<br />\n";
-		$output['body'] .= "</div>\n";
+		$output['body'] .= '<div style="clear:both;text-align:right'.$hide.'">';
+		$output['body'] .= html5('totals_shipping_id',$this->fields['totals_shipping_id']);
+		$output['body'] .= html5('',                  $this->fields['totals_shipping_est']);
+		$output['body'] .= html5('freight',           $this->fields['freight']);
+		$output['body'] .= html5('',                  $this->fields['totals_shipping_opt'])."<br />";
+		$output['body'] .= "</div>";
         if ($this->hidden) { $output['body'] .= $this->lang['label'].'<br />'; }
-		$output['body'] .= '<div style="text-align:right">'.html5('method_code',$this->fields['method_code'])."</div>\n";
-		$output['body'] .= '<div id="totals_shipping_div" style="display:none" class="layout-expand-over">'."\n";
-		$output['body'] .= html5('totals_shipping_gl',        $this->fields['totals_shipping_gl'])  ."<br />\n";
-		$output['body'] .= html5('totals_shipping_resi',      $this->fields['totals_shipping_resi'])."<br />\n";
-		$output['body'] .= html5('totals_shipping_bill_type', $this->fields['totals_shipping_bill_type'])."\n";
-		$output['body'] .= html5('totals_shipping_bill_acct', $this->fields['totals_shipping_bill_acct'])."\n";
-		$output['body'] .= "</div>\n";
+		$output['body'] .= '<div style="text-align:right">'.html5('method_code',$this->fields['method_code'])."</div>";
+		$output['body'] .= '<div id="totals_shipping_div" style="display:none" class="layout-expand-over">';
+		$output['body'] .= html5('totals_shipping_resi',      $this->fields['totals_shipping_resi'])."<br />";
+		$output['body'] .= html5('totals_shipping_bill_type', $this->fields['totals_shipping_bill_type'])."<br />";
+		$output['body'] .= html5('totals_shipping_bill_acct', $this->fields['totals_shipping_bill_acct'])."<br />";
+		$output['body'] .= html5('totals_shipping_gl',        $this->fields['totals_shipping_gl']);
+		$output['body'] .= "</div>";
         $output['jsHead'][] = $this->jsTotal($data);
 	}
 
@@ -183,8 +182,7 @@ class shipping
     newTaxTotal = roundCurrency(taxTotal);
     taxRunning += newTaxTotal;
     return newBalance + newTaxTotal;
-}
-";
+}";
     }
     
     /**

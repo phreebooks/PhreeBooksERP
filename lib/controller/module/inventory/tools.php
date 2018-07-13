@@ -332,7 +332,7 @@ class inventoryTools
         $count = 0;
         $result= dbGetMulti(BIZUNO_DB_PREFIX.'inventory', "id>$rID", 'id', ['id','sku','inactive','description_short'], $blockSize);
         foreach ($result as $row) {
-            $rID = $row['id']; // set the higest rID for next iteration
+            $rID = $row['id']; // set the highest rID for next iteration
             if (!$row['inactive']) { continue; }
             if (!$row['sku']) {
                 msgAdd("There is not SKU value for record {$row['id']}, This should never happen! The record will be skipped.");

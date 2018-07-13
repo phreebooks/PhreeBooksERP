@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-07
+ * @version    2.x Last Update: 2018-06-14
  * @filesource /lib/controller/module/phreebooks/journals/j18.php
  */
 
@@ -104,8 +104,9 @@ class j18 extends jCommon
             $data['jsReady']['divInit'] = "ajaxForm('frmJournal'); jq('#contactSel_b').next().find('input').focus();";
         } else {
             unset($data['divs']['tbJrnl']);
-            $data['divs']['divDetail']  = ['order'=>50,'type'=>'html','html'=>html5('contactSel', ['label'=>lang('search')])];
-            $data['jsBody']['selVendor']= "jq('#contactSel').combogrid({width:120,panelWidth:500,delay:500,idField:'contact_id_b',textField:'primary_name_b',mode:'remote',
+            $data['divs']['divDetail']  = ['order'=>50,'type'=>'html','html'=>html5('contactSel', ['attr'=>['type'=>'input']])];
+            $data['jsBody']['selVendor']= "jq('#contactSel').combogrid({width:120,panelWidth:500,delay:500,iconCls:'icon-search',hasDownArrow:false,
+    idField:'contact_id_b',textField:'primary_name_b',mode:'remote',
     url:       '".BIZUNO_AJAX."&p=phreebooks/main/managerRowsBank&jID=".JOURNAL_ID."', 
     onBeforeLoad:function (param) { var newValue = jq('#contactSel').combogrid('getValue'); if (newValue.length < 2) return false; },
     onClickRow:function (idx, row) { journalEdit(".JOURNAL_ID.", 0, row.contact_id_b); },

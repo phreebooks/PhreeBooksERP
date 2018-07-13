@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-02-09
+ * @version    2.x Last Update: 2018-07-09
  * @filesource /lib/controller/module/payment/main.php
  */
 
@@ -178,22 +178,22 @@ class paymentMain
 		$sort   = clean('sort', ['format'=>'text',   'default'=>'exp_date'],'post');
 		$order  = clean('order',['format'=>'text',   'default'=>''],    'post');
 		$data = [
-            'id'   => $name,
-			'rows' => $rows,
-			'page' => $page,
-			'attr' => [
-                'url'      => BIZUNO_AJAX."&p=payment/main/managerRows&rID=$rID",
-				'pageSize' => getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField'  => 'id'],
+            'id'     => $name,
+			'rows'   => $rows,
+			'page'   => $page,
+			'attr'   => [
+                'url'     => BIZUNO_AJAX."&p=payment/main/managerRows&rID=$rID",
+				'pageSize'=> getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
+				'idField' => 'id'],
 			'source' => [
-                'tables' => ['data_security'=>  ['table'=>BIZUNO_DB_PREFIX."data_security"]],
+                'tables' => ['data_security'=>['table'=>BIZUNO_DB_PREFIX."data_security"]],
 				'filters' => [
                     'module'=>  ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."data_security.module='contacts'"],
 					'rID'   =>  ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."data_security.ref_1=$rID"]],
 				'sort' => ['s0'=>  ['order'=>10, 'field'=>"$sort $order"]]],
-			'columns' => [
-                'id'     => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."data_security.id", 'attr'=>  ['hidden'=>true]],
-				'action' => ['order'=>1, 'label'=>'', 'attr'=>  ['width'=>75],
+			'columns'=> [
+                'id'     => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."data_security.id", 'attr'=>['hidden'=>true]],
+				'action' => ['order'=>1, 'label'=>'', 'attr'=>['width'=>75],
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> [
                         'pmtEdit' => ['icon'=>'edit','size'=>'small', 'order'=>20, 'label'=>lang('edit'), 'hidden'=>$security>2?false:true,
@@ -201,11 +201,11 @@ class paymentMain
                         'pmtTrash' => ['icon'=>'trash','size'=>'small', 'order'=>50, 'label'=>lang('delete'), 'hidden'=>$security>3?false:true,
 							'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('payment/main/delete', idTBD);"]]]],
 				'enc_value' => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."data_security.enc_value", 'format'=>'encryptName',
-					'label' => lang('address_book_primary_name'), 'attr'=>  ['width'=>200, 'sortable'=>true, 'resizable'=>true]],
+					'label' => lang('address_book_primary_name'), 'attr'=>['width'=>200, 'sortable'=>true, 'resizable'=>true]],
 				'hint'   => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX."data_security.hint",
-					'label' => lang('hint'),  'attr'=>  ['width'=>150, 'sortable'=>true, 'resizable'=>true]],
+					'label' => lang('hint'),  'attr'=>['width'=>150, 'sortable'=>true, 'resizable'=>true]],
 				'exp_date'=> ['order'=>30, 'field' => BIZUNO_DB_PREFIX."data_security.exp_date", 'format'=>'date',
-					'label' => lang('payment_expiration'), 'attr'=>  ['width'=>120, 'sortable'=>true, 'resizable'=>true]]]];
+					'label' => lang('payment_expiration'), 'attr'=>['width'=>120, 'sortable'=>true, 'resizable'=>true]]]];
 		return $data;
 	}
 

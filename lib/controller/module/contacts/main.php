@@ -665,7 +665,7 @@ cgMerge('mergeDest');";
         compose('contacts', 'main', 'edit', $layout);
         unset($layout['divs']['formBOF']);
 		unset($layout['divs']['formEOF']);
-        unset($layout['toolbar']);
+        unset($layout['divs']['tbContact']);
         unset($layout['attachPath']);
         unset($layout['jsHead']);
         unset($layout['jsReady']);

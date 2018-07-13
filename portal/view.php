@@ -15,10 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-28
- * @filesource /portal/view.php
+ * @version    2.x Last Update: 2018-07-12
+ * @filesource portal/view.php
  */
 
 namespace bizuno;
@@ -82,17 +82,18 @@ class portalView
         $bizSearch= '<div style="text-align:center;padding-top:5px"><input class="easyui-searchbox" data-options="prompt:\''.lang('search').'\'" style="width:300px;text-align:center"></div>';
         if ($region == 'left') { $bizSearch= str_replace('padding-top:5px', 'padding-top:15px', $bizSearch); }
         if (!biz_validate_user()) { $bizSearch = ''; }
-        $divHome   = '<div style="float:left">'.html5('imgFooter', $htmlLogo).'</div>';
+        $divHome   = '<div style="float:left;cursor:pointer">'.html5('imgFooter', $htmlLogo).'</div>';
         $footer    = '<div style="font-size:9px;float:right">'.$company."</div>\n";
         $data = ['type'=>'page', 'divs'=>[
-            'qlinks' => ['order'=> 1,'type'=>'menu','region'=>'top','size'=>'large','styles'=>['float'=>'right'],'data'=>getUserCache('quickBar')],
+            'qlinks' => ['order'=> 1,'type'=>'menu','region'=>'top','size'=>'large','classes'=>['menuHide'],'styles'=>['float'=>'right','display'=>'none'],'data'=>getUserCache('quickBar')],
             'imgHome'=> ['order'=> 2,'type'=>'html','region'=>'top','html'=>$divHome],
 //          'bizsrch'=> ['order'=>50,'type'=>'html','region'=>'top','html'=>$bizSearch],
-            'menu'   => ['order'=> 5,'type'=>'menu','region'=>$region,'data'=>getUserCache('menuBar')],
+            'menu'   => ['order'=> 5,'type'=>'menu','region'=>$region,'classes'=>['menuHide'],'styles'=>['display'=>'none'],'data'=>getUserCache('menuBar')],
             'footer' => ['order'=>99,'type'=>'divs','region'=>'bottom','id'=>'bizFooter','divs'=>[
                 'sTag' => ['order'=> 1,'type'=>'html','html'=>"<!-- Footer -->\n<footer>"],
                 'stats'=> ['order'=>50,'type'=>'html','html'=>$footer],
-                'eTag' => ['order'=>99,'type'=>'html','html'=>"</footer>"]]]]];
+                'eTag' => ['order'=>99,'type'=>'html','html'=>"</footer>"]]]],
+            'jsReady'=> ['initPage'=>"jq('.menuHide').css('display', 'inline-block');"]];
         if (defined('BIZUNO_MY_FOOTER')) {
             $data['divs']['footer']['divs']['myFooter'] = ['order'=>10, 'type'=>'html', 'html'=>BIZUNO_MY_FOOTER];
         }

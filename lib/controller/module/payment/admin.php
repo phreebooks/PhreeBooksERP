@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-19
+ * @version    2.x Last Update: 2018-06-28
  * @filesource /lib/controller/module/payment/admin.php
  */
 
@@ -38,11 +38,11 @@ class paymentAdmin
 			'gl_discount_v' => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[0]];
 		$this->settings  = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
 		$this->structure = [
-            'url'          => BIZUNO_URL."controller/module/$this->moduleID/",
-            'version'      => MODULE_BIZUNO_VERSION,
-			'category'     => 'bizuno',
-			'required'     => '1',
-			'dirMethods'   => 'methods'];
+            'url'       => BIZUNO_URL."controller/module/$this->moduleID/",
+            'version'   => MODULE_BIZUNO_VERSION,
+			'category'  => 'bizuno',
+			'required'  => '1',
+			'dirMethods'=> 'methods'];
 	}
 
 	/**

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-09
+ * @version    2.x Last Update: 2018-06-19
  * @filesource /lib/model/registry.php
  */
 
@@ -66,9 +66,12 @@ final class bizRegistry
     {
         $modSettings = [];
         $rows = dbGetMulti(BIZUNO_DB_PREFIX.'configuration');
-        foreach ($rows as $row) { 
-            $modSettings[$row['config_key']] = json_decode($row['config_value'], true);
-            unset($modSettings[$row['config_key']]['hooks']); // will clear hooks to be rebuilt later
+        foreach ($rows as $row) {
+            $bizData = json_decode($row['config_value'], true);
+            if (!empty($bizData['properties']['status'])) { 
+                $modSettings[$row['config_key']] = $bizData;
+                unset($modSettings[$row['config_key']]['hooks']); // will clear hooks to be rebuilt later
+            }
         }
         return $modSettings;
     }
@@ -170,15 +173,15 @@ final class bizRegistry
         }
         $myPurchases = $this->reSortExtensions($myAcct);
         foreach ($myPurchases as $mID => $settings) {
-            if (!array_key_exists($mID, $myAcct)) { continue; }
+            if (empty($settings['paid']) && getModuleCache($mID, 'properties', 'status', false, 0)) { // set status to disabled
+                msgDebug("\nDisabling status for business ID = ".getUserCache('profile', 'biz_id')." and module: $mID");
+                setModuleCache($mID, 'properties', 'status', 0);
+                continue;
+            }
 //          if (!empty($myAcct[$mID]['msg'])) { $messages[] = $myAcct[$mID]['msg']; } // check for messages and add to msgSys, expirations, news updates
 //          if (version_compare($settings['version'], getModuleCache($mID, 'settings', 'version', false, 0))) { // compare versions, add messages if reminder to renew or expired
 //              $messages[] = ['msg_id'=>"EXT:$mID:".$myAcct['bizuno']['version'], 'subject'=>"Extension: $mID Version {$myAcct['bizuno']['version']} Released!"];
 //          }
-            // disable any extensions that are not subscribed to, keep custom extensions
-            if (!empty($settings['expired'])) {
-                // disable extension in registry
-            }
         }
         msgSysWrite($messages);
     }
