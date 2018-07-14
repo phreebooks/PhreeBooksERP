@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-10
+ * @version    2.x Last Update: 2018-07-14
  * @filesource /portal/main.php
  */
 
@@ -135,8 +135,8 @@ class main //extends controller
                 $this->reloadCache($email);
             } elseif ($usrData) { // logged in, normal just get settings
                 $bizunoUser = json_decode($usrData['settings'], true);
-            } elseif (!$usrData) {
-                if (dbTableExists(BIZUNO_DB_PREFIX.'users')) { msgAdd("You do not have an account, please see your Bizuno administrator!"); }
+            } elseif (!$usrData && dbTableExists(BIZUNO_DB_PREFIX.'users')) { 
+                msgAdd("You do not have an account, please see your Bizuno administrator!");
                 unset($_GET['p']);
             }
             $bizunoLang = $this->loadBaseLang(getUserCache('profile', 'language')); // load the environment language file, includes module add-ons

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-28
+ * @version    2.x Last Update: 2018-07-14
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -341,7 +341,6 @@ class bizunoAdmin
         $guest = new guest();
         if (method_exists($guest, 'installPreFlight')) { $success = $guest->installPreFlight($layout); }
         $bID = clean('bID', 'integer', 'get');
-//msgAdd("returning with install form, bID = $bID and post = ".print_r($_POST, true));
         if ($success) { $layout = ['content'=>['action'=>'eval', 'actionData'=>"jsonAction('bizuno/admin/installForm', $bID);"]]; }
     }
 
@@ -352,6 +351,7 @@ class bizunoAdmin
     public function installForm(&$layout=[])
     {
 		$bID   = clean('rID', 'integer', 'get');
+        if (!$bID) { return msgAdd("bad business ID: $bID"); }
         $title = $this->lang['bizuno_install_title'];
 		$langs = viewLanguages(true);
 		$crncy = viewCurrencyDropdown();

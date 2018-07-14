@@ -116,8 +116,8 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 function myExceptionHandler($e)
 {
     if (defined('BIZUNO_DEBUG') && constant('BIZUNO_DEBUG')===true) {
-//        msgTrap();
-//        msgDebugWrite();
+        msgTrap();
+        msgDebugWrite();
     }
     error_log("Fatal Error, message returned: ".$e->getMessage());
     exit("Program Exception! Please fill out a support ticket with the details that got you here.");

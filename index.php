@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-12
+ * @version    2.x Last Update: 2018-07-14
  * @filesource /index.php
  */
 
 namespace bizuno;
 
-define('MODULE_BIZUNO_VERSION','2.1.5'); // PhreeBooks R5.0.4
+define('MODULE_BIZUNO_VERSION','2.1.5'); // PhreeBooks R5.0.5
 
 ini_set('display_errors', true);
 //error_reporting(E_ALL);
@@ -38,7 +38,7 @@ define('BIZUNO_HOST',      'phreebooks'); // PhreeBooks 5 hosted
 define('BIZUNO_HOME',      'index.php?'); // filename of the main entry index script
 define('BIZUNO_AJAX',      'index.php?'); // root path for AJAX requests
 // URL paths
-$path = pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME);
+$path = rtrim(pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME), '/');
 define('BIZUNO_SRVR',      "http".(!empty($_SERVER['HTTPS'])?"s":"")."://".$_SERVER["SERVER_NAME"].$path.'/'); // url to server with trailing slash
 define('BIZUNO_LOGO',      BIZUNO_SRVR.'phreebooks.png');
 define('BIZUNO_URL',       BIZUNO_SRVR.'lib/'); // full url to Bizuno plugin library folder
@@ -62,6 +62,8 @@ $GLOBALS['dbBizuno'] = $GLOBALS['dbPortal'] = ['type'=>'mysql','host'=>BIZUNO_DB
 // Third Party Apps
 define('BIZUNO_3P_QZ_TRAY',BIZUNO_EXT ."extShipping/qz-tray/");
 define('BIZUNO_3P_TCPDF',  BIZUNO_ROOT.'apps/TCPDF/');
+
+define('BIZUNO_DEBUG', true);
 
 require("portal/main.php");
 $ctl = new main();
