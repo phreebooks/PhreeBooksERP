@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-08-27
+ * @version    3.x Last Update: 2017-08-27
  * @filesource /lib/controller/module/phreebooks/totals/balanceBeg/balanceBeg.php
  * 
  */
@@ -51,28 +51,25 @@ class balanceBeg
     {
 		// ajax request with GL acct/post_date to get starting balance
 		// need to modify post_date and gl_account field to call javascript call
-		$this->fields = [
-            'totals_balanceBeg' => ['label'=>$this->lang['title'], 'format'=>'currency',
-		    'attr' => ['type'=>'text','size'=>'15','value'=>'0','style'=>'text-align:right']],];
-		$output['body'] .= '<div style="text-align:right">'."\n".html5('totals_balanceBeg',$this->fields['totals_balanceBeg'])."\n</div>\n";
+		$this->fields = ['totals_balanceBeg'=>['label'=>$this->lang['title'],'attr'=>['type'=>'currency','size'=>'15','value'=>'0','readonly'=>'readonly']]];
+		$output['body'] .= '<div style="text-align:right">'."\n"
+                .html5('totals_balanceBeg',$this->fields['totals_balanceBeg']).html5('', ['icon'=>'blank', 'size'=>'small'])."</div>\n";
         $output['jsHead'][] = "function totals_balanceBeg(begBalance) { return cleanCurrency(jq('#totals_balanceBeg').val()); }
 function totalsGetBegBalance() {
     var rID      = jq('#id').val();
-    var postDate = jq('#post_date').datebox('getValue');
-    var glAccount= jq('#gl_acct_id').combogrid('getValue');
+    var postDate = jq('#post_date').val();
+    var glAccount= jq('#gl_acct_id').val();
     jq.ajax({
         url: '".BIZUNO_AJAX."&p=phreebooks/main/journalBalance&rID='+rID+'&postDate='+postDate+'&glAccount='+glAccount,
         success: function (json) {
             processJson(json);
             if (json.balance) {
-                jq('#totals_balanceBeg').val(formatCurrency(''+json.balance));
+                bizTextSet('totals_balanceBeg', ''+json.balance, 'currency');
             } else alert('Balance could not be found!');
             totalUpdate();
        }
     });
 }";
-        $output['jsReady'][] = "totalsGetBegBalance();
-jq('#post_date').datebox({'onSelect': function(date) { totalsGetBegBalance(); }});
-jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBegBalance(); }});";
+        $output['jsReady'][] = "totalsGetBegBalance();";
 	}
 }

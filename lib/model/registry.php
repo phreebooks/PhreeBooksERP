@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-19
+ * @version    3.x Last Update: 2018-06-19
  * @filesource /lib/model/registry.php
  */
 
@@ -153,6 +153,25 @@ final class bizRegistry
         // set some known facts
         $bizunoUser['profile']['email'] = $usrEmail;
         $bizunoUser['profile']['biz_id']= $bizID;
+        
+        // OLD WAY - DEPRECATED SETTING CAN BE DELETED AFTER 30 DAYS FROM 9/15/2018 also in view.php
+        $colors = getUserCache('profile', 'colors');
+        if (!empty($colors)) { 
+            $icons = getUserCache('profile', 'theme', false, 'default');
+            setUserCache('profile', 'icons', $icons);
+            setUserCache('profile', 'theme', $colors);
+            clearUserCache('profile', 'colors');
+        } // END OLD WAY
+        
+        // Check to make sure the themes and icons folders are still there
+        $theme = getUserCache('profile', 'theme');
+        if ('default' != $theme) {
+            if (!is_dir(BIZUNO_THEMES.$theme)) { setUserCache('profile', 'theme', 'default'); }
+        }
+        $icons = getUserCache('profile', 'icons');
+        if ('default' != $icons) {
+            if (!is_dir(BIZUNO_ICONS.$icons)) { setUserCache('profile', 'icons', 'default'); }
+        }
         $GLOBALS['updateUserCache'] = true;
         return true;
     }

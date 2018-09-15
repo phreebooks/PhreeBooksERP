@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-14
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/totals/tax_other/tax_other.php
  */
 
@@ -44,7 +44,7 @@ class tax_other
         return [
             'gl_type'   => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'  => ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
-            'gl_account'=> ['jsBody' => htmlComboGL($this->code.'_gl_account'), 'attr' => ['value' => $this->settings['gl_account']]],
+            'gl_account'=> ['attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
             'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
 	}
 
@@ -70,13 +70,11 @@ class tax_other
 	public function render(&$output, $data)
     {
 		$this->fields = [
-            'totals_tax_other_id' => ['label'=>'', 'attr'=>  ['type'=>'hidden']],
-			'totals_tax_other_gl' => ['label'=>lang('gl_account'), 'jsBody'=>htmlComboGL('totals_tax_other_gl'),
-				'attr'   => ['size'=>'5', 'value'=>$this->settings['gl_account']]],
-			'totals_tax_other_opt'=> ['icon'=>'settings', 'size'=>'small',
-				'events' => ['onClick'=>"jq('#phreebooks_totals_tax_other').toggle('slow');"]],
-			'totals_tax_other'    => ['label'=>lang('inventory_tax_rate_id_c').' '.$this->lang['extra_title'], 'format'=>'currency',
-				'attr' => ['size'=>'15', 'value'=>'0', 'style'=>'text-align:right'], 'events'=> ['onBlur'=>"totalUpdate();"]]];
+            'totals_tax_other_id' => ['label'=>'', 'attr'=>['type'=>'hidden']],
+			'totals_tax_other_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
+			'totals_tax_other_opt'=> ['icon'=>'settings','size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_tax_other').toggle('slow');"]],
+			'totals_tax_other'    => ['label'=>lang('inventory_tax_rate_id_c').' '.$this->lang['extra_title'], 'events'=>['onBlur'=>"totalUpdate();"],
+				'attr' => ['type'=>'currency','size'=>'15','value'=>0]]];
         if (!empty($data['items'])) { foreach ($data['items'] as $row) { // fill in the data if available
             if ($row['gl_type'] == $this->settings['gl_type']) {
                 $this->fields['totals_tax_other_id']['attr']['value'] = $row['id'];
@@ -96,7 +94,7 @@ class tax_other
         $output['jsHead'][] = "function totals_tax_other(begBalance) {
 	var newBalance = begBalance;
     var salesTax = cleanCurrency(jq('#totals_tax_other').val());
-    jq('#totals_tax_other').val(formatCurrency(salesTax));
+    bizTextSet('totals_tax_other', salesTax, 'currency');
     newBalance += salesTax;
     var decLen= parseInt(bizDefaults.currency.currencies[currency].dec_len);
 	return parseFloat(newBalance.toFixed(decLen));

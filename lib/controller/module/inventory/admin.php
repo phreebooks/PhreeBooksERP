@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-09
+ * @version    3.x Last Update: 2018-08-23
  * @filesource /lib/controller/module/inventory/admin.php
  */
 
@@ -91,37 +91,37 @@ class inventoryAdmin
 				'stock_usage'    => ['values'=>$noYes,    'attr'=>  ['type'=>'select', 'value'=>'1']],
 				'barcode_length' => ['attr'=>  ['value'=>'12']]], // 0 to turn off
 			'phreebooks'=> [
-                'sales_si'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_si'),'jsBody'=>htmlComboGL('phreebooks_sales_si'),'attr'=>  ['value'=>$this->defaults['sales']]],
-				'inv_si'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_si'),'jsBody'=>htmlComboGL('phreebooks_inv_si'),  'attr'=>  ['value'=>$this->defaults['stock']]],
-				'cogs_si'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_si'),'jsBody'=>htmlComboGL('phreebooks_cogs_si'), 'attr'=>  ['value'=>$this->defaults['cogs']]],
-				'method_si' => ['label'=>$this->lang['set_inv_meth_'] .lang('inventory_inventory_type_si'),'values'=>$invCosts, 'attr'=>  ['type'=>'select', 'value'=>$this->defaults['method']]],
-				'sales_ms'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_ms'),'jsBody'=>htmlComboGL('phreebooks_sales_ms'),'attr'=>  ['value'=>$this->defaults['sales']]],
-				'inv_ms'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_ms'),'jsBody'=>htmlComboGL('phreebooks_inv_ms'),  'attr'=>  ['value'=>$this->defaults['stock']]],
-				'cogs_ms'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_ms'),'jsBody'=>htmlComboGL('phreebooks_cogs_ms'), 'attr'=>  ['value'=>$this->defaults['cogs']]],
-				'method_ms' => ['label'=>$this->lang['set_inv_meth_'] .lang('inventory_inventory_type_ms'),'values'=>$invCosts, 'attr'=>  ['type'=>'select', 'value'=>$this->defaults['method']]],
-				'sales_ma'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_ma'),'jsBody'=>htmlComboGL('phreebooks_sales_ma'),'attr'=>  ['value'=>$this->defaults['sales']]],
-				'inv_ma'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_ma'),'jsBody'=>htmlComboGL('phreebooks_inv_ma'),  'attr'=>  ['value'=>$this->defaults['stock']]],
-				'cogs_ma'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_ma'),'jsBody'=>htmlComboGL('phreebooks_cogs_ma'), 'attr'=>  ['value'=>$this->defaults['cogs']]],
-				'method_ma' => ['label'=>$this->lang['set_inv_meth_'] .lang('inventory_inventory_type_ma'),'values'=>$invCosts, 'attr'=>  ['type'=>'select', 'value'=>$this->defaults['method']]],
-				'sales_sr'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_sr'),'jsBody'=>htmlComboGL('phreebooks_sales_sr'),'attr'=>  ['value'=>$this->defaults['sales']]],
-				'inv_sr'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_sr'),'jsBody'=>htmlComboGL('phreebooks_inv_sr'),  'attr'=>  ['value'=>$this->defaults['stock']]],
-				'cogs_sr'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_sr'),'jsBody'=>htmlComboGL('phreebooks_cogs_sr'), 'attr'=>  ['value'=>$this->defaults['cogs']]],
-				'method_sr' => ['label'=>$this->lang['set_inv_meth_'] .lang('inventory_inventory_type_sr'),'values'=>$invCosts, 'attr'=>  ['type'=>'select', 'value'=>$this->defaults['method']]],
-				'sales_sa'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_sa'),'jsBody'=>htmlComboGL('phreebooks_sales_sa'),'attr'=>  ['value'=>$this->defaults['sales']]],
-				'inv_sa'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_sa'),'jsBody'=>htmlComboGL('phreebooks_inv_sa'),  'attr'=>  ['value'=>$this->defaults['stock']]],
-				'cogs_sa'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_sa'),'jsBody'=>htmlComboGL('phreebooks_cogs_sa'), 'attr'=>  ['value'=>$this->defaults['cogs']]],
-				'method_sa' => ['label'=>$this->lang['set_inv_meth_'] .lang('inventory_inventory_type_sa'),'values'=>$invCosts, 'attr'=>  ['type'=>'select', 'value'=>$this->defaults['method']]],
-				'sales_ns'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_ns'),'jsBody'=>htmlComboGL('phreebooks_sales_ns'),'attr'=>  ['value'=>$this->defaults['sales']]],
-				'inv_ns'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_ns'),'jsBody'=>htmlComboGL('phreebooks_inv_ns'),  'attr'=>  ['value'=>$this->defaults['nonstock']]],
-				'cogs_ns'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_ns'),'jsBody'=>htmlComboGL('phreebooks_cogs_ns'), 'attr'=>  ['value'=>$this->defaults['cogs']]],
-				'sales_sv'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_sv'),'jsBody'=>htmlComboGL('phreebooks_sales_sv'),'attr'=>  ['value'=>$this->defaults['sales']]],
-				'inv_sv'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_sv'),'jsBody'=>htmlComboGL('phreebooks_inv_sv'),  'attr'=>  ['value'=>$this->defaults['nonstock']]],
-				'cogs_sv'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_sv'),'jsBody'=>htmlComboGL('phreebooks_cogs_sv'), 'attr'=>  ['value'=>$this->defaults['cogs']]],
-				'sales_lb'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_lb'),'jsBody'=>htmlComboGL('phreebooks_sales_lb'),'attr'=>  ['value'=>$this->defaults['sales']]],
-				'inv_lb'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_lb'),'jsBody'=>htmlComboGL('phreebooks_inv_lb'),  'attr'=>  ['value'=>$this->defaults['nonstock']]],
-				'cogs_lb'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_lb'),'jsBody'=>htmlComboGL('phreebooks_cogs_lb'), 'attr'=>  ['value'=>$this->defaults['cogs']]],
-				'sales_ai'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_ai'),'jsBody'=>htmlComboGL('phreebooks_sales_ai'),'attr'=>  ['value'=>$this->defaults['sales']]],
-				'sales_ci'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_ci'),'jsBody'=>htmlComboGL('phreebooks_sales_ci'),'attr'=>  ['value'=>$this->defaults['sales']]]]];
+                'sales_si'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_si'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_si','value'=>$this->defaults['sales']]],
+				'inv_si'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_si'),'attr'=>['type'=>'ledger','id'=>'phreebooks_inv_si',  'value'=>$this->defaults['stock']]],
+				'cogs_si'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_si'),'attr'=>['type'=>'ledger','id'=>'phreebooks_cogs_si', 'value'=>$this->defaults['cogs']]],
+				'method_si' => ['label'=>$this->lang['set_inv_meth_'] .lang('inventory_inventory_type_si'),'values'=>$invCosts,'attr'=>['type'=>'select',        'value'=>$this->defaults['method']]],
+				'sales_ms'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_ms'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_ms','value'=>$this->defaults['sales']]],
+				'inv_ms'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_ms'),'attr'=>['type'=>'ledger','id'=>'phreebooks_inv_ms',  'value'=>$this->defaults['stock']]],
+				'cogs_ms'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_ms'),'attr'=>['type'=>'ledger','id'=>'phreebooks_cogs_ms', 'value'=>$this->defaults['cogs']]],
+				'method_ms' => ['label'=>$this->lang['set_inv_meth_'] .lang('inventory_inventory_type_ms'),'values'=>$invCosts,'attr'=>['type'=>'select',        'value'=>$this->defaults['method']]],
+				'sales_ma'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_ma'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_ma','value'=>$this->defaults['sales']]],
+				'inv_ma'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_ma'),'attr'=>['type'=>'ledger','id'=>'phreebooks_inv_ma',  'value'=>$this->defaults['stock']]],
+				'cogs_ma'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_ma'),'attr'=>['type'=>'ledger','id'=>'phreebooks_cogs_ma', 'value'=>$this->defaults['cogs']]],
+				'method_ma' => ['label'=>$this->lang['set_inv_meth_'] .lang('inventory_inventory_type_ma'),'values'=>$invCosts,'attr'=>['type'=>'select',        'value'=>$this->defaults['method']]],
+				'sales_sr'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_sr'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_sr','value'=>$this->defaults['sales']]],
+				'inv_sr'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_sr'),'attr'=>['type'=>'ledger','id'=>'phreebooks_inv_sr',  'value'=>$this->defaults['stock']]],
+				'cogs_sr'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_sr'),'attr'=>['type'=>'ledger','id'=>'phreebooks_cogs_sr', 'value'=>$this->defaults['cogs']]],
+				'method_sr' => ['label'=>$this->lang['set_inv_meth_'] .lang('inventory_inventory_type_sr'),'values'=>$invCosts,'attr'=>['type'=>'select',        'value'=>$this->defaults['method']]],
+				'sales_sa'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_sa'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_sa','value'=>$this->defaults['sales']]],
+				'inv_sa'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_sa'),'attr'=>['type'=>'ledger','id'=>'phreebooks_inv_sa',  'value'=>$this->defaults['stock']]],
+				'cogs_sa'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_sa'),'attr'=>['type'=>'ledger','id'=>'phreebooks_cogs_sa', 'value'=>$this->defaults['cogs']]],
+				'method_sa' => ['label'=>$this->lang['set_inv_meth_'] .lang('inventory_inventory_type_sa'),'values'=>$invCosts,'attr'=>['type'=>'select',        'value'=>$this->defaults['method']]],
+				'sales_ns'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_ns'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_ns','value'=>$this->defaults['sales']]],
+				'inv_ns'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_ns'),'attr'=>['type'=>'ledger','id'=>'phreebooks_inv_ns',  'value'=>$this->defaults['nonstock']]],
+				'cogs_ns'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_ns'),'attr'=>['type'=>'ledger','id'=>'phreebooks_cogs_ns', 'value'=>$this->defaults['cogs']]],
+				'sales_sv'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_sv'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_sv','value'=>$this->defaults['sales']]],
+				'inv_sv'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_sv'),'attr'=>['type'=>'ledger','id'=>'phreebooks_inv_sv',  'value'=>$this->defaults['nonstock']]],
+				'cogs_sv'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_sv'),'attr'=>['type'=>'ledger','id'=>'phreebooks_cogs_sv', 'value'=>$this->defaults['cogs']]],
+				'sales_lb'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_lb'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_lb','value'=>$this->defaults['sales']]],
+				'inv_lb'    => ['label'=>$this->lang['set_inv_inv_']  .lang('inventory_inventory_type_lb'),'attr'=>['type'=>'ledger','id'=>'phreebooks_inv_lb',  'value'=>$this->defaults['nonstock']]],
+				'cogs_lb'   => ['label'=>$this->lang['set_inv_cogs_'] .lang('inventory_inventory_type_lb'),'attr'=>['type'=>'ledger','id'=>'phreebooks_cogs_lb', 'value'=>$this->defaults['cogs']]],
+				'sales_ai'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_ai'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_ai','value'=>$this->defaults['sales']]],
+				'sales_ci'  => ['label'=>$this->lang['set_inv_sales_'].lang('inventory_inventory_type_ci'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_ci','value'=>$this->defaults['sales']]]]];
 		settingsFill($data, $this->moduleID);
 		return $data;
 	}
@@ -132,30 +132,49 @@ class inventoryAdmin
         $data = [
             'tabs' => ['tabAdmin'=> ['divs'=>  [
                 'prices' => ['order'=>10,'label'=>lang('prices'), 'attr'=>['module'=>$this->moduleID,'path'=>$this->structure['dirMethods']],
-                    'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
-                'settings'=> ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminSettings.php"],
+                    'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
+                'settings'=> ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/tabAdminSettings.php"],
 				'fields'  => ['order'=>60,'label'=>lang('extra_fields'),'type'=>'html', 'html'=>'',
-                    'attr'=> ["data-options"=>"href:'".BIZUNO_AJAX."&p=bizuno/fields/manager&module=$this->moduleID&table=inventory'"]],
-                'tabDBs'  => ['order'=>70, 'label' => lang('dashboards'), 'attr' => ['module' => $this->moduleID, 'type' => 'dashboards'], 'src' => BIZUNO_LIB . "view/module/bizuno/tabAdminMethods.php"],
-				'tools'   => ['order'=>90,'label'=>lang('tools'),   'src'=>BIZUNO_LIB."view/module/$this->moduleID/tabAdmTools.php"]]]],
+                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=bizuno/fields/manager&module=$this->moduleID&table=inventory'"]],
+                'tabDBs'  => ['order'=>70, 'label' => lang('dashboards'), 'attr' => ['module' => $this->moduleID, 'type' => 'dashboards'], 'src' => BIZUNO_LIB . "view/tabAdminMethods.php"],
+				'tools'   => ['order'=>90,'label'=>lang('tools'),'type'=>'divs','divs'=>$this->getViewTools()]]]],
 			'fields' => [
                 'btnMethodAdd' => ['attr'=>  ['type'=>'button', 'value'=>lang('install')],'hidden'=>$security> 1?false:true],
                 'btnMethodDel' => ['attr'=>  ['type'=>'button', 'value'=>lang('remove')], 'hidden'=>$security==4?false:true],
                 'btnMethodProp'=> ['icon'=>'settings','size'=>'medium'],
-                'settingSave'  => ['icon'=>'save',    'size'=>'large'],
-                'btnHistTest'  => ['label'=>'', 'attr'=>  ['type'=>'button', 'value'=>$this->lang['inv_tools_btn_test']],
-                    'events'=> ['onClick'=>"jsonAction('inventory/tools/historyTestRepair', 0, 'test');"]],
-                'btnHistFix'   => ['label'=>'', 'attr'=>  ['type'=>'button', 'value'=>$this->lang['inv_tools_btn_repair']],
-                    'events'=> ['onClick'=>"jsonAction('inventory/tools/historyTestRepair', 0, 'fix');"]],
-                'btnAllocFix'  => ['label'=>'', 'attr'=>  ['type'=>'button', 'value'=>$this->lang['inv_tools_qty_alloc_label']],
-                    'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/qtyAllocRepair');"]],
-                'btnJournalFix'=> ['label'=>'', 'attr'=>  ['type'=>'button', 'value'=>$this->lang['inv_tools_btn_so_po_fix']],
-                    'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/onOrderRepair');"]],
-                'btnPriceAssy' => ['label'=>'', 'attr'=>  ['type'=>'button', 'value'=>lang('go')],
-                    'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/priceAssy');"]]],
+                'settingSave'  => ['icon'=>'save',    'size'=>'large']],
             'lang' => $this->lang];
 		$layout = array_replace_recursive($layout, adminStructure($this->moduleID, $this->settingsStructure(), $this->lang), $data);
 	}
+    
+    private function getViewTools()
+    {
+        $btnHistTest  = ['label'=>$this->lang['inv_tools_repair_test'], 'attr'=>['type'=>'button','value'=>$this->lang['inv_tools_btn_test']],
+            'events'=> ['onClick'=>"jsonAction('inventory/tools/historyTestRepair', 0, 'test');"]];
+        $btnHistFix   = ['label'=>$this->lang['inv_tools_repair_fix'], 'attr'=>['type'=>'button', 'value'=>$this->lang['inv_tools_btn_repair']],
+            'events'=> ['onClick'=>"jsonAction('inventory/tools/historyTestRepair', 0, 'fix');"]];
+        $btnAllocFix  = ['label'=>'', 'attr'=>['type'=>'button', 'value'=>$this->lang['inv_tools_qty_alloc_label']],
+            'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/qtyAllocRepair');"]];
+        $btnJournalFix= ['label'=>'', 'attr'=>['type'=>'button', 'value'=>$this->lang['inv_tools_btn_so_po_fix']],
+            'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/onOrderRepair');"]];
+        $btnPriceAssy = ['label'=>'', 'attr'=>['type'=>'button', 'value'=>lang('go')],
+            'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/priceAssy');"]];
+        return [
+                'invVal'  => ['order'=>10,'label'=>$this->lang['inv_tools_val_inv'],'type'=>'divs','divs'=>[
+                    'desc'  => ['order'=>10,'type'=>'html','html'=>"<p>".$this->lang['inv_tools_val_inv_desc']."</p>"],
+                    'btnGo1'=> ['order'=>20,'type'=>'html','html'=>"<p>".html5('', $btnHistTest)."</p>"],
+                    'btnGo2'=> ['order'=>30,'type'=>'html','html'=>"<p>".html5('', $btnHistFix)."</p>"]]],
+                'invAlloc'=> ['order'=>20,'label'=>$this->lang['inv_tools_qty_alloc'],'type'=>'divs','divs'=>[
+                    'desc'  => ['order'=>20,'type'=>'html','html'=>"<p>".$this->lang['inv_tools_qty_alloc_desc']."</p>"],
+                    'btnGo' => ['order'=>50,'type'=>'html','html'=>"<p>".html5('', $btnAllocFix)."</p>"]]],
+                'invVal'=> ['order'=>30,'label'=>$this->lang['inv_tools_repair_so_po'],'type'=>'divs','divs'=>[
+                    'desc'  => ['order'=>20,'type'=>'html','html'=>"<p>".$this->lang['inv_tools_validate_so_po_desc']."</p>"],
+                    'btnGo' => ['order'=>50,'type'=>'html','html'=>"<p>".html5('', $btnJournalFix)."</p>"]]],
+                'invVal'=> ['order'=>40,'label'=>$this->lang['inv_tools_price_assy'],'type'=>'divs','divs'=>[
+                    'desc'  => ['order'=>20,'type'=>'html','html'=>"<p>".$this->lang['inv_tools_price_assy_desc']."</p>"],
+                    'btnGo' => ['order'=>50,'type'=>'html','html'=>"<p>".html5('', $btnPriceAssy)."</p>"]]],
+            ];
+    }
 
 	public function adminSave()
     {

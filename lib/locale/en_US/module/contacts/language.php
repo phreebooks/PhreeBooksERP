@@ -15,12 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-06-01
-
+ * @version    3.x Last Update: 2018-09-04
  * @filesource /locale/en_US/module/contacts/language.php
- * 
  */
 
 $lang = [
@@ -54,7 +52,7 @@ $lang = [
     // API
     'conapi_desc' => 'The Contacts API currently supports the base contacts table, one main address and one shipping address for both inserts and updates. Extra custom fields are supported. To import an contacts file:<br>1. Download the contacts template which lists the field headers and descriptions.<br>2. Add your data to your .csv file.<br>3. Select the file and press the import icon.<br>The results will be displayed after the script completes. Any errors will also be displayed.',
 	'conapi_template' => 'Step 1: Download the contacts template => ',
-	'conapi_import' => 'Step 3: Add your contacts to the template, browse to select the file and press Import. ',
+	'conapi_import' => 'Step 2: Add your contacts to the template, browse to select the file and press Import. ',
 	'conapi_export' => 'OPTIONAL: Export your contacts database table in .csv format for backup => ',
     // Tools
     'close_j9_title' => 'Bulk Close Customer Quotes',

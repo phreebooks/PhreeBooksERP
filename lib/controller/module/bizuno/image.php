@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-10-24
+ * @version    3.x Last Update: 2018-08-13
  * @filesource /lib/controller/module/bizuno/image.php
  */
 
@@ -42,10 +42,9 @@ class bizunoImage
 		$path   = clean('imgMgrPath',['format'=>'path_rel','default'=>'images/'], 'get');
 		if ($action) {
 			switch ($action) {
-                case 'parent':  $path = dirname($path); break;
-				case 'refresh': $search = ''; break;
-                case 'upload':
-                    $io = new io(); 
+                case 'parent':  $path   = dirname($path); break;
+                case 'refresh': $search = '';             break;
+                case 'upload':  $io     = new io(); 
                     return $io->uploadSave('imgFile', "images/$path/");
 			}
 			if (substr($action, 0, 6) == 'newdir') {
@@ -59,31 +58,26 @@ class bizunoImage
 		$frmImgFields = html5('imgTarget', ['attr'=>['type'=>'hidden','value'=>$target]]);
 		$frmImgFields.= html5('imgAction', ['attr'=>['type'=>'hidden','value'=>'']]);
 		$frmImgFields.= html5('imgMgrPath',['attr'=>['type'=>'hidden','value'=>$path]]);
-        $data = [
-            'divs'   => [
-                'frmStart'  => ['order'=>10,'type'=>'html',   'html'=>html5('frmImgMgr', ['attr'=>  ['type'=>'form']])],
+        $data = ['type'=>'popup','title'=>jsLang('image_manager').": $path/",
+            'attr'    => ['id'=>'winImgMgr','width'=>860,'height'=>600],
+            'divs'    => [
+                'frmStart'  => ['order'=>10,'type'=>'html',   'html'=>html5('frmImgMgr',['attr'=>['type'=>'form']])],
 				'toolbar'   => ['order'=>20,'type'=>'toolbar','key' =>'tbImgMgr'],
 				'frmEnd'    => ['order'=>30,'type'=>'html',   'html'=>'</form>'],
 				'frmImgFlds'=> ['order'=>40,'type'=>'html',   'html'=>$frmImgFields],
 				'images'    => ['order'=>50,'type'=>'html',   'html'=>$this->managerRows($path, $search, $target)]],
-			'toolbars'=> ['tbImgMgr'=> ['icons' => [
-                'imgClose'  => ['order'=> 10,'icon'=>'close',  'label'=>lang('close'),  'events'=>['onClick'=>"jq('#winImgMgr').window('close');"]],
+			'toolbars'=> ['tbImgMgr'=>['icons'=>[
+                'imgClose'  => ['order'=> 10,'icon'=>'close',  'label'=>lang('close'),  'events'=>['onClick'=>"bizWindowClose('winImgMgr');"]],
 				'imgParent' => ['order'=> 20,'icon'=>'up',     'label'=>lang('up'),     'events'=>['onClick'=>"imgAction('parent');"]],
 				'imgRefresh'=> ['order'=> 30,'icon'=>'refresh','label'=>lang('refresh'),'events'=>['onClick'=>"imgAction('refresh');"]],
 				'imgNewDir' => ['order'=> 40,'icon'=>'dirNew', 'label'=>lang('add_folder'),
 					'events'=> ['onClick'=>"var title=prompt('".lang('msg_new_folder_name')."'); if (title!=null) imgAction('newdir:'+title);"]],
-				'imgSearch' => ['order'=> 50,'type'=>'field', 'label'=>lang('search'),'attr'=>['type'=>'text', 'value'=>$search]],
-				'imgSrchGo' => ['order'=> 60,'icon'=>'search','label'=>lang('go'),      'events'=>['onClick'=>"imgAction('search');"]],
-				'imgFile'   => ['order'=> 70,'type'=>'field','attr'=>['type'=>'file']],
-				'imgUpload' => ['order'=> 80,'icon'=>'import', 'label'=>lang('upload'),'events'=>['onClick'=>"imgAction('upload');"]]]]],
-            ];
-		if ($action) { // just update the window contents
-    		$data['type'] = 'divHTML';
-		} else {
-    		$data['content'] = ['action'=>'window','id'=>'winImgMgr','title'=>jsLang('image_manager').": $path/",'width'=>860,'height'=>600];
-        }
-        msgDebug("\nReturning with data = ".print_r($data, true));
-		$layout = array_replace_recursive($layout, $data);
+				'imgSearch' => ['order'=> 50,'type'=>'field',  'label'=>lang('search'), 'attr'  =>['value'  =>$search]],
+				'imgSrchGo' => ['order'=> 60,'icon'=>'search', 'label'=>lang('go'),     'events'=>['onClick'=>"imgAction('search');"]],
+				'imgFile'   => ['order'=> 70,'type'=>'field',  'attr'=>['type'=>'file']],
+				'imgUpload' => ['order'=> 80,'icon'=>'import', 'label'=>lang('upload'), 'events'=>['onClick'=>"imgAction('upload');"]]]]]];
+        if (in_array($action, ['parent','refresh','search'])) { $data['type'] = 'divHTML'; } // just the window contents
+        $layout = array_replace_recursive($layout, $data);
 	}
 
 	/**
@@ -131,7 +125,7 @@ function imgClickImg(strImage) {
 		jq('#imgTarget').val(fullPath);
 		jq('#'+target).val(fullPath);
 		jq('#img_'+target).attr('src', bizunoAjaxFS+'&src=0/images/'+fullPath);
-		jq('#winImgMgr').window('close');
+        bizWindowClose('winImgMgr');
 	}
 }
 function imgRefresh() {

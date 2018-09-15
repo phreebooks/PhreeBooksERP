@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-09
+ * @version    3.x Last Update: 2018-07-09
  * @filesource /lib/controller/module/payment/common.php
  */
 
@@ -44,10 +44,8 @@ class paymentCommon
     {
 		$noYes = [['id'=>'0','text'=>lang('no')], ['id'=>'1','text'=>lang('yes')]];
         return [
-            'cash_gl_acct'=> ['label'=>$this->lang['set_gl_payment_c'], 'position'=>'after', 'jsBody'=>htmlComboGL("{$this->code}_cash_gl_acct"),
-				'attr' => ['size'=>'10', 'value'=>$this->settings['cash_gl_acct']]],
-			'disc_gl_acct'=> ['label'=>$this->lang['set_gl_discount_c'], 'position'=>'after', 'jsBody'=>htmlComboGL("{$this->code}_disc_gl_acct"),
-				'attr' => ['size'=>'10','value'=>$this->settings['disc_gl_acct']]],
+            'cash_gl_acct'=> ['label'=>$this->lang['set_gl_payment_c'], 'position'=>'after','attr'=>['type'=>'ledger','id'=>"{$this->code}_cash_gl_acct",'value'=>$this->settings['cash_gl_acct']]],
+			'disc_gl_acct'=> ['label'=>$this->lang['set_gl_discount_c'],'position'=>'after','attr'=>['type'=>'ledger','id'=>"{$this->code}_disc_gl_acct",'value'=>$this->settings['disc_gl_acct']]],
 			'order'       => ['label'=>lang('order'), 'position'=>'after', 'attr'=>  ['type'=>'integer', 'size'=>'3','value'=>$this->settings['order']]],
 			'prefix'      => ['label'=>$this->lang['set_prefix'], 'position'=>'after', 'attr'=>['size'=>'5','value'=>$this->settings['prefix']]],
 			'prefixAX'    => ['label'=>$this->lang['prefix_amex'],'position'=>'after', 'attr'=>['size'=>'5','value'=>$this->settings['prefixAX']]],

@@ -17,12 +17,10 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-14
+ * @version    3.x Last Update: 2018-08-17
  * @filesource /lib/controller/module/bizuno/main.php
  * 
- * @todo BUG - 
- * when lowering number of columns, dashboards in removed columns no longer show, need to add to last current column
- * context sensitive help, look at current module, page, method to send to Phreehelp
+ * @todo BUG - context sensitive help, look at current module, page, method to send to Phreehelp
  */
 
 namespace bizuno;
@@ -40,18 +38,53 @@ class bizunoMain
      * generates the structure for the home page and any main menu dashboard page
      * @param array $layout - structure coming in
      */
-    public function BizunoHome(&$layout) 
+    public function bizunoHome(&$layout)
     {
-        $defMenu= getUserCache('profile', 'admin_id', false, 0) ? 'home' : 'portal';
-        $menu_id= clean('menuID', ['format'=>'text','default'=>$defMenu], 'get');
+        $mIDdef= getUserCache('profile', 'admin_id', false, 0) ? 'home' : 'portal';
+		$title = getModuleCache('bizuno', 'settings', 'company', 'primary_name', getUserCache('profile', 'biz_title'));
+        $menuID= clean('menuID', ['format'=>'text','default'=>$mIDdef], 'get');
+        $data  = ['title'=>"$title - ".getModuleCache('bizuno', 'properties', 'title'),
+            'jsHead'=>['menu_id'=>"var menuID='$menuID';"]];
+        if ($GLOBALS['myDevice'] != 'mobile' && $mIDdef <> 'portal') {
+            $linkDash = ['attr'=>['type'=>'a','value'=>$this->lang['msg_add_dashboards'],'href'=>BIZUNO_HOME.'&p=bizuno/dashboard/manager&menuID='.$menuID]];
+            $data['divs']['tbDash'] = ['order'=>10,'classes'=>['datagrid-toolbar'],'styles'=>['min-height'=>'32px'],'attr'=>['id'=>'tbDash'],'type'=>'html','html'=>html5('', $linkDash)];
+        }
+        if ($GLOBALS['myDevice'] != 'mobile' || $mIDdef == 'portal') { // text and link to add dashboards divs
+            $this->setDashJS($data);
+            $cols = getColumns();
+            $width= round(100/$cols, 0);
+            $html = '';
+            for ($i=0; $i<$cols; $i++) { $html .= "\n".'<div style="width:'.$width.'%"></div>'; }
+            $data['divs']['bodyDash'] = ['order'=>50,'styles'=>['clear'=>'both'],'attr'=>['id'=>'dashboard'],'type'=>'html','html'=>$html];
+        }
+        $layout = array_replace_recursive(viewMain(), $data);
+	}
+    
+    public function dashboard(&$layout=[])
+    {
+        $data = [];
+        $this->setDashJS($data);
+        $menuID= clean('menuID', ['format'=>'text','default'=>'home'], 'get');
+        $data['jsHead']['menu_id'] = "var menuID='$menuID';";
+        if ($GLOBALS['myDevice'] != 'mobile') { // text and link to add dashboards
+            $linkDash = ['attr'=>['type'=>'a','value'=>$this->lang['msg_add_dashboards'],'href'=>BIZUNO_HOME.'&p=bizuno/dashboard/manager&menuID='.$menuID]];
+            $data['divs']['tbDash'] = ['order'=>10,'classes'=>['datagrid-toolbar'],'styles'=>['min-height'=>'32px'],'attr'=>['id'=>'tbDash'],'type'=>'html','html'=>html5('', $linkDash)];
+        }
+        $cols = getColumns();
+        $width = round(100/$cols, 0);
+        $html  = '';
+        for ($i=0; $i<$cols; $i++) { $html .= "\n".'<div style="width:'.$width.'%"></div>'; }
+        $data['divs']['bodyDash'] = ['order'=>50,'styles'=>['clear'=>'both'],'attr'=>['id'=>'dashboard'],'type'=>'html','html'=>$html];
+        $layout = array_replace_recursive(viewMain(), $data);
+    }
+    
+    private function setDashJS(&$data)
+    {
+		$cols = getUserCache('profile', 'cols', false, 3);
         $opts = '';
         if (clean('lost',   'cmd','get') == 'true') { $opts .= '&lost=true'; }
         if (clean('newuser','cmd','get') == 'true') { $opts .= '&newuser=true'; }
-		$cols   = getUserCache('profile', 'cols', false, 3);
-		$title  = getModuleCache('bizuno', 'settings', 'company', 'primary_name', getUserCache('profile', 'biz_title'));
-        $data = [
-            'pageTitle'=> "$title - ".getModuleCache('bizuno', 'properties', 'title'),
-            'jsBody'   => ['jsHome'=>"var menuID = '$menu_id'; var panels = new Array();
+        $data['jsBody']['jsHome'] = "var panels = new Array();
 function getPanelOptions(id) {
 	for (var i=0; i<panels.length; i++) if (panels[i].id == id) return panels[i];
 	return undefined;
@@ -80,18 +113,19 @@ function addPanels(json) {
                 var panelHref = options.href;
                 options.href = '';
 				p.panel(options);
+                if (isMobile()) { p.panel('panel').draggable('disable'); }
 				p.panel({ href:panelHref,onBeforeClose:function() { if (confirm('".jsLang('msg_confirm_delete')."')) { dashboardDelete(this); } else { return false } } });
 				jq('#dashboard').portal('add',{ panel:p, columnIndex:columnIndex });
 			}
 		}
 	}
-}"],
-            'jsReady' => ['initDash'=> "jq('#dashboard').portal({border:false,onStateChange:function(){
+}";
+        $data['jsReady']['initDash'] = "jq('#dashboard').portal({border:false,onStateChange:function(){
         var state = getPortalState();
         jq.ajax({ url:'".BIZUNO_AJAX."&p=bizuno/dashboard/organize&menuID='+menuID+'&state='+state });
     }
 });
-jq.ajax({ url: '".BIZUNO_AJAX."&p=bizuno/dashboard/render$opts&menuID='+menuID, success: addPanels });"]];
+jq.ajax({ url: '".BIZUNO_AJAX."&p=bizuno/dashboard/render$opts&menuID='+menuID, success: addPanels });";
 /*
 window.onresize = function(){ location.reload(); }
 $(function() {
@@ -103,18 +137,9 @@ $(function() {
         }
     },'json');
 });
-*/
-
-        if ($menu_id <> 'portal') {
-            $linkDash = ['attr'=>['type'=>'a','value'=>$this->lang['msg_add_dashboards'],'href'=>BIZUNO_HOME.'&p=bizuno/dashboard/manager&menuID='.$menu_id]];
-            $data['divs']['tbDash'] = ['order'=>10,'classes'=>['datagrid-toolbar'],'styles'=>['min-height'=>'32px'],'attr'=>['id'=>'tbDash'],'type'=>'html','html'=>html5('', $linkDash)];
-        }
-        $width = round(100/$cols, 0);
-        $html = '';
-        for ($i=0; $i<$cols; $i++) { $html .= '<div style="width:'.$width.'%"></div>'; }
-        $data['divs']['bodyDash'] = ['order'=>50,'styles'=>['clear'=>'both'],'attr'=>['id'=>'dashboard'],'type'=>'html','html'=>$html];
-        $layout = array_replace_recursive(viewMain(), $data);
-	}
+*/        
+    }
+    
 	/**
      * Used to refresh session timer to keep log in alive. Forces log out after 8 hours if no user actions are detected.
      */
@@ -142,7 +167,7 @@ $(function() {
 		$icnSave= ['icon'=>'save', 'label'=>lang('save'), 'events'=>  ['onClick'=>"jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());"]];
 		$inpEncr= ['attr'=>['type'=>'password']];
 		$html   = lang('msg_enter_encrypt_key').'<br />'.html5('pwEncrypt', $inpEncr).html5('', $icnSave);
-		$js     = "jq('#pwEncrypt').focus();
+		$js     = "bizFocus('pwEncrypt');
 jq('#winEncrypt').keypress(function(event) {
     var keycode = (event.keyCode ? event.keyCode : event.which);
     if (keycode=='13') jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());
@@ -174,7 +199,7 @@ jq('#winEncrypt').keypress(function(event) {
         unset($qlinks['child']['encrypt']);
         setUserCache('quickBar', false, $qlinks);
 		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 
-            'actionData'=>"jq('#winEncrypt').window('close'); jq('#ql_encrypt').hide();"]]);
+            'actionData'=>"bizWindowClose('winEncrypt'); jq('#ql_encrypt').hide();"]]);
 	}
 	
 	/*
@@ -182,6 +207,7 @@ jq('#winEncrypt').keypress(function(event) {
      */
     public function fileDownload()
     {
+        if (!validateSecurity('bizuno', 'phreeform', 1)) { return; } // changed to 'phreeform' security to enable download across Bizuno modules
         $path = clean('pathID', 'path', 'get');
 		$file = clean('fileID', 'file', 'get');
 		$parts = explode(":", $file, 2);
@@ -204,6 +230,7 @@ jq('#winEncrypt').keypress(function(event) {
      */
     public function fileDelete(&$layout=[])
     {
+        if (!validateSecurity('bizuno', 'admin', 4)) { return; }
         $dgID = clean('rID', 'text', 'get');
 		$file = clean('data','text', 'get');
 		$output = new io();

@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-30
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/journals/j02.php
  */
 
@@ -108,17 +108,17 @@ class j02 extends jCommon
      */
     private function getProps($data)
     {
-        return [
-            'id'             => $data['fields']['main']['id'],
+        return ['id'         => $data['fields']['main']['id'],
             'journal_id'     => $data['fields']['main']['journal_id'],
             'recur_id'       => $data['fields']['main']['recur_id'],
             'recur_frequency'=> $data['recur_frequency'],
             'item_array'     => $data['item_array'],
             'followup'       => ['attr'=>['type'=>'hidden']],
+            'store_id'       => $data['fields']['main']['store_id'],
             // Displayed
-            'invoice_num'    => array_merge(['break'=>true], $data['fields']['main']['invoice_num']),
-            'post_date'      => array_merge(['break'=>true], $data['fields']['main']['post_date']),
-            'store_id'       => array_merge(['break'=>true], $data['fields']['main']['store_id'])];
+            'invoice_num'    => array_merge($data['fields']['main']['invoice_num'], ['break'=>true,'order'=>20]),
+            'post_date'      => array_merge($data['fields']['main']['post_date'], ['break'=>true,'order'=>40]),
+            ];
     }
     
 /*******************************************************************************************************************/
@@ -228,37 +228,28 @@ class j02 extends jCommon
      */
     private function dgLedger($name)
     {
-		return [
-            'id'   => $name,
-			'type' => 'edatagrid',
-			'attr' => ['toolbar'=>"#{$name}Toolbar",'rownumbers'=> true,'idField'=>'id'],
-			'events' => [
-                'data'         => "datagridData",
+		return ['id' => $name, 'type'=>'edatagrid',
+			'attr'   => ['toolbar'=>"#{$name}Toolbar",'rownumbers'=> true,'idField'=>'id'],
+			'events' => ['data'=> "datagridData",
 				'onLoadSuccess'=> "function(row) { totalUpdate(); }",
-				'onClickCell'  => "function(rowIndex) { if (icnAction=='trash') { jq('#$name').edatagrid('destroyRow', rowIndex); } icnAction=''; }",
 				'onClickRow'   => "function(rowIndex, row) { curIndex = rowIndex; }",
 				'onBeginEdit'  => "function(rowIndex, row) { glEditing(rowIndex); }",
 				'onDestroy'    => "function(rowIndex, row) { totalUpdate(); curIndex = undefined; }"],
-			'source' => ['actions'=>['newItem'=>['order'=>10,'html'=>['icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]]],
-			'columns'=> [
-                'id'  => ['order'=>0, 'attr'=>  ['hidden'=>true]],
-				'qty' => ['order'=>0, 'attr'=>  ['hidden'=>true, 'value'=>1]],
-				'action' => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>40],
-					'events'  => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
-					'actions' => ['delete' => ['icon'=>'trash', 'size'=>'small', 'order'=>20, 'events'=>  ['onClick'=>"icnAction='trash';"]]]],
-				'gl_account' => ['order'=>20, 'label'=>pullTableLabel('journal_item', 'gl_account', $this->journalID),
-					'attr' => ['width'=>120, 'resizable'=>true, 'align'=>'center'],
-					'events'=>  ['editor'=>dgHtmlGLAcctData()]],
-				'description' => ['order'=>30, 'label'=>lang('description'), 'attr'=>  ['width'=>400, 'editor'=>'text', 'resizable'=>true]],
-				'debit_amount' => ['order'=>40, 'label'=>pullTableLabel('journal_item', 'debit_amount'),
-					'attr'  => ['width'=>150, 'resizable'=>true, 'align'=>'right'],
-					'events'=> ['editor'=>"{type:'numberbox',value:0,options:{onChange:function(){ glCalc('debit'); } } }",
-					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'credit_amount' => ['order'=>50, 'label'=>pullTableLabel('journal_item', 'credit_amount'),
-					'attr'  => ['width'=>150, 'resizable'=>true, 'align'=>'right'],
-					'events'=> ['editor'=>"{type:'numberbox',value:0,options:{onChange:function(){ glCalc('credit'); } } }",
-					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'notes' => ['order'=>90, 'label'=>lang('notes'), 'attr'=>  ['width'=>150, 'resizable'=>true],
-					'events' => ['editor'=>"{type:'text'}"]]]];
+			'source' => ['actions'=>['newItem'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
+			'columns'=> ['id'  => ['order'=>0, 'attr'=>['hidden'=>true]],
+				'qty'          => ['order'=>0, 'attr'=>['hidden'=>true,'value'=>1]],
+				'action'       => ['order'=>1, 'label'=>lang('action'),
+					'events'   => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+					'actions'  => ['delete'   =>['order'=>20,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
+				'gl_account'   => ['order'=>20,'label'=>pullTableLabel('journal_item','gl_account',$this->journalID),'attr'=>['width'=>200,'resizable'=>true,'align'=>'center'],
+					'events'   => ['editor'=>dgHtmlGLAcctData()]],
+				'description'  => ['order'=>30,'label'=>lang('description'), 'attr'=>['width'=>400,'editor'=>'text','resizable'=>true]],
+				'debit_amount' => ['order'=>40,'label'=>pullTableLabel('journal_item', 'debit_amount'),'attr'=>['width'=>150,'resizable'=>true, 'align'=>'right'],
+					'events'   => ['editor'=>"{type:'numberbox',value:0,options:{onChange:function(){ glCalc('debit'); } } }",
+					'formatter'=> "function(value,row){ return formatCurrency(value); }"]],
+				'credit_amount'=> ['order'=>50, 'label'=>pullTableLabel('journal_item', 'credit_amount'),'attr'=>['width'=>150,'resizable'=>true, 'align'=>'right'],
+					'events'   => ['editor'=>"{type:'numberbox',value:0,options:{onChange:function(){ glCalc('credit'); } } }",
+					'formatter'=> "function(value,row){ return formatCurrency(value); }"]],
+				'notes'        => ['order'=>90, 'label'=>lang('notes'), 'attr'=>  ['width'=>200,'editor'=>'text','resizable'=>true]]]];
 	}
 }

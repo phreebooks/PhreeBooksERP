@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-07
+ * @version    3.x Last Update: 2018-08-13
  * @filesource /lib/controller/module/phreebooks/tools.php
  */
 
@@ -140,14 +140,13 @@ class phreebooksTools
     public function fyCloseValidate(&$layout=[])
     {
         $icnFyGo = ['attr'=>['type'=>'button', 'value'=>$this->lang['fy_del_btn_go']],
-			'events'=>  ['onClick'=>"jq('#tabAdmin').tabs('add',{title:'Close FY',href:'".BIZUNO_AJAX."&p=phreebooks/tools/fyCloseHome'}); jq('#winFyClose').window('close');"]];
+			'events'=>  ['onClick'=>"jq('#tabAdmin').tabs('add',{title:'Close FY',href:'".BIZUNO_AJAX."&p=phreebooks/tools/fyCloseHome'}); bizWindowClose('winFyClose');"]];
         $icnCancel = ['attr'=>['type'=>'button', 'value'=>$this->lang['fy_del_btn_cancel']],
-			'events'=>  ['onClick'=>"jq('#winFyClose').window('close');"]];
+			'events'=>  ['onClick'=>"bizWindowClose('winFyClose');"]];
 		$html  = '<p>'.$this->lang['fy_del_desc'] .'</p><div style="float:right">'.html5('', $icnFyGo).'</div><div>'.html5('', $icnCancel).'</div>';
-		$layout= array_replace_recursive($layout, [
-			'divs'   => ['fyClose'=> ['order'=>50,'type'=>'html', 'html'=>$html]],
-			'content'=> ['action'=>'window','id'=>'winFyClose','title'=>$this->lang['fy_del_title']],
-            ]);
+		$data = ['type'=>'popup','title'=>$this->lang['fy_del_title'],'attr'=>['id'=>'winFyClose'],
+			'divs' => ['body'=>['order'=>50,'type'=>'html','html'=>$html]]];
+        $layout= array_replace_recursive($layout, $data);
     }
     
     /**
@@ -158,13 +157,53 @@ class phreebooksTools
     public function fyCloseHome(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'admin', 4)) { return; }
+        $title = getModuleCache('phreebooks', 'properties', 'title');
 		$fy = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", 'fiscal_year', '', false);
         $this->lang['fy_del_instr'] = sprintf($this->lang['fy_del_instr'], $fy);
 		$layout = array_replace_recursive($layout, ['type'=>'divHTML',
-			'divs'    => ['fyClose'   =>['order'=>10, 'src'=>BIZUNO_LIB."view/module/phreebooks/tabToolsCloseFY.php"]],
+			'divs' => ['fyClose'=>['order'=>10,'type'=>'divs','attr'=>['id'=>"divCloseFY"],'divs'=>[
+                'tbClose'=> ['order'=>10,'type'=>'toolbar','key' =>'tbFyClose'],
+                'head'   => ['order'=>20,'type'=>'html',   'html'=>"<p>".$this->lang['fy_del_instr']."</p>"],
+                'body'   => ['order'=>50,'type'=>'tabs',   'key' =>'tabFyClose'],
+            ]]],
 			'toolbars'=> ['tbFyClose' =>['icons'=>['start'=>['order'=>10,'title'=>lang('Start'),'icon'=>'next','type'=>'menu','events'=>['onClick'=>"divSubmit('phreebooks/tools/fyClose', 'divCloseFY');"]]]]],
-			'tabs'    => ['tabFyClose'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]]],
+			'tabs'    => ['tabFyClose'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]],'divs'=>[
+                'phreebooks' => ['order'=>50,'label'=>$title,'type'=>'html','html'=>$this->getViewFyClose()],
+            ]],
             'lang'    => $this->lang]);
+    }
+
+    private function getViewFyClose()
+    {
+        $html = '<h2><u>What will happen when a Fiscal Year is Closed</u></h2>
+<p>The following is a summary of the tasks performed while closing a fiscal year. The fiscal year being closed is indicated above.</p>
+<h3>Pre-flight Check</h3>
+<p>All journal entries will be tested to make sure they are in a completed state. You have an option to skip this test and remove them unconditionally by checking the box below. 
+If any journal entries are not in a closed state, this process will terminate. There may be other modules that will terminate the close process, the conditions for other modules 
+is described in the tab of the module.</p>
+<b>Close Process</b><br />
+<p>The close process will remove all general journal records for the closing fiscal year. Fiscal calendar periods that are vacated during this process will be removed and 
+the fiscal calendar will be re-sequenced starting with period 1 being the first period of the first remaining fiscal year.</p>
+The following is a summary of the PhreeBooks module closing task list:
+<ul>
+<li>Delete all journal entries for the closing fiscal year, tables journal_main and journal_item and associated attachments</li>
+<li>Delete table journal_history records for the closing fiscal year</li>
+<li>Clean up COGS owed table for closing fiscal year</li>
+<li>Clean up journal_cogs_usage table for closing fiscal year</li>
+<li>Delete journal_periods for fiscal year</li>
+<li>Re-sequence journal periods in journal_history table</li>
+<li>Delete all gl chart of accounts if inactive no journal entries exits against the account</li>
+<li>Delete tax_rates that have end date within the closing fiscal year</li>
+<li>Delete bank reconciliation records within the range of closed fiscal year, re-sequence periods periods</li>
+</ul>
+<h3>Post-close Clean-up</h3><br />
+<p>Following the journal deletion and other PhreeBooks module close tasks discussed above, each module will clean orphaned table records. See the instructions 
+within each module tab for details on what is performed.</p>
+<p>The PhreeBooks post close process will be to re-run the journal tools to validate the journal balance and history table are in sync. 
+Other tools are also run to removed orphaned transactions, attachments and other general maintenance activities. 
+Most of these are available in the Journal Tools tab in the PhreeBooks module settings.</p>';
+        $html .= "<p>"."To prevent the pre-flight test from halting the close process, check the box below."."</p>";
+        $html .= html5('phreebooks_skip', ['label'=>'Do not perform the pre-flight check, I understand that this may affect my financial statements and inventory balances', 'position'=>'after','attr'=>['type'=>'checkbox','value'=>'1']]);
     }
 
 	/**
@@ -610,7 +649,7 @@ class phreebooksTools
 			if (getModuleCache('extShipping', 'properties', 'status')) {
 				dbGetResult("TRUNCATE TABLE ".BIZUNO_DB_PREFIX."extShipping");
 			}
-			dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."journal_history SET beginning_balance=0, debit_amount=0, credit_amount=0, budget=0, stmt_balance=0, last_update='0000-00-00'");
+			dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."journal_history SET beginning_balance=0, debit_amount=0, credit_amount=0, budget=0, stmt_balance=0, last_update=''");
 			dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."inventory SET qty_stock=0, qty_po=0, qty_so=0");
             $io = new \bizuno\io(); // purge the files
             $io->folderDelete("data/phreebooks/uploads");

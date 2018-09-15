@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-131
+ * @version    3.x Last Update: 2018-08-13
  * @filesource /lib/controller/module/bizuno/fields.php
  */
 
@@ -43,11 +43,11 @@ class bizunoFields
 		$table = clean('table', 'text', 'get');
         if (!$module || !$table) { return msgAdd("Module and/or table information missing!"); }
 		$layout = array_replace_recursive($layout, ['type'=>'divHTML',
-			'divs' => ['fields' => ['order'=>60, 'type'=>'accordion','key' =>'accFields']],
+			'divs'     => ['fields'   =>['order'=>60, 'type'=>'accordion','key' =>'accFields']],
 			'accordion'=> ['accFields'=>['divs'=>[
-                'divFieldManager'=> ['order'=>30,'label'=>$this->lang['custom_field_manager'],'type'=>'datagrid','key'=>'dgFields'],
-				'divFieldDetail' => ['order'=>70,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;']]]],
-			'datagrid'=> ['dgFields' => $this->dgFields('dgFields', $module, $table, $security)]]);
+                'manager'=> ['order'=>30,'label'=>$this->lang['custom_field_manager'],'type'=>'datagrid','key'=>'dgFields'],
+				'detail' => ['order'=>70,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;']]]],
+			'datagrid' => ['dgFields'=>$this->dgFields('dgFields', $module, $table, $security)]]);
 	}
 
 	/**
@@ -94,19 +94,15 @@ class bizunoFields
     private function dgFields($name, $module, $table, $security=0)
     {
 		return ['id' => $name,
-            'attr'   => [
-                'url'     => BIZUNO_AJAX."&p=bizuno/fields/managerRows&module=$module&table=$table",
-				'toolbar' => "#{$name}Toolbar",
-				'pageSize'=> getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField' => 'field'],
+            'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'field', 'url'=>BIZUNO_AJAX."&p=bizuno/fields/managerRows&module=$module&table=$table"],
 			'events' => ['onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accFields', 'dgFields', 'divFieldDetail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', rowData.id); }"],
-			'source' => ['actions'=>['newField'=>['order'=>10,'html'=>['icon'=>'new','events'=>['onClick'=>"accordionEdit('accFields','dgFields','divFieldDetail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', 0);"]]]]],
+			'source' => ['actions'=>['newField'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"accordionEdit('accFields','dgFields','divFieldDetail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', 0);"]]]],
 			'columns'=> [
-                'id' => ['order'=>0,'attr'=>  ['hidden'=>true]],
+                'id' => ['order'=>0,'attr'=>['hidden'=>true]],
 				'action' => ['order'=>1, 'label'=>lang('action'),
 					'attr'   => ['width'=>40, 'formatter'=>$name.'Formatter'],
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
-					'actions'=> ['delete' => ['icon'=>'trash','size'=>'small', 'order'=>90,'hidden'=>$security==4?false:true,
+					'actions'=> ['delete' => ['order'=>90,'icon'=>'trash','hidden'=>$security==4?false:true,
 						'events' => ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/fields/delete&table=$table', 0, 'idTBD');"]]]],
 				'field'  => ['label'=>lang('field'),  'order'=>10,'attr'=>['width'=>100,'sortable'=>true,'resizable'=>true]],
 				'label'  => ['label'=>lang('label'),  'order'=>20,'attr'=>['width'=>160,'sortable'=>true,'resizable'=>true]],
@@ -129,85 +125,96 @@ class bizunoFields
         if (!$module || !$table) { return msgAdd("Module and/or table information missing!"); }
         if ($field) { msgAdd($this->lang['xf_msg_edit_warn'], 'caution'); }
 		$struc = dbLoadStructure(BIZUNO_DB_PREFIX.$table);
-		$props = $field ? $struc[$field] : ['attr'=>  ['type'=>'text']];
+		$props = $field ? $struc[$field] : ['attr'=>['type'=>'text']];
 		msgDebug("\n Working with field properties: ".print_r($props, true));
-		$tabs  = [];
+		$tabs  = $gList = [];
 		$groups= [['id'=>'', 'text'=>'']];
-		$gList = [];
-		foreach (getModuleCache($module, 'tabs') as $tID => $settings) {
-			$tabs[] = ['id'=>$tID, 'text'=>$settings['title']];
+		foreach (getModuleCache($module, 'tabs') as $tID => $settings) { $tabs[] = ['id'=>$tID, 'text'=>$settings['title']];}
+		foreach ($struc as $value) { 
+            if (empty($value['group'])) { continue; }
+            if (!in_array($value['group'], $gList)) {
+                $gList[] = $value['group'];
+                $groups[]= ['id'=>$value['group'], 'text'=>$value['group']];
+            }
         }
-		foreach ($struc as $value) { if (isset($value['group']) && $value['group']) { if (!in_array($value['group'], $gList)) {
-			$gList[] = $value['group'];
-			$groups[]= ['id'=>$value['group'], 'text'=>$value['group']];
-        } } }
-		$integers  = viewKeyDropdown([
-            'tinyint'  => '-127 '          .lang('to').' 127',
-			'smallint' => '-32,768 '       .lang('to').' 32,768',
-			'mediumint'=> '-8,388,608 '    .lang('to').' 8,388,607',
-			'int'      => '-2,147,483,648 '.lang('to').' 2,147,483,647',
-			'bigint'   => lang('greater_than').' 2,147,483,648',
-            ]);
-		$floats = viewKeyDropdown([
-            'float'  => $this->lang['xf_lbl_db_float'],
-			'double' => $this->lang['xf_lbl_db_double'],
-		]);
-		$checkboxes = viewKeyDropdown(['0'=>lang('unchecked'),'1'=>lang('checked')]);
+        $jsBody = "jq('#group').combobox({ 
+    data:grpData, valueField:'id', textField:'id', width:100, delay:1000,
+    onChange: function (newVal) {
+        var datas = jq('#group').combobox('options').data;
+        datas.push({ id:newVal });
+        jq('#group').combobox('loadData', datas);
+        jq('#group').combobox('setValue', newVal);
+    }
+});";
 		$data = ['type'=>'divHTML',
-			'divs'    => ['detail' => ['order'=>10, 'src'=>BIZUNO_LIB."view/module/bizuno/accFieldDetail.php"]],
-			'toolbars'=> ['tbField'=>  ['icons' => [
-                'new'  => ['order'=>20,'events'=>  ['onClick'=>"accordionEdit('accFields', 'dgFields', 'divFieldDetail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', 0);"]],
-				'save' => ['order'=>40,'events'=>  ['onClick'=>"jq('#frmField').submit();"]]]]],
-			'forms'    => ['frmField'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/fields/save"]]],
-			'fields'  => [
-                'module'		  => ['attr'=>  ['type'=>'hidden','value'=>$module]],
-				'table'			  => ['attr'=>  ['type'=>'hidden','value'=>$table]],
-				'id'			  => ['attr'=>  ['type'=>'hidden','value'=>$field]], // holds old_field_name
-				'field'			  => ['label'=>$this->lang['xf_lbl_field'], 'position'=>'after','attr'=>  ['value'=>$field]],
-				'label'			  => ['label'=>$this->lang['xf_lbl_label'], 'position'=>'after','attr'=>  ['value'=>isset($props['label'])?$props['label']:'']],
-				'tag'			  => ['label'=>$this->lang['xf_lbl_tag'],   'position'=>'after','attr'=>  ['value'=>isset($props['tag'])?$props['tag']:'']],
-				'tab'			  => ['label'=>$this->lang['xf_lbl_tab'],   'classes'=>  ['easyui-combobox'],'position'=>'after',
-					'attr'=>  ['value'=>isset($props['tab'])?$props['tab']:'',
-						'data-options'=>"{data:tabData,width:200,valueField:'id',textField:'text'}"]],
-				'group'			  => ['label'=>$this->lang['xf_lbl_group'],'classes'=>  ['easyui-combobox'],'position'=>'after',
-					'attr'=>  ['value'=>isset($props['group'])?$props['group']:'']],
-				'order'			  => ['label'=>$this->lang['xf_lbl_order'], 'position'=>'after','attr'=>  ['value'=>isset($props['order'])?$props['order']:'']],
-				'type'			  => ['position'=>'after', 'attr'=>  ['type'=>'radio','value'=>isset($props['attr']['type'])?$props['attr']['type']:'text']], // label at radio html5 build
-				'text_length'	  => ['label'=>$this->lang['xf_lbl_text_length']."<br />"],
-				'text_default'	  => ['label'=>lang('default')."<br />", 'attr'=>  ['type'=>'textarea']],
-				'link_default'	  => ['label'=>lang('default')."<br />"],
-				'int_select'	  => ['label'=>lang('range')."<br />", 'values'=>$integers, 'attr'=>  ['type'=>'select']],
-				'int_default'	  => ['label'=>lang('default')."<br />", 'attr'=>  ['value'=>isset($props['attr']['value'])?$props['attr']['value']:'0']],
-				'float_select'	  => ['label'=>lang('precision')."<br />",'values'=>$floats, 'attr'=>  ['type'=>'select']],
-				'float_default'	  => ['label'=>lang('default')."<br />", 'attr'=>  ['value'=>isset($props['attr']['value'])?$props['attr']['value']:'0']],
-				'radio_default'	  => ['label'=>$this->lang['xf_lbl_radio_default']."<br />", 'attr'=>  ['type'=>'textarea']],
-				'checkbox_default'=> ['label'=>lang('default')."<br />", 'values'=>$checkboxes, 'attr'=>  ['type'=>'select']],
-				'icnSave'         => ['icon'=>'save', 'size'=>'large', 'events'=>  ['onClick'=>"jq('#frmField').submit();"]]],
-			'lang' => $this->lang,
-			'javascript' => [
+			'divs'    => ['detail' =>['order'=>50,'type'=>'divs','divs'=>[
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbField'],
+                'formBOF'=> ['order'=>15,'type'=>'form',   'key' =>'frmField'],
+                'body'   => ['order'=>50,'type'=>'html',   'html'=>$this->getViewFields($props, $module, $table, $field)],
+                'formEOF'=> ['order'=>85,'type'=>'html',   'html'=>"</form>"]]]],
+			'toolbars'=> ['tbField'=>['icons' =>[
+                'new' => ['order'=>20,'events'=>['onClick'=>"accordionEdit('accFields','dgFields','divFieldDetail','".lang('details')."','bizuno/fields/edit&module=$module&table=$table', 0);"]],
+				'save'=> ['order'=>40,'events'=>['onClick'=>"jq('#frmField').submit();"]]]]],
+			'forms'   => ['frmField'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/fields/save"]]],
+			'jsHead'  => [
                 'tabData' => "var tabData=".json_encode($tabs).";",
 				'grpData' => "var grpData=".json_encode($groups).";"],
-            ];
+            'jsBody'  => ['init'=>$jsBody],
+            'jsReady' => ['init'=>"ajaxForm('frmField');"]];
+		$layout = array_replace_recursive($layout, $data);
+	}
+
+    private function getViewFields($props, $module, $table, $field)
+    {
+        $type  = isset($props['attr']['type']) ? $props['attr']['type'] : 'text';
+		$ints  = viewKeyDropdown(['tinyint'=>'-127 '.lang('to').' 127', 'smallint'=>'-32,768 '.lang('to').' 32,768',
+			'mediumint'=>'-8,388,608 '.lang('to').' 8,388,607', 'int'=>'-2,147,483,648 '.lang('to').' 2,147,483,647',
+			'bigint'   =>lang('greater_than').' 2,147,483,648']);
+		$floats= viewKeyDropdown(['float'=>$this->lang['xf_lbl_db_float'], 'double'=>$this->lang['xf_lbl_db_double']]);
+		$checks= viewKeyDropdown(['0'=>lang('unchecked'),'1'=>lang('checked')]);
+        $fields= [
+            'module'		  => ['attr'=>['type'=>'hidden','value'=>$module]],
+            'table'			  => ['attr'=>['type'=>'hidden','value'=>$table]],
+            'id'			  => ['attr'=>['type'=>'hidden','value'=>$field]], // holds old_field_name
+            'field'			  => ['label'=>$this->lang['xf_lbl_field'],'position'=>'after','attr'=>['value'=>$field]],
+            'label'			  => ['label'=>$this->lang['xf_lbl_label'],'position'=>'after','attr'=>['value'=>isset($props['label'])?$props['label']:'']],
+            'tag'			  => ['label'=>$this->lang['xf_lbl_tag'],  'position'=>'after','attr'=>['value'=>isset($props['tag'])?$props['tag']:'']],
+            'tab'			  => ['label'=>$this->lang['xf_lbl_tab'],  'classes' =>['easyui-combobox'],'position'=>'after',
+                'options'=>['data'=>'tabData','width'=>200,'valueField'=>"'id'",'textField'=>"'text'"],
+                'attr'   =>['value'=>isset($props['tab'])?$props['tab']:'']],
+            'group'			  => ['label'=>$this->lang['xf_lbl_group'],'classes'=>['easyui-combobox'],'position'=>'after','attr'=>['value'=>isset($props['group'])?$props['group']:'']],
+            'order'			  => ['label'=>$this->lang['xf_lbl_order'],'position'=>'after','attr'=>['value'=>isset($props['order'])?$props['order']:'']],
+            'type'			  => ['position'=>'after', 'attr'=>['type'=>'radio','value'=>$type]],
+            'text_length'	  => ['label'=>$this->lang['xf_lbl_text_length']."<br />"],
+            'text_default'	  => ['label'=>lang('default')."<br />", 'attr'=>  ['type'=>'textarea']],
+            'link_default'	  => ['label'=>lang('default')."<br />"],
+            'int_select'	  => ['label'=>lang('range')."<br />", 'values'=>$ints, 'attr'=>['type'=>'select']],
+            'int_default'	  => ['label'=>lang('default')."<br />", 'attr'=>['value'=>isset($props['attr']['value'])?$props['attr']['value']:'0']],
+            'float_select'	  => ['label'=>lang('precision')."<br />",'values'=>$floats, 'attr'=>['type'=>'select']],
+            'float_default'	  => ['label'=>lang('default')."<br />", 'attr'=>['value'=>isset($props['attr']['value'])?$props['attr']['value']:'0']],
+            'radio_default'	  => ['label'=>$this->lang['xf_lbl_radio_default']."<br />", 'attr'=>['type'=>'textarea']],
+            'checkbox_default'=> ['label'=>lang('default')."<br />",'values'=>$checks,'attr'=>['type'=>'select']],
+            'icnSave'         => ['icon'=>'save', 'size'=>'large', 'events'=>  ['onClick'=>"jq('#frmField').submit();"]]];
 		switch ($props['attr']['type']) {
 			case 'varchar':
 			case 'text':
-            case 'textarea': $data['fields']['type']['attr']['value'] = 'text';
+            case 'textarea': $fields['type']['attr']['value'] = 'text';
 			case 'html':
-				$data['fields']['text_length']['attr']['value'] = isset($props['attr']['maxlength']) ? $props['attr']['maxlength'] : 32;
+				$fields['text_length']['attr']['value'] = isset($props['attr']['maxlength']) ? $props['attr']['maxlength'] : 32;
 				// continue like link, which is just text
 			case 'link_url':
 			case 'link_image':
 			case 'link_inventory':
-//				$data['fields']['type']['attr']['value'] = $props['attr']['type'];
-				$data['fields']['text_default']['attr']['value'] = isset($props['default']) ? $props['default'] : '';
+//				$fields['type']['attr']['value'] = $props['attr']['type'];
+				$fields['text_default']['attr']['value'] = isset($props['default']) ? $props['default'] : '';
 				break;
 			case 'integer':
 				$data_type = (strpos($props['dbType'],'(') === false) ? strtolower($props['dbType']) : strtolower(substr($props['dbType'],0,strpos($props['dbType'],'(')));
-				$data['fields']['int_select']['attr']['value'] = $data_type;
+				$fields['int_select']['attr']['value'] = $data_type;
 				break;
 			case 'float':
 				$data_type = (strpos($props['dbType'],'(') === false) ? strtolower($props['dbType']) : strtolower(substr($props['dbType'],0,strpos($props['dbType'],'(')));
-				$data['fields']['float_select']['attr']['value'] = $data_type;
+				$fields['float_select']['attr']['value'] = $data_type;
 				break;
 			case 'radio':
 			case 'select':
@@ -215,15 +222,129 @@ class bizunoFields
 			case 'enum':
 				$tmp = [];
                 if (isset($props['opts'])) { foreach ($props['opts'] as $row) { $tmp[] = $row['id'].":".$row['text']; } }
-				$data['fields']['radio_default']['attr']['value'] = implode(';', $tmp);
+				$fields['radio_default']['attr']['value'] = implode(';', $tmp);
 				break;
 			case 'checkbox':
-				$data['fields']['checkbox_default']['attr']['value'] = $props['default'];
+				$fields['checkbox_default']['attr']['value'] = $props['default'];
 				break;
 			default:
 		}
-		$layout = array_replace_recursive($layout, $data);
-	}
+        $output  = html5('',        $fields['icnSave']);
+        $output .= html5('module',  $fields['module']);
+        $output .= html5('table',   $fields['table']);
+        $output .= html5('id',      $fields['id']);
+        $output .= '<table>
+         <tbody>
+          <tr><td colspan="2">'.$this->lang['xf_lbl_field_tip'] .'</td></tr>
+          <tr><td colspan="2">'.html5('field', $fields['field']).'</td></tr>
+          <tr><td colspan="2">'.html5('label', $fields['label']).'</td></tr>
+          <tr><td colspan="2">'.html5('tag',   $fields['tag'])  .'</td></tr>
+          <tr><td colspan="2">'.html5('tab',   $fields['tab'])  .'</td></tr>
+          <tr><td colspan="2">'.html5('group', $fields['group']).'</td></tr>
+          <tr><td colspan="2">'.html5('order', $fields['order'])."</td></tr>";
+// @todo ************************************* THIS NEEDS FIXIN ***********************************************//
+        if (isset($viewData['options']) && is_array($viewData['options'])){
+            $output .= '  <tr class="panel-header"><th colspan="2">'.lang('options')."</th></tr>";
+            $output .= '  <tr><td colspan="2">'.$viewData['options']['description']."</td></tr>";
+            foreach ($viewData['options']['values'] as $key => $settings) { $output .= "  <tr><td>".html5($key, $settings)."</td></tr>"; }
+        }
+
+        $output .= '  <tr class="panel-header"><th colspan="2">'.lang('attributes')."</th></tr>";
+
+        $output .= "  <tr><td>";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_text'];
+        $fields['type']['attr']['checked'] = $type=='text' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'text'; // radio button type
+        $output .= html5('type', $fields['type'])."<br />";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_html'];
+        $fields['type']['attr']['checked'] = $type=='html' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'html';
+        $output .= html5('type', $fields['type'])."<br />";
+        $output .= "  </td><td>";
+        $output .= html5('text_length', $fields['text_length'])."<br />";
+        $output .= html5('text_default', $fields['text_default']);
+        $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
+        $output .= "  <tr><td>";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_link_url'];
+        $fields['type']['attr']['checked'] = $type=='link_url' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'link_url';
+        $output .= html5('type', $fields['type'])."<br />";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_link_image'];
+        $fields['type']['attr']['checked'] = $type=='link_image' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'link_image';
+        $output .= html5('type', $fields['type'])."<br />";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_link_inventory'];
+        $fields['type']['attr']['checked'] = $type=='link_inventory' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'link_inventory';
+        $output .= html5('type', $fields['type']);
+        $output .= "  </td><td>";
+        $output .= html5('link_default', $fields['link_default']);
+        $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
+        $output .= "  <tr><td>";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_int'];
+        $fields['type']['attr']['checked'] = $type=='integer' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'integer';
+        $output .= html5('type', $fields['type']);
+        $output .= "  </td><td>";
+        $output .= html5('int_select',  $fields['int_select'])."<br />";
+        $output .= html5('int_default', $fields['int_default']);
+        $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
+        $output .= "  <tr><td>";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_float'];
+        $fields['type']['attr']['checked'] = $type=='float' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'float';
+        $output .= html5('type', $fields['type']);
+        $output .= "  </td><td>";
+        $output .= html5('float_select',  $fields['float_select'])."<br />";
+        //$output .= html5('float_format',  $fields['float_format'])."<br />"; // for decimal type
+        $output .= html5('float_default', $fields['float_default']);
+        $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
+        $output .= "  <tr><td>";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_checkbox_multi'];
+        $fields['type']['attr']['checked'] = $type=='checkbox_multi' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'checkbox_multi';
+        $output .= html5('type', $fields['type'])."<br />";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_select'];
+        $fields['type']['attr']['checked'] = $type=='select' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'select';
+        $output .= html5('type', $fields['type'])."<br />";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_radio'];
+        $fields['type']['attr']['checked'] = $type=='radio' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'radio';
+        $output .= html5('type', $fields['type'])."</td>";
+        $output .= "  </td><td>";
+        $output .= html5('radio_default', $fields['radio_default']);
+        $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
+        $output .= "  <tr><td>";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_checkbox'];
+        $fields['type']['attr']['checked'] = $type=='checkbox' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'checkbox';
+        $output .= html5('type', $fields['type']);
+        $output .= "  </td><td>";
+        $output .= html5('checkbox_default', $fields['checkbox_default']);
+        $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
+        $output .= "  <tr><td>";
+        $fields['type']['label'] = lang('date');
+        $fields['type']['attr']['checked'] = $type=='date' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'date';
+        $output .= html5('type', $fields['type'])."<br />";
+        $fields['type']['label'] = lang('time');
+        $fields['type']['attr']['checked'] = $type=='time' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'time';
+        $output .= html5('type', $fields['type'])."<br />";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_datetime'];
+        $fields['type']['attr']['checked'] = $type=='datetime' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'datetime';
+        $output .= html5('type', $fields['type'])."<br />";
+        $fields['type']['label'] = $viewData['lang']['xf_lbl_timestamp'];
+        $fields['type']['attr']['checked'] = $type=='timestamp' ? 'checked' : false;
+        $fields['type']['attr']['value'] = 'timestamp';
+        $output .= html5('type', $fields['type']);
+        $output .= '  </td></tr>';
+        $output .= " </tbody>";
+        $output .= "</table>";
+        return $output;
+    }
 
 	/**
      * Method to save a new/modified custom field

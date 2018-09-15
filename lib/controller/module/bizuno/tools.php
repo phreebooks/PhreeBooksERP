@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-27
+ * @version    3.x Last Update: 2018-07-14
  * @filesource /lib/controller/module/bizuno/tools.php
  */
 
@@ -46,32 +46,40 @@ class bizunoTools {
      */
     public function ticketMain(&$layout=[])
     {
-//        if (!$security = validateSecurity('bizuno', 'ticket', 1)) { return; }
+        $data = ['type'=>'page','title'=>lang('support'),
+			'divs'  => ['tcktMain'=>['order'=>50,'type'=>'divs','divs'=>[
+                'head'   => ['order'=>10,'type'=>'html',  'html'  =>"<h1>".lang('support')."</h1>"],
+                'formBOF'=> ['order'=>15,'type'=>'form',  'key'   =>'frmTicket'],
+                'body'   => ['order'=>50,'type'=>'fields','fields'=>$this->getViewSupport()],
+                'formEOF'=> ['order'=>85,'type'=>'html',  'html'  =>"</form>"]]]],
+			'forms'=> ['frmTicket'=>['attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=bizuno/tools/ticketSave",'enctype'=>"multipart/form-data"]]]];
+        $layout = array_replace_recursive($layout, viewMain(), $data);
+        
+    }
+
+    private function getViewSupport()
+    {
 		$reasons = [['id'=>'none', 'text' => lang('select')]];
         foreach ($this->reasons as $key => $value) { $reasons[] = ['id'=>$key, 'text'=>$value]; }
         $values  = dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id=".getUserCache('profile', 'admin_id', false, 0));
         $machines= [['id'=>'pc','text'=>'PC'],['id'=>'mac','text'=>'MAC'],['id'=>'mobile','text'=>'Mobile Phone'],['id'=>'tablet','text'=>'Tablet'],['id'=>'other','text'=>'Other (list below)']];
         $os      = [['id'=>'windows','text'=>'Windows'],['id'=>'osx','text'=>'Apple OSX'],['id'=>'ios','text'=>'iPhone IOS'],['id'=>'android','text'=>'Android'],['id'=>'other','text'=>'Other (list below)']];
         $browsers= [['id'=>'firefox','text'=>'Firefox'],['id'=>'chrome','text'=>'Chrome'],['id'=>'safari','text'=>'Safari'],['id'=>'edge','text'=>'MS Edge'],['id'=>'ie','text'=>'Internet Explorer'],['id'=>'other','text'=>'Other (list below)']];
-        $layout  = array_replace_recursive($layout, viewMain(), [
-            'pageTitle'=> lang('support'),
-			'divs'     => ['tcktMain' =>['order'=>50,'src'=>BIZUNO_LIB."view/module/bizuno/divSptTicket.php"]],
-			'forms'     => ['frmTicket'=>['attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=bizuno/tools/ticketSave",'enctype'=>"multipart/form-data"]]],
-			'fields'   => [
-				'ticketDate' => ['attr'  => ['type'=>'hidden', 'value'=>date('Y-m-d')]],
-				'ticketURL'  => ['attr'  => ['type'=>'hidden', 'value'=>$_SERVER['HTTP_HOST']]],
-                'selReason'  => ['values'=> $reasons, 'attr'=>['type'=>'select']],
-                'selMachine' => ['values'=> $machines,'attr'=>['type'=>'select']],
-                'selOS'      => ['values'=> $os,      'attr'=>['type'=>'select']],
-                'selBrowser' => ['values'=> $browsers,'attr'=>['type'=>'select']],
-				'ticketUser' => ['attr'  => ['value'=>$values['title'], 'size'=>40]],
-				'ticketPhone'=> [],
-				'ticketEmail'=> ['attr'  => ['value'=>$values['email'], 'size'=>60]],
-				'ticketDesc' => ['attr'  => ['type'=>'textarea', 'rows'=>8, 'cols'=>60]],
-				'ticketFile' => ['attr'  => ['type'=>'file']],
-				'btnSubmit'  => ['events'=> ['onClick'=>"jq('#frmTicket').submit();"],'attr'=>['type'=>'button','value'=>lang('submit')]]],
-            'lang' => $this->lang]);
-	}
+        return [
+            'ticketDate' => ['order'=>10,'break'=>true,'attr'=>['type'=>'hidden','value'=>date('Y-m-d')]],
+            'ticketURL'  => ['order'=>15,'break'=>true,'attr'=>['type'=>'hidden','value'=>$_SERVER['HTTP_HOST']]],
+            '$langDesc'  => ['order'=>20,'break'=>true,'html'=>$this->lang['ticket_desc'],'attr'=>['type'=>'raw']],
+            'selReason'  => ['order'=>25,'break'=>true,'label'=>lang('reason'), 'values'=>$reasons, 'attr'=>['type'=>'select']],
+            'selMachine' => ['order'=>30,'break'=>true,'label'=>lang('Machine'),'values'=>$machines,'attr'=>['type'=>'select']],
+            'selOS'      => ['order'=>35,'break'=>true,'label'=>lang('OS'),     'values'=>$os,      'attr'=>['type'=>'select']],
+            'selBrowser' => ['order'=>40,'break'=>true,'label'=>lang('Browser'),'values'=>$browsers,'attr'=>['type'=>'select']],
+            'ticketUser' => ['order'=>45,'break'=>true,'label'=>lang('address_book_primary_name'),'attr'=>['value'=>$values['title'],'size'=>40]],
+            'ticketEmail'=> ['order'=>50,'break'=>true,'label'=>lang('email'),'attr'=>['value'=>$values['email'],'size'=>60]],
+            'ticketPhone'=> ['order'=>55,'break'=>true,'label'=>lang('telephone')],
+            'ticketDesc' => ['order'=>60,'break'=>true,'label'=>lang('description'),'attr'=>['type'=>'textarea','rows'=>8,'cols'=>60]],
+            'ticketFile' => ['order'=>65,'break'=>true,'label'=>$this->lang['ticket_attachment'],'attr'=>['type'=>'file']],
+            'btnSubmit'  => ['order'=>70,'events'=>['onClick'=>"jq('#frmTicket').submit();"],'attr'=>['type'=>'button','value'=>lang('submit')]]];
+    }
 
 	/**
      * Support ticket emailed to Bizuno BizNerds
@@ -91,8 +99,8 @@ class bizunoTools {
 		$brwsr= clean('selBrowser', 'text', 'post');
 		$date = clean('ticketDate', 'text', 'post');
 		$msg  = str_replace("\n", '<br />', clean('ticketDesc', 'text', 'post'));
-		$message = "Support Ticket Request<br /><br />From:    $user ($url)<br />Email:   $email<br />";
-		$message.= "Phone:   $tel<br />Date:    $date<br />Reason:  $type<br />Machine:  $box<br />OS:  $os<br />Browser:  $brwsr<br />Message: $msg<br />";
+		$message = "Support Ticket Request<br /><br />From: $user ($url)<br />Email: $email<br />";
+		$message.= "Phone: $tel<br />Date: $date<br />Reason: $type<br />Machine: $box<br />OS: $os<br />Browser: $brwsr<br />Message: $msg<br />";
         if (!$this->supportEmail) { return msgAdd("You do not have a support email address defined for your business , Please visit the PhreeSoft website for support."); }
         $toName = defined('BIZUNO_SUPPORT_NAME') ? BIZUNO_SUPPORT_NAME : $this->supportEmail;
 		$mail = new bizunoMailer($this->supportEmail, $toName, "Support Request ($url)", $message, $email, "$user ($url)");
@@ -168,10 +176,10 @@ class bizunoTools {
      */
     public function impExpMain(&$layout=[])
     {
-        if (!$security  = validateSecurity('bizuno', 'impexp', 2)) { return; }
+        if (!$security  = validateSecurity('bizuno', 'impexp', 1)) { return; }
 		$title = lang('bizuno_impexp');
 		$data = [
-            'pageTitle'=> $title,
+            'title'=> $title,
 			'toolbars' =>['tbImpExp'=>['icons'=>['help'=>['order'=>99,'index'=>'']]]],
 			'divs' => [
                 'submenu'=> ['order'=>10,'type'=>'html',   'html'=>viewSubMenu('tools')],

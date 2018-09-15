@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-12
+ * @version    3.x Last Update: 2018-09-15
  * @filesource portal/view.php
  */
 
@@ -34,37 +34,46 @@ class portalView
     public function setEnvHTML(&$output, $data)
     {
         global $html5;
-        $theme   = getUserCache('profile', 'theme', false, 'default');
-        $color   = getUserCache('profile', 'colors',false, 'default');
+        $theme = getUserCache('profile', 'colors');
+        if (!empty($theme)) { // OLD WAY - DEPRECATED SETTING CAN BE DELETED AFTER 30 DAYS FROM 9/15/2018
+            $icons = getUserCache('profile', 'theme', false, 'default');
+            setUserCache('profile', 'icons', $icons);
+            setUserCache('profile', 'theme', $theme);
+            clearUserCache('profile', 'colors');
+        } else {
+            $icons = getUserCache('profile', 'icons', false, 'default');
+            $theme = getUserCache('profile', 'theme', false, 'default');
+        }
+        $pathTheme= $theme=='default' ? BIZUNO_URL.'view/easyUI/jquery-easyui/themes/' : BIZUNO_THEMES;
         $myBiz   = getUserCache('profile', 'biz_id',false, 0);
         $lang    = substr(getUserCache('profile', 'language', false, 'en_US'), 0, 2);
         $logoPath= getModuleCache('bizuno', 'settings', 'company', 'logo');
+        $myDevice= !empty($GLOBALS['myDevice']) ? $GLOBALS['myDevice'] : 'desktop';
         $favicon = $logoPath ? BIZUNO_URL_FS."&src=" . getUserCache('profile', 'biz_id')."/images/$logoPath" : BIZUNO_LOGO;
         // Create page Head HTML
-        $output['head'] .= '
-    <title>' . (isset($data['pageTitle']) ? $data['pageTitle'] : getModuleCache('bizuno', 'properties', 'title')) . '</title>
-    <!-- p: ' . clean('p', ['format' => 'path_rel', 'default' => ''], 'get') . ' -->
-    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-    <link rel="icon" type="image/png" href="'.$favicon.'" />
-    <link type="text/css" rel="stylesheet" href="'.BIZUNO_URL .'view/easyUI/jquery-easyui/themes/'.$color.'/easyui.css" />
-    <link type="text/css" rel="stylesheet" href="'.BIZUNO_URL .'view/easyUI/jquery-easyui/themes/icon.css">
-    <link type="text/css" rel="stylesheet" href="'.BIZUNO_URL .'view/easyUI/stylesheet.css" />
-    <link type="text/css" rel="stylesheet" href="'.BIZUNO_SRVR.'bizunoCSS.php?style='.$theme.'&code='.$myBiz.'" />
-    <script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-3.2.1.js"></script>
-    <script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/jquery.easyui.min.js?ver='.MODULE_BIZUNO_VERSION.'"></script>
-    <script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/easyui-extensions.js?ver='.MODULE_BIZUNO_VERSION.'"></script>
-    <script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-i18n/src/jquery.i18n.js?ver='.MODULE_BIZUNO_VERSION.'"></script>
-    <script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-i18n/src/jquery.i18n.messagestore.js?ver='.MODULE_BIZUNO_VERSION.'"></script>
-    <script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/locale/easyui-lang-'.$lang.'.js?ver='.MODULE_BIZUNO_VERSION.'"></script>
-    <script type="text/javascript">var bizID='.getUserCache('profile', 'biz_id',false, 0).';</script>
-    <script type="text/javascript" src="'.BIZUNO_SRVR.'portal/view.js?ver='       .MODULE_BIZUNO_VERSION.'"></script>
-    <script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/common.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'."\n";
-        // for standalone javascript that needs to be in the head
-        if (getModuleCache('bizuno', 'settings', 'general', 'session_max') === 0) { $output['jsBody'][] = "refreshSessionClock();"; }
-        switch (viewScreenSize()) {
-            case 'small':  $html5->layoutMobile( $output, $data); break;
-            case 'medium': $html5->layoutTablet( $output, $data); break;
-            case 'large':  $html5->layoutDesktop($output, $data); break;
+        $output['head']['meta'][]= ['order'=>10,'html'=>'<title>'.(!empty($data['title']) ? $data['title'] : getModuleCache('bizuno', 'properties', 'title')).'</title>'];
+        $output['head']['meta'][]= ['order'=>20,'html'=>'<!-- p:'.clean('p',['format'=>'path_rel','default'=>''],'get').' -->'];
+        $output['head']['meta'][]= ['order'=>30,'html'=>'<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />'];
+        $output['head']['meta'][]= ['order'=>40,'html'=>'<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1.0, maximum-scale=1.0, minimal-ui" />'];
+        $output['head']['meta'][]= ['order'=>90,'html'=>'<link rel="icon" type="image/png" href="'.$favicon.'" />'];
+        $output['head']['css'][] = ['order'=>10,'html'=>'<link type="text/css" rel="stylesheet" href="'.$pathTheme .$theme.'/easyui.css" />'];
+        $output['head']['css'][] = ['order'=>20,'html'=>'<link type="text/css" rel="stylesheet" href="'.BIZUNO_URL .'view/easyUI/jquery-easyui/themes/icon.css">'];
+        $output['head']['css'][] = ['order'=>30,'html'=>'<link type="text/css" rel="stylesheet" href="'.BIZUNO_URL .'view/easyUI/stylesheet.css" />'];
+        $output['head']['css'][] = ['order'=>40,'html'=>'<link type="text/css" rel="stylesheet" href="'.BIZUNO_SRVR.'bizunoCSS.php?icons='.$icons.'&code='.$myBiz.'" />'];
+        $output['head']['js'][]  = ['order'=>10,'html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-3.2.1.js"></script>'];
+        $output['head']['js'][]  = ['order'=>15,'html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/jquery.easyui.min.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $output['head']['js'][]  = ['order'=>25,'html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/easyui-extensions.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $output['head']['js'][]  = ['order'=>30,'html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-i18n/src/jquery.i18n.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $output['head']['js'][]  = ['order'=>35,'html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-i18n/src/jquery.i18n.messagestore.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $output['head']['js'][]  = ['order'=>40,'html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/locale/easyui-lang-'.$lang.'.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $output['head']['js'][]  = ['order'=>45,'html'=>'<script type="text/javascript">var myDevice='."'$myDevice';var bizID=1;</script>"];
+        $output['head']['js'][]  = ['order'=>50,'html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'portal/view.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $output['head']['js'][]  = ['order'=>55,'html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/common.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        if (getModuleCache('bizuno', 'settings', 'general', 'session_max') === 0) { $output['jsReady']['sessionClk'] = "refreshSessionClock();"; }
+        switch ($myDevice) {
+            case 'mobile': $html5->layoutMobile ($output, $data); break;
+            case 'tablet': $html5->layoutTablet ($output, $data); break;
+            case 'desktop':$html5->layoutDesktop($output, $data); break;
         }
     }
     
@@ -75,7 +84,7 @@ class portalView
         $src      = $logoPath ? BIZUNO_URL_FS."&src=".getUserCache('profile', 'biz_id')."/images/$logoPath" : BIZUNO_LOGO;
         $htmlLogo = ['label'=>getModuleCache('bizuno', 'properties', 'title'),'events'=>['onClick'=>"hrefClick('');"],'attr'=>['type'=>'img','src'=>$src,'height'=>'48']];
         $portal   = explode('.', $_SERVER['SERVER_ADDR']);
-        $version  = getModuleCache('bizuno', 'properties', 'version', false, 'v?')."-{$portal[3]}-".getUserCache('profile', 'language')."-".getUserCache('profile', 'currency', false, 'No ISO');
+        $version  = PHREEBOOKS_VERSION."-{$portal[3]}-".getUserCache('profile', 'language')."-".getUserCache('profile', 'currency', false, 'No ISO');
         $company  = getModuleCache('bizuno', 'settings', 'company', 'primary_name').' - '.lang('period').': '.getModuleCache('phreebooks', 'fy', 'period').' | '.$version;
         $company .= ' - '.getModuleCache('bizuno', 'properties', 'title').' | '.lang('copyright').' &copy;'.date('Y').' <a href="http://www.PhreeSoft.com" target="_blank">PhreeSoft&trade;</a>';
         if ($GLOBALS['bizunoModule'] <> 'bizuno') { $company .= '-'.$GLOBALS['bizunoModule'].' '.getModuleCache($GLOBALS['bizunoModule'], 'properties', 'status'); }
@@ -102,11 +111,42 @@ class portalView
     }
 
     public function renderDOM($output) {
-		echo "<!DOCTYPE HTML>
-<html>
-<head>".$output['head']."</head>
-<body class=\"easyui-layout\">".$output['body']."</body>".
-    $output['raw']."
-</html>";
+		echo "<!DOCTYPE HTML>\n<html>";
+        $this->renderHead($output['head']);
+        switch ($GLOBALS['myDevice']) {
+            case 'mobile': $this->renderMobile ($output['body']); break;
+            case 'tablet': $this->renderTablet ($output['body']); break;
+            default:
+            case 'desktop':$this->renderDesktop($output['body']); break;
+        }
+        echo $output['raw'];
+        echo "</html>";
+    }
+    
+    private function renderHead($head)
+    {
+        echo "<head>\n";
+        $meta = sortOrder($head['meta']);
+        foreach ($meta as $value) { echo "\t{$value['html']}\n"; }
+        $css = sortOrder($head['css']);
+        foreach ($css as $value) { echo "\t{$value['html']}\n"; }
+        $js = sortOrder($head['js']);
+        foreach ($js as $value) { echo "\t{$value['html']}\n"; }
+        echo "</head>\n";
+    }
+    
+    private function renderMobile($body)
+    {
+        echo "<body>\n$body</div>\n".'<div id="navPopup" class="easyui-navpanel">'."</div>\n</body>\n"; // close the mobile navpanel div here, add popup panel
+    }
+
+    private function renderTablet($body)
+    {
+        return $this->renderMobile($body);
+    }
+
+    private function renderDesktop($body)
+    {
+        echo '<body class="easyui-layout">'."\n$body</body>\n";
     }
 }

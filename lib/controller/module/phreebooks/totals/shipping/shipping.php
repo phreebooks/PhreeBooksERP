@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-14
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/totals/shipping/shipping.php
  */
 
@@ -93,15 +93,14 @@ class shipping
         }
 		$this->fields = [
             'totals_shipping_id' => ['label'=>'', 'attr'=>  ['type'=>'hidden']],
-            'totals_shipping_gl' => ['label'=>lang('gl_account'), 'jsBody'=>htmlComboGL('totals_shipping_gl'),'attr' =>['size'=>'10','value'=>$this->settings['gl_account']]],
+            'totals_shipping_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
             'totals_shipping_bill_type' => ['label'=>$this->lang['ship_bill_to'], 'values'=>viewKeyDropdown($billingTypes),'attr'=>['type'=>'select']],
-            'totals_shipping_bill_acct' => ['label'=>$this->lang['ship_bill_acct_num'],'events'=>['onChange'=>"jq('#totals_shipping_bill_type').val('3rdparty');"]],
+            'totals_shipping_bill_acct' => ['label'=>$this->lang['ship_bill_acct_num'],'events'=>['onChange'=>"bizSelSet('totals_shipping_bill_type', '3rdparty');"]],
             'totals_shipping_resi'=> ['label'=>lang('residential_address'),'attr'=>['type'=>'checkbox', 'value'=>'1']],
-            'totals_shipping_opt' => ['icon'=>'settings', 'size'=>'small','events'=> ['onClick'=>"jq('#totals_shipping_div').toggle('slow');"]],
-            'method_code' => ['label'=>'', 'values'=>$choices, 'attr'=>  ['type'=>'select']],
+            'totals_shipping_opt' => ['icon'=>'settings','size'=>'small','events'=> ['onClick'=>"jq('#totals_shipping_div').toggle('slow');"]],
+            'method_code' => ['options'=>['width'=>300], 'values'=>$choices, 'attr'=>['type'=>'select']],
             'totals_shipping_est' =>['attr'=>['type'=>'button','value'=>lang('rate_quote')],'events'=>['onClick'=>"shippingEstimate(".JOURNAL_ID.");"]],
-            'freight' => ['label'=>$this->lang['label'], 'attr'=>['size'=>'15','value'=>'0','style'=>'text-align:right'],'format'=>'currency',
-              'events'=> ['onBlur'=>"totalUpdate();"]]];
+            'freight' => ['label'=>$this->lang['label'], 'attr'=>['type'=>'currency','size'=>'15','value'=>'0'],'events'=>['onBlur'=>"totalUpdate();"]]];
         $resi = getModuleCache('extShipping', 'settings', 'general', 'resi_checked', 1);
         if ($resi) { $this->fields['totals_shipping_resi']['attr']['checked'] = 'checked'; }
 		if (isset($data['items'])) {
@@ -153,10 +152,10 @@ class shipping
         $type       = in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
         return "function totals_shipping(begBalance) {
 	var newBalance = begBalance;
-	var shipping   = cleanCurrency(jq('#freight').val());
+	var shipping   = cleanCurrency(bizTextGet('freight'));
     var taxShipping= $taxShipping;
 	if (isNaN(shipping)) { alert('Invalid amount for shipping!'); shipping = 0; }
-    jq('#freight').val(formatCurrency(shipping));
+    bizTextSet('freight', shipping, 'currency');
 	newBalance += shipping;
 
     if (!taxShipping) return newBalance;

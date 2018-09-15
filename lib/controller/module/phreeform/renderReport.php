@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-16
+ * @version    3.x Last Update: 2018-03-16
  * @filesource /controller/module/phreeform/renderReport.php
  */
 
@@ -160,7 +160,7 @@ class PDF extends \TCPDF
      */
     function Footer()
     {
-		$this->SetY(-8); //Position at 1.5 cm from bottom
+		$this->SetY(-12); //Position at 1.5 cm from bottom
 		$this->SetFont($this->fontData, '', '8');
 		$this->SetTextColor(0);
 		$total_pages = \TCPDF::getAliasNbPages();
@@ -177,20 +177,20 @@ class PDF extends \TCPDF
     {
 		global $report;
         if (!is_array($Data)) { return; }
-		$FillColor  = [224, 235, 255];
+		$FillColor = [224, 235, 255];
 		$this->SetFont($this->fontData, '', $report->data->size);
 		$this->SetFillColor($FillColor[0], $FillColor[1], $FillColor[2]);
-        $Colors     = $this->convertRGB($report->data->color);
+        $Colors    = $this->convertRGB($report->data->color);
 		$this->SetTextColor($Colors[0], $Colors[1], $Colors[2]);
-		$CellHeight = ($report->data->size) * 0.35;
+		$CellHeight= ($report->data->size) * 0.35;
 		// fetch the column widths
-		$CellXPos   = $this->columnWidths;
+		$CellXPos  = $this->columnWidths;
 		// See if we need to truncate the data
-		$trunc      = isset($report->truncate) && $report->truncate ? true: false;
+		$trunc     = isset($report->truncate) && $report->truncate ? true: false;
 		// Ready to draw the column data
-		$fill       = false;
-		$brdr       = 'T';
-		$NeedTop    = 'No';
+		$fill      = false;
+		$brdr      = 'T';
+		$NeedTop   = 'No';
 		$this->MaxRowHt = 0; //track the tallest row to estimate page breaks
 		$group_break= false;
 		foreach ($Data as $myrow) {

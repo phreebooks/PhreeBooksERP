@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-28
+ * @version    3.x Last Update: 2018-06-28
  * @filesource /locale/cleaner.php
  */
 
@@ -352,7 +352,6 @@ function getExtLang($path)
 function getExtMethLang($module, $folder, $method)
 {
 	$lang = [];
-    msgDebug("\nEntering getExtMethLang with module: $module and folder = $folder and method = $method");
     $output = getExtLang(BIZUNO_EXT."$module/");
     if (file_exists(BIZUNO_EXT."$module/locale/en_US/$folder/$method/language.php")) {
         require    (BIZUNO_EXT."$module/locale/en_US/$folder/$method/language.php"); // populates $lang
@@ -432,7 +431,7 @@ function localeLoadCharts()
     foreach ($coas as $chart) { if ($chart <> '.' && $chart <> '..') {
         $strXML   = file_get_contents(BIZUNO_LIB."locale/$lang/charts/$chart");
         $objChart = parseXMLstring($strXML);
-        $output[] = ['id'=>BIZUNO_LIB."locale/$lang/charts/$chart", 'text'=>isset($objChart->title) ? $objChart->title : $chart];
+        $output[] = ['id'=>"locale/$lang/charts/$chart", 'text'=>isset($objChart->title) ? $objChart->title : $chart];
     } }
     return $output;
 }

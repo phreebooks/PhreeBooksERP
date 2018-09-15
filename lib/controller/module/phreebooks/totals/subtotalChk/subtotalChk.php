@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-14
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /controller/module/phreebooks/totals/subtotalChk/subtotalChk.php
  */
 
@@ -48,21 +48,22 @@ class subtotalChk {
 	public function render(&$output)
     {
         $this->fields = [
-            'totals_subtotal'=>['label'=>$this->lang['subtotal'],'format'=>'currency','attr'=>['size'=>'15','value'=>'0','style'=>'text-align:right','readonly'=>'readonly']]];
-		$output['body'] .= '<div style="text-align:right">'."\n";
-		$output['body'] .= html5('totals_subtotal', $this->fields['totals_subtotal']) ."\n";
-		$output['body'] .= "</div>\n";
+            'totals_subtotal'    => ['label'=>$this->lang['subtotal'],'attr'=>['type'=>'currency','size'=>'15','value'=>'0','readonly'=>'readonly']],
+            'totals_subtotal_opt'=> ['icon'=>'blank','size'=>'small']];
+		$output['body'] .= '<div style="text-align:right">'
+            .html5('totals_subtotal', $this->fields['totals_subtotal'])
+            .html5('',                $this->fields['totals_subtotal_opt'])."</div>\n";
         $output['jsHead'][] = "function totals_subtotalChk(begBalance) {
     var newBalance = 0;
     var rowData = jq('#dgJournalItem').datagrid('getData');
     for (var i=0; i<rowData.rows.length; i++) if (rowData.rows[i]['checked']) {
-        var amount  = parseFloat(rowData.rows[i].total);
-        var discount= parseFloat(rowData.rows[i].discount);
+        var amount  = cleanCurrency(rowData.rows[i].total);
+        var discount= cleanCurrency(rowData.rows[i].discount);
         if (isNaN(amount))   amount   = 0;
         if (isNaN(discount)) discount = 0;
         newBalance += amount + discount;
     }
-    jq('#totals_subtotal').val(formatCurrency(newBalance));
+    bizTextSet('totals_subtotal', newBalance, 'currency');
     return newBalance;
 }";
 	}

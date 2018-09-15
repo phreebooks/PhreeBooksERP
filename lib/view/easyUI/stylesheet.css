@@ -16,11 +16,12 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-31
+ * @version    3.x Last Update: 2018-05-31
  * @filesource /view/theme/default/stylesheet.css
  */
 
-a, div, body, html, table{ font:normal normal 12px Verdana; }
+/* a, div, body, html, table{ font:normal normal 16px Verdana; } */
+body, html               { font-family:Verdana; }
 body                     { background-color:#ffffff; margin:0; }
 h1                       { width:auto; clear:both; color:#003080; font-size:16px; font-variant:small-caps; font-weight:bold; background-color:transparent; padding:4px; }
 h2                       { width:auto; clear:both; color:#003080; font-size:14px; font-variant:small-caps; font-weight:bold; background-color:transparent; padding:2px; }
@@ -37,8 +38,8 @@ th                       { text-align:center; font-weight:bold;}
 body.loading             { overflow: hidden; }
 body.loading .modal      { display:block; }
 .areaView                { display:block; width:100%; position:relative; }
-.blockView               { display:inline-block; position:relative; vertical-align:top; min-width:225px; margin:3px; } /* border:solid 1px red; */
-.blockViewR              { display:inline-block; position:relative; vertical-align:top; min-width:225px; margin:3px; text-align:right; } /* border:solid 1px red; */
+.blockView               { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; } /* border:solid 1px red; */
+.blockViewR              { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; text-align:right; } /* border:solid 1px red; */
 .menuHide                { display:none; }
 .fldLabel                { }
 .journal-waiting         { background-color:#FFFF00; }
@@ -46,6 +47,9 @@ body.loading .modal      { display:block; }
 .row-default             { background-color:lightgreen; }
 .ui-tab-image            { display:inline-block; line-height:12px; padding-top:5px; }
 .ui-tab-image img        { border:0; }
+#list .list-image        { width:32px; height:32px; border:0; margin-right:5px; float:left;}
+#list .list-header       { font-size:16px; font-weight:bold;}
+#list .list-content      { text-overflow:ellipsis; overflow:hidden;}
 /* drag-drop for journal totals */
 .jrnlLeft                { width:250px; float:left; }
 .jrnlLeft table          { background:#E0ECFF; }

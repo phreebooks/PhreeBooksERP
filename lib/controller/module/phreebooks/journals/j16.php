@@ -15,12 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-24
-
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/journals/j16.php
- * 
  */
 
 namespace bizuno;
@@ -76,18 +74,42 @@ class j16 extends jCommon
     public function getDataItem(&$data, $rID=0, $cID=0, $security=0)
     {
         $data['datagrid']['item'] = $this->dgAdjust('dgJournalItem');
-        $data['itemDGSrc'] = BIZUNO_LIB."view/module/phreebooks/accInvAdjDetail.php";
+//        $data['itemDGSrc'] = BIZUNO_LIB."view/module/phreebooks/accInvAdjDetail.php"; // should be ok, may need to ref old template getViewAdj below
         unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
         $isWaiting = isset($data['fields']['main']['waiting']['attr']['checked']) && $data['fields']['main']['waiting']['attr']['checked'] ? '1' : '0';
         $data['fields']['main']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'props' => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'fields'=>$this->getProps($data)],
+            'props' => ['order'=>40,'type'=>'fields','classes'=>['blockView'], 'attr'=>['id'=>'pbProps'],'fields'=>$this->getProps($data)],
             'totals'=> ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
         $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
     }
 
+    private function getViewAdj()
+    {
+        $output['body'] .= '<div style="float:right;width:30%">';
+        foreach ($viewData['totals_methods'] as $methID) {
+            $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
+            require_once("{$path}$methID.php");
+            $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
+            $fqcn = "\\bizuno\\$methID";
+            $totals = new $fqcn($totSet);
+            $content = $totals->render($output, $viewData);
+        }
+        $output['body'] .= "</div>";
+        // Hidden fields
+        $output['body'] .= html5('id',             $viewData['fields']['main']['id'])."\n";
+        $output['body'] .= html5('journal_id',     $viewData['fields']['main']['journal_id']);
+        $output['body'] .= html5('item_array',     $viewData['item_array']);
+        $output['body'] .= html5('recur_id',       $viewData['fields']['main']['recur_id']);
+        $output['body'] .= html5('recur_frequency',$viewData['recur_frequency']);
+        // Displayed fields
+        $output['body'] .= html5('invoice_num',    $viewData['fields']['main']['invoice_num'])."\n";
+        $output['body'] .= html5('store_id',       $viewData['fields']['main']['store_id'])."\n";
+        $output['body'] .= html5('post_date',      $viewData['fields']['main']['post_date'])."\n";
+
+    }
     /**
      * Configures the journal entry properties (other than address and items)
      * @param array $data - current working structure
@@ -100,9 +122,11 @@ class j16 extends jCommon
             'recur_id'       => $data['fields']['main']['recur_id'],
             'recur_frequency'=> $data['recur_frequency'],
             'item_array'     => $data['item_array'],
-            'invoice_num'    => array_merge(['break'=>true], $data['fields']['main']['invoice_num']),
-            'post_date'      => array_merge(['break'=>true], $data['fields']['main']['post_date']),
-            'store_id'       => array_merge(['break'=>true], $data['fields']['main']['store_id'])];
+            'store_id'       => $data['fields']['main']['store_id'],
+            // Displayed
+            'invoice_num'    => array_merge($data['fields']['main']['invoice_num'], ['break'=>true,'order'=>20]),
+            'post_date'      => array_merge($data['fields']['main']['post_date'], ['break'=>true,'order'=>40]),
+            ];
     }
 /*******************************************************************************************************************/
 // START Post Journal Function
@@ -245,19 +269,10 @@ class j16 extends jCommon
 		$on_hand  = jsLang('inventory', 'qty_stock');
 		$on_order = jsLang('inventory', 'qty_po');
         $store_id = getUserCache('profile', 'store_id', false, 0);
-		return [
-            'id'   => $name,
-			'type' => 'edatagrid',
-			'attr' => ['toolbar'=>"#{$name}Toolbar",'rownumbers'=>true,'singleSelect'=>true,'idField'=>'id'],
-			'events' => [
-                'data'         => "datagridData",
+		return ['id'=>$name, 'type'=>'edatagrid',
+			'attr' => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true, 'singleSelect'=>true, 'idField'=>'id'],
+			'events' => ['data'=> "datagridData",
 				'onLoadSuccess'=> "function(row) { totalUpdate(); }",
-				'onClickCell'  => "function(rowIndex) {
-					switch (icnAction) {
-						case 'trash': jq('#$name').edatagrid('destroyRow', rowIndex); break;
-					}
-					icnAction = '';
-				}",
 				'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
                 'onBeforeEdit' => "function(rowIndex) {
     var edtURL = jq(this).edatagrid('getColumnOption','sku');
@@ -267,14 +282,13 @@ class j16 extends jCommon
 				'onDestroy'    => "function(rowIndex) { totalUpdate(); curIndex = undefined; }",
 				'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
 			'source' => [
-                'actions' => ['newItem' =>['order'=>10,'html'=>['icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]]],
+                'actions' => ['newItem' =>['order'=>10,'icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
 			'columns'=> [
                 'id'         => ['order'=>0, 'attr'=>  ['hidden'=>true]],
 				'gl_account' => ['order'=>0, 'attr'=>  ['hidden'=>true]],
 				'unit_cost'  => ['order'=>0, 'attr'=>  ['editor'=>'text', 'hidden'=>true]],
-				'action'     => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>50],
-					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
-					'actions'=> ['trash' => ['icon'=>'trash','order'=>20,'size'=>'small','events'=>  ['onClick'=>"icnAction='trash';"]]]],
+				'action'     => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+					'actions'=> ['trash' => ['order'=>20,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
 				'sku'=> ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true,'align'=>'center'],
 					'events'=>  ['editor'=>"{type:'combogrid',options:{
 						width: 150, panelWidth: 540, delay: 500, idField: 'sku', textField: 'sku', mode: 'remote',

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-29
+ * @version    3.x Last Update: 2018-09-10
  * @filesource /view/main.php
  */
 
@@ -32,7 +32,7 @@ final class view extends portalView
         // declare global data until all modules are converted to new nested structure
         global $viewData;
         $viewData = $data;
-        $this->output = ['head'=>'', 'jsHead'=>[], 'body'=>'', 'jsBody'=>[], 'jsReady'=>[], 'raw'=>''];
+        $this->output = ['head'=>'','jsHead'=>[],'body'=>'','jsBody'=>[],'jsReady'=>[],'jsResize'=>[],'raw'=>''];
         parent::__construct();
         $this->render($data);
 	}
@@ -45,7 +45,7 @@ final class view extends portalView
      */
     private function render($data=[])
     {
-		global $html5, $msgStack;
+		global $msgStack;
         dbWriteCache();
         $type = !empty($data['type']) ? $data['type'] : 'json';
 		switch ($type) {
@@ -64,14 +64,9 @@ final class view extends portalView
                 $msgStack->debugWrite();
                 exit();
 			case 'page':
-            case 'html': // old way
                 $this->setEnvHTML($this->output, $data);
-//				$html5->layout($this->output, $data);
-//              msgDebug("\noutput = ".print_r($this->output, true));
                 $this->renderJS($data);
-                msgDebug("\nafter js output = ".print_r($this->output, true));
                 $this->renderDOM($this->output);
-//				echo "<!DOCTYPE HTML>\n<html>\n<head>\n".$this->output['head']."</head>\n<body>".$this->output['body']."</body>\n".$this->output['raw']."</html>";
                 $msgStack->debugWrite();
 				break;
 			case 'raw':
@@ -85,6 +80,7 @@ final class view extends portalView
 				echo createXmlHeader() . $xml . createXmlFooter();
                 $msgStack->debugWrite();
                 exit();
+            case 'popup': $this->renderPopup($data); // make layout changes per device
 			case 'json':
 			default:
                 if (isset($data['action'])){ $data['content']['action']= $data['action']; }
@@ -100,6 +96,33 @@ final class view extends portalView
 		}
 	}
 
+    private function renderPopup(&$data)
+    {
+        global $html5;
+        switch($GLOBALS['myDevice']) {
+            case 'mobile': // set a new panel
+                // need container div with mobile panel
+                $divsTemp = $data['divs'];
+                $header   = ['title'=>$data['title'],'left'=>['close'],'right'=>[]];
+                $data['divs'] = [
+                    'header'=> ['order'=>  1,'type'=>'html','html'=>$html5->mobileMenu($header, 'header')],
+                    'bodyS' => ['order'=>  2,'type'=>'html','html'=>"\n".'<div class="easyui-panel"><!-- start body -->'."\n"],
+                    'body'  => ['order'=> 50,'type'=>'divs','divs'=>[$divsTemp]],
+                    'bodyE' => ['order'=> 98,'type'=>'html','html'=>"\n</div><!-- end body -->\n\n"],
+                    'footer'=> ['order'=> 99,'type'=>'html','html'=>$html5->mobileMenu([], 'footer')]];
+                $data['divs'] = array_merge($data['divs'], $divsTemp);
+                $data['jsReady'][] = "jq.mobile.go('#navPopup'); jq.parser.parse('#navPopup');"; // load the div, init easyui components
+                $data['content']['action'] = 'newDiv';
+                break;
+            case 'tablet':
+            case 'desktop': // set a javascript popup window
+            default:
+                $data['content']['action'] = 'window';
+                $data['content']['title'] = $data['title'];
+                $data['content'] = array_merge($data['content'], $data['attr']);
+        }
+    }
+    
     private function renderDivs($data)
     {
         global $html5;
@@ -110,22 +133,21 @@ final class view extends portalView
     private function renderJS($data, $addMsg=true)
     {
         global $html5;
-        if (!isset($data['javascript'])){ $data['javascript']= []; } // old way
-        if (!isset($data['jsHead']))    { $data['jsHead']    = []; } // new way
-        if (!isset($data['js']))        { $data['js']        = []; } // old way
-        if (!isset($data['jsBody']))    { $data['jsBody']    = []; } // new way
-        if (!isset($data['jsReady']))   { $data['jsReady']   = []; } // new way
-        $data['jsHead'] = array_merge($data['javascript'], $data['jsHead']);
-        $data['jsBody'] = array_merge($data['js'], $data['jsBody']);
-        if (isset($this->output['js'])) { // old way
-            $this->output['jsBody'] = array_replace($this->output['jsBody'], $this->output['js']); // merge old way in
-            unset($this->output['js']);
-        }
-        if ($addMsg) { $data['jsReady']['msgStack'] = $html5->addMsgStack(); }
-        // combine everything together
-        $jsHead = array_merge($this->output['jsHead'], $data['jsHead'], $html5->jsHead);
-        $jsBody = array_merge($this->output['jsBody'], $data['jsBody'], $html5->jsBody);
-        $jsReady= array_merge($this->output['jsReady'],$data['jsReady'],$html5->jsReady);
+        if (!isset($data['jsHead']))   { $data['jsHead']  = []; }
+        if (!isset($data['jsBody']))   { $data['jsBody']  = []; }
+        if (!isset($data['jsReady']))  { $data['jsReady'] = []; }
+        if (!isset($data['jsResize'])) { $data['jsResize']= []; }
+//        if (isset($this->output['js'])){ // old way
+//            $this->output['jsBody'] = array_replace($this->output['jsBody'], $this->output['js']); // merge old way in
+//            unset($this->output['js']);
+//        }
+        // gather everything together
+        $jsHead  = array_merge($this->output['jsHead'],  $data['jsHead'],  $html5->jsHead);
+        $jsBody  = array_merge($this->output['jsBody'],  $data['jsBody'],  $html5->jsBody);
+        $jsReady = array_merge($this->output['jsReady'], $data['jsReady'], $html5->jsReady);
+        $jsResize= array_merge($this->output['jsResize'],$data['jsResize'],$html5->jsResize);
+        if (sizeof($jsResize)) { $jsReady['reSize'] = "var windowWidth = jq(window).width();\njq(window).resize(function() { if (jq(window).width() != windowWidth) { windowWidth = jq(window).width(); ".implode(" ", $jsResize)." } });"; }
+        if ($addMsg) { $jsReady['msgStack'] = $html5->addMsgStack(); }
         // Render the output
         if (sizeof($jsHead)) { // first
             $this->output['body'] .= '<script type="text/javascript">'."\n".implode("\n", $jsHead)."\n</script>\n";
@@ -209,108 +231,12 @@ function viewFormat($value, $format = '')
 		case 'rep_id':	  $result = dbGetValue(BIZUNO_DB_PREFIX."users", 'title', "admin_id='$value'");
 			return $result ? $result : $value;
 		case 'rnd2d':     return !is_numeric($value) ? $value : number_format(round($value, 2), 2, '.', '');
-        case 'taxTitle':return viewTaxTitle($value);
-        case 'terms':   return viewTerms($value); // must be passed encoded terms, default terms will use customers default
-        case 'terms_v': return viewTerms($value, true, 'v'); // must be passed encoded terms, default terms will use customers default
-        case 'today':   return date('Y-m-d');
-        case 'uc':      return mb_strtoupper($value);
-        case 'yesBno':  return $value ? lang('yes') : '';
-/* BEGIN DEPRECATION - mostly moved to PhreeBooks functions.php */
-        case 'bnkReg':
-            $rID = intval($value);
-			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id=$rID");
-			return in_array($main['journal_id'], [7,13,18,19,20,21]) ? -$main['total_amount'] : $main['total_amount'];
-        case 'invBalance': // needs journal_main.id
-			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id='$value'");
-			$jID  = $main['journal_id']; 
-			$total_inv = in_array($jID, [6,13]) ? -$main['total_amount'] : $main['total_amount'];
-			$total_paid= 0;
-			$result = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "item_ref_id='$value' AND gl_type='pmt'");
-			foreach ($result as $row) {
-                if (in_array($jID, [6,13])) { $total_paid += $row['debit_amount'] - $row['credit_amount']; }
-                else { $total_paid += $row['credit_amount'] - $row['debit_amount']; }
-			}
-			return $total_inv + (in_array($jID, [6,13]) ? $total_paid : -$total_paid);
-		case 'invRefNum': // needs journal_main.id
-            $rID = intval($value);
-			return dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'invoice_num', "id=$rID");
-        case 'paymentDue': // needs journal_main.id
-            $rID  = clean($value, 'integer');
-			$row  = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id','total_amount','post_date','terms'], "id=$rID");
-            $type = in_array($row['journal_id'], [3,4,6,7]) ? 'v' : 'c';
-            $dates= localeDueDate($row['post_date'], $row['terms'], $type);
-            $discount = $row['post_date'] <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
-            if ($format == 'pmtDisc') { return $discount; }
-            return $row['total_amount'] - $discount;
-		case 'paymentRcv': // needs journal_main.id
-            $rID   = clean($value, 'integer');
-            $jID   = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'journal_id', "id=$rID");
-			$result= dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "item_ref_id=$rID AND gl_type IN ('dsc','pmt')");
-			$total_paid = 0;
-            foreach ($result as $row) { $total_paid += $row['credit_amount'] - $row['debit_amount']; }
-			return in_array($jID, [6,13]) ? -$total_paid : $total_paid;
-        case 'paymentRef': // gets the payment transaction code, needs journal_main.id
-            $invID = clean($value, 'integer');
-			$pmtID = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'ref_id', "item_ref_id=$invID");
-            if ($pmtID) { return dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'trans_code', "ref_id=$pmtID AND gl_type='ttl'"); }
-            else        { return ''; }
-        case 'pmtDate': // needs journal_main.id
-            $rID   = clean($value, 'integer');
-			$result= dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['post_date','journal_id','terms'], "id=$rID");
-            if (!in_array($result['journal_id'], ['3','4','6','7','9','10','12','13'])) { return ''; }
-			$temp  = localeDueDate($result['post_date'], $result['terms']);
-			return $temp['net_date'];
-        case 'pmtDisc': return 'TBD';
-        case 'ship_bal': // pass table journal_item.id and check for quantites remaining to be shipped
-            msgDebug("\nEntering ship_bal with value = $value");
-			$refID = clean($value, 'integer');
-            if (!$refID) { return 0; }
-            $qtySO = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'qty', "id=$refID");
-			if ($qtySO) {
-                $filled = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'SUM(qty) as qty', "item_ref_id=$refID", false);
-				return $qtySO - $filled;
-            } else { return 0; }
-		case 'shipBalVal': // pass table journal_item.id and check for quantites remaining to be shipped
-			$refID = clean($value, 'integer');
-            $ttlSO = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'debit_amount+credit_amount', "id=$refID", false);
-			if ($ttlSO) {
-                $invSO = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'SUM(debit_amount+credit_amount) as invSO', "item_ref_id=$refID", false);
-				return $ttlSO - $invSO;
-            } else { return 0; }
-        case 'shipInfo': if (!$value) { return ''; }
-			$parts  = explode(':', $value);
-			$carrier= $parts[0];
-			$title  = getModuleCache('extShipping', 'carriers', $carrier, 'acronym', $carrier);
-			if (isset($parts[1]) && $parts[1]) {
-                if (!getModuleCache('extShipping', 'carriers', $carrier, 'path')) { return $title; }
-                if (!file_exists(getModuleCache('extShipping', 'carriers', $carrier, 'path'))) { return $title; }
-				require_once(getModuleCache('extShipping', 'carriers')[$carrier]['path']."$carrier.php");
-                $shipSet = getModuleCache('extShipping','carriers',$carrier,'settings');
-                $fqcn = "\\bizuno\\$carrier";
-                $clsMeth = new $fqcn($shipSet);
-				$service = ' ' . isset($clsMeth->lang[$parts[1]]) ? $clsMeth->lang[$parts[1]] : $parts[1];
-            } else { $service = ''; }
-			return $title." ".$service;
-		case 'ship_prior': // pass table journal_item.id and check for quantites shipped prior
-            if (!$value) { return 0; }
-            if (strpos($value, ':')) {
-                $tmp = explode(':', $value);
-                $links = ['ref_id'=>$tmp[0], 'item_ref_id'=>$tmp[1]];
-            } else {
-    			$links = dbGetValue(BIZUNO_DB_PREFIX."journal_item", ['ref_id', 'item_ref_id'], "id=$value");
-            }
-			if ($links['item_ref_id']) {
-				return dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'SUM(qty)', "item_ref_id={$links['item_ref_id']} AND ref_id!={$links['ref_id']}", false);
-            } else { return 0; }
-		case 'shipTrack': // get tracking from journal_main.invoice_num
-			$result = dbGetMulti(BIZUNO_DB_PREFIX."extShipping", "ref_id='$value' OR ref_id LIKE '$value-%'");
-			$output = array();
-            foreach ($result as $row) { $output[] = $row['tracking_id']; }
-			return lang('extShipping_tracking_id').' '.implode(', ', $output);
-        case 'subTotal': 
-            $rID = clean($value, 'integer');
-			return dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(debit_amount-credit_amount) AS F0", "ref_id=$rID AND gl_type='itm'", false);
-/* END DEPRECATION */
+        case 'taxTitle':  return viewTaxTitle($value);
+        case 'terms':     return viewTerms($value); // must be passed encoded terms, default terms will use customers default
+        case 'terms_v':   return viewTerms($value, true, 'v'); // must be passed encoded terms, default terms will use customers default
+        case 'today':     return date('Y-m-d');
+        case 'uc':        return mb_strtoupper($value);
+        case 'yesBno':    return $value ? lang('yes') : '';
 	}
 	if (getModuleCache('phreeform', 'formatting', $format, 'function')) {
 		$func = getModuleCache('phreeform', 'formatting')[$format]['function'];
@@ -349,7 +275,7 @@ function viewFormat($value, $format = '')
         return '-';
 	} elseif (substr($format, 0, 5) == 'cache') {
 		$tmp = explode(':', $format); // $format = cache:module:index
-        if (sizeof($tmp) <> 3) { return ''; } // wrong element count, return empty string
+        if (sizeof($tmp) <> 3 || empty($value)) { return ''; } // wrong element count, return empty string
         return getModuleCache($tmp[1], $tmp[2], $value, false, $value);
     }
 	return $value;
@@ -364,7 +290,7 @@ function viewFormat($value, $format = '')
 function viewDate($raw_date = '', $long = false)
 {
 	// from db to locale display format
-    if (!$raw_date || $raw_date == '0000-00-00' || $raw_date == '0000-00-00 00:00:00') { return ''; }
+    if (!$raw_date) { return ''; }
 	$error  = false;
 	$year   = substr($raw_date,  0, 4);
 	$month  = substr($raw_date,  5, 2);
@@ -443,6 +369,27 @@ function viewKeyDropdown($source, $addNull=false)
 	$output = $addNull ? [['id'=>'', 'text'=>lang('none')]] : [];
     if (is_array($source)) { foreach ($source as $key => $value) { $output[] = ['id'=>$key, 'text'=>$value]; } }
 	return $output;
+}
+
+/**
+ * Processes a string of data with a user specified process, returns unprocessed if function not found
+ * @param mixed $strData - data to process
+ * @param string $Process - process to apply to the data
+ * @return mixed - processed string if process found, original string if not
+ */
+function viewProcess($strData, $Process=false)
+{
+    msgDebug("\nEntering viewProcess with $strData = $strData and process = $Process");
+    if ($Process && getModuleCache('phreeform', 'processing', $Process, 'function')) {
+		$func = getModuleCache('phreeform', 'processing')[$Process]['function'];
+		if (!function_exists(__NAMESPACE__.'\\'.$func)) {
+			$module = getModuleCache('phreeform', 'processing')[$Process]['module'];
+			require_once(getModuleCache($module, 'properties', 'path')."functions.php");
+		}
+        $fqfn = "\\bizuno\\$func";
+		return $fqfn($strData, $Process);
+	}
+	return $strData;
 }
 
 /**
@@ -736,7 +683,7 @@ function adminStructure($module, $structure=[], $lang=[])
 	$iconBack = ['icon'=>'back','events'=>  ['onClick'=>"hrefClick('bizuno/settings/manager');"]];
 	$data = [
         'security'   => getUserCache('security', 'admin', false, 0),
-		'pageTitle'  => $title,
+		'title'  => $title,
 		'statsModule'=> $module,
 		'toolbars'   => ['tbAdmin'=> ['icons'=>  ['save' => ['order'=>20, 'events'=>  ['onClick'=>"jq('#frmAdmin').submit();"]]]]],
 		'forms'      => ['frmAdmin'=>  ['attr'=> ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=$module/admin/adminSave"]]],
@@ -877,40 +824,6 @@ function htmlComboContact($id, $props=[])
 }
 
 /**
-* This function builds the combo box editor HTML for the country list
- * @return string set the editor structure
- */
-function htmlComboCountry($id, $value='')
-{
-	return html5($id, ['styles'=>['width'=>250],'classes'=>['easyui-combogrid'], 
-		'attr'=> ['type'=>'select', 'data-options'=>"data:bizDefaults.countries,width:150,panelWidth:300,value:'$value',idField:'iso3',textField:'title',columns:[[{field:'iso3',title:'".jsLang('code')."',width:60},{field:'title',title:'".jsLang('title')."',width:200}]]"]]);
-}
-
-/**
- * This function builds the combo box editor HTML for a datagrid to view GL Accounts
- * @return string set the editor structure
- */
-function htmlComboGL($id, $types=[])
-{
-    if (!empty($types)) {
-        $js = "var {$id}Data = [];
-var types= [".implode(',',$types)."];
-for (i=0; i<bizDefaults.glAccounts.length; i++) {
-	for (j=0; j<types.length; j++) { if (bizDefaults.glAccounts[i].type == type[j]) {$id}Data[] = bizDefaults.glAccounts[i]; }
-}";
-    } else {
-        $js = "var {$id}Data = typeof bizDefaults.glAccounts != 'undefined' ? bizDefaults.glAccounts : [];";
-    }
-	return $js."
-jq('#$id').combogrid({
-	data:{$id}Data, rows:100, width:150, panelWidth:490, idField:'id', textField:'title',
-	columns: [[{field:'id',title:'".jsLang('gl_account')."',width:60},
-		{field:'title',title:'".jsLang('title')."',width:200},
-		{field:'type',title:'" .jsLang('type') ."',width:180}]]
-});\n";
-}
-
-/**
  * This function builds the combo box editor HTML for a datagrid to view GL Accounts
  * @return string set the editor structure
  */
@@ -1040,7 +953,7 @@ function htmlTabs(&$output, $prop, $idx=false)
 function htmlToolbar(&$output, $prop, $idx=false)
 {
     global $html5;
-    if ($idx) {  // legacy to old style
+    if ($idx) { // legacy to old style
         if (empty($prop['toolbars'][$idx])) { return; }
         $prop = array_merge($prop['toolbars'][$idx], ['id'=>$idx]);
     }
@@ -1061,22 +974,6 @@ function htmlTree(&$output, $prop, $idx=false)
         $prop = array_merge($prop['tree'][$idx], ['id'=>$idx]);
     }
     return $html5->layoutTree($output, $prop);
-}
-
-/**
- * generates a keyed array of color choices from the DEFAULT theme folder
- * @return array - keyed array needs to be converted before rendering drop-dowm menu
- */
-function themeColors()
-{
-	$colors = [];
-	$choices = scandir(BIZUNO_LIB."view/easyUI/jquery-easyui/themes/");
-	foreach ($choices as $choice) {
-        if (!in_array($choice, ['.','..','icons']) && is_dir(BIZUNO_LIB."view/easyUI/jquery-easyui/themes/$choice")) { 
-            $colors[$choice] = ucwords(str_replace('-', ' ', $choice));
-        }
-	}
-	return $colors;
 }
 
 /**
@@ -1109,5 +1006,5 @@ function formatDatagrid($dbData, $name, $structure=[], $override=[])
         }
     }
 //	msgDebug("\n Added datagrid data rows: ".print_r($rows, true));
-	return "var $name = ".json_encode(array('total'=>sizeof($rows), 'rows'=>$rows)).";\n";
+	return "var $name = ".json_encode(['total'=>sizeof($rows), 'rows'=>$rows]).";\n";
 }

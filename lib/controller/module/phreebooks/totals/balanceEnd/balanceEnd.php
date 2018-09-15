@@ -15,11 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-08-27
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/totals/balanceEnd/balanceEnd.php
- * 
  */
 
 namespace bizuno;
@@ -48,16 +47,12 @@ class balanceEnd {
 
 	public function render(&$output)
     {
-		$this->fields = [
-            'totals_balanceEnd' => ['label'=>$this->lang['title'], 'format'=>'currency',
-		    'attr' => ['type'=>'text', 'size'=>'15', 'value'=>'0', 'style'=>'text-align:right']]];
-		$output['body'] .= '<div style="text-align:right">'."\n";
-		$output['body'] .= html5('totals_balanceEnd',$this->fields['totals_balanceEnd'])."\n";
-		$output['body'] .= "</div>\n";
+		$fields = ['totals_balanceEnd'=>['label'=>$this->lang['title'],'attr'=>['type'=>'currency','size'=>'15','value'=>'0','readonly'=>'readonly']]];
+		$output['body'] .= '<div style="text-align:right">'.html5('totals_balanceEnd',$fields['totals_balanceEnd']).html5('',['icon'=>'blank','size'=>'small'])."</div>\n";
         $output['jsHead'][] = "function totals_balanceEnd(begBalance) {
     var newBalance = begBalance;
     var begBal = cleanCurrency(jq('#totals_balanceBeg').val());
-    jq('#totals_balanceEnd').val(formatCurrency(''+(begBal - newBalance)));
+    bizTextSet('totals_balanceEnd', ''+(begBal - newBalance), 'currency');
     return newBalance;
 }";
 	}

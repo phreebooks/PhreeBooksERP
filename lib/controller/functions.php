@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-10
+ * @version    3.x Last Update: 2018-08-07
  * @filesource lib/controller/functions.php
  */
 
@@ -41,7 +41,7 @@ function compose($module, $page, $method, &$layout=[])
 {
     $processes = mergeHooks($module, $page, $method);
     foreach ($processes as $modID => $modProps) {
-//        msgAdd("modID = $modID AND modProps = ".print_r($modProps, true));
+//      msgAdd("modID = $modID AND modProps = ".print_r($modProps, true));
         $fqdn = isset($modProps['class']) ? "\\bizuno\\".$modProps['class'] : "\\bizuno\\".$modID.ucfirst($modProps['page']);
         $controller = "{$modProps['path']}{$modProps['page']}.php";
         if (!file_exists($controller)) {
@@ -102,7 +102,7 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
     if (!(error_reporting() & $errno)) { return; } // This error code is not included in error_reporting
 	switch ($errno) {
 		case E_USER_ERROR:
-			msgAdd("<b>ERROR</b> [$errno] $errstr<br />\n  Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\nAborting...<br />\n", 'error');
+			msgAdd("<b>ERROR</b> [$errno] $errstr<br />\n  Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\nAborting...<br />\n");
             msgDebugWrite();
             exit(1);
 			break;
@@ -118,9 +118,63 @@ function myExceptionHandler($e)
     if (defined('BIZUNO_DEBUG') && constant('BIZUNO_DEBUG')===true) {
         msgTrap();
         msgDebugWrite();
+        exit("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
     }
-    error_log("Fatal Error, message returned: ".$e->getMessage());
-    exit("Program Exception! Please fill out a support ticket with the details that got you here.");
+    if (BIZUNO_HOST=='phreesoft' && (!defined('BIZUNO_DEBUG') || constant('BIZUNO_DEBUG')===false)) {
+		error_log("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
+        exit("Program Exception! Please fill out a support ticket with the details that got you here.");
+    }
+}
+
+/**
+ * Detects device to set screen size and menu structure
+ * @return string - device type, [mobile, tablet, desktop]
+ */
+function detectDevice()
+{
+    $tablet_browser = $mobile_browser = 0;
+    if (preg_match('/(tablet|ipad|playbook)|(android(?!.*(mobi|opera mini)))/i', strtolower($_SERVER['HTTP_USER_AGENT']))) { $tablet_browser++; }
+    if (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile)/i', strtolower($_SERVER['HTTP_USER_AGENT']))) { $mobile_browser++; }
+    if ((strpos(strtolower($_SERVER['HTTP_ACCEPT']),'application/vnd.wap.xhtml+xml') > 0) or ((isset($_SERVER['HTTP_X_WAP_PROFILE']) or isset($_SERVER['HTTP_PROFILE'])))) { $mobile_browser++; }
+    $mobile_ua = strtolower(substr($_SERVER['HTTP_USER_AGENT'], 0, 4));
+    $mobile_agents = [
+        'w3c ','acs-','alav','alca','amoi','audi','avan','benq','bird','blac',
+        'blaz','brew','cell','cldc','cmd-','dang','doco','eric','hipt','inno',
+        'ipaq','java','jigs','kddi','keji','leno','lg-c','lg-d','lg-g','lge-',
+        'maui','maxo','midp','mits','mmef','mobi','mot-','moto','mwbp','nec-',
+        'newt','noki','palm','pana','pant','phil','play','port','prox',
+        'qwap','sage','sams','sany','sch-','sec-','send','seri','sgh-','shar',
+        'sie-','siem','smal','smar','sony','sph-','symb','t-mo','teli','tim-',
+        'tosh','tsm-','upg1','upsi','vk-v','voda','wap-','wapa','wapi','wapp',
+        'wapr','webc','winw','winw','xda ','xda-'];
+    if (in_array($mobile_ua,$mobile_agents)) { $mobile_browser++; }
+    if (strpos(strtolower($_SERVER['HTTP_USER_AGENT']),'opera mini') > 0) {
+        $mobile_browser++;
+        //Check for tablets on opera mini alternative headers
+        $stock_ua = strtolower(isset($_SERVER['HTTP_X_OPERAMINI_PHONE_UA'])?$_SERVER['HTTP_X_OPERAMINI_PHONE_UA']:(isset($_SERVER['HTTP_DEVICE_STOCK_UA'])?$_SERVER['HTTP_DEVICE_STOCK_UA']:''));
+        if (preg_match('/(tablet|ipad|playbook)|(android(?!.*mobile))/i', $stock_ua)) { $tablet_browser++; }
+    }
+    if ($tablet_browser > 0) { // actually a tablet but we'll treat as mobile and try to set width by device
+        $device = 'mobile';
+        setUserCache('profile', 'cols', 2);
+    } else if ($mobile_browser > 0) {
+        $device = 'mobile';
+        setUserCache('profile', 'cols', 1);
+    } else {
+       $device = 'desktop';
+    }
+    return $device;
+}
+
+function getColumns()
+{
+    switch ($GLOBALS['myDevice']) {
+        case 'mobile':  return 1;
+        case 'tablet':  return 2;
+        default:
+        case 'desktop': 
+    }
+    return getUserCache('profile', 'cols', false, 3);
 }
 
 /**
@@ -156,7 +210,7 @@ function getUserCache($group='profile', $lvl1=false, $lvl2=false, $default=null)
 function setUserCache($group='', $lvl1='', $value='')
 {
     global $bizunoUser;
-//    msgDebug("\nSetting user group: $group with lvl1: $lvl1 and value = ".print_r($value, true));
+//  msgDebug("\nSetting user group: $group with lvl1: $lvl1 and value = ".print_r($value, true));
     if     ($group && $lvl1) { $bizunoUser[$group][$lvl1]= $value; }
     elseif ($group)          { $bizunoUser[$group]       = $value; }
     $GLOBALS['updateUserCache'] = true;
@@ -382,7 +436,6 @@ function updateSelection($data)
     setUserCache($data['path'], false, $output);
 	return $output;
 }
-
 
 /**
  * Given a file, i.e. /css/base.js, replaces it with a string containing the file's mtime, i.e. /css/base.1221534296.js

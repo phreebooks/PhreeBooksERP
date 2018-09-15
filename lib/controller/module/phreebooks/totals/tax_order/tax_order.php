@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.X Last Update: 2018-06-14
+ * @version    3.x Last Update: 2018-09-13
  * @filesource /controller/module/phreebooks/totals/tax_order/tax_order.php
  */
 
@@ -86,16 +86,17 @@ class tax_order
 
 	public function render(&$output, $data=[])
     {
+        $jID   = $data['fields']['main']['journal_id']['attr']['value'];
+		$type  = in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
+		$hide  = $this->hidden ? ';display:none' : '';
+        $defTax= $type=='v' ? $this->settings['tax_id_v'] : $this->settings['tax_id_c'];
 		$this->fields = [
-            'totals_tax_order'     => ['label'=>pullTableLabel('journal_main','tax_rate_id',$this->cType).' '.$this->lang['extra_title'],'format'=>'currency','attr'=>['size'=>'15','value'=>'0','style'=>'text-align:right','readonly'=>'readonly']],
-            'tax_rate_id'          => [], // drop down tax rate selection
-            'totals_tax_order_text'=> ['attr'=>  ['value'=>'textTBD','size'=>'16','readonly'=>'readonly']],
-            'totals_tax_order_gl'  => ['label'=>lang('gl_account'), 'attr'=>  ['type'=>'text', 'value'=>'glTBD','size'=>'5','readonly'=>'readonly']],
-            'totals_tax_order_amt' => ['attr'=>  ['value'=>'amtTBD','size'=>'15','style'=>'text-align:right','readonly'=>'readonly']],
-            'totals_tax_order_opt' => ['icon'=>'settings', 'size'=>'small','events'=> ['onClick'=>"jq('#phreebooks_totals_tax_order').toggle('slow');"]]];
-        $jID  = $data['fields']['main']['journal_id']['attr']['value'];
-		$type = in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
-		$hide = $this->hidden ? ';display:none' : '';
+            'totals_tax_order'     => ['label'=>pullTableLabel('journal_main','tax_rate_id',$this->cType).' '.$this->lang['extra_title'],'attr'=>['type'=>'currency','value'=>0,'size'=>'15','readonly'=>'readonly']],
+            'tax_rate_id'          => ['attr' =>['type'=>'tax'],'defaults'=>['value'=>$defTax,'type'=>$type]],
+            'totals_tax_order_text'=> ['attr' =>['value'=>'textTBD','size'=>'16','readonly'=>'readonly']],
+            'totals_tax_order_gl'  => ['label'=>lang('gl_account'), 'attr'=>['type'=>'text', 'value'=>'glTBD','readonly'=>'readonly']],
+            'totals_tax_order_amt' => ['attr' =>['value'=>'amtTBD','size'=>'15','style'=>'text-align:right','readonly'=>'readonly']],
+            'totals_tax_order_opt' => ['icon' =>'settings', 'size'=>'small','events'=> ['onClick'=>"jq('#phreebooks_totals_tax_order').toggle('slow');"]]];
         $output['body'] .= '<div style="text-align:right'.$hide.'">';
 		$output['body'] .= html5('totals_tax_order',$this->fields['totals_tax_order']);
 		$output['body'] .= html5('',                $this->fields['totals_tax_order_opt'])."<br />";
@@ -109,13 +110,12 @@ class tax_order
 		$temp.= "<td>"    .html5('totals_tax_order_gl[]',  $this->fields['totals_tax_order_gl'])  ."</td>";
 		$temp.= "<td>"    .html5('totals_tax_order_amt[]', $this->fields['totals_tax_order_amt']) ."</td></tr>";
 		$row  = str_replace("\n", "", $temp);
-        $output['jsHead'][] = "
-var taxOrderTD = '".str_replace("'", "\'", $row)."';
+        $output['jsHead'][] = "var taxOrderTD = '".str_replace("'", "\'", $row)."';
 function totals_tax_order(begBalance) {
     jq('#tableTaxOrder').find('tr').remove();
     var taxTotal  = 0;
     var taxOutput = new Array();
-    var rate_id = jq('#tax_rate_id').combogrid('getValue');
+    var rate_id = jq('#tax_rate_id').val();
     for (var idx=0; idx<bizDefaults.taxRates.$type.rows.length; idx++) {
         if (rate_id != bizDefaults.taxRates.$type.rows[idx].id) { continue; }
         if (typeof bizDefaults.taxRates.$type.rows[idx].auths != 'undefined') {
@@ -147,20 +147,8 @@ function totals_tax_order(begBalance) {
     var newBalance = begBalance + newTaxItem;
     if (typeof taxRunning !== 'undefined') { taxRunning += newTaxItem; }
     else { taxRunning = newTaxItem; }
-    jq('#totals_tax_order').val(formatCurrency(taxRunning));
+    bizTextSet('totals_tax_order', taxRunning, 'currency');
 	return newBalance;
-}
-jq('#tax_rate_id').combogrid({
-	data:       bizDefaults.taxRates.$type.rows,
-    value:      '".$data['fields']['main']['tax_rate_id']['attr']['value']."',
-	width:      120,
-	panelWidth: 210,
-	idField:   'id',
-	textField: 'text',
-	onSelect:  function (id, data) { totalUpdate(); },
-	columns:   [[{field:'id',hidden:true},
-				 {field:'text',    title:'".lang('journal_main_tax_rate_id')."',width:120},
-				 {field:'tax_rate',title:'".lang('amount')."',align:'center',width:70}]]
-});";
+}";
 	}
 }

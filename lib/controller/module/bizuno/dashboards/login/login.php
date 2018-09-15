@@ -15,15 +15,15 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-01
+ * @version    3.x Last Update: 2018-08-22
  * @filesource /lib/controller/module/bizuno/dashboards/login/login.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_LOGIN_VERSION','1.0');
+define('DASHBOARD_LOGIN_VERSION','2.0');
 
 class login
 {
@@ -43,42 +43,38 @@ class login
 
 	public function render()
     {
-        $portal = explode('.', $_SERVER['SERVER_ADDR']);
+        $portal= explode('.', $_SERVER['SERVER_ADDR']);
         $email = clean('bizuno_user_email', 'email', 'cookie');
         $focus = $email ? 'UserID' : 'UserPW';
-		$data = [
+		$data  = [
             'type'     => 'html',
-			'pageTitle'=> lang('login'),
-			'username' => ['label'=>lang('email'), 'attr'=>  ['type'=>'text','required'=>'1','value'=>$email,'size'=>'40'],
-				'classes' => ['easyui-validatebox']],
-			'password' => ['label'=>lang('password'), 'attr'=>  ['type'=>'password', 'required'=>'1','size'=>'40'],
-				'classes' => ['easyui-validatebox']],
-			'language' => ['label'=>lang('language'), 'values'=>viewLanguages(), 'attr'=>  ['type'=>'select']],
-			'email'=> ['label'=>lang('email'), 'attr'=>  ['type'=>'email','required'=>'0', 'validType'=>'email','size'=>'40'],
-				'classes' => ['easyui-validatebox']],
-			'image_title' => ['label'=>getModuleCache('bizuno', 'properties', 'title'),'attr'=>  ['type'=>'img', 'src'=>BIZUNO_LOGO, 'height'=>'50']],
-			'btnLogin' => ['attr'=>  ['type'=>'button','value'=>lang('login')],'styles'=>  ['cursor'=>'pointer'],
+			'title'=> lang('login'),
+			'username' => ['attr'=>['type'=>'email','value'=>$email]],
+			'password' => ['attr'=>['type'=>'password']],
+			'language' => ['label'=>lang('language'), 'values'=>viewLanguages(), 'attr'=>['type'=>'select']],
+			'email'    => ['label'=>lang('email'), 'attr'=>['type'=>'email','required'=>'0','validType'=>'email','size'=>'40']],
+			'image_title' => ['label'=>getModuleCache('bizuno', 'properties', 'title'),'attr'=>['type'=>'img', 'src'=>BIZUNO_LOGO, 'height'=>'50']],
+			'btnLogin' => ['attr'=>['type'=>'button','value'=>lang('login')],'styles'=>['cursor'=>'pointer'],
 				'events' => ['onClick'=> "if (jq('#userLoginForm').form('validate')) jq('#userLoginForm').submit();"]],
-			'btnLost' => ['attr'=>  ['type'=>'button','value'=>lang('password_lost')],'styles'=>  ['cursor'=>'pointer'],
+			'btnLost' => ['attr'=>['type'=>'button','value'=>lang('password_lost')],'styles'=>['cursor'=>'pointer'],
 				'events' => ['onClick'=>"jq('#lostPWForm').submit();"]],
-			'divs' => ['login'=>  ['order'=>50, 'src'=>BIZUNO_LIB."view/module/bizuno/login.php"]],
-            ];
+			'divs' => ['login'=>  ['order'=>50, 'src'=>BIZUNO_LIB."view/login.php"]],];
         $data['username']['attr']['value'] = clean('bizuno_user', 'text', 'cookie');
         $data['language']['attr']['value'] = clean('bizuno_lang', 'text', 'cookie');
 		$html = '<div><!-- login section -->
 	<div id="divLogin" style="text-align:center">
-		<form id="userLoginForm" action="'.BIZUNO_AJAX.'&p=bizuno/portal/login">
+		<form id="userLoginForm" action="'.BIZUNO_AJAX.'&p=bizuno/portal/login"><br />
 			<p>'.html5('UserID',  $data['username']).'</p>
 			<p>'.html5('UserPW',  $data['password']).'</p>
 			<p>'.html5('UserLang',$data['language']).'</p>
-			<div style="text-align:right">'.html5('btnLogin', $data['btnLogin']).'</div>
+			<div style="text-align:center;margin-top:30px">'.html5('btnLogin', $data['btnLogin']).'</div>
 			<div style="text-align:left"><a style="cursor:pointer" onClick="jq(\'#divLogin\').hide(\'slow\'); jq(\'#divLostPW\').show(\'slow\');">'.lang('password_lost').'</a></div>
 			<div style="text-align:right">('.$portal[3].')</div>
 		</form>
 	</div>
 	<div id="divLostPW" style="display:none;"><!-- Lost password section -->
 		<form id="lostPWForm" action="'.BIZUNO_AJAX.'&p=bizuno/portal/bizunoLostPW">
-			<div style="text-align:center">'.html5('email',  $data['email']).'</div>
+			<div style="text-align:center"><br />'.html5('email',  $data['email']).'</div>
 			<div style="text-align:right">' .html5('btnLost',$data['btnLost'])."</div>
 		</form>
 	</div>
@@ -92,7 +88,7 @@ jq('#lostPWForm').keypress(function(event){
 	var keycode = (event.keyCode ? event.keyCode : event.which);
 	if (keycode == '13') jq('#lostPWForm').submit();
 });
-jq('#$focus').focus();";
+bizFocus('$focus');";
         $html .= htmlJS($js);
 		return $html;
 	}

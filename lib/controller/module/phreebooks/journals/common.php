@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-14
+ * @version    3.x Last Update: 2018-07-20
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -931,7 +931,7 @@ class jCommon
      */
     protected function setCloseStatus($id, $closed=true)
     {
-		$dbData = ['closed'=>$closed?'1':'0', 'closed_date'=>$closed?$this->main['post_date']:'0000-00-00'];
+		$dbData = ['closed'=>$closed?'1':'0', 'closed_date'=>$closed?$this->main['post_date']:''];
 		dbWrite(BIZUNO_DB_PREFIX."journal_main", $dbData, 'update', "id=$id");
 		msgDebug("\n  Record ID: {$this->main['id']}".($closed ? " Closed Record ID: " : " Opened Record ID: ").$id);
 	}
@@ -973,52 +973,38 @@ class jCommon
      * @return array - datagrid structure
      */
 	protected function dgBanking($name, $journalID=20) {
-		return [
-            'id'   => $name,
-			'type' => 'edatagrid',
-			'attr' => [
-                'pageSize'     => getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-//				'idField'      => 'invoice_num', // if id field is not unique, breaks getChecked method
-				'rownumbers'   => true,
-				'checkOnSelect'=> false,
-				'selectOnCheck'=> false],
-			'events' => [
-                'data'         => 'datagridData',
-				'onLoadSuccess'=> "function(data){
-					for (var i=0; i<data.rows.length; i++) if (data.rows[i].checked) jq('#$name').datagrid('checkRow', i);
-					totalUpdate();
-				}",  
-				'onClickRow'  => "function(rowIndex) { curIndex = rowIndex; }",
-				'onBeginEdit' => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
-				'onCheck'     => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked: true} }); totalUpdate(); }",
-				'onCheckAll'  => "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('checkRow',i); }",
-				'onUncheck'   => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked:false} }); totalUpdate(); }",
-				'onUncheckAll'=> "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('uncheckRow',i); }",
-				'rowStyler'   => "function(idx, row) { if (row.waiting==1) { return {class:'journal-waiting'}; }}"],
+		return ['id'=>$name, 'type'=>'edatagrid',
+			'attr'   => ['rownumbers'=>true, 'checkOnSelect'=>false, 'selectOnCheck'=>false, 'remoteSort'=>false, 'multiSort'=>true],
+			'events' => ['data'=> 'datagridData',
+				'onLoadSuccess'=> "function(data) { for (var i=0; i<data.rows.length; i++) if (data.rows[i].checked) jq('#$name').datagrid('checkRow', i); totalUpdate(); }",  
+				'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
+				'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
+				'onCheck'      => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked: true} }); totalUpdate(); }",
+				'onCheckAll'   => "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('checkRow',i); }",
+				'onUncheck'    => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked:false} }); totalUpdate(); }",
+				'onUncheckAll' => "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('uncheckRow',i); }",
+				'rowStyler'    => "function(idx, row) { if (row.waiting==1) { return {class:'journal-waiting'}; }}"],
 			'columns'=> [
-                'id'         => ['order'=> 0, 'attr' =>['hidden'=>'true']],
-				'ref_id'     => ['order'=> 0, 'attr' =>['hidden'=>'true']],
-				'gl_account' => ['order'=> 0, 'attr' =>['hidden'=>'true']],
-				'item_ref_id'=> ['order'=> 0, 'attr' =>['hidden'=>'true']],
-				'invoice_num'=> ['order'=>10, 'label'=>pullTableLabel('journal_main', 'invoice_num', '12'),
-					'attr' => ['width'=>100, 'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
-				'post_date'  => ['order'=>20, 'label'=>pullTableLabel('journal_main', 'post_date', '12'),
-					'attr' => ['type'=>'date', 'width'=>100, 'resizable'=>true, 'align'=>'center']],
-				'date_1'     => ['order'=>30, 'label'=>pullTableLabel('journal_item', 'date_1', $journalID),
-					'attr' => ['type'=>'date','width'=>100, 'resizable'=>true, 'align'=>'center']],
-				'description'=> ['order'=>40, 'label'=>lang('notes'), 'attr'=>  ['width'=>350,'resizable'=>true,'editor'=>'text']],
-				'amount'     => ['order'=>50, 'label'=>lang('amount_due'),
-					'attr' =>  ['type'=>'currency', 'width'=> 100,'resizable'=>true, 'align'=>'right']],
-				'discount'   => ['order'=>60, 'label'=>lang('discount'), 'styles'=>  ['text-align'=>'right'],
-					'attr' => ['width'=>100, 'resizable'=>true, 'align'=>'right'],
-					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('disc'); } } }",
-					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'total'      => ['order'=>70, 'label'=>lang('total'), 'styles'=>  ['text-align'=>'right'],
-					'attr'  => ['width'=>100, 'resizable'=>true, 'align'=>'right'],
-					'events'=> ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('direct'); } } }",
-					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'pay' => ['order'=>90, 'attr'=>  ['checkbox'=>true]], // was 'attr'=>array() for paying bills but breaks customer receipts
-            ]];
+                'id'         => ['order'=> 0,'attr' =>['hidden'=>'true']],
+				'ref_id'     => ['order'=> 0,'attr' =>['hidden'=>'true']],
+				'gl_account' => ['order'=> 0,'attr' =>['hidden'=>'true']],
+				'item_ref_id'=> ['order'=> 0,'attr' =>['hidden'=>'true']],
+				'invoice_num'=> ['order'=>10,'label'=>pullTableLabel('journal_main', 'invoice_num', '12'),
+					'attr'  => ['sortable'=>true, 'resizable'=>true, 'width'=>100,  'align'=>'center']],
+				'post_date'  => ['order'=>20,'label'=>pullTableLabel('journal_main', 'post_date', '12'),
+					'attr'  => ['type'=>'date','sortable'=>true,'resizable'=>true,'width'=>100,'align'=>'center']],
+				'date_1'     => ['order'=>30,'label'=>pullTableLabel('journal_item', 'date_1', $journalID),
+					'attr'  => ['type'=>'date','sortable'=>true,'resizable'=>true,'width'=>100,'align'=>'center']],
+				'description'=> ['order'=>40,'label'=>lang('notes'), 'attr'=>['width'=>350,'resizable'=>true,'editor'=>'text']],
+				'amount'     => ['order'=>50,'label'=>lang('amount_due'),
+					'attr'  => ['type'=>'currency','width'=> 100,'resizable'=>true,'align'=>'right']],
+				'discount'   => ['order'=>60,'label'=>lang('discount'), 'styles'=>['text-align'=>'right'],
+					'attr'  => ['type'=>'currency','resizable'=>true,'width'=>100,  'align'=>'right'],'formatter'=>"function(value,row){ return formatCurrency(value); }",
+					'events'=> ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('disc'); } } }"]],
+				'total'      => ['order'=>70,'label'=>lang('total'), 'styles'=>['text-align'=>'right'],
+					'attr'  => ['type'=>'currency','resizable'=>true,'width'=>100,'align'=>'right'],'formatter'=>"function(value,row){ return formatCurrency(value); }",
+					'events'=> ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('direct'); } } }"]],
+				'pay'        => ['order'=>90,'attr'=>['checkbox'=>true]]]];
 	}
 
     /**
@@ -1028,22 +1014,13 @@ class jCommon
      */
     protected function dgBankingBulk($name, $journalID=20)
     {
-		return ['id' => $name,
-			'type'   => 'edatagrid',
-			'attr'   => [
-                'pageSize'     => getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'rownumbers'   => true,
-				'checkOnSelect'=> false,
-				'selectOnCheck'=> false,
-				'multiSort'    => true, // this is cool as it allows multiple columns to be sorted but may become confusing
-				'remoteSort'   => false],
-			'events' => [
-                'data'         => 'datagridData',
-				'onLoadSuccess'=> "function(data){
-					for (var i=0; i<data.rows.length; i++) if (data.rows[i].checked) jq('#$name').datagrid('checkRow', i);
-			        jq('#$name').datagrid('fitColumns');
-					totalUpdate();
-				}",
+		return ['id'=>$name, 'type'=>'edatagrid',
+			'attr'   => ['rownumbers'=>true, 'checkOnSelect'=>false, 'selectOnCheck'=>false, 'remoteSort'=>false, 'multiSort'=>true], // multiSort is cool as it allows multiple columns to be sorted but may become confusing
+			'events' => ['data'=>'datagridData',
+				'onLoadSuccess'=> "function(data) { for (var i=0; i<data.rows.length; i++) if (data.rows[i].checked) jq('#$name').datagrid('checkRow', i);
+    jq('#$name').datagrid('fitColumns');
+    totalUpdate();
+}",
 				'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
 				'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
 				'onCheck'      => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked: true} }); totalUpdate(); }",
@@ -1052,29 +1029,22 @@ class jCommon
 				'onUncheckAll' => "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('uncheckRow',i); }",
 				'rowStyler'    => "function(idx, row) { if (row.waiting==1) { return {class:'journal-waiting'}; }}"],
 			'columns'=> [
-                'id'         => ['order'=>0, 'attr' =>  ['hidden'=>'true']],
-				'item_ref_id'=> ['order'=>0, 'attr' =>  ['hidden'=>'true']],
-				'contact_id' => ['order'=>0, 'attr' =>  ['hidden'=>'true']],
-				'inv_date' => ['order'=>10, 'label'=>pullTableLabel('journal_main', 'post_date', '12'),
-					'attr' => ['type'=>'date', 'width'=>100, 'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
-				'primary_name' => ['order'=>20, 'label'=>pullTableLabel('journal_main', 'primary_name_b', '12'),
-					'attr' => ['width'=>220, 'sortable'=>true, 'resizable'=>true]],
-				'inv_num'=> ['order'=>30, 'label'=>pullTableLabel('journal_main', 'invoice_num', '12'),
-					'attr' => ['width'=>120, 'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
-				'amount' => ['order'=>40, 'label'=>lang('amount_due'),
-					'attr' =>  ['type'=>'currency', 'width'=>100,'resizable'=>true, 'align'=>'right']],
-				'description'=> ['order'=>50, 'label'=>lang('notes'), 'attr'=>  ['width'=>220,'resizable'=>true,'editor'=>'text']],
-				'date_1' => ['order'=>60, 'label'=>pullTableLabel('journal_item', 'date_1', $journalID),
-					'attr' => ['type'=>'date', 'width'=>90, 'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
-				'discount'   => ['order'=>70, 'label'=>lang('discount'), 'styles'=>['text-align'=>'right'],
-					'attr' => ['width'=>80, 'resizable'=>true, 'align'=>'right'],
-					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('disc'); } } }",
-					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'total'      => ['order'=>80, 'label'=>lang('total'), 'styles'=>  ['text-align'=>'right'],
-					'attr'  => ['width'=>80, 'resizable'=>true, 'align'=>'right'],
-					'events'=> ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('direct'); } } }",
-					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'pay' => ['order'=>90, 'attr'=>  ['checkbox'=>true]]]];
+                'id'          => ['order'=> 0,'attr' =>['hidden'=>'true']],
+				'item_ref_id' => ['order'=> 0,'attr' =>['hidden'=>'true']],
+				'contact_id'  => ['order'=> 0,'attr' =>['hidden'=>'true']],
+				'inv_date'    => ['order'=>10,'label'=>pullTableLabel('journal_main', 'post_date', '12'),'attr'=>['type'=>'date','width'=>100,'sortable'=>true,'resizable'=>true,'align'=>'center']],
+				'primary_name'=> ['order'=>20,'label'=>pullTableLabel('journal_main', 'primary_name_b', '12'),'attr'=>['width'=>220,'sortable'=>true,'resizable'=>true]],
+				'inv_num'     => ['order'=>30,'label'=>pullTableLabel('journal_main', 'invoice_num', '12'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true, 'align'=>'center']],
+				'amount'      => ['order'=>40,'label'=>lang('amount_due'),'attr'  =>  ['type'=>'currency', 'width'=>100,'resizable'=>true, 'align'=>'right']],
+				'description' => ['order'=>50,'label'=>lang('notes'), 'attr'=>  ['width'=>220,'resizable'=>true,'editor'=>'text']],
+				'date_1'      => ['order'=>60,'label'=>pullTableLabel('journal_item', 'date_1', $journalID),'attr'=>['type'=>'date','width'=>90,'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
+				'discount'    => ['order'=>70,'label'=>lang('discount'),'styles'=>['text-align'=>'right'],
+					'attr'  => ['type'=>'currency','width'=>80, 'resizable'=>true, 'align'=>'right'],'formatter'=>"function(value,row){ return formatCurrency(value); }",
+					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('disc'); } } }"]],
+				'total'       => ['order'=>80,'label'=>lang('total'),'styles'=>['text-align'=>'right'],
+					'attr'  => ['type'=>'currency','width'=>80, 'resizable'=>true, 'align'=>'right'],'formatter'=>"function(value,row){ return formatCurrency(value); }",
+					'events'=> ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('direct'); } } }"]],
+				'pay'         => ['order'=>90,'attr'=>['checkbox'=>true]]]];
 	}
 	
 	/**
@@ -1090,35 +1060,18 @@ class jCommon
 		$inv_title  = $type=='v' ? lang('cost'): lang('price');
 		$hideItemTax= true;
         foreach ($this->totals as $methID) { if ($methID == 'tax_item') { $hideItemTax = false; } }
-		$data = ['id'=> $name,
-			'type'   => 'edatagrid',
-			'attr'   => [
-                'toolbar'     => "#{$name}Toolbar",
-				'rownumbers'  => true,
-				'idField'     => 'id',
-				'singleSelect'=> true,
-				'fitColumns'  => true],
-			'events' => [
-                'data'         => "datagridData",
+		$data = ['id'=> $name, 'type'=>'edatagrid',
+			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true, 'idField'=>'id', 'singleSelect'=>true, 'fitColumns'=>true],
+			'events' => ['data'=> "datagridData",
 				'onLoadSuccess'=> "function(row) { totalUpdate(); }",
-				'onClickCell'  => "function(rowIndex) {
-					switch (icnAction) {
-						case 'trash':    jq('#$name').edatagrid('destroyRow', rowIndex); break;
-						case 'price':    inventoryGetPrice(rowIndex, '$type'); break;
-						case 'settings': inventoryProperties(rowIndex);        break;
-					}
-					icnAction = '';
-				}",
-//				'view'         => "detailview", //breaks edatagrid 'edit', may be a sequencing issue, otherwise reproduce on easyui website for them to look at
 				'onClickRow'   => "function(rowIndex, row) { curIndex = rowIndex; }",
-                'onBeforeEdit' => "function(rowIndex) {
-    var edtURL = jq(this).edatagrid('getColumnOption','sku');
+                'onBeforeEdit' => "function(rowIndex) { var edtURL = jq(this).edatagrid('getColumnOption','sku');
     edtURL.editor.options.url = '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&bID='+jq('#store_id').val();
 }",
 				'onBeginEdit'  => "function(rowIndex) { ordersEditing(rowIndex); }",
 				'onDestroy'    => "function(rowIndex) { totalUpdate(); curIndex = undefined; }",
 				'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
-			'source' => ['actions'=>['newItem'=>['order'=>10,'html'=>['icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]]],
+			'source' => ['actions'=>['newItem'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
 			'columns'=> [
                 'id'            => ['order'=>0, 'attr'=>['hidden'=>'true']],
 				'ref_id'        => ['order'=>0, 'attr'=>['hidden'=>'true']],
@@ -1132,18 +1085,17 @@ class jCommon
 				'trans_code'    => ['order'=>0, 'attr'=>['hidden'=>'true']],
 				'attach'        => ['order'=>0, 'attr'=>['hidden'=>'true', 'value'=>'0']],
 				'date_1'        => ['order'=>0, 'attr'=>['hidden'=>'true']],
-				'action'        => ['order'=>1, 'attr'=>['width'=>80], 'label'=>lang('action'),
-					'events'  => ['formatter'=>"function(value,row,index) { return {$name}Formatter(value,row,index); }"],
+				'action'        => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index) { return {$name}Formatter(value,row,index); }"],
 					'actions' => [
-                        'trash'   => ['icon'=>'trash',   'order'=>20,'size'=>'small','events'=>  ['onClick'=>"icnAction='trash';"],
-							'display'=>"typeof row.item_ref_id==='undefined' || row.item_ref_id=='0' || row.item_ref_id==''"],
-						'price'   => ['icon'=>'price',   'order'=>40,'size'=>'small','events'=>  ['onClick'=>"icnAction='price';"]],
-						'settings'=> ['icon'=>'settings','order'=>60,'size'=>'small','events'=>  ['onClick'=>"icnAction='settings';"]]]],
+                        'trash'   => ['order'=>20,'icon'=>'trash',   'events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"],
+							'display' => "typeof row.item_ref_id==='undefined' || row.item_ref_id=='0' || row.item_ref_id==''"],
+						'price'   => ['order'=>40,'icon'=>'price',   'events'=>['onClick'=>"var rowIndex=jq('#$name').datagrid('getRowIndex', jq('#$name').datagrid('getSelected')); inventoryGetPrice(rowIndex, '$type');"]],
+						'settings'=> ['order'=>60,'icon'=>'settings','events'=>['onClick'=>"var rowIndex=jq('#$name').datagrid('getRowIndex', jq('#$name').datagrid('getSelected')); inventoryProperties(rowIndex);"]]]],
 				'sku'=> ['order'=>30, 'label'=>pullTableLabel('journal_item', 'sku', $this->journalID),
 					'attr' => ['width'=>150, 'sortable'=>true, 'resizable'=>true, 'align'=>'center', 'value'=>''],
 					'events'=>  ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
 						width:150, panelWidth:550, delay:500, idField:'sku', textField:'sku', mode:'remote',
-                        onLoadSuccess: function () {
+                        onLoadSuccess: function () { jq.parser.parse(jq(this).datagrid('getPanel')); 
                             var skuEditor = jq('#dgJournalItem').datagrid('getEditor', {index:curIndex,field:'sku'});
                             var g = jq(skuEditor.target).combogrid('grid');
                             var r=g.datagrid('getData');
@@ -1161,19 +1113,15 @@ class jCommon
 							{field:'$inv_field', title:'$inv_title', width:90,align:'right'},
 							{field:'$gl_account', hidden:true}, {field:'item_weight', hidden:true}]]}}"]],
 				'description'  => ['order'=>40, 'label'=>lang('description'),'attr'=>['width'=>400,'editor'=>'text','resizable'=>true]],
-				'gl_account'   => ['order'=>50, 'label'=>pullTableLabel('journal_item', 'gl_account', $this->journalID),
-					'attr'     => ['width'=>100, 'resizable'=>true, 'align'=>'center'],
+				'gl_account'   => ['order'=>50, 'label'=>pullTableLabel('journal_item', 'gl_account', $this->journalID),'attr'=>['width'=>100,'resizable'=>true,'align'=>'center'],
 					'events'   => ['editor'=>dgHtmlGLAcctData()]],
-				'tax_rate_id'  => ['order'=>60, 'label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->type), 'hidden'=>$hideItemTax,
-					'attr'     => ['width'=>150, 'resizable'=>true, 'align'=>'center'],
+				'tax_rate_id'  => ['order'=>60, 'label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->type),'attr'=>['hidden'=>$hideItemTax,'width'=>150,'resizable'=>true,'align'=>'center'],
 					'events'   => ['editor'=>dgHtmlTaxData($name, 'tax_rate_id', $type, 'totalUpdate();'),
 					'formatter'=>"function(value,row){ return getTextValue(bizDefaults.taxRates.$type.rows, value); }"]],
-				'price'        => ['order'=>70, 'label'=>lang('price'), 'format'=>'currency',
-					'attr'     => ['width'=>80, 'resizable'=>true, 'align'=>'right'],
+				'price'        => ['order'=>70, 'label'=>lang('price'), 'format'=>'currency','attr'=>['width'=>80,'resizable'=>true,'align'=>'right'],
 					'events'   => ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('price'); } } }",
 					'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'total'        => ['order'=>80, 'label'=>lang('total'), 'format'=>'currency',
-					'attr'     => ['width'=>80, 'resizable'=>true, 'align'=>'right', 'value'=>'0'],
+				'total'        => ['order'=>80, 'label'=>lang('total'), 'format'=>'currency','attr'=>['width'=>80,'resizable'=>true,'align'=>'right','value'=>'0'],
 					'events'   => ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('total'); } } }",
 					'formatter'=>"function(value,row){ return formatCurrency(value); }"]]]];
 		switch ($this->journalID) {

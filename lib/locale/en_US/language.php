@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-09
+ * @version    3.x Last Update: 2018-09-11
  * @filesource /local/en_US/language.php
  */
 
@@ -99,7 +99,7 @@ $langCore = [
 	'bank_check' => 'Bank Checks',
 	'bank_deposit' => 'Deposit Slips',
     'bank_register_format' => 'Db/Cr By Journal',
-	'bill_to' => 'Bill To:',
+	'bill_to' => 'Bill To',
 	'both' => 'Both',
 	'browse' => 'Browse',
 	'browser' => 'Browser',
@@ -164,9 +164,9 @@ $langCore = [
 	'download' => 'Download',
 	'edit' => 'Edit',
 	'email' => 'Email',
-	'email_body' => 'Email Body',
+	'email_body' => 'Body',
 	'email_cc' => 'CC',
-	'email_subject' => 'Email Subject',
+	'email_subject' => 'Subject',
 	'encrypt_disabled' => 'Encryption Disabled',
 	'encrypt_enabled' => 'Encryption Enabled',
 	'end' => 'End',
@@ -223,6 +223,9 @@ $langCore = [
     'kilograms' => 'Kilograms',
 	'label' => 'Label',
 	'language' => 'Language',
+    'last_30_days' => 'Last 30 Days',
+    'last_60_days' => 'Last 60 Days',
+    'last_90_days' => 'Last 90 Days',
 	'last_update'=> 'Last Update',
 	'left' => 'Left',
 	'length' => 'Length',
@@ -286,7 +289,7 @@ $langCore = [
 	'payment_received' => 'Payment Received',
 	'payment_reference' => 'Payment Reference',
 	'password' => 'Password',
-	'password_lost' => 'Reset Password',
+	'password_lost' => 'Forgot Password?',
 	'password_new' => 'New Password',
 	'password_confirm' => 'Confirm Password',
 	'pdf' => 'PDF Format',
@@ -307,6 +310,7 @@ $langCore = [
 	'printed' => 'Printed',
 	'priority' => 'Priority',
 	'production' => 'Production',
+    'properties' => 'Properties',
 	'profile' => 'Profile',
 	'qty' => 'Qty',
     'qty_needed' => 'Qty Needed',
@@ -584,7 +588,7 @@ $langCore = [
 	'num_boxes' => 'Number of Boxes',
 	'residential_address' => 'Residential Address',
 	'ship_from' => 'Ship From:',
-	'ship_to' => 'Ship To:',
+	'ship_to' => 'Ship To',
 	'list_price' => 'List Price',
 	'rate_quote' => 'Rate Quote',
 	'get_rate_quotes' => 'Get Rate Quotes',

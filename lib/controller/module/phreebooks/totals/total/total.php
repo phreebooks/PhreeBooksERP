@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-14
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /controller/module/phreebooks/totals/total/total.php
  */
 
@@ -98,16 +98,12 @@ class total
 	public function render(&$output, $data=[])
     {
 	  	$this->fields = [
-            'totals_total_id'   => ['label'=>'','attr'=>  ['type'=>'hidden']],
-			'totals_total_desc' => ['label'=>'','attr'=>  ['type'=>'hidden']],
-			'totals_total_txid' => ['label'=>'','attr'=>  ['type'=>'hidden']],
-			'gl_acct_id' => ['label'=>lang('gl_account'), 'jsBody'=>htmlComboGL('gl_acct_id'),
-				'attr'  => ['type'=>'text', 'size'=>'5', 'value'=>$this->settings['gl_account']]],
-			'totals_total_opt' => ['icon'=>'settings', 'size'=>'small',
-				'events'=> ['onClick'=>"jq('#totals_total_div').toggle('slow');"]],
-			'total_amount' => ['label'=>lang('total'), 'format'=>'currency',
-				'attr' => ['size'=>'15', 'value'=>'0', 'style'=>'text-align:right', 'readonly'=>'readonly']],
-                ];
+            'totals_total_id'  => ['attr'=>['type'=>'hidden']],
+			'totals_total_desc'=> ['attr'=>['type'=>'hidden']],
+			'totals_total_txid'=> ['attr'=>['type'=>'hidden']],
+			'gl_acct_id'       => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
+			'totals_total_opt' => ['icon'=>'settings', 'size'=>'small','events'=>['onClick'=>"jq('#totals_total_div').toggle('slow');"]],
+			'total_amount'     => ['label'=>lang('total'),'attr'=>['type'=>'currency','size'=>'15','value'=>'0','readonly'=>'readonly']]];
 		if (isset($data['items'])) { foreach ($data['items'] as $row) { // fill in the data if available
 			if ($row['gl_type'] == $this->settings['gl_type']) {
 				$this->fields['totals_total_id']['attr']['value']  = isset($row['id']) ? $row['id'] : 0;
@@ -130,7 +126,7 @@ class total
 		$output['body'] .= "</div>\n";
         $output['jsHead'][] = "function totals_total(begBalance) {
     var newBalance = begBalance;
-    jq('#total_amount').val(formatCurrency(newBalance));
+    bizTextSet('total_amount', newBalance, 'currency');
     return newBalance;
 }";
 	}

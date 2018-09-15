@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-17
+ * @version    3.x Last Update: 2018-08-16
  * @filesource /lib/controller/module/inventory/prices/quantity.php
  */
 
@@ -54,15 +54,40 @@ class quantity extends inventoryPrices
 	 */
 	public function priceRender(&$layout=[], $settings=[])
     {
-        $layout['divs']['divPrices']= ['order'=>50,'src'=>BIZUNO_LIB."view/module/inventory/divQuantity.php"];
-        $layout['fields']['title']  = ['label'=>lang('title'),'attr'=>['value'=>$settings['title']]];
         $prices = isset($settings['attr']) ? $settings['attr'] : '';
         $layout['values']['prices'] = $this->getPrices($prices);
-        $layout['values']['pricesCode'] = $this->code;
-        $layout['lang']['title'] = $this->lang['title'];
-        $layout['datagrid']['dgPricesSet'] = $this->datagridQuantity('dgPricesSet');
+        $jsHead = "
+var dgPricesSetData = ".json_encode($layout['values']['prices']).";
+var qtySource = "      .json_encode(viewKeyDropdown($layout['values']['qtySource'])).";
+var qtyAdj    = "      .json_encode(viewKeyDropdown($layout['values']['qtyAdj'])).";
+var qtyRnd    = "      .json_encode(viewKeyDropdown($layout['values']['qtyRnd'])).";
+function preSubmitPrices() {
+	jq('#dgPricesSet').edatagrid('saveRow');
+	var items = jq('#dgPricesSet').datagrid('getData');
+	var serializedItems = JSON.stringify(items);
+	jq('#item$this->code').val(serializedItems);
+	return true;
+}";
+        $layout['divs']['divPrices'] = ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
+            'byCBody' => ['order'=>20,'type'=>'fields','label'=>$this->lang['title'],'fields'=>$this->getView($layout['fields'])],
+            'byCdg'   => ['order'=>50,'type'=>'datagrid','key'=>'dgPricesSet']]];
+        $layout['jsHead'][$this->code] = $jsHead;
+        $layout['datagrid']['dgPricesSet'] = $this->dgQuantity('dgPricesSet');
+		$layout['datagrid']['dgPricesSet']['columns']['price']['attr']['hidden']  = false;
+		$layout['datagrid']['dgPricesSet']['columns']['margin']['attr']['hidden'] = false;
 	}
 
+    private function getView($structure)
+    {
+        $defAttr= ['label'=>lang('default'),'attr'=>['type'=>'checkbox','value'=>1]];
+        if (!empty($structure['settings']['default'])) { $defAttr['attr']['checked'] = true; }
+        return [
+            'id'          .$this->code => $structure['id'], // hidden
+            'item'        .$this->code => ['attr'=>['type'=>'hidden']],
+            'title'       .$this->code => array_merge($structure['title'],['break'=>true]),
+            'default'     .$this->code => array_merge($defAttr,  ['break'=>true]),
+            'currency'    .$this->code => array_merge($structure['currency'],['break'=>true])];
+    }
 	/**
 	 * This method saves the form contents for quantity pricing into the database, it is called from method: inventoryPrices:save 
 	 * @param string $layout

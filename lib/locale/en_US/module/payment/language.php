@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-11-01
+ * @version    3.x Last Update: 2018-09-13
  * @filesource /locale/en_US/module/payment/language.php
  */
 
@@ -26,6 +26,7 @@ $lang = [
     'description' => 'The payment module is a wrapper for user configurable payment methods. Some methods are included with the core package and others are available for download from the PhreeSoft website. <b>NOTE: This is a core module and cannot be removed!</b>',
     'payment_settings_discount_gl' => 'Default GL Discount Account to use for this payment method.',
 	'payment_settings_deposit_prefix' => 'Default prefix to use for deposit slips.',
+    'stored' => 'Stored',
     // Settings
 	'set_gl_payment_c'  => 'Default GL account to use for payments received from customers. Typically a Cash type account.',
 	'set_gl_discount_c' => 'Default GL account to use for payment discounts from customers. Typically a Sales/Income type account.',

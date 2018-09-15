@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-06
+ * @version    3.x Last Update: 2018-06-06
  * @filesource lib/view/theme/default/icons-default.php
  */
 
@@ -48,6 +48,7 @@ $icons = [
     'debug'      => ['dir'=>'default','path'=>'utilities-system-monitor.png'],
     'delete'     => ['dir'=>'default','path'=>'edit-delete.png'],
     'design'     => ['dir'=>'default','path'=>'applications-accessories.png'],
+    'dashboard'  => ['dir'=>'default','path'=>'preferences-system-windows.png'],
     'dirNew'     => ['dir'=>'default','path'=>'folder-new.png'],
     'docNew'     => ['dir'=>'default','path'=>'document-new.png'],
     'download'   => ['dir'=>'default','path'=>'go-down.png'],
@@ -68,6 +69,7 @@ $icons = [
     'inventory'  => ['dir'=>'default','path'=>'preferences-desktop-theme.png'],
     'invoice'    => ['dir'=>'default','path'=>'applix.png'],
     'journal'    => ['dir'=>'default','path'=>'journal.png'],
+    'loading'    => ['dir'=>'default','path'=>'loading.gif'],
     'locked'     => ['dir'=>'default','path'=>'system-lock-screen.png'],
     'logout'     => ['dir'=>'default','path'=>'system-log-out.png'],
     'merge'      => ['dir'=>'default','path'=>'mail-reply-all.png'],
@@ -84,6 +86,7 @@ $icons = [
     'mimeZip'    => ['dir'=>'default','path'=>'package-x-generic.png'],
     'mimeXML'    => ['dir'=>'default','path'=>'text-x-script.png'],
     'message'    => ['dir'=>'default','path'=>'reddot.png'],
+    'more'       => ['dir'=>'default','path'=>'navigate-more.png'],
     'move'       => ['dir'=>'default','path'=>'view-fullscreen.png'],
     'new'        => ['dir'=>'default','path'=>'document-new.png'],
     'newFolder'  => ['dir'=>'default','path'=>'folder-new.png'],

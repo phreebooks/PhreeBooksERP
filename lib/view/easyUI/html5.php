@@ -1,5 +1,4 @@
 <?php
-
 /*
  * This class maps the structure to HTML syntax using the jQuery easyUI UI
  *
@@ -18,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-19
+ * @version    3.x Last Update: 2018-09-13
  * @filesource /view/easyUI/html5.php
  */
 
@@ -29,20 +28,21 @@ final class html5 {
     const htmlEditor = 'https://cdn.tinymce.com/4/tinymce.min.js';
     const bizunoHelp = 'https://www.bizuno.com?p=bizuno/portal/helpMain';
 
-    private $pageT = '50';  // page layout minimum pixel height
-    private $pageB = '35';
-    private $pageL = '175';
-    private $pageR = '175';
-    public $jsHead = [];
-    public $jsBody = [];
-    public $jsReady= [];
+    private $pageT  = '50';  // page layout minimum pixel height
+    private $pageB  = '35';
+    private $pageL  = '175';
+    private $pageR  = '175';
+    public $jsHead  = [];
+    public $jsBody  = [];
+    public $jsReady = [];
+    public $jsResize= [];
 
     function __construct() {
         
     }
 
     /**
-     * This function builds a div element based on a type and structure
+     * This function builds an array of div elements based on a type and structure
      * @param string $output - running output buffer
      * @param array $data - data structure to be processed (typically within the div)
      */
@@ -75,31 +75,39 @@ final class html5 {
                 $this->layoutAccordion($output, $prop);
                 break;
             case 'address':
-                $this->layoutAddress($output, $prop); break;
+                if (!empty($prop['label'])) { $output['body'] .= $this->layoutFieldset($prop); }
+                $this->layoutAddress($output, $prop);
+                if (!empty($prop['label'])) { $output['body'] .= '</fieldset>'; }
+                break;
+            case 'attach': $this->layoutAttach($output, $prop); break;
             case 'datagrid':
+                $output['body'] .= $this->htmlElOpen('', array_merge($prop, ['attr'=>['type'=>'div']]));
                 if (isset($prop['key'])) { $prop['el'] = $viewData['datagrid'][$prop['key']]; } // legacy to old style
                 $this->layoutDatagrid($output, $prop['el']);
+                $output['body'] .= "</div>";
                 break;
-            case 'divs': $this->buildDivs($output, $prop); break;
-            case 'fields':
-                if (!empty($prop['label'])) { $output['body'] .= $prop['label']."<br />"; }
-                sortOrder($prop);
-                foreach ($prop['fields'] as $key => $attr) { $output['body'] .= $this->render($key, $attr); }
+            case 'divs':   
+                if (!empty($prop['label'])) { $output['body'] .= $this->layoutFieldset($prop); }
+                $this->buildDivs($output, $prop);
+                if (!empty($prop['label'])) { $output['body'] .= '</fieldset>'; }
                 break;
-            case 'form': $output['body'] .= $this->render($prop['key'], $viewData['forms'][$prop['key']]); break;
-            case 'html': $output['body'] .= $prop['html']."\n"; break;
-            case 'menu': $this->menu($output, $prop); break;
+            case 'fields': $output['body'] .= $this->layoutFields($prop); break;
+            case 'form':   $output['body'] .= $this->render($prop['key'], $viewData['forms'][$prop['key']]); break;
+            case 'html':   $output['body'] .= $prop['html']."\n"; break;
+            case 'menu':   $this->menu($output, $prop); break;
+            case 'panel':  $this->layoutPanel($output, $prop); break;
+            case 'payment':$this->layoutPayment($output, $prop); break;
             case 'payments':
                 foreach ($viewData['payment_methods'] as $methID) {
                     require_once(BIZUNO_LIB."controller/module/payment/methods/$methID/$methID.php");
                     $totSet = getModuleCache('payment','methods',$methID,'settings');
-                    $fqcn = "\\bizuno\\$methID";
+                    $fqcn   = "\\bizuno\\$methID";
                     $totals = new $fqcn($totSet);
                     $totals->render($output, $viewData);
                 }
                 break;
             case 'table':
-                if (isset($prop['key'])) {  // legacy to old style
+                if (isset($prop['key'])) { // legacy to old style
                     $prop = array_merge($prop, $viewData['tables'][$prop['key']]);
                     $prop['attr']['id'] = $prop['key'];
                 }
@@ -118,13 +126,16 @@ final class html5 {
                 $this->layoutToolbar($output, $prop);
                 break;
             case 'totals':
+                if (!empty($prop['label'])) { $output['body'] .= $this->layoutFieldset($prop); }
                 foreach ($viewData['totals_methods'] as $methID) {
-                    require_once(BIZUNO_LIB."controller/module/phreebooks/totals/$methID/$methID.php");
+                    $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
+                    require_once("{$path}$methID.php");
                     $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
                     $fqcn = "\\bizuno\\$methID";
                     $totals = new $fqcn($totSet);
                     $totals->render($output, $viewData);
                 }
+                if (!empty($prop['label'])) { $output['body'] .= '</fieldset>'; }
                 break;
             case 'tree':
                 if (isset($prop['key'])) {  // legacy to old style
@@ -134,7 +145,6 @@ final class html5 {
                 break;
             default:
             case 'template': // set some variables if needed
-//                msgDebug("\ntemplate for buildDiv = ".print_r($prop, true));
                 if (!isset($prop['settings']) && isset($prop['attr'])) {
                     $prop['settings'] = $prop['attr'];
                 } // for legacy
@@ -170,10 +180,10 @@ final class html5 {
             case 'label':
             case 'p':
             case 'span':
-            case 'u': return $this->htmlElBoth($id, $prop);
+            case 'u':       return $this->htmlElBoth($id, $prop);
             case 'br':
             case 'hr':
-            case 'img': return $this->htmlElEmpty($id, $prop);
+            case 'img':     return $this->htmlElEmpty($id, $prop);
             case 'div':
             case 'form':
             case 'section':
@@ -183,40 +193,45 @@ final class html5 {
             case 'tr':
             case 'thead':
             case 'tbody':
-            case 'tfoot':
-                return $this->htmlElOpen($id, $prop);
-            case 'button': return $this->inputButton($id, $prop);
-//            case 'iframe':          return $this->layoutIframe($output, $id, $prop);
+            case 'tfoot':    return $this->htmlElOpen($id, $prop);
+            case 'button':   return $this->inputButton($id, $prop);
+//          case 'iframe':   return $this->layoutIframe($output, $id, $prop);
             case 'checkbox': return $this->inputCheckbox($id, $prop);
-            case 'color': return $this->inputColor($id, $prop);
+            case 'color':    return $this->inputColor($id, $prop);
+            case 'contact':  return $this->inputContact($id, $prop);
+            case 'country':  return $this->inputCountry($id, $prop);
             case 'currency': return $this->inputCurrency($id, $prop);
             case 'date':
             case 'datetime-local':
             case 'datetime': return $this->inputDate($id, $prop);
-            case 'email': return $this->inputEmail($id, $prop);
+            case 'email':    return $this->inputEmail($id, $prop);
             case 'decimal':
             case 'float':
-            case 'integer': return $this->inputNumber($id, $prop);
+            case 'number':   return $this->inputNumber($id, $prop);
             case 'file':
-            case 'hidden':
+            case 'hidden':   return $this->input($id, $prop);
             case 'input':
-            case 'month':
-            case 'number':
-            case 'password':
+            case 'linkimg': // used in custom fields contacts/inventory
             case 'phone':
             case 'tel':
             case 'text':
-            case 'time':
+            case 'time':     return $this->inputText($id, $prop);
+            case 'integer': 
+            case 'month':
             case 'week':
-            case 'year': return $this->input($id, $prop);
+            case 'year':     return $this->inputNumber($id, $prop, 0);
+            case 'inventory':return $this->inputInventory($id, $prop);
+            case 'password': return $this->inputPassword($id, $prop);
+            case 'ledger':   return $this->inputGL($id, $prop);
             case 'selNoYes': return $this->selNoYes($id, $prop);
-            case 'radio': return $this->inputRadio($id, $prop);
-            case 'raw': return $this->inputRaw($id, $prop);
-            case 'select': return $this->inputSelect($id, $prop);
+            case 'radio':    return $this->inputRadio($id, $prop);
+            case 'raw':      return $this->inputRaw($id, $prop);
+            case 'select':   return $this->inputSelect($id, $prop);
             case 'html':
             case 'htmlarea': // @todo - need to deprecate htmlarea, replace with either html or textarea
             case 'textarea': return $this->inputTextarea($id, $prop);
-            case 'table': return $this->layoutTable($id, $prop);
+            case 'table':    return $this->layoutTable($id, $prop);
+            case 'tax':      return $this->inputTax($id, $prop);
 
 
             case 'abbr': //Defines an abbreviation or an acronym
@@ -306,6 +321,12 @@ final class html5 {
 
     /*     * *************************** Elements ***************** */
 
+    /**
+     * Creates an full html element with separate opening and closing tags, i.e. <...> something </...>
+     * @param string $id - element id
+     * @param array $prop - element properties
+     * @return string - html element ready to send to browser
+     */
     private function htmlElBoth($id, $prop) {
         if (isset($prop['attr']['value'])) {
             $tmp = isset($prop['format']) ? viewFormat($prop['attr']['value'], $prop['format']) : $prop['attr']['value'];
@@ -320,10 +341,22 @@ final class html5 {
         return $output . (!empty($prop['break']) ? '<br />' : '');
     }
 
+    /**
+     * Creates an element that is self closing, i.e. <... />
+     * @param string $id - element id
+     * @param array $prop - element properties
+     * @return string - html element ready to send to browser
+     */
     public function htmlElEmpty($id, $prop) {
         return "<{$prop['attr']['type']}" . $this->addAttrs($prop) . " />";
     }
 
+    /**
+     * Builds a HTML open element, i.e no closing tag </...> 
+     * @param string $id - element id
+     * @param array $prop - element properties
+     * @return string - html element ready to send to browser
+     */
     private function htmlElOpen($id, $prop) {
         $this->addID($id, $prop);
         $type = $prop['attr']['type'];
@@ -380,9 +413,7 @@ final class html5 {
         }
     }
 
-    /*     * *************************** Lists ***************** */
-    /*     * *************************** Navigation ***************** */
-
+    /***************************** Navigation ******************/
     /**
      * This function takes the menu structure and builds the easyUI HTML markup
      * @param string $output - The running HTML output
@@ -392,18 +423,18 @@ final class html5 {
         if (empty($prop['data']['child'])) { return; }
         $prop['attr']['type'] = 'div';
         $prop['data']['attr']['type'] = 'div';
-//        $prop['classes'][] = 'menuHide';
-        if (empty($prop['size'])) { $prop['size'] = 'small'; }
         $orient    = in_array($prop['region'], ['east', 'left', 'right', 'west']) ? 'v' : 'h';
-        $hideLabel = !empty($prop['hideLabels']) ? true : false;
-        $hideBorder= !empty($prop['hideBorder']) ? true : false;
+        $hideLabel = !empty($prop['hideLabels']) ? $prop['hideLabels'] : false;
+        $hideBorder= !empty($prop['hideBorder']) ? $prop['hideBorder'] : false;
         if ($orient == 'v') { 
+            if (empty($prop['size'])) { $prop['size'] = 'small'; }
             $prop['classes'][] = 'easyui-menu';
-            $prop['attr']['data-options'] = 'inline:true';
-        } //" data-options="inline:true">'; }
+            $prop['options']['inline'] = 'true';
+        } else {
+            if (empty($prop['size'])) { $prop['size'] = 'large'; }            
+        }
         $output['body'] .= $this->htmlElOpen('', $prop)."\n";
         $output['body'] .= $this->menuChild($prop['data']['child'], $prop['size'], $orient, $hideLabel, $hideBorder);
-//        if ($orient == 'v') { $output['body'] .= "  </div>\n"; }
         $output['body'] .= "</div>\n";
     }
 
@@ -413,16 +444,16 @@ final class html5 {
      * @param string $struc - The menu structure
      * @return string - HTML formatted EasyUI menu (child) appended to parent menu $output
      */
-    public function menuChild($struc=[], $size='small', $orient='v', $hideLabel=false, $hideBorder=false) {
+    public function menuChild($struc=[], $size='small', $orient='v', $hideLabel=false) {
         $output = '';
         $subQueue = [];
+        if (empty($struc)) { return; }
         $structure = sortOrder($struc);
         foreach ($structure as $subid => $submenu) {
             $options = [];
-            if (!isset($submenu['hidden'])) { $submenu['hidden'] = false; }
-            if (!isset($submenu['security']) || isset($submenu['child'])) { $submenu['security'] = 1; }
-            if ($submenu['hidden'] || empty($submenu['security'])) { continue; }
-            if (empty($submenu['child']) && !empty($submenu['icon']) && $orient=='h' && ($hideLabel || !empty($submenu['hideLabel']))) { // just an icon
+            if (!isset($submenu['security'])|| !empty($submenu['child']))    { $submenu['security'] = 1; }
+            if (!empty($submenu['hidden'])  ||  empty($submenu['security'])) { continue; }
+            if ( empty($submenu['child'])   && !empty($submenu['icon']) && $orient=='h' && ($hideLabel || !empty($submenu['hideLabel']))) { // just an icon
                 $output .= $this->menuIcon($subid, $submenu);
                 continue;
             }
@@ -432,39 +463,32 @@ final class html5 {
             }
             if (empty($submenu['attr']['id'])) { $submenu['attr']['id'] = $subid; }
             if ($orient == 'h') {
-                if (empty($submenu['child'])) {
-                    $submenu['classes'][] = 'easyui-linkbutton';
-                } else {
-                    $submenu['classes'][] = 'easyui-splitbutton';
-                }
-                $options[] = "plain:false";
+                if (empty($submenu['child'])) { $submenu['classes'][] = 'easyui-linkbutton'; }
+                else                          { $submenu['classes'][] = 'easyui-splitbutton'; }
+                $options['plain'] = 'false';
             }
-            if (isset($submenu['popup'])) {
-                $submenu['events']['onClick'] = "winOpen('$subid','{$submenu['popup']}');";
-            }
-            if (isset($submenu['icon']) && $size == 'small') { $options[] = "iconCls:'icon-{$submenu['icon']}', size:'small'"; }
-            if (isset($submenu['icon']) && $size == 'large') { $options[] = "iconCls:'iconL-{$submenu['icon']}',size:'large'"; }
-            if ($orient == 'h' && !empty($submenu['child'])) { $options[] = "menu:'#sub_{$subid}'"; }
-            if (!empty($submenu['disabled'])) { $options[] = "disabled:true"; }
+            if (isset($submenu['popup'])) { $submenu['events']['onClick'] = "winOpen('$subid','{$submenu['popup']}');"; }
+            if     (isset($submenu['icon']) && $size == 'small') { $options['iconCls']="'icon-{$submenu['icon']}'"; $options['size']="'small'"; }
+            elseif (isset($submenu['icon']))                     { $options['iconCls']="'iconL-{$submenu['icon']}'";$options['size']="'large'"; }
+            if ($orient == 'h' && !empty($submenu['child'])) { $options['menu'] = "'#sub_{$subid}'"; }
+            if (!empty($submenu['disabled'])) { $options['disabled'] = 'true'; }
             $label = !empty($submenu['label']) ? $submenu['label'] : lang($subid);
             $submenu['attr']['title'] = !empty($submenu['tip']) ? $submenu['tip'] : $label;
-            if (sizeof($options)) { $submenu['attr']['data-options'] = implode(',', $options); }
+            $submenu['options'] = $options;
             if ($orient == 'h') {
                 if (isset($submenu['child'])) { $subQueue[] = ['id' => "sub_{$subid}", 'menu' => $submenu['child']]; }
                 $submenu['attr']['type'] = 'a';
-                $output .= "  " . $this->htmlElOpen($subid, $submenu) . ($hideLabel ? '' : $label) . "</a>\n";
+                $output .= "  ".$this->htmlElOpen($subid, $submenu) . ($hideLabel ? '' : $label) . "</a>\n";
             } else {
                 $submenu['attr']['type'] = 'div';
-                $output .= "  " . $this->htmlElOpen($subid, $submenu) . "<span>".($hideLabel ? '' : $label)."</span>"; // <div>
+                $output .= "  ".$this->htmlElOpen($subid, $submenu) . "<span>".($hideLabel ? '' : $label)."</span>"; // <div>
                 if (isset($submenu['child'])) { $output .= "\n<div>" . $this->menuChild($submenu['child'], 'small', 'v') . "</div>\n"; }
                 $output .= '  </div>' . "\n";
             }
         }
-        if ($orient == 'h') {
-            foreach ($subQueue as $child) { // process the submenu queue
+        if ($orient == 'h') { foreach ($subQueue as $child) { // process the submenu queue
                 $output .= '  <div id="' . $child['id'] . '">' . $this->menuChild($child['menu'], 'small', 'v') . "</div>\n";
-            }
-        }
+        } }
         return $output;
     }
 
@@ -475,7 +499,7 @@ final class html5 {
      * @return type
      */
     public function menuIcon($id, $prop) {
-        if (!isset($prop['size'])) { $prop['size'] = 'large'; } // default to large icons
+        if (empty($prop['size'])) { $prop['size'] = 'large'; } // default to large icons
         $prop['attr']['type'] = 'span';
         switch ($prop['size']) {
             case 'small': $prefix = "icon";  $size = '16px'; break;
@@ -485,7 +509,7 @@ final class html5 {
         }
         $prop['classes'][]          = "{$prefix}-{$prop['icon']}";
         $prop['styles']['border']   = '0';
-        $prop['styles']['display']  = 'inline-block;vertical-align:middle';
+        $prop['styles']['display']  = 'inline-block;vertical-align:middle'; // added float:left for mobile lists
         $prop['styles']['height']   = $size;
         $prop['styles']['min-width']= $size;
         $prop['styles']['cursor']   = 'pointer';
@@ -498,61 +522,248 @@ final class html5 {
         return $this->render($id, $prop);
     }
 
-    /***************************** Layout ******************/
-    public function layoutMobile() {
-        msgAdd('layoutMobile: This functionality is not available yet.');
-        // shrink menu to just icons, 2 or 3 elements, rest to More..., only display menu elements that are allowed
-        // remove footer
-        // set global screen size so div builder knows what to do
-        // allowed menus, customers, vendors, sales, CRM, purchases, cash receipts, bank register, inventory view, dashboards (which ones), profile, roles, users, extensions (???)
-        // not allowed: reports except email only, pay bills, pricing, general journal, settings, tools, 
-        // how to handle regions? standardize? menu bottom, quickBar rolled inot menu, ??
-        // all view divs need to be divisible by 3, 4 (for orders) to accordion style input
-        // toolbars need to be placed at bottom of form as it is a more sequential, autosave??
-        // hover pull down menus will need to be click operated instead, no more dashboards on menus
-        // sub menus will need to be a dashboard when menu is clicked to show then click to get to function
+    /***************************** Mobile *****************************/
+    /**
+     * Creates the body list if present
+     * @param array $theList - list of menu items to be displayed in the body of the screen
+     * @return string
+     */
+    private function mobileBodyList($theList=[])
+    {
+        if (empty($theList)) { return ''; }
+        $output = '<ul id="list" class="m-list">'."\n";
+        $items  = sortOrder($theList);
+        foreach ($items as $menuID => $item) {
+            $output .= $this->htmlElOpen('', ['events'=>!empty($item['events']) ? $item['events'] : [],'attr'=>['type'=>'li']]);
+            unset($item['events']);
+            $item['classes']['image'] = "list-image";
+            $output .= html5('', $item);
+            $output .= '<div class="list-header">'.$item['label'].'</div>';
+            if (!empty(getUserCache('menuBar')['child'][$menuID]['description'])) { $output .= '<div>'.getUserCache('menuBar')['child'][$menuID]['description'].'</div>'; }
+            $output .= "</li>\n";
+        }
+        return $output."</ul>\n";
     }
 
-    public function layoutTablet() {
-        msgAdd('layoutTablet: This functionality is not available yet.');
-        // will look a lot like mobile except 2 columns instead of 1, allow all features
+    /**
+     * Takes an array of icons and creates a tiled list of large icons, like mobile and tablet
+     * @param array $content - list of icons to build menu with
+     * @param string $location - [default: header] Placement of menu, choices are header or footer
+     * @return array - HTML for the tiled menu
+     */
+    public function mobileMenu($content=[], $location='header')
+    {
+        $hasDropMenu = false;
+        if (empty($content)) { return ''; }
+        $menuID = clean('menuID', ['format'=>'cmd', 'default'=>'home'], 'get');
+        $output = '<'.$location.'><div class="m-toolbar">'."\n";
+        if (!empty($content['title'])){ $output .= '<div class="m-title">'.$content['title'].'</div>'; }
+        if (!empty($content['left'])) {
+            $output .= '<div class="m-left">';
+            foreach($content['left'] as $choice) { 
+                $output .= $this->mobileMenuAdd($choice, $menuID);
+                if ($choice == 'more') { $hasDropMenu = true; }
+            }
+            $output .= '</div>';
+        }
+        if (!empty($content['right'])) {
+            $output .= '<div class="m-right">';
+            foreach($content['right'] as $choice) { 
+                $output .= $this->mobileMenuAdd($choice, $menuID);
+                if ($choice == 'more') { $hasDropMenu = true; }
+            }
+            $output .= "</div>\n";            
+        }
+        $output .= '</div></'.$location.'>'."\n";
+        if ($hasDropMenu) { $output .= $this->mobileMenuChild('more'.$menuID, $this->mobileMenuMore()); }
+        return $output;
+    }
+
+    /**
+     * Creates the HTML element for the menu at the specified position
+     * @param string $choice - determines the type of menu item to display
+     * @param string $menuID - jQuery id for access
+     * @return string - HTML element to be placed in the menu
+     */
+    private function mobileMenuAdd($choice='home', $menuID='')
+    {
+        switch ($choice) {
+            case 'add':   return html5('', ['order'=>10,'icon'=>'add','options'=>['menuAlign'=>"'right'"],
+                'classes'=>['easyui-linkbutton'],'events'=>['onClick'=>"hrefClick('".BIZUNO_HOME."&p=bizuno/dashboard/manager&menuID=$menuID');"]]);
+            case 'back':  return html5('', ['order'=>10,'icon'=>'back','options'=>['menuAlign'=>"'left'"],
+                'classes'=>['easyui-linkbutton'],'events'=>['onClick'=>"jq.mobile.back();"]]);
+            case 'close': return html5('', ['order'=>10,'icon'=>'close','options'=>['menuAlign'=>"'left'"],
+                'classes'=>['easyui-linkbutton'],'events'=>['onClick'=>"jq.mobile.back();"]]);
+            case 'home':  return html5('', ['order'=>10,'label'=>lang('home'),'icon'=>'home','events'=>['onClick'=>"hrefClick('');"]]);
+            case 'more':  return html5('', ['order'=>10,'icon'=>'more','options'=>['hasDownArrow'=>'false','menu'=>"'#more$menuID'",'menuAlign'=>"'right'"],
+                'classes'=>['easyui-menubutton']]);
+        }
+    }
+    
+    /**
+     * This function takes a menu child structure and builds the easyUI HTML markup, it is recursive for multi-level menus
+     * @param string $id - root ID for the parent element
+     * @param string $props - The menu structure
+     * @return string - HTML formatted EasyUI menu (child) appended to parent menu $output
+     */
+    public function mobileMenuChild($id, $props) {
+        $output = '<div id="'.$id.'" class="easyui-menu" style="width:150px;">';
+        if (empty($props)) { return; }
+        $structure = sortOrder($props);
+        foreach ($structure as $subid => $submenu) {
+            if (!isset($submenu['hidden']))    { $submenu['hidden'] = false; }
+            if (!isset($submenu['security']) || isset($submenu['child'])) { $submenu['security'] = 1; }
+            if ($submenu['hidden'] || empty($submenu['security'])) { continue; }
+            if ( empty($submenu['attr']['id'])){ $submenu['attr']['id'] = $subid; }
+            if ( isset($submenu['popup']))     { $submenu['events']['onClick'] = "winOpen('$subid','{$submenu['popup']}');"; }
+            $options = [];
+            if ( isset($submenu['icon']))      { $options['iconCls'] = "'icon-{$submenu['icon']}'"; $options['size'] = "'small'"; }
+            if (!empty($submenu['disabled']))  { $options['disabled']= 'true'; }
+            $submenu['options'] = $options;
+            $submenu['attr']['type'] = 'div';
+            $label = !empty($submenu['label']) ? $submenu['label'] : lang($subid);
+            $output .= $this->htmlElOpen($subid, $submenu) . $label . "</div>\n";
+        }
+        $output .= "</div>\n";
+        return $output;
+    }
+
+    /**
+     * builds the mobile menu for the 'more' icon with links to the major menus and settings
+     * @param type $output
+     * @param type $data
+     */
+    private function mobileMenuMore()
+    {
+        $main = getUserCache('menuBar');
+        if (empty($main['child'])) { return; }
+        foreach ($main['child'] as $menuID => $menu) {
+            unset($menu['child']);
+            $menu['events'] = ['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=$menuID');"];
+            $output[$menuID] = $menu;
+        }
+        $output['settings']= ['order'=>90,'label'=>lang('bizuno_company'),'icon'=>'settings','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=settings');"]];
+        $output['help']    = ['order'=>98,'label'=>lang('help'),  'icon'=>'help'];
+        $output['logout']  = ['order'=>99,'label'=>lang('logout'),'icon'=>'logout','events'=>['onClick'=>"hrefClick('bizuno/portal/logout');"]];
+        return $output;
+    }
+
+    /**
+     * Determines the type of page to render to build the correct menu
+     * @param type $data
+     * @return string $type - Choices are home, menu, dash, or target
+     */
+    private function mobileMenuType()
+    {
+        if (!getUserCache('profile', 'admin_id', false, 0)) { return 'portal'; } // not logged in
+        $path = clean('p', 'filename', 'get');
+        if (empty($path) || in_array($path, ['bizuno/main/bizunoHome'])) {
+            $menuID = clean('menuID', 'cmd', 'get');
+            return !empty($menuID) ? 'menu' : 'home';
+        }
+        if (empty($path) || in_array($path, ['bizuno/main/dashboard'])) { return 'dash'; }
+        return 'target';
+    }
+    
+    /***************************** Layout ******************/
+    public function layoutMobile(&$output, $data) {
+        $output['head']['meta'][]= ['order'=>70,'html'=>'<meta name="mobile-web-app-capable" content="yes" />'];
+        $output['head']['css'][] = ['order'=>20,'html'=>'<link type="text/css" rel="stylesheet" href="'.BIZUNO_URL.'view/easyUI/jquery-easyui/themes/mobile.css" />'];
+        $output['head']['js'][]  = ['order'=>20,'html'=>'<script type="text/javascript" src="'.BIZUNO_URL.'view/easyUI/jquery-easyui/jquery.easyui.mobile.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $output['jsResize'][]    = "jq('#navMobile').navpanel('resize', windowWidth);";
+        if (empty($data['divs'])) { return msgAdd('No divs were found, the page does not contain any content!'); }
+
+        $output['body'] .= '<div id="navMobile" class="easyui-navpanel">'."\n";
+        $menuID = clean('menuID', ['format'=>'cmd', 'default'=>'home'], 'get');
+        $theList= $footer = $header = [];
+        $title  = !empty($data['title']) ? $data['title'] : 'No Title';
+        switch($this->mobileMenuType()) {
+            case 'home': // Home screen
+                $header = ['title'=>$title,'left'=>[],'right'=>[]];
+                $theList= $this->mobileMenuMore();
+                $theList['dashboard'] = ['order'=>1,'label'=>lang('dashboard'),'icon'=>'dashboard','events'=>['onClick'=>"hrefClick('bizuno/main/dashboard');"]];
+                break;
+            case 'menu': // Menu screen for main menu or My Business
+                $title  = lang($menuID);
+                $header = ['title'=>$title,'left'=>['home'],'right'=>['more']];
+                if ($menuID=='settings') {
+                    $theList= getUserCache('quickBar')['child']['home']['child'];
+                    unset($theList['logout']);
+                } else {
+                    $theList= getUserCache('menuBar')['child'][$menuID]['child'];
+                    $theList['dashboard'] = ['order'=>1,'label'=>lang('dashboard'),'icon'=>'dashboard','events'=>['onClick'=>"hrefClick('bizuno/main/dashboard&menuID=$menuID');"]];
+                }
+                break;
+            case 'dash': // Dashboard manager screen
+                $title  = in_array($menuID, ['settings','home']) ? lang('bizuno_company') : getUserCache('menuBar')['child'][$menuID]['label'];
+                $header = ['title'=>$title,'left'=>['back'],'right'=>['add']];
+                break;
+            case 'target':
+                $header = ['title'=>$title,'left'=>['back'],'right'=>['more']];
+                break;
+            case 'portal':
+                $header = ['title'=>'Welcome to Bizuno','left'=>[],'right'=>[]];
+        }
+        $output['body'] .= $this->mobileMenu($header, 'header');
+        $output['body'] .= $this->mobileMenu($footer, 'footer');
+        if (!empty($theList)) { $output['body'] .= $this->mobileBodyList($theList); }
+//      $output['body'] .= "</div>\n"; // THIS NEEDS TO BE ADDED AT THE END OF THE HTML TO KEEP WITHIN THE CONFINES OF THE MOBILE DEVICE
+        // remove standard header and footer content
+        unset($data['divs']['qlinks']);
+        unset($data['divs']['menu']);
+        unset($data['divs']['footer']);
+        unset($data['divs']['imgHome']);
+        // form toolbars need to be placed at bottom of form as it is a more sequential, autosave??
+        // hover pull down menus will need to be click operated instead, no more dashboards on menus
+        // sub menus will need to be a dashboard when menu is clicked to show then click to get to function
+        $data['divs'] = sortOrder($data['divs']);
+        foreach ($data['divs'] as $props) { $this->buildDiv($output, $props); }
+        $output['body'] .= '<iframe id="attachIFrame" src="" style="display:none;visibility:hidden;"></iframe>'."\n"; // For file downloads
+        $output['body'] .= '<div class="modal"></div><div id="divChart"></div>'."\n";
+    }
+
+    /**
+     * Tablet layout is the same as desktop except if dashboard only 2 columns are shown
+     */
+    public function layoutTablet(&$output, $data) {
+        return $this->layoutMobile($output, $data);
     }
 
     public function layoutDesktop(&$output, $data) {
-//        $output['body'] .= '<body class="easyui-layout">' . "\n";
         if (empty($data['divs'])) { return msgAdd('No divs were found, the page does not contain any content!'); }
+//        $output['jsResize'][] = "jq(body).layout('resize');"; // in WordPress version it's a div
         $data['divs'] = sortOrder($data['divs']);
-        // now separate by region to take advantage of layout
-        $regions = [];
-        $dim = [];
+        $regions = $dim = [];
         foreach ($data['divs'] as $id => $settings) {
             $curRgn = isset($settings['region']) ? $settings['region'] : 'center'; // default to center region
             $region = str_replace(["top", "bottom", "right", "left"], ["north", "south", "east", "west"], $curRgn); // map to codex
             $regions[$region][$id] = $settings;
-            $dim[$region]['height'] = isset($settings['height']) ? $settings['height'] : false;
-            $dim[$region]['width'] = isset($settings['width']) ? $settings['width'] : false;
+            if (!isset($dim[$region]['height'])){ $dim[$region]['height'] = 32; }
+            if (!isset($dim[$region]['width'])) { $dim[$region]['width']  = 32; }
+            if (!empty($settings['height']))    { $dim[$region]['height'] = max($dim[$region]['height'],$settings['height']); }
+            if (!empty($settings['width']))     { $dim[$region]['width']  = max($dim[$region]['width'], $settings['width']); }
         }
         $compass = ['north', 'west', 'center', 'east', 'south'];
         foreach ($compass as $region) {
             if (empty($dim[$region])) { continue; }
             switch ($region) {
                 case 'north': $divID = 'bodyNorth';
-                    $opts = "region:'north',border:false,style:{borderWidth:0},minHeight:" . ($dim[$region]['height'] ? $dim[$region]['height'] : $this->pageT);
+                    $opts = "region:'north',border:false,style:{borderWidth:0},minHeight:".max($dim[$region]['height'],$this->pageT);
                     break;
                 case 'south': $divID = 'bodySouth';
-                    $opts = "region:'south',border:false,style:{borderWidth:0},minHeight:" . ($dim[$region]['height'] ? $dim[$region]['height'] : $this->pageB);
+                    $opts = "region:'south',border:false,style:{borderWidth:0},minHeight:".max($dim[$region]['height'],$this->pageB);
                     break;
                 case 'west': $divID = 'bodyWest';
-                    $opts = "region:'west',border:false,style:{borderWidth:0},width:" . ($dim[$region]['width'] ? $dim[$region]['width'] : $this->pageL);
+                    $opts = "region:'west',border:false,style:{borderWidth:0},width:"     .max($dim[$region]['width'], $this->pageL);
                     break;
                 case 'east': $divID = 'bodyEast';
-                    $opts = "region:'east',border:false,style:{borderWidth:0},width:" . ($dim[$region]['width'] ? $dim[$region]['width'] : $this->pageR);
+                    $opts = "region:'east',border:false,style:{borderWidth:0},width:"     .max($dim[$region]['width'], $this->pageR);
                     break;
                 default:
                 case 'center':$divID = 'bodyCenter';
                     $opts = "region:'center',border:false,style:{borderWidth:0},minHeight:10,minWidth:200";
             }
-            $output['body'] .= '<div id="' . $divID . '" data-options="' . $opts . ',split:true">' . "\n";
+            $output['body'] .= '<div id="'.$divID.'" data-options="'.$opts.',split:true">' . "\n";
             foreach ($regions[$region] as $settings) {
                 $this->buildDiv($output, $settings);
             }
@@ -571,27 +782,24 @@ final class html5 {
      */
     public function layoutAccordion(&$output, $prop) {
         $prop['divs'] = sortOrder($prop['divs']);
-        $output['body'] .= '  <div id="' . $prop['id'] . '" class="easyui-accordion" style="width:auto;height:auto;"';
-        if (isset($prop['attr'])) {
+        $output['jsResize'][] = "jq('#{$prop['id']}').accordion('resize',{width:jq(this).parent().width()});";
+        $output['body'] .= '  <div id="'.$prop['id'].'" class="easyui-accordion" style="width:auto;height:auto;"';
+        if (isset($prop['options'])) {
             $temp = [];
-            foreach ($prop['attr'] as $key => $value) {
-                $temp[] = "$key:$value";
-            }
-            $output['body'] .= ' data-options="' . implode(',', $temp) . '"';
+            foreach ($prop['options'] as $key => $value) { $temp[] = "$key:$value"; }
+            $output['body'] .= ' data-options="'.implode(',', $temp).'"';
         }
         $output['body'] .= "><!-- Begin accordion group {$prop['id']} -->\n";
         foreach ($prop['divs'] as $accID => $accContents) {
             $output['body'] .= '     <div id="' . $accID . '" title="' . $accContents['label'] . '" style="padding:10px;"';
-            if (isset($accContents['attr'])) {
+            if (isset($accContents['options'])) {
                 $temp = [];
-                foreach ($accContents['attr'] as $key => $value) {
-                    $temp[] = "$key:" . encodeType($value);
-                }
-                $output['body'] .= ' data-options="' . implode(',', $temp) . '"';
+                foreach ($accContents['options'] as $key => $value) { $temp[] = "$key:$value"; } // was "$key:".encodeType($value);
+                $output['body'] .= ' data-options="'.implode(',', $temp).'"';
             }
-            $output['body'] .= "><!-- BOF accordion " . $accContents['label'] . " -->\n";
+            $output['body'] .= "><!-- BOF accordion ".$accContents['label']." -->\n";
             $this->buildDiv($output, $accContents);
-            $output['body'] .= "     </div> <!-- EOF accordion " . $accContents['label'] . " -->\n";
+            $output['body'] .= "     </div><!-- EOF accordion ".$accContents['label']." -->\n";
         }
         $output['body'] .= "  </div>\n";
         if (isset($prop['select'])) {
@@ -605,11 +813,11 @@ final class html5 {
      * @param type $props
      */
     public function layoutAddress(&$output, $props) {
-        $defaults = ['type'=>defined('CONTACT_TYPE') ? constant('CONTACT_TYPE') : 'c',
-            'format'=>'short','suffix'  =>'',   'search'=>false,  'props'=>true,'clear'=>true, 'copy'=>false,
-            'update'=>false,  'validate'=>false,'required'=>false,'store'=>true,'drop' =>false,'fill'=>'none','notes'=>false];
+        $defaults  = ['type'=>'c','format'=>'short','suffix' =>'','search'=>false,'props'=>true,'clear'=>true,'copy'=>false,
+            'update'=>false,'validate'=>false,'required'=>false,'store'=>true,'drop' =>false,'fill'=>'none','notes'=>false];
         $attr      = array_replace($defaults, $props['settings']);
         $structure = $props['content'];
+        $structure['country']['attr']['type'] = 'country'; // triggers the combogrid
         if ($attr['format'] != 'long') { unset($structure['country']['label']); }
         $structure['email']['attr']['size'] = 32; // keep this from overlapping with other divs
         if (!empty($attr['required'])) { foreach (array_keys($structure) as $field) {
@@ -617,24 +825,9 @@ final class html5 {
         } }
         if (!$attr['search']) { $structure['contactSel'] = ['attr'=>['type'=>'hidden']]; }
         else {
-            $structure['contactSel'] = ['classes'=>['easyui-combogrid'],'attr'=>['data-options'=>"
-                width:130, panelWidth:750, delay:900, idField:'id', textField:'primary_name', mode: 'remote',iconCls: 'icon-search', hasDownArrow:false,
-                url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type=".($attr['drop']?'c':$attr['type'])."&store=".($attr['store']?'1':'0')."',
-                onBeforeLoad:function (param) { var newValue = jq('#contactSel{$attr['suffix']}').combogrid('getValue'); if (newValue.length < 3) return false; },
-                selectOnNavigation:false,
-                onClickRow:  function (idx, row){ contactsDetail(row.id, '{$attr['suffix']}', '{$attr['fill']}'); },
-                columns: [[{field:'id', hidden:true},
-                    {field:'short_name',  title:'".jsLang('contacts_short_name')."', width:100},
-                    {field:'type',        hidden:".(strlen($attr['type'])>1?'false':'true').",title:'".jsLang('contacts_type')."', width:100},
-                    {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
-                    {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
-                    {field:'city',        title:'".jsLang('address_book_city')."', width:100},
-                    {field:'state',       title:'".jsLang('address_book_state')."', width: 50},
-                    {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
-                    {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]]"]];
-        }
+            $attr['callback'] = 'contactsDetail';
+            $structure['contactSel'] = ['defaults'=>$attr,'attr'=>['type'=>'contact']]; }
         // build pull down selection
-        if (!empty($props['label'])) { $output['body'] .= "<label>".$props['label']."</label><br />\n"; }
         if ($attr['clear']) { $output['body'] .= ' '.html5('', ['icon'=>'clear','size'=>'small','events'=>['onClick'=>"addressClear('{$attr['suffix']}')"]])."\n"; }
         if ($attr['validate'] && getModuleCache('extShipping', 'properties', 'status')) {
             $output['body'] .= ' '.html5('', ['icon'=>'truck','size'=>'small','label'=>lang('validate_address'),'events'=>['onClick'=>"shippingValidate('{$attr['suffix']}');"]])."\n";
@@ -653,39 +846,42 @@ final class html5 {
             'events' => ['onClick'=>"windowEdit('contacts/main/properties&rID='+jq('#contact_id{$attr['suffix']}').val(), 'winContactProps', '".jsLang('details')."', 1000, 600);"]]);
         }
         $output['body'] .= '</span></div>';
-
         // Address select (hidden by default)
         $output['body'] .= '  <div id="addressDiv'.$attr['suffix'].'" style="display:none">'.html5('addressSel'.$attr['suffix'], ['attr'=>['type'=>'text']])."</div>\n";
-        $output['jsBody']['addrCombo'.$attr['suffix']] = "var addressVals{$attr['suffix']} = ".(isset($data['address'][$attr['suffix']]) ? $data['address'][$attr['suffix']] : "[]").";";
-        $output['jsReady']['addrCombo'.$attr['suffix']] = "jq('#addressSel{$attr['suffix']}').combogrid({
-            width:     150,
-            panelWidth:750,
-            data:      addressVals{$attr['suffix']},
-            idField:   'id',
-            textField: 'primary_name',
-            onSelect:  function (id, data){ addressFill(data, '{$attr['suffix']}'); },
-            columns:   [[
-                {field:'address_id', hidden:true},
-                {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
-                {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
-                {field:'city',        title:'".jsLang('address_book_city')."', width:100},
-                {field:'state',       title:'".jsLang('address_book_state')."', width: 50},
-                {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
-                {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]]
-        });";
-        // show the address drop down if values are present
+        $output['jsBody']['addrCombo'.$attr['suffix']] = "var addressVals{$attr['suffix']} = ".(isset($data['address'][$attr['suffix']]) ? $data['address'][$attr['suffix']] : "[]").";
+jq('#addressSel{$attr['suffix']}').combogrid({
+    width:     150,
+    panelWidth:750,
+    data:      addressVals{$attr['suffix']},
+    idField:   'id',
+    textField: 'primary_name',
+    onSelect:  function (id, data){ addressFill(data, '{$attr['suffix']}'); },
+    columns:   [[
+        {field:'address_id', hidden:true},
+        {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
+        {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
+        {field:'city',        title:'".jsLang('address_book_city')."', width:100},
+        {field:'state',       title:'".jsLang('address_book_state')."', width: 50},
+        {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
+        {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]]
+});";
+// show the address drop down if values are present
         if (isset($data['address'][$attr['suffix']])) { $output['jsReady'][] = "jq('#addressDiv{$attr['suffix']}').show();"; }
         // Options Bar
-        if ($attr['update']) { $output['body'] .= html5('AddUpdate'.$attr['suffix'], ['label'=>lang('add_update'),'attr'=>['type'=>'checkbox']])."<br />\n"; }
+        if ($attr['update']) { $output['body'] .= html5('AddUpdate'.$attr['suffix'], ['label'=>lang('add_update'),'attr'=>['type'=>'checkbox']]); }
         if ($attr['drop']) {
             $drop_attr = ['type'=>'checkbox'];
             if (isset($structure['drop_ship']['attr']['checked'])) { $drop_attr['checked'] = 'checked'; }
-            $output['body'] .= html5('drop_ship'.$attr['suffix'], ['label'=>lang('drop_ship'), 'attr'=>$drop_attr,
+            $output['body'] .= "<br />".html5('drop_ship'.$attr['suffix'], ['label'=>lang('drop_ship'), 'attr'=>$drop_attr,
                 'events' => ['onClick'=>"jq('#contactDiv{$attr['suffix']}').toggle();"]])."\n";
         }
-        $output['body'] .= "<br />\n";
+        $output['body'] .= "<br />";
+        if ($attr['format'] == 'short') { foreach ($structure as $key => $value) {
+            if (!empty($value['label'])) { $structure[$key]['options']['prompt'] = "'".jsLang($value['label'])."'"; }
+            unset($structure[$key]['label']);
+        } }
         // Address fields
-        $output['body'] .= '  <div class="inner-labels">'."\n";
+        $output['body'] .= '<div>'."\n";
         if (isset($structure['contact_id'])) { $output['body'] .= html5('contact_id'.$attr['suffix'], $structure['contact_id'])."\n"; }
         $output['body'] .= html5('address_id'.$attr['suffix'],  $structure['address_id'])."\n";
         $output['body'] .= html5('primary_name'.$attr['suffix'],$structure['primary_name'])."<br />\n";
@@ -695,16 +891,43 @@ final class html5 {
         $output['body'] .= html5('city'.$attr['suffix'],        $structure['city'])."<br />\n";
         $output['body'] .= html5('state'.$attr['suffix'],       $structure['state'])."<br />\n";
         $output['body'] .= html5('postal_code'.$attr['suffix'], $structure['postal_code'])."<br />\n";
-        $output['body'] .= htmlComboCountry('country'.$attr['suffix'],$structure['country']['attr']['value'])."<br />\n";
+        $output['body'] .= html5('country'.$attr['suffix'],     $structure['country'])."<br />\n";
         $output['body'] .= html5('telephone1'.$attr['suffix'],  $structure['telephone1'])."<br />\n";
-        if (!empty($structure['telephone2'])) { $output['body'] .= html5('telephone2'.$attr['suffix'],  $structure['telephone2'])."<br />\n"; }
-        if (!empty($structure['telephone3'])) { $output['body'] .= html5('telephone3'.$attr['suffix'],  $structure['telephone3'])."<br />\n"; }
-        if (!empty($structure['telephone4'])) { $output['body'] .= html5('telephone4'.$attr['suffix'],  $structure['telephone4'])."<br />\n"; }
+        if (!empty($structure['telephone2'])) { $output['body'] .= html5('telephone2'.$attr['suffix'],$structure['telephone2'])."<br />\n"; }
+        if (!empty($structure['telephone3'])) { $output['body'] .= html5('telephone3'.$attr['suffix'],$structure['telephone3'])."<br />\n"; }
+        if (!empty($structure['telephone4'])) { $output['body'] .= html5('telephone4'.$attr['suffix'],$structure['telephone4'])."<br />\n"; }
         $output['body'] .= html5('email'.$attr['suffix'],       $structure['email'])."<br />\n";
-        if (!empty($structure['website'])) { $output['body'] .= html5('website'.$attr['suffix'],  $structure['website'])."<br />\n"; }
+        if (!empty($structure['website']))    { $output['body'] .= html5('website'   .$attr['suffix'],$structure['website'])."<br />\n"; }
         if ($attr['notes']) { $output['body'] .= html5('email'.$attr['suffix'],$structure['email']); }
         $output['body'] .= "  </div>\n";
-        $output['jsReady']['addrDiv'.$attr['suffix']] = "setInnerLabels(addressFields, '".$attr['suffix']."');";
+    }
+
+    /**
+     * 
+     * @param type $output
+     * @param type $prop
+     */
+    public function layoutAttach(&$output, $prop) {
+        $upload_mb= min((int)(ini_get('upload_max_filesize')), (int)(ini_get('post_max_size')), (int)(ini_get('memory_limit')));
+        $path     = $prop['attr']['path'].$prop['attr']['prefix'];
+        $io       = new \bizuno\io();
+        $rows     = $io->fileReadGlob($path);
+        $attr     = ['delPath'=>'bizuno/main/fileDelete','getPath'=>'bizuno/main/fileDownload','dgName'=>'dgAttachment'];
+        $datagrid = ['id'=>$attr['dgName'],
+            'title'  => lang('attachments').' '.sprintf(lang('max_upload'), $upload_mb),
+            'attr'   => ['toolbar'  =>"#{$attr['dgName']}Toolbar",'pagination'=>false,'idField'=>'title'],
+            'events' => ['data'   => json_encode(['total'=>sizeof($rows),'rows'=>$rows])],
+            'source' => ['actions'=> ['file_attach'=>['order'=>10,'attr'=>['type'=>'file','name'=>'file_attach']]]],
+            'columns'=> [
+                'action' => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>100],
+                    'events' => ['formatter'=>"function(value,row,index) { return {$attr['dgName']}Formatter(value,row,index); }"],
+                    'actions'=> [
+                        'download'=>['order'=>30,'icon'=>'download','size'=>'small','events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p={$attr['getPath']}&pathID=$path&fileID=idTBD');"]],
+                        'trash'   =>['order'=>70,'icon'=>'trash',   'size'=>'small','events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('{$attr['delPath']}','{$attr['dgName']}','{$path}idTBD');"]]]],
+                'title'=> ['order'=>10,'label'=>lang('filename'),'attr'=>['width'=>300,'resizable'=>true]],
+                'size' => ['order'=>20,'label'=>lang('size'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'center']],
+                'date' => ['order'=>30,'label'=>lang('date'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'center']]]];
+        $this->layoutDatagrid($output, $datagrid);
     }
 
     /**
@@ -715,137 +938,118 @@ final class html5 {
      * @return string - HTML formatted EasyUI datagrid appended to $output
      */
     public function layoutDatagrid(&$output, $prop) {
-//        msgDebug("\nprop = ".print_r($prop, true));
+        $output['jsReady'][] = "jq('#{$prop['id']}').datagrid('resize');";
+        $output['jsResize'][]= "jq('#{$prop['id']}').datagrid('resize',{width:jq(this).parent().width()});";
         $id = $prop['id'];
         $dgType = (isset($prop['type']) && $prop['type']) ? $prop['type'] : 'datagrid';
         $output['body'] .= "\n<!-- $dgType {$prop['id']} -->\n";
         if (isset($prop['attr']['toolbar'])) { // start the toolbar div
-            $output['body'] .= '<div id="' . str_replace('#', '', $prop['attr']['toolbar']) . '" style="padding:5px;height:auto">' . "\n";
+            $output['body'] .= '<div id="'.str_replace('#', '', $prop['attr']['toolbar']).'" style="padding:5px;height:auto">'."\n";
             $output['body'] .= "  <div>\n";
             if (isset($prop['source']['filters'])) {
                 $prop['source']['filters'] = sortOrder($prop['source']['filters']);
-                $js = "function {$prop['id']}Reload() {\n";
-                $js .= "  jq('#{$prop['id']}').$dgType('reload', { ";
-                $temp = [];
+                $temp = $dgGet = [];
                 foreach ($prop['source']['filters'] as $key => $value) {
-                    if (!isset($value['hidden'])) {
-                        $value['hidden'] = false;
-                    }
-                    $id = isset($value['html']['attr']['id']) ? $value['html']['attr']['id'] : $key; // override id, for dups on multi datagrid page
-                    if (!$value['hidden']) {
-                        $temp[] = $id . ':jq("#' . $id . '").val()';
-                    }
+                    if (!empty($value['hidden']) || (!empty($value['attr']['type']) && $value['attr']['type']=='label')) { continue; }
+                    $id = isset($value['attr']['id']) ? $value['attr']['id'] : $key; // override id, for dups on multi datagrid page
+                    $temp[] = $id.":jq('#$id').val()";
                 }
-                $js .= implode(',', $temp) . ' });' . "\n}";
-                $output['jsBody'][] = $js;
+                $output['jsBody'][] = "function {$prop['id']}Reload() {\n  jq('#{$prop['id']}').$dgType('load',{".implode(',', $temp)."});\n}";
             }
             if (isset($prop['source']['fields'])) {
-                $temp = [];
-                foreach ($prop['source']['fields'] as $key => $value) {
-                    $temp[$key] = isset($value['order']) ? $value['order'] : 0;
-                }
-                array_multisort($temp, SORT_ASC, $prop['source']['fields']);
+                $prop['source']['fields'] = sortOrder($prop['source']['fields']);
                 $output['body'] .= '<div style="float:right">';
-                foreach ($prop['source']['fields'] as $key => $value)
-                    if (!isset($value['hidden']) || !$value['hidden'])
-                        $output['body'] .= $this->render($key, $value['html']);
+                foreach ($prop['source']['fields'] as $key => $value) {
+                    if (!isset($value['hidden']) || !$value['hidden']) { $output['body'] .= $this->render($key, $value); }
+                }
                 $output['body'] .= '</div>';
             }
             if (isset($prop['source']['actions'])) {
-                $temp = [];
-                foreach ($prop['source']['actions'] as $key => $value) {
-                    $temp[$key] = isset($value['order']) ? $value['order'] : 0;
-                }
-                array_multisort($temp, SORT_ASC, $prop['source']['actions']);
+                $prop['source']['actions'] = sortOrder($prop['source']['actions']);
                 // handle the right aligned toolbar elements
                 $right = '';
                 foreach ($prop['source']['actions'] as $key => $value) {
-                    if (isset($value['align']) && $value['align'] == 'right') {
-                        $right .= $this->render($key, $value['html']);
-                    }
+                    if (isset($value['align']) && $value['align'] == 'right') { $right .= $this->render($key, $value); }
                 }
                 if ($right) { $output['body'] .= '<div style="float:right;">' . $right . "</div>\n"; }
                 // now the left aligned
                 foreach ($prop['source']['actions'] as $key => $value) {
-                    if ((!isset($value['hidden']) || !$value['hidden']) && (!isset($value['align']) || $value['align'] == 'left')) {
-                        $output['body'] .= $this->render($key, $value['html']);
+                    if (empty($value['hidden']) && (!isset($value['align']) || $value['align']=='left')) {
+                        $output['body'] .= $this->render($key, $value);
                     }
                 }
             }
             if (isset($prop['source']['filters'])) {
                 if (!empty($prop['source']['filters']['search'])) {
-                    $output['body'] .= $this->render('search', $prop['source']['filters']['search']['html']);
-                    unset($prop['source']['filters']['search']);                    
+                    $output['body'] .= $this->render('search', $prop['source']['filters']['search']);
+                    unset($prop['source']['filters']['search']);
                 }
-                $output['body'] .= '      <a href="#" onClick="' . $prop['id'] . 'Reload();" class="easyui-linkbutton" data-options="iconCls:\'icon-search\'">' . lang('search') . "</a>\n";
+                $output['body'] .= '<a onClick="' . $prop['id'] . 'Reload();" class="easyui-linkbutton" data-options="iconCls:\'icon-search\'">' . lang('search') . "</a><br />\n";
                 foreach ($prop['source']['filters'] as $key => $value) {
-                    if (!isset($value['hidden']) || !$value['hidden']) {
-                        if (!isset($value['break']) || $value['break']) { $output['body'] .= "<br />"; }
-                        $output['body'] .= $this->render($key, $value['html']);
-                    }
+                    if (!empty($value['hidden'])) { continue; }
+                    $output['body'] .= $this->render($key, $value);
                 }
             }
             $output['body'] .= "  </div>\n";
             $output['body'] .= "</div>\n";
         }
         if (isset($prop['columns']) && is_array($prop['columns'])) { // build the formatter for the action column
-            $temp = [];
-            foreach ($prop['columns'] as $key => $value) {
-                $temp[$key] = $value['order'];
-            }
-            array_multisort($temp, SORT_ASC, $prop['columns']);
-            if (isset($prop['columns']['action']['actions'])) {
-                $js = "function {$prop['id']}Formatter(value, row, index) {\n";
-                $js .= "  var text = '';\n";
+            $prop['columns'] = sortOrder($prop['columns']);
+            if (!empty($prop['columns']['action']['actions'])) {
+                $jsBody = "  var text = '';";
                 foreach ($prop['columns']['action']['actions'] as $id => $event) {
-                    if (!isset($event['hidden'])) {
-                        $event['hidden'] = false;
-                    }
+                    if (!isset($event['hidden'])) { $event['hidden'] = false; }
                     if (!$event['hidden']) {
-                        if (isset($event['display'])) {
-                            $js .= "  if ({$event['display']})";
-                        }
+                        if (isset($event['display'])) { $jsBody .= "  if ({$event['display']})"; }
+                        unset($event['size']); // make all icons large 
                         $temp = $this->render('', $event) . "&nbsp;";
-                        $js .= "  text += '" . str_replace(["\n", "\r", "'"], ["", "", "\'"], $temp) . "';\n";
+                        $jsBody .= "  text += '" . str_replace(["\n", "\r", "'"], ["", "", "\'"], $temp) . "';\n";
                     }
                 }
-                $js .= "  text = text.replace(/indexTBD/g, index);\n";
+                $jsBody .= "  text = text.replace(/indexTBD/g, index);\n";
                 if (isset($prop['attr']['idField'])) { // for sending db ID's versus row index ID's
-                    $js .= "  text = text.replace(/idTBD/g, row.{$prop['attr']['idField']});\n";
+                    $jsBody .= "  text = text.replace(/idTBD/g, row.{$prop['attr']['idField']});\n";
                 }
                 if (isset($prop['attr']['xtraField'])) { // for replacing row.values
                     foreach ($prop['attr']['xtraField'] as $rField) {
-                        $js .= "  text = text.replace(/{$rField['key']}/g, row.{$rField['value']});\n";
+                        $jsBody .= "  text = text.replace(/{$rField['key']}/g, row.{$rField['value']});\n";
                     }
                 }
-                $js .= "  return text;\n}";
-                $output['jsBody'][] = $js;
+                $btnMore  = trim($this->render("more_{$prop['id']}_indexTBD", ['icon'=>'more','size'=>'small','label'=>lang('more'),'events'=>['onClick'=>"myMenu{$prop['id']}(event, indexTBD)"],'attr'=>['type'=>'button']]));
+                $funcMore = "function {$prop['id']}Formatter(value, row, index) {\n  var text='$btnMore';\n";
+                $funcMore.= "  text = text.replace(/indexTBD/g, index);\n  return text;\n}\n";
+                $output['jsBody'][] = $funcMore."function myMenu{$prop['id']}(e, index) {
+    e.preventDefault();
+    jq('#{$prop['id']}').datagrid('unselectAll');
+    jq('#{$prop['id']}').datagrid('selectRow', index);
+    var row = jq('#{$prop['id']}').datagrid('getRows')[index]; 
+    if (typeof row == 'undefined') {  }
+    jq('#tmenu').remove();
+    var tmenu = jq('<div id=\"tmenu\"></div>').appendTo('body');
+    $jsBody
+    jq('<div />').html(text).appendTo(tmenu);
+    tmenu.menu({ minWidth:30,itemHeight:44,onClick:function(item) {  } });
+    jq('#more_{$prop['id']}_'+index).removeClass('icon-more');
+    jq('#more_{$prop['id']}_'+index).menubutton({ iconCls: 'icon-more', menu:'#tmenu',hasDownArrow: false });
+    jq('#tmenu').menu('show',{left:e.pageX, top:e.pageY} );
+}";
+                $prop['events']['onRowContextMenu'] = "function (e, index, row) { myMenu{$prop['id']}(e, index); }";
             }
         }
-        $output['body'] .= '<div><table id="' . $prop['id'] . '"';
-        if (isset($prop['title'])) {
-            $output['body'] .= ' title="' . $prop['title'] . '"';
-        }
-        $output['body'] .= "></table>\n";
+        $output['body'] .= '<table id="' . $prop['id'] . '"';
+        if (isset($prop['title'])) { $output['body'] .= ' title="' . $prop['title'] . '"'; }
+        $output['body'] .= "></table>";
         if (isset($prop['footnotes'])) {
             $output['body'] .= '<b>' . lang('notes') . ":</b><br />\n";
-            foreach ($prop['footnotes'] as $note) {
-                $output['body'] .= $note . "<br />\n";
-            }
+            foreach ($prop['footnotes'] as $note) { $output['body'] .= $note . "<br />\n"; }
         }
-        $output['body'] .= "</div>\n";
-        if (isset($prop['tip'])) {
-            $output['body'] .= "<div>\n  " . $prop['tip'] . "\n</div>\n";
-        }
+        if (isset($prop['tip'])) { $output['body'] .= "<div>\n  " . $prop['tip'] . "\n</div>\n"; }
         $js = "jq('#{$prop['id']}').$dgType({\n";
         $options = [];
-        foreach ($prop['attr'] as $key => $value) {
-            $options[] = "  $key:" . encodeType($value);
-        }
+        if (!empty($prop['rows'])) { $options[] = "  pageSize:{$prop['rows']}"; }
+        foreach ($prop['attr'] as $key => $value) { $options[] = "  $key:" . encodeType($value); }
         if (isset($prop['events'])) {
-            foreach ($prop['events'] as $key => $value) {
-                $options[] = " $key:$value";
-            }
+            foreach ($prop['events'] as $key => $value) { $options[] = " $key:$value"; }
         }
         // build the columns
         $cols = [];
@@ -853,13 +1057,9 @@ final class html5 {
             $settings['attr']['field'] = $col;
             $settings['attr']['title'] = isset($settings['label']) ? $settings['label'] : $col;
             $temp = [];
-            foreach ($settings['attr'] as $key => $value) {
-                $temp[] = "$key:" . encodeType($value);
-            }
-            if (isset($settings['events'])) {
-                foreach ($settings['events'] as $key => $value) {
-                    $temp[] = "$key:$value";
-                }
+            foreach ($settings['attr'] as $key => $value) { $temp[] = "$key:" . encodeType($value); }
+            if (!empty($settings['events']) && empty($settings['attr']['hidden'])) {
+                foreach ($settings['events'] as $key => $value) { $temp[] = "$key:$value"; }
             }
             $cols[] = "    { " . implode(",", $temp) . " }";
         }
@@ -904,41 +1104,27 @@ final class html5 {
      * @return string - HTML formatted EasyUI tabs appended to $output
      */
     public function layoutTab(&$output, $prop) {
-        $prop['divs'] = sortOrder($prop['divs']);
-        $output['body'] .= '     <div id="' . $prop['id'] . '" class="easyui-tabs"';
-        if (isset($prop['attr']['focus'])) {
-            $indices = array_keys($prop['divs']);
-            foreach ($indices as $key => $tabID) {
-                if ($prop['attr']['focus'] == $tabID) {
-                    $prop['attr']['selected'] = $key;
-                    unset($prop['attr']['focus']);
-                    break;
-                }
-            }
+        $output['jsResize'][] = "jq('#{$prop['id']}').tabs('resize',{width:jq(this).parent().width()});";
+        $divs = sortOrder($prop['divs']);
+        if (isset($prop['focus'])) {
+            $indices = array_keys($divs);
+            foreach ($indices as $key => $tabID) { if ($prop['focus'] == $tabID) { $prop['options']['selected'] = $key; } }
         }
-        if (!empty($prop['styles'])) {
-            $output['body'] .= $this->addStyles($prop['styles']);
-        }
-        if (!empty($prop['attr'])) {
-            $temp = [];
-            foreach ($prop['attr'] as $key => $value) {
-                $temp[] = "$key:" . encodeType($value);
-            }
-            $output['body'] .= ' data-options="' . implode(',', $temp) . '"';
-        }
-        $output['body'] .= "><!-- Begin tab group {$prop['id']} -->\n";
-        foreach ($prop['divs'] as $tabID => $tabDiv) {
+        $prop['attr']['type'] = 'div';
+        $prop['classes']['ui']= "easyui-tabs";
+        $output['body'] .= $this->htmlElOpen($prop['id'], $prop)."\n<!-- Begin tab group {$prop['id']} -->\n";
+        foreach ($divs as $tabID => $tabDiv) {
             $tabDiv['attr']['id'] = $tabID;
             $tabDiv['attr']['title'] = !empty($tabDiv['label']) ? $tabDiv['label'] : $tabID;
-            $tabDiv['styles']['padding'] = '20px';
-            if (!empty($tabDiv['icon'])) {
-                $tabDiv['attr']['iconCls'] = "icon-{$tabDiv['icon']}";
-            }
+            $tabDiv['classes']['display']= 'menuHide';
+            $tabDiv['styles']['padding'] = '5px';
+            if (!empty($tabDiv['icon'])) { $tabDiv['attr']['iconCls'] = "icon-{$tabDiv['icon']}"; }
             $output['body'] .= "<!-- Begin tab $tabID -->\n";
             $this->buildDiv($output, $tabDiv);
             $output['body'] .= "<!-- End tab $tabID -->\n";
         }
         $output['body'] .= "</div><!-- End tab group {$prop['id']} -->\n";
+        $this->jsReady[] = "jq('.menuHide').show();";
     }
 
     /**
@@ -973,78 +1159,129 @@ final class html5 {
      * @return string - HTML formatted EasyUI tree appended to $output
      */
     public function layoutTree(&$output, $prop) {
+        $output['jsResize'][] = "jq('#{$prop['id']}').tree('resize',{width:jq(this).parent().width()});";
         $temp = [];
         $output['body'] .= '<ul id="' . $prop['id'] . '"></ul>' . "\n";
         if (isset($prop['menu'])) {
             $output['body'] .= "<div";
-            foreach ($prop['menu']['attr'] as $key => $value) {
-                $output['body'] .= ' ' . $key . '="' . str_replace('"', '\"', $value) . '"';
-            }
+            foreach ($prop['menu']['attr'] as $key => $value) { $output['body'] .= ' ' . $key . '="' . str_replace('"', '\"', $value) . '"'; }
             $output['body'] .= ">\n";
             foreach ($prop['menu']['actions'] as $key => $value) {
                 $output['body'] .= '  <div id="' . $key . '"';
-                foreach ($value['attr'] as $key => $val) {
-                    $output['body'] .= ' ' . $key . '="' . str_replace('"', '\"', $val) . '"';
-                }
+                foreach ($value['attr'] as $key => $val) { $output['body'] .= ' ' . $key . '="' . str_replace('"', '\"', $val) . '"'; }
                 $output['body'] .= ">" . (isset($value['label']) ? $value['label'] : '') . "</div>\n";
             }
             $output['body'] .= "</div>\n";
         }
         if (isset($prop['footnotes'])) {
             $output['body'] .= '<b>' . lang('notes') . ":</b><br />\n";
-            foreach ($prop['footnotes'] as $note) {
-                $output['body'] .= $note . "\n";
-            }
+            foreach ($prop['footnotes'] as $note) { $output['body'] .= $note . "\n"; }
         }
         foreach ($prop['attr'] as $key => $value) {
             $val = is_bool($value) ? ($value ? 'true' : 'false') : "'$value'";
             $temp[] = "$key: $val";
         }
         if (isset($prop['events'])) {
-            foreach ($prop['events'] as $key => $value) {
-                $temp[] = "      $key: $value";
+            foreach ($prop['events'] as $key => $value) { $temp[] = "      $key: $value"; }
+        }
+        $output['jsBody'][] = "jq('#".$prop['id']."').tree({\n".implode(",\n", $temp)."\n});\n";
+    }
+
+    public function layoutFields($prop) {
+        $tmp1   = sortOrder($prop['fields']); //sort order first
+        $fields = [];
+        foreach ($tmp1 as $key => $value) {
+            if (empty($value['col'])) { $value['col'] = 1; }
+            $fields[$value['col']][$key] = $value;
+        }
+        ksort($fields);
+//      msgDebug("after sort layoutFields with prop = ".print_r($fields, true));
+        $output = '';
+        if (!empty($prop['label'])) { $output .= $this->layoutFieldset($prop); }
+        foreach ($fields as $column) {
+            $output .= '<div class="blockView">';
+            foreach ($column as $key => $attr) { $output .= $this->render($key, $attr); }
+            $output .= "</div>\n";
+        }
+        if (!empty($prop['label'])) { $output .= '</fieldset>'; }
+        $output .= '<div>&nbsp;</div>';
+        return $output;
+    }
+
+    public function layoutFieldset($props) {
+        switch ($GLOBALS['myDevice']) {
+            case 'mobile':
+            case 'tablet': return '<fieldset style="width:100%;min-width:0;"><legend>'.$props['label'].'</legend>';
+            default:       return '<fieldset><legend>'.$props['label'].'</legend>';
+        }
+    }
+
+    public function layoutPanel(&$otuput, $prop) {
+        switch ($GLOBALS['myDevice']) {
+            case 'mobile': // need to build as a new div and attach to page
+            case 'tablet':
+                if (empty($prop['attr']['id'])) { $prop['attr']['id'] = randomValue(); }
+                $output['body'] .= '<div id="'.$prop['attr']['id'].'" class="easyui-navpanel">';
+                $title  = !empty($prop['title']) ? $prop['title'] : 'No Title';
+                $header = ['left'=>['back'],'title'=>$title,'right'=>[]];
+                $footer = [];
+                $output['body'] .= $this->mobileMenu($header, 'header');
+                $output['body'] .= $this->mobileMenu($footer, 'footer');
+                $output['body'] .= '<div>'.$this->buildDivs($prop)."</div>\n"; // build the body
+                break;
+            case 'desktop':
+            default:
+        }
+    }
+
+    public function layoutPayment(&$output, $prop) {
+        global $viewData;
+        $output['body'] .= '<div class="blockView">'."<fieldset><legend>".lang('payment_method')."</legend>\n";
+        // if we have data, see what the stored values are to set defaults
+        $viewDataValues= [];
+        $dispFirst = $viewData['fields']['selMethod']['attr']['value'] = $viewData['fields']['main']['method_code']['attr']['value'];
+
+        if (isset($prop['settings']['items'])) { foreach ($prop['settings']['items'] as $row) { // fill in the data if available
+            $props = explode(";", $row['description']);
+            foreach ($props as $val) {
+                $tmp = explode(":", $val);
+                $viewDataValues[$tmp[0]] = isset($tmp[1]) ? $tmp[1] : '';
+            }
+            if (empty($row['item_ref_id'])) { continue; }
+            $txID = dbGetValue(BIZUNO_DB_PREFIX."journal_item", array('description','trans_code'), "ref_id='{$prop['settings']['items'][0]['item_ref_id']}' AND gl_type='ttl'");
+            $props1 = !empty($txID['description']) ? explode(";", $txID['description']) : [];
+            foreach ($props1 as $val) {
+                $tmp = explode(":", $val);
+                $viewDataValues[$tmp[0]] = isset($tmp[1]) ? $tmp[1] : '';
+            }
+            $viewDataValues['id']        = $row['item_ref_id'];
+            $viewDataValues['trans_code']= !empty($txID['trans_code']) ? $txID['trans_code'] : '';
+            $viewDataValues['total']     = !empty($row['total']) ? $row['total'] : 0;
+        } }
+        // set the pull down for which method, onChange execute javascript function to load defaults
+        $output['body'] .= html5('method_code', $viewData['fields']['selMethod']);
+        $methods = sortOrder(getModuleCache('payment', 'methods'));
+        foreach ($methods as $method => $settings) {
+            if (isset($settings['status']) && $settings['status']) { // load the div for each method
+                if (!is_file($settings['path']."$method.php")) {
+                    msgAdd("I cannot find the method $method to load! Skipping.");
+                    continue;
+                }
+                if (!$dispFirst) { $dispFirst = $method; }
+                $style = $dispFirst == $method ? '' : ' style="display:none;"'; 
+                $output['body'] .= '<div id="div_'.$method.'" class="layout-expand-over"'.$style.'>'."\n";
+                require_once($settings['path']."$method.php");
+                $pmtSet = getModuleCache('payment','methods',$method,'settings');
+                $fqcn = "\\bizuno\\$method";
+                $temp = new $fqcn($pmtSet);
+                $temp->render($output, $viewData, $viewDataValues, $dispFirst);
+                $output['body'] .= "</div>\n";
             }
         }
-        $output['jsBody'][] = "jq('#" . $prop['id'] . "').tree({\n" . implode(",\n", $temp) . "\n});\n";
+        $output['body'] .= "</fieldset></div>\n";
     }
 
-    public function layoutIframe() {
-        
-    }
-
-    public function layoutFieldset() {
-        
-    }
-
-    public function layoutLegend() {
-        
-    }
-
-    public function layoutHeader() {
-        
-    }
-
-    public function layoutNav() {
-        
-    }
-
-    public function layoutSection() {
-        
-    }
-
-    public function layoutArticle() {
-        
-    }
-
-    public function layoutAside() {
-        
-    }
-
-    public function layoutFooter() {
-        
-    }
-
-    /*     * *************************** Forms ***************** */
+    /***************************** Forms ******************/
 
     public function input($id, $prop) {
         $this->addID($id, $prop);
@@ -1054,91 +1291,11 @@ final class html5 {
             $field .= ' value="' . str_replace('"', '&quot;', $value) . '"';
             unset($prop['attr']['value']);
         }
-        if (!empty($prop['js'])) {
-            $this->jsBody[] = $prop['js'];
-        } // old way
-        if (!empty($prop['jsBody'])) {
-            $this->jsBody[] = $prop['jsBody'];
-        } // new way
-        $output = $this->addLabelFirst($id, $prop) . $field . $this->addAttrs($prop) . " />" . $this->addLabelLast($id, $prop);
-        return $output . (!empty($prop['break']) ? '<br />' : '');
-    }
-
-    public function inputTextarea($id, $prop) {
-        $this->addID($id, $prop);
-        if (empty($prop['attr']['rows'])) { $prop['attr']['rows'] = 20; }
-        if (empty($prop['attr']['cols'])) { $prop['attr']['cols'] = 60; }
-        $content = '';
-        $field = $this->addLabelFirst($id, $prop);
-        $field .= '<textarea';
-        foreach ($prop['attr'] as $key => $value) {
-            if (in_array($key, ['type', 'maxlength'])) { continue; }
-            if ($key == 'value') { $content = $value; continue; }
-            $field .= ' ' . $key . '="' . str_replace('"', '&quot;', $value) . '"';
-        }
-        $field .= ">" . htmlspecialchars($content) . "</textarea>\n";
-        $field .= $this->render('', ['icon'=>'edit', 'size'=>'small', 'label'=>lang('edit'), 'events'=>['onClick'=>"tinymceInit('$id');"]]);
-        $field .= $this->addLabelLast($id, $prop);
-        $this->jsBody['tinyMCE'] = "jq.cachedScript('" . self::htmlEditor . "');";
-        if (!empty($prop['break'])) { $field .= '<br />'; }
-        return $field;
-    }
-
-    public function inputSelect($id, $prop) {
-        $this->addID($id, $prop);
-        $first= $this->addLabelFirst($id, $prop);
-        $last = $this->addLabelLast($id, $prop);
-        $value= isset($prop['attr']['value']) ? (array)$prop['attr']['value'] : []; // needs to be isset, cannot be empty
-        unset($prop['attr']['type']);
-        unset($prop['attr']['value']);
         if (!empty($prop['js']))     { $this->jsBody[] = $prop['js']; } // old way
         if (!empty($prop['jsBody'])) { $this->jsBody[] = $prop['jsBody']; } // new way
-        // style it
-//        $prop['classes']['combo'] = "easyui-combo";
-//        $prop['attr']['data-options'] = "editable:false";
-//        convert events to easyUI events, onClick, etc.
-        // need to load data values into data-options
-        $field = '<select' . $this->addAttrs($prop) . '>';
-        if (isset($prop['values']) && is_array($prop['values']) && sizeof($prop['values']) > 0) {
-            foreach ($prop['values'] as $choice) {
-                if (isset($choice['hidden']) && $choice['hidden']) {
-                    continue;
-                }
-                $field .= '<option value="' . $choice['id'] . '"';
-                if (in_array($choice['id'], $value)) {
-                    $field .= ' selected="selected"';
-                }
-                $field .= '>' . htmlspecialchars(isset($choice['title']) ? $choice['title'] : $choice['text']) . '</option>';
-            }
-        } elseif (sizeof($value)) {
-            $field .= '<option value="' . $value[0] . '">' . htmlspecialchars($value[0]) . '</option>';
-        }
-        $field .= "</select>\n";
-        $output = $first . $field . $last;
-        return $output . (!empty($prop['break']) ? '<br />' : '');
-    }
-
-    public function inputPassword($id, $prop) {
-        return $this->input($id, $prop);
-    }
-
-    public function inputRadio($id, $prop) {
-        if (empty($prop['attr']['checked'])) { unset($prop['attr']['checked']);  }
-        if (empty($prop['attr']['selected'])){ unset($prop['attr']['selected']); }
-        $prop['position'] = 'after';
-        return $this->input($id, $prop);
-    }
-
-    public function inputRaw($id, $prop) {
-        return $this->addLabelFirst($id, $prop) . $prop['html'] . $this->addLabelLast($id, $prop);
-    }
-
-    public function inputCheckbox($id, $prop) {
-        if (empty($prop['attr']['checked'])) { unset($prop['attr']['checked']); }
-//        $prop['classes'][] = 'easyui-switchbutton';
-//        $prop['attr']['data-options'] = "onText:'".jsLang('yes')."',offText:'".jsLang('no')."'";
-        // convert html events to easyui events
-        return $this->input($id, $prop);
+        $output = $this->addLabelFirst($id, $prop) . $field . $this->addAttrs($prop) . " />" . $this->addLabelLast($id, $prop);
+        $hidden = isset($prop['attr']['type']) && $prop['attr']['type']=='hidden' ? true : false;
+        return $output . (!empty($prop['break']) && !$hidden ? '<br />' : '');
     }
 
     public function inputButton($id, $prop) {
@@ -1150,11 +1307,266 @@ final class html5 {
         return $this->htmlElBoth($id, $prop);
     }
 
+    public function inputCheckbox($id, $prop) {
+        if (empty($prop['attr']['checked'])) { unset($prop['attr']['checked']); }
+        $prop['classes'][] = 'easyui-switchbutton';
+        $prop['options']['onText']  = "'".jsLang('yes')."'";
+        $prop['options']['offText'] = "'".jsLang('no')."'";
+        return $this->input($id, $prop);
+    }
+
     public function inputColor($id, $prop) {
+        $prop['classes'][] = 'easyui-color';
+        return $this->input($id, $prop);
+    }
+
+    public function inputContact($id, $prop) {
+        $defaults = ['type'=>'c','value'=>0,'suffix'=>'','store'=>0,'drop'=>false,'fill'=>false,'data'=>false];
+        $attr = array_merge($defaults, $prop['defaults']);
+        $url = "'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1";
+        $url .= "&type=" .(!empty($attr['drop'])  ? 'c' : $attr['type']);
+        $url .= "&store=".(!empty($attr['store']) ? '1' : '0');
+        $url .= "'";
+        $prop['classes'][] = 'easyui-combogrid';
+        $prop['options']['width']         = "250,panelWidth:750,delay:900,idField:'id',textField:'primary_name',mode:'remote',iconCls:'icon-search',hasDownArrow:false,selectOnNavigation:false";
+        $prop['options']['url']       = $url;
+        $prop['options']['onBeforeLoad']  = "function (param) { var newValue=jq('#$id').combogrid('getValue'); if (newValue.length < 3) return false; }";
+        if (!empty($attr['data'])) { $prop['options']['data'] = $attr['data']; }
+        if (!empty($attr['callback'])) {
+            $prop['options']['onClickRow']= "function (idx, row) { {$attr['callback']}(row.id, '{$attr['suffix']}', '{$attr['fill']}'); }";
+        }
+        $prop['options']['columns']       = "[[{field:'id', hidden:true},
+    {field:'short_name',  title:'".jsLang('contacts_short_name')."', width:100},
+    {field:'type',        hidden:".(strlen($attr['type'])>1?'false':'true').",title:'".jsLang('contacts_type')."', width:100},
+    {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
+    {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
+    {field:'city',        title:'".jsLang('address_book_city')."', width:100},
+    {field:'state',       title:'".jsLang('address_book_state')."', width: 50},
+    {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
+    {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]]";
+        unset($prop['attr']['type'], $prop['defaults']);
+        return $this->input($id, $prop);
+    }
+    
+    public function inputCountry($id, $prop) {
+        $value = !empty($prop['attr']['value']) ? $prop['attr']['value'] : getModuleCache('bizuno','settings','company','country','USA');
+        $prop['classes'] = ['easyui-combogrid'];
+        $prop['options']['data'] = "bizDefaults.countries";
+        $prop['options']['width'] = 150;
+        $prop['options']['panelWidth'] = 300;
+        $prop['options']['value'] =  "'$value'" ;
+        $prop['options']['idField'] = "'iso3'";
+        $prop['options']['textField'] = "'title'";
+        $prop['options']['columns'] = "[[{field:'iso3',title:'".jsLang('code')."',width:60},{field:'title',title:'".jsLang('title')."',width:200}]]";
         return $this->input($id, $prop);
     }
 
     public function inputCurrency($id, $prop) {
+        $prop['classes'][] = 'easyui-textbox'; // needs to be textbox to allow currency characters
+        $prop['styles']['text-align'] = 'right';
+        if (isset($prop['attr']['value'])) { $prop['attr']['value'] = viewFormat($prop['attr']['value'], 'currency'); }
+        unset($prop['attr']['type']);
+        $this->mapEvents($prop);
+        return $this->input($id, $prop);
+    }
+
+    public function inputDate($id, $prop) {
+        if (empty($prop['styles']['width'])) { $prop['styles']['width']  = '150px'; }
+        $prop['classes'][] = 'easyui-datebox';
+        $prop['attr']['type'] = 'text'; // needed to turn off browser takeover of date box (Chrome)
+        if (!empty($prop['attr']['value'])) {
+            $prop['options']['value'] = "'".viewDate($prop['attr']['value'])."'";
+            unset($prop['attr']['value']);
+        }
+        return $this->input($id, $prop);
+    }
+
+    public function inputEmail($id, $prop) {
+        if (empty($prop['styles']['width']))  { $prop['styles']['width']  = '300px'; }
+//      if (empty($prop['styles']['height'])) { $prop['styles']['height']= '38px'; }
+        $prop['classes'][] = 'easyui-textbox easyui-validatebox';
+        $prop['options']['prompt']  = "'".jsLang('email')."'";
+        $prop['options']['iconCls'] = "'icon-email'";
+        unset($prop['attr']['type']);
+        return $this->input($id, $prop);
+    }
+
+    /**
+     * This function builds the combo box editor HTML for a datagrid to view GL Accounts
+     * @return string set the editor structure
+     */
+    public function inputGL($id, $prop)
+    {
+        if (!empty($prop['types'])) {
+            $js = "var {$id}Data = [];
+    var types= [".implode(',',$prop['types'])."];
+    for (i=0; i<bizDefaults.glAccounts.length; i++) {
+        for (j=0; j<types.length; j++) { if (bizDefaults.glAccounts[i].type == type[j]) {$id}Data[] = bizDefaults.glAccounts[i]; }
+    }";
+        } else {
+            $js = "var {$id}Data = typeof bizDefaults.glAccounts != 'undefined' ? bizDefaults.glAccounts : [];";
+        }
+        $this->jsHead[] = $js;
+        $prop['classes'][]         = 'easyui-combogrid';
+        $prop['options']['width']  = "150,rows:100,panelWidth:490,idField:'id',textField:'title',selectOnNavigation:false";
+        $prop['options']['data']   = "{$id}Data";
+        if (!empty($prop['attr']['value'])) { $prop['options']['value'] = "'".$prop['attr']['value']."'"; }
+        $this->mapEvents($prop);
+        $prop['options']['columns']= "[[{field:'id',title:'".jsLang('gl_account')."',width:60},{field:'title',title:'".jsLang('title')."',width:200},{field:'type',title:'".jsLang('type')."',width:180}]]";
+        unset($prop['attr']['type'],$prop['attr']['value']);
+        return  $this->input($id, $prop);
+    }
+
+    public function inputInventory($id, $prop) {
+        $defaults = ['data'=>false,'callback'=>false];
+        if (!empty($prop['defaults']))    { $defaults = array_merge($defaults, $prop['defaults']); }
+        if ( empty($defaults['callback'])){ $defaults['callback'] = "jq('#item_cost').val(data.item_cost); jq('#full_price').val(data.full_price);"; }
+        $prop['classes'][]              = 'easyui-combogrid';
+        $prop['options']['width']       = "250,panelWidth:350,delay:500,idField:'id',textField:'description_short',mode:'remote',iconCls:'icon-search',hasDownArrow:false";
+        if (!empty($defaults['data'])) { $prop['options']['data'] = $defaults['data']; }
+        $prop['options']['url']         = "'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1'";
+        $prop['options']['onBeforeLoad']= "function () { var newValue=jq('#$id').combogrid('getValue'); if (newValue.length < 2) return false; }";
+        $prop['options']['onClickRow']  = "function (id, data) { {$defaults['callback']} }";
+        $prop['options']['columns']     = "[[{field:'id',hidden:true},{field:'sku',title:'".jsLang('sku')."',width:100},{field:'description_short',title:'".jsLang('description')."',width:200}]]";
+        return $this->input($id, $prop);
+    }
+
+    public function inputMonth($id, $prop) {
+        return $this->input($id, $prop);
+    }
+
+    public function inputNumber($id, $prop, $precision=false) {
+        $prop['classes'][] = 'easyui-numberbox';
+        $prop['styles']['text-align'] ='right';
+        if ($precision !== false) { $prop['options']['precision'] = 0; }
+        if (empty($prop['options']['width'])) { $prop['options']['width'] = 100; }
+        $this->mapEvents($prop);
+        return $this->input($id, $prop);
+    }
+
+    public function inputPassword($id, $prop) {
+        if (empty($prop['styles']['width']))  { $prop['styles']['width']  = '300px'; }
+//      if (empty($prop['styles']['height'])) { $prop['styles']['height'] = '38px'; }
+        $prop['classes'][] = 'easyui-passwordbox';
+        $prop['options']['prompt'] = "'".jsLang('password')."'";
+        return $this->input($id, $prop);
+    }
+
+    public function inputRadio($id, $prop) {
+        if (empty($prop['attr']['checked'])) { unset($prop['attr']['checked']);  }
+        if (empty($prop['attr']['selected'])){ unset($prop['attr']['selected']); }
+        $prop['position'] = 'after';
+        return $this->input($id, $prop);
+    }
+
+    public function inputRange($id, $prop) {
+        return $this->input($id, $prop);
+    }
+
+    public function inputRaw($id, $prop) {
+        $output = $this->addLabelFirst($id, $prop) . $prop['html'] . $this->addLabelLast($id, $prop);
+        return $output . (!empty($prop['break']) ? '<br />' : '');
+    }
+
+    public function inputSearch($id, $prop) {
+        return $this->input($id, $prop);
+    }
+
+    public function inputSelect($id, $prop) {
+        $this->addID($id, $prop);
+        $first = $this->addLabelFirst($id, $prop);
+        $last  = $this->addLabelLast($id, $prop);
+        unset($prop['attr']['type']);
+        if (!empty($prop['jsBody'])) { $this->jsBody[] = $prop['jsBody']; } // new way
+        // style it
+        $prop['classes']['ui'] = "easyui-combobox";
+        if (!empty($prop['attr']['value']) && !is_array($prop['attr']['value'])) { 
+            $prop['options']['value'] = "'".$prop['attr']['value']."'";
+        }
+        $prop['options']['editable'] = 'false';
+        if (empty($prop['options']['width'])) { $prop['options']['width'] = 200; }
+        // fix the events
+        $this->mapEvents($prop);
+        // value need to be an array to accomodate multiple select comboboxes 
+        $values = isset($prop['attr']['value']) ? (array)$prop['attr']['value'] : []; // needs to be isset, cannot be empty
+        if (sizeof($values)) {
+            $optField = '<option value="'.$values[0].'">'.htmlspecialchars($values[0]).'</option>';
+        } else { $optField = ''; }
+        unset($prop['attr']['value']);
+        $field = '<select' . $this->addAttrs($prop) . '>';
+        if (isset($prop['values']) && is_array($prop['values']) && sizeof($prop['values']) > 0) {
+            foreach ($prop['values'] as $choice) {
+                if (isset($choice['hidden']) && $choice['hidden']) { continue; }
+                $field .= '<option value="'.$choice['id'].'"';
+                if (in_array($choice['id'], $values)) { $field .= ' selected="selected"'; }
+                $field .= '>' . htmlspecialchars(isset($choice['title']) ? $choice['title'] : $choice['text']) . '</option>';
+            }
+        } else {
+            $field .= $optField;
+        }
+        $field .= "</select>\n";
+        $output = $first . $field . $last;
+        return $output . (!empty($prop['break']) ? '<br />' : '');
+    }
+
+    public function inputTax($id, $prop) {
+        $defaults = ['value'=>'', 'type'=>'c', 'callback'=>false];
+        if (!empty($prop['defaults']))    { $defaults = array_merge($defaults, $prop['defaults']); }
+        if ( empty($defaults['callback'])){ $defaults['callback'] = "totalUpdate();"; }
+        $prop['classes'][]          = 'easyui-combogrid';
+        $prop['options']['data']    = "bizDefaults.taxRates.{$defaults['type']}.rows";
+        $prop['options']['value']   = "'{$defaults['value']}'";
+        $prop['options']['width']   = "120,panelWidth:210,delay:500,idField:'id',textField:'text'";
+        if (!empty($defaults['data'])) { $prop['options']['data'] = $defaults['data']; }
+        $prop['options']['onSelect']= "function (id, data) { {$defaults['callback']} }";
+        $prop['options']['columns'] = "[[{field:'id',hidden:true},{field:'text',title:'".jsLang('journal_main_tax_rate_id')."',width:120},{field:'tax_rate',title:'".jsLang('amount')."',align:'center',width:70}]]";
+        unset($prop['attr']['type']);
+        return $this->input($id, $prop);
+    }
+
+    public function inputTel($id, $prop) {
+        // restrict to numbers, dots or dashes
+        return $this->input($id, $prop);
+    }
+
+    public function inputText($id, $prop) {
+        if (!empty($prop['inner']) && !empty($prop['label'])) { $prop['options']['prompt'] = jsLang('email'); }
+        $prop['classes'][] = 'easyui-textbox';
+        if (empty($prop['options']['width'])) { $prop['options']['width'] = 200; }
+        $this->mapEvents($prop);
+        return $this->input($id, $prop);
+    }
+
+    public function inputTextarea($id, $prop) {
+        $this->addID($id, $prop);
+        if (empty($prop['attr']['rows'])) { $prop['attr']['rows'] = 20; }
+        if (empty($prop['attr']['cols'])) { $prop['attr']['cols'] = 60; }
+        $content = '';
+        $field  = $this->addLabelFirst($id, $prop);
+        $field .= '<textarea';
+        foreach ($prop['attr'] as $key => $value) {
+            if (in_array($key, ['type', 'maxlength'])) { continue; }
+            if ($key == 'value') { $content = $value; continue; }
+            $field .= ' ' . $key . '="' . str_replace('"', '&quot;', $value) . '"';
+        }
+        $field .= ">" . htmlspecialchars($content) . "</textarea>\n";
+        $field .= $this->render('', ['icon'=>'edit','size'=>'small','label'=>lang('edit'),'events'=>['onClick'=>"tinymceInit('$id');"]]);
+        $field .= $this->addLabelLast($id, $prop);
+        $this->jsBody['tinyMCE'] = "jq.cachedScript('" . self::htmlEditor . "');";
+        if (!empty($prop['break'])) { $field .= '<br />'; }
+        return $field;
+    }
+
+    public function inputTime($id, $prop) {
+        // time spinner
+        return $this->input($id, $prop);
+    }
+
+    public function inputUrl($id, $prop) {
+        return $this->input($id, $prop);
+    }
+
+    public function selCurrency($id, $prop) {
         $rateProp = ['attr' => ['size'=>12]];
 		if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
 			$prop['attr']['type'] = 'select';
@@ -1177,25 +1589,6 @@ final class html5 {
         return $output;
     }
 
-    public function inputDate($id, $prop) {
-        $prop['classes'][] = 'easyui-datebox';
-        $prop['attr']['type'] = 'text'; // needed to turn off browser takeover of date box (Chrome)
-        if (!empty($prop['attr']['value'])) {
-            $prop['attr']['data-options'] = "value:'" . viewDate($prop['attr']['value']) . "'";
-            unset($prop['attr']['value']);
-        }
-        return $this->input($id, $prop);
-    }
-
-    public function inputEmail($id, $prop) {
-        // add validate feature and add icon
-        return $this->input($id, $prop);
-    }
-
-    public function inputMonth($id, $prop) {
-        return $this->input($id, $prop);
-    }
-
     public function selNoYes($id, $prop) {
 //        $prop['classes'][] = 'easyui-switchbutton';
         // need to set on if checked true or !empty value
@@ -1205,37 +1598,7 @@ final class html5 {
         return $this->render($id, $prop);
     }
 
-    public function inputNumber($id, $prop) {
-//        $prop['classes'][] = 'easyui-numberbox';
-//      defaults should already be set in .js file
-        // need to set on if checked true or !empty value
-        // convert events to easyUI events
-        return $this->input($id, $prop);
-    }
-
-    public function inputRange($id, $prop) {
-        return $this->input($id, $prop);
-    }
-
-    public function inputSearch($id, $prop) {
-        return $this->input($id, $prop);
-    }
-
-    public function inputTel($id, $prop) {
-        // restrict to numbers, dots or dashes
-        return $this->input($id, $prop);
-    }
-
-    public function inputTime($id, $prop) {
-        // time spinner
-        return $this->input($id, $prop);
-    }
-
-    public function inputUrl($id, $prop) {
-        return $this->input($id, $prop);
-    }
-
-    /*     * *************************** Media ***************** */
+    /***************************** Media ******************/
 
     public function media() {
         
@@ -1263,8 +1626,13 @@ final class html5 {
 
     private function addAttrs($prop) {
         $field = '';
+        if (!empty($prop['options'])) {
+            $tmp = [];
+            foreach ($prop['options'] as $key => $value) { $tmp[] = "$key:$value"; }
+            $prop['attr']['data-options'] = "{".implode(',', $tmp)."}";
+        }
         foreach ($prop['attr'] as $key => $value) {
-            $field .= ' ' . $key . '="' . str_replace('"', '\"', $value) . '"'; // was str_replace('"', '&quot;', $value)
+            $field .= ' '.$key.'="'.str_replace('"', '\"', $value).'"'; // was str_replace('"', '&quot;', $value)
         }
         if (!empty($prop['classes'])) { $field .= $this->addClasses($prop['classes']); }
         if (!empty($prop['styles']))  { $field .= $this->addStyles($prop['styles']); }
@@ -1284,6 +1652,25 @@ final class html5 {
         return $output;
     }
 
+    private function mapEvents(&$prop) {
+        if (empty($prop['events'])) { return; }
+        foreach ($prop['events'] as $key => $event) {
+            msgDebug("\nmapEvents with key = $key and event = $event");
+            $action = false;
+            switch($key) {
+                case 'onBlur':   $newKey = 'onChange'; $action = "function (newVal, oldVal) { ".$event." }"; break;
+                case 'onChange': $newKey = 'onChange'; $action = "function (newVal, oldVal) { ".$event." }"; break;
+                case 'onSelect': $newKey = 'onSelect'; $action = "function (index, row) { ".$event." }";     break;
+                default: // do nothing
+            }
+            if ($action) {
+                msgDebug("\nadding to options array with key = $key and action = $action");
+                $prop['options'][$newKey] = $action;
+                unset($prop['events'][$key]);
+            }
+        }
+    }
+
     private function addID($id = '', &$prop = []) {
         if ($id && !isset($prop['attr']['name'])) { $prop['attr']['name'] = $id; }
         if (isset($prop['attr']['id'])) { } // use it
@@ -1297,20 +1684,23 @@ final class html5 {
 
     private function addLabelFirst($id, $prop) {
         $field = '';
-//      if (!$id)                  { return $field; }
-        if (empty($prop['label'])) { return $field; }
-        if ($prop['attr']['type'] <> 'hidden' && empty($prop['position'])) {
-            return '<label for="'.$id.'" class="fldLabel" style="vertical-align:top">'.$prop['label'].'</label>&nbsp;';
+        if ( empty($prop['label'])) { return $field; }
+        if (!empty($prop['attr']['type']) && $prop['attr']['type'] == 'hidden') { return $field; }
+        if ( empty($prop['position'])) {
+            $el = ['styles'=>['vertical-align'=>'top'],'attr'=>['type'=>'label','for'=>$id]];
+            if (!empty($prop['lblStyle'])) { $el['styles'] = array_merge($el['styles'], $prop['lblStyle']); }
+            return $this->htmlElOpen('', $el) . $prop['label'].'</label>&nbsp;';
         }
         return $field;
     }
 
     private function addLabelLast($id, $prop) {
         $field = '';
-//      if (!$id)                  { return $field; }
-        if (empty($prop['label'])) { return $field; }
-        if ($prop['attr']['type']<>'hidden' && isset($prop['position']) && $prop['position'] == 'after') {
-            $styles = "vertical-align:top;" . in_array($prop['attr']['type'], ['checkbox','radio'])? 'min-width:60px;' : '';
+        if ( empty($prop['label'])) { return $field; }
+        if (!empty($prop['attr']['type']) && $prop['attr']['type'] == 'hidden') { return $field; }
+        if (!empty($prop['position'])     && $prop['position'] == 'after') {
+            $mins  = !empty($prop['attr']['type']) && in_array($prop['attr']['type'], ['checkbox','radio'])? 'min-width:60px;' : '';
+            $styles= "vertical-align:top;$mins"; 
             $field = '<label for="'.$id.'" class="fldLabel" style="'.$styles.'">'.$prop['label'].'</label>';
         }
         return $field;

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-23
+ * @version    3.x Last Update: 2018-04-23
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -29,6 +29,7 @@ $lang = [
     //You will receive an email from us momentarily with a special ONE-TIME link to the Bizuno NEW Member Log-in page so you can instantly activate your membership. If you do not receive your confirmation email, contact us at biznerds@phreesoft.com. If you are using a spam filter on your email, please be sure that email coming from biznerds@phreesoft.com is directed to your inbox. If you do not, you may miss important subscription information, like your membership activation link.
 	'email_new_portal_body' => 'Welcome to Bizuno,<br /><br />%s has added you to the list of users that have access to their business, %s. You will need to set your password before you can log into Bizuno. Please go to <a href="%s">%s</a> to initialize your account.<br />You will need to enter your confirmation code along with a new password. Your confirmation code will expire in 48 hours: <br /><b>%s</b>',
 	'email_new_user_body' => 'Welcome to Bizuno,<br /><br />%s has added you to the list of users that have access to their business, %s. Since you already have an Bizuno username, all you have to do is go to the portal <a href="%s">%s</a> and log in using your current credentials.',
+    'account_verified' => 'Your credentials have been verified at PhreeSoft. Any purchases you have made in our store should now be ready to download and install.',
     // Settings
     'set_timezone' => 'Set your locale/timezone to base your posted entries.',
     'set_password_min' => 'Sets the minimum password length. Longer passwords lead to a more secure website. Minimum value is 8.',

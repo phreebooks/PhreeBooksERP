@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-28
+ * @version    3.x Last Update: 2018-06-28
  * @filesource /controller/module/phreeform/admin.php
  */
 
@@ -70,8 +70,8 @@ class phreeformAdmin
     {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
 		$data = adminStructure($this->moduleID, $this->settingsStructure(), $this->lang);
-		$data['tabs']['tabAdmin']['divs']['settings'] = ['order'=>20,'label'=>lang('settings'),  'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminSettings.php"];
-		$data['tabs']['tabAdmin']['divs']['tabDBs']   = ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"];
+		$data['tabs']['tabAdmin']['divs']['settings'] = ['order'=>20,'label'=>lang('settings'),  'src'=>BIZUNO_LIB."view/tabAdminSettings.php"];
+		$data['tabs']['tabAdmin']['divs']['tabDBs']   = ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"];
 		$layout = array_replace_recursive($layout, $data);
 	}
 

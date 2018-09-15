@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-09
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/payment/methods/paypal.php
  */
 
@@ -68,10 +68,8 @@ class paypal
 		$noYes = [['id'=>'0','text'=>lang('no')], ['id'=>'1','text'=>lang('yes')]];
 		$auths = [['id'=>'Sale','text'=>lang('capture')], ['id'=>'Authorization','text'=>lang('authorize')]];
         return [
-            'cash_gl_acct'=> ['label'=>$this->lang['set_gl_payment_c'], 'position'=>'after', 'jsBody'=>htmlComboGL("{$this->code}_cash_gl_acct"),
-				'attr' => ['size'=>'10', 'value'=>$this->settings['cash_gl_acct']]],
-			'disc_gl_acct'=> ['label'=>$this->lang['set_gl_discount_c'], 'position'=>'after', 'jsBody'=>htmlComboGL("{$this->code}_disc_gl_acct"),
-				'attr' => ['size'=>'10','value'=>$this->settings['disc_gl_acct']]],
+            'cash_gl_acct'=> ['label'=>$this->lang['set_gl_payment_c'], 'position'=>'after','attr'=>['type'=>'ledger','id'=>"{$this->code}_cash_gl_acct",'value'=>$this->settings['cash_gl_acct']]],
+			'disc_gl_acct'=> ['label'=>$this->lang['set_gl_discount_c'],'position'=>'after','attr'=>['type'=>'ledger','id'=>"{$this->code}_disc_gl_acct",'value'=>$this->settings['disc_gl_acct']]],
 			'order'       => ['label'=>lang('order'), 'position'=>'after', 'attr'=>  ['type'=>'integer', 'size'=>'3','value'=>$this->settings['order']]],
 			'user'        => ['label'=>$this->lang['user'],       'position'=>'after', 'attr'=>['type'=>'text', 'size'=>'20','value'=>$this->settings['user']]],
 			'pass'        => ['label'=>$this->lang['pass'],       'position'=>'after', 'attr'=>['type'=>'text','value'=>$this->settings['pass']]],
@@ -84,16 +82,16 @@ class paypal
 	public function render(&$output, $data, $values=[], $dispFirst=false)
 	{
 		msgDebug("\nWorking with values = ".print_r($values, true));
-		$exp   = pullExpDates();
+		$cc_exp = pullExpDates();
 		$this->viewData = [
             'trans_code'=> ['attr'=>['type'=>'hidden']],
 			'selCards'  => ['attr'=>['type'=>'select'],'events'=>['onChange'=>"paypalRefNum('stored');"]],
-			'save'      => ['label'=>lang('save'),                'break'=>true,'attr'=>['type'=>'checkbox', 'value'=>'1']],
-			'name'      => ['label'=>lang('payment_name') ,       'break'=>true,'attr'=>['size'=>'24']],
-			'number'    => ['label'=>lang('payment_number'),      'break'=>true,'attr'=>['size'=>'19'], 'events'=>['onChange'=>"paypalRefNum('number');"]],
-			'month'     => ['label'=>lang('payment_expiration'),  'values'=>$exp['months'],'attr'=>  ['type'=>'select']],
-			'year'      => ['values'=>$exp['years'], 'break'=>true,'attr'=>['type'=>'select']],
-			'cvv'       => ['label'=>lang('payment_cvv'),          'attr'=>['size'=>'5', 'maxlength'=>'4']]];
+			'save'      => ['label'=>lang('save'),'break'=>true,'attr'=>['type'=>'checkbox','value'=>'1']],
+            'name'      => ['options'=>['width'=>200],'break'=>true,'label'=>lang('payment_name')],
+            'number'    => ['options'=>['width'=>160],'break'=>true,'label'=>lang('payment_number'),'events'=>['onChange'=>"convergeRefNum('number');"]],
+            'month'     => ['label'=>lang('payment_expiration'),'options'=>['width'=>130],'values'=>$cc_exp['months'],'attr'=>['type'=>'select','value'=>date('m')]],
+            'year'      => ['break'=>true,'options'=>['width'=>70],'values'=>$cc_exp['years'],'attr'=>['type'=>'select','value'=>date('Y')]],
+            'cvv'       => ['options'=>['width'=>45],'label'=>lang('payment_cvv'),'attr'=>['type'=>'text','size'=>'4']]];
 		if (isset($values['method']) && $values['method']==$this->code 
 				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
 			$this->viewData['number']['attr']['value'] = isset($values['hint']) ? $values['hint'] : '****';
@@ -127,20 +125,17 @@ class paypal
 		$output['jsBody'][] = "
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account', discGL:'$discount_gl', ref:'$invoice_num'};
 function payment_$this->code() {
-	jq('#invoice_num').val(arrPmtMethod['$this->code'].ref);
-	jq('#gl_acct_id').combogrid('setValue', arrPmtMethod['$this->code'].cashGL);
-	jq('#totals_discount_gl').combogrid('setValue', arrPmtMethod['$this->code'].discGL);
+    bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
+    bizGridSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
+    bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
 }
 function paypalRefNum(type) {
-	if (type=='stored') {
-		var ccNum = jq('#{$this->code}selCards option:selected').text();
-	} else {
-		var ccNum = jq('#{$this->code}_number').val();
-	}
+	if (type=='stored') { var ccNum = bizSelGet('{$this->code}selCards'); }
+      else { var ccNum = bizTextGet('{$this->code}_number');  }
 	var newRef = arrPmtMethod['$this->code'].ref;
-	jq('#invoice_num').val(newRef);
+	bizTextSet('invoice_num', newRef);
 }";
-        if ($this->code == $dispFirst) { $output['jsReady'][] = "jq('#invoice_num').val('$invoice_num');"; }
+        if ($this->code == $dispFirst) { $output['jsReady'][] = "bizTextSet('invoice_num', '$invoice_num');"; }
         $output['body'] .= html5($this->code.'_action', ['label'=>lang('capture'),'hidden'=>($show_c?false:true),'attr'=>['type'=>'radio','value'=>'c','checked'=>$checked=='c'?true:false],
 	'events'=>  ['onChange'=>"jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').hide(); jq('#div{$this->code}c').show();"]]).
 html5($this->code.'_action', ['label'=>lang('stored'),'hidden'=>($show_s?false:true),'attr'=>  ['type'=>'radio','value'=>'s','checked'=>$checked=='s'?true:false],

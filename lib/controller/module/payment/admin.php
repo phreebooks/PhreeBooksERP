@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-28
+ * @version    3.x Last Update: 2018-06-28
  * @filesource /lib/controller/module/payment/admin.php
  */
 
@@ -52,10 +52,10 @@ class paymentAdmin
     public function settingsStructure()
     {
 		$data = ['general' => [
-                'gl_payment_c'  => ['jsBody'=>htmlComboGL('general_gl_payment_c'), 'attr'=>  ['value'=>$this->defaults['gl_payment_c']]],
-				'gl_discount_c' => ['jsBody'=>htmlComboGL('general_gl_discount_c'),'attr'=>  ['value'=>$this->defaults['gl_discount_c']]],
-				'gl_payment_v'  => ['jsBody'=>htmlComboGL('general_gl_payment_v'), 'attr'=>  ['value'=>$this->defaults['gl_payment_v']]],
-				'gl_discount_v' => ['jsBody'=>htmlComboGL('general_gl_discount_v'),'attr'=>  ['value'=>$this->defaults['gl_discount_v']]],
+                'gl_payment_c'  => ['attr'=>['type'=>'ledger','id'=>'general_gl_payment_c', 'value'=>$this->defaults['gl_payment_c']]],
+				'gl_discount_c' => ['attr'=>['type'=>'ledger','id'=>'general_gl_discount_c','value'=>$this->defaults['gl_discount_c']]],
+				'gl_payment_v'  => ['attr'=>['type'=>'ledger','id'=>'general_gl_payment_v', 'value'=>$this->defaults['gl_payment_v']]],
+				'gl_discount_v' => ['attr'=>['type'=>'ledger','id'=>'general_gl_discount_v','value'=>$this->defaults['gl_discount_v']]],
 				'prefix'        => ['attr'=>  ['value'=>'DP']]]];
 		settingsFill($data, $this->moduleID);
 		return $data;
@@ -71,8 +71,8 @@ class paymentAdmin
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
 		$data = adminStructure($this->moduleID, $this->settingsStructure(), $this->lang);
 		$data['tabs']['tabAdmin']['divs']['methods'] = ['order'=>10,'label'=>lang('payment_methods'),'attr'=>['module'=>$this->moduleID,'path'=>$this->structure['dirMethods']],
-			'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"];
-		$data['tabs']['tabAdmin']['divs']['settings']= ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminSettings.php"];
+			'src'=>BIZUNO_LIB."view/tabAdminMethods.php"];
+		$data['tabs']['tabAdmin']['divs']['settings']= ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/tabAdminSettings.php"];
 		$layout = array_replace_recursive($layout, $data);
 	}
 

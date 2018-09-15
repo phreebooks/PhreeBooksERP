@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2018-06-04
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/totals/debitcredit/debitcredit.php
  */
 
@@ -48,10 +48,8 @@ class debitCredit
 
 	public function render(&$output) {
 		$this->fields = [
-            'totals_debit' => ['label'=>lang('total_debits'),
-                'styles'=>  ['text-align'=>'right'], 'attr' => ['size'=>'15', 'value'=>'0']],
-		    'totals_credit'=> ['label'=>lang('total_credits'),
-                'styles'=>  ['text-align'=>'right'], 'attr' => ['size'=>'15', 'value'=>'0']]];
+            'totals_debit' =>['label'=>lang('total_debits'), 'styles'=>['text-align'=>'right'],'attr'=>['size'=>'15','value'=>'0']],
+		    'totals_credit'=>['label'=>lang('total_credits'),'styles'=>['text-align'=>'right'],'attr'=>['size'=>'15','value'=>'0']]];
 		$output['body'] .= '<div style="text-align:right">'."
 	".html5('totals_debit', $this->fields['totals_debit'])."<br />
 	".html5('totals_credit',$this->fields['totals_credit'])."</div>\n";
@@ -69,8 +67,8 @@ class debitCredit
 		if (isNaN(amount)) amount = 0;
 		creditAmount += amount;
 	}
-	jq('#totals_debit' ).val(formatCurrency(debitAmount));
-	jq('#totals_credit').val(formatCurrency(creditAmount));
+    bizTextSet('totals_debit', debitAmount, 'currency');
+    bizTextSet('totals_credit', creditAmount, 'currency');
 	return debitAmount - creditAmount;
 }";
 	}

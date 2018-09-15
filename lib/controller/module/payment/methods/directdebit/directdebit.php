@@ -15,11 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-08-27
+ * @version    3.x Last Update: 2017-08-27
  * @filesource /lib/controller/module/payment/methods/directdebit.php
- * 
  */
 
 namespace bizuno;
@@ -42,17 +41,15 @@ class directdebit
     public function settingsStructure()
     {
         return [
-            'cash_gl_acct'=> ['label'=>$this->lang['set_gl_payment_c'], 'position'=>'after', 'jsBody'=>htmlComboGL("{$this->code}_cash_gl_acct"),
-               'attr' => ['size'=>'10', 'value'=>$this->settings['cash_gl_acct']]],
-            'disc_gl_acct'=> ['label'=>$this->lang['set_gl_discount_c'], 'position'=>'after', 'jsBody'=>htmlComboGL("{$this->code}_disc_gl_acct"),
-               'attr' => ['size'=>'10', 'value'=>$this->settings['disc_gl_acct']]],
+            'cash_gl_acct'=> ['label'=>$this->lang['set_gl_payment_c'], 'position'=>'after','attr'=>['type'=>'ledger','id'=>"{$this->code}_cash_gl_acct",'value'=>$this->settings['cash_gl_acct']]],
+            'disc_gl_acct'=> ['label'=>$this->lang['set_gl_discount_c'],'position'=>'after','attr'=>['type'=>'ledger','id'=>"{$this->code}_disc_gl_acct",'value'=>$this->settings['disc_gl_acct']]],
             'prefix'=> ['label'=>$this->lang['set_prefix'], 'position'=>'after', 'attr'=>  ['size'=>'5', 'value'=>$this->settings['prefix']]],
             'order' => ['label'=>lang('order'), 'position'=>'after', 'attr'=>  ['type'=>'integer', 'size'=>'3', 'value'=>$this->settings['order']]]];
 	}
 
 	public function render(&$output, $data, $values=[], $dispFirst=false)
 	{
-		$this->viewData = ['ref_1'=> ['label'=>lang('journal_main_invoice_num_2'),'break'=>true, 'attr'=>  ['size'=>'19']]];
+		$this->viewData = ['ref_1'=> ['options'=>['width'=>150],'label'=>lang('journal_main_invoice_num_2'),'break'=>true, 'attr'=>  ['size'=>'19']]];
 		if (isset($values['method']) && $values['method']==$this->code 
 				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
 			$this->viewData['ref_1']['attr']['value'] = $this->getRefValue($data['fields']['main']['id']['attr']['value']);
@@ -67,11 +64,11 @@ class directdebit
 		$output['jsBody'][] = "
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account',discGL:'$discount_gl',ref:'$invoice_num'};
 function payment_".$this->code."() {
-    jq('#invoice_num').val(arrPmtMethod['$this->code'].ref);
-    jq('#gl_acct_id').combogrid('setValue', arrPmtMethod['$this->code'].cashGL);
-    jq('#totals_discount_gl').combogrid('setValue', arrPmtMethod['$this->code'].discGL);
+    bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
+    bizGridSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
+    bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
 }";
-        if ($this->code == $dispFirst) { $output['jsReady'][] = "jq('#invoice_num').val('$invoice_num');"; }
+        if ($this->code == $dispFirst) { $output['jsReady'][] = "bizTextSet('invoice_num', '$invoice_num');"; }
 		$output['body'] .= html5($this->code.'_ref_1',$this->viewData['ref_1']);
 	}
 

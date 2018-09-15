@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-13
+ * @version    3.x Last Update: 2018-09-10
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -34,19 +34,19 @@ class contactsMain
     {
 		$this->lang = getLang($this->moduleID);
         $rID = clean('rID', 'integer', 'get');
-        if ($rID) { $this->type = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID"); } 
+        if ($rID) { $this->type = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID"); }
         else      { $this->type = clean('type', ['format'=>'char', 'default'=>'c'], 'get'); }
         if (!defined('CONTACT_TYPE')) { define('CONTACT_TYPE', $this->type); }
 		$this->securityModule = 'contacts';
 		$this->securityMenu   = 'mgr_'.$this->type;
 		switch ($this->type) {
 			case 'b': $this->securityMenu = 'mgr_c'; // allow access o branches if access to customers
-					  $this->helpIndex='40.80'; $this->f0_default='y'; break; // branches
+					  $this->helpIndex='40.80'; $this->f0_default='0'; break; // branches
 			case 'c': $this->helpIndex='40.30'; $this->f0_default='a'; break; // customers
-			case 'e': $this->helpIndex='40.50'; $this->f0_default='y'; break; // employees
+			case 'e': $this->helpIndex='40.50'; $this->f0_default='0'; break; // employees
 			case 'i': $this->helpIndex='40.40'; $this->f0_default='a'; break; // crm
 			case 'j': $this->helpIndex='40.70'; $this->f0_default='a'; break; // jobs/projects
-			case 'v': $this->helpIndex='40.20'; $this->f0_default='y'; break; // vendors
+			case 'v': $this->helpIndex='40.20'; $this->f0_default='0'; break; // vendors
 			default:
 		}
 		$this->contact = [
@@ -74,18 +74,24 @@ class contactsMain
         $title= sprintf(lang('tbd_manager'), lang('contacts_type', $this->type));
         if     (in_array($this->type, ['c','i'])) { $submenu = viewSubMenu('customers'); }
         elseif ($this->type == 'v')               { $submenu = viewSubMenu('vendors'); }
-        else   { $submenu = ''; } 
-        $data = ['pageTitle' => $title,
+        else   { $submenu = ''; }
+        if ($rID) {
+            $jsReady = "jq(document).ready(function() { accordionEdit('accContacts', 'dgContacts', 'divContactDetail', '".jsLang('details')."', 'contacts/main/edit&type=$this->type', $rID); });";
+        } else {
+            $jsReady = "bizFocus('search_$this->type', 'dgContacts');";
+        }
+        $data = ['type'=>'page','title'=>$title,
             'divs' => [
-                'submenu' =>['order'=>10, 'type'=>'html','html'=>$submenu],
+                'submenu' =>['order'=>10,'type'=>'html',     'html'=>$submenu],
                 'contacts'=>['order'=>50,'type'=>'accordion','id'=>'accContacts','divs'=>[
-                    'divContactManager'=>['order'=>30,'type'=>'datagrid','label'=>$title,'el'=>$this->dgContacts('dgContacts', $this->type, $security)],
-                    'divContactDetail' =>['order'=>70,'type'=>'html','label'=>lang('details'),'html'=>'&nbsp;']]]]];
+                    'divContactManager'=>['order'=>30,'type'=>'datagrid','label'=>$title,         'key' =>'manager'],
+                    'divContactDetail' =>['order'=>70,'type'=>'html',    'label'=>lang('details'),'html'=>'&nbsp;']]]],
+            'datagrid'=>['manager'=>$this->dgContacts('dgContacts', $this->type, $security)],
+            'jsReady'=>['init'=>$jsReady]];
         if ($view == 'div') { // probably a status popup
 			$data['type'] = 'divHTML';
             $layout = array_replace_recursive($layout, $data);
 		} else {
-            if ($rID) { $data['jsReady']['contactsEdit'] = "jq(document).ready(function() { accordionEdit('accContacts', 'dgContacts', 'divContactDetail', '".jsLang('details')."', 'contacts/main/edit&type=$this->type', $rID); });"; }
             $layout = array_replace_recursive($layout, viewMain(), $data);
         }
 	}
@@ -158,27 +164,16 @@ class contactsMain
 			case '1': $f0_value = BIZUNO_DB_PREFIX."contacts.inactive='1'"; break;
             case '2': $f0_value = BIZUNO_DB_PREFIX."contacts.inactive='2'"; break;
 		}
-		$data = [
-            'id'     => $name,
-			'rows'   => $this->defaults['rows'],
-			'page'   => $this->defaults['page'],
-			'attr'=> [
-                'url'     => BIZUNO_AJAX."&p=contacts/main/managerRows&type=$type".($rID?"&rID=$rID":''),
-				'toolbar' => "#{$name}Toolbar",
-				'pageSize'=> getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField' => 'id'],
+		$data = ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
+			'attr'=> ['idField'=>'id', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&p=contacts/main/managerRows&type=$type".($rID?"&rID=$rID":'')],
 			'events' => [
-                'onLoadSuccess'=> "function(data) { 
-					jq('#search_{$type}').focus();
-					jq('#{$name}Toolbar input').keypress(function (e) { if (e.keyCode == 13) { {$name}Reload(); } });
-				}",
 				'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accContacts', 'dgContacts', 'divContactDetail', '".jsLang('details')."', 'contacts/main/edit&type=$type', rowData.id); }",
 				'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; } if (row.inactive==2) { return {style:'background-color:pink'}; }}"],
 			'footnotes' => ['codes'=>lang('color_codes').': <span class="row-inactive">&nbsp;'.lang('inactive').'&nbsp;</span>&nbsp;<span style="background-color:pink">&nbsp;'.lang('locked').'&nbsp;</span>'],
 			'source'    => [
                 'tables' => [
-                    'contacts'    => ['table'=>BIZUNO_DB_PREFIX."contacts"],
-					'address_book'=> ['table'=>BIZUNO_DB_PREFIX."address_book",'join'=>'join','links'=>BIZUNO_DB_PREFIX."contacts.id=".BIZUNO_DB_PREFIX."address_book.ref_id"]],
+                    'contacts'    =>['table'=>BIZUNO_DB_PREFIX."contacts"],
+					'address_book'=>['table'=>BIZUNO_DB_PREFIX."address_book",'join'=>'join','links'=>BIZUNO_DB_PREFIX."contacts.id=".BIZUNO_DB_PREFIX."address_book.ref_id"]],
 				'search' => [
                     BIZUNO_DB_PREFIX."contacts.id",
                     BIZUNO_DB_PREFIX."contacts.short_name",
@@ -190,32 +185,30 @@ class contactsMain
 					BIZUNO_DB_PREFIX."address_book.city",
 					BIZUNO_DB_PREFIX."address_book.postal_code"],
 				'actions' => [
-                    'help'      =>  ['order'=> 0,'align'=>'right','html'=>['icon'=>'help', 'index'=>$this->helpIndex]],
-					'newContact'=>  ['order'=>10,'html'=>['icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accContacts', 'dgContacts', 'divContactDetail', '".lang('details')."', 'contacts/main/edit&type=$type', 0, '');"]]],
-					'clrSearch' =>  ['order'=>50,'html'=>['icon'=>'clear','events'=>['onClick'=>"jq('#f0_{$type}').val('$this->f0_default'); jq('#search_$type').val(''); ".$name."Reload();"]]]],
+                    'help'      => ['order'=> 0,'icon'=>'help', 'align' =>'right','index'=>$this->helpIndex],
+					'newContact'=> ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accContacts', 'dgContacts', 'divContactDetail', '".lang('details')."', 'contacts/main/edit&type=$type', 0, '');"]],
+					'clrSearch' => ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#f0_{$type}').val('$this->f0_default'); jq('#search_$type').val(''); ".$name."Reload();"]]],
 				'filters' => [
-                    "f0_$type" => ['order'=>10, 'sql'=>$f0_value,
-						'html' => ['label'=>lang('status'), 'values'=>$statusValues, 'attr'=>['type'=>'select', 'value'=>$this->defaults['f0_'.$type]]],
-                        ],
-					'search' => ['order'=>90, 'html'=>['attr'=>['id'=>"search_$type", 'value'=>$this->defaults['search_'.$type]]]],
-					'cType'  => ['order'=>98, 'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."contacts.type='$type'"],
-					'aType'  => ['order'=>99, 'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."address_book.type='m'"]],
-				'sort' => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
+                    "f0_$type"=> ['order'=>10,'break'=>true,'sql'=>$f0_value,'label'=>lang('status'),'values'=>$statusValues,'attr'=>['type'=>'select','value'=>$this->defaults['f0_'.$type]]],
+					'search'  => ['order'=>90,'attr'=>['id'=>"search_$type", 'value'=>$this->defaults['search_'.$type]]],
+					'cType'   => ['order'=>98,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."contacts.type='$type'"],
+					'aType'   => ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."address_book.type='m'"]],
+				'sort' => ['s0'=>['order'=>10,'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
 			'columns' => [
-                'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."contacts.id",       'attr'=>['hidden'=>true]],
-                'email'   => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."address_book.email",'attr'=>['hidden'=>true]],
-				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."contacts.inactive", 'attr'=>['hidden'=>true]],
-				'attach'  => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."contacts.attach",   'attr'=>['hidden'=>true]],
-				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>60],
+                'id'      => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."contacts.id",       'attr'=>['hidden'=>true]],
+                'email'   => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."address_book.email",'attr'=>['hidden'=>true]],
+				'inactive'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX."contacts.inactive", 'attr'=>['hidden'=>true]],
+				'attach'  => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."contacts.attach",   'attr'=>['hidden'=>true]],
+				'action'  => ['order'=>1,'label'=>lang('action'),
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> [
-						'edit'  => ['icon'=>'edit', 'size'=>'small', 'order'=>20, 'label'=>lang('edit'),
+						'edit'  => ['icon'=>'edit', 'order'=>20, 'label'=>lang('edit'),
 							'events'=> ['onClick' => "accordionEdit('accContacts', 'dgContacts', 'divContactDetail', '".lang('details')."', 'contacts/main/edit&type=$type', idTBD);"]],
-						'delete'=> ['icon'=>'trash', 'size'=>'small', 'order'=>60, 'label'=>lang('delete'),'hidden'=>$security>3?false:true,
+						'delete'=> ['icon'=>'trash', 'order'=>60, 'label'=>lang('delete'),'hidden'=>$security>3?false:true,
 							'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('contacts/main/delete', idTBD, 'reload:$name');"]],
-                        'chart' => ['icon'=>'mimePpt', 'size'=>'small', 'order'=>80, 'label'=>lang('sales'),'hidden'=>in_array($type, ['c','v'])?false:true,
+                        'chart' => ['icon'=>'mimePpt', 'order'=>80, 'label'=>lang('sales'),'hidden'=>in_array($type, ['c','v'])?false:true,
 							'events'=> ['onClick' => "windowEdit('contacts/tools/chartSales&rID=idTBD', 'myChart', '&nbsp;', 600, 500);"]],
-						'attach' => ['order'=>95,'icon'=>'attachment','size'=>'small','display'=>"row.attach=='1'"]]],
+						'attach' => ['order'=>95,'icon'=>'attachment','display'=>"row.attach=='1'"]]],
 				'short_name'   => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX.'contacts.short_name',
 					'label' => pullTableLabel("contacts", 'short_name', $type),
 					'attr'  => ['width'=>100, 'sortable'=>true, 'resizable'=>true]],
@@ -250,7 +243,7 @@ class contactsMain
 					'attr'  => ['width'=>100, 'sortable'=>true, 'resizable'=>true]]],
             ];
 		if ($type=='c' || $type == 'v') {
-			$data['source']['actions']['mergeContact'] = ['order'=>20, 'html'=>  ['icon'=>'merge','events'=>  ['onClick'=>"jsonAction('contacts/main/merge&type=$type', 0);"]]];
+			$data['source']['actions']['mergeContact'] = ['order'=>20,'icon'=>'merge','events'=>['onClick'=>"jsonAction('contacts/main/merge&type=$type', 0);"]];
 		} elseif (strlen($type)>1) { // search only certain types, all types are listed (i.e. cv)
 		    $data['source']['filters']['cType']['sql'] = BIZUNO_DB_PREFIX."contacts.type IN ('".implode("','", str_split($type))."')";
 //            $data['columns']['type']['attr']['hidden'] = false;
@@ -258,6 +251,13 @@ class contactsMain
         if (getUserCache('profile', 'restrict_user', false, 0)) { // check for user restrictions
             $uID = getUserCache('profile', 'contact_id', false, 0);
             $data['source']['filters']['restrict_user'] = ['order'=>99, 'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."contacts.rep_id='$uID'"];
+        }
+        if ($GLOBALS['myDevice'] == 'mobile') {
+            $data['columns']['short_name']['attr']['hidden'] = true;
+            $data['columns']['flex_field_1']['attr']['hidden'] = true;
+            $data['columns']['address1']['attr']['hidden'] = true;
+            $data['columns']['state']['attr']['hidden'] = true;
+            $data['columns']['postal_code']['attr']['hidden'] = true;
         }
 		return $data;
 	}
@@ -271,22 +271,50 @@ class contactsMain
     {
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
 		$rID = clean('rID', 'integer', 'get');
+		$structure = [
+            'contacts'    => dbLoadStructure(BIZUNO_DB_PREFIX."contacts",    $this->type),
+			'address_book'=> dbLoadStructure(BIZUNO_DB_PREFIX."address_book",$this->type)];
+		// merge data with structure
+		$cData = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id=$rID");
+		dbStructureFill($structure['contacts'], $cData);
+		// set some special cases
+		$structure['contacts']['type']['attr']['value'] = $this->type;
+		$structure['contacts']['short_name']['tooltip'] = lang('msg_leave_null_to_assign_ref');
+		$structure['contacts']['rep_id']['attr']['type']= 'select';
+		unset($structure['contacts']['rep_id']['attr']['size']);
+        $structure['contacts']['inactive']['label']     = lang('status');
+        $structure['contacts']['inactive']['values']    = $this->status_choices;
+		$structure['contacts']['rep_id']['values']      = viewRoleDropdown();
+		$structure['contacts']['tax_rate_id']['attr']['type']= 'select';
+		$structure['contacts']['tax_rate_id']['values'] = viewSalesTaxDropdown($this->type=='b'?'c':$this->type, 'inventory');
+		unset($structure['contacts']['tax_rate_id']['attr']['size']);
+		if (sizeof(getModuleCache('inventory', 'prices'))) {
+			$structure['contacts']['price_sheet']['attr']['type'] = 'select';
+			unset($structure['contacts']['price_sheet']['attr']['size']);
+			require_once(BIZUNO_LIB."controller/module/inventory/prices.php");
+			$tmp = new inventoryPrices();
+			$structure['contacts']['price_sheet']['values'] = $tmp->quantityList($this->type=='b'?'c':$this->type, true);
+		}
+		if (!$rID) { // set some defaults
+			$structure['contacts']['gl_account']['attr']['value'] = $this->contact['gl_account'];
+			$structure['contacts']['terms']['attr']['value']      = '0';
+		}
+		$structure['contacts']['gl_account']['attr']['type'] = 'ledger';
+		$structure['contacts']['terms_text'] = ['label'=>pullTableLabel("contacts", 'terms', $this->type), 
+			'attr'=>['value'=>viewTerms($structure['contacts']['terms']['attr']['value'], true, $this->type), 'readonly'=>'readonly']];
+		$structure['contacts']['terms_edit'] = ['icon'=>'settings','size'=>'small','label'=>lang('terms'),'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=$this->type',$rID,jq('#terms').val());"]];
         switch ($this->type) {
             case 'c': $formID = 'cust:ltr'; break;
             case 'v': $formID = 'vend:ltr'; break;
             default:  $formID = false;
         }
-		$structure = [
-            'contacts'    => dbLoadStructure(BIZUNO_DB_PREFIX."contacts",    $this->type),
-			'address_book'=> dbLoadStructure(BIZUNO_DB_PREFIX."address_book",$this->type)];
-		$data = ['type'=>'divHTML',
-			'title'    => lang('new'),
-			'divs'    => [
-                'tbContact' => ['order'=>10,'type'=>'toolbar','key'=>'tbContacts'],
-                'heading'   => ['order'=>15,'type'=>'html','html'=>"<h1>".lang('new')."</h1>"],
-                'formBOF'   => ['order'=>20,'type'=>'form','key'=>'frmContact'],
-                'tabContact'=> ['order'=>50,'type'=>'tabs','key'=>'tabContacts'],
-                'formEOF'   => ['order'=>99,'type'=>'html', 'html'=>'</form>']],
+		$data = ['type'=>'divHTML', 'title'=>lang('new'),
+			'divs'     => [
+                'toolbar' => ['order'=>10,'type'=>'toolbar','key' =>'tbContacts'],
+                'heading' => ['order'=>15,'type'=>'html',   'html'=>"<h1>".lang('new')."</h1>"],
+                'formBOF' => ['order'=>20,'type'=>'form',   'key' =>'frmContact'],
+                'tabs'    => ['order'=>50,'type'=>'tabs',   'key' =>'tabContacts'],
+                'formEOF' => ['order'=>99,'type'=>'html',   'html'=>'</form>']],
 			'toolbars'  => [
                 'tbContacts' => ['icons' => [ 
                     'save' => ['order'=>20,'hidden'=>$security >1?false:true,        'events'=>['onClick'=>"if (jq('#frmContact').form('validate')) { jq('body').addClass('loading'); jq('#frmContact').submit(); }"]],
@@ -302,66 +330,55 @@ class contactsMain
                     'news'  => ['order'=>20,'icon'=>'new', 'label'=>lang('new'), 'hidden'=>$security >1?false:true,        'events'=>['onClick'=>"addressClear('s');"]],
 					'copys' => ['order'=>30,'icon'=>'copy','label'=>lang('copy'),'hidden'=>$security >1?false:true,        'events'=>['onClick'=>"addressCopy('m', 's');"]]]]],
 			'tabs' => ['tabContacts'=>['divs'=>[
-                'general'=> ['order'=>10,'label'=>lang('general'), 'type'=>'divs', 'divs'=>[
-                    'genMain'  => ['order'=>20, 'src'=>BIZUNO_LIB."view/module/contacts/tabGeneral.php"],
-                    'genAddr'  => ['order'=>50, 'type'=>'address', 'content' =>$structure['address_book'],'settings'=>['suffix'=>'m','required'=>true]],
-                    'getAttach'=> ['order'=>80, 'src'=>BIZUNO_LIB."view/module/bizuno/divAttach.php",'attr'=>['delPath'=>"$this->moduleID/main/deleteAttach"]]]],
+                'general'=> ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
+                    'genMain'  => ['order'=>20,'type'=>'fields','label'=>lang('general'),'fields'=>$this->getGenFields($structure['contacts'])],
+                    'genAddr'  => ['order'=>50,'type'=>'address','content' =>$structure['address_book'],'settings'=>['suffix'=>'m','required'=>true]],
+                    'getAttach'=> ['order'=>80,'type'=>'attach', 'attr'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>"rID_{$rID}_"]]]],
 				'crm_add' => ['order'=>20,'label'=>lang('contacts'), 'type'=>'html', 'html'=>'', 'attr'=>['id'=>'crmDiv'],
-					'attr'=>  ['data-options'=>"href:'".BIZUNO_AJAX."&p=contacts/main/crmDetails&rID=$rID'"]],
-				'history'  => ['order'=>30,'label'=>lang('history'), 'hidden'=>$rID?false:true,'type'=>'html', 'html'=>'',
-					'attr'=>  ['data-options'=>"href:'".BIZUNO_AJAX."&p=contacts/main/history&rID=$rID'"]],
+					'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/crmDetails&rID=$rID'"]],
+				'history' => ['order'=>30,'label'=>lang('history'), 'hidden'=>$rID?false:true,'type'=>'html', 'html'=>'',
+					'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/history&rID=$rID'"]],
 				'bill_add'=> ['order'=>40,'label'=>lang('address_book_type_b'), 'type'=>'html', 'html'=>'',
-					'attr'=>  ['data-options'=>"href:'".BIZUNO_AJAX."&p=contacts/main/getTabAddress&type=b&rID=$rID'"]],
+					'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/getTabAddress&type=b&rID=$rID'"]],
 				'ship_add'=> ['order'=>50,'label'=>lang('address_book_type_s'), 'type'=>'html', 'html'=>'',
-					'attr'=>  ['data-options'=>"href:'".BIZUNO_AJAX."&p=contacts/main/getTabAddress&type=s&rID=$rID'"]],
-				'payment' => ['order'=>60,'label'=>lang('payment'), 'hidden'=>$rID && getUserCache('profile', 'admin_encrypt', false, '')?false:true, 'type'=>'html', 'html'=>'',
-					'attr'=>  ['data-options'=>"href:'".BIZUNO_AJAX."&p=payment/main/manager&rID=$rID'"]],
+					'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/getTabAddress&type=s&rID=$rID'"]],
 				'notes'   => ['order'=>70,'label'=>lang('notes'), 'html'=>'',
-					'attr'=>  ['data-options'=>"href:'".BIZUNO_AJAX."&p=contacts/main/getTabNotes&rID=$rID'"]]]]],
+					'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/getTabNotes&rID=$rID'"]]]]],
 			'forms' => ['frmContact'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=contacts/main/save&type=$this->type"]]],
-			'fields' => ['contacts'=>$structure['contacts']],
-            'jsHead' => ['conHead' =>"function preSubmit() { clearInnerLabels(addressFields, 'm'); clearInnerLabels(addressFields, 'i'); clearInnerLabels(addressFields, 'b'); clearInnerLabels(addressFields, 's'); return true; }"],
             'jsReady'=> ['conReady'=>"ajaxForm('frmContact');"]];
-		// merge data with structure
-		$cData = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id=$rID");
-		dbStructureFill($data['fields']['contacts'], $cData);
-		customTabs($data, $data['fields']['contacts'], 'contacts', 'tabContacts');
-		// set some special cases
-        if (!getModuleCache('extShipping', 'properties', 'status')) { unset($data['tabs']['tabContacts']['divs']['address_s']); }
-		$data['fields']['contacts']['type']['attr']['value'] = $this->type;
-		$data['fields']['contacts']['short_name']['tooltip'] = lang('msg_leave_null_to_assign_ref');
-		$data['fields']['contacts']['rep_id']['attr']['type']= 'select';
-		unset($data['fields']['contacts']['rep_id']['attr']['size']);
-        $data['fields']['contacts']['inactive']['label']     = lang('status');
-        $data['fields']['contacts']['inactive']['values']    = $this->status_choices;
-		$data['fields']['contacts']['rep_id']['values']      = viewRoleDropdown();
-		$data['fields']['contacts']['tax_rate_id']['attr']['type']= 'select';
-		$data['fields']['contacts']['tax_rate_id']['values'] = viewSalesTaxDropdown($this->type=='b'?'c':$this->type, 'inventory');
-		unset($data['fields']['contacts']['tax_rate_id']['attr']['size']);
-		if (sizeof(getModuleCache('inventory', 'prices'))) {
-			$data['fields']['contacts']['price_sheet']['attr']['type'] = 'select';
-			unset($data['fields']['contacts']['price_sheet']['attr']['size']);
-			require_once(BIZUNO_LIB."controller/module/inventory/prices.php");
-			$tmp = new inventoryPrices();
-			$data['fields']['contacts']['price_sheet']['values'] = $tmp->quantityList($this->type=='b'?'c':$this->type, true);
-		}
 		if ($rID) {
             $aValue = dbGetRow(BIZUNO_DB_PREFIX."address_book", "ref_id=$rID AND type='m'");
             dbStructureFill($data['tabs']['tabContacts']['divs']['general']['divs']['genAddr']['content'], $aValue);
-			$data['title'] = $data['fields']['contacts']['short_name']['attr']['value'].' - '.$aValue['primary_name'];
+			$data['title'] = $structure['contacts']['short_name']['attr']['value'].' - '.$aValue['primary_name'];
             $data['divs']['heading']['html'] = "<h1>".$data['title']."</h1>";
-		} else {
-			$data['fields']['contacts']['gl_account']['attr']['value'] = $this->contact['gl_account'];
-			$data['fields']['contacts']['terms']['attr']['value']      = '0';
-		}
-		$data['fields']['contacts']['gl_account']['js'] = htmlComboGL('gl_account');
-		$data['terms_text'] = ['label'=>pullTableLabel("contacts", 'terms', $this->type), 
-			'attr'=>  ['value'=>viewTerms($data['fields']['contacts']['terms']['attr']['value'], true, $this->type), 'readonly'=>'readonly']];
-		$data['terms_edit'] = ['icon'=>'settings','size'=>'small','label'=>lang('terms'), 'events'=>  ['onClick'=>"jsonAction('contacts/main/editTerms&type=$this->type', $rID, '".$data['fields']['contacts']['terms']['attr']['value']."');"]];
-		// build the attachment structure
-		$data['attachPath']   = getModuleCache('contacts', 'properties', 'attachPath');
-		$data['attachPrefix'] = "rID_{$rID}_";
-		if (in_array($this->type, ['c','v'])) {
+        }
+        if (!getModuleCache('extShipping', 'properties', 'status')) { unset($data['tabs']['tabContacts']['divs']['address_s']); }
+		customTabs($data, $structure['contacts'], 'contacts', 'tabContacts');
+		if ($this->type=='c') { 
+            $data['tabs']['tabContacts']['divs']['payment'] = ['order'=>60,'label'=>lang('payment'),'hidden'=>$rID && getUserCache('profile', 'admin_encrypt', false, '')?false:true,'type'=>'html','html'=>'',
+                'options'=>['href'=>"'".BIZUNO_AJAX."&p=payment/main/manager&rID=$rID'"]];
+        }
+        if ($this->type == 'i') { // show the combogrid for contact link
+            $linkID = !empty($structure['contacts']['rep_id']['attr']['value']) ? $structure['contacts']['rep_id']['attr']['value'] : 0;
+            if ($linkID) {
+                $primary_name = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'primary_name', "ref_id=$linkID AND type='m'"); }
+            else { $primary_name = ''; }
+            $data['jsBody']['repIDi'] = "
+jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textField:'primary_name',mode:'remote',
+    url:    '".BIZUNO_AJAX."&p=contacts/main/managerRows&type=cv&store=0',
+    onBeforeLoad:function (param) { var newValue = jq('#rep_id').combogrid('getValue'); if (newValue.length < 3) return false; },
+    selectOnNavigation:false,
+	columns:[[{field:'id',hidden:true},
+		{field:'short_name',  title:'".pullTableLabel(BIZUNO_DB_PREFIX."contacts",    'short_name')."',  width:100},
+		{field:'type',        title:'".pullTableLabel(BIZUNO_DB_PREFIX."contacts",    'type')."',        width:100},
+		{field:'primary_name',title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'primary_name')."',width:200},
+		{field:'address1',    title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'address1')."',    width:200},
+		{field:'city',        title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'city')."',        width:100},
+		{field:'postal_code', title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'postal_code')."', width:100}
+	]]
+}).combogrid('setValue', {id:'$linkID',primary_name:'$primary_name'});";
+        }
+        if (in_array($this->type, ['c','v'])) {
             $jIdx = $this->type=='v' ? "j6_mgr" : "j12_mgr";
             if (!validateSecurity('phreebooks', $jIdx, 1, false)) { $data['tabs']['tabContacts']['divs']['history']['hidden'] = true; }
 		} else {
@@ -369,33 +386,6 @@ class contactsMain
 			unset($data['tabs']['tabContacts']['divs']['history']);
 			unset($data['tabs']['tabContacts']['divs']['bill_add']);
 			unset($data['tabs']['tabContacts']['divs']['ship_add']);
-			unset($data['tabs']['tabContacts']['divs']['payment']);
-		}
-		switch ($this->type) {
-			case 'b':
-				$data['fields']['contacts']['gl_account']['label']    = lang('default_gl_account').': '.lang('gl_acct_type_30'); // sales gl acct
-				$data['fields']['contacts']['flex_field_1']['label']  = lang('default_gl_account').': '.lang('sales_discounts'); // discount gl acct
-				$data['fields']['contacts']['account_number']['label']= lang('default_gl_account').': '.lang('gl_acct_type_2');  // AR gl acct
-				$data['fields']['contacts']['gov_id_number']['label'] = lang('default_gl_account').': '.lang('gl_acct_type_20'); // AP gl acct
-				$data['fields']['contacts']['gl_account']['js']       = htmlComboGL('gl_account');
-				$data['fields']['contacts']['flex_field_1']['js']     = htmlComboGL('flex_field_1');
-				$data['fields']['contacts']['account_number']['js']   = htmlComboGL('account_number');
-				$data['fields']['contacts']['gov_id_number']['js']    = htmlComboGL('gov_id_number');
-				break;
-			case 'c': // Customers
-				break;
-			case 'e': // Employees
-				break;
-			case 'i': // CRM 
-				$data['fields']['contacts']['rep_id']['attr']['type'] = 'select';
-				unset($data['fields']['contacts']['rep_id']['attr']['size']);
-				unset($data['fields']['contacts']['rep_id']['values']);
-				break;
-            case 'j': // Projects/Jobs
-                break;
-			case 'v': // Vendors
-				unset($data['tabs']['tabContacts']['divs']['payment']);
-				break;
 		}
         $layout = array_replace_recursive($layout, $data);
 	}
@@ -414,6 +404,58 @@ class contactsMain
 		$data   = ['content'=>['action'=>'eval', 'actionData'=>"addressFill(".json_encode($row).", '$suffix');"]];
         $layout = array_replace_recursive($layout, $data);
 	}
+
+    private function getGenFields($structure)
+    {
+        $output = [
+            'id'            => $structure['id'],
+            'type'          => $structure['type'],
+            'short_name'    => array_merge($structure['short_name'], ['break'=>true]),
+            'inactive'      => array_merge($structure['inactive'], ['break'=>true]),
+            'rep_id'        => array_merge($structure['rep_id'], ['break'=>true]),
+            'tax_rate_id'   => array_merge($structure['tax_rate_id'], ['break'=>true]),
+            'contact_first' => array_merge($structure['contact_first'], ['col'=>2,'break'=>true]),
+            'contact_last'  => array_merge($structure['contact_last'], ['col'=>2,'break'=>true]),
+            'flex_field_1'  => array_merge($structure['flex_field_1'], ['col'=>2,'break'=>true,'order'=>31]),
+            'store_id'      => array_merge($structure['store_id'], ['col'=>2,'break'=>true]),
+            'account_number'=> array_merge($structure['account_number'], ['col'=>3,'break'=>true]),
+            'gov_id_number' => array_merge($structure['gov_id_number'], ['col'=>3,'break'=>true]),
+            'gl_account'    => array_merge($structure['gl_account'], ['col'=>3,'break'=>true]),
+            'terms'         => array_merge($structure['terms'], ['col'=>3]),
+            'terms_text'    => array_merge($structure['terms_text'], ['col'=>3]),
+            'terms_edit'    => array_merge($structure['terms_edit'], ['col'=>3,'break'=>true]),
+            'recordID'      => ['order'=>99,'html'=>'<p>Record ID: '.$structure['id']['attr']['value']."</p>",'attr'=>['type'=>'raw']]];
+        if (sizeof(getModuleCache('inventory', 'prices'))) { $output['price_sheet'] = array_merge($structure['price_sheet'], ['col'=>1,'break'=>true]); }
+		switch ($this->type) {
+			case 'b':
+				$output['gl_account']['label']           = lang('default_gl_account').': '.lang('gl_acct_type_30'); // sales gl acct
+				$output['flex_field_1']['label']         = lang('default_gl_account').': '.lang('sales_discounts'); // discount gl acct
+				$output['account_number']['label']       = lang('default_gl_account').': '.lang('gl_acct_type_2');  // AR gl acct
+				$output['gov_id_number']['label']        = lang('default_gl_account').': '.lang('gl_acct_type_20'); // AP gl acct
+				$output['gl_account']['attr']['type']    = 'ledger';
+				$output['flex_field_1']['attr']['type']  = 'ledger';
+				$output['account_number']['attr']['type']= 'ledger';
+				$output['gov_id_number']['attr']['type'] = 'ledger';
+                unset($output['contact_first'],$output['contact_last'],$output['store_id']);
+				break;
+			case 'c': // Customers
+				break;
+			case 'e': // Employees
+                unset($output['rep_id'],$output['account_number'],$output['tax_rate_id'],$output['gl_account'],$output['terms'],$output['terms_edit'],$output['terms_text']);
+				break;
+			case 'i': // CRM 
+				$output['rep_id']['attr']['type'] = 'select';
+				unset($output['rep_id']['attr']['size'],$output['rep_id']['values']);
+                unset($output['account_number'],$output['gov_id_number'],$output['tax_rate_id'],$output['gl_account'],$output['terms'],$output['terms_edit'],$output['terms_text']);
+				break;
+            case 'j': // Projects/Jobs
+                break;
+			case 'v': // Vendors
+            case 'c':
+            default:
+		}
+        return $output;
+    }
 
     /**
      * Saves posted data to a contact record
@@ -434,7 +476,7 @@ class contactsMain
 		$this->dbAddressSave($rID, 'b', 'b', false);
 		$this->dbAddressSave($rID, 's', 's', false);
 		$this->dbCRMSave    ($rID, 'i'); // CRM contact record
-        $this->saveLog($rID);
+        $this->saveLog($layout, $rID);
         if ($makeTransaction) { dbTransactionCommit(); }
         $io = new \bizuno\io();
         if ($io->uploadSave('file_attach', getModuleCache('contacts', 'properties', 'attachPath')."rID_{$rID}_")) {
@@ -475,19 +517,35 @@ class contactsMain
      * Saves a log entry to a specified contact record
      * @param integer $rID - db record id of the contact to update/save log data
      */
-    private function saveLog($rID)
+    public function saveNotes()
     {
+        $rID = clean('rID', 'integer', 'get');
+        if (!$rID) { return; }
+        dbWrite(BIZUNO_DB_PREFIX."address_book", ['notes'=> clean('notesm','text','post')], 'update', "ref_id=$rID AND type='m'");
+        msgAdd(lang('msg_record_saved'), 'success');
+    }
+
+    /**
+     * Saves a log entry to a specified contact record
+     * @param integer $rID - db record id of the contact to update/save log data
+     */
+    public function saveLog(&$layout, $id=0)
+    {
+        $rID = $id ? $id : clean('rID', 'integer', 'get');
         $action= clean('crm_action','text', 'post');
         $note  = clean('crm_note',  'text', 'post');
-        if ($action || $note) { //check for crm notes
-			$values = [
-                'contact_id'=> $rID,
-				'entered_by'=> clean('crm_rep_id','integer','post'),
-				'log_date'  => clean('crm_date',  'date',   'post'),
-				'action'    => $action,
-				'notes'     => $note];
-			dbWrite(BIZUNO_DB_PREFIX."contacts_log", $values);
-		}
+        if (!$rID || !$note) { return; }
+        $values = [
+            'contact_id'=> $rID,
+            'entered_by'=> clean('crm_rep_id','integer','post'),
+            'log_date'  => clean('crm_date',  'date',   'post'),
+            'action'    => $action,
+            'notes'     => $note];
+        dbWrite(BIZUNO_DB_PREFIX."contacts_log", $values);
+        $data = ['content'=>['action'=>'eval','actionData'=>"jq('#dgLog').datagrid('reload');"]];
+        if (!$id) { msgAdd(lang('msg_record_saved'), 'success'); } // if stand alone
+        $layout = array_replace_recursive($layout, $data);
+
     }
 
 	/**
@@ -500,7 +558,7 @@ class contactsMain
 		$icnSave= ['icon'=>'save', 'label'=>lang('merge'),
 			'events'=>  ['onClick'=>"var srcID=jq('#mergeSrc').combogrid('getValue'); var destID=jq('#mergeDest').combogrid('getValue'); jsonAction('contacts/main/mergeSave&type=$this->type', srcID, destID);"]];
 		$html   = $this->lang['msg_contacts_merge_src'] .'<br /><input id="mergeSrc"  name="mergeSrc"><br />'.
-				 $this->lang['msg_contacts_merge_dest'].'<br /><input id="mergeDest" name="mergeDest"><br />'.html5('icnMergeSave', $icnSave);
+				  $this->lang['msg_contacts_merge_dest'].'<br /><input id="mergeDest" name="mergeDest"><br />'.html5('icnMergeSave', $icnSave);
 		$js     = "
 function cgMerge(id) {
     jq('#'+id).combogrid({panelWidth:625, delay:900, idField:'id', textField:'primary_name', mode:'remote',
@@ -515,11 +573,9 @@ function cgMerge(id) {
 }
 cgMerge('mergeSrc');
 cgMerge('mergeDest');";
-		$data = [
-            'title'     => $this->lang['contacts_merge'],
-			'divs'      => ['merge' => ['order'=>50,'type'=>'html', 'html'=>$html]],
-            'javascript'=> ['merge' => $js],
-			'content'   => ['action'=>'window','id'=>'winMerge','title'=>$this->lang['contacts_merge']],];
+		$data = ['type'=>'popup','title'=>$this->lang['contacts_merge'],'attr'=>['id'=>'winMerge'],
+			'divs'  => ['body'=>['order'=>50,'type'=>'html','html'=>$html]],
+            'jsHead'=> ['merge'=>$js]];
 		$layout = array_replace_recursive($layout, $data);
 	}
 
@@ -556,7 +612,7 @@ cgMerge('mergeDest');";
         $io->fileMove(getModuleCache('contacts', 'properties', 'attachPath'), "rID_{$srcID}_", "rID_{$destID}_");
 		msgAdd($message, 'success');
 		msgLog(lang("contacts").'-'.lang('merge')." - $srcID => $destID");
-		$data = ['content'=>['action'=>'eval','actionData'=>"jq('#winMerge').window('close'); jq('#dgContacts').datagrid('reload');"]];
+		$data = ['content'=>['action'=>'eval','actionData'=>"bizWindowClose('winMerge'); jq('#dgContacts').datagrid('reload');"]];
         $layout = array_replace_recursive($layout, $data);
 	}
 
@@ -587,9 +643,7 @@ cgMerge('mergeDest');";
                 BIZUNO_DB_PREFIX."contacts"     => "DELETE FROM ".BIZUNO_DB_PREFIX."contacts WHERE id=$rID",
 				BIZUNO_DB_PREFIX."address_book" => "DELETE FROM ".BIZUNO_DB_PREFIX."address_book WHERE ref_id=$rID",
 				BIZUNO_DB_PREFIX."data_security"=> "DELETE FROM ".BIZUNO_DB_PREFIX."data_security WHERE ref_1=$rID",
-				BIZUNO_DB_PREFIX."contacts_log" => "DELETE FROM ".BIZUNO_DB_PREFIX."contacts_log WHERE contact_id=$rID",
-                ],
-            ];
+				BIZUNO_DB_PREFIX."contacts_log" => "DELETE FROM ".BIZUNO_DB_PREFIX."contacts_log WHERE contact_id=$rID"]];
 		$files = glob(getModuleCache('contacts', 'properties', 'attachPath')."rID_{$rID}_*.zip");
         if (is_array($files)) { foreach ($files as $filename) { @unlink($filename); } }
 		msgLog(lang('contacts_title')." ".lang('delete')." - $short_name (rID=$rID)");
@@ -607,8 +661,9 @@ cgMerge('mergeDest');";
         $rID = clean('rID', 'integer', 'get');
         if ($rID) { $row = dbGetRow(BIZUNO_DB_PREFIX.'contacts', "id=$rID"); }
         else      { $row = ['type'=>'c','first_date'=>date('Y-m-d'),'first_date'=>date('Y-m-d')]; }
-        $first_date  = ['label'=>pullTableLabel('contacts','first_date'),'break'=>true,'attr'=>['type'=>'date','value'=>viewFormat($row['first_date'], 'date'),'readonly'=>'readonly']];
-        $last_update = ['label'=>pullTableLabel('contacts','last_update'),'attr'=>['type'=>'date','value'=>viewFormat($row['last_update'],'date'),'readonly'=>'readonly']];
+        msgDebug("\nread row = ".print_r($row, true));
+        $first_date  = ['order'=>10,'label'=>pullTableLabel('contacts','first_date'), 'break'=>true,'attr'=>['type'=>'date','value'=>$row['first_date'], 'readonly'=>'readonly']];
+        $last_update = ['order'=>20,'label'=>pullTableLabel('contacts','last_update'),'break'=>true,'attr'=>['type'=>'date','value'=>$row['last_update'],'readonly'=>'readonly']];
         $data = ['type'=>'divHTML',
 			'divs'    => [
                 'props' => ['order'=>20,'type'=>'fields','attr'=>['id'=>'fldProps'],'fields'=>['first_date'=>$first_date, 'last_update'=>$last_update]],
@@ -618,6 +673,7 @@ cgMerge('mergeDest');";
                 'po_so'=> $this->dgHistory('dgHistory10', $row['type']=='v'?4:10, $rID),
 				'inv'  => $this->dgHistory('dgHistory12', $row['type']=='v'?6:12, $rID)]];
         $layout = array_replace_recursive($layout, $data);
+        msgDebug("\nlayout is now = ".print_r($layout, true));
     }
 
 	/**
@@ -788,17 +844,6 @@ cgMerge('mergeDest');";
 		$layout = array_replace_recursive($layout, $data);
 	}
 
-    /**
-     * DEPRECATED - THIS CAN BE REMOVED AFTER ANALYSIS
-     * Deletes an attachment 
-     * @param type $layout
-     */
-    public function deleteAttach(&$layout=[])
-    {
-        $io = new io;
-        $io->attachDelete($layout, $this->moduleID, $pfxID='rID_');
-    }
-    
 	/**
      * Builds address list datagrid structure
      * @param integer $rID - contact db record id
@@ -810,29 +855,21 @@ cgMerge('mergeDest');";
     private function dgAddress($rID=0, $type='', $aType='', $security=0)
     {
 		$this->managerSettingsAddress($aType);
-		return ['id' => 'addressMain'.$aType,
-			'rows'   => $this->defaults['rows'],
-			'page'   => $this->defaults['page'],
-			'attr'   => [
-                'url'       => BIZUNO_AJAX."&p=contacts/main/managerRowsAddress&type=$type&rID=$rID&aType=$aType",
-				'pageSize'  => getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField'   => 'address_id'],
-			'events' => [
-                'onDblClickRow' => "function(rowIndex, rowData){ jsonAction('contacts/main/editAddress', $rID, rowData.address_id); }",
-				'onLoadSuccess' => "function(data) { jq('#addressMain".$aType."').datagrid('fitColumns', true); }"],
+		return ['id'=>'addressMain'.$aType, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
+			'attr'   => ['idField'=>'address_id', 'url'=>BIZUNO_AJAX."&p=contacts/main/managerRowsAddress&type=$type&rID=$rID&aType=$aType"],
+			'events' => ['onDblClickRow'=>"function(rowIndex, rowData){ jsonAction('contacts/main/editAddress', $rID, rowData.address_id); }"],
 			'source' => [
                 'tables'  => ['address_book'=> ['table'=>BIZUNO_DB_PREFIX."address_book"]],
 				'search'  => ['primary_name', 'contact', 'telephone1', 'telephone2', 'telephone4', 'city', 'postal_code', 'email'],
 				'filters' => [
-                    'search' => ['order'=>90, 'html'=>['attr'=>['id'=>"search_$aType", 'value'=>$this->defaults["search_$aType"]]]],
-					'ref_id' => ['order'=>98, 'hidden'=> true, 'sql'=>"ref_id=$rID"],
-					'type'   => ['order'=>99, 'hidden'=> true, 'sql'=>"type='$aType'"]],
-				'sort' => ['s0'=>  ['order'=>10, 'field'=>$this->defaults['sort'].' '.$this->defaults['order']]]],
+                    'search' => ['order'=>90,'attr'=>['id'=>"search_$aType", 'value'=>$this->defaults["search_$aType"]]],
+					'ref_id' => ['order'=>98,'hidden'=> true, 'sql'=>"ref_id=$rID"],
+					'type'   => ['order'=>99,'hidden'=> true, 'sql'=>"type='$aType'"]],
+				'sort' =>['s0'=>['order'=>10,'field'=>$this->defaults['sort'].' '.$this->defaults['order']]]],
 			'columns' => [
-                'address_id' => ['order'=>0, 'field'=>'address_id',  'attr'=>['hidden'=>true]],
-				'ref_id'     => ['order'=>0, 'field'=>'ref_id',      'attr'=>['hidden'=>true]],
-				'action'     => ['order'=>1, 'label'=>lang('action'),'attr'=>['width'=>50],
-					'events' => ['formatter'=>"function(value,row,index){ return addressMain".$aType."Formatter(value,row,index); }"],
+                'address_id' => ['order'=>0,'field'=>'address_id',  'attr'=>['hidden'=>true]],
+				'ref_id'     => ['order'=>0,'field'=>'ref_id',      'attr'=>['hidden'=>true]],
+				'action'     => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return addressMain".$aType."Formatter(value,row,index); }"],
 					'actions'=> [
                         'edit' => ['icon'=>'edit', 'size'=>'small', 'order'=>30, 'label'=>lang('edit'), 'hidden'=> $security > 2 ? false : true,
 							'events'=> ['onClick' => "jsonAction('contacts/main/editAddress', $rID, idTBD);"]],
@@ -894,7 +931,7 @@ cgMerge('mergeDest');";
                     'crmDG'  => ['order'=>20, 'type'=>'datagrid','el'=>$this->dgContacts('crm_main', 'i', $security, $rID)],
                     'crmTB'  => ['order'=>40, 'type'=>'toolbar','key'=>'tbAddressi'],
                     'crmBoF' => ['order'=>41, 'type'=>'html','html'=>'<div id="crmDiv">'],
-                    'crmMain'=> ['order'=>60, 'type'=>'html','html'=>$this->crmXFields($rID, $structure['contacts'])],
+                    'crmMain'=> ['order'=>60, 'type'=>'html','html'=>$this->crmXFields($structure['contacts'])],
                     'crmAddr'=> ['order'=>70, 'type'=>'address', 'content' =>$structure['address_book'],'settings'=>['suffix'=>'i','clear'=>false]],
                     'crmEoF' => ['order'=>81, 'type'=>'html','html'=>'</div>']]]]];
         // now some adjustments
@@ -934,25 +971,26 @@ cgMerge('mergeDest');";
     public function getTabNotes(&$layout=[])
     {
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
-        $rID    = clean('rID', 'integer','get');
-        $type   = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID");
-        $notes  = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'notes',"ref_id=$rID AND type='m'");
-        $fldNotes= ['label'=>lang('notes'),'attr'=>['type'=>'textarea', 'value'=>$notes]];
-        $fldLog  = [
-            'crm_rep_id'=> ['label'=>lang('contacts_log_entered_by'),'break'=>true,'values'=>viewRoleDropdown(),'attr'=>['type'=>'select','value'=>getUserCache('profile', 'contact_id', false, '0')]],
-            'crm_date'  => ['label'=>lang('date'),'break'=>true,'classes'=>['easyui-datebox'],'attr'=>['type'=>'text', 'value'=>viewDate(date('Y-m-d'))]],
-            'crm_action'=> ['label'=>lang('action'),'break'=>true,'values'=>viewKeyDropdown(getModuleCache('contacts', 'crm_actions'), true), 'attr'=>  ['type'=>'select']],
-            'crm_note'  => ['label'=>'','attr'=>['type'=>'textarea','rows'=>5]]];
-        $data    = ['type'=>'divHTML',
-			'toolbars'=> ['tbLog'=> ['icons' => [
-                'save' => ['order'=>10,'icon'=>'save','hidden'=>$rID && $security >1?false:true,'events'=>['onClick'=>"divSubmit('contacts/main/saveLog&rID=$rID', 'fldLog');"]]]]],
-            'divs' => ['divDetail' => ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'cNotes'],'divs'=>[
-                'fldNotes'=> ['order'=>20,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'fldNotes'],'fields'=>['notesm'=>$fldNotes]],
-                'fldLog'  => ['order'=>80,'type'=>'divs','classes'=>['blockView'],'attr'=>['id'=>'fldLog'],  'divs'=>[
-                    'heading'=> ['order'=>10,'type'=>'html','html'=>"<h2>".lang('contacts_log')."</h2>"],
-                    'tbLog'  => ['order'=>20, 'type'=>'toolbar','key'=>'tbLog'],
-                    'fldLog' => ['order'=>50,'type'=>'fields','attr'=>['id'=>'divLog'],'fields'=>$fldLog],
-                    'dgLog'  => ['order'=>80, 'type'=>'datagrid','el'=>$this->dgLog('dgLog',  $rID, $security)]]]]]]];
+        $rID   = clean('rID', 'integer','get');
+        $type  = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID");
+        $notes = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'notes',"ref_id=$rID AND type='m'");
+        $fldLog= [
+            'crm_date'  => ['order'=>10,'label'=>lang('date'),  'break'=>true,'classes'=>['easyui-datebox'],'attr'=>['type'=>'text', 'value'=>viewDate(date('Y-m-d'))]],
+            'crm_rep_id'=> ['order'=>20,'label'=>lang('contacts_log_entered_by'),'break'=>true,'values'=>viewRoleDropdown(),'attr'=>['type'=>'select','value'=>getUserCache('profile', 'contact_id', false, '0')]],
+            'crm_action'=> ['order'=>30,'label'=>lang('action'),'break'=>true,'values'=>viewKeyDropdown(getModuleCache('contacts', 'crm_actions'), true),'attr'=>['type'=>'select']],
+            'crm_note'  => ['order'=>40,'label'=>'','break'=>true,'attr'=>['type'=>'textarea','rows'=>5]]];
+        $data  = ['type'=>'divHTML',
+			'toolbars'=> [
+                'tbNote'=> ['icons'=>['save'=>['order'=>10,'icon'=>'save','hidden'=>$rID && $security >1?false:true,'events'=>['onClick'=>"divSubmit('contacts/main/saveNotes&rID=$rID', 'divNotes');"]]]],
+                'tbLog' => ['icons'=>['save'=>['order'=>10,'icon'=>'save','hidden'=>$rID && $security >1?false:true,'events'=>['onClick'=>"divSubmit('contacts/main/saveLog&rID=$rID', 'divLog');"]]]]],
+            'divs' => ['divDetail'=>['order'=>50,'type'=>'divs','divs'=>[
+                'fldNotes'=> ['order'=>20,'label'=>lang('notes'),'type'=>'divs','classes'=>['blockView'],'attr'=>['id'=>'divNotes'],'divs'=>[
+                    'tbNote' => ['order'=>20,'type'=>'toolbar','key'=>'tbNote'],
+                    'fldNote'=> ['order'=>50,'type'=>'fields', 'fields'=>["notesm"=>['attr'=>['type'=>'textarea', 'value'=>$notes]]]]]],
+                'divLog'  => ['order'=>80,'label'=>lang('contacts_log'),'type'=>'divs','classes'=>['blockView'],'attr'=>['id'=>'divLog'],'divs'=>[
+                    'tbLog'  => ['order'=>20,'type'=>'toolbar','key'=>'tbLog'],
+                    'fldLog' => ['order'=>50,'type'=>'fields','fields'=>$fldLog],
+                    'dgLog'  => ['order'=>80,'type'=>'datagrid','el'=>$this->dgLog('dgLog',  $rID, $security)]]]]]]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -961,10 +999,9 @@ cgMerge('mergeDest');";
      * @param array $data - working data with CRM information
      * @return string - table html with additional CRM fields for render
      */
-    private function crmXFields($rID, $structure)
+    private function crmXFields($structure)
     {
-        return '
-<table style="border-collapse:collapse;width:100%;">
+        return '<table style="border-collapse:collapse;width:100%;">
     <tr>
         <td>'.html5('short_namei',    $structure['short_name']).html5('idi', $structure['id'])."</td>
         <td>".html5('flex_field_1i',  $structure['flex_field_1'])."</td>
@@ -1013,68 +1050,47 @@ cgMerge('mergeDest');";
             case 12:
             default: $jPmt = 18; break;
         }
-		$data = [
-            'title' => sprintf(lang('tbd_history'), lang('journal_main_journal_id', $jID)),
-			'id'    => $name,
-            'strict'=>true,
-			'rows'  => $rows,
-			'page'  => $page,
-			'attr'  => [
-                'url'      => BIZUNO_AJAX."&p=contacts/main/managerRowsHistory&type=$this->type&jID=$jID&rID=$rID",
-				'pageSize' => getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField'  => 'id',
-                ],
-			'events' => ['onLoadSuccess'=> "function(data) { jq('#$name').datagrid('fitColumns', true); }"],
+		$data = ['id'=>$name, 'strict'=>true, 'rows'=>$rows, 'page'=>$page, 'title'=>sprintf(lang('tbd_history'), lang('journal_main_journal_id', $jID)),
+			'attr'   => ['idField'=>'id', 'url'=>BIZUNO_AJAX."&p=contacts/main/managerRowsHistory&type=$this->type&jID=$jID&rID=$rID"],
 			'source' => [
-                'tables' => ['journal_main'=>  ['table'=>BIZUNO_DB_PREFIX."journal_main"]],
+                'tables' => ['journal_main'=>['table'=>BIZUNO_DB_PREFIX."journal_main"]],
 				'filters' => [
                     'jID'  => ['order'=>99, 'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."journal_main.journal_id IN ($jSearch)"],
-					'rID'  => ['order'=>99, 'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."journal_main.contact_id_b='$rID'"],
-                    ],
-				'sort' => ['s0'=>  ['order'=>10, 'field'=>("$sort $order")]],
-                ],
+					'rID'  => ['order'=>99, 'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."journal_main.contact_id_b='$rID'"]],
+				'sort' => ['s0'=>['order'=>10, 'field'=>("$sort $order")]]],
 			'columns' => [
-                'id'        => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."journal_main.id",        'attr'=>  ['hidden'=>true]],
-				'closed'    => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."journal_main.closed",    'attr'=>  ['hidden'=>true]],
-				'journal_id'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."journal_main.journal_id",'attr'=>  ['hidden'=>true]],
-                'bal_due'   => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."journal_main.id",'format'=>'paymentRcv','attr'=>  ['hidden'=>true]],
-				'action'    => ['order'=>1, 'label'=>lang('action'),  'attr'=>  ['width'=>75],
-					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'id'        => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."journal_main.id",        'attr'=>['hidden'=>true]],
+				'closed'    => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."journal_main.closed",    'attr'=>['hidden'=>true]],
+				'journal_id'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."journal_main.journal_id",'attr'=>['hidden'=>true]],
+                'bal_due'   => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."journal_main.id",'process'=>'paymentRcv','attr'=>['hidden'=>true]],
+				'action'    => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> [
-                        'edit'       => ['icon'=>'edit', 'size'=>'small', 'order'=>20, 'label'=>lang('edit'),
+                        'edit'       => ['order'=>20,'icon'=>'edit',    'label'=>lang('edit'),
 							'events' => ['onClick' => "tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD');"]],
-						'print'      => ['icon'=>'print','size'=>'small', 'order'=>40,
+						'print'      => ['order'=>40,'icon'=>'print',   'label'=>lang('print'),
 							'events' => ['onClick'=>"var idx=jq('#$name').datagrid('getRowIndex', idTBD); var jID=jq('#$name').datagrid('getRows')[idx].journal_id; ('fitColumns', true); winOpen('phreeformOpen', 'phreeform/render/open&group={$gID[0]}:j'+jID+'&date=a&xfld=journal_main.id&xcr=equal&xmin=idTBD&rName=primary_name_b&rEmail=email_b');"]],
-						'purchase'   => ['order'=>80,'icon'=>'purchase','size'=>'small',  'label'=>lang('fill_purchase'),
+						'purchase'   => ['order'=>80,'icon'=>'purchase','label'=>lang('fill_purchase'),
 							'events' => ['onClick' => "tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD&jID=6&bizAction=inv');"],
 							'display'=> "row.closed=='0' && (row.journal_id=='3' || row.journal_id=='4')"],
-						'sale'       => ['order'=>80,'icon'=>'sales', 'size'=>'small',  'label'=>lang('fill_sale'),
+						'sale'       => ['order'=>80,'icon'=>'sales',   'label'=>lang('fill_sale'),
 							'events' => ['onClick' => "tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD&jID=12&bizAction=inv');"],
 							'display'=> "row.closed=='0' && (row.journal_id=='9' || row.journal_id=='10')"],
-						'payment'    => ['order'=>80,'icon'=>'payment','size'=>'small','label'=>lang('payment'),
+						'payment'    => ['order'=>80,'icon'=>'payment', 'label'=>lang('payment'),
 							'events' => ['onClick' => "var cID=jq('#id').val(); tabOpen('_blank', 'phreebooks/main/manager&rID=0&jID=$jPmt&bizAction=inv&iID=idTBD&cID='+cID);"],
-							'display'=> "row.closed=='0' && (row.journal_id=='6' || row.journal_id=='7' || row.journal_id=='12' || row.journal_id=='13')"],
-                        ],
-                    ],
-				'invoice_num' => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."journal_main.invoice_num",
-					'label' => pullTableLabel("journal_main", 'invoice_num', $jID),
+							'display'=> "row.closed=='0' && (row.journal_id=='6' || row.journal_id=='7' || row.journal_id=='12' || row.journal_id=='13')"]]],
+				'invoice_num'   => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."journal_main.invoice_num",'label'=>pullTableLabel("journal_main", 'invoice_num', $jID),
 					'attr'  => ['width'=>125, 'sortable'=>true, 'resizable'=>true]],
-				'purch_order_id' => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX."journal_main.purch_order_id",
-					'label' => pullTableLabel("journal_main", 'purch_order_id', $jID),
+				'purch_order_id'=> ['order'=>20, 'field'=>BIZUNO_DB_PREFIX."journal_main.purch_order_id",'label'=>pullTableLabel("journal_main", 'purch_order_id', $jID),
 					'attr'  => ['width'=>150, 'sortable'=>true, 'resizable'=>true]],
-				'post_date' => ['order'=>30, 'field' => BIZUNO_DB_PREFIX."journal_main.post_date", 'format'=>'date',
-					'label' => pullTableLabel("journal_main", 'post_date', $jID),
+				'post_date'     => ['order'=>30, 'field' => BIZUNO_DB_PREFIX."journal_main.post_date", 'format'=>'date','label' => pullTableLabel("journal_main", 'post_date', $jID),
 					'attr'  => ['width'=>120,'align'=>'center', 'sortable'=>true, 'resizable'=>true]],
-				'closed_date' => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX."journal_main.closed_date",
-					'label' => in_array($jID, [6, 12]) ? lang('paid') : lang('closed'),
+				'closed_date'   => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX."journal_main.closed_date",'label'=>in_array($jID, [6, 12]) ? lang('paid') : lang('closed'),
 					'attr'  => ['width'=>120,'align'=>'center', 'sortable'=>true, 'resizable'=>true],
-                    'events'=> ['formatter'=>"function(value,row) { return (row.closed=='1' && value!='0000-00-00') ? formatDate(value) : (row.bal_due ? formatCurrency(row.bal_due, false) : ''); }"]],		
-				'total_amount' => ['order'=>50, 'field'=>BIZUNO_DB_PREFIX."journal_main.total_amount",
-					'label' =>lang('total'), 'attr'=>  ['width'=>100, 'align'=>'right', 'sortable'=>true, 'resizable'=>true],
-					'events'=> ['formatter'=>"function(value,row) { return (row.journal_id==7 || row.journal_id==13) ? formatCurrency(-value, false) : formatCurrency(value, false); }"]],
-                ],
-            ];
-		return $data;
+                    'events'=> ['formatter'=>"function(value,row) { return (row.closed=='1' && value!='') ? formatDate(value) : (row.bal_due ? formatCurrency(row.bal_due, false) : ''); }"]],
+				'total_amount'  => ['order'=>50, 'field'=>BIZUNO_DB_PREFIX."journal_main.total_amount",'label'=>lang('total'), 'attr'=>['width'=>100, 'align'=>'right', 'sortable'=>true, 'resizable'=>true],
+					'events'=> ['formatter'=>"function(value,row) { return (row.journal_id==7 || row.journal_id==13) ? formatCurrency(-value, false) : formatCurrency(value, false); }"]]]];
+		if (in_array($GLOBALS['myDevice'], ['mobile','tablet'])) { $data['columns']['closed_date']['attr']['hidden'] = true; }
+        return $data;
 	}
 
 	/**
@@ -1116,27 +1132,22 @@ cgMerge('mergeDest');";
 		$page   = clean('page', ['format'=>'integer','default'=> 1], 'post');
 		$sort   = clean('sort', ['format'=>'text',   'default'=>'log_date'],'post');
 		$order  = clean('order',['format'=>'text',   'default'=>'desc'],    'post');
-		return ['id'=>$name,'rows'=>$rows,'page'=>$page,
-			'attr'   => ['nowrap'=>false,'idField'=>'id','pageSize'=>$rows,'url'=>BIZUNO_AJAX."&p=contacts/main/managerRowsLog&rID=$rID"],
-			'events' => ['onLoadSuccess'=> "function(data) { jq('#$name').datagrid('fitColumns', true); }"],
+		return ['id'=>$name, 'rows'=>$rows, 'page'=>$page,
+			'attr'   => ['nowrap'=>false, 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=contacts/main/managerRowsLog&rID=$rID"],
 			'source' => [
-                'tables' => ['contacts_log'=>  ['table'=>BIZUNO_DB_PREFIX."contacts_log"]],
-				'filters'=> ['rID'=>  ['order'=>99, 'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."contacts_log.contact_id='$rID'"]],
-				'sort'   => ['s0'=> ['order'=>10, 'field'=>"$sort $order"]]],
+                'tables' => ['contacts_log'=>['table'=>BIZUNO_DB_PREFIX."contacts_log"]],
+				'filters'=> ['rID'=> ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."contacts_log.contact_id='$rID'"]],
+				'sort'   => ['s0' => ['order'=>10,'field'=>"$sort $order"]]],
 			'columns' => [
-                'id' => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."contacts_log.id", 'attr'=>  ['hidden'=>true]],
-				'action' => ['order'=>1, 'label'=>'', 'attr'=>  ['width'=>30],
-					'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
+                'id' => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."contacts_log.id",'attr'=>['hidden'=>true]],
+				'action' => ['order'=>1,'events'=>['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
 					'actions'=> [
-                        'logTrash' => ['icon'=>'trash', 'size'=>'small', 'order'=>80, 'label'=>lang('delete'), 'hidden'=>$security==4?false:true,
-							'events' => ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('contacts/main/deleteLog', idTBD);"]]],
-                    ],
+                        'logTrash' => ['order'=>80,'icon'=>'trash','label'=>lang('delete'),'hidden'=>$security==4?false:true,
+							'events' => ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('contacts/main/deleteLog', idTBD);"]]]],
 				'log_date'  => ['order'=>10,'field'=>"log_date",  'label'=>lang('date'), 'format'=>'date', 'attr'=>['width'=> 50, 'resizable'=>true]],
 				'entered_by'=> ['order'=>20,'field'=>"entered_by",'label'=>lang('contacts_log_entered_by'),'attr'=>['width'=> 50, 'resizable'=>true], 'format'=>'contactID'],
 				'action'    => ['order'=>30,'field'=>"action",    'label'=>lang('action'),                 'attr'=>['width'=> 50, 'resizable'=>true], 'format'=>'cache:contacts:crm_actions'],
-				'notes'     => ['order'=>40,'field'=>"notes",     'label'=>lang('notes'),                  'attr'=>['width'=>200, 'resizable'=>true]],
-                ],
-            ];
+				'notes'     => ['order'=>40,'field'=>"notes",     'label'=>lang('notes'),                  'attr'=>['width'=>200, 'resizable'=>true]]]];
 	}
 
     /**
@@ -1174,28 +1185,55 @@ cgMerge('mergeDest');";
      */
     public function editTerms(&$layout=[], $defType='c')
     {
-		$type     = clean('type',    ['format'=>'char','default'=>$defType],'get');
-		$cID      = clean('id',      ['format'=>'integer','default'=>0],    'get');
-		$encoded  = clean('data',    ['format'=>'text','default'=>false],   'get');
 		$call_back= clean('callBack',['format'=>'text','default'=>'terms'], 'get');
-        if     (!$encoded && $cID)       { $encoded = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'terms', "id=$cID"); }
-        elseif (!$encoded && $type=='v') { $encoded = getModuleCache('phreebooks', 'settings', 'vendors', 'terms'); }
-        elseif (!$encoded)               { $encoded = getModuleCache('phreebooks', 'settings', 'customers', 'terms'); }
-		$terms   = explode(':', $encoded);
-		$layout = array_replace_recursive($layout, [
-            'title'    => lang('terms'),
+        $data = ['type'=>'popup','title'=>lang('terms'),'attr'=>['id'=>'winTerms'],
 			'call_back'=> $call_back,
-			'toolbars' => ['tbTerms'=>['icons'=> ['next'  => ['order'=> 20, 'events'=>  ['onClick'=>"termsSave();"]]]]],
+			'toolbars' => ['tbTerms'=>['icons'=>['next'=>['order'=>20,'events'=>['onClick'=>"termsSave();"]]]]],
 			'divs'     => [
-                'toolbar'     => ['order'=>30, 'type'=>'toolbar', 'key'=>'tbTerms'],
-				'window_terms'=> ['order'=>50, 'src'=>BIZUNO_LIB."view/module/contacts/divTerms.php"]],
-            'fields'   => [
-                'terms_type'  => ['attr' => ['type'=>'radio', 'value'=>$terms[0]]],
-                'terms_disc'  => ['attr' => ['type'=>'input', 'value'=>isset($terms[1]) ? $terms[1] : '0', 'size'=>'4', 'maxlength'=>'3']],
-                'terms_early' => ['attr' => ['type'=>'input', 'value'=>isset($terms[2]) ? $terms[2] : '0', 'size'=>'4', 'maxlength'=>'3']],
-                'terms_net'   => ['attr' => ['type'=>'input', 'value'=>isset($terms[3]) ? $terms[3] : '30','size'=>'4', 'maxlength'=>'3']],
-                'terms_date'  => ['attr' => ['type'=>'date',  'value'=>date('Y-m-d')]],
-                'credit_limit'=> ['format' =>'currency','styles'=>['text-align'=>'right'],'attr'=>['type'=>'input','value'=>isset($terms[4])?$terms[4]:'1000']]],
-			'content'  => ['action'=>'window', 'id'=>'winTerms', 'title'=>lang('terms')]]);
+                'toolbar'     => ['order'=>80,'type'=>'toolbar','key'=>'tbTerms'],
+				'window_terms'=> ['order'=>50,'type'=>'fields','fields'=>$this->getTermsDiv($defType)]],
+			'jsBody'   => ['termsInit' => "function termsSave() {
+    var type  = jq('#terms_type:checked').val();
+    var enc   = type+':'+jq('#terms_disc').val()+':'+jq('#terms_early').val()+':';
+    enc += (type=='4' ? jq('#terms_date').val() : jq('#terms_net').val())+':'+cleanCurrency(jq('#credit_limit').val());
+    jq('#terms').val(enc);
+    jq.ajax({
+        url:     '".BIZUNO_AJAX."&p=contacts/main/termsText&enc='+enc,
+        success: function(json) { processJson(json); if (json.text) { bizTextSet('terms_text', json.text); bizWindowClose('winTerms'); } }
+    });
+}"]];
+		$layout = array_replace_recursive($layout, $data);
 	}
+    
+    private function getTermsDiv($defType='c')
+    {
+		$type   = clean('type',['format'=>'char','default'=>$defType],'get');
+		$cID    = clean('id',  ['format'=>'integer','default'=>0],    'get');
+		$encoded= clean('data',['format'=>'text','default'=>false],   'get');
+		$terms  = explode(':', $encoded);
+        if     (!$encoded && $cID)      { $encoded = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'terms', "id=$cID"); }
+        elseif (!$encoded && $type=='v'){ $encoded = getModuleCache('phreebooks', 'settings', 'vendors', 'terms'); }
+        elseif (!$encoded)              { $encoded = getModuleCache('phreebooks', 'settings', 'customers', 'terms'); }
+        $fields = [
+            'terms_type'  => ['position'=>'after','attr'=>['type'=>'radio','value'=>$terms[0]]],
+            'terms_disc'  => ['attr'=>['type'=>'input','value'=>isset($terms[1]) ? $terms[1] : '0', 'size'=>'4','maxlength'=>'3']],
+            'terms_early' => ['attr'=>['type'=>'input','value'=>isset($terms[2]) ? $terms[2] : '0', 'size'=>'4','maxlength'=>'3']],
+            'terms_net'   => ['attr'=>['type'=>'input','value'=>isset($terms[3]) ? $terms[3] : '30','size'=>'4','maxlength'=>'3']],
+            'terms_date'  => ['order'=>61,'break'=>true,'attr'=>['type'=>'date', 'value'=>date('Y-m-d')]],
+            'credit_limit'=> ['label'=>lang('contacts_terms_credit_limit'),'position'=>'after','styles'=>['text-align'=>'right'],'attr'=>['type'=>'input','format' =>'currency','value'=>isset($terms[4])?$terms[4]:'1000']]];
+        $custom = ' - '.sprintf(lang('contacts_terms_discount'), html5('terms_disc', $fields['terms_disc']), html5('terms_early', $fields['terms_early'])).' '.sprintf(lang('contacts_terms_net'), html5('terms_net',$fields['terms_net']));
+        $output = [
+            'radio0' => ['order'=>10,'break'=>true,'label'=>lang('contacts_terms_default'),'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>0,'checked'=>$terms[0]==0?true:false]],
+            'r0Text' => ['order'=>11,'break'=>true,'html'=>' ['.viewTerms('0', false, $terms[0]).']','attr'=>['type'=>'raw']],
+            'radio3' => ['order'=>20,'label'=>lang('contacts_terms_custom'), 'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>3,'checked'=>$terms[0]==3?true:false]],
+            'r1Disc' => ['order'=>21,'break'=>true,'html'=>$custom,'attr'=>['type'=>'raw']],
+            'radio6' => ['order'=>30,'break'=>true,'label'=>lang('contacts_terms_now'),    'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>6,'checked'=>$terms[0]==6?true:false]],
+            'radio2' => ['order'=>40,'break'=>true,'label'=>lang('contacts_terms_prepaid'),'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>2,'checked'=>$terms[0]==2?true:false]],
+            'radio1' => ['order'=>50,'break'=>true,'label'=>lang('contacts_terms_cod'),    'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>1,'checked'=>$terms[0]==1?true:false]],
+            'radio4' => ['order'=>60,'label'=>lang('contacts_terms_dom'),    'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>4,'checked'=>$terms[0]==4?true:false]],
+            'r4dom'  => $fields['terms_date'],
+            'radio5' => ['order'=>70,'break'=>true,'label'=>lang('contacts_terms_eom'),    'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>5,'checked'=>$terms[0]==5?true:false]],
+            'credit' => $fields['credit_limit']];
+        return $output;
+    }
 }

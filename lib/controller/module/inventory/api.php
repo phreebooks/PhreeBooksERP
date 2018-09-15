@@ -15,12 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-04-13
-
+ * @version    3.x Last Update: 2018-09-04
  * @filesource /lib/controller/module/inventory/api.php
- * 
  */
 
 namespace bizuno;
@@ -41,23 +39,17 @@ class inventoryApi
 	public function inventoryAPI(&$layout)
     {
 		$fields = [
-            'btnInvapi_tpl' => ['icon'=>'download','label'=>lang('download'),
-				'events'=>  ['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p=inventory/api/apiTemplate');"]],
+            'btnInvapi_tpl' => ['icon'=>'download','label'=>lang('download'),'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p=inventory/api/apiTemplate');"]],
 			'fileInventory' => ['attr'=>  ['type'=>'file']],
-			'btnInvapi_imp' => ['icon'=>'import','label'=>lang('import'),
-				'events'=>  ['onClick'=>"jq('body').addClass('loading'); jq('#frmInvApiImport').submit();"]],
-			'btnInvapi_exp' => ['icon'=>'export','label'=>lang('export'),
-				'events'=>  ['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p=inventory/api/apiExport');"]],
-                ];
+			'btnInvapi_imp' => ['icon'=>'import','label'=>lang('import'),'events'=>['onClick'=>"jq('body').addClass('loading'); jq('#frmInvApiImport').submit();"]],
+			'btnInvapi_exp' => ['icon'=>'export','label'=>lang('export'),'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p=inventory/api/apiExport');"]]];
 		$forms = ['frmInvApiImport'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=inventory/api/apiImport"]]];
-		$html = '
-<p>'.$this->lang['invapi_desc'].'</p>
-<p>'.$this->lang['invapi_template'].html5('', $fields['btnInvapi_tpl']).'</p><hr />
-'.html5('frmInvApiImport',  $forms['frmInvApiImport']).'
+		$html = '<p>'.$this->lang['invapi_desc'].'</p>
+<p>'.$this->lang['invapi_template'].html5('', $fields['btnInvapi_tpl']).'</p><hr />'.html5('frmInvApiImport',  $forms['frmInvApiImport']).'
 <p>'.$this->lang['invapi_import'].html5('fileInventory', $fields['fileInventory']).html5('btnInvapi_imp', $fields['btnInvapi_imp']).'</p></form><hr />
 <p>'.$this->lang['invapi_export'].html5('', $fields['btnInvapi_exp']).'</p>';
         $layout['tabs']['tabAPI']['divs'][$this->moduleID] = ['order'=>40,'label'=>getModuleCache($this->moduleID, 'properties', 'title'),'type'=>'html','html'=>$html];
-        $layout['javascript'][$this->moduleID] = "ajaxForm('frmInvApiImport');";
+        $layout['jsReady'][$this->moduleID] = "ajaxForm('frmInvApiImport');";
 	}
 
 	public function apiTemplate()
@@ -65,8 +57,7 @@ class inventoryApi
 		$tables = [];
 		require(BIZUNO_LIB."controller/module/bizuno/install/tables.php");
 		$map    = $tables['inventory']['fields'];
-		$header = [];
-		$props  = [];
+		$header = $props  = [];
 		$fields = dbLoadStructure(BIZUNO_DB_PREFIX.'inventory');
 		foreach ($fields as $field => $settings) {
             if (isset($map[$field]['import']) && !$map[$field]['import']) { continue; } // skip values that cannot be imported
@@ -90,7 +81,7 @@ class inventoryApi
 		$map     = $tables['inventory']['fields'];
 		$fields  = dbLoadStructure(BIZUNO_DB_PREFIX.'inventory');
 		$template= [];
-        foreach ($fields as $field => $props) { $template[$props['tag']] = $field; }
+        foreach ($fields as $field => $props) { $template[$props['tag']] = trim($field); }
 		$csv     = array_map('str_getcsv', file($_FILES['fileInventory']['tmp_name']));
 		$head    = array_shift($csv);
 		$cnt     = $newCnt = $updCnt = 0;
@@ -98,7 +89,7 @@ class inventoryApi
 		foreach ($csv as $row) {
 			$tmp = array_combine($head, $row);
 			$sqlData = [];
-            foreach ($tmp as $tag => $value) { if (isset($template[$tag])) { $sqlData[$template[$tag]] = $value; } }
+            foreach ($tmp as $tag => $value) { if (isset($template[$tag])) { $sqlData[$template[$tag]] = trim($value); } }
             if (!isset($sqlData['sku'])) { return msgAdd("The SKU field cannot be found and is a required field. The operation was aborted!"); }
 			if (!$sqlData['sku']) {
 				msgAdd(sprintf("Missing SKU on row: %s. The row will be skipped", $cnt+1));

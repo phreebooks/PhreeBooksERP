@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-06
+ * @version    3.x Last Update: 2018-09-04
  * @filesource /locale/en_US/module/phreebooks/language.php
  */
 
@@ -58,7 +58,7 @@ $lang = [
     'msg_attach_clean_empty' => 'No attachments were found prior to your date criteria!',
     'msg_pb_admin_roles' => 'Select the PhreeBooks roles that apply to this Bizuno role. If selected, users will appear in the Rep ID drop downs in Sales, Purchases, etc.',
 	'msg_gl_replace_confirm' => 'Are you sure you want to replace your GL Accounts?',
-	'msg_gl_replace_success' => 'Your GL accounts have been replaced, you should log out and back in to reload the settings.',
+	'msg_gl_replace_success' => 'Your GL accounts have been replaced, you may need to log out and back in to reload the cache. Now is also a good time to reset your default accounts for all affected modules.',
     'phreebooks_purge_success' => 'Journal Entries were purged successfully!',
     'coa_import_blocked' => 'Importing/Uploading chart of accounts has been disabled since there are journal entries present. This operation can only be performed on a clean general journal at start-up. To delete your journal and start clean, perform the purge operation on the Journal Tools tab.',
     'recur_desc' => 'This transaction can be duplicated in the future by selecting the number of entries to be created and the frequency for which they are posted. The current entry is considered the first recurrence, other post dates will be calculated automatically.',
@@ -137,6 +137,8 @@ $lang = [
 	'desc_gl_db_purge' => 'Delete all Journal Entries (type \'purge\' in the text box and press purge button)<br />',
     'set_invoice_num' => 'Set Invoice Number',
     'enter_invoice_num' => 'Enter the Invoice number, the waiting flag will also be cleared.',
+    'set_ref_num' => 'Change Reference Number',
+    'enter_ref_num' => 'Enter the new Refernece number.',
     // Currency
     'neg_prefix' => 'Negative Prefix',
 	'neg_suffix' => 'Negative Suffix',

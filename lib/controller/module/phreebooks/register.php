@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-27
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/register.php
  */
 
@@ -35,13 +35,12 @@ class phreebooksRegister
         if (!$security = validateSecurity('phreebooks', 'register', 1)) { return; }
 		$title = lang('phreebooks_register');
 		$layout = array_replace_recursive($layout, viewMain(), [
-            'pageTitle'=> $title,
+            'title'=> $title,
 			'datagrid' => ['manager'=>$this->dgRegister('dgRegister', $security)],
 			'divs'     => [
-                'submenu' => ['order'=>10, 'type'=>'html', 'html'=>viewSubMenu('banking')],
-                'heading' => ['order'=>30, 'type'=>'html', 'html'=>"<h1>$title</h1>"],
-				'register'=> ['order'=>70, 'label'=>$title, 'type'=>'datagrid','key'=>'manager']],
-            ]);
+                'submenu' => ['order'=>10,'type'=>'html', 'html'=>viewSubMenu('banking')],
+                'heading' => ['order'=>30,'type'=>'html', 'html'=>"<h1>$title</h1>"],
+				'register'=> ['order'=>70,'label'=>$title,'type'=>'datagrid','key'=>'manager']]]);
 	}
 
 	/**
@@ -86,24 +85,18 @@ class phreebooksRegister
      */
     private function dgRegister($name)
     {
-		return [
-            'id'   => $name,
-			'attr' => ['url'=>BIZUNO_AJAX."&p=phreebooks/register/managerRows",'toolbar'=>"#{$name}Toolbar",'width'=>900],
-			'source' => [
-                'filters' => [
-                    'period'=> ['order'=>10,
-						'html'=>  ['label'=>lang('period'), 'values'=>dbPeriodDropDown(false), 'attr'=>  ['type'=>'select', 'value'=>getModuleCache('phreebooks', 'fy', 'period')]]],
-					'glAcct'=> ['order'=>20,
-						'html'=>  ['label'=>lang('gl_account'), 'values'=>dbGLDropDown(false, ['0']), 'attr'=>  ['type'=>'select', 'value'=>getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash')]]],
-                ]],
-			'columns' => [
-                'id'         => ['order'=> 0, 'attr'=>['hidden'=>true]],
-				'post_date'  => ['order'=>10, 'label'=>lang('date'),       'attr'=>['width'=> 80,'resizable'=>true]],
-				'reference'  => ['order'=>20, 'label'=>lang('reference'),  'attr'=>['width'=> 80,'resizable'=>true]],
-				'description'=> ['order'=>30, 'label'=>lang('description'),'attr'=>['width'=>200,'resizable'=>true]],
-				'debit'      => ['order'=>40, 'label'=>lang('deposit'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'right']],
-				'credit'     => ['order'=>50, 'label'=>lang('payment'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'right']],
-				'balance'    => ['order'=>60, 'label'=>lang('balance'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'right']],
-            ]];
+		return ['id' => $name,
+			'attr'   => ['toolbar'=>"#{$name}Toolbar",'url'=>BIZUNO_AJAX."&p=phreebooks/register/managerRows"],
+			'source' => ['filters'=>[
+                'period'=> ['order'=>10,'options'=>['width'=>300],'label'=>lang('period'),'break'=>true,'values'=>dbPeriodDropDown(false),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'fy', 'period')]],
+                'glAcct'=> ['order'=>20,'options'=>['width'=>350],'label'=>lang('gl_account'),'values'=>dbGLDropDown(false, ['0']),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash')]]]],
+			'columns'=> [
+                'id'         => ['order'=> 0,'attr'=>['hidden'=>true]],
+				'post_date'  => ['order'=>10,'label'=>lang('date'),       'attr'=>['resizable'=>true]],
+				'reference'  => ['order'=>20,'label'=>lang('reference'),  'attr'=>['resizable'=>true]],
+				'description'=> ['order'=>30,'label'=>lang('description'),'attr'=>['resizable'=>true]],
+				'debit'      => ['order'=>40,'label'=>lang('deposit'),    'attr'=>['resizable'=>true,'align'=>'right']],
+				'credit'     => ['order'=>50,'label'=>lang('payment'),    'attr'=>['resizable'=>true,'align'=>'right']],
+				'balance'    => ['order'=>60,'label'=>lang('balance'),    'attr'=>['resizable'=>true,'align'=>'right']]]];
 	}
 }

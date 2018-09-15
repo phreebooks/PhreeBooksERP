@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-09
+ * @version    3.x Last Update: 2018-04-09
  * @filesource /lib/model/msg.php
  */
 
@@ -41,7 +41,7 @@ final class messageStack
 		$this->trace .= "Trace Start Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms\n\n";
 		$this->trace .= "GET Vars = " .print_r($_GET, true)."\n";
 		$this->trace .= "POST Vars = ".print_r($_POST,true)."\n";
-		set_error_handler("\bizuno\myErrorHandler");
+        set_error_handler("\bizuno\myErrorHandler");
         set_exception_handler("\bizuno\myExceptionHandler");
 	}
 

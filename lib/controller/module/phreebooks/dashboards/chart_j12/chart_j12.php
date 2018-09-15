@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0.x Last Update: 2017-12-07
+ * @version    3.x Last Update: 2017-12-07
  * @filesource /lib/controller/module/phreebooks/dashboards/chart_j12/chart_j12.php
  * 
  */
@@ -37,19 +37,17 @@ class chart_j12
         $defaults      = ['jID'=>12,'rows'=>10,'users'=>'-1','roles'=>'-1','reps'=>'0','range'=>'e'];
         $this->settings= array_replace_recursive($defaults, $settings);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
-        $this->choices = ['c'=>lang('today'),'e'=>lang('dates_wtd'),'l'=>lang('dates_this_period'),
-			'g'=>lang('dates_mtd'),'i'=>lang('dates_qtd'),'k'=>lang('dates_ytd')];
+        $this->choices = ['c'=>lang('today'),'e'=>lang('dates_wtd'),'l'=>lang('dates_this_period'),'g'=>lang('dates_mtd'),'i'=>lang('dates_qtd'),'k'=>lang('dates_ytd')];
 	}
 
     public function settingsStructure()
     {
-        return [
-            'jID'   => ['attr'=>['type'=>'hidden','value'=>$this->settings['jID']]],
-            'rows'  => ['attr'=>['type'=>'hidden','value'=>$this->settings['rows']]],
-            'users' => ['label'=>lang('users'),    'position'=>'after','values'=>listUsers(),   'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
-            'roles' => ['label'=>lang('groups'),   'position'=>'after','values'=>listRoles(),   'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']],
-            'reps'  => ['label'=>lang('just_reps'),'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['reps']]],
-            'range' => ['label'=>lang('range'),    'position'=>'after','values'=>viewKeyDropdown($this->choices),'attr'=>['type'=>'select','value'=>$this->settings['range']]]];
+        return ['jID'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['jID']]],
+            'rows'   => ['attr'=>['type'=>'hidden','value'=>$this->settings['rows']]],
+            'users'  => ['label'=>lang('users'),    'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
+            'roles'  => ['label'=>lang('groups'),   'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']],
+            'reps'   => ['label'=>lang('just_reps'),'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['reps']]],
+            'range'  => ['label'=>lang('range'),    'position'=>'after','values'=>viewKeyDropdown($this->choices),'attr'=>['type'=>'select','value'=>$this->settings['range']]]];
 	}
 
 	public function render()
@@ -58,7 +56,7 @@ class chart_j12
         $btn   = ['attr'=>['type'=>'button','value'=>lang('save')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]];
         $data  = $this->settingsStructure();
         $cData = chartSales($this->settings['jID'], $this->settings['range'], $this->settings['rows'], $this->settings['reps']);
-        $output = ['divID'=>$this->code."_chart",'type'=>'pie','attr'=>['chartArea'=>['left'=>'15%'],'title'=>$this->choices[$this->settings['range']]],'data'=>$cData];
+        $output= ['divID'=>$this->code."_chart",'type'=>'pie','attr'=>['chartArea'=>['left'=>'15%'],'title'=>$this->choices[$this->settings['range']]],'data'=>$cData];
         $js    = "var data_{$this->code} = ".json_encode($output).";\n";
         $js   .= "google.charts.load('current', {'packages':['corechart']});\n";
         $js   .= "google.charts.setOnLoadCallback(chart{$this->code});\n";

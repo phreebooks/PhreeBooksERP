@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-13
+ * @version    3.x Last Update: 2018-02-13
  * @filesource /lib/controller/module/bizuno/tabs.php
  */
 
@@ -98,38 +98,25 @@ class bizunoTabs
     private function dgTabs($name, $security=0)
     {
 		$this->managerSettings();
-		$data = [
-            'id'   => $name,
-			'rows' => $this->defaults['rows'],
-			'page' => $this->defaults['page'],
-			'attr' => ['url'     => BIZUNO_AJAX."&p=bizuno/tabs/managerRows",
-				'toolbar' => "#{$name}Toolbar",
-				'pageSize'=> getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField' => 'id',
-                ],
+		return ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
+			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id','url'=>BIZUNO_AJAX."&p=bizuno/tabs/managerRows"],
 			'events' => ['onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accTabs', 'dgTabs', 'divTabDetail', '".lang('details')."', 'bizuno/tabs/edit', rowData.id); }"],
 			'source' => [
-                'actions'=> ['newTab' => ['order'=>10,'html'=>  ['icon'=>'new','events'=>  ['onClick'=>"windowEdit('bizuno/tabs/add','winNewTab','".$this->lang['new_tab']."',400,200);"]]]],
-				'filters'=> ['search' => ['order'=>90, 'html'=>  ['label' => lang('search'),'attr'=>  ['value'=>$this->defaults['search']]]]],
+                'actions'=> ['newTab' => ['order'=>10,'icon'=>'new','events'=>  ['onClick'=>"windowEdit('bizuno/tabs/add','winNewTab','".$this->lang['new_tab']."',400,200);"]]],
+				'filters'=> ['search' => ['order'=>90,'label' => lang('search'),'attr'=>  ['value'=>$this->defaults['search']]]],
 				'sort' => ['s0' => ['order'=>10, 'field' => ("{$this->defaults['sort']} {$this->defaults['order']}")]],
                 ],
 			'columns'=> [
                 'id'     => ['order'=>0, 'attr'=>  ['hidden'=>true]],
-				'action' => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>150],
+				'action' => ['order'=>1, 'label'=>lang('action'),
 					'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
 					'actions'=> [
                         'tabTrash' => ['icon'=>'trash','size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
-							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/tabs/delete', idTBD);"],
-                            ],
-                        ],
-                    ],
+							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/tabs/delete', idTBD);"]]]],
 				'module_id' =>  ['order'=>10,'label'=>lang('module'),'format'=>'modTitle','attr'=>  ['width'=>160,'sortable'=>true,'resizable'=>true]],
 				'table_id'  =>  ['order'=>20,'label'=>lang('table'), 'attr'=>  ['width'=>160,'sortable'=>true,'resizable'=>true]],
 				'title'     =>  ['order'=>30,'label'=>lang('title'), 'attr'=>  ['width'=>160,'sortable'=>true,'resizable'=>true]],
-				'sort_order'=>  ['order'=>40,'label'=>lang('order'), 'attr'=>  ['width'=>100,'sortable'=>true,'resizable'=>true]],
-                ],
-            ];
-		return $data;
+				'sort_order'=>  ['order'=>40,'label'=>lang('order'), 'attr'=>  ['width'=>100,'sortable'=>true,'resizable'=>true]]]];
 	}
 
 	/**
@@ -193,7 +180,7 @@ class bizunoTabs
             } }
 		}
 		if ($action=='save') {
-			$data = ['content'=>  ['action'=>'eval','actionData'=>"accordionEdit('accTabs', 'dgTabs', 'divTabDetail', '".lang('details')."', 'bizuno/tabs/edit', $rID); jq('#winNewTab').window('close');"]];
+			$data = ['content'=>  ['action'=>'eval','actionData'=>"accordionEdit('accTabs', 'dgTabs', 'divTabDetail', '".lang('details')."', 'bizuno/tabs/edit', $rID); bizWindowClose('winNewTab');"]];
 		} else {
             $html  = html5('frmTabs', ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/tabs/save"]]);
             $html .= html5('id', ['attr'=>  ['type'=>'hidden', 'value'=>$rID]]);

@@ -15,12 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-01-12
-
+ * @version    3.x Last Update: 2018-09-05
  * @filesource /lib/controller/module/phreebooks/api.php
- * 
  */
 
 namespace bizuno;
@@ -47,50 +45,100 @@ class phreebooksApi
 	public function journalAPI(&$layout)
     {
 		$layout = array_replace_recursive($layout, [
-			'tabs'=>['tabImpExp'=>['divs'=>['begBal'=>['order'=>90,'label'=>lang('beginning_balances'),'src'=>BIZUNO_LIB."view/module/phreebooks/tabToolsBegBal.php"]]]],
+			'tabs'=>['tabImpExp'=>['divs'=>['begBal'=>['order'=>90,'type'=>'divs','label'=>lang('beginning_balances'),'divs'=>[
+                'formBOF' => ['order'=>15,'type'=>'form','key'=>'frmBegBal'],
+                'body'    => ['order'=>50,'type'=>'html','html'=>$this->getViewBB()],
+                'formEOF' => ['order'=>95,'type'=>'html','html'=>"</form>"]]]]]],
 			'forms'=>[
-                'frmBegBal'=> ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/begBalSave"]],
-				'frmImpInv'=> ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=inv"]],
-				'frmImpJ4' => ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j4"]],
-				'frmImpJ6' => ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j6"]],
-				'frmImpJ10'=> ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j10"]],
-				'frmImpJ12'=> ['attr'=> ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j12"]]],
-			'fields' => [
-                'bb_value'        => ['styles'=> ["text-align"=>"right"], 'attr'=> ['size'=>"13", 'value'=>0],
-					'events' => ['onChange'=>"begBalTotal();"]],
-				'bb_debit_total'  => ['styles'=> ["text-align"=>"right"], 'attr'=> ['readonly'=>'readonly', 'size'=>13, 'value'=>0]],
-				'bb_credit_total' => ['styles'=> ["text-align"=>"right"], 'attr'=> ['readonly'=>'readonly', 'size'=>13, 'value'=>0]],
-				'bb_balance_total'=> ['styles'=> ["text-align"=>"right"], 'attr'=> ['readonly'=>'readonly', 'size'=>13, 'value'=>0]],
-				'btnSaveBegBal'   => ['icon'=>'save', 'size'=>'large', 'events'=> ['onClick'=>"jq('body').addClass('loading'); jq('#frmBegBal').submit();"]],
-				// Import beginning balances
-				'import_inv'      => ['attr'=> ['type'=>'file']],
-				'import_j4'       => ['attr'=> ['type'=>'file']],
-				'import_j6'       => ['attr'=> ['type'=>'file']],
-				'import_j10'      => ['attr'=> ['type'=>'file']],
-				'import_j12'      => ['attr'=> ['type'=>'file']],
-				'btn_inv'         => ['attr'=> ['type'=>'button', 'value'=>lang('import')], 'events'=> ['onClick'=>"jq('#frmImpInv').submit();"]],
-				'btn_j4'          => ['attr'=> ['type'=>'button', 'value'=>lang('import')], 'events'=> ['onClick'=>"jq('#frmImpJ4').submit();"]],
-				'btn_j6'          => ['attr'=> ['type'=>'button', 'value'=>lang('import')], 'events'=> ['onClick'=>"jq('#frmImpJ6').submit();"]],
-				'btn_j10'         => ['attr'=> ['type'=>'button', 'value'=>lang('import')], 'events'=> ['onClick'=>"jq('#frmImpJ10').submit();"]],
-				'btn_j12'         => ['attr'=> ['type'=>'button', 'value'=>lang('import')], 'events'=> ['onClick'=>"jq('#frmImpJ12').submit();"]],
-                ],
-            'lang' => $this->lang,
-            ]);
-		$coa_types = selGLTypes();
-        $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_history", "period=1", "gl_account");
-		$layout['values']['beg_bal'] = [];
-		foreach ($result as $row) {
-			$layout['values']['beg_bal'][$row['gl_account']] = [
-                'desc'     => getModuleCache('phreebooks', 'chart', 'accounts')[$row['gl_account']]['title'],
-				'type'     => $row['gl_type'],
-				'desc_type'=> lang('gl_acct_type_'.$row['gl_type']),
-				'value'    => $coa_types[$row['gl_type']]['asset'] ? $row['beginning_balance'] : -$row['beginning_balance'],
-				'asset'    => $coa_types[$row['gl_type']]['asset'],
-                ];
-		}
-        $layout['javascript']['phreebooksImport'] = "\najaxForm('frmImpInv');\najaxForm('frmImpJ4');\najaxForm('frmImpJ6');\najaxForm('frmImpJ10');\najaxForm('frmImpJ12');";
+                'frmBegBal'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/begBalSave"]],
+				'frmImpInv'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=inv"]],
+				'frmImpJ4' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j4"]],
+				'frmImpJ6' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j6"]],
+				'frmImpJ10'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j10"]],
+				'frmImpJ12'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j12"]]],
+            'jsBody' => ['init'=>$this->getViewBBJS()],
+            'jsReady'=> ['init'=>"ajaxForm('frmBegBal');"]]);
+        $layout['jsReady']['phreebooksImport'] = "ajaxForm('frmImpInv');\najaxForm('frmImpJ4');\najaxForm('frmImpJ6');\najaxForm('frmImpJ10');\najaxForm('frmImpJ12');";
         $layout['tabs']['tabAPI']['divs'][$this->moduleID] = ['order'=>80,'label'=>getModuleCache($this->moduleID, 'properties', 'title'),'type'=>'html','html'=>$this->render($layout)];
 	}
+
+    private function getViewBB()
+    {
+        $bb_value        = ['styles'=>["text-align"=>"right"],'attr'=>['size'=>"13", 'value'=>0],'events'=>['onChange'=>"begBalTotal();"]];
+        $bb_debit_total  = ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
+        $bb_credit_total = ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
+        $bb_balance_total= ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
+        $btnSaveBegBal   = ['icon'=>'save','size'=>'large','events'=>['onClick'=>"jq('body').addClass('loading'); jq('#frmBegBal').submit();"]];
+		$coa_types = selGLTypes();
+        $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_history", "period=1", "gl_account");
+		$beg_bal = [];
+		foreach ($result as $row) { $beg_bal[$row['gl_account']] = [
+            'desc'     => getModuleCache('phreebooks', 'chart', 'accounts')[$row['gl_account']]['title'],
+            'type'     => $row['gl_type'],
+            'desc_type'=> lang('gl_acct_type_'.$row['gl_type']),
+            'value'    => $coa_types[$row['gl_type']]['asset'] ? $row['beginning_balance'] : -$row['beginning_balance'],
+            'asset'    => $coa_types[$row['gl_type']]['asset']];
+		}
+        $output = '<table style="border-style:none;margin-left:auto;margin-right:auto;">
+         <thead class="panel-header">
+          <tr>
+           <th>'.lang('journal_main_gl_acct_id').'</th>
+           <th nowrap="nowrap">'.lang('description')               .'</th>
+           <th nowrap="nowrap">'.lang('journal_item_gl_type')      .'</th>
+           <th nowrap="nowrap">'.lang('journal_item_debit_amount') .'</th>
+           <th nowrap="nowrap">'.lang('journal_item_credit_amount').'</th>
+          </tr>
+         </thead>
+         <tbody>'."\n";
+        foreach ($beg_bal as $glAcct => $values) {
+            $output .= "  <tr>\n";
+            $output .= '   <td align="center">'.$glAcct."</td>\n";
+            $output .= "   <td>".$values['desc']."</td>\n";
+            $output .= "   <td>".$values['desc_type']."</td>\n";
+            $bb_value['attr']['value'] = $values['value'];
+            if ($values['asset']) {
+                $output .= '<td style="text-align:center">'.html5("debits[$glAcct]", $bb_value)."</td>\n";
+                $output .= '<td style="background-color:#CCCCCC">&nbsp;</td>'."\n";
+            } else { // credit
+                $output .= '<td style="background-color:#CCCCCC">&nbsp;</td>'."\n";
+                $output .= '<td style="text-align:center">'.html5("credits[$glAcct]", $bb_value)."</td>\n";
+            }
+            $output .= "</tr>\n";
+        }
+        $output .= '
+         </tbody>
+         <tfoot class="panel-header">
+          <tr>
+           <td colspan="3" align="right">'.lang('total').'</td>
+           <td style="text-align:right">'.html5('bb_debit_total',  $bb_debit_total) .'</td>
+           <td style="text-align:right">'.html5('bb_credit_total', $bb_credit_total).'</td>
+          </tr>
+          <tr>
+           <td colspan="4" style="text-align:right">'.lang('balance').'</td>
+           <td style="text-align:right">'.html5('bb_balance_total', $bb_balance_total).'</td>
+           <td colspan="4" style="text-align:right">'.html5('btnSaveBegBal', $btnSaveBegBal)."</td>
+          </tr>
+         </tfoot>
+        </table>";
+        return $output;
+    }
+
+    private function getViewBBJS()
+    {
+        return "function begBalTotal() {
+	var debits = 0;
+	var credits= 0;
+	var balance= 0;
+	jq('input[name^=debits]').each(function() { debits += cleanCurrency(jq(this).val()); });
+	jq('input[name^=credits]').each(function(){ credits+= cleanCurrency(jq(this).val()); });
+	balance = debits - credits;
+	jq('#bb_debit_total').val(formatCurrency(debits));
+	jq('#bb_credit_total').val(formatCurrency(credits));
+	jq('#bb_balance_total').val(formatCurrency(balance));
+	if (balance == 0) jq('#bb_balance_total').css({color:'#000000'});
+	else jq('#bb_balance_total').css({color:'red'});
+}";
+    }
 
 	/**
      * Generates the HTML for the beginning balance import for PhreeBooks journal presets
@@ -99,29 +147,34 @@ class phreebooksApi
      */
     public function render($data)
     {
-		$output = '<fieldset>
- <legend>'.lang('phreebooks_import_journal_title').'</legend>
- <p>'.$this->lang['desc_import_journal'].'</p>
+        $import_inv= ['attr'=>['type'=>'file']];
+        $import_j4 = ['attr'=>['type'=>'file']];
+        $import_j6 = ['attr'=>['type'=>'file']];
+        $import_j10= ['attr'=>['type'=>'file']];
+        $import_j12= ['attr'=>['type'=>'file']];
+        $btn_inv   = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpInv').submit();"]];
+        $btn_j4    = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpJ4').submit();"]];
+        $btn_j6    = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpJ6').submit();"]];
+        $btn_j10   = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpJ10').submit();"]];
+        $btn_j12   = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpJ12').submit();"]];
+		return "<fieldset><legend>".lang('phreebooks_import_journal_title')."</legend>
+ <p>".$this->lang['desc_import_journal'].'</p>
  <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
   <tbody>
    <tr><td>'.$this->lang['phreebooks_import_inv']."</td><td>".html5('frmImpInv',$data['forms']['frmImpInv']).
-    html5('import_inv',$data['fields']['import_inv']).html5('btn_inv',$data['fields']['btn_inv']).'</form></td></tr>
+    html5('import_inv',$import_inv).html5('btn_inv',$btn_inv).'</form></td></tr>
    <tr><td colspan="2"><hr /></td></tr>
    <tr><td>'.$this->lang['phreebooks_import_po'] ."</td><td>".html5('frmImpJ4',$data['forms']['frmImpJ4']).
-    html5('import_j4', $data['fields']['import_j4']) .html5('btn_j4', $data['fields']['btn_j4']) .'</form></td></tr>
+    html5('import_j4', $import_j4) .html5('btn_j4', $btn_j4) .'</form></td></tr>
    <tr><td colspan="2"><hr /></td></tr>
    <tr><td>'.$this->lang['phreebooks_import_ap'] ."</td><td>".html5('frmImpJ6',$data['forms']['frmImpJ6']).
-    html5('import_j6', $data['fields']['import_j6']) .html5('btn_j6', $data['fields']['btn_j6']) .'</form></td></tr>
+    html5('import_j6', $import_j6) .html5('btn_j6', $btn_j6) .'</form></td></tr>
    <tr><td colspan="2"><hr /></td></tr>
    <tr><td>'.$this->lang['phreebooks_import_so'] ."</td><td>".html5('frmImpJ10',$data['forms']['frmImpJ10']).
-    html5('import_j10',$data['fields']['import_j10']).html5('btn_j10',$data['fields']['btn_j10']).'</form></td></tr>
+    html5('import_j10',$import_j10).html5('btn_j10',$btn_j10).'</form></td></tr>
    <tr><td colspan="2"><hr /></td></tr>
    <tr><td>'.$this->lang['phreebooks_import_ar'] ."</td><td>".html5('frmImpJ12',$data['forms']['frmImpJ12']).
-    html5('import_j12',$data['fields']['import_j12']).html5('btn_j12',$data['fields']['btn_j12']).'</form></td></tr>
-  </tbody>
- </table>
-</fieldset>';
-        return $output;
+    html5('import_j12',$import_j12).html5('btn_j12',$btn_j12)."</form></td></tr>\n</tbody>\n</table>\n</fieldset>";
 	}
 
     /**

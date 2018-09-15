@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2018-04-17
+ * @version    3.x Last Update: 2018-08-16
  * @filesource /lib/controller/module/inventory/prices/bySKU.php
  */
 
@@ -60,7 +60,7 @@ class bySKU extends inventoryPrices
         if (!$security = validateSecurity('inventory', 'prices_'.$type, 3, false)) { return; }
         if (!$iID) { return; }// cannot add prices until the sku has been saved and exists as prices are added asyncronously
 		$layout['tabs']['tabInventory']['divs'][$this->code] = ['order'=>40, 'label'=>$this->lang['tab_label'], 'type'=>'html', 'html'=>'',
-			'attr'=>  ["data-options"=>"href:'".BIZUNO_AJAX."&p=inventory/prices/manager&type=$type&security=$security&iID=$iID&mod={$GLOBALS['bizunoModule']}'"]];
+			'options'=>['href'=>"'".BIZUNO_AJAX."&p=inventory/prices/manager&type=$type&security=$security&iID=$iID&mod={$GLOBALS['bizunoModule']}'"]];
 	}
 
 	/**
@@ -86,18 +86,53 @@ class bySKU extends inventoryPrices
 	 */
 	public function priceRender(&$layout=[], $settings=[])
     {
-        $mod = clean('mod', 'text', 'request'); // in specific module, can be either post or get
         $prices = isset($settings['attr']) ? $settings['attr'] : '';
         $layout['values']['prices'] = $this->getPrices($prices);
-        $layout['divs']['divPrices'] = ['order'=>50,'src'=>BIZUNO_LIB."view/module/inventory/divBySKU.php"];
-        $layout['values']['inInventory'] = $mod=='inventory' ? true : false;
-        $layout['values']['pricesCode'] = $this->code;
-        $layout['lang']['title'] = $this->lang['title'];
-        $layout['datagrid']['dgPricesSet'] = $this->datagridQuantity('dgPricesSet');
+        $mod    = clean('mod', 'text', 'request'); // in specific module, can be either post or get
+        $inInv  = $mod=='inventory' ? true : false;
+        $jsHead = "
+var dgPricesSetData = ".json_encode($layout['values']['prices']).";
+var qtySource = "      .json_encode(viewKeyDropdown($layout['values']['qtySource'])).";
+var qtyAdj    = "      .json_encode(viewKeyDropdown($layout['values']['qtyAdj'])).";
+var qtyRnd    = "      .json_encode(viewKeyDropdown($layout['values']['qtyRnd'])).";
+function preSubmitPrices() {
+	jq('#dgPricesSet').edatagrid('saveRow');
+	var items = jq('#dgPricesSet').datagrid('getData');
+	var serializedItems = JSON.stringify(items);
+	jq('#item$this->code').val(serializedItems);
+	return true;
+}";
+        if ($inInv) { // we're in the inventory form, hide inventory_id field and set to current form value
+            $layout['jsReady'][$this->code] = "jq('#$this->code').val(jq('#id').val());";
+        } else {
+            $iID = $layout['fields']['inventory_id']['attr']['value'];
+            if ($iID) {
+                $name = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'description_short', "id=$iID");
+                $layout['fields']['inventory_id']['defaults']['data'] = "iData$this->code";
+                $jsHead .= "\nvar iData$this->code = ".json_encode([['id'=>$iID,'description_short'=>$name]]).";";
+            }
+            $layout['fields']['inventory_id']['attr']['id']  = "inventory_id$this->code";
+            $layout['fields']['inventory_id']['attr']['type']= 'inventory';
+        }
+        $layout['divs']['divPrices'] = ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
+            'byCBody' => ['order'=>20,'type'=>'fields','label'=>$this->lang['title'],'fields'=>$this->getView($layout['fields'], $inInv)],
+            'byCdg'   => ['order'=>50,'type'=>'datagrid','key'=>'dgPricesSet']]];
+        $layout['jsHead'][$this->code] = $jsHead;
+        $layout['datagrid']['dgPricesSet'] = $this->dgQuantity('dgPricesSet');
 		$layout['datagrid']['dgPricesSet']['columns']['price']['attr']['hidden']  = false;
 		$layout['datagrid']['dgPricesSet']['columns']['margin']['attr']['hidden'] = false;
 	}
 
+    private function getView($structure, $inInv)
+    {
+        $output = [
+            'id'          .$this->code => $structure['id'], // hidden
+            'item'        .$this->code => ['attr'=>['type'=>'hidden']],
+            'inventory_id'.$this->code => $inInv ? ['attr'=>['type'=>'hidden']] : array_merge($structure['inventory_id'],['break'=>true]),
+            'ref_id'      .$this->code => array_merge($structure['ref_id'],  ['break'=>true]),
+            'currency'    .$this->code => array_merge($structure['currency'],['break'=>true])];
+        return $output;
+    }
 	/**
 	 * This method saves the form contents for quantity pricing into the database, it is called from method: inventoryPrices:save 
 	 * @return true if successful, NULL and messageStack with error message if failed

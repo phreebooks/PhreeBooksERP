@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-18
+ * @version    3.x Last Update: 2018-06-18
  * @filesource /lib/model/io.php
  */
 
@@ -437,11 +437,11 @@ final class io
      */
     public function apiPhreeSoft($method='', $myData=[])
     {
-        $data = array_replace_recursive([
+        $data = array_replace([
             'host'   => BIZUNO_HOST,
             'bizID'  => getUserCache('profile', 'biz_id', false, 0),
-            'bizUser'=> getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_user'),
-            'bizPass'=> getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_pass')], $myData);
+            'UserID'=> getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_user'),
+            'UserPW'=> getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_pass')], $myData);
         $result = $this->cURLGet("https://www.phreesoft.com/wp-admin/admin-ajax.php?action=bizuno_ajax&p=myPortal/admin/$method", $data, 'post');
         if (!$result) { 
             msgAdd("I cannot reach the PhreeSoft.com server, please try again later.");

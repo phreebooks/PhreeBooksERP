@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-01
+ * @version    3.x Last Update: 2018-07-01
  * @filesource /controller/module/phreeform/renderHTML.php
  */
 
@@ -78,25 +78,25 @@ class HTML
 		$this->numColumns = sizeof($html_heading);
 		$rStyle = '';
 		if (isset($report->heading->show) && $report->heading->show) { // Show the company name
-			$color  = $this->convertHex($report->heading->color);
+			$color  = convertHex($report->heading->color);
 			$dStyle = 'style="font-family:'.$this->fontHeading.'; color:'.$color.'; font-size:'.$report->heading->size.'pt; font-weight:bold;"';
 			$this->writeRow([['align' => $report->heading->align, 'value' => getModuleCache('bizuno', 'settings', 'company', 'primary_name')]], $rStyle, $dStyle, $heading = true);
 		}
 		if (isset($report->title1->show) && $report->title1->show) { // Set title 1 heading
-			$color  = $this->convertHex($report->title1->color);
+			$color  = convertHex($report->title1->color);
 			$dStyle = 'style="font-family:'.$this->fontTitle1.'; color:'.$color.'; font-size:'.$report->title1->size.'pt;"';
 			$this->writeRow([['align' => $report->title1->align, 'value' => TextReplace($report->title1->text)]], $rStyle, $dStyle, $heading = true);
 		}
 		if (isset($report->title2->show) && $report->title2->show) { // Set Title 2 heading
-			$color  = $this->convertHex($report->title2->color);
+			$color  = convertHex($report->title2->color);
 			$dStyle = 'style="font-family:'.$this->fontTitle2.'; color:'.$color.'; font-size:'.$report->title2->size.'pt;"';
 			$this->writeRow([['align' => $report->title2->align, 'value' => TextReplace($report->title2->text)]], $rStyle, $dStyle, $heading = true);
 		}
-		$color  = $this->convertHex($report->filter->color);
+		$color  = convertHex($report->filter->color);
 		$dStyle = 'style="font-family:'.$this->fontFilter.'; color:'.$color.'; font-size:'.$report->filter->size.'pt;"';
 		$this->writeRow([['align' => $report->filter->align, 'value' => TextReplace($report->filter->text)]], $rStyle, $dStyle, $heading = true);
 		// Set the table header
-		$color  = $this->convertHex($report->data->color);
+		$color  = convertHex($report->data->color);
 		$rStyle = 'style="background-color:'.$this->HdColor.'"';
 		$dStyle = 'style="font-family:'.$this->fontData.'; color:'.$color.'; font-size:'.$report->data->size.'pt;"';
 		$align  = $report->data->align;
@@ -116,7 +116,7 @@ class HTML
 			$this->output .= '</table>';
 			return;
 		}
-		$color  = $this->convertHex($this->FillColor);
+		$color  = convertHex($this->FillColor);
 		$bgStyle= 'style="background-color:'.$color.'"';
 		$color  = str_replace(':', '', $report->data->color);
 		$dStyle = 'style="font-family:'.$this->fontData.';color:'.$color.';font-size:'.$report->data->size.'pt;"';
@@ -191,19 +191,5 @@ class HTML
 		}
 		$output .= '  </tr>';
 		$this->output .= $output;
-	}
-
-	/**
-     * Converts a RGB color to hexadecimal format
-     * @param string $value - value to convert
-     * @return string - converted $value
-     */
-    private function convertHex($value)
-    {
-        if (strpos($value, '#') === 0) { return $value; } // already in hex
-        $colors = explode(':', $value);
-		$output = NULL;
-        foreach ($colors as $decimal) { $output .= str_pad(dechex($decimal), 2, "0", STR_PAD_LEFT); }
-		return '#'.$output;
 	}
 }

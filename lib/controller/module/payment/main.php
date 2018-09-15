@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-09
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/payment/main.php
  */
 
@@ -42,9 +42,7 @@ class paymentMain
 		$jID  = clean('jID',  'integer','get');
         $type = clean('type', 'char',   'get');
         if (!$type) { $type = in_array($jID, [17, 20, 21]) ? 'v' : 'c'; }
-		$layout = array_replace_recursive($layout,[
-            'fields' => ['selMethod'=>['label'=>lang('payment_method'),'values'=>viewMethods('payment'),'attr'=>['type'=>'select'],
-                'events'=>['onChange'=>'selPayment(this);']]]]);
+		$layout = array_replace_recursive($layout,['fields'=>['selMethod'=>['values'=>viewMethods('payment'),'events'=>['onChange'=>'selPayment(newVal);'],'attr'=>['type'=>'select']]]]);
 	}
 
     /**
@@ -55,28 +53,38 @@ class paymentMain
     public function manager(&$layout=[])
     {
         if (!$security = validateSecurity('contacts', 'mgr_c', 2)) { return; }
-        $rID   = clean('rID', 'integer', 'get');
-        $cc_exp= pullExpDates();
-        $js = "function paymentNew() {\njq('#payment_id').val('');
-    jq('#payment_name').val(''); jq('#payment_num').val('');
-    jq('#payment_mon').val('" .date('m')."');
-    jq('#payment_year').val('".date('Y')."');
-    jq('#payment_cvv').val('');\n}\n";
+        $rID = clean('rID', 'integer', 'get');
+        $js  = "function paymentNew() {\n  jq('#payment_id').val('');
+  bizTextSet('payment_name','');\n  bizTextSet('payment_num','');\n  bizSelSet('payment_mon','".date('m')."');
+  bizSelSet('payment_year','".date('Y')."');\n  bizTextSet('payment_cvv','');\n}\n";
         $data = ['type'=>'divHTML',
-			'toolbars'  => ['tbPayment'=>['icons'=>[
+			'toolbars'=> ['tbPayment'=>['icons'=>[
                     'pmtNew' => ['order'=>10,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"paymentNew();"]],
                     'pmtSave'=> ['order'=>20,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"divSubmit('payment/main/save&rID=$rID', 'frmPayment');"]]]]],
-			'divs'      => ['pmtMgr' => ['order'=>50, 'src'=>BIZUNO_LIB."view/module/payment/accPmtManager.php"]],
-            'jsHead'    => ['manager'=>$js],
-			'datagrid'  => ['dgPayment'=> $this->dgPayment('dgPayment', $rID, $security)],
-            'fields'    => [
-                'payment_id'  => ['attr'  =>['type'=>'hidden']],
-                'payment_name'=> ['label' =>lang('payment_name')],
-                'payment_num' => ['label' =>lang('payment_number')],
-                'payment_mon' => ['label' =>lang('payment_expiration'), 'values'=>$cc_exp['months'], 'attr'=>['type'=>'select', 'value'=>date('m')]],
-                'payment_year'=> ['values'=>$cc_exp['years'],   'attr'=>['type'=>'select', 'value'=>date('Y')]],
-                'payment_cvv' => ['label' =>lang('payment_cvv'),'attr'=>['type'=>'text', 'size'=>'4']]]];
+			'divs'    => [
+                'dgPayment'=> ['order'=>10,'type'=>'datagrid','key'=>'dgPayment'],
+                'body'     => ['order'=>20,'label'=>lang('payment_new'),'type'=>'divs','divs'=>[
+                    'formBOF'  => ['order'=>10, 'type'=>'html','html'=>'<div id="frmPayment" style="width:50%">'],
+                    'tbPayment'=> ['order'=>15,'type'=>'toolbar','key'=>'tbPayment'],
+                    'body'     => ['order'=>50,'type'=>'fields','label'=>lang('general'),'fields'=>$this->getViewMgr()],
+                    'formEOF'  => ['order'=>85, 'type'=>'html','html'=>'</div>']]]],
+            'jsHead'  => ['manager'=>$js],
+			'datagrid'=> ['dgPayment'=> $this->dgPayment('dgPayment', $rID, $security)]];
         $layout = array_replace_recursive($layout, $data);
+    }
+
+    private function getViewMgr()
+    {
+        if (!getUserCache('profile', 'admin_encrypt')) { return lang('err_encrypt_key_missing'); }
+        $cc_exp= pullExpDates();
+        $output = [
+            'payment_id'  => ['order'=>10,'attr'=>['type'=>'hidden']], // hidden
+            'payment_name'=> ['order'=>20,'break'=>true,'label'=>lang('payment_name')],
+            'payment_num' => ['order'=>30,'break'=>true,'label'=>lang('payment_number')],
+            'payment_mon' => ['order'=>40,'label'=>lang('payment_expiration'),'options'=>['width'=>150],'values'=>$cc_exp['months'],'attr'=>['type'=>'select','value'=>date('m')]],
+            'payment_year'=> ['order'=>50,'break'=>true,'options'=>['width'=>80],'values'=>$cc_exp['years'],'attr'=>['type'=>'select','value'=>date('Y')]],
+            'payment_cvv' => ['order'=>60,'label'=>lang('payment_cvv'),'attr'=>['type'=>'text','size'=>'4']]];
+        return $output;
     }
 
 	/**
@@ -108,11 +116,11 @@ class paymentMain
         $fields = [];
         if (!$encrypt->decryptCC($rID, $fields)) { return false; } // update $fields with stored data
         $respTasks = "jq('#payment_id').val('".$rID."');"
-                   . "jq('#payment_name').val('".$fields['name']  ."');"
-                   . "jq('#payment_num').val('" .$fields['number']."');"
-                   . "jq('#payment_mon').val('" .$fields['month'] ."');"
-                   . "jq('#payment_year').val('".$fields['year']  ."');"
-                   . "jq('#payment_cvv').val('" .$fields['cvv']   ."');";
+                   . "bizTextSet('payment_name', '".$fields['name']  ."');"
+                   . "bizTextSet('payment_num', '" .$fields['number']."');"
+                   . "bizSelSet ('payment_mon', '" .$fields['month'] ."');"
+                   . "bizSelSet ('payment_year', '".$fields['year']  ."');"
+                   . "bizTextSet('payment_cvv', '" .$fields['cvv']   ."');";
         $layout = array_replace_recursive($layout, ['content' =>['action'=>'eval', 'actionData'=>$respTasks]]);
 	}
 
@@ -129,15 +137,9 @@ class paymentMain
         $nmbr = clean('payment_num', 'numeric','post');
         if (!$security = validateSecurity('contacts', 'mgr_c', 2)) { return; }
 		if (!$rID || !$name || !$nmbr) { return msgAdd('Please make sure all fields are filled out!');; } // allow for save contact if no payment data
-		$fields = [
-            'id'    => $pID,
-            'name'  => $name,
-			'number'=> str_replace(' ', '', $nmbr), 
-			'month' => clean('payment_mon', 'integer','post'),
-			'year'  => clean('payment_year','integer','post'),
-			'cvv'   => clean('payment_cvv', 'integer','post'),
-			'module'=> 'contacts',
-			'ref_1' => $rID]; // record in contacts table
+		$fields = ['id'=>$pID, 'name'=>$name, 'module'=>'contacts', 'ref_1'=>$rID,
+			'number'=>str_replace(' ', '', $nmbr),            'month'=>clean('payment_mon', 'integer','post'),
+			'year'  =>clean('payment_year','integer','post'), 'cvv'  =>clean('payment_cvv', 'integer','post')]; // record in contacts table
         msgDebug("\nWorking with payment fields: ".print_r($fields, true));
         require_once(BIZUNO_LIB."model/encrypter.php");
 		$encrypt = new encryption();
@@ -173,39 +175,31 @@ class paymentMain
      */
     private function dgPayment($name, $rID=0, $security=0)
     {
-		$rows   = clean('rows', ['format'=>'integer','default'=>getModuleCache('bizuno', 'settings', 'general', 'max_rows')], 'post');
-		$page   = clean('page', ['format'=>'integer','default'=>1], 'post');
-		$sort   = clean('sort', ['format'=>'text',   'default'=>'exp_date'],'post');
-		$order  = clean('order',['format'=>'text',   'default'=>''],    'post');
-		$data = [
-            'id'     => $name,
-			'rows'   => $rows,
-			'page'   => $page,
-			'attr'   => [
-                'url'     => BIZUNO_AJAX."&p=payment/main/managerRows&rID=$rID",
-				'pageSize'=> getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField' => 'id'],
+		$rows = clean('rows', ['format'=>'integer','default'=>getModuleCache('bizuno', 'settings', 'general', 'max_rows')], 'post');
+		$page = clean('page', ['format'=>'integer','default'=>1],         'post');
+		$sort = clean('sort', ['format'=>'text',   'default'=>'exp_date'],'post');
+		$order= clean('order',['format'=>'text',   'default'=>''],        'post');
+		$data = ['id'=>$name, 'rows'=>$rows, 'page'=>$page,
+            'attr'   =>['idField'=>'id', 'url'=>BIZUNO_AJAX."&p=payment/main/managerRows&rID=$rID"],
 			'source' => [
                 'tables' => ['data_security'=>['table'=>BIZUNO_DB_PREFIX."data_security"]],
-				'filters' => [
-                    'module'=>  ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."data_security.module='contacts'"],
-					'rID'   =>  ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."data_security.ref_1=$rID"]],
-				'sort' => ['s0'=>  ['order'=>10, 'field'=>"$sort $order"]]],
+				'filters'=> [
+                    'module'=>['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."data_security.module='contacts'"],
+					'rID'   =>['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."data_security.ref_1=$rID"]],
+				'sort'   => ['s0'=>['order'=>10, 'field'=>"$sort $order"]]],
 			'columns'=> [
-                'id'     => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."data_security.id", 'attr'=>['hidden'=>true]],
-				'action' => ['order'=>1, 'label'=>'', 'attr'=>['width'=>75],
-					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'id'       => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."data_security.id",'attr'=>['hidden'=>true]],
+				'action'   => ['order'=>1,'label'=>'','events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> [
-                        'pmtEdit' => ['icon'=>'edit','size'=>'small', 'order'=>20, 'label'=>lang('edit'), 'hidden'=>$security>2?false:true,
-							'events'=> ['onClick' => "jsonAction('payment/main/edit', idTBD);"]],
-                        'pmtTrash' => ['icon'=>'trash','size'=>'small', 'order'=>50, 'label'=>lang('delete'), 'hidden'=>$security>3?false:true,
-							'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('payment/main/delete', idTBD);"]]]],
-				'enc_value' => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."data_security.enc_value", 'format'=>'encryptName',
-					'label' => lang('address_book_primary_name'), 'attr'=>['width'=>200, 'sortable'=>true, 'resizable'=>true]],
-				'hint'   => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX."data_security.hint",
-					'label' => lang('hint'),  'attr'=>['width'=>150, 'sortable'=>true, 'resizable'=>true]],
-				'exp_date'=> ['order'=>30, 'field' => BIZUNO_DB_PREFIX."data_security.exp_date", 'format'=>'date',
-					'label' => lang('payment_expiration'), 'attr'=>['width'=>120, 'sortable'=>true, 'resizable'=>true]]]];
+                        'pmtEdit' => ['order'=>20,'icon'=>'edit', 'label'=>lang('edit'),  'hidden'=>$security>2?false:true,
+							'events'=>['onClick'=>"jsonAction('payment/main/edit', idTBD);"]],
+                        'pmtTrash'=> ['order'=>50,'icon'=>'trash','label'=>lang('delete'),'hidden'=>$security>3?false:true,
+							'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('payment/main/delete', idTBD);"]]]],
+				'enc_value'=> ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."data_security.enc_value",'format'=>'encryptName',
+					'label'=> lang('address_book_primary_name'),'attr'=>['width'=>200,'sortable'=>true,'resizable'=>true]],
+				'hint'     => ['order'=>20,'field'=>BIZUNO_DB_PREFIX."data_security.hint",'label'=>lang('hint'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]],
+				'exp_date' => ['order'=>30, 'field' => BIZUNO_DB_PREFIX."data_security.exp_date",
+					'label'=> lang('payment_expiration'),'attr'=>['type'=>'date','width'=>120,'sortable'=>true,'resizable'=>true]]]];
 		return $data;
 	}
 

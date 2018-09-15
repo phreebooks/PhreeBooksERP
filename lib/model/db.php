@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-29
+ * @version    3.x Last Update: 2018-09-10
  * @filesource /lib/model/db.php
  */
 
@@ -381,7 +381,7 @@ function dbWriteCache($usrEmail=false, $lang=false)
 function dbClearCache($email='')
 {
     $crit = $email ? "email='$email'" : '';
-    dbWrite(BIZUNO_DB_PREFIX.'users', ['cache_date'=>'0000-00-00'], 'update', $crit);
+    dbWrite(BIZUNO_DB_PREFIX.'users', ['cache_date'=>''], 'update', $crit);
 }
 
 /**
@@ -683,12 +683,12 @@ function dbTableRead($data)
 	if (!empty($data['source']['filters'])) {
         foreach ($data['source']['filters'] as $key => $value) {
 		if ($key == 'search') {
-                if ($value['html']['attr']['value']) {
-                    $search_text = addslashes($value['html']['attr']['value']);
+                if ($value['attr']['value']) {
+                    $search_text = addslashes($value['attr']['value']);
                     $criteria[] = "(".implode(" LIKE '%$search_text%' OR ", $data['source']['search'])." LIKE '%$search_text%')";
                 }
             } else {
-                if (isset($value['sql']) && $value['sql']) { $criteria[] = $value['sql']; }
+                if (!empty($value['sql'])) { $criteria[] = $value['sql']; }
             }
         }
     }
@@ -711,11 +711,6 @@ function dbTableRead($data)
                 $aFields[] = $value['field']." AS `$key`";
             }
 		}
-//		$sqlFields   = implode(', ', $aFields);
-//		$sqlCriteria = $sqlCriteria ? $sqlCriteria : '';
-//		$sql = "SELECT $sqlFields FROM $sqlTables $sqlCriteria $sqlOrder";
-//      if (!$stmt = dbGetResult($sql)) { return $output; }
-//		$temp = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         if (!$temp = dbGetMulti($sqlTables, $sqlCriteria, $sqlOrder, $aFields, 0, false)) { return $output; }
 		$output['total'] = sizeof($temp);
 		$result = array_slice($temp, ($data['page']-1)*$data['rows'], $data['rows']);
@@ -727,7 +722,7 @@ function dbTableRead($data)
         if (!$result = dbGetMulti($sqlTables, $sqlCriteria, $sqlOrder, '*', $limit)) { return $output; }
 	}
 	foreach ($result as $row) {
-        $rowRaw = $row; // save the raw data for aliases and formatting alterations of data
+        $GLOBALS['currentRow'] = $row; // save the raw data for aliases and formatting alterations of data
 		if (isset($row['currency'])) {
 			$currencies->iso  = $row['currency']; // @todo this needs to temporarily set a value in viewFormatter for processing
 			$currencies->rate = isset($row['currency_rate']) ? $row['currency_rate'] : 1;
@@ -738,10 +733,11 @@ function dbTableRead($data)
 				$tmp = json_decode($row[$parts[0]], true);
 				$row[$key] = isset($parts[1]) && isset($tmp[$parts[1]]) ? $tmp[$parts[1]] : '';
 			}
-            if (isset($value['alias'])) { $row[$key] = $rowRaw[$value['alias']]; }
+            if (isset($value['alias'])) { $row[$key] = $GLOBALS['currentRow'][$value['alias']]; }
 		}
 		foreach ($row as $key => $value) {
-            if (isset($data['columns'][$key]['format'])) { $row[$key] = viewFormat($value, $data['columns'][$key]['format']); }
+            if (!empty($data['columns'][$key]['process'])){ $row[$key] = viewProcess($row[$key], $data['columns'][$key]['process']); }
+            if (!empty($data['columns'][$key]['format'])) { $row[$key] = viewFormat ($row[$key], $data['columns'][$key]['format']); }
         }
 		$output['rows'][] = $row;
 	}
@@ -856,18 +852,19 @@ function dbFiscalDropDown()
  * @param string $include_all
  * @return array - formatted result array to be used for HTML5 input type select render function
  */
-function dbPeriodDropDown($include_all=true)
+function dbPeriodDropDown($incAll=true, $incRecent=false)
 {
 	$result = dbGetMulti(BIZUNO_DB_PREFIX."journal_periods", '', 'period');
-//  msgDebug("\nread peiods from DB = ".print_r($result, true));
-	$output = [];
-    if ($include_all) { $output[] = ['id'=>'all', 'text'=>lang('all')]; }
+	$output = $choices = [];
+    if ($incRecent) {
+        $choices = ['l'=>lang('dates_this_period'),'t'=>lang('last_30_days'),'v'=>lang('last_60_days'),'w'=>lang('last_90_days'),'i'=>lang('dates_qtd'),'k'=>lang('dates_ytd')];
+    }
+    if ($incAll) { $output[] = ['id'=>'a', 'text'=>lang('all')]; }
 	foreach ($result as $row) {
 		$text_value = lang('period').' '.$row['period'].' : '.viewDate($row['start_date']).' - '.viewDate($row['end_date']);
 		$output[] = ['id' => $row['period'], 'text' => $text_value];
 	}
-//  msgDebug("\nLoaded periods = ".print_r($output, true));
-	return $output;
+	return array_merge(viewKeyDropdown($choices), $output);
 }
 
 /**
@@ -889,6 +886,136 @@ function dbGLDropDown($inc_sel=true, $limits=array())
 	return $output;
 }
 
+function dbSqlDates($dateType='a', $df=false) {
+    if (!$df) { $df = 'post_date'; }
+	$dates = localeGetDates();
+	$DateArray = explode(':', $dateType);
+	$tnow = time();
+	$dbeg = '1969-01-01';
+	$dend = '2029-12-31';
+	switch ($DateArray[0]) {
+        case "a": // All, skip the date addition to the where statement, all dates in db
+        case "all": // old way 
+            $sql  = '';
+            $desc = '';
+            break;
+        case "b": // Date Range
+            $sql  = '';
+            $desc = lang('date_range');
+            if ($DateArray[1] <> '') {
+                $dbeg = clean($DateArray[1], 'date');
+                $sql .= "$df>='$dbeg'";
+                $desc.= ' '.lang('from').' '.$DateArray[1];
+            }
+            if ($DateArray[2] <> '') { // a value entered, check
+                if (strlen($sql) > 0) { $sql .= ' AND '; }
+                $dend = localeCalculateDate(clean($DateArray[2], 'date'), 1);
+                $sql .= "$df<'$dend'";
+                $desc.= ' '.lang('to').' '.$DateArray[2];
+            }
+            $desc .= '; ';			
+            break;
+        case "c": // Today (specify range for datetime type fields to match for time parts)
+            $dbeg = $dates['Today'];
+            $dend = localeCalculateDate($dates['Today'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('date_range').' = '.viewDate($dates['Today']).'; ';
+            break;
+        case "d": // This Week
+            $dbeg = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $tnow) - date('w', $tnow), $dates['ThisYear']));
+            $dend = localeCalculateDate(date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $tnow) - date('w', $tnow)+6, $dates['ThisYear'])), 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate(localeCalculateDate($dend, -1)).'; ';
+            break;
+        case "e": // This Week to Date
+            $dbeg = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $tnow)-date('w', $tnow), $dates['ThisYear']));
+            $dend = localeCalculateDate($dates['Today'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($dates['Today']).'; ';
+            break;
+        case "f": // This Month
+            $dbeg = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], 1, $dates['ThisYear']));
+            $dend = localeCalculateDate(date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], $dates['TotalDays'], $dates['ThisYear'])), 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate(localeCalculateDate($dend, -1)).'; ';
+            break;
+        case "g": // This Month to Date
+            $dbeg = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], 1, $dates['ThisYear']));
+            $dend = localeCalculateDate($dates['Today'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($dates['Today']).'; ';
+            break;
+        case "h": // This Quarter
+            $QtrStrt = getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 3);
+            $temp = dbGetFiscalDates($QtrStrt);
+            $dbeg = $temp['start_date'];
+            $temp = dbGetFiscalDates($QtrStrt + 2);
+            $dend = localeCalculateDate($temp['end_date'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($temp['end_date']).'; ';
+            break;
+        case "i": // Quarter to Date
+            $QtrStrt = getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 3);
+            $temp = dbGetFiscalDates($QtrStrt);
+            $dbeg = $temp['start_date'];
+            $dend = localeCalculateDate($dates['Today'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($dates['Today']).'; ';
+            break;
+        case "j": // This Year
+            $YrStrt = getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 12);
+            $temp = dbGetFiscalDates($YrStrt);
+            $dbeg = $temp['start_date'];
+            $temp = dbGetFiscalDates($YrStrt + 11);
+            $dend = localeCalculateDate($temp['end_date'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($temp['end_date']).'; ';
+            break;
+        case "k": // Year to Date
+            $YrStrt = getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 12);
+            $temp = dbGetFiscalDates($YrStrt);
+            $dbeg = $temp['start_date'];
+            $dend = localeCalculateDate($dates['Today'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($dates['Today']).'; ';
+            break;
+        case "l": // This Period
+            $temp = dbGetFiscalDates(getModuleCache('phreebooks', 'fy', 'period'));
+            $dbeg = $temp['start_date'];
+            $dend = localeCalculateDate($temp['end_date'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('period').' '.getModuleCache('phreebooks', 'fy', 'period').' ('.viewDate($dbeg).' '.lang('to').' '.viewDate($temp['end_date']).'); ';
+            break;
+        case 't': // Last 30 days
+            $dbeg = localeCalculateDate($dates['Today'], -30);
+            $dend = localeCalculateDate($dates['Today'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('last_30');
+            break;
+        case 'v': // last 60 days
+            $dbeg = localeCalculateDate($dates['Today'], -60);
+            $dend = localeCalculateDate($dates['Today'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('last_60');
+            break;
+        case 'w': // Last 90 days
+            $dbeg = localeCalculateDate($dates['Today'], -90);
+            $dend = localeCalculateDate($dates['Today'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('last_90');
+            break;
+        default: // date by period
+        case "z":
+            if (!intval($DateArray[0])) { $DateArray[0] = getModuleCache('phreebooks', 'fy', 'period'); }
+            $temp = dbGetFiscalDates($DateArray[0]);
+            $dbeg = $temp['start_date'];
+            $dend = localeCalculateDate($temp['end_date'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('period')." {$DateArray[0]} (".viewFormat($temp['start_date'], 'date')." - ".viewFormat($temp['end_date'], 'date')."); ";
+            break;
+	}
+	return ['sql'=>$sql,'description'=>$desc,'start_date'=>$dbeg,'end_date'=>$dend];
+}
 /**
  * Prepares a drop down values list of users
  * @param boolean $active_only - [default true] Restrict list to active users only, default true

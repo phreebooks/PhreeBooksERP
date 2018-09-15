@@ -15,13 +15,15 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-08-17
+ * @version    3.x Last Update: 2018-08-17
  * @filesource /lib/controller/module/bizuno/roles.php
  */
 
 namespace bizuno;
+
+require_once(BIZUNO_LIB."controller/module/bizuno/functions.php");
 
 class bizunoRoles
 {
@@ -42,14 +44,14 @@ class bizunoRoles
         if (!$security = validateSecurity('bizuno', 'roles', 1)) { return; }
 		$title = lang('roles');
 		$layout = array_replace_recursive($layout, viewMain(), [
-            'pageTitle' => $title,
+            'title' => $title,
 			'divs' => [
                 'heading'=> ['order'=>30, 'type'=>'html',     'html'=>"<h1>$title</h1>\n"],
 				'roles'  => ['order'=>60, 'type'=>'accordion','key'=>'accRoles']],
-			'accordion' => ['accRoles'=>  ['divs'=>  [
-                'divRolesManager'=> ['order'=>30,'label'=>lang('manager'),'type'=>'datagrid','key'=>'dgRoles'],
-				'divRolesDetail' => ['order'=>70,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;']]]],
-			'datagrid' => ['dgRoles' => $this->dgRoles('dgRoles', $security)]]);
+			'accordion' => ['accRoles'=>['divs'=>[
+                'divRolesManager'=>['order'=>30,'label'=>lang('manager'),'type'=>'datagrid','key'=>'dgRoles'],
+				'divRolesDetail' =>['order'=>70,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;']]]],
+			'datagrid' => ['dgRoles'=>$this->dgRoles('dgRoles', $security)]]);
 	}
 
 	/**
@@ -88,39 +90,32 @@ class bizunoRoles
     private function dgRoles($name, $security=0)
     {
         $this->managerSettings();
-        return [
-            'id'     => $name,
-			'rows'   => $this->defaults['rows'],
-			'page'   => $this->defaults['page'],
+        return ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
+			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=bizuno/roles/managerRows"],
 			'events' => [
                 'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; }}",
 				'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', rowData.id); }"],
-			'attr'   => ['type' =>'table',
-				'url'         => BIZUNO_AJAX."&p=bizuno/roles/managerRows",
-				'toolbar'     => '#'.$name.'Toolbar',
-				'pageSize'    => getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField'     => 'id'],
 			'source' => [
                 'tables' => ['roles'=>['table'=>BIZUNO_DB_PREFIX."roles"]],
 				'actions' => [
-                    'newRole'  => ['order'=>10, 'html'=>['icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', 0);"]]],
-					'clrSearch'=> ['order'=>50, 'html'=>['icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]]],
+                    'newRole'  => ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', 0);"]],
+					'clrSearch'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]],
 				'search' => [BIZUNO_DB_PREFIX."roles".'.title'],
 				'sort'   => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
-				'filters'=> ['search' => ['order'=>'90', 'html'=>['attr'=>['value'=>$this->defaults['search']]]]]],
+				'filters'=> ['search' => ['order'=>'90','attr'=>['value'=>$this->defaults['search']]]]],
 			'columns' => [
                 'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.id",      'attr'=>['hidden'=>true]],
 				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.inactive",'attr'=>['hidden'=>true]],
-				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>['width'=>150], 'events'=>['formatter'=>$name.'Formatter'],
+				'action'  => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
 					'actions'=> [
-						'edit' => ['icon'=>'edit', 'size'=>'small', 'order'=>20,
-							'events'=>  ['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', idTBD);"]],
-						'copy' => ['icon'=>'copy', 'size'=>'small', 'order'=>40,
-							'events'=> ['onClick' => "var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/roles/copy', idTBD, title);"]],
-						'delete' => ['icon'=>'trash', 'size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
-							'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/roles/delete', idTBD);"]]]],
+						'edit' => ['order'=>20,'icon'=>'edit',
+							'events'=> ['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', idTBD);"]],
+						'copy' => ['order'=>40,'icon'=>'copy',
+							'events'=> ['onClick'=>"var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/roles/copy', idTBD, title);"]],
+						'delete' => ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,
+							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/roles/delete', idTBD);"]]]],
 				'title'=> ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."roles.title", 'label'=>pullTableLabel(BIZUNO_DB_PREFIX."roles", 'title'),
-					'attr' => ['width'=>100, 'sortable'=>true, 'resizable'=>true]]]];
+					'attr' => ['sortable'=>true,'resizable'=>true]]]];
 	}
 
 	/**
@@ -130,9 +125,36 @@ class bizunoRoles
      */
     public function edit(&$layout=[])
     {
-        require_once(BIZUNO_LIB."controller/module/bizuno/functions.php");
         if (!$security = validateSecurity('bizuno', 'roles', 3)) { return; }
-		$rID = clean('rID', 'integer', 'get');
+		$rID   = clean('rID', 'integer', 'get');
+		$dbData= dbGetRow(BIZUNO_DB_PREFIX."roles", "id='$rID'");
+		$dbData['settings'] = json_decode($dbData['settings'], true);
+        msgDebug("\nRead from db = ".print_r($dbData, true));
+		$roles = dbLoadStructure(BIZUNO_DB_PREFIX."roles");
+		unset($roles['settings']);
+		dbStructureFill($roles, $dbData);
+		$data = ['type'=>'divHTML','title'=>lang('roles').' - '.($rID ? $dbData['title'] : lang('new')),
+			'divs'    => ['detail'=>['order'=>10,'type'=>'divs','divs'=>[
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbRoles'],
+                'formBOF'=> ['order'=>15,'type'=>'form',   'key'=>'frmRoles'],
+                'body'   => ['order'=>40,'type'=>'fields', 'fields'=>$this->getViewRoles($roles, $dbData['settings'])],
+                'tabs'   => ['order'=>60,'type'=>'tabs',   'key'=>'tabRoles'],
+                'formEOF'=> ['order'=>85,'type'=>'html',   'html'=>"</form>"]]]],
+			'toolbars'=> ['tbRoles'=>['icons'=>[
+				'save' => ['order'=>20,'hidden'=>$security>1?'0':'1',   'events'=>['onClick'=>"jq('#frmRoles').submit();"]],
+                'new'  => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"accordionEdit('accRoles','dgRoles','divRolesDetail','".jsLang('details')."','bizuno/roles/edit', 0);"]],
+				'help' => ['order'=>99,'index' =>'']]]],
+			'tabs'    => ['tabRoles'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]]],
+			'forms'   => ['frmRoles'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/roles/save"]]],
+            'jsHead'  => ['init'=>"function autoFill() {\n	var setting = jq('#selFill').val();
+	jq('#frmRoles :input').each(function() { if (jq(this).attr('id').substr(0, 4) == 'sID:') jq(this).val(setting); });\n}"],
+            'jsReady' => ['init'=>"ajaxForm('frmRoles');"]];
+		$data['tabs']['tabRoles']['divs'] = roleTabs(is_array($dbData['settings']['security']) ? $dbData['settings']['security'] : []);
+		$layout = array_replace_recursive($layout, $data);
+	}
+
+    private function getViewRoles($roles, $settings)
+    {
 		$securityChoices = [
             ['id'=>'-1','text'=>lang('select')],
 			['id'=>'0', 'text'=>lang('none')],
@@ -140,29 +162,16 @@ class bizunoRoles
 			['id'=>'2', 'text'=>lang('add')],
 			['id'=>'3', 'text'=>lang('edit')],
 			['id'=>'4', 'text'=>lang('full')]];
-		$data = ['type'=>'divHTML',
-			'divs'    => ['detail'=> ['order'=>10, 'src'=>BIZUNO_LIB."view/module/bizuno/accRolesDetail.php"]],
-			'toolbars'=> ['tbRoles'=>  ['icons' => [
-				'save' => ['order'=>20,'hidden'=>$security>1?'0':'1',   'events'=>['onClick'=>"jq('#frmRoles').submit();"]],
-                'new'  => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"accordionEdit('accRoles','dgRoles','divRolesDetail','".jsLang('details')."','bizuno/roles/edit', 0);"]],
-				'help' => ['order'=>99,'index' =>'']]]],
-			'tabs'  => ['tabRoles'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]]],
-			'forms' => ['frmRoles'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/roles/save"]]],
-			'fields'=> [
-                'selFill' => ['label'=>$this->lang['desc_security_fill'],'values'=>$securityChoices,'events'=>['onChange'=>"autoFill();"],'attr'=>['type'=>'select']]]];
-		$dbData = dbGetRow(BIZUNO_DB_PREFIX."roles", "id='$rID'");
-		$dbData['settings'] = json_decode($dbData['settings'], true);
-        msgDebug("\nRead from db = ".print_r($dbData, true));
-		$data['roles'] = dbLoadStructure(BIZUNO_DB_PREFIX."roles");
-		unset($data['roles']['settings']);
-		dbStructureFill($data['roles'], $dbData);
-        $data['roles']['restrict'] = ['label'=>$this->lang['roles_restrict'],'position'=>'after',
-            'attr'=>['type'=>'checkbox', 'checked'=>isset($dbData['settings']['restrict']) && $dbData['settings']['restrict'] ? 1 : 0]];
-		$data['tabs']['tabRoles']['divs'] = roleTabs(is_array($dbData['settings']['security']) ? $dbData['settings']['security'] : []);
-		$data['pageTitle'] = lang('roles').' - '.($rID ? $dbData['title'] : lang('new'));
-		$layout = array_replace_recursive($layout, $data);
-	}
-
+		$selFill = ['label'=>$this->lang['desc_security_fill'],'values'=>$securityChoices,'events'=>['onChange'=>"autoFill();"],'attr'=>['type'=>'select']];
+        $restrict= ['label'=>$this->lang['roles_restrict'],'position'=>'after','attr'=>['type'=>'checkbox','checked'=>!empty($settings['restrict']) ? 1 : 0]];
+        return [
+          'id'       => array_merge($roles['id'],      ['break'=>true]),
+          'title'    => array_merge($roles['title'],   ['break'=>true]),
+          'inactive' => array_merge($roles['inactive'],['break'=>true]),
+          'selFill'  => array_merge($selFill,          ['break'=>true]),
+          'restrict' => array_merge($restrict,         ['break'=>true])];
+    }
+    
 	/**
      * Structure for saving roles after edit
      * @param array $layout - structure coming in

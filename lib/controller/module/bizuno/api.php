@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-19
+ * @version    3.x Last Update: 2018-09-11
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
@@ -639,7 +639,7 @@ class bizunoApi
 			$invoice_num = strpos($value['ref_id'], '-') ? substr($value['ref_id'], 0, strpos($value['ref_id'], '-')) : $value['ref_id'];
 			$value['order_num'] = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'purch_order_id', "invoice_num='$invoice_num'");
 			$order_num = $value['order_num'] ? $value['order_num'] : $invoice_num;
-            $method_text = viewFormat($value['method_code'], 'shipInfo');
+            $method_text = viewProcess($value['method_code'], 'shipInfo');
 			if (isset($output[$order_num]['tracking_id'])) {
 				$output[$order_num]['Tracking'] .= ', '.$value['tracking_id'];
 			} else {

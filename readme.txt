@@ -35,6 +35,7 @@ Bizuno Accounting, by PhreeSoft, Inc., is a full featured double-entry accountin
 
 == Upgrade Notice ==
 
+2018-09-15 - 5.1.0 - No database changes. Optional to delete /view/* folder and replace with new version. Many files are no longer needed or used.
 2018-07-14 - 5.0.5 - No database changes, overwrite current files with new version
 2018-07-12 - 5.0.4 - No database changes, overwrite current files with new version
 2018-06-13 - 5.0.3 - No database changes, overwrite current files with new version
@@ -54,6 +55,8 @@ Bizuno Accounting, by PhreeSoft, Inc., is a full featured double-entry accountin
 
 == Changelog ==
 
+= 5.1.0 =
+2018-09-15 - Incorporate Bizuno 3.0.1 library. New look and feel. Database table default fixes for MySQL 5.7, misc bugs and security improvements.
 = 5.0.5 =
 2018-07-14 - Bug fix for installation script
 = 5.0.4 =

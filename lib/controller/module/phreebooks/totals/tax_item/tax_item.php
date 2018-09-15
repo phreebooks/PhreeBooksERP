@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-14
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /controller/module/phreebooks/totals/tax_item/tax_item.php
  */
 
@@ -38,8 +38,8 @@ class tax_item
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
 		$this->fields = [
-            'totals_tax_item' => ['label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->cType).' '.$this->lang['extra_title'], 'format'=>'currency', 
-                'attr'=>['size'=>'15','value'=>'0','style'=>'text-align:right','readonly'=>'readonly']],
+            'totals_tax_item' => ['label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->cType).' '.$this->lang['extra_title'],
+                'attr'=>['type'=>'currency','value'=>0,'size'=>'15','readonly'=>'readonly']],
             'totals_tax_item_text'=> ['attr'=>  ['value'=>'textTBD','size'=>'16','readonly'=>'readonly']],
             'totals_tax_item_gl'  => ['label'=>lang('gl_account'), 'attr'=>  ['type'=>'text', 'value'=>'glTBD','size'=>'5','readonly'=>'readonly']],
             'totals_tax_item_amt' => ['attr'=>  ['value'=>'amtTBD','size'=>'10','style'=>'text-align:right','readonly'=>'readonly']],
@@ -157,7 +157,7 @@ function totals_tax_item(begBalance) {
     var newBalance = begBalance + newTaxItem;
     if (typeof taxRunning !== 'undefined') { taxRunning += newTaxItem; }
     else { taxRunning = newTaxItem; }
-    jq('#totals_tax_item').val(formatCurrency(newTaxItem));
+    bizTextSet('totals_tax_item', newTaxItem, 'currency');
 	return newBalance;
 }";
     }

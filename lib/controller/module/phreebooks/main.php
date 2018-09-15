@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-13
+ * @version    3.x Last Update: 2018-09-10
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -79,24 +79,21 @@ class phreebooksMain
     public function manager(&$layout=[])
     {
         if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", 1)) { return; }
-		$rID = clean('rID', 'integer', 'get');
-		$cID = clean('cID', 'integer', 'get');
-		$mgr = clean('mgr', 'boolean', 'get');
-        $jsBody = $jsReady = '';
-        $detail = lang('journal_main_journal_id', $this->journalID);
+		$rID   = clean('rID', 'integer', 'get');
+		$cID   = clean('cID', 'integer', 'get');
+		$mgr   = clean('mgr', 'boolean', 'get');
+        $jsBody= $jsReady = '';
+        $detail= lang('journal_main_journal_id', $this->journalID);
         if     (in_array($this->journalID, [3, 4, 6, 7])) { $manager = sprintf(lang('tbd_manager'), lang('journal_main_journal_id_6')); }
         elseif (in_array($this->journalID, [9,10,12,13])) { $manager = sprintf(lang('tbd_manager'), lang('journal_main_journal_id_12')); }
         else   { $manager= sprintf(lang('tbd_manager'), lang('journal_main_journal_id', $this->journalID)); }
         if ($this->journalID == 0) { // search
-			$jsBody = "viewLabels();
-jq('#postDateMin').datebox({onChange:function (newDate) { jq('#postDateMin').val(newDate); } });
-jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val(newDate); } });
-jq('#search').focus();";
+			$jsBody = "jq('#postDateMin').datebox({onChange:function (newDate) { jq('#postDateMin').val(newDate); } });
+jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val(newDate); } });";
 		} elseif (!$mgr || $rID || $cID) { // get the detail screen
-			$jsReady = "setTimeout(function () { journalEdit($this->journalID, $rID, $cID, '$this->action') }, 500);";
-		} else {
-            $jsReady = "jq('#search').next().find('input').focus();";
+			$jsReady = "setTimeout(function () { journalEdit($this->journalID, $rID, $cID, '$this->action') }, 500);\n";
         }
+        $jsReady .= "bizFocus('search', 'dgPhreeBooks');";
         if     (in_array($this->journalID, [3, 4, 6, 7]))       { $submenu = viewSubMenu('vendors'); }
         elseif (in_array($this->journalID, [9,10,12,13]))       { $submenu = viewSubMenu('customers'); }
         elseif (in_array($this->journalID, [0]))                { $submenu = viewSubMenu('tools'); }
@@ -105,17 +102,17 @@ jq('#search').focus();";
         elseif (in_array($this->journalID, [17,18,19,20,21,22])){ $submenu = viewSubMenu('banking'); }
         else                                                    { $submenu = ''; } 
 		$data = [
-            'pageTitle'=> $detail,
+            'title'=> $detail,
 			'divs'     => [
                 'submenu'   => ['order'=>10, 'type'=>'html','html'=>$submenu],
                 'phreebooks'=> ['order'=>60, 'type'=>'accordion','key'=>'accJournal']],
-			'accordion'=> ['accJournal'=> ['divs'=>  [
+			'accordion'=> ['accJournal'=> ['divs'=>[
                 'divJournalManager'=> ['order'=>30,'label'=>$manager,'type'=>'datagrid','key' =>'manager'],
 				'divJournalDetail' => ['order'=>60,'label'=>$detail, 'type'=>'html',    'html'=>lang('msg_edit_new')]]]],
-            'jsHead'   => ['phreebooks'=> "jq.cachedScript('".BIZUNO_URL."controller/module/phreebooks/phreebooks.js?ver=".MODULE_BIZUNO_VERSION."');"],
-            'jsBody'   => ['phreebooks'=> $jsBody],
-            'jsReady'  => ['phreebooks'=> $jsReady],
-			'datagrid' => ['manager'=> $this->dgPhreeBooks('dgPhreeBooks', $security)]];
+            'datagrid' => ['manager'=> $this->dgPhreeBooks('dgPhreeBooks', $security)],
+            'jsHead'   => ['init' => "jq.cachedScript('".BIZUNO_URL."controller/module/phreebooks/phreebooks.js?ver=".MODULE_BIZUNO_VERSION."');"],
+            'jsBody'   => ['init' => $jsBody],
+            'jsReady'  => ['init' => $jsReady]];
         if ($this->journalID == 0) { unset($data['accordion']['accJournal']['divs']['divJournalDetail']); }
 		$layout = array_replace_recursive($layout, viewMain(), $data);
 	}
@@ -147,7 +144,7 @@ jq('#search').focus();";
         unset($data['source']['filters']['period']);
 		// reset some search criteria
 		$data['source']['search'] = [BIZUNO_DB_PREFIX.'journal_main.invoice_num'];
-		$data['source']['filters']['search'] = ['order'=>90,'html'=>['label'=>lang('search'),'attr'=>['type'=>'input','value'=>getSearch()]]];
+		$data['source']['filters']['search'] = ['order'=>90,'label'=>lang('search'),'attr'=>['type'=>'input','value'=>getSearch()]];
 		if ($waiting) {
 			$data['source']['filters']['waiting']    = ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."journal_main.waiting='1'"];
 			$data['source']['filters']['method_code']= ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."journal_main.method_code<>''"];
@@ -201,7 +198,7 @@ jq('#search').focus();";
             ['index'=>'page',  'clean'=>'integer','default'=>'1'],
             ['index'=>'sort',  'clean'=>'text',   'default'=>BIZUNO_DB_PREFIX.'journal_main.post_date'],
             ['index'=>'order', 'clean'=>'text',   'default'=>'DESC'],
-            ['index'=>'period','clean'=>'text',   'default'=>getModuleCache('phreebooks','fy','period')],
+            ['index'=>'period','clean'=>'text',   'default'=>'l'],
             ['index'=>'jID',   'clean'=>'integer','default'=>'a'],
             ['index'=>'status','clean'=>'char',   'default'=>'a'],
             ['index'=>'search','clean'=>'text',   'default'=>'']]];
@@ -215,13 +212,13 @@ jq('#search').focus();";
      * @param string $divID - DOM field id
      * @return modified $layout
      */
-    public function edit(&$layout=[], $divID='divJournalDetail')
+    public function edit(&$layout=[])
     {
         $rID       = $this->rID = clean('rID', 'integer', 'get');
 		$cID       = clean('cID', 'integer', 'get'); // contact record for banking stuff
 		$references= (array)explode(":", clean('iID', 'text', 'get'));
 		$xAction   = clean('xAction','text', 'get');
-		$min_level = $this->action=='inv' || !$rID? 2 : 1; // if converting SO/PO then add else read-only and above
+		$min_level = $this->action=='inv' || !$rID ? 2 : 1; // if converting SO/PO then add else read-only and above
         if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", $min_level)) { return []; }
         if (!$cID && sizeof($references) && !empty($references[0])) { // attempt to pull contact_id from prechecked records
 			$cID = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'contact_id_b', "id={$references[0]}");
@@ -230,14 +227,13 @@ jq('#search').focus();";
             'journal_main' => dbLoadStructure(BIZUNO_DB_PREFIX.'journal_main', $this->journalID),
 			'journal_item' => dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID)];
 		// fix map to address links
-        $structure['journal_main']['country_b']['attr']['value'] = getModuleCache('bizuno', 'settings', 'company', 'country', 'USA');
-        $structure['journal_main']['country_s']['attr']['value'] = getModuleCache('bizuno', 'settings', 'company', 'country', 'USA');
-		$data = ['type'=>'divHTML',
+		$prefix= $rID && $this->action<>'inv' ? "rID_{$rID}_" : "rID_0_";
+		$data  = ['type'=>'divHTML',
 			'divs'    => [
-                'tbJrnl'   => ['order'=>10,'type'=>'toolbar','key'=>'tbPhreeBooks'],
-                'formBOF'  => ['order'=>15,'type'=>'form',   'key'=>'frmJournal'],
-                'divAttach'=> ['order'=>90,'src'=>BIZUNO_LIB."view/module/bizuno/divAttach.php",'attr'=>['delPath'=>"$this->moduleID/main/deleteAttach"]],
-                'formEOF'  => ['order'=>99,'type'=>'html', 'html'=>'</form>']],
+                'tbJrnl'   => ['order'=>10,'type'=>'toolbar','key' =>'tbPhreeBooks'],
+                'formBOF'  => ['order'=>15,'type'=>'form',   'key' =>'frmJournal'],
+                'divAttach'=> ['order'=>80,'type'=>'attach', 'attr'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>$prefix]],
+                'formEOF'  => ['order'=>99,'type'=>'html',   'html'=>'</form>']],
 			'toolbars' => ['tbPhreeBooks'=>['icons'=>[
                 'jSave'=> ['order'=>10,'label'=>lang('save'),  'icon'=>'save','type'=>'menu','hidden'=>$security>1?false:true,
 					'events'=> ['onClick'=>"jq('#frmJournal').submit();"],'child'=>$this->renderMenuSave($security)],
@@ -258,7 +254,7 @@ jq('#search').focus();";
     if (!formValidate()) return false;
     return true;
 }"],
-            'jsReady' => ['divInit'=>"ajaxForm('frmJournal'); jq('#dgJournalItem').edatagrid('addRow'); jq('#contactSel_b').next().find('input').focus();"]];
+            'jsReady' => ['divInit'=>"ajaxForm('frmJournal'); jq('#dgJournalItem').edatagrid('addRow'); bizFocus('contactSel_b');"]];
 		// see if there are any extra actions
 		if (substr($xAction, 0, 8) == 'journal:') {
 			$temp = explode(':', $xAction);
@@ -289,9 +285,8 @@ jq('#search').focus();";
         $default_gl = $this->type=='v' ? getModuleCache('phreebooks', 'settings', 'vendors', 'gl_purchases') : getModuleCache('phreebooks', 'settings', 'customers', 'gl_sales');
         $default_tax = 0;
         if (!$rID) { // new order
-            $data['jsBody']['frmInit'] = "jq('#AddUpdate_b').prop('checked', true);
-var def_contact_gl_acct = '$default_gl';
-var def_contact_tax_id  = ".($default_tax ? $default_tax : 0).";";
+            $data['jsReady']['checkBill']= "bizCheckBox('AddUpdate_b');";
+            $data['jsBody']['frmInit']  = "var def_contact_gl_acct = '$default_gl'; var def_contact_tax_id  = ".($default_tax ? $default_tax : 0).";";
         } else {
             $cID  = $data['fields']['main']['contact_id_b']['attr']['value'];
             $defs = $cID ? dbGetValue(BIZUNO_DB_PREFIX.'contacts', ['gl_account','tax_rate_id'], "id=$cID") : ['gl_account'=>$default_gl,'tax_rate_id'=>$default_tax];
@@ -299,9 +294,10 @@ var def_contact_tax_id  = ".($default_tax ? $default_tax : 0).";";
 var def_contact_gl_acct = '{$defs['gl_account']}';
 var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']).";";
         }
+        $data['fields']['main']['currency']['attr']['type'] = 'hidden';
         $data['fields']['main']['currency']['excRate'] = !empty($data['fields']['main']['currency_rate']['attr']['value']) ? $data['fields']['main']['currency_rate']['attr']['value'] : 1;
 		$data['terms_text'] = ['label'=>lang('terms'),
-			'attr'=>  ['type'=>'text', 'value'=>viewTerms($data['fields']['main']['terms']['attr']['value'], true, $this->type), 'readonly'=>'readonly']];
+			'attr'=>['type'=>'text', 'value'=>viewTerms($data['fields']['main']['terms']['attr']['value'], true, $this->type), 'readonly'=>'readonly']];
 		$data['terms_edit'] = ['icon'=>'settings', 'size'=>'small', 'label'=>lang('terms'),
 			'events'=> ['onClick'=>"jsonAction('contacts/main/editTerms&type=$this->type', $cID, jq('#terms').val());"]];
 		$data['item_add'] = ['icon'=>'add', 'size'=>'small',
@@ -321,9 +317,6 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		$data['jsHead']['phreebooks']   = "bizDefaults.phreebooks = { journalID:$this->journalID,type:'$this->type' };";
 		$data['jsHead']['totalsMethods']= "var totalsMethods = ".json_encode($this->journal->totals).";";
 		$data['jsHead']['totalUpdate']  = $jsTotals;
-		// build the attachment structure
-		$data['attachPath']  = getModuleCache('phreebooks', 'properties', 'attachPath');
-		$data['attachPrefix']= $rID && $this->action<>'inv' ? "rID_{$rID}_" : "rID_0_";
 		// now specialize by journal ID, items and final customization
         msgDebug("\nGoing to getDataItem, cID = $cID");
         $this->journal->getDataItem($data, $rID, $cID, $security);
@@ -418,7 +411,8 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		msgDebug("\nStarting to build total GL rows, starting subtotal = $current_total");
 		$ledger->main['sales_tax'] = 0; // clear the sales tax before building new values
 		foreach ($this->journal->totals as $methID) {
-			require_once(BIZUNO_LIB."controller/module/phreebooks/totals/$methID/$methID.php");
+            $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
+            require_once("{$path}$methID.php");
             $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
             $fqcn = "\\bizuno\\$methID";
             $totalEntry = new $fqcn($totSet);
@@ -554,8 +548,8 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		foreach ($rows as $row) {
             if (!isset($cIDs[$row['contact_id']]['dsc'])) { $cIDs[$row['contact_id']]['dsc'] = 0; }
             if (!isset($cIDs[$row['contact_id']]['ttl'])) { $cIDs[$row['contact_id']]['ttl'] = 0; }
-			$cIDs[$row['contact_id']]['dsc']   += $row['discount'];
-			$cIDs[$row['contact_id']]['ttl']   += $row['total'];
+			$cIDs[$row['contact_id']]['dsc']   += clean($row['discount'], 'currency');
+			$cIDs[$row['contact_id']]['ttl']   += clean($row['total'], 'currency');
 			$cIDs[$row['contact_id']]['rows'][] = $row;
 		}
 		$post_date = clean($request['post_date'], 'date');
@@ -615,7 +609,8 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
             foreach ($ledger->item as $row) { $current_total += $row['debit_amount'] + $row['credit_amount']; } // subtotal of all rows
 			msgDebug("\n\nStarting to build total GL rows, starting subtotal = $current_total");
 			foreach ($this->journal->totals as $methID) {
-				require_once(BIZUNO_LIB."controller/module/phreebooks/totals/$methID/$methID.php");
+                $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
+                require_once("{$path}$methID.php");
                 $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
                 $fqcn = "\\bizuno\\$methID";
                 $totalEntry = new $fqcn($totSet);
@@ -717,17 +712,6 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accJournal').accordion('select',0); jq('#dgPhreeBooks').datagrid('reload'); jq('#divJournalDetail').html('&nbsp;');"]]);
 	}
 	
-    /**
-     * Deletes an attachment tied to a PhreeBooks journal entry
-     * @param array $layout - Structure coming in
-     * @return modified $layout
-     */
-    public function deleteAttach(&$layout=[])
-    {
-        $io = new io;
-        $io->attachDelete($layout, $this->moduleID, $pfxID='rID_', 'journal_main');
-    }
-    
 	/**
      * Retrieves the detailed status for a single contact, typically used as a pop up
      * @param array $layout - Structure coming in
@@ -735,50 +719,72 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
      */
     public function detailStatus(&$layout=[])
     {
-		$cID    = clean('rID', 'integer', 'get');
-		$stmt   = dbGetResult("SELECT c.type, c.inactive, c.terms, a.notes FROM ".BIZUNO_DB_PREFIX."contacts"." c JOIN ".BIZUNO_DB_PREFIX."address_book"." a ON c.id=a.ref_id WHERE c.id=$cID AND a.type LIKE '%m'");
-		$contact= $stmt->fetch(\PDO::FETCH_ASSOC);
-        if ($contact['type'] == 'v') { $idx='vendors';   $jQuote=3; $jOrder= 4; $jSale=  6; $jRtn= 7; }
-        else                         { $idx='customers'; $jQuote=9; $jOrder=10; $jSale= 12; $jRtn=13; }
-		$new_data = calculate_aging($cID);
+		$cID     = clean('rID', 'integer', 'get');
+		$stmt    = dbGetResult("SELECT c.type, c.inactive, c.terms, a.notes FROM ".BIZUNO_DB_PREFIX."contacts"." c JOIN ".BIZUNO_DB_PREFIX."address_book"." a ON c.id=a.ref_id WHERE c.id=$cID AND a.type LIKE '%m'");
+		$contact = $stmt->fetch(\PDO::FETCH_ASSOC);
+		$new_data= calculate_aging($cID);
 		// set the customer/vendor status in order of importance
 		if     ($contact['inactive'])                           { $statusBg='red';    $statusMsg=lang('inactive');	}
 		elseif ($new_data['past_due'] > 0)                      { $statusBg='yellow'; $statusMsg=$this->lang['msg_contact_status_past_due']; }
 		elseif ($new_data['total'] > $new_data['credit_limit']) { $statusBg='yellow'; $statusMsg=$this->lang['msg_contact_status_over_limit']; }
 		else                                                    { $statusBg='green';  $statusMsg=$this->lang['msg_contact_status_good']; }
-		$data = [
-            'text' => [
-                'alertMsg'=> $statusMsg,
-				'alertBg' => $statusBg,
-				'age_1'   => '0-30',
-				'age_2'   => '31-60',
-				'age_3'   => '61-90',
-				'age_4'   => $this->lang['over_90'],
-				'past_due'=> $new_data['past_due']],
-			'values' => [
-                'text_terms'=> $new_data['terms_lang'],
-				'bal_1'     => viewFormat($new_data['balance_0'], 'currency'),
-				'bal_2'     => viewFormat($new_data['balance_30'], 'currency'),
-				'bal_3'     => viewFormat($new_data['balance_60'], 'currency'),
-				'bal_4'     => viewFormat($new_data['balance_90'], 'currency'),
-				'total'     => viewFormat($new_data['total']),
-				'notes'     => $contact['notes'] ? str_replace("\n", "<br />", $contact['notes']) : '&nbsp;'],
-			'divs'   => ['divStatus'=> ['order'=>50, 'src'=>BIZUNO_LIB."view/module/phreebooks/divContactStatus.php"]],
-            'lang'   => $this->lang,
-			'content'=> ['action'=>'window','id'=>'winStatus','title'=>sprintf(lang('tbd_summary'), lang('contacts_type', $contact['type']))]];
-		if (sizeof($new_data['inv_orders']) >1) { $data['fields']['inv_orders'] = ['values'=>$new_data['inv_orders'], 
-            'attr'=>  ['type'=>'select'], 'events'=>  ['onChange'=>"jq('winStatus').window('close'); journalEdit($jSale, jq(this).val(), 0, 'inv')"]]; }
-		if (sizeof($new_data['open_quotes'])>1) { $data['fields']['open_quotes']= ['values'=>$new_data['open_quotes'],
-             'attr'=>  ['type'=>'select'], 'events'=>  ['onChange'=>"jq('winStatus').window('close'); journalEdit($jQuote, jq(this).val())"]]; }
-		if (sizeof($new_data['open_orders'])>1) { $data['fields']['open_orders']= ['values'=>$new_data['open_orders'],
-             'attr'=>  ['type'=>'select'], 'events'=>  ['onChange'=>"jq('winStatus').window('close'); journalEdit($jOrder, jq(this).val())"]]; }
-		if (sizeof($new_data['unpaid_inv']) >1) { $data['fields']['unpaid_inv'] = ['values'=>$new_data['unpaid_inv'],
-            'attr'=>  ['type'=>'select'], 'events'=>  ['onChange'=>"jq('winStatus').window('close'); journalEdit($jSale, jq(this).val())"]]; }
-		if (sizeof($new_data['unpaid_crd']) >1) { $data['fields']['unpaid_crd'] = ['values'=>$new_data['unpaid_crd'],
-            'attr'=>  ['type'=>'select'], 'events'=>  ['onChange'=>"jq('winStatus').window('close'); journalEdit($jRtn, jq(this).val())"]]; }
+        $statusHtml = '<p style="font-weight:bold;text-align:center;background-color:'.$statusBg.'">'.$statusMsg."</p>";
+        $notes = !empty($contact['notes']) ? str_replace("\n", "<br />", $contact['notes']) : '&nbsp;';
+        $fldNotes = ['notes'=>['label'=>lang('notes'),'attr'=>['type'=>'p','value'=>$notes]]];
+		$data = ['type'=>'popup','attr'=>['id'=>'winStatus'],
+            'title'=> sprintf(lang('tbd_summary'), lang('contacts_type', $contact['type'])),
+			'divs' => [
+                'status' => ['order'=>10,'type'=>'html','html'=>$statusHtml],
+                'terms'  => ['order'=>20,'label'=>pullTableLabel(BIZUNO_DB_PREFIX."contacts", 'terms'),'type'=>'fields','fields'=>$this->getStatusTerms($new_data)],
+                'history'=> ['order'=>30,'label'=>lang('history'),'type'=>'fields','classes'=>['blockView'],'fields'=>$this->getStatusHistory($contact, $new_data)],
+                'balance'=> ['order'=>40,'label'=>lang('account'),'type'=>'fields','classes'=>['blockView'],'fields'=>$this->getStatusBalance($new_data)],
+                'notes'  => ['order'=>50,'label'=>lang('notes'),  'type'=>'fields','fields'=>$fldNotes]]];
 		$layout = array_replace_recursive($layout, $data);
 	}
-	
+
+    private function getStatusTerms($new_data)
+    {
+        $output = "<p>{$new_data['terms_lang']}</p>";
+        if (!empty($new_data['past_due'])) {
+            $output .= '<p style="background-color:yellow;">'.sprintf($this->lang['msg_contact_past_due_amount'], viewFormat($new_data['past_due'], 'currency'))."</p>";
+        }
+        return ['terms'=>['html'=>$output,'attr'=>['type'=>'raw']]];
+    }
+
+    private function getStatusHistory($contact, $new_data)
+    {
+        if ($contact['type']=='v') { $idx='vendors';   $jQuote=3; $jOrder= 4; $jSale= 6; $jRtn= 7; }
+        else                       { $idx='customers'; $jQuote=9; $jOrder=10; $jSale=12; $jRtn=13; }
+        $output = [];
+        $output['inv_orders'] = ['order'=>10,'label'=>$this->lang['status_orders_invoice'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
+        if (sizeof($new_data['inv_orders']) >1) { $output['inv_orders'] = array_merge($output['inv_orders'], ['values'=>$new_data['inv_orders'], 
+            'attr'=>['type'=>'select'],'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jSale, newVal, 0, 'inv');"]]); }
+        $output['open_quotes'] = ['order'=>20,'label'=>$this->lang['status_open_j9'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
+		if (sizeof($new_data['open_quotes'])>1) { $output['open_quotes']= array_merge($output['open_quotes'],['values'=>$new_data['open_quotes'],
+             'attr'=>['type'=>'select'],'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jQuote, newVal);"]]); }
+        $output['open_orders'] = ['order'=>30,'label'=>$this->lang['status_open_j10'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
+		if (sizeof($new_data['open_orders'])>1) { $output['open_orders']= array_merge($output['open_orders'],['values'=>$new_data['open_orders'],
+             'attr'=>['type'=>'select'],'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jOrder, newVal);"]]); }
+        $output['unpaid_inv'] = ['order'=>40,'label'=>$this->lang['status_open_j12'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
+		if (sizeof($new_data['unpaid_inv']) >1) { $output['unpaid_inv'] = array_merge($output['unpaid_inv'], ['values'=>$new_data['unpaid_inv'],
+            'attr'=>['type'=>'select'], 'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jSale, newVal);"]]); }
+        $output['unpaid_crd'] = ['order'=>50,'label'=>$this->lang['status_open_j13'],'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
+		if (sizeof($new_data['unpaid_crd']) >1) { $output['unpaid_crd'] = array_merge($output['unpaid_crd'], ['values'=>$new_data['unpaid_crd'],
+            'attr'=>['type'=>'select'], 'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jRtn, newVal);"]]); }
+        return $output;
+    }
+
+    private function getStatusBalance($new_data)
+    {
+        return [
+            'term0' => ['order'=>10,'label'=>'0-30', 'break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_0']]],
+            'term30'=> ['order'=>20,'label'=>'31-60','break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_30']]],
+            'term60'=> ['order'=>30,'label'=>'61-90','break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_60']]],
+            'term90'=> ['order'=>40,'label'=>$this->lang['over_90'],'break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_90']]],
+            'total' => ['order'=>50,'label'=>lang('total'),'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['total']]],
+        ];        
+    }
+    
 	/**
 	 * This method formats a db search field to the proper mysql syntax.
 	 * @param string $index - Database field name to search
@@ -818,6 +824,9 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
     public function dgPhreeBooks($name, $security=0)
     {
         $this->managerSettings();
+        msgDebug("\nPhreeBooks Settings = ".print_r($this->defaults, true));
+        $dateRange  = dbSqlDates($this->defaults['period']);
+        $sqlPeriod  = $dateRange['sql']; // BIZUNO_DB_PREFIX."journal_main.period={$this->defaults['period']}";
         $formID     = explode(':', getDefaultFormID($this->journalID));
 		$formGroup  = $this->journalID==18 ? 'cust:j19' : $formID[0].':jjrnlTBD'; // special case for customer receipts, make like POS
 		$jHidden    = true;
@@ -864,7 +873,7 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 					case 13: $valid_jIDs = [13]; break;
 				}
 				$jID_values = [['id'=>'a','text'=>lang('all')]];
-                if (getUserCache('security', 'j9_mgr')) { $jID_values[]  = ['id'=> '9','text'=>lang('journal_main_journal_id_9')];  }
+                if (getUserCache('security', 'j9_mgr'))  { $jID_values[] = ['id'=> '9','text'=>lang('journal_main_journal_id_9')];  }
                 if (getUserCache('security', 'j10_mgr')) { $jID_values[] = ['id'=>'10','text'=>lang('journal_main_journal_id_10')]; }
                 if (getUserCache('security', 'j12_mgr')) { $jID_values[] = ['id'=>'12','text'=>lang('journal_main_journal_id_12')]; }
                 if (getUserCache('security', 'j13_mgr')) { $jID_values[] = ['id'=>'13','text'=>lang('journal_main_journal_id_13')]; }
@@ -877,21 +886,10 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 			default:
 		}
         $jrnl_sql = $this->setAllowedJournals($valid_jIDs);
-		$data  = [
-            'id'  => $name,
-			'rows'=> $this->defaults['rows'],
-			'page'=> $this->defaults['page'],
-			'attr'=> [
-                'url'      => BIZUNO_AJAX."&p=phreebooks/main/managerRows&jID=$this->journalID&type=$this->type",
-				'toolbar'  => "#{$name}Toolbar",
-				'pageSize' => getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField'  => 'id',
+		$data  = ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
+			'attr'=> ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=phreebooks/main/managerRows&jID=$this->journalID&type=$this->type",
 				'xtraField'=> [['key'=>'jrnlTBD','value'=>"journal_id"],['key'=>'cIDTBD','value'=>"contact_id_b"]]],
-			'events' => [
-                'onLoadSuccess'=> "function(data) { 
-                    jq('#search').focus();
-                    jq('#{$name}Toolbar input').keypress(function (e) { if (e.keyCode == 13) { {$name}Reload(); } }); }",
-				'onDblClickRow'=> "function(idx, data){ journalEdit(data.journal_id, data.id); }"],
+			'events' => ['onDblClickRow'=>"function(idx, data){ journalEdit(data.journal_id, data.id); }"],
 			'source' => [
                 'tables' => ['journal_main'=>['table'=>BIZUNO_DB_PREFIX.'journal_main']],
 				'search' => [
@@ -904,61 +902,63 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 					BIZUNO_DB_PREFIX.'journal_main.purch_order_id',
 					BIZUNO_DB_PREFIX.'journal_main.total_amount'],
 				'actions' => [
-                    'newJournal'=>['order'=>10,'html'=>['icon'=>'new',    'events'=>['onClick'=>"journalEdit($this->journalID, 0);"]]],
-                    'clrSearch' =>['order'=>50,'html'=>['icon'=>'refresh','events'=>['onClick'=>"jq('#search').val(''); jq('#jID').val('a'); jq('#status').val('a'); jq('#period').val('".getModuleCache('phreebooks','fy','period')."'); {$name}Reload();"]]]],
+                    'newJournal'=>['order'=>10,'icon'=>'new',    'events'=>['onClick'=>"journalEdit($this->journalID, 0);"]],
+                    'clrSearch' =>['order'=>50,'icon'=>'refresh','events'=>['onClick'=>"hrefClick('phreebooks/main/manager&mgr=1&jID=$this->journalID');"]]],
 				'filters' => [
-                    'period' => ['order'=>10, 'sql'=>$this->defaults['period']=='all' ? '' : BIZUNO_DB_PREFIX."journal_main.period={$this->defaults['period']}",
-						'html'=>['label'=>lang('period'), 'values'=>dbPeriodDropDown(), 'attr'=>['type'=>'select', 'value'=>$this->defaults['period']]]],
-					"jID"    => ['order'=>20, 'sql'=>$jrnl_sql, 'hidden'=>$jHidden,
-						'html'=>['label'=>lang('journal_main_journal_id'), 'values'=>$jID_values, 'attr'=>['type'=>'select', 'value'=>$this->defaults['jID']]]],
-					"status" => ['order'=>30, 'sql'=>$jrnl_status, 'hidden'=>$jHidden,
-						'html'=>['label'=>lang('status'), 'values'=>$jID_statuses, 'attr'=>['type'=>'select', 'value'=>$this->defaults['status']]]],
-					'search' => ['order'=>90,'html'=>  ['attr'=>['value'=>$this->defaults['search']]]]],
-				'sort' => ['s0'=> ['order'=>10, 'field'=>("{$this->defaults['sort']} {$this->defaults['order']}, ".BIZUNO_DB_PREFIX."journal_main.id DESC")]]],
+                    'period' => ['order'=>10,'break'=>true,'options'=>['width'=>300],'sql'=>$sqlPeriod,
+						'label'=>lang('period'), 'values'=>dbPeriodDropDown(true, true),'attr'=>['type'=>'select','value'=>$this->defaults['period']]],
+					"jID"    => ['order'=>20,'break'=>true,'sql'=>$jrnl_sql, 'hidden'=>$jHidden,
+						'label'=>lang('journal_main_journal_id'), 'values'=>$jID_values,'attr'=>['type'=>'select','value'=>$this->defaults['jID']]],
+					"status" => ['order'=>30,'break'=>true,'sql'=>$jrnl_status,'hidden'=>$jHidden,
+						'label'=>lang('status'), 'values'=>$jID_statuses,'attr'=>['type'=>'select','value'=>$this->defaults['status']]],
+					'search' => ['order'=>90,'attr'=>['value'=>$this->defaults['search']]]],
+				'sort' => ['s0'=> ['order'=>10,'field'=>("{$this->defaults['sort']} {$this->defaults['order']}, ".BIZUNO_DB_PREFIX."journal_main.id DESC")]]],
 			'columns' => [
-                'id'           => ['order'=>0, 'field'=>'DISTINCT '.BIZUNO_DB_PREFIX.'journal_main.id','attr'=>['hidden'=>true]],
-				'contact_id_b' => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX.'journal_main.contact_id_b',  'attr'=>['hidden'=>true]],
-				'journal_id'   => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX.'journal_main.journal_id',    'attr'=>['hidden'=>true]],
-				'currency'     => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX.'journal_main.currency',      'attr'=>['hidden'=>true]],
-				'currency_rate'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX.'journal_main.currency_rate', 'attr'=>['hidden'=>true]],
-				'attach'       => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX.'journal_main.attach',        'attr'=>['hidden'=>true]],//'alias'=>'id', 'format'=>'attch:'.getModuleCache('phreebooks', 'properties', 'attachPath')."rID_idTBD_"],
-				'action' => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>160],
+                'id'           => ['order'=>1, 'field'=>'DISTINCT '.BIZUNO_DB_PREFIX.'journal_main.id','attr'=>['hidden'=>true]],
+				'contact_id_b' => ['order'=>1, 'field'=>BIZUNO_DB_PREFIX.'journal_main.contact_id_b',  'attr'=>['hidden'=>true]],
+				'journal_id'   => ['order'=>1, 'field'=>BIZUNO_DB_PREFIX.'journal_main.journal_id',    'attr'=>['hidden'=>true]],
+				'currency'     => ['order'=>1, 'field'=>BIZUNO_DB_PREFIX.'journal_main.currency',      'attr'=>['hidden'=>true]],
+				'currency_rate'=> ['order'=>1, 'field'=>BIZUNO_DB_PREFIX.'journal_main.currency_rate', 'attr'=>['hidden'=>true]],
+				'attach'       => ['order'=>1, 'field'=>BIZUNO_DB_PREFIX.'journal_main.attach',        'attr'=>['hidden'=>true]],//'alias'=>'id', 'format'=>'attch:'.getModuleCache('phreebooks', 'properties', 'attachPath')."rID_idTBD_"],
+				'action' => ['order'=>0, 'label'=>lang('action'), // leave order BEFORE id so it stays first on view, id need to go first in sql as DISTINCT
 					'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
 					'actions'=> [
-                        'print'      => ['order'=>10,'icon'=>'print','size'=>'small',
+                        'print'      => ['order'=>10,'icon'=>'print',
 							'events' => ['onClick'=>"var jID=jq('#journal_id').val(); winOpen('phreeformOpen', 'phreeform/render/open&group={$formGroup}&date=a&xfld=journal_main.id&xcr=equal&xmin=idTBD&rName=primary_name_b&rEmail=email_b');"]],
-						'edit'       => ['order'=>20,'icon'=>'edit', 'size'=>'small',  'label'=>lang('edit'),
+						'edit'       => ['order'=>20,'icon'=>'edit',   'label'=>lang('edit'),
 							'events' => ['onClick' => "journalEdit(jrnlTBD, idTBD);"]],
-						'trash'      => ['order'=>30,'icon'=>'trash','size'=>'small','label'=>lang('delete'),'hidden'=>$security==4?false:true,
+						'trash'      => ['order'=>30,'icon'=>'trash','label'=>lang('delete'),'hidden'=>$security==4?false:true,
 							'display'=>"(row.journal_id!='12' && row.journal_id!='6') || (row.journal_id=='12' && (row.closed=='0' || row.total_amount==0)) || (row.journal_id=='6' && (row.closed=='0' || row.total_amount==0))",
 							'events' => ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/main/delete&jID={$this->journalID}', idTBD);"]],
-						'toggle'     => ['order'=>40,'icon'=>'toggle','size'=>'small','label'=>lang('toggle_status'),'hidden'=> $security>2?false:true, 
+						'toggle'     => ['order'=>40,'icon'=>'toggle','label'=>lang('toggle_status'),'hidden'=> $security>2?false:true, 
 							'events' => ['onClick' => "jsonAction('phreebooks/main/toggleWaiting&jID=jrnlTBD', idTBD);"],
 							'display'=> "row.journal_id=='4' || row.journal_id=='10' || row.journal_id=='12'"],
-						'invoice'    => ['order'=>70,'icon'=>'invoice', 'size'=>'small',  'label'=>$this->lang['set_invoice_num'],
-							'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_invoice_num']."'); jsonAction('phreebooks/main/setInvoiceNum&jID=6', idTBD, invNum);"],
-							'display'=> "row.waiting=='1' && row.journal_id=='6'"],
-						'dates'      => ['order'=>50,'icon'=>'date','size'=>'small','label'=>$this->lang['expected_delivery_dates'],
+						'dates'      => ['order'=>50,'icon'=>'date','label'=>$this->lang['expected_delivery_dates'],
 							'events' => ['onClick' => "windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".$this->lang['expected_delivery_dates']."', 500, 400);"],
 							'display'=> "row.journal_id=='4' || row.journal_id=='10'"],
-						'purchase'   => ['order'=>70,'icon'=>'purchase','size'=>'small','label'=>$this->lang['fill_purchase'],
+						'invoice'    => ['order'=>70,'icon'=>'invoice',   'label'=>$this->lang['set_invoice_num'],
+							'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_invoice_num']."'); jsonAction('phreebooks/main/setInvoiceNum&jID=6', idTBD, invNum);"],
+							'display'=> "row.waiting=='1' && row.journal_id=='6'"],
+						'reference'  => ['order'=>70,'icon'=>'invoice',   'label'=>$this->lang['set_ref_num'],
+							'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_ref_num']."'); jsonAction('phreebooks/main/setReferenceNum&jID=18', idTBD, invNum);"],
+							'display'=> "row.journal_id=='18'"],
+						'purchase'   => ['order'=>70,'icon'=>'purchase','label'=>$this->lang['fill_purchase'],
 							'events' => ['onClick' => "journalEdit(6, 0, cIDTBD, 'inv', '', idTBD);"],
 							'display'=> "row.closed=='0' && (row.journal_id=='3' || row.journal_id=='4')"],
-						'sale'       => ['order'=>70,'icon'=>'sales', 'size'=>'small',  'label'=>$this->lang['fill_sale'],
+						'sale'       => ['order'=>70,'icon'=>'sales',   'label'=>$this->lang['fill_sale'],
 							'events' => ['onClick' => "journalEdit(12, 0, cIDTBD, 'inv', '', idTBD);"],
 							'display'=> "row.closed=='0' && (row.journal_id=='9' || row.journal_id=='10')"],
-						'vcred'      => ['order'=>80,'icon'=>'credit', 'size'=>'small',  'label'=>$this->lang['create_credit'],
+						'vcred'      => ['order'=>80,'icon'=>'credit',   'label'=>$this->lang['create_credit'],
 							'events' => ['onClick' => "setCrJournal(jrnlTBD, cIDTBD, idTBD);"],
 							'display'=> "row.closed=='0' && (row.journal_id=='6' || row.journal_id=='12')"],
-						'payment'    => ['order'=>80,'icon'=>'payment','size'=>'small','label'=>lang('payment'),
+						'payment'    => ['order'=>80,'icon'=>'payment','label'=>lang('payment'),
 							'events' => ['onClick' => "setPmtJournal(jrnlTBD, cIDTBD, idTBD);"],
 							'display'=> "row.closed=='0' && (row.journal_id=='6' || row.journal_id=='7' || row.journal_id=='12' || row.journal_id=='13')"],
-						'attach'     => ['order'=>90,'icon'=>'attachment','size'=>'small','display'=>"row.attach=='1'",
-							'events' => ['onClick'=>"icnAction='';"]]]], // info only
+						'attach'     => ['order'=>90,'icon'=>'attachment','display'=>"row.attach=='1'"]]], // info only
 				'post_date' => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX.'journal_main.post_date', 'format'=>'date',
-					'label' => pullTableLabel('journal_main', 'post_date'),'attr'=>['width'=>100, 'sortable'=>true, 'resizable'=>true]],
+					'label' => pullTableLabel('journal_main', 'post_date'),'attr'=>['sortable'=>true, 'resizable'=>true]],
 				'invoice_num' => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX.'journal_main.invoice_num',
-					'label' => pullTableLabel('journal_main', 'invoice_num', $this->journalID),'attr'=>['width'=>100, 'sortable'=>true, 'resizable'=>true]],
+					'label' => pullTableLabel('journal_main', 'invoice_num', $this->journalID),'attr'=>['sortable'=>true, 'resizable'=>true]],
 				'so_po_ref_id' => ['order'=>25, 'field'=>BIZUNO_DB_PREFIX.'journal_main.so_po_ref_id','format'=>'storeID',
 					'label' => pullTableLabel('journal_main', 'so_po_ref_id', $this->journalID),
 					'attr'  => ['width'=>120, 'sortable'=>true, 'resizable'=>true, 'hidden'=> in_array($this->journalID, [15]) ? false : true]],
@@ -995,66 +995,58 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 					'label' => pullTableLabel('journal_main', 'journal_id'), 'attr'=>  ['width'=>120, 'resizable'=>true]];
 
 				$journalID = clean('journalID', 'integer', 'post');
-				$html = ['label'=>pullTableLabel('journal_main', 'journal_id'), 'values'=>$this->selJournals(),'attr'=>['type'=>'select','value'=>$journalID]];
                 if     ($journalID)              { $sql = BIZUNO_DB_PREFIX."journal_main.journal_id=$journalID"; }
                 elseif ($this->blocked_journals) { $sql = BIZUNO_DB_PREFIX."journal_main.journal_id NOT IN ($this->blocked_journals)"; }
                 else                             { $sql = ''; }
-				$data['source']['filters']['journalID']= ['order'=>55,'sql'=>$sql, 'html'=>$html];
+				$data['source']['filters']['journalID']= ['order'=>55,'break'=>true,'sql'=>$sql, 'label'=>pullTableLabel('journal_main', 'journal_id'),'values'=>$this->selJournals(),'attr'=>['type'=>'select','value'=>$journalID]];
 
-				$data['source']['filters']['hdcol1'] = ['order'=>56,               'html'=>['classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('fieldname')]]];
-				$data['source']['filters']['hdcol2'] = ['order'=>57,'break'=>false,'html'=>['classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('operator')]]];
-				$data['source']['filters']['hdMin']  = ['order'=>58,'break'=>false,'html'=>['classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('minimum')]]];
-				$data['source']['filters']['hdMax']  = ['order'=>59,'break'=>false,'html'=>['classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('maximum')]]];
+//				$data['source']['filters']['hdcol1'] = ['order'=>56,              'classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('fieldname')]];
+//				$data['source']['filters']['hdcol2'] = ['order'=>57,              'classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('operator')]];
+//				$data['source']['filters']['hdMin']  = ['order'=>58,              'classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('minimum')]];
+//				$data['source']['filters']['hdMax']  = ['order'=>59,'break'=>true,'classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('maximum')]];
 
-				$sql = $this->searchCriteriaSQL('postDate', BIZUNO_DB_PREFIX.'journal_main.post_date', 'date', 'band', getModuleCache('phreebooks', 'fy', 'period_start'), getModuleCache('phreebooks', 'fy', 'period_end'));
-				$temp = explode(':', $this->defaults['postDate']);
-                if (!$temp[0]) { $temp[0] = 'band'; }
-				$html = ['label'=>pullTableLabel('journal_main', 'post_date'), 'values'=>selChoices(), 'attr'=>  ['type'=>'select','value'=>$temp[0]]];
-				$data['source']['filters']['postDate']    = ['order'=>60,'sql'=>$sql, 'html'=>$html];
-				$data['source']['filters']['postDateMin'] = ['order'=>61,'break'=>false,'html'=>['attr'=>['type'=>'date', 'value'=>$temp[1]]]];
-				$data['source']['filters']['postDateMax'] = ['order'=>62,'break'=>false,'html'=>['attr'=>['type'=>'date', 'value'=>$temp[2]]]];
+				$sql1 = $this->searchCriteriaSQL('postDate', BIZUNO_DB_PREFIX.'journal_main.post_date', 'date', 'band', getModuleCache('phreebooks', 'fy', 'period_start'), getModuleCache('phreebooks', 'fy', 'period_end'));
+				$temp1 = explode(':', $this->defaults['postDate']);
+                if (!$temp1[0]) { $temp1[0] = 'band'; }
+				$data['source']['filters']['postDate']    = ['order'=>60,'sql'=>$sql1,'label'=>pullTableLabel('journal_main', 'post_date'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp1[0]]];
+				$data['source']['filters']['postDateMin'] = ['order'=>61,              'attr'=>['type'=>'date', 'value'=>$temp1[1]]];
+				$data['source']['filters']['postDateMax'] = ['order'=>62,'break'=>true,'attr'=>['type'=>'date', 'value'=>$temp1[2]]];
 
-				$sql = $this->searchCriteriaSQL('refID', [BIZUNO_DB_PREFIX.'journal_main.invoice_num', BIZUNO_DB_PREFIX.'journal_main.purch_order_id']);
-				$temp = explode(':', $this->defaults['refID']);
-				$html = ['label'=>pullTableLabel('journal_main', 'invoice_num'), 'values'=>selChoices(), 'attr'=>  ['type'=>'select','value'=>$temp[0]]];
-				$data['source']['filters']['refID']    = ['order'=>63,'sql'=>$sql, 'html'=>$html];
-				$data['source']['filters']['refIDMin'] = ['order'=>64,'break'=>false,'html'=>['attr'=>['value'=>$temp[1]]]];
-				$data['source']['filters']['refIDMax'] = ['order'=>65,'break'=>false,'html'=>['attr'=>['value'=>$temp[2]]]];
+				$sql2 = $this->searchCriteriaSQL('refID', [BIZUNO_DB_PREFIX.'journal_main.invoice_num', BIZUNO_DB_PREFIX.'journal_main.purch_order_id']);
+				$temp2 = explode(':', $this->defaults['refID']);
+				$data['source']['filters']['refID']    = ['order'=>63,'sql'=>$sql2,'label'=>pullTableLabel('journal_main', 'invoice_num'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp2[0]]];
+				$data['source']['filters']['refIDMin'] = ['order'=>64,              'attr'=>['value'=>$temp2[1]]];
+				$data['source']['filters']['refIDMax'] = ['order'=>65,'break'=>true,'attr'=>['value'=>$temp2[2]]];
 
-				$sql = $this->searchCriteriaSQL('contactID', BIZUNO_DB_PREFIX.'journal_main.primary_name_b');
-				$temp = explode(':', $this->defaults['contactID']);
-				$html = ['label'=>pullTableLabel('address_book', 'primary_name'), 'values'=>selChoices(), 'attr'=>  ['type'=>'select','value'=>$temp[0]]];
-				$data['source']['filters']['contactID']    = ['order'=>66,'sql'=>$sql, 'html'=>$html];
-				$data['source']['filters']['contactIDMin'] = ['order'=>67,'break'=>false,'html'=>['attr'=>['value'=>$temp[1]]]];
-				$data['source']['filters']['contactIDMax'] = ['order'=>68,'break'=>false,'html'=>['attr'=>['value'=>$temp[2]]]];
+				$sql3 = $this->searchCriteriaSQL('contactID', BIZUNO_DB_PREFIX.'journal_main.primary_name_b');
+				$temp3 = explode(':', $this->defaults['contactID']);
+				$data['source']['filters']['contactID']    = ['order'=>66,'sql'=>$sql3,'label'=>pullTableLabel('address_book', 'primary_name'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp3[0]]];
+				$data['source']['filters']['contactIDMin'] = ['order'=>67,              'attr'=>['value'=>$temp3[1]]];
+				$data['source']['filters']['contactIDMax'] = ['order'=>68,'break'=>true,'attr'=>['value'=>$temp3[2]]];
 
-				$sqlSKU = $this->searchCriteriaSQL('sku', BIZUNO_DB_PREFIX.'journal_item.sku');
-				$tempSKU = explode(':', $this->defaults['sku']);
-				$htmlSKU = ['label'=>pullTableLabel('journal_item', 'sku'), 'values'=>selChoices(), 'attr'=>  ['type'=>'select','value'=>$tempSKU[0]]];
-				$data['source']['filters']['sku']    = ['order'=>69,'sql'=>$sqlSKU, 'html'=>$htmlSKU];
-				$data['source']['filters']['skuMin'] = ['order'=>70,'break'=>false,'html'=>['attr'=>['value'=>$tempSKU[1]]]];
-				$data['source']['filters']['skuMax'] = ['order'=>71,'break'=>false,'html'=>['attr'=>['value'=>$tempSKU[2]]]];
+				$sql4 = $this->searchCriteriaSQL('sku', BIZUNO_DB_PREFIX.'journal_item.sku');
+				$temp4 = explode(':', $this->defaults['sku']);
+				$data['source']['filters']['sku']    = ['order'=>69,'sql'=>$sql4,'label'=>pullTableLabel('journal_item', 'sku'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp4[0]]];
+				$data['source']['filters']['skuMin'] = ['order'=>70,              'attr'=>['value'=>$temp4[1]]];
+				$data['source']['filters']['skuMax'] = ['order'=>71,'break'=>true,'attr'=>['value'=>$temp4[2]]];
 
-				$sql = $this->searchCriteriaSQL('amount',  [BIZUNO_DB_PREFIX.'journal_main.total_amount', BIZUNO_DB_PREFIX.'journal_item.debit_amount', BIZUNO_DB_PREFIX.'journal_item.credit_amount']);
-				$temp = explode(':', $this->defaults['amount']);
-				$html = ['label'=>lang('amount'), 'values'=>selChoices(), 'attr'=>['type'=>'select','value'=>$temp[0]]];
-				$data['source']['filters']['amount']    = ['order'=>72,'sql'=>$sql, 'html'=>$html];
-				$data['source']['filters']['amountMin'] = ['order'=>73,'break'=>false,'html'=>['attr'=>['value'=>$temp[1]]]];
-				$data['source']['filters']['amountMax'] = ['order'=>74,'break'=>false,'html'=>['attr'=>['value'=>$temp[2]]]];
+				$sql5 = $this->searchCriteriaSQL('amount',  [BIZUNO_DB_PREFIX.'journal_main.total_amount', BIZUNO_DB_PREFIX.'journal_item.debit_amount', BIZUNO_DB_PREFIX.'journal_item.credit_amount']);
+				$temp5 = explode(':', $this->defaults['amount']);
+				$data['source']['filters']['amount']    = ['order'=>72,'sql'=>$sql5,'label'=>lang('amount'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp5[0]]];
+				$data['source']['filters']['amountMin'] = ['order'=>73,              'attr'=>['value'=>$temp5[1]]];
+				$data['source']['filters']['amountMax'] = ['order'=>74,'break'=>true,'attr'=>['value'=>$temp5[2]]];
 
-				$sql = $this->searchCriteriaSQL('glAcct',  [BIZUNO_DB_PREFIX.'journal_main.gl_acct_id', BIZUNO_DB_PREFIX.'journal_item.gl_account']);
-				$temp = explode(':', $this->defaults['glAcct']);
-				$html = ['label'=>pullTableLabel('journal_main', 'gl_acct_id'), 'values'=>selChoices(), 'attr'=>  ['type'=>'select','value'=>$temp[0]]];
-				$data['source']['filters']['glAcct']    = ['order'=>75,'sql'=>$sql, 'html'=>$html];
-				$data['source']['filters']['glAcctMin'] = ['order'=>76,'break'=>false,'html'=>['attr'=>['value'=>$temp[1]]]];
-				$data['source']['filters']['glAcctMax'] = ['order'=>77,'break'=>false,'html'=>['attr'=>['value'=>$temp[2]]]];
+				$sql6 = $this->searchCriteriaSQL('glAcct',  [BIZUNO_DB_PREFIX.'journal_main.gl_acct_id', BIZUNO_DB_PREFIX.'journal_item.gl_account']);
+				$temp6 = explode(':', $this->defaults['glAcct']);
+				$data['source']['filters']['glAcct']    = ['order'=>75,'sql'=>$sql6,'label'=>pullTableLabel('journal_main', 'gl_acct_id'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp6[0]]];
+				$data['source']['filters']['glAcctMin'] = ['order'=>76,              'attr'=>['value'=>$temp6[1]]];
+				$data['source']['filters']['glAcctMax'] = ['order'=>77,'break'=>true,'attr'=>['value'=>$temp6[2]]];
 
-				$sql = $this->searchCriteriaSQL('rID', BIZUNO_DB_PREFIX.'journal_main.id');
-				$temp = explode(':', $this->defaults['rID']);
-				$html = ['label'=>lang('users_admin_id'), 'values'=>selChoices(), 'attr'=>  ['type'=>'select','value'=>$temp[0]]];
-				$data['source']['filters']['rID']    = ['order'=>78,'sql'=>$sql, 'html'=>$html];
-				$data['source']['filters']['rIDMin'] = ['order'=>79,'break'=>false,'html'=>['attr'=>['value'=>$temp[1]]]];
-				$data['source']['filters']['rIDMax'] = ['order'=>80,'break'=>false,'html'=>['attr'=>['value'=>$temp[2]]]];
+				$sql7 = $this->searchCriteriaSQL('rID', BIZUNO_DB_PREFIX.'journal_main.id');
+				$temp7 = explode(':', $this->defaults['rID']);
+				$data['source']['filters']['rID']    = ['order'=>78,'sql'=>$sql7,'label'=>lang('users_admin_id'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp7[0]]];
+				$data['source']['filters']['rIDMin'] = ['order'=>79,              'attr'=>['value'=>$temp7[1]]];
+				$data['source']['filters']['rIDMax'] = ['order'=>80,'break'=>true,'attr'=>['value'=>$temp7[2]]];
 				unset($data['source']['filters']['period']);
 				break;
 			case 2:
@@ -1134,7 +1126,7 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		}
         if (getUserCache('profile', 'restrict_user', false, 0)) { // see if user restrictions are in place
             $uID = getUserCache('profile', 'contact_id', false, 0);
-            $data['source']['filters']['restrict_user'] = ['order'=>99, 'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."journal_main.rep_id='$uID'"];
+            $data['source']['filters']['restrict_user'] = ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."journal_main.rep_id='$uID'"];
         }
 		return $data;
 	}
@@ -1256,15 +1248,21 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
             if ($row['gl_type'] != 'itm') { continue; }
 			$items[] = ['id'=>$row['id'],'qty'=>$row['qty'],'sku'=>$row['sku'],'description'=>$row['description'],'date_1'=>$row['date_1']];
 		}
-		$data = ['type'=>'divHTML',
-			'fields' => [
-                'items'  => $items,
-				'delSave'=> ['icon'=>'save','events'=>['onClick'=>"divSubmit('phreebooks/main/deliveryDatesSave&jID=$this->journalID', 'winDelDates');"]]],
-			'divs' => ['divRate' => ['order'=>50, 'src'=>BIZUNO_LIB."view/module/phreebooks/winDelivery.php"]]];
-		msgDebug("\nitems to list is: ".print_r($data['fields']['items'], true));
+		$data = ['type'=>'divHTML','divs'=>['divRate'=>['order'=>50,'type'=>'html','html'=>$this->getViewDelDates($items)]]];
 		$layout = array_replace_recursive($layout, $data);
 	}
 
+    private function getViewDelDates($items)
+    {
+        $delSave = ['icon'=>'save','events'=>['onClick'=>"divSubmit('phreebooks/main/deliveryDatesSave&jID=$this->journalID', 'winDelDates');"]];
+        $output = '<table style="border-collapse:collapse;width:100%;"><thead><tr class="panel-header"><th>'.lang('qty')."</th><th>".lang('sku')."</th><th>".lang('description')."</th><th>".lang('date')."</th></tr></thead><tbody>";
+        foreach ($items as $row) {
+            $output .= "<tr><td>".$row['qty']."</td><td>".$row['sku']."</td><td>".$row['description']."</td><td>".html5("rID_{$row['id']}", ['classes'=> ['easyui-datebox'], 'attr'=> ['value'=>viewFormat($row['date_1'], 'date')]])."</td></tr>";
+        }
+        $output .= '</tbody><tfooter><tr><td colspan="4" style="text-align:right">'.html5('delSave', $delSave)."</td></tr></tfooter></table>\n";
+        return $output;
+    }
+    
 	/**
      * Saves the user entered delivery dates (typically for PO's and SO's
      * @param array $layout - Structure coming in
@@ -1281,7 +1279,7 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 			}
 		}
 		msgAdd(lang('msg_database_write'), 'success');
-		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 'actionData'=>"jq('#winDelDates').window('close');"]]);
+		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 'actionData'=>"bizWindowClose('winDelDates');"]]);
 	}
 
     /**
@@ -1319,14 +1317,14 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		$rID       = clean('rID',      'integer', 'get');
 		$post_date = clean('postDate', ['format'=>'date','default'=>date('Y-m-d')], 'get');
 		$gl_account= clean('glAccount',['format'=>'text','default'=>getModuleCache('phreebooks', 'settings', 'vendors', 'gl_cash')], 'get');
-		$row = dbGetRow(BIZUNO_DB_PREFIX."journal_periods", "start_date<='$post_date' AND end_date>='$post_date'");
+		$row       = dbGetRow(BIZUNO_DB_PREFIX."journal_periods", "start_date<='$post_date' AND end_date>='$post_date'");
         if (!$row) { return msgAdd(sprintf(lang('err_gl_post_date_invalid'), $post_date)); }
-		$balance  = dbGetValue(BIZUNO_DB_PREFIX."journal_history", 'beginning_balance', "period={$row['period']} AND gl_account='$gl_account'");
-		$balance += dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'SUM(debit_amount - credit_amount) as balance', "gl_account='$gl_account' AND post_date>='{$row['start_date']}' AND post_date<='$post_date'", false);
+		$balance   = dbGetValue(BIZUNO_DB_PREFIX."journal_history", 'beginning_balance', "period={$row['period']} AND gl_account='$gl_account'");
+		$balance  += dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'SUM(debit_amount - credit_amount) as balance', "gl_account='$gl_account' AND post_date>='{$row['start_date']}' AND post_date<='$post_date'", false);
 		// add back the record amount if editing
         if ($rID) { $balance += dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'credit_amount', "ref_id=$rID AND gl_type='ttl'"); }
 		msgDebug("returning balance = $balance");
-		$layout = array_replace_recursive($layout, ['content' => ['balance'=>$balance]]);
+		$layout = array_replace_recursive($layout, ['content'=>['balance'=>$balance]]);
 	}
 
 	/**
@@ -1361,17 +1359,17 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
             $data['fields']['main']['terminal_date']['attr']['value'] = date('Y-m-d');
         }
 		$termsType = in_array($this->journalID, [3,4,6,7,17,20,21]) ? 'vendors' : 'customers';
-		$data['fields']['main']['terms']['attr']['value']  = getModuleCache('phreebooks', 'settings', $termsType, 'terms');
-		$data['fields']['main']['gl_acct_id']['jsBody']    = htmlComboGL('gl_acct_id');
-        $data['fields']['main']['currency']['attr']['type']= 'currency';
-        $data['fields']['main']['currency']['func']        = 'ordersCurrency';
-		$data['fields']['main']['rep_id']['attr']['value'] = getUserCache('profile', 'contact_id', false, 0);
-		$data['fields']['main']['rep_id']['values']        = viewRoleDropdown();
-		$data['fields']['main']['currency']['break']       = true;
-		$data['fields']['main']['waiting']['break']        = true;
-		$data['fields']['main']['closed']['break']         = true;
-		$data['fields']['main']['invoice_num']['tooltip']  = lang('msg_leave_null_to_assign_ref');
-        $data['fields']['main']['currency']['excRate']     = 1;
+		$data['fields']['main']['terms']['attr']['value']    = getModuleCache('phreebooks', 'settings', $termsType, 'terms');
+		$data['fields']['main']['gl_acct_id']['attr']['type']= 'ledger';
+        $data['fields']['main']['currency']['attr']['type']  = 'currency';
+        $data['fields']['main']['currency']['func']          = 'ordersCurrency';
+		$data['fields']['main']['rep_id']['attr']['value']   = getUserCache('profile', 'contact_id', false, 0);
+		$data['fields']['main']['rep_id']['values']          = viewRoleDropdown();
+		$data['fields']['main']['currency']['break']         = true;
+		$data['fields']['main']['waiting']['break']          = true;
+		$data['fields']['main']['closed']['break']           = true;
+		$data['fields']['main']['invoice_num']['tooltip']    = lang('msg_leave_null_to_assign_ref');
+        $data['fields']['main']['currency']['excRate']       = 1;
     }
 
     public function setInvoiceNum(&$layout=[])
@@ -1382,6 +1380,17 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
         $invNum = clean('data', 'text', 'get');
         if (empty($invNum)) { return msgAdd($this->lang['msg_inv_waiting']); }
 		dbWrite(BIZUNO_DB_PREFIX."journal_main", ['waiting'=>'0','invoice_num'=>$invNum], 'update', "id=$rID");
+		$layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"jq('#dgPhreeBooks').datagrid('reload');"]]);        
+    }
+
+    public function setReferenceNum(&$layout=[])
+    {
+        if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", 1)) { return; }
+		$rID = clean('rID', 'integer', 'get');
+        if (!$rID) { return msgAdd(lang('bad_id')); }
+        $refNum = clean('data', 'text', 'get');
+        if (empty($refNum)) { return 'Bad reference number'; } // should never happen
+		dbWrite(BIZUNO_DB_PREFIX."journal_main", ['invoice_num'=>$refNum], 'update', "id=$rID");
 		$layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"jq('#dgPhreeBooks').datagrid('reload');"]]);        
     }
 
@@ -1454,7 +1463,7 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		$html .= html5('radioRecur',['label'=>lang('dates_bi_weekly'),'position'=>'after','attr'=>  ['type'=>'radio', 'value'=>'2', 'checked'=>$freq==2?true:false]])."<br />";
 		$html .= html5('radioRecur',['label'=>lang('dates_monthly'),  'position'=>'after','attr'=>  ['type'=>'radio', 'value'=>'3', 'checked'=>$freq==3?true:false]])."<br />";
 		$html .= html5('radioRecur',['label'=>lang('dates_quarterly'),'position'=>'after','attr'=>  ['type'=>'radio', 'value'=>'4', 'checked'=>$freq==4?true:false]])."<br />";
-		$html .= html5('iconGO',    ['icon'=>'next','events'=>['onClick'=>"jq('#recur_id').val(jq('#rcrTimes').val()); jq('#recur_frequency').val(jq('input[name=radioRecur]:checked').val()); jq('#winRecur').window('close');"]]);
+		$html .= html5('iconGO',    ['icon'=>'next','events'=>['onClick'=>"jq('#recur_id').val(jq('#rcrTimes').val()); jq('#recur_frequency').val(jq('input[name=radioRecur]:checked').val()); bizWindowClose('winRecur');"]]);
 		$layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['winRecur'=>['order'=>50, 'type'=>'html', 'html'=>$html]]]);
 	}
 }

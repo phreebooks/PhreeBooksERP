@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-14
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/totals/fee_order/fee_order.php
  */
 
@@ -72,8 +72,7 @@ class fee_order
     {
 		$this->fields = [
             'totals_fee_order_id' => ['label'=>'', 'attr'=>  ['type'=>'hidden']],
-			'totals_fee_order_gl' => ['label'=>lang('gl_account'), 'jsBody'=>htmlComboGL('totals_fee_order_gl'),
-				'attr'   => ['size'=>'5', 'value'=>$this->settings['gl_account']]],
+			'totals_fee_order_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
 			'totals_fee_order_opt'=> ['icon'=>'settings', 'size'=>'small',
 				'events' => ['onClick'=>"jq('#phreebooks_totals_fee_order').toggle('slow');"]],
 			'totals_fee_order_pct'=> ['label'=>lang('percent'), 'attr'=>  ['type'=>'text', 'size'=>'5'],
@@ -110,7 +109,7 @@ class fee_order
 	var percent = parseFloat(jq('#totals_fee_order_pct').val());
 	if (isNaN(percent)) percent = 0;
 	percent = percent / 100;
-	jq('#totals_fee_order').val(formatCurrency(newBalance * percent));
+    bizTextSet('totals_fee_order', newBalance * percent, 'currency');
 	newBalance = begBalance * (1 + percent);
 	return newBalance;
 }";

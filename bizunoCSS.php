@@ -15,23 +15,23 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-29
+ * @version    3.x Last Update: 2018-03-29
  * @filesource /bizunoCSS.php
  */
 
 namespace bizuno;
 
-@include('bizunoCFG.php');
+//@include('bizunoCFG.php'); // only has db info not needed
 
 // Host Information/source paths
 define('BIZUNO_HOST',      'phreebooks'); // PhreeBooks 5 hosted
 define('BIZUNO_HOME',      'index.php?'); // filename of the main entry index script
 define('BIZUNO_AJAX',      'index.php?'); // root path for AJAX requests
 // URL paths
-$path = pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME);
-define('BIZUNO_SRVR',      "http".(!empty($_SERVER['HTTPS'])?"s":"")."://".$_SERVER["SERVER_NAME"].$path.'/'); // url to server with trailing slash
+$pathSrvr = pathinfo($_SERVER["SCRIPT_NAME"], PATHINFO_DIRNAME);
+define('BIZUNO_SRVR',      "http".(!empty($_SERVER['HTTPS'])?"s":"")."://".$_SERVER["SERVER_NAME"].$pathSrvr.'/'); // url to server with trailing slash
 define('BIZUNO_LOGO',      BIZUNO_SRVR.'phreebooks.png');
 define('BIZUNO_URL',       BIZUNO_SRVR.'lib/'); // full url to Bizuno plugin library folder
 define('BIZUNO_URL_FS',    BIZUNO_SRVR.'bizunoFS.php?'); // full url to Bizuno plugin extensions folder
@@ -41,27 +41,40 @@ define('BIZUNO_URL_CUSTOM',BIZUNO_SRVR.'myExt/'); // full url to Bizuno plugin c
 define('BIZUNO_ROOT',      dirname(__FILE__).'/'); // relative path to bizuno root index file
 define('BIZUNO_LIB',       BIZUNO_ROOT.'lib/'); // file system path to Bizuno Library
 define('BIZUNO_EXT',       BIZUNO_ROOT.'ext/'); // file system path to Bizuno Extensions
-define('BIZUNO_DATA',      BIZUNO_ROOT.'myFiles/'); // myFolder
 define('BIZUNO_CUSTOM',    BIZUNO_ROOT.'myExt/'); // file system path to Bizuno custom extensions
+define('BIZUNO_DATA',      BIZUNO_ROOT.'myFiles/'); // myFolder
+define('BIZUNO_ICONS',     BIZUNO_ROOT.'icons/'); // file system path to extra icon sets 
+define('BIZUNO_THEMES',    BIZUNO_ROOT.'themes/'); // file system path to extra themes
 
 require_once(BIZUNO_LIB."controller/functions.php");
 require_once(BIZUNO_LIB."locale/cleaner.php");
 $cleaner= new cleaner();
-$style  = clean('style',['format'=>'cmd', 'default'=>'default'], 'get');
+// BO Deprecated
+$style  = clean('style',['format'=>'cmd','default'=>'default'],'get'); // OLD WAY CAN BE DEPRECATED AFTER 10/1/2018, change icons[default] to 'default'
+// EO Deprecated
+$icnSet = clean('icons',['format'=>'cmd','default'=>$style],   'get');
 $creds  = explode('.', clean('code', ['format'=>'float','default'=>'0'], 'get')); // bizID.userID
 $bizID  = $creds[0];
 $userID = !empty($creds[1]) ? $creds[1] : 0;
+
+$path   = $icnSet=='default' ? BIZUNO_LIB."view/icons/" : BIZUNO_ICONS;
+$pathURL= $icnSet=='default' ? BIZUNO_URL."view/icons/" : BIZUNO_ICONS;
+if (!file_exists("{$path}$icnSet.php")) { // icons cannot be found, use default
+    $icnSet  = 'default'; 
+    $path    = BIZUNO_LIB."view/icons/";
+    $pathURL = BIZUNO_URL."view/icons/";
+}
 $output = '';
-if (!file_exists(BIZUNO_LIB."view/icons/$style.php")) { die; } // invalid access
 if ($userID) {
     // fetch the users Profile for icon set and font stlye
     $output .= "a, div, body, html, table{ font:normal normal 11px Comic Sans MS; }\n";
 }
-require(BIZUNO_LIB."view/icons/$style.php");
+$icons = [];
+require("{$path}$icnSet.php");
 foreach ($icons as $idx => $icon) {
-    $output .= ".icon-$idx  { background:url('".BIZUNO_URL."view/icons/{$icon['dir']}/16x16/{$icon['path']}') no-repeat; }\n";
-    $output .= ".iconM-$idx { background:url('".BIZUNO_URL."view/icons/{$icon['dir']}/24x24/{$icon['path']}') no-repeat; }\n";
-    $output .= ".iconL-$idx { background:url('".BIZUNO_URL."view/icons/{$icon['dir']}/32x32/{$icon['path']}') no-repeat; }\n";
+    $output .= ".icon-$idx  { background:url('{$pathURL}$icnSet/16x16/{$icon['path']}') no-repeat; }\n";
+    $output .= ".iconM-$idx { background:url('{$pathURL}$icnSet/24x24/{$icon['path']}') no-repeat; }\n";
+    $output .= ".iconL-$idx { background:url('{$pathURL}$icnSet/32x32/{$icon['path']}') no-repeat; }\n";
 }
 // Now extensions
 $output .= dirCSS(BIZUNO_EXT); // scan the Bizuno extensions
@@ -83,8 +96,7 @@ header("Content-Length: ".strlen($output));
 echo $output;
 die;
 
-function dirCSS($dir, $custom=false, $bizID=0)
-{
+function dirCSS($dir, $custom=false, $bizID=0) {
     $output = '';
     $extenions = is_dir($dir) ? scandir($dir) : []; 
     foreach ($extenions as $extension) {
@@ -94,8 +106,7 @@ function dirCSS($dir, $custom=false, $bizID=0)
     return $output;
 }
 
-function addCSS($dir, $ext, $custom=false, $bizID=0)
-{
+function addCSS($dir, $ext, $custom=false, $bizID=0) {
     $output = '';
     if ($ext == '.' || $ext == '..' || !is_dir("$dir/$ext")) { return $output; }
     $files = scandir("$dir/$ext");

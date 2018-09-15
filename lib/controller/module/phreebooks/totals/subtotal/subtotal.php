@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-05
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/totals/subtotal/subtotal.php
  */
  
@@ -49,19 +49,18 @@ class subtotal
 
 	public function render(&$output)
     {
-		$this->fields = [
-            'totals_subtotal' => ['label'=>lang('subtotal'),'format'=>'currency','attr'=>['size'=>'15','value'=>'0','style'=>'text-align:right','readonly'=>'readonly']]];
+		$fields = ['totals_subtotal'=>['label'=>lang('subtotal'),'attr'=>['type'=>'currency','size'=>'15','value'=>'0','readonly'=>'readonly']]];
 		$hide   = $this->hidden ? ';display:none' : '';
-        $output['body'] .= '<div style="text-align:right'.$hide.'">'.html5('totals_subtotal', $this->fields['totals_subtotal'])."</div>\n";
+        $output['body'] .= '<div style="text-align:right'.$hide.'">'.html5('totals_subtotal',$fields['totals_subtotal']).html5('',['icon'=>'blank','size'=>'small'])."</div>\n";
         $output['jsHead'][]= "function totals_subtotal(begBalance) {
-    taxRunning = 0;
+taxRunning = 0;
     var newBalance = begBalance;
     var rowData    = jq('#dgJournalItem').edatagrid('getData');
     for (var rowIndex=0; rowIndex<rowData.total; rowIndex++) {
         var amount = roundCurrency(parseFloat(rowData.rows[rowIndex].total));
         if (!isNaN(amount)) newBalance += amount;
     }
-    jq('#totals_subtotal').val(formatCurrency(newBalance));
+    bizTextSet('totals_subtotal', newBalance, 'currency');
     return newBalance;
 }";
 	}

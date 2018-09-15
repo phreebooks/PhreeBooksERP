@@ -17,13 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-14
+ * @version    3.x Last Update: 2018-09-15
  * @filesource /index.php
  */
 
 namespace bizuno;
 
-define('MODULE_BIZUNO_VERSION','2.1.5'); // PhreeBooks R5.0.5
+define('MODULE_BIZUNO_VERSION','3.0.1');
+define('PHREEBOOKS_VERSION','5.1.0');
 
 ini_set('display_errors', true);
 //error_reporting(E_ALL);
@@ -46,13 +47,16 @@ define('BIZUNO_URL_FS',    BIZUNO_SRVR.'bizunoFS.php?'); // full url to Bizuno p
 define('BIZUNO_URL_EXT',   BIZUNO_SRVR.'ext/'); // full url to Bizuno plugin extensions folder
 define('BIZUNO_URL_CUSTOM',BIZUNO_SRVR.'myExt/'); // full url to Bizuno plugin custom extensions folder
 // File system paths
-define('BIZUNO_ROOT',      dirname(__FILE__).'/'); // relative path to bizuno root index file
+//define('BIZUNO_ROOT',      dirname(__FILE__).'/'); // Used to be this which was absolute path
+define('BIZUNO_ROOT',      ''); // relative path to bizuno root index file
 define('BIZUNO_LIB',       BIZUNO_ROOT.'lib/'); // file system path to Bizuno Library
 define('BIZUNO_EXT',       BIZUNO_ROOT.'ext/'); // file system path to Bizuno Extensions
-define('BIZUNO_DATA',      BIZUNO_ROOT.'myFiles/'); // myFolder
 define('BIZUNO_CUSTOM',    BIZUNO_ROOT.'myExt/'); // file system path to Bizuno custom extensions
+define('BIZUNO_DATA',      BIZUNO_ROOT.'myFiles/'); // myFolder
+define('BIZUNO_ICONS',     BIZUNO_DATA.'extIcons/'); // file system path to extra icon sets 
+define('BIZUNO_THEMES',    BIZUNO_DATA.'extThemes/'); // file system path to extra themes
 // Database
-if (!defined('BIZUNO_DB_HOST'))  { define('BIZUNO_DB_HOST',  ''); }
+if (!defined('BIZUNO_DB_HOST'))  { define('BIZUNO_DB_HOST',  'localhost'); }
 if (!defined('BIZUNO_DB_NAME'))  { define('BIZUNO_DB_NAME',  ''); }
 if (!defined('BIZUNO_DB_USER'))  { define('BIZUNO_DB_USER',  ''); }
 if (!defined('BIZUNO_DB_PASS'))  { define('BIZUNO_DB_PASS',  ''); }

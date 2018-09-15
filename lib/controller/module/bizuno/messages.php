@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-09
+ * @version    3.x Last Update: 2018-08-13
  * @filesource /lib/controller/module/bizuno/messages.php
  */
 
@@ -42,7 +42,7 @@ class bizunoMessages
         if (!$security = validateSecurity('bizuno', 'message', 1)) { return; }
 		$title = lang('messages');
 		$layout = array_replace_recursive($layout, viewMain(), [
-            'pageTitle'=> $title,
+            'title'=> $title,
 			'divs'     => [
                 'heading' => ['order'=>30,'type'=>'html',     'html'=>"<h1>$title</h1>\n"],
 				'phreemsg'=> ['order'=>60,'type'=>'accordion','key'=>'accMessage']],
@@ -74,19 +74,17 @@ class bizunoMessages
      */
     private function dgMessage($name, $security=0)
     {
-        return ['id' => $name,
-			'attr'   => ['type'=>'table','idField'=>'id','url'=>BIZUNO_AJAX."&p=bizuno/messages/managerRows"],
-			'events' => [
+        return ['id' =>$name,
+			'attr'   =>['type'=>'table','idField'=>'id','url'=>BIZUNO_AJAX."&p=bizuno/messages/managerRows"],
+			'events' =>[
                 'rowStyler'    => "function(index, row) { if (row.status=='0') { return {class:'row-default'}; }}",
 				'onDblClickRow'=> "function(rowIndex, rowData) { jsonAction('bizuno/messages/read&host=".BIZUNO_HOST."', rowData.id); }"],
-			'source' => ['tables' => ['phreemsg'=>['table'=>BIZUNO_DB_PREFIX."phreemsg"]]],
-			'columns'=> [
-                'id'     => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."phreemsg.id",    'attr'=>  ['hidden'=>true]],
+			'source' =>['tables'=>['phreemsg'=>['table'=>BIZUNO_DB_PREFIX."phreemsg"]]],
+			'columns'=>['id'=>['order'=>0,'field'=>BIZUNO_DB_PREFIX."phreemsg.id",    'attr'=>  ['hidden'=>true]],
 				'status' => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."phreemsg.status",'attr'=>  ['hidden'=>true]],
-				'action' => ['order'=>1,'label'=>lang('action'), 'attr'=>['width'=>20], 'events'=>['formatter'=>$name.'Formatter'],
+				'action' => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
 					'actions'=> [
-						'read'  => ['icon'=>'email', 'size'=>'small', 'order'=>20,
-							'events'=>['onClick'=>"jsonAction('bizuno/messages/read&host=".BIZUNO_HOST."', idTBD);"]],
+						'read'  => ['icon'=>'email', 'size'=>'small', 'order'=>20,'events'=>['onClick'=>"jsonAction('bizuno/messages/read&host=".BIZUNO_HOST."', idTBD);"]],
 						'delete'=> ['icon'=>'trash', 'size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
 							'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/messages/delete', idTBD);"]]]],
 				'post_date'=> ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."phreemsg.post_date", 'label'=>lang('date'),
@@ -121,9 +119,9 @@ class bizunoMessages
             if ($quickBar['child']['sysMsg']['attr']['value'] < 1) { unset($quickBar['child']['sysMsg']['attr']['value']); } // prevents showing 0
             setUserCache('quickBar', false, $quickBar);
         }
-		$layout = array_replace_recursive($layout, [
-			'divs'   => ['window_terms'=> ['order'=>50, 'type'=>'html',   'html'=>$response['sysMsg']]],
-			'content'=> ['action'=>'window', 'id'=>'winSysMsg', 'title'=>$row['subject']]]);
+        $data = ['type'=>'popup','title'=>$row['subject'],'attr'=>['id'=>'winSysMsg'],
+			'divs'=>['body'=>['order'=>50,'type'=>'html','html'=>$response['sysMsg']]]];
+		$layout = array_replace_recursive($layout, $data);
 	}
 
 	/**

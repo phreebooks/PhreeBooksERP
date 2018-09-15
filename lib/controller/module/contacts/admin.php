@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-28
+ * @version    3.x Last Update: 2018-09-04
  * @filesource /lib/controller/module/contacts/admin.php
  */
 
@@ -96,23 +96,32 @@ class contactsAdmin
     public function adminHome(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
-        $clnDefault = viewFormat(localeCalculateDate(date('Y-m-d'), 0, -1), 'date');
-        $data = [
-            'tabs' => ['tabAdmin'=> ['divs'=>  [
-                'settings'=> ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminSettings.php"],
-				'fields'  => ['order'=>50,'label'=>lang('extra_fields'),'type'=>'html', 'html'=>'',
-                    'attr'=> ["data-options"=>"href:'".BIZUNO_AJAX."&p=bizuno/fields/manager&module=$this->moduleID&table=contacts'"]],
-                'tabDBs'  => ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
-				'tools'   => ['order'=>80,'label'=>lang('tools'),   'src'=>BIZUNO_LIB."view/module/contacts/tabSettingsTools.php"]]]],
-			'fields' => [
-                'dateJ9Close'=> ['label'=>'','classes'=>['easyui-datebox'], 'attr'=>['data-options'=>"{value:'$clnDefault'}"]],
-                'btnJ9Close' => ['label'=>'', 'events'=> ['onClick' => "jq('body').addClass('loading'); jsonAction('contacts/tools/j9Close', 0, jq('#dateJ9Close').datebox('getValue'));"],
-                    'attr'=>  ['type'=>'button', 'value'=>lang('start')]],
-                'btnSyncAttach' => ['label'=>'', 'events'=> ['onClick' => "jq('body').addClass('loading'); jsonAction('contacts/tools/syncAttachments&verbose=1');"],
-                    'attr'=>  ['type'=>'button', 'value'=>lang('go')]]],
-            'lang' => $this->lang];
+        $data = ['tabs'=>['tabAdmin'=>['divs'=>[
+            'settings'=> ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/tabAdminSettings.php"],
+            'fields'  => ['order'=>50,'label'=>lang('extra_fields'),'type'=>'html','html'=>'','options'=>["href"=>"'".BIZUNO_AJAX."&p=bizuno/fields/manager&module=$this->moduleID&table=contacts'"]],
+            'tabDBs'  => ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
+            'tools'   => ['order'=>80,'label'=>lang('tools'),'type'=>'html','html'=>$this->setToolsTab()]]]]];
 		$layout = array_replace_recursive($layout, adminStructure($this->moduleID, $this->settingsStructure(), $this->lang), $data);
 	}
+
+    private function setToolsTab()
+    {
+        $clnDefault = viewFormat(localeCalculateDate(date('Y-m-d'), 0, -1), 'date');
+        $fields = [
+            'dateJ9Close'  => ['classes'=>['easyui-datebox'],'options'=>['value'=>"'$clnDefault'"]],
+            'btnJ9Close'   => ['events' =>['onClick'=>"jq('body').addClass('loading'); jsonAction('contacts/tools/j9Close', 0, jq('#dateJ9Close').datebox('getValue'));"],
+                'attr' => ['type'=>'button','value'=>lang('start')]],
+            'btnSyncAttach'=> ['events'=> ['onClick' => "jq('body').addClass('loading'); jsonAction('contacts/tools/syncAttachments&verbose=1');"],
+                'attr'=>  ['type'=>'button','value'=>lang('go')]]];
+         return "<fieldset><legend>".$this->lang['close_j9_title']."</legend>
+    <p>".$this->lang['close_j9_desc']."</p>
+    <p>".$this->lang['close_j9_label'].' '.html5('dateJ9Close', $fields['dateJ9Close']).html5('btnJ9Close', $fields['btnJ9Close']).'</p>
+</fieldset>
+<fieldset><legend>'.$this->lang['sync_attach_title']."</legend>
+    <p>".$this->lang['sync_attach_desc']."</p>
+    <p>".html5('btnSyncAttach', $fields['btnSyncAttach']).'</p>
+</fieldset>';
+    }
 
 	/**
      * Saves the users settings 

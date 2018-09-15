@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-10
+ * @version    3.x Last Update: 2018-09-15
  * @filesource lib/controller/module/bizuno/profile.php
  */
 
@@ -52,46 +52,52 @@ class bizunoProfile
      */
     public function edit(&$layout=[])
     {
-        if (!$security = validateSecurity('bizuno', 'profile', 3)) { return; }
-		$rID = getUserCache('profile', 'admin_id', false, 0);
-		$positions = [['id'=>'top', 'text'=>lang('top')], ['id'=>'left', 'text'=>lang('left')]];
-        $locale = localeLoadDB();
-        foreach ($locale->Timezone as $value) { $zones[] = ['id' => $value->Code, 'text'=> $value->Description]; }
-		$title = lang('bizuno_profile');
-		$data = [
-            'pageTitle' => $title,
-			'toolbars'  => ['tbProfile'=>  ['icons'=>  ['save'=>  ['order'=>40,'events'=>  ['onClick'=>"jq('#frmProfile').submit();"]]]]],
-			'forms'     => ['frmProfile'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/profile/save"]]],
-			'divs'      => [
-                'toolbar'=> ['order'=> 5, 'type'=>'toolbar','key' =>'tbProfile'],
-				'heading'=> ['order'=>10, 'type'=>'html',   'html'=>"<h1>$title</h1>\n"],
-				'profile'=> ['order'=>50, 'type'=>'tabs',   'key' =>'tabProfile'],
-				'frmEnd' => ['order'=>90, 'type'=>'html',   'html'=>"</form>\n"],],
-			'tabs'      => ['tabProfile'=>  ['divs'=>  [
-                'general'  => ['order'=>10,'label'=>lang('general'), 'src'=>BIZUNO_LIB."view/module/bizuno/tabProfileBizuno.php"],
-				'reminders'=> ['order'=>50,'label'=>$this->lang['reminders'],'type'=>'html','html'=>'','attr'=>  ["data-options"=>"href:'".BIZUNO_AJAX."&p=bizuno/profile/reminderManager&uID=".getUserCache('profile', 'admin_id', false, 0)."'"]]]]],
-            'javascript'=> ['jsProfile'=>"ajaxForm('frmProfile');"],
-			'fields'    => dbLoadStructure(BIZUNO_DB_PREFIX."users")];
-		$data['divs']['frmProfile'] = ['order'=>10, 'type'=>'html', 'html'=>html5('frmProfile', $data['forms']['frmProfile'])];
-		// merge data with structure
-		$dbData = dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id='$rID'");
-		$settings = json_decode($dbData['settings'], true)['profile'];
+        if (!$security = validateSecurity('bizuno', 'profile', 1)) { return; }
+		$rID     = getUserCache('profile', 'admin_id', false, 0);
+        $struc   = dbLoadStructure(BIZUNO_DB_PREFIX."users");
+		$dbData  = dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id='$rID'");
+		$settings= json_decode($dbData['settings'], true)['profile'];
 		unset($dbData['settings']);
-		dbStructureFill($data['fields'], $dbData);
-		// set some special cases
-		unset($data['fields']['password']['attr']['value']);
-		$data['fields']['gmail'] = ['label'=>$this->lang['gmail_address'],'position'=>'after','attr'=>  ['size'=>50, 'value'=>isset($settings['gmail']) ? $settings['gmail'] : '']];
-		$data['fields']['gzone'] = ['label'=>$this->lang['gmail_zone'],'values'=>$zones,'position'=>'after','attr'=>['type'=>'select','value'=>isset($settings['gzone'] )?$settings['gzone'] : '']];
-		$data['fields']['password']        = ['label'=>$this->lang['password_now'],'attr'=>  ['type'=>'password']];
-		$data['fields']['password_new']    = ['label'=>lang('password_new'),       'attr'=>  ['type'=>'password']];
-		$data['fields']['password_confirm']= ['label'=>lang('password_confirm'),   'attr'=>  ['type'=>'password']];
-		$data['fields']['theme'] = ['label'=>$this->lang['icon_set'],'values'=>viewKeyDropdown(adminThemes()),'position'=>'after','attr'=>['type'=>'select','value'=>isset($settings['theme'] )?$settings['theme'] :'default']];
-		$data['fields']['colors']= ['label'=>lang('style'),   'values'=>viewKeyDropdown(themeColors()),'position'=>'after','attr'=>['type'=>'select','value'=>isset($settings['colors'])?$settings['colors']:'default']];
-		$data['fields']['menu']  = ['label'=>lang('menu_pos'),'values'=>$positions,				       'position'=>'after','attr'=>['type'=>'select','value'=>isset($settings['menu'])  ?$settings['menu']  :'default']];
-		$data['fields']['cols']  = ['label'=>$this->lang['dashboard_columns'],		                   'position'=>'after','attr'=>[                 'value'=>isset($settings['cols'])  ?$settings['cols']  :'3']];
-		$data['settings']        = $settings; // pass for customization
+		dbStructureFill($struc, $dbData);
+		$data = ['title'=>lang('bizuno_profile'),
+			'toolbars' => ['tbProfile' =>['icons'=>['save'=>['order'=>40,'hidden'=>$security<2?true:false,'events'=>['onClick'=>"jq('#frmProfile').submit();"]]]]],
+			'forms'    => ['frmProfile'=>['attr' =>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/profile/save"]]],
+			'divs'     => [
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbProfile'],
+				'formBOF'=> ['order'=>15,'type'=>'form',   'key' =>'frmProfile'],
+				'heading'=> ['order'=>20,'type'=>'html',   'html'=>"<h1>".lang('bizuno_profile')."</h1>"],
+				'body'   => ['order'=>50,'type'=>'tabs',   'key' =>'tabProfile'],
+				'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"]],
+			'tabs'     => ['tabProfile'=>['divs'=>[
+                'general'  => ['order'=>10,'label'=>lang('general'),'type'=>'fields','fields'=>$this->getViewProfile($struc, $settings)],
+				'reminders'=> ['order'=>50,'label'=>$this->lang['reminders'],'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=bizuno/profile/reminderManager&uID=".getUserCache('profile', 'admin_id', false, 0)."'"]]]]],
+            'jsReady'  => ['jsProfile'=>"ajaxForm('frmProfile');"]];
+//"<fieldset><legend>".lang('general')."</legend>".
+//"<fieldset><legend>".'Google Interface'."</legend>".
+//"<fieldset><legend>".lang('password_lost')."</legend>".
+//"<fieldset><legend>".lang('profile')."</legend>";
         $layout = array_replace_recursive($layout, viewMain(), $data);
 	}
+
+    private function getViewProfile($fields, $settings)
+    {
+        $locale = localeLoadDB();
+        foreach ($locale->Timezone as $value) { $zones[] = ['id' => $value->Code, 'text'=> $value->Description]; }
+        $positions = [['id'=>'top','text'=>lang('top')],['id'=>'left','text'=>lang('left')]];
+		unset($fields['password']['attr']['value']);
+        return [
+            'title'           => array_merge($fields['title'], ['order'=>10,'break'=>true]),
+            'email'           => array_merge($fields['email'], ['order'=>15,'break'=>true]),
+            'gmail'           => ['order'=>20,'break'=>true,'label'=>$this->lang['gmail_address'],'position'=>'after','attr'=>['type'=>'email','size'=>50,'value'=>isset($settings['gmail']) ? $settings['gmail'] : '']],
+            'gzone'           => ['order'=>25,'break'=>true,'label'=>$this->lang['gmail_zone'],'options'=>['width'=>500],'values'=>$zones,'position'=>'after','attr'=>['type'=>'select','value'=>isset($settings['gzone'] )?$settings['gzone'] : '']],
+            'password'        => ['order'=>30,'break'=>true,'label'=>$this->lang['password_now'],'attr'=>['type'=>'password']],
+            'password_new'    => ['order'=>35,'break'=>true,'label'=>lang('password_new'),       'attr'=>['type'=>'password']],
+            'password_confirm'=> ['order'=>40,'break'=>true,'label'=>lang('password_confirm'),   'attr'=>['type'=>'password']],
+            'icons'           => ['order'=>45,'break'=>true,'label'=>$this->lang['icon_set'],'values'=>getIcons(), 'attr'=>['type'=>'select','value'=>isset($settings['icons'] )?$settings['icons']:'default']],
+            'theme'           => ['order'=>50,'break'=>true,'label'=>lang('theme'),          'values'=>getThemes(),'attr'=>['type'=>'select','value'=>isset($settings['theme']) ?$settings['theme']:'default']],
+            'menu'            => ['order'=>55,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$positions, 'attr'=>['type'=>'select','value'=>isset($settings['menu'])  ?$settings['menu'] :'default']],
+            'cols'            => ['order'=>60,'break'=>true,'label'=>$this->lang['dashboard_columns'],'attr'=>['value'=>isset($settings['cols'])  ?$settings['cols']  :'3']]];
+    }
 
 	/**
      * Saves users profile
@@ -101,13 +107,13 @@ class bizunoProfile
     public function save(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'profile', 3)) { return; }
-        setUserCache('profile', 'title',  clean('title', 'text',   'post'));
-		setUserCache('profile', 'theme',  clean('theme', 'text',   'post'));
-		setUserCache('profile', 'colors', clean('colors','text',   'post'));
-        setUserCache('profile', 'menu',   clean('menu',  'text',   'post'));
-		setUserCache('profile', 'cols',   clean('cols',  'integer','post'));
-        setUserCache('profile', 'gmail',  clean('gmail', 'text',   'post'));
-        setUserCache('profile', 'gzone',  clean('gzone', 'text',   'post'));
+        setUserCache('profile', 'title', clean('title','text',   'post'));
+		setUserCache('profile', 'icons', clean('icons','text',   'post'));
+		setUserCache('profile', 'theme', clean('theme','text',   'post'));
+        setUserCache('profile', 'menu',  clean('menu', 'text',   'post'));
+		setUserCache('profile', 'cols',  clean('cols', 'integer','post'));
+        setUserCache('profile', 'gmail', clean('gmail','text',   'post'));
+        setUserCache('profile', 'gzone', clean('gzone','text',   'post'));
         $pw_cur= clean('password', 'password', 'post');
 		$email = getUserCache('profile', 'email');
 		if (strlen($pw_cur) > 0 && biz_validate_user_creds($email, $pw_cur)) { // check, see if reset password
@@ -176,22 +182,27 @@ class bizunoProfile
 	{
     	if (!validateSecurity('bizuno', 'profile', 2)) { return; }
         $data = ['type'=>'divHTML',
-			'divs' => [
-                'toolbar'    => ['order'=> 5, 'type'=>'toolbar','key' =>'tbReminder'],
-                'divReminder'=> ['order'=>10,'src'=>BIZUNO_LIB."view/module/bizuno/accProfileReminder.php"]],
-			'toolbars' => ['tbReminder'=>['icons' => [
-                'reminderSave' => ['order'=>10,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"divSubmit('bizuno/profile/reminderSave', 'divReminder');"]]]]],
-			'fields' => [
-				'title'    => ['label'=>lang('title'), 'attr'=>['value'=>'']],
-                'recur'    => ['label'=>$this->lang['frequency'], 'values'=>viewKeyDropdown($this->freqs), 'attr'=>['type'=>'select','value'=>'m']],
-				'dateStart'=> ['label'=>$this->lang['start_date'],'classes'=>['easyui-datebox'], 'attr'=>['value'=>date('Y-m-d')]]],
-            'lang'=>[
-                'reminder_title'=> $this->lang['reminder_edit'],
-                'reminder_desc' => $this->lang['reminder_desc'],]
-            ];
+			'divs'    => [
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbReminder'],
+                'body'   => ['order'=>50,'type'=>'html',   'html'=>$this->getViewReminder()]],
+			'toolbars'=> ['tbReminder'=>['icons'=>[
+                'save' => ['order'=>10,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"divSubmit('bizuno/profile/reminderSave', 'divReminder');"]]]]],
+            'jsReady' => ['init'=>"ajaxForm('frmReminder');"]];
 		$layout = array_replace_recursive($layout, $data);
 	}
 
+    private function getViewReminder()
+    {
+        $title    = ['label'=>lang('title'), 'attr'=>['value'=>'']];
+        $recur    = ['label'=>$this->lang['frequency'], 'values'=>viewKeyDropdown($this->freqs), 'attr'=>['type'=>'select','value'=>'m']];
+        $dateStart= ['label'=>$this->lang['start_date'],'classes'=>['easyui-datebox'], 'attr'=>['value'=>date('Y-m-d')]];
+        return '<div id="divReminder"><fieldset><legend>'.$this->lang['reminder_title'].'</legend>
+    <p>'.$this->lang['reminder_desc'].'</p>
+    <p>'.html5('title',    $title).'</p>
+    <p>'.html5('dateStart',$dateStart).'</p>
+    <p>'.html5('recur',    $recur) .'</p>\n</fieldset></div>';
+    }
+    
 	/**
      * Adds a new reminder to the list, not possible to edit, need to delete and re-save a new reminder
      * @param array $layout - structure coming in typically []
@@ -251,32 +262,23 @@ class bizunoProfile
      */
     public function dgReminder($name, $security=0)
 	{
-		return [
-            'id'  => $name,
-			'rows'=> getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-			'page'=> '1',
-			'attr'=> [
-                'url'     => BIZUNO_AJAX."&p=bizuno/profile/reminderManagerRows&uID=".getUserCache('profile', 'admin_id', false, 0)."",
-                'toolbar' => "#{$name}Toolbar",
-				'pageSize'=> getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField' => 'id'],
-//			'events'   => ['onDblClickRow' => "function(rowIndex, rowData){ accordionEdit('accReminder','dgReminder','divReminderDtl','".jsLang('details')."','bizuno/profile/reminderEdit', 0); }"],
-			'source'   => ['actions'=>['reminderNew'=>['order'=>10,'html'=>['icon'=>'new','events'=>['onClick'=>"accordionEdit('accReminder','dgReminder','divReminderDtl','".jsLang('details')."','bizuno/profile/reminderEdit', 0);"]]]]],
-            'columns'  => [
-                'id'   => ['order'=>0, 'attr'=>['hidden'=>true]],
-                'action' => ['order'=> 1, 'label'=>lang('action'), 'attr'=>  ['width'=>50],
+		$output = ['id'=>$name, 'rows'=>getModuleCache('bizuno', 'settings', 'general', 'max_rows'), 'page'=>'1',
+			'attr'=> ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=bizuno/profile/reminderManagerRows&uID=".getUserCache('profile', 'admin_id', false, 0).""],
+			'source'   => ['actions'=>['reminderNew'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"accordionEdit('accReminder','dgReminder','divReminderDtl','".jsLang('details')."','bizuno/profile/reminderEdit', 0);"]]]],
+            'columns'  => ['id'=>['order'=>0,'attr'=>['hidden'=>true]],
+                'action' => ['order'=> 1, 'label'=>lang('action'),
                     'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
 					'actions'=> [
                         'delete'=> ['icon'=>'trash','size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
-							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/profile/reminderDelete', idTBD);"],
-                            ],
-                        ],
-                    ],
+							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/profile/reminderDelete', idTBD);"]]]],
 				'title'    => ['order'=>10,'label'=>lang('title'),            'attr'=>['width'=>300,'resizable'=>true]],
 				'recur'    => ['order'=>20,'label'=>$this->lang['frequency'], 'attr'=>['width'=>100,'resizable'=>true]],
 				'dateStart'=> ['order'=>30,'label'=>$this->lang['start_date'],'attr'=>['width'=>100,'resizable'=>true]],
-				'dateNext' => ['order'=>50,'label'=>$this->lang['next_date'], 'attr'=>['width'=>100,'resizable'=>true]],
-                ],
-            ];
+				'dateNext' => ['order'=>50,'label'=>$this->lang['next_date'], 'attr'=>['width'=>100,'resizable'=>true]]]];
+        if ($GLOBALS['myDevice'] == 'mobile') {
+            $output['columns']['recur']['attr']['hidden'] = true;
+            $output['columns']['dateStart']['attr']['hidden'] = true;
+        }
+        return $output;
 	}
 }

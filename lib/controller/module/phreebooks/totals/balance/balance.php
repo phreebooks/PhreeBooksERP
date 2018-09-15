@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.0 Last Update: 2017-08-27
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/totals/balance/balance.php
  */
 
@@ -48,21 +48,16 @@ class balance
 
 	public function render(&$output)
     {
-		$this->fields = [
-            'total_balance' => ['label'=>$this->lang['title'],//'classes'=>["easyui-numberbox"], // using numberbox causes errors on edit load
-		    'styles' => ['text-align'=>'right'], 'attr' => ['size'=>'15', 'value'=>0]],
-		  'total_amount' => ['attr'=>  ['type'=>'hidden', 'value'=>0]],
-          ];
 		$output['body'] .= '<div style="text-align:right">'."\n";
-		$output['body'] .= html5('total_balance',$this->fields['total_balance']);
-		$output['body'] .= html5('total_amount', $this->fields['total_amount']);
+		$output['body'] .= html5('total_balance',['label'=>$this->lang['title'],'attr'=>['type'=>'currency','size'=>'15','value'=>0]]);
+		$output['body'] .= html5('total_amount', ['attr'=>['type'=>'hidden','value'=>0]]);
 		$output['body'] .= "</div>\n";
         $output['jsHead'][] = "function totals_balance(begBalance) {
     var newBalance = begBalance;
     if (newBalance == 0) jq('#total_balance').css({color:'#000000'}); else jq('#total_balance').css({color:'#FF0000'});
-    jq('#total_balance').val(formatCurrency(newBalance));
-    var totalDebit = cleanCurrency(jq('#totals_debit' ).val());
-    jq('#total_amount').val(formatCurrency(totalDebit));
+    bizTextSet('total_balance', newBalance, 'currency');
+    var totalDebit = cleanCurrency(bizTextGet('totals_debit'));
+    bizTextSet('total_amount', totalDebit, 'currency');
     return newBalance;
 }";
 	}

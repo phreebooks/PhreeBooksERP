@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-01
+ * @version    3.x Last Update: 2018-08-13
  * @filesource /lib/controller/module/phreebooks/currency.php
  */
 
@@ -63,10 +63,10 @@ class phreebooksCurrency
 		$html  = '<p>'.$this->lang['new_currency_desc']."</p>";
 		$html .= html5('currencyNewISO',['values'=>$codes,'attr'=>['type'=>'select', 'value'=>'USD']]);
 		$html .= html5('iconGO',['icon'=>'next',
-			'events'=>  ['onClick'=>"accordionEdit('accCurrency','dgCurrency','accCurrencyDtl','".lang('details')."','phreebooks/currency/edit&iso='+jq('#currencyNewISO').val()); jq('#winNewCur').window('close');"]]);
-		$layout = array_replace_recursive($layout, [
-            'divs'   => ['winNewCur' => ['order'=>50, 'type'=>'html', 'html'=>$html]],
-			'content'=> ['action'=>'window','width'=>400,'height'=>200,'id'=>'winNewCur','title'=>$this->lang['new_currency']]]);
+			'events'=>  ['onClick'=>"accordionEdit('accCurrency','dgCurrency','accCurrencyDtl','".lang('details')."','phreebooks/currency/edit&iso='+jq('#currencyNewISO').val()); bizWindowClose('winNewCur');"]]);
+		$data = ['type'=>'popup','title'=>$this->lang['new_currency'],'attr'=>['id'=>'winNewCur','width'=>400,'height'=>200],
+            'divs' => ['body'=>['order'=>50,'type'=>'html','html'=>$html]]];
+        $layout = array_replace_recursive($layout, $data);
 	}
 
 	/**
@@ -82,26 +82,50 @@ class phreebooksCurrency
 		$values = getModuleCache('phreebooks', 'currency', 'iso', $iso, $this->currencySettings($iso));
         if ($iso == getUserCache('profile', 'currency')) { $values['value'] = 1; }
 		$data = ['type'=>'divHTML',
-			'divs'     => ['divCurrencyDetail'=>  ['order'=>10,'src'=>BIZUNO_LIB."view/module/phreebooks/divCurrencyDtl.php"]],
+			'divs'     => [
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbCurrency'],
+                'formBOF'=> ['order'=>15,'type'=>'form',   'key'=>'frmCurrency'],
+                'body'   => ['order'=>50,'type'=>'fields', 'fields'=>$this->getViewCurrency($values)],
+                'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"],
+                ],
 			'toolbars' => ['tbCurrency'=>  ['icons' => [
                 "currencySave" => ['order'=>10,'icon'=>'save','label'=>lang('save'),
 					'events'=>  ['onClick'=>"jq('body').addClass('loading'); jq('#frmCurrency').submit();"]]]]],
 			'forms'    => ['frmCurrency'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/save"]]],
-			'fields'   => [
-                'is_def' => ['label'=>lang('default'),  'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getUserCache('profile', 'currency', false, 'USD')==$iso?true:false]],
-				'code'   => ['label'=>lang('code'),     'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']],
-                'xrate'  => ['label'=>lang('exc_rate'), 'attr'=>['value'=>$values['value']]],
-				'title'  => ['label'=>lang('title'),    'attr'=>['value'=>$values['title']]],
-				'prefix' => ['label'=>lang('prefix'),   'attr'=>['value'=>$values['prefix']]],
-				'suffix' => ['label'=>lang('suffix'),   'attr'=>['value'=>$values['suffix']]],
-				'dec_pt' => ['label'=>$this->lang['dec_point'], 'attr'=>['value'=>$values['dec_pt']]],
-				'sep'    => ['label'=>lang('separator'),'attr'=>['value'=>$values['sep']]],
-				'dec_len'=> ['label'=>$this->lang['dec_length'],'attr'=>['value'=>$values['dec_len']]],
-				'pfxneg' => ['label'=>$this->lang['neg_prefix'],'attr'=>['value'=>isset($values['pfxneg']) ? $values['pfxneg'] : '-']],
-				'sfxneg' => ['label'=>$this->lang['neg_suffix'],'attr'=>['value'=>isset($values['sfxneg']) ? $values['sfxneg'] : '']]]];
+            'jsReady'  => ['jsReady'=>"ajaxForm('frmCurrency');"]];
 		$layout = array_replace_recursive($layout, $data);
 	}
 
+ //   htmlToolbar($output, $viewData, 'tbCurrency');
+//$output['body'] .= html5('frmCurrency', $viewData['forms']['frmCurrency'])."
+    
+    private function getViewCurrency($values)
+    {
+        $title  = ['label'=>lang('title'),   'attr'=>['value'=>$values['title']]];
+        $code   = ['label'=>lang('code'),    'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']];
+        $is_def = ['label'=>lang('default'), 'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getUserCache('profile', 'currency', false, 'USD')==$iso?true:false]];
+        $xrate  = ['label'=>lang('exc_rate'),'attr'=>['value'=>$values['value']]];
+        $dec_len= ['label'=>$this->lang['dec_length'],'attr'=>['value'=>$values['dec_len']]];
+        $dec_pt = ['label'=>$this->lang['dec_point'], 'attr'=>['value'=>$values['dec_pt']]];
+        $sep    = ['label'=>lang('separator'),'attr'=>['value'=>$values['sep']]];
+        $prefix = ['label'=>lang('prefix'),  'attr'=>['value'=>$values['prefix']]];
+        $suffix = ['label'=>lang('suffix'),  'attr'=>['value'=>$values['suffix']]];
+        $pfxneg = ['label'=>$this->lang['neg_prefix'],'attr'=>['value'=>isset($values['pfxneg']) ? $values['pfxneg'] : '-']];
+        $sfxneg = ['label'=>$this->lang['neg_suffix'],'attr'=>['value'=>isset($values['sfxneg']) ? $values['sfxneg'] : '']];
+        return [
+            'title'  => array_merge($title,  ['col'=>1,'break'=>true]),
+            'code'   => array_merge($code,   ['col'=>1,'break'=>true]),
+            'is_def' => array_merge($is_def, ['col'=>1,'break'=>true]),
+            'xrate'  => array_merge($xrate,  ['col'=>1,'break'=>true]),
+            'dec_len'=> array_merge($dec_len,['col'=>2,'break'=>true]),
+            'dec_pt' => array_merge($dec_pt, ['col'=>2,'break'=>true]),
+            'sep'    => array_merge($sep,    ['col'=>2,'break'=>true]),
+            'prefix' => array_merge($prefix, ['col'=>3,'break'=>true]),
+            'suffix' => array_merge($suffix, ['col'=>3,'break'=>true]),
+            'pfxneg' => array_merge($pfxneg, ['col'=>3,'break'=>true]),
+            'sfxneg' => array_merge($sfxneg, ['col'=>3,'break'=>true])];
+    }
+    
 	/**
      * Structure for saving user edits to a currency
      * @param array $layout - Structure coming in
@@ -244,18 +268,14 @@ class phreebooksCurrency
     public function dgCurrency($name, $security=0)
 	{
 		return ['id' => $name,
-			'attr'   => [
-                'toolbar'      => "#{$name}Toolbar",
-				'singleSelect' => true],
-			'events' => [
-                'data'         => "dataCurrency",
+			'attr'   => ['toolbar'=>"#{$name}Toolbar",'singleSelect'=>true],
+			'events' => ['data'=> "dataCurrency",
 				'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accCurrency', 'dgCurrency', 'accCurrencyDtl', '".lang('details')."', 'phreebooks/currency/edit&iso='+rowData.code); }",
 				'onClickRow'   => "function(rowIndex, rowData) { selectedCurrency = rowData.code; }",
 				'rowStyler'    => "function(index, row) { if (row.code=='".getUserCache('profile', 'currency', false, 'USD')."') { return {class:'row-default'}; }}"],
-			'source' => ['actions'=>['currencyNew'=>['order'=>10,'html'=>['icon'=>'new',
-                'events'=>['onClick'=>"jsonAction('phreebooks/currency/add');"]]]]],
+			'source' => ['actions'=>['currencyNew'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"jsonAction('phreebooks/currency/add');"]]]],
 			'columns'=> [
-                'action' => ['order'=> 1, 'label'=>lang('action'), 'attr'=>  ['width'=>50],
+                'action' => ['order'=> 1, 'label'=>lang('action'),
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> ['delete'=>['icon'=>'trash','size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
 						'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/currency/delete', indexTBD, jq('#$name').datagrid('getRows')[indexTBD]['code']);"]]]],

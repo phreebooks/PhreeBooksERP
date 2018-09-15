@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-14
+ * @version    3.x Last Update: 2018-09-12
  * @filesource /portal/main.php
  */
 
@@ -46,6 +46,8 @@ class main //extends controller
         $msgStack = new messageStack();
         $cleaner  = new cleaner();
         $html5    = new html5();
+        $GLOBALS['myDevice'] = detectDevice(); // 'desktop' or 'mobile';
+//      $GLOBALS['myDevice'] = 'mobile'; // for testing mobile behavior on desktop devices
         $this->initDB();
         $this->validateUser();
         $this->validateBusiness();
@@ -63,7 +65,15 @@ class main //extends controller
         return $this->layout;
     }
 
-    private function validateUser($bizUser='', $bizPass='')
+    private function initDB()
+    {
+        global $db;
+        msgDebug("\nEntering initDB"); // with dbCreds = ".print_r($GLOBALS['dbBizuno'], true));
+        $db = new db($GLOBALS['dbBizuno']);
+        msgDebug(" ... after db connection connected = ".($db->connected?'true':'false'));
+    }
+
+    private function validateUser($userID='', $userPW='')
     {
         global $bizunoUser, $bizunoLang;
         $bizunoUser = $this->setGuestCache();
@@ -73,8 +83,8 @@ class main //extends controller
         msgDebug("\nEntering validateUser with session = ".print_r($session, true)." and lang = ".$bizunoUser['profile']['language']);
         if ($session && constant('BIZUNO_DB_NAME') !== '') { $this->setSession($session); }
         else { // not logged in, try to log in
-            if (!$email= clean('UserID',['format'=>'email','default'=>$bizUser], 'post')) { return; }
-            if (!$pass = clean('UserPW',['format'=>'text', 'default'=>$bizPass], 'post')) { return; }
+            if (!$email= clean('UserID',['format'=>'email','default'=>$userID], 'post')) { return; }
+            if (!$pass = clean('UserPW',['format'=>'text', 'default'=>$userPW], 'post')) { return; }
             if (!biz_validate_user_creds($email, $pass)) { return; }
             $bizunoUser['profile']['email'] = $email;
             $cookie = "[\"{$bizunoUser['profile']['email']}\",0,".time()."]";
@@ -103,11 +113,7 @@ class main //extends controller
         global $bizunoUser;
         msgDebug("\nEntering validateBusiness with biz_id = ".getUserCache('profile', 'biz_id'));
         if (getUserCache('profile', 'biz_id')) { return true; } // logged in and business selected
-        if (constant('BIZUNO_DB_NAME')=='') { // logged in but bizuno DBs have not been installed
-            $GLOBALS['bizuno_install_admin_id']= 1; // set flags used when requesting to install
-            $GLOBALS['bizuno_install_biz_id']  = 1;
-            $bizunoUser['dashboards']['login']['dashboard_id'] = 'install'; // replace the login dashboard with the install dashboard
-        }
+        if (constant('BIZUNO_DB_NAME')=='') { $this->setInstallView(); } // logged in but configure.php file is not set, install
         if (!$email = getUserCache('profile', 'email')) { return; } // not logged in
         setUserCache('profile', 'biz_id', 1);
         portalWrite('users', ['last_login'=>date('Y-m-d h:i:s')], 'update', "biz_user='$email'");
@@ -141,7 +147,7 @@ class main //extends controller
             }
             $bizunoLang = $this->loadBaseLang(getUserCache('profile', 'language')); // load the environment language file, includes module add-ons
             setlocale(LC_ALL, getUserCache('profile', 'language').'.UTF-8');
-        }
+        } elseif (!dbTableExists(BIZUNO_DB_PREFIX.'users')) { $this->setInstallView(); }
         $currencies = new currency();
     }
     
@@ -194,26 +200,10 @@ class main //extends controller
     private function sessionExpired($usrData)
     {
         $cache_date = substr($usrData['cache_date'], 0, 10);
-        if ($cache_date == '0000-00-00 00:00:00') { return true; } // not logged in
+        if ($cache_date == '') { return true; } // not logged in
         // check for stale cache
         $yesterday = localeCalculateDate(date('Y-m-d'), -1);
         if ($cache_date < $yesterday) { return true; }
-        // check cache date and erase if expired
-/*      $bizSess = getModuleCache('bizuno', 'settings', 'general', 'session_max', 0);
-        $expDate = getUserCache('profile', 'cache_date', false, time());
-        $timeout = 60 * min(300, max(5, $bizSess));
-        if ($bizSess && (time() - $expDate > $timeout)) { // session timeout
-            biz_user_logout();
-            return false;
-        }*/
-    }
-
-    private function initDB()
-    {
-        global $db;
-        msgDebug("\nEntering initDB"); // with dbCreds = ".print_r($GLOBALS['dbBizuno'], true));
-        $db = new db($GLOBALS['dbBizuno']);
-        msgDebug(" ... after db connection connected = ".($db->connected?'true':'false'));
     }
 
     private function reloadCache($usrEmail)
@@ -265,5 +255,13 @@ class main //extends controller
         if (clean('lost',   'cmd','get')=='true') { $settings['dashboards']['login']['dashboard_id'] = 'reset_password'; }
         if (clean('newuser','cmd','get')=='true') { $settings['dashboards']['login']['dashboard_id'] = 'new_user'; }
         return $settings;
+    }
+    
+    private function setInstallView()
+    {
+        global $bizunoUser;
+        $GLOBALS['bizuno_install_admin_id']= 1; // set flags used when requesting to install
+        $GLOBALS['bizuno_install_biz_id']  = 1;
+        $bizunoUser['dashboards']['login']['dashboard_id'] = 'install'; // replace the login dashboard with the install dashboard
     }
 }

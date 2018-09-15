@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-28
+ * @version    3.x Last Update: 2018-06-28
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -139,7 +139,7 @@ class bizunoSettings
         $bizID   = getUserCache('profile', 'biz_id');
         $bizUser = getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_user');
         $bizPass = getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_pass');
-        $data    = http_build_query(['bizID'=>$bizID, 'bizUser'=>$bizUser, 'bizPass'=>$bizPass]);
+        $data    = http_build_query(['bizID'=>$bizID, 'UserID'=>$bizUser, 'UserPW'=>$bizPass]);
         $context = stream_context_create(['http'=>[
             'method' =>'POST',
             'header' => "Content-type: application/x-www-form-urlencoded\r\n"."Content-Length: ".strlen($data)."\r\n",

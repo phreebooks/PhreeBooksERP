@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-19
+ * @version    3.x Last Update: 2018-09-11
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -53,15 +53,14 @@ class inventoryPrices
         if     (!$mod && $this->type == 'c') { $submenu = viewSubMenu('customers'); }
         elseif (!$mod && $this->type == 'v') { $submenu = viewSubMenu('vendors'); }
         else   { $submenu = ''; } 
-		$data = [
-            'pageTitle'=> $title,
+		$data = ['type'=>'page','title'=>$title,
 			'divs'     => [
                 'submenu'=> ['order'=>10,'type'=>'html','html'=>$submenu],
                 'prices' => ['order'=>50,'type'=>'accordion','key'=>'accPrices']],
-			'accordion'=> ['accPrices' => ['divs' => [
-                'divPricesMgr' => ['order'=>30,'label'=>$title,'type'=>'datagrid','key'=>'dgPricesMgr'],
-				'divPricesSet' => ['order'=>50,'label'=>lang('settings'),'type'=>'html',    'html'=>"<p>".$this->lang['msg_no_price_sheets']."</p>"]]]],
-			'datagrid' =>  ['dgPricesMgr' => $this->dgPrices('dgPricesMgr', $this->type, $security, $mID, $cID, $iID, $mod)]];
+			'accordion'=> ['accPrices'=>['divs'=>[
+                'divPricesMgr' =>['order'=>30,'label'=>$title,'type'=>'datagrid','key'=>'dgPricesMgr'],
+				'divPricesSet' =>['order'=>50,'label'=>lang('settings'),'type'=>'html',    'html'=>"<p>".$this->lang['msg_no_price_sheets']."</p>"]]]],
+			'datagrid' => ['dgPricesMgr' => $this->dgPrices('dgPricesMgr', $this->type, $security, $mID, $cID, $iID, $mod)]];
         if ($mod) { // if mod then in a tab of some sort
             $data['type'] = 'divHTML'; // just the div html
             $layout = array_replace_recursive($layout, $data);
@@ -114,15 +113,8 @@ class inventoryPrices
 	private function dgPrices($name, $type='c', $security=0, $mID='', $cID=0, $iID=0, $mod='')
     {
 		$this->managerSettings();
-        $data = [
-            'id'     => $name,
-			'rows'   => $this->defaults['rows'],
-			'page'   => $this->defaults['page'],
-			'attr'   => [
-                'url'     => BIZUNO_AJAX."&p=inventory/prices/managerRows&type=$type".($mID?"&mID=$mID":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":''),
-				'toolbar' => '#'.$name.'Toolbar',
-				'pageSize'=> getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField' => 'id'],
+        $data = ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
+			'attr'   => ['toolbar'=>"#{$name}Toolbar",'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=inventory/prices/managerRows&type=$type".($mID?"&mID=$mID":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":'')],
 			'events' => [
                 'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$type".($mod?"&mod=$mod":'')."',rowData.id); }",
 				'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; } if (row.default==1) { return {class:'row-default'}; } }"],
@@ -132,26 +124,22 @@ class inventoryPrices
                     'inventory'=> ['table'=>BIZUNO_DB_PREFIX."inventory",'join'=>'JOIN','links'=>BIZUNO_DB_PREFIX."inventory_prices.inventory_id=".BIZUNO_DB_PREFIX."inventory.id"]],
 				'search' => ['settings', 'method', 'sku', 'description_short', 'description_purchase', 'description_sales'],
 				'actions'=> [
-                    'newPrices'=> ['order'=>10,'html'=>['icon'=>'new',  'events'=>['onClick'=>"windowEdit('inventory/prices/add&type=$type".($mod?"&mod=$mod":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":'')."','winNewPrice','".jsLang('inventory_prices_method')."',400,200);"]]],
-					'clrPrices'=> ['order'=>50,'html'=>['icon'=>'clear','events'=>['onClick'=>"jq('#searchPrice').val(''); ".$name."Reload();"]]]],
+                    'newPrices'=> ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"windowEdit('inventory/prices/add&type=$type".($mod?"&mod=$mod":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":'')."','winNewPrice','".jsLang('inventory_prices_method')."',400,200);"]],
+					'clrPrices'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#searchPrice').val(''); ".$name."Reload();"]]],
 				'filters'=> [
                     'search'   => ['order'=>90,'html'  =>['attr'=>['id'=>'searchPrice','value'=>$this->defaults['search']]]],
 					'typePrice'=> ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."inventory_prices.contact_type='$type'"]],
-				'sort' => ['s0' => ['order'=>10,'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
+				'sort' => ['s0' =>['order'=>10,'field' =>($this->defaults['sort'].' '.$this->defaults['order'])]]],
 			'footnotes'=> ['codes'=>lang('color_codes').': <span class="row-default">'.lang('default').'</span>'],
 			'columns'  => [
-                'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.id',      'attr'=>['hidden'=>true]],
-				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inactive','attr'=>['hidden'=>true]],
-				'default' => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.settings','attr'=>['hidden'=>true], 'format'=>'setng:default'],
-				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>50],
-					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'id'      => ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.id',      'attr'=>['hidden'=>true]],
+				'inactive'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inactive','attr'=>['hidden'=>true]],
+				'default' => ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.settings','attr'=>['hidden'=>true], 'format'=>'setng:default'],
+				'action'  => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> [
-                        'edit' => ['icon'=>'edit',  'size'=>'small', 'order'=>30, 'hidden'=>$security>2?false:true,
-							'events'=> ['onClick' => "accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$type',idTBD);"]],
-						'copy' => ['icon'=>'copy',  'size'=>'small', 'order'=>30, 'hidden'=>$security>1?false:true,
-							'events'=> ['onClick'=>"var title=prompt('".lang('msg_entry_copy')."'); if (title!=null) jsonAction('inventory/prices/copy', idTBD, title);"]],
-						'trash'=> ['icon'=>'trash', 'size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
-							'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/prices/delete', idTBD);"]]]],
+                        'edit' => ['order'=>30,'icon'=>'edit', 'hidden'=>$security>2?false:true,'events'=>['onClick'=>"accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$type',idTBD);"]],
+						'copy' => ['order'=>30,'icon'=>'copy', 'hidden'=>$security>1?false:true,'events'=>['onClick'=>"var title=prompt('".lang('msg_entry_copy')."'); if (title!=null) jsonAction('inventory/prices/copy', idTBD, title);"]],
+						'trash'=> ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/prices/delete', idTBD);"]]]],
 				'title'      => ['order'=>10, 'field'=>'settings:title',   'label'=>lang('title'),
 					'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
 				'method'     => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.method',     'label'=>lang('method'),
@@ -159,9 +147,9 @@ class inventoryPrices
 				'ref_id'     => ['order'=>30, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.ref_id',     'label'=>lang('reference'),'format'=>'dbVal;'.BIZUNO_DB_PREFIX.'inventory_prices;settings:title;id',
 					'attr'=>  ['width'=>80, 'sortable'=>true, 'resizable'=>true]],
 				'contact_id' => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.contact_id', 'label'=>lang('address_book_primary_name'),'format'=>'contactName',
-					'attr'=>  ['width'=>175, 'sortable'=>true, 'resizable'=>true]],
+					'attr'=>  ['sortable'=>true, 'resizable'=>true]],
 				'inventory_id'=> ['order'=>50, 'field'=>BIZUNO_DB_PREFIX.'inventory.description_short','label'=>lang('description'),
-					'attr'=>  ['width'=>175, 'sortable'=>true, 'resizable'=>true]],
+					'attr'=>  ['sortable'=>true, 'resizable'=>true]],
 				'currency'   => ['order'=>60, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.currency',   'label'=>lang('currency'),
 					'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
 				'last_update'=> ['order'=>70, 'field'=>'settings:last_update',   'label'=>lang('last_update'),'format'=>'date',
@@ -195,6 +183,14 @@ class inventoryPrices
             $data['columns']['inventory_id']['field'] = BIZUNO_DB_PREFIX.'inventory_prices.inventory_id';
             $data['columns']['inventory_id']['format']= 'dbVal;inventory;description_short;id';
         }
+        if (in_array($GLOBALS['myDevice'], ['mobile','tablet'])) {
+            $data['columns']['title']['attr']['hidden'] = true;
+            $data['columns']['method']['attr']['hidden'] = true;
+            $data['columns']['ref_id']['attr']['hidden'] = true;
+            $data['columns']['currency']['attr']['hidden'] = true;
+            $data['columns']['last_update']['attr']['hidden'] = true;
+        }
+
 		return $data;
 	}
 
@@ -223,7 +219,7 @@ class inventoryPrices
             }
             $html  = '<p>'.lang('desc_new_price_sheets')."</p>";
             $html .= html5('methodID',['values'=>$meths,'attr'=>['type'=>'select']]);
-            $html .= html5('iconGO',  ['icon'=>'next','events'=>['onClick'=>"accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$this->type&mod=$mod&mID='+jq('#methodID').val(),0); jq('#winNewPrice').window('close');"]]);
+            $html .= html5('iconGO',  ['icon'=>'next','events'=>['onClick'=>"accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$this->type&mod=$mod&mID='+jq('#methodID').val(),0); bizWindowClose('winNewPrice');"]]);
         }
 		$layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['winNewPrice'=>['order'=>50,'type'=>'html','html'=>$html]]]);
 	}
@@ -257,17 +253,19 @@ class inventoryPrices
                 'qtyAdj' => $this->qtyAdj,
                 'qtyRnd' => $this->qtyRnd]];
         unset($data['fields']['settings']);
-        $data['fields']['contact_id']['label'] = lang('contacts_short_name');
-        $data['fields']['ref_id']['label'] = $this->lang['price_sheet_to_override'];
-        $data['fields']['ref_id']['attr']['type'] = 'select';
-        $data['fields']['ref_id']['values'] = $this->quantityList();
-        $data['fields']['inventory_id']['label'] = lang('sku');
+        $data['fields']['contact_id']['label']         = lang('contacts_short_name');
+        $data['fields']['contact_id']['attr']['type']  = 'hidden';
+        $data['fields']['ref_id']['label']             = $this->lang['price_sheet_to_override'];
+        $data['fields']['ref_id']['values']            = $this->quantityList();
+        $data['fields']['ref_id']['attr']['type']      = 'hidden';
+        $data['fields']['inventory_id']['label']       = lang('sku');
+        $data['fields']['inventory_id']['attr']['type']= 'hidden';
 		if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
-			$data['fields']['currency']['attr']['type'] = 'select';
+			$data['fields']['currency']['attr']['type']= 'select';
 			$data['fields']['currency']['values'] = viewDropdown(getModuleCache('phreebooks', 'currency', 'iso'), "code", "title");
 			unset($data['fields']['currency']['attr']['size']);
 		} else {
-			$data['fields']['currency']['attr']['type'] = 'hidden';
+			$data['fields']['currency']['attr']['type']= 'hidden';
 		}
 		dbStructureFill($data['fields'], $row);
 		require_once(getModuleCache('inventory', 'prices')[$mID]['path']."$mID.php");
@@ -356,8 +354,8 @@ class inventoryPrices
     public function details(&$layout=[])
     {
         if (!$security = validateSecurity('inventory', 'inv_mgr', 1)) { return; }
-		$sku = clean('sku',       'text',   'get');
-		$rID = clean('rID',       'integer','get');
+		$sku = clean('sku', 'text',   'get');
+		$rID = clean('rID', 'integer','get');
         if     ($rID) { $inv = dbGetRow(BIZUNO_DB_PREFIX."inventory", "id=$rID"); }
         elseif ($sku) { $inv = dbGetRow(BIZUNO_DB_PREFIX."inventory", "sku='$sku'"); }
         else   { return msgAdd("Bad SKU sent!"); }
@@ -365,17 +363,35 @@ class inventoryPrices
         $full= clean('fullPrice',['format'=>'float','default'=>0],'get');
         if (!$cost) { $cost = $inv['item_cost']; }
         if (!$full) { $full = $inv['full_price']; }
-		$this->quote($layout, $cost, $full);
-		$data = [
-            'divs'   => ['winStatus'=> ['order'=>50, 'src'=>BIZUNO_LIB."view/module/inventory/winPrices.php"]],
-			'values' => [
-                'price' => isset($layout['content']['price']) ? $layout['content']['price'] : 0,
-				'cost'  => $cost,
-				'full'  => $full,
-				'sheets'=> isset($layout['content']['sheets']) ? $layout['content']['sheets'] : []],
-			'content' => ['action'=>'window','id'=>'winPrices','title'=>lang('inventory_prices',$this->type),'width'=>275]];
+        $prices = [];
+		$this->quote($prices, $cost, $full);
+		$data = ['type'=>'popup', 'title'=>lang('inventory_prices', $this->type), 'attr'=>['id'=>'winPrices','width'=>275, 'height'=>600],
+            'divs' => ['winStatus'=>['order'=>50,'type'=>'html','html'=>$this->getViewPrices($prices['content'], $cost, $full)]]];
 		$layout = array_replace_recursive($layout, $data);
 	}
+
+    private function getViewPrices($prices=[], $cost=0, $full=0)
+    {
+        msgDebug("\nprices = ".print_r($prices, true));
+        $output = '<table style="border-collapse:collapse;"><thead class="panel-header"><tr><th colspan="2">'.lang('general').'</th></tr></thead><tbody>
+    <tr class="panel-header"><td style="width:125px;">'.lang('qty').'</td><td style="width:125px;">'.lang('price').'</td></tr>
+    <tr><td style="width:125px;">'.lang('price').'</td><td style="width:125px;">'.viewFormat($prices['price'], 'currency').'</td></tr>
+    <tr><td style="width:125px;">'.lang('inventory_full_price').'</td><td style="width:125px;">'.viewFormat($full, 'currency').'</td></tr>';
+        if (validateSecurity('phreebooks', 'j6_mgr', 1, false)) {
+            $output .= '<tr><td style="width:125px;">'.lang('inventory_item_cost').'</td><td style="width:125px;">'.viewFormat($cost, 'currency').'</td></tr>';
+        }
+        $output .= "</tbody></table>\n";
+        if (empty($prices['sheets'])) { return $output; }
+        $output .= '<table style="border-collapse:collapse;"><thead class="panel-header"><tr><th colspan="2">'.lang('inventory_prices')."</th></tr></thead><tbody>\n";
+        foreach ($prices['sheets'] as $level) {
+            $output .= '<tr class="panel-header"><td colspan="2" style="text-align:center;">'.$level['title']."</td></tr>\n";
+            $output .= '<tr class="panel-header"><td style="width:125px;">'.lang('qty').'</td><td style="width:125px;">'.lang('price')."</td></tr>\n";
+            foreach ($level['levels'] as $entry) { 
+                $output .= '<tr><td style="width:125px;">'.$entry['qty'].'</td><td style="width:125px;">'.viewFormat($entry['price'], 'currency')."</td></tr>\n";
+            }
+        }
+        return $output."</tbody></table>";
+    }
 
 	/**
      * Retrieves the best price for a given customer/sku using available price sheets
@@ -548,41 +564,34 @@ class inventoryPrices
      * @param string $name - DOM field name
      * @return array - datagrid structure
      */
-    protected function datagridQuantity($name) {
-		return [
-            'id'   => $name,
-			'type' => 'edatagrid',
-			'attr' => [
-                'toolbar'   => '#'.$name.'Toolbar',
-				'rownumbers'=> true],
-			'events' => [
-                'data'         => $name.'Data',
+    protected function dgQuantity($name) {
+		return ['id' => $name, 'type'=>'edatagrid',
+			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true],
+			'events' => ['data'=> $name.'Data',
 				'onLoadSuccess'=> "function(row) { var rows=jq('#$name').edatagrid('getData'); if (rows.total == 0) jq('#$name').edatagrid('addRow'); }",
 				'onClickRow'   => "function(rowIndex) { jq('#$name').edatagrid('editRow', rowIndex); }"],
-			'source' => ['actions'=>['new'=>['order'=>10,'html'=>['icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]]],
+			'source' => ['actions'=>['new'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
 			'columns'=> [
-                'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>['width'=>80],
-					'actions'=> ['trash'=>  ['icon'=>'trash','order'=>20,'size'=>'small','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]],
+                'action'  => ['order'=> 1,'label'=>lang('action'), 'attr'=>['width'=>80],
+					'actions'=> ['trash'=>  ['icon'=>'trash','order'=>20,'events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]],
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"]],
-				'qty'     => ['order'=>10, 'label'=>lang('qty'), 'attr'=>['width'=>80, 'align'=>'right'],
+				'qty'     => ['order'=>10,'label'=>lang('qty'), 'attr'=>['width'=>80, 'align'=>'right'],
 					'events'=>  ['editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
-				'source'  => ['order'=>20, 'label'=>lang('source'), 'attr'=>['width'=>150, 'sortable'=>true, 'resizable'=>true, 'align'=>'center'],
+				'source'  => ['order'=>20,'label'=>lang('source'), 'attr'=>['width'=>150, 'sortable'=>true, 'resizable'=>true, 'align'=>'center'],
 					'events' => ['formatter'=>"function(value){ return getTextValue(qtySource, value); }",
 						'editor'=>"{type:'combobox',options:{valueField:'id',textField:'text',data:qtySource,value:'1'}}"]],
-				'adjType' => ['order'=>30, 'label'=>lang('adjustment'),'attr' =>['width'=>150],
+				'adjType' => ['order'=>30,'label'=>lang('adjustment'),'attr' =>['width'=>150],
 					'events' => ['formatter'=>"function(value){ return getTextValue(qtyAdj, value); }",
 						'editor'=>"{type:'combobox',options:{valueField:'id',textField:'text',data:qtyAdj}}"]],
-				'adjValue'=> ['order'=>40, 'label'=>$this->lang['adj_value'], 'attr'=>['width'=>100, 'align'=>'center', 'size'=>'10'],
+				'adjValue'=> ['order'=>40,'label'=>$this->lang['adj_value'], 'attr'=>['width'=>100, 'align'=>'center', 'size'=>'10'],
 					'events' => ['editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
-				'rndType' => ['order'=>50, 'label'=>lang('rounding'),'attr' =>['width'=>150],
-					'events' => ['formatter'=>"function(value){ return getTextValue(qtyRnd, value); }",
-						'editor'=>"{type:'combobox',options:{valueField:'id',textField:'text',data:qtyRnd}}"]],
-				'rndValue'=> ['order'=>60, 'label'=>$this->lang['rnd_value'], 'attr'=>['width'=>100, 'align'=>'center', 'size'=>'10'],
+				'rndType' => ['order'=>50,'label'=>lang('rounding'),'attr' =>['width'=>150],
+					'events' => ['formatter'=>"function(value){ return getTextValue(qtyRnd, value); }",'editor'=>"{type:'combobox',options:{valueField:'id',textField:'text',data:qtyRnd}}"]],
+				'rndValue'=> ['order'=>60,'label'=>$this->lang['rnd_value'], 'attr'=>['width'=>100, 'align'=>'center', 'size'=>'10'],
 					'events' => ['editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
-				'price'   => ['order'=>70, 'label'=>lang('price'), 'attr'=>['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10'],
-					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }",
-						'editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
-				'margin'  => ['order'=>80, 'label'=>lang('margin'),'attr'=>['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10']]]];
+				'price'   => ['order'=>70,'label'=>lang('price'), 'attr'=>['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10'],
+					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }",'editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
+				'margin'  => ['order'=>80,'label'=>lang('margin'),'attr'=>['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10']]]];
 	}
     
     /**

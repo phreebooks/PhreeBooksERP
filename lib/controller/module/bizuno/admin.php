@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-14
+ * @version    3.x Last Update: 2018-09-06
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -39,20 +39,19 @@ class bizunoAdmin
 			'required'       => '1',
 			'usersAttachPath'=> 'data/bizuno/users/uploads',
 			'quickBar'       => ['styles'=>['float'=>'right','padding'=>'1px'],'child'=>[
-				'sysMsg'     => ['order'=>20,'label'=>lang('messages'),'icon'=>'email','classes'=>['msgCount'],'required'=>true,'hideLabel'=>true,
-                    'attr'=>['id'=>'sysMsg'],'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
+				'sysMsg'     => ['order'=>20,'label'=>lang('messages'),'icon'=>'email','classes'=>['msgCount'],'required'=>true,'hideLabel'=>true,'attr'=>['id'=>'sysMsg'],'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
 				'encrypt'    => ['order'=>60,'label'=>lang('bizuno_encrypt_enable'),'icon'=>'encrypt-off','required'=>true,'hideLabel'=>true,'attr'=>['id'=>'ql_encrypt'],
                     'events' => ['onClick'=>"windowEdit('bizuno/main/encryptionForm','winEncrypt','".jsLang('bizuno_encrypt_enable')."',400,150)"]],
 				'newTab'     => ['order'=>95,'label'=>lang('new_tab'), 'icon'=>'add','required'=>true,'hideLabel'=>true,'events'=>['onClick'=>"tabOpen('', '');"]],
                 'home'       => ['order'=>90,'label'=>lang('bizuno_company'),'icon'=>'employee','events'=>['onClick'=>"hrefClick('');"],'child'=>[
                     'admin'  => ['order'=>10,'label'=>lang('settings'),'icon'=>'settings','events'=>['onClick'=>"hrefClick('bizuno/settings/manager');"]],
-                    'profile'=> ['order'=>20,'label'=>lang('profile'), 'icon'=>'profile','events'=>['onClick'=>"hrefClick('bizuno/profile/edit');"]],
-                    'roles'  => ['order'=>30,'label'=>lang('roles'),   'icon'=>'roles',  'events'=>['onClick'=>"hrefClick('bizuno/roles/manager');"]],
-                    'users'  => ['order'=>40,'label'=>lang('users'),   'icon'=>'users',  'events'=>['onClick'=>"hrefClick('bizuno/users/manager');"]],
-                    'help'   => ['order'=>50,'label'=>lang('help'),    'icon'=>'help',   'required'=>true,'events'=>['onClick'=>"winHref('bizuno_help', 'https://www.bizuno.com?p=bizuno/portal/helpMain')"]],
-                    'message'=> ['order'=>60,'label'=>lang('messages'),'icon'=>'email',  'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
-                    'ticket' => ['order'=>70,'label'=>lang('support'), 'icon'=>'support','required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/tools/ticketMain');"],'hidden'=>defined('BIZUNO_SUPPORT_EMAIL')?false:true],
-                    'logout' => ['order'=>90,'label'=>lang('logout'),  'icon'=>'logout', 'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/portal/logout');"]]]]]],
+                    'profile'=> ['order'=>20,'label'=>lang('profile'), 'icon'=>'profile', 'events'=>['onClick'=>"hrefClick('bizuno/profile/edit');"]],
+                    'roles'  => ['order'=>30,'label'=>lang('roles'),   'icon'=>'roles',   'events'=>['onClick'=>"hrefClick('bizuno/roles/manager');"]],
+                    'users'  => ['order'=>40,'label'=>lang('users'),   'icon'=>'users',   'events'=>['onClick'=>"hrefClick('bizuno/users/manager');"]],
+                    'help'   => ['order'=>50,'label'=>lang('help'),    'icon'=>'help',    'required'=>true,'events'=>['onClick'=>"winHref('bizuno_help', 'https://www.bizuno.com?p=bizuno/portal/helpMain')"]],
+                    'message'=> ['order'=>60,'label'=>lang('messages'),'icon'=>'email',   'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
+                    'ticket' => ['order'=>70,'label'=>lang('support'), 'icon'=>'support', 'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/tools/ticketMain');"],'hidden'=>defined('BIZUNO_SUPPORT_EMAIL')?false:true],
+                    'logout' => ['order'=>90,'label'=>lang('logout'),  'icon'=>'logout',  'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/portal/logout');"]]]]]],
 			'menuBar' => ['child'=>[
                 'tools' => ['order'=>70,'label'=>lang('tools'),'icon'=>'tools','group'=>'tool','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=tools');"],'child'=>[
                     'imgmgr' => ['order'=>75,'label'=>lang('image_manager'),'icon'=>'mimeImg', 'events'=>['onClick'=>"jsonAction('bizuno/image/manager');"]],
@@ -149,9 +148,9 @@ class bizunoAdmin
 		$ISO_country = getModuleCache('bizuno', 'settings', 'company', 'country', 'USA');
 		$data  = [
             'general' => [
-                'password_min'    => ['classes'=>['easyui-numberbox'],'attr'=>['value'=> '8','data-options'=>"{min: 8,precision:0}"]],
-				'max_rows'        => ['classes'=>['easyui-numberbox'],'attr'=>['value'=>'20','data-options'=>"{min:10,max:100,precision:0}"]],
-				'session_max'     => ['classes'=>['easyui-numberbox'],'attr'=>['value'=>'15','data-options'=>"{min: 0,max:300,precision:0}"]]], // min zero for auto refresh
+                'password_min'    => ['options'=>['min'=> 8],           'attr'=>['type'=>'integer','value'=> 8]],
+				'max_rows'        => ['options'=>['min'=>10,'max'=>100],'attr'=>['type'=>'integer','value'=>20]],
+				'session_max'     => ['options'=>['min'=> 0,'max'=>300],'attr'=>['type'=>'integer','value'=> 0]]], // min zero for auto refresh
 			'company' => [
                 'id'              => ['label'=>pullTableLabel('contacts',     'short_name', 'b'),'attr'=>['value'=>getUserCache('profile', 'biz_title')]],
 				'primary_name'    => ['label'=>pullTableLabel('address_book', 'primary_name'),   'attr'=>['value'=>getUserCache('profile', 'biz_title')]],
@@ -166,7 +165,7 @@ class bizunoAdmin
 				'city'            => ['label'=>pullTableLabel('address_book', 'city')],
 				'state'           => ['label'=>pullTableLabel('address_book', 'state')],
 				'postal_code'     => ['label'=>pullTableLabel('address_book', 'postal_code')],
-				'country'         => ['label'=>pullTableLabel('address_book', 'country'), 'html'=>htmlComboCountry('company_country', $ISO_country), 'attr'=>['type'=>'raw']],
+				'country'         => ['label'=>pullTableLabel('address_book', 'country'),'attr'=>['type'=>'country']],
 				'telephone1'      => ['label'=>pullTableLabel('address_book', 'telephone1')],
 				'telephone2'      => ['label'=>pullTableLabel('address_book', 'telephone2')],
 				'telephone3'      => ['label'=>pullTableLabel('address_book', 'telephone3')],
@@ -176,7 +175,8 @@ class bizunoAdmin
 				'logo'            => ['attr'=>['type'=>'hidden']]],
 			'my_phreesoft_account' => [
                 'phreesoft_user'  => ['label'=>lang('username')],
-				'phreesoft_pass'  => ['label'=>lang('password'), 'attr'=>['type'=>'password']]],
+				'phreesoft_pass'  => ['label'=>lang('password'),'attr'=>['type'=>'password']],
+				'test_con'        => ['label'=>lang('test'),'icon'=>'checkin','attr'=>['type'=>'hidden'],'events'=>['onClick'=>"jsonAction('bizuno/admin/testAccount', 0, jq('#my_phreesoft_account_phreesoft_user').val()+';'+jq('#my_phreesoft_account_phreesoft_pass').val());"]]],
             'mail' => [
                 'smtp_enable'     => ['attr'=>['type'=>'selNoYes']],
 				'smtp_host'       => ['attr'=>['value'=>'smtp.gmail.com']],
@@ -184,11 +184,11 @@ class bizunoAdmin
                 'smtp_user'       => ['attr'=>['value'=>'']],
 				'smtp_pass'       => ['attr'=>['type'=>'password','value'=>'']]],
 			'bizuno_api' => [
-                'gl_receivables'  => ['jsBody'=>htmlComboGL('bizuno_api_gl_receivables'),'attr'=>['value'=>getModuleCache('phreebooks','settings','customers','gl_receivables')]],
-				'gl_sales'        => ['jsBody'=>htmlComboGL('bizuno_api_gl_sales'),      'attr'=>['value'=>getModuleCache('phreebooks','settings','customers','gl_sales')]],
-                'gl_discount'     => ['jsBody'=>htmlComboGL('bizuno_api_gl_discount'),   'attr'=>['value'=>getModuleCache('phreebooks','settings','customers','gl_discount')]],
-                'gl_tax'          => ['jsBody'=>htmlComboGL('bizuno_api_gl_tax'),        'attr'=>['value'=>getModuleCache('phreebooks','settings','customers','gl_liability')]],
-				'tax_rate_id'     => ['values'=>viewSalesTaxDropdown('c'),   'attr'=>['type'=>'select','value'=>0]]],
+                'gl_receivables'  => ['attr'=>['type'=>'ledger','id'=>'bizuno_api_gl_receivables','value'=>getModuleCache('phreebooks','settings','customers','gl_receivables')]],
+				'gl_sales'        => ['attr'=>['type'=>'ledger','id'=>'bizuno_api_gl_sales',      'value'=>getModuleCache('phreebooks','settings','customers','gl_sales')]],
+                'gl_discount'     => ['attr'=>['type'=>'ledger','id'=>'bizuno_api_gl_discount',   'value'=>getModuleCache('phreebooks','settings','customers','gl_discount')]],
+                'gl_tax'          => ['attr'=>['type'=>'ledger','id'=>'bizuno_api_gl_tax',        'value'=>getModuleCache('phreebooks','settings','customers','gl_liability')]],
+				'tax_rate_id'     => ['values'=>viewSalesTaxDropdown('c'),'attr'=>['type'=>'select','value'=>0]]],
 			'locale' => [
                 'timezone'        => ['values'=>$timezones,'attr'=>['type'=>'select','value'=>'America/New_York']],
                 'number_precision'=> ['values'=>$selPrec,  'attr'=>['type'=>'select','value'=>'2']],
@@ -203,6 +203,15 @@ class bizunoAdmin
 		settingsFill($data, $this->moduleID);
 		return $data;
 	}
+
+    public function testAccount(&$layout=[])
+    {
+        $parts  = explode(';', clean('data', 'text', 'get'), 2);
+        $creds  = ['UserID'=>!empty($parts[0]) ? $parts[0] : '', 'UserPW'=>!empty($parts[1]) ? $parts[1] : ''];
+        $io     = new io();
+        $success= $io->apiPhreeSoft('testAccount', $creds);
+        if (!empty($success['success'])) { msgAdd($this->lang['account_verified'], 'success'); }
+    }
 
 	/**
      * Special initialization methods for this module
@@ -224,45 +233,74 @@ class bizunoAdmin
         msgDebug("\nEditing with settings = ".print_r(getModuleCache('bizuno', 'settings'), true));
         $imgSrc = getModuleCache('bizuno', 'settings', 'company', 'logo');
         $imgDir = dirname($imgSrc) == '/' ? '/' : dirname($imgSrc).'/';
-		$data = [
-            'tabs'  => ['tabAdmin'=> ['divs'=>  [
-                'settings'=> ['order'=>20,'label'=>lang('settings'),  'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminSettings.php"],
-				'tabs'    => ['order'=>40,'label'=>lang('extra_tabs'),'type'=>'html','html'=>'','attr'=>  ["data-options"=>"href:'".BIZUNO_AJAX."&p=bizuno/tabs/manager'"]],//
-				'tools'   => ['order'=>50,'label'=>lang('tools'),     'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminTools.php"],
-				'tabDBs'  => ['order'=>60,'label'=>lang('dashboards'),'settings'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminMethods.php"],
-				'stats'   => ['order'=>99,'label'=>lang('statistics'),'src'=>BIZUNO_LIB."view/module/bizuno/tabAdminStats.php"]]]],
-			'forms'  => ['frmReference'=> ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/statusSave"]]],
-            'lang'  => $this->lang,
-            'divs'  => ['footerLogo'  =>['order'=>99,'type'=>'html','html'=>'<div id="imdtl_company_logo"></div>']],
-            'jsBody'=> ['company_logo'=>"imgManagerInit('company_logo', '$imgSrc', '$imgDir', 'images/');"]];
+        $tools  = $this->getViewTools();
+		$data   = [
+            'tabs'   => ['tabAdmin'=> ['divs'=>  [
+                'settings'=> ['order'=>20,'label'=>lang('settings'),  'src'=>BIZUNO_LIB."view/tabAdminSettings.php"],
+				'tabs'    => ['order'=>40,'label'=>lang('extra_tabs'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=bizuno/tabs/manager'"]],
+				'tools'   => ['order'=>50,'label'=>lang('tools'),'type'=>'divs','divs'=>[
+                    'status' => ['order'=>20,'label'=>$this->lang['admin_status_update'], 'type'=>'divs','divs'=>[
+                        'formBOF'=> ['order'=>10,'type'=>'form','key'=>'frmStatus'],
+                        'body'   => ['order'=>50,'type'=>'fields','fields'=>$tools['status']],
+                        'formEOF'=> ['order'=>85,'type'=>'html','html'=>"</form>"]]],
+                    'encrpt' => ['order'=>30,'label'=>$this->lang['admin_encrypt_update'],'type'=>'fields','fields'=>$tools['encrypt']],
+                    'encDel' => ['order'=>40,'label'=>$this->lang['btn_security_clean'],  'type'=>'fields','fields'=>$tools['encDel']]]],
+				'tabDBs'  => ['order'=>60,'label'=>lang('dashboards'),'settings'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
+				'stats'   => ['order'=>99,'label'=>lang('statistics'),'type'=>'html','html'=>$this->getViewStats()]]]],
+            'divs'   => ['footerLogo'  =>['order'=>99,'type'=>'html','html'=>'<div id="imdtl_company_logo"></div>']],
+			'forms'  => ['frmStatus'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/statusSave"]]],
+            'jsBody' => ['company_logo'=>"imgManagerInit('company_logo', '$imgSrc', '$imgDir', 'images/');"],
+            'jsReady'=> ['init'=>"ajaxForm('frmReference');"]];
 		// add special fields
-		$data['module_install_btn']= ['label'=>'','attr'=>['type'=>'button','value'=>lang('install')]];
-		$data['module_remove_btn'] = ['label'=>'','attr'=>['type'=>'button','value'=>lang('remove')]];
+		$data['module_install_btn']= ['attr'=>['type'=>'button','value'=>lang('install')]];
+		$data['module_remove_btn'] = ['attr'=>['type'=>'button','value'=>lang('remove')]];
 		$data['module_prop_btn']   = ['icon'=>'settings', 'size'=>'medium'];
-		// For the Tools tab
-		$data['status_btn']   = ['icon'=>'save','label'=>'save','events'=>['onClick'=>"jq('#frmReference').submit();"]];
-		$data['status_fields']= dbLoadStructure(BIZUNO_DB_PREFIX."current_status");
-		$result               = dbGetRow(BIZUNO_DB_PREFIX."current_status", "id=1");
-		foreach ($result as $key => $value) {
-			$data['status_fields'][$key]['position'] = 'after';
-			$data['status_fields'][$key]['label'] = sprintf(lang('next_ref'), lang($key));
-			$data['status_fields'][$key]['attr']['value'] = $value;
-		}
-		ksort($data['status_fields']);
-		$data['encrypt_key_btn']   = ['label'=>'', 'events'=> ['onClick' => "encryptChange();"],
-			'attr'=>  ['type'=>'button', 'value'=>lang('change')]];
-		$data['encrypt_clean_date']= ['label'=>'','classes'=>['easyui-datebox'], 'attr'=>  ['type'=>'text', 'value'=>date('Y-m-d')]];
-		$data['encrypt_clean_btn'] = ['label'=>'', 'events'=> ['onClick' => "jq('body').addClass('loading'); jsonAction('bizuno/tools/encryptionClean', 0, jq('#encrypt_clean_date').datebox('getValue'));"],
-			'attr'=>  ['type'=>'button', 'value'=>lang('start')]];
-		$data['encrypt_key_orig']  = ['label'=>$this->lang['admin_encrypt_old'],    'position'=>'after','attr'=>  ['type'=>'password']];
-		$data['encrypt_key_new']   = ['label'=>$this->lang['admin_encrypt_new'],    'position'=>'after','attr'=>  ['type'=>'password']];
-		$data['encrypt_key_dup']   = ['label'=>$this->lang['admin_encrypt_confirm'],'position'=>'after','attr'=>  ['type'=>'password']];
-        // table stats
-        $stmt   = dbGetResult("SHOW TABLE STATUS");
-        $data['fields']['stats'] = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 		$layout = array_replace_recursive($layout, adminStructure($this->moduleID, $this->settingsStructure(), $this->lang), $data);
 	}
 
+    private function getViewTools()
+    {
+		$status = dbLoadStructure(BIZUNO_DB_PREFIX."current_status");
+		$result = dbGetRow(BIZUNO_DB_PREFIX."current_status", "id=1");
+		foreach ($result as $key => $value) {
+			$status[$key]['position']= 'after';
+			$status[$key]['break']   = true;
+			$status[$key]['label']   = sprintf(lang('next_ref'), lang($key));
+			$status[$key]['attr']['value'] = $value;
+		}
+		ksort($status);
+        $output = [
+            'status' => ['status_btn'=>['icon'=>'save','label'=>'save','events'=>['onClick'=>"jq('#frmReference').submit();"]]],
+            'encrypt'=> [
+                'desc'              => ['html'=>$this->lang['desc_encrypt_config'],'attr'=>['type'=>'raw']],
+                'encrypt_key_btn'   => ['label'=>'','events'=>['onClick'=>"encryptChange();"],'attr'=>['type'=>'button','value'=>lang('change')]],
+                'encrypt_key_orig'  => ['label'=>$this->lang['admin_encrypt_old'],    'position'=>'after','attr'=>['type'=>'password']],
+                'encrypt_key_new'   => ['label'=>$this->lang['admin_encrypt_new'],    'position'=>'after','attr'=>['type'=>'password']],
+                'encrypt_key_dup'   => ['label'=>$this->lang['admin_encrypt_confirm'],'position'=>'after','attr'=>['type'=>'password']]],
+            'encDel' => [
+                'desc'              => ['html'=>$this->lang['desc_security_clean'],'attr'=>['type'=>'raw']],
+                'encrypt_clean_date'=> ['label' =>$this->lang['desc_security_clean_date'],'attr'=>['type'=>'date','value'=>date('Y-m-d')]],
+                'encrypt_clean_btn' => ['events'=>['onClick'=>"jq('body').addClass('loading'); jsonAction('bizuno/tools/encryptionClean', 0, jq('#encrypt_clean_date').datebox('getValue'));"],
+                    'attr'=>['type'=>'button','value'=>lang('start')]]]];
+        foreach ($status as $key => $settings) { if ($key != 'id') { $output['status'][$key] = $settings; } }
+        return $output;
+    }
+
+    private function getViewStats()
+    {
+        $stmt   = dbGetResult("SHOW TABLE STATUS");
+        $stats  = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $output = "<!-- db table stats -->\n<fieldset><legend>".$this->lang['table_stats']."</legend>\n".'<table style="border-style:none;width:100%">
+<thead class="panel-header">
+    <tr><th>'.lang('table')."</th><th>".$this->lang['db_engine']."</th><th>".$this->lang['db_rows']."</th><th>".$this->lang['db_collation']."</th><th>".lang('size')."</th><th>".$this->lang['db_next_id']."</th></tr>
+</thead>
+<tbody>\n";
+        foreach ($stats as $table) {
+            $output .= "<tr><td>{$table['Name']}</td><td>{$table['Engine']}</td><td>{$table['Rows']}</td><td>{$table['Collation']}</td><td>".($table['Data_length']+$table['Index_length'])."</td><td>{$table['Auto_increment']}</td></tr>\n";
+        }
+        $output .= "</tbody></table>\n</fieldset>\n";
+        return $output;
+    }
 	/**
      * Special operations to save settings page beyond core settings
      * Check for company name change and update portal
@@ -346,43 +384,61 @@ class bizunoAdmin
 
     /**
      * Sets the popup form to load db and set starting settings
-     * @param type $layout
+     * @param arrray $layout
      */
     public function installForm(&$layout=[])
     {
-		$bID   = clean('rID', 'integer', 'get');
+		$bID  = clean('rID', 'integer', 'get');
         if (!$bID) { return msgAdd("bad business ID: $bID"); }
-        $title = $this->lang['bizuno_install_title'];
+        $data = ['type'=>'popup','title'=>$this->lang['bizuno_install_title'],'attr'=>['id'=>'bizInstall','wClosable'=>false],
+            'toolbars' => ['tbInstall'=>  ['icons'=> [
+                'instBack' => ['order'=>10,'icon'=>'close','label'=>lang('cancel'),'events'=>['onClick'=>"bizWindowClose('bizInstall');"]],
+				'instNext' => ['order'=>20,'icon'=>'next', 'label'=>lang('next'),  'events'=>['onClick'=>"installSave($bID);"]]]]],
+			'divs' => [
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'   =>'tbInstall'],
+                'divBOF' => ['order'=>15,'type'=>'html',   'html'  =>'<div id="divInstall"><p>'.$this->lang['intro'].'</p>'],
+				'body'   => ['order'=>50,'type'=>'fields', 'fields'=>$this->getViewInstall()],
+                'divEOF' => ['order'=>85,'type'=>'html',   'html'  =>"</div>"]],
+           'jsBody'=>['init'=>$this->getViewInstallJS()]];
+		$layout = array_replace_recursive($layout, $data);
+	}
+
+    private function getViewInstall()
+    {
 		$langs = viewLanguages(true);
 		$crncy = viewCurrencyDropdown();
 	    $charts= localeLoadCharts();
 		$years = [];
 		$year  = date('Y');
         for ($i=2; $i>=0; $i--) { $years[] = ['id'=>$year - $i, 'text'=>$year - $i]; }
-		$layout = array_replace_recursive($layout, [
-            'toolbars' => ['tbInstall'=>  ['icons'=> [
-                'instBack'    => ['order'=>10,'icon'=>'close','label'=>lang('cancel'),'events'=>['onClick'=>"jq('#bizInstall').window('close');"]],
-				'instNext'    => ['order'=>20,'icon'=>'next', 'label'=>lang('next'),  'events'=>['onClick'=>"jq(this).removeClass('iconL-next').addClass('icon-blank'); installSave($bID);"]]]]],
-			'divs' => [
-                'toolbar'     => ['order'=>10,'type'=>'toolbar','key' =>'tbInstall'],
-                'divFormStrt' => ['order'=>20,'type'=>'html',   'html'=>'<div id="divInstall">'],
-				'divPBInfo'   => ['order'=>50,'src' =>BIZUNO_LIB."view/module/bizuno/popupInstall.php"],
-                'divFormEnd'  => ['order'=>80,'type'=>'html',   'html'=>"</div>"]],
-			'fields' => [
-                'biz_title'   => [                  'attr'=>['value'=>getUserCache('profile', 'biz_title'),'maxlength'=>'16']],
-				'biz_lang'    => ['values'=>$langs, 'attr'=>['type'=>'select', 'value'=>'en_US']],
-				'biz_currency'=> ['values'=>$crncy, 'attr'=>['type'=>'select', 'value'=>'USD']],
-				'biz_chart'   => ['values'=>$charts,'attr'=>['type'=>'select', 'value'=>'retailLLC']],
-				'biz_fy'      => ['values'=>$years, 'attr'=>['type'=>'select', 'value'=>date('Y')]]],
-			'text' => [
-                'intro'       => $this->lang['intro'],
-				'biz_title'   => $this->lang['biz_title'],
-				'biz_lang'    => $this->lang['biz_lang'],
-				'biz_currency'=> $this->lang['biz_currency'],
-				'biz_chart'   => $this->lang['biz_chart'],
-				'biz_fy'      => $this->lang['biz_fy']],
-			'content' => ['action'=>'window','id'=>'bizInstall','title'=>$title,'wClosable'=>false]]);
-	}
+        $biz_title   = ['label'=>$this->lang['biz_title'],                     'attr'=>['value'=>getUserCache('profile', 'biz_title'),'maxlength'=>'16']];
+        $biz_lang    = ['label'=>$this->lang['biz_lang'],    'values'=>$langs, 'attr'=>['type'=>'select','value'=>'en_US']];
+        $biz_currency= ['label'=>$this->lang['biz_currency'],'values'=>$crncy, 'attr'=>['type'=>'select','value'=>'USD']];
+        $biz_chart   = ['label'=>$this->lang['biz_chart'],   'values'=>$charts,'attr'=>['type'=>'select','value'=>"locale/en_US/charts/retailCorp.xml"]];
+        $biz_fy      = ['label'=>$this->lang['biz_fy'],      'values'=>$years, 'attr'=>['type'=>'select','value'=>date('Y')]];
+        return [
+            'biz_title'   => array_merge($biz_title,   ['break'=>true]),
+            'biz_lang'    => array_merge($biz_lang,    ['break'=>true]),
+            'biz_currency'=> array_merge($biz_currency,['break'=>true]),
+            'biz_chart'   => array_merge($biz_chart,   ['break'=>true]),
+            'biz_fy'      => $biz_fy];
+    }
+
+    private function getViewInstallJS()
+    {
+        return "function installSave(bizID) {
+    jq('#instNext').linkbutton({ iconCls:'iconL-loading',text:'' });
+    divData = jq('#divInstall :input').serializeObject();
+    jq.ajax({
+        url:     '".BIZUNO_AJAX."&p=bizuno/admin/installBizuno&bID='+bizID,
+        type:    'post',
+        data:    divData,
+        async:   false,
+        success: function (data) { processJson(data); }
+    });
+    jq('#bizInstall').window('destroy');
+}";
+    }
 
 	public function installBizuno(&$layout=[])
     {

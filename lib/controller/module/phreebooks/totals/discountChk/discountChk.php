@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-21
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/totals/discountChk/discountChk.php
  */
 
@@ -84,14 +84,10 @@ class discountChk
 	public function render(&$output, $data=[])
     {
 		$this->fields = [
-            'totals_discount_gl' => ['label'=>lang('gl_account'), 'jsBody'=>htmlComboGL('totals_discount_gl'),
-                'attr'   => ['size'=>'5', 'value'=>$this->settings['gl_account']]],
-            'totals_discount_opt'=> ['icon'=>'settings', 'size'=>'small',
-                'events' => ['onClick'=>"jq('#phreebooks_totals_discount').toggle('slow');"]],
-            'totals_discount'    => ['label'=>lang('discount'), 'format'=>'currency',
-                'events' => ['onClick'=>"discountType='amt'; totalUpdate();"],
-                'attr'   => ['size'=>'15', 'value'=>'0', 'style'=>'text-align:right', 'readonly'=>'readonly']],
-            ];
+            'totals_discount_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
+            'totals_discount_opt'=> ['icon'=>'settings', 'size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_discount').toggle('slow');"]],
+            'totals_discount'    => ['label'=>lang('discount'), 'format'=>'currency','events'=>['onClick'=>"discountType='amt'; totalUpdate();"],
+                'attr'   => ['size'=>'15', 'value'=>'0', 'style'=>'text-align:right', 'readonly'=>'readonly']]];
         msgDebug("\nSettings for discountChk = ".print_r($this->settings, true));
 		if (isset($data['items'])) { foreach ($data['items'] as $row) { // fill in the data if available
             msgDebug("\nRow = ".print_r($row, true));
@@ -112,10 +108,10 @@ class discountChk
     var totalDisc = 0;
     var rowData = jq('#dgJournalItem').datagrid('getData');
     for (var i=0; i<rowData.rows.length; i++) if (rowData.rows[i]['checked']) {
-        var discount = parseFloat(rowData.rows[i].discount);
+        var discount = cleanCurrency(rowData.rows[i].discount);
         if (!isNaN(discount)) totalDisc += discount;
     }
-    jq('#totals_discount').val(formatCurrency(totalDisc));
+    bizTextSet('totals_discount', totalDisc, 'currency');
     var newBalance = begBalance - totalDisc;
     var decLen= parseInt(bizDefaults.currency.currencies[currency].dec_len);
 	return parseFloat(newBalance.toFixed(decLen));

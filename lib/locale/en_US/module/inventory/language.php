@@ -15,12 +15,10 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2017-04-22
-
+ * @version    3.x Last Update: 2018-09-04
  * @filesource /locale/en_US/module/inventory/language.php
- * 
  */
 
 $lang = [
@@ -88,7 +86,7 @@ $lang = [
 	// API and Import/Export
     'invapi_desc' => 'The inventory API currently supports the base inventory table for both inserts and updates. Extra custom fields are supported. To import an inventory file:<br>1. Download the inventory template which lists the field headers and descriptions.<br>2. Add your data to your .csv file.<br>3. Select the file and press the import icon.<br>The results will be displayed after the script completes. Any errors will also be displayed.',
 	'invapi_template' => 'Step 1: Download the inventory template => ',
-	'invapi_import' => 'Step 3: Add your inventory to the template, browse to select the file and press Import. ',
+	'invapi_import' => 'Step 2: Add your inventory to the template, browse to select the file and press Import. ',
 	'invapi_export' => 'OPTIONAL: Export your inventory database table in .csv format for backup => ',
     // Install notes
     'note_inventory_install_1' => 'PRIORITY MEDIUM: Set default general ledger accounts for inventory types, after loading GL accounts (My Business -> Settings -> Bizuno Tab -> Inventory (Settings)',

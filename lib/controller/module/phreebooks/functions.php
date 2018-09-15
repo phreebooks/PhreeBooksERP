@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-01
+ * @version    3.x Last Update: 2018-07-01
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -94,8 +94,8 @@ function processPhreeBooks($value, $format = '')
 			break;
         // ************ Bank Processing *******************
         case 'bnkReg':
-            msgDebug("\nbnkReg processing working with currentRow = ".print_r($report->currentRow, true));
-            if (!empty($report->currentRow['journal_id']) && in_array($report->currentRow['journal_id'], [7,13,18,19,20,21])) { $value = -$value; }
+            msgDebug("\nbnkReg processing working with currentRow = ".print_r($GLOBALS['currentRow'], true));
+            if (!empty($GLOBALS['currentRow']['journal_id']) && in_array($GLOBALS['currentRow']['journal_id'], [7,13,18,19,20,21])) { $value = -$value; }
 			return $value;
         // ************ Income Statement Processing *******************
 		case 'isCur':  return $report->currentValues['amount'];       // income_statement current period

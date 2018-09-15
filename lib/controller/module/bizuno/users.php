@@ -15,15 +15,15 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-18
+ * @version    3.x Last Update: 2018-08-13
  * @filesource lib/controller/module/bizuno/users.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/bizuno/functions.php");
+require_once(BIZUNO_LIB ."controller/module/bizuno/functions.php");
 require_once(BIZUNO_ROOT."portal/guest.php");
 
 class bizunoUsers
@@ -45,7 +45,7 @@ class bizunoUsers
         if (!$security = validateSecurity('bizuno', 'users', 1)) { return; }
 		$title = lang('bizuno_users');
 		$layout = array_replace_recursive($layout, viewMain(), [
-            'pageTitle'=> $title,
+            'title'=> $title,
 			'divs' => [
                 'heading'=> ['order'=>30, 'type'=>'html',     'html'=>"<h1>$title</h1>\n"],
 				'roles'  => ['order'=>60, 'type'=>'accordion','key' =>'accUsers']],
@@ -101,16 +101,9 @@ class bizunoUsers
 			case 'y': $f0_value = BIZUNO_DB_PREFIX."users.inactive<>'1'"; break;
 			case 'n': $f0_value = BIZUNO_DB_PREFIX."users.inactive='1'";  break;
 		}
-        return [
-            'id'    => $name,
-			'strict'=> true, // forces limit of the fields read to columns listed, roles inactive is overwriting users inactive
-			'rows'  => $this->defaults['rows'],
-			'page'  => $this->defaults['page'],
-			'attr'  => [
-                'url'     => BIZUNO_AJAX."&p=bizuno/users/managerRows",
-				'toolbar' => '#'.$name.'Toolbar',
-				'pageSize'=> getModuleCache('bizuno', 'settings', 'general', 'max_rows'),
-				'idField' => 'admin_id'],
+        return ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
+			'strict' => true, // forces limit of the fields read to columns listed, roles inactive is overwriting users inactive
+            'attr'   => ['toolbar'=>"#{$name}Toolbar",'idField'=>'admin_id', 'url'=>BIZUNO_AJAX."&p=bizuno/users/managerRows"],
 			'events' => [
                 'rowStyler'    => "function(index, row) { if (row.inactive == '1') { return {class:'row-inactive'}; }}",
 				'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', rowData.admin_id); }"],
@@ -119,26 +112,22 @@ class bizunoUsers
                     'users' => ['table'=>BIZUNO_DB_PREFIX."users", 'join'=>'',    'links'=>''],
 					'roles' => ['table'=>BIZUNO_DB_PREFIX."roles", 'join'=>'join','links'=>BIZUNO_DB_PREFIX."roles.id=".BIZUNO_DB_PREFIX."users.role_id"]],
 				'actions' => [
-                    'newUser'  => ['order'=>10, 'html'=>  ['icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', 0);"]]],
-					'clrSearch'=> ['order'=>50, 'html'=>  ['icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]]],
+                    'newUser'  => ['order'=>10, 'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', 0);"]],
+					'clrSearch'=> ['order'=>50, 'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]],
 				'search' => [BIZUNO_DB_PREFIX."users.email", BIZUNO_DB_PREFIX."roles".'.title'],
 				'sort'   => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
 				'filters'=> [
-                    'f0'     => ['order'=>10,'sql'=>$f0_value,'html' => ['label'=>lang('status'), 'values'=>$yes_no_choices, 'attr'=>  ['type'=>'select', 'value'=>$this->defaults['f0']]]],
-                    'search' => ['order'=>90,'html'=>['attr'=>['value'=>$this->defaults['search']]]]]],
+                    'f0'     => ['order'=>10,'sql'=>$f0_value,'label'=>lang('status'), 'values'=>$yes_no_choices, 'attr'=>  ['type'=>'select', 'value'=>$this->defaults['f0']]],
+                    'search' => ['order'=>90,'attr'=>['value'=>$this->defaults['search']]]]],
 			'columns' => [
                 'admin_id'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."users.admin_id",'attr'=>['hidden'=>true]],
 				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."users.inactive",'attr'=>['hidden'=>true]],
-				'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>['width'=>100], 'events'=>['formatter'=>$name.'Formatter'],
+				'action'  => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
 					'actions'=> [
-						'edit' => ['icon'=>'edit', 'size'=>'small', 'order'=>20,
-							'events'=>  ['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', idTBD);"]],
-						'copy' => ['icon'=>'copy', 'size'=>'small', 'order'=>40,
-							'events'=> ['onClick'=>"var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/users/copy', idTBD, title);"]],
-						'delete' => ['icon'=>'trash', 'size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
-							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/users/delete', idTBD);"]],
-                            ],
-                    ],
+						'edit'  => ['order'=>20,'icon'=>'edit', 'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', idTBD);"]],
+						'copy'  => ['order'=>40,'icon'=>'copy', 'events'=>['onClick'=>"var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/users/copy', idTBD, title);"]],
+						'delete'=> ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,
+							'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/users/delete', idTBD);"]]]],
 				'email'   => ['order'=>10, 'field' => BIZUNO_DB_PREFIX."users.email", 'label'=>pullTableLabel(BIZUNO_DB_PREFIX."users", 'email'),
 					'attr'=> ['width'=>120, 'sortable'=>true, 'resizable'=>true]],
 				'title'   => ['order'=>20, 'field' => BIZUNO_DB_PREFIX."users.title", 'label'=>lang('title'),
@@ -156,47 +145,67 @@ class bizunoUsers
     {
 		$rID = clean('rID', 'integer', 'get');
         if (!$security = validateSecurity('bizuno', 'users', $rID?3:2)) { return; }
-		$positions = [['id'=>'top','text'=>lang('top')], ['id'=>'left','text'=>lang('left')]];
-        $stores = getModuleCache('bizuno', 'stores');
-        array_unshift($stores, ['id'=>-1, 'text'=>lang('all')]);
-		$data = ['type'=>'divHTML',
-			'divs'    => ['detail'=> ['order'=>10, 'src'=>BIZUNO_LIB."view/module/bizuno/accUsersDetail.php"]],
-			'toolbars'=> ['tbUsers'=>  ['icons' => [
-				'save'=> ['order'=>20,'hidden'=>$security>1?'0':'1',   'events'=>  ['onClick'=>"jq('#frmUsers').submit();"]],
-                'new' => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>  ['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".jsLang('details')."', 'bizuno/users/edit', 0);"]],
-				'help'=> ['order'=>99,'index' =>'']]]],
-			'tabs'=> ['tabUsers'=>  ['divs'=>  [
-                'general' => ['order'=>10,'label'=>lang('general'), 'src'=>BIZUNO_LIB."view/module/bizuno/tabUsersGeneral.php"]]]],
-			'forms'  => ['frmUsers'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/users/save"]]],
-			'fields'=> dbLoadStructure(BIZUNO_DB_PREFIX."users"),
-			'text'  => ['pw_title' => $rID ? lang('password_lost') : lang('password')]];
-		// merge data with structure
-		$dbData = $rID ? dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id='$rID'") : ['settings'=>''];
-		$usrSettings = json_decode($dbData['settings'], true);
-        $settings = isset($usrSettings['profile']) ? $usrSettings['profile'] : [];
+        $structure = dbLoadStructure(BIZUNO_DB_PREFIX."users");
+		$dbData    = $rID ? dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id='$rID'") : ['settings'=>''];
+		$mySettings= json_decode($dbData['settings'], true);
+        $settings  = isset($mySettings['profile']) ? $mySettings['profile'] : [];
         msgDebug("\nSettings decoded is: ".print_r($settings, true));
 		unset($dbData['settings']);
-		dbStructureFill($data['fields'], $dbData);
-		$data['pageTitle'] = lang('bizuno_users').' - '.($rID ? $dbData['email'] : lang('new'));
-		// set some special cases
-		$data['fields']['contact_id']['label'] = lang('contacts_rep_id_i');
-		$data['fields']['password_new']     = ['label'=>lang('password_new'),    'attr'=>  ['type'=>'password']];
-		$data['fields']['password_confirm'] = ['label'=>lang('password_confirm'),'attr'=>  ['type'=>'password']];
-		$data['fields']['role_id']['attr']['type']= 'select';
-        $data['fields']['role_id']['values']      = listRoles(true, false);
-		$data['fields']['theme']   = ['label'=>lang('theme'),   'values'=>viewKeyDropdown(adminThemes()),'position'=>'after','attr'=>['type'=>'select', 'value'=>isset($settings['theme'] )?$settings['theme'] :'default']];
-		$data['fields']['colors']  = ['label'=>lang('style'),   'values'=>viewKeyDropdown(themeColors()),'position'=>'after','attr'=>['type'=>'select', 'value'=>isset($settings['colors'])?$settings['colors']:'default']];
-		$data['fields']['menu']    = ['label'=>lang('menu_pos'),'values'=>$positions,				     'position'=>'after','attr'=>['type'=>'select', 'value'=>isset($settings['menu'])  ?$settings['menu']  :'default']];
-		$data['fields']['cols']    = ['label'=>$this->lang['dashboard_columns'],					     'position'=>'after','attr'=>['value'=>isset($settings['cols'])  ?$settings['cols']  :'3']];
-		$data['fields']['store_id']= ['label'=>$this->lang['store_id'],'values'=>getModuleCache('bizuno', 'stores'),'position'=>'after','attr'=>['type'=>'select', 'value'=>isset($settings['store_id'])?$settings['store_id'] :'0']];
-		$data['fields']['restrict_store']= ['label'=>$this->lang['restrict_store'],'values'=>$stores,'position'=>'after','attr'=>['type'=>'select', 'value'=>isset($settings['restrict_store'])?$settings['restrict_store'] :'-1']];
-		$data['fields']['restrict_user'] = ['label'=>$this->lang['restrict_user'], 'position'=>'after','attr'=>['type'=>'selNoYes', 'value'=>isset($settings['restrict_user'])?$settings['restrict_user'] :'0']];
-        $data['attachPath']        = getModuleCache('bizuno', 'properties', 'usersAttachPath');
-		$data['attachPrefix']      = $rID.'-';
-		$data['settings']          = $usrSettings; // pass for customization
+		dbStructureFill($structure, $dbData);
+        $cID   = !empty($structure['contact_id']['attr']['value']) ? (int)$structure['contact_id']['attr']['value'] : 0;
+        $name  = $cID ? dbGetValue(BIZUNO_DB_PREFIX."address_book", 'primary_name', "ref_id=$cID AND type='m'") : '';
+		$title = lang('bizuno_users').' - '.($rID ? $dbData['email'] : lang('new'));
+		$data = ['type'=>'divHTML',
+			'divs'    => ['detail'=>['order'=>50,'type'=>'divs','divs'=>[
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbUsers'],
+                'head'   => ['order'=>15,'type'=>'html',   'html'=>"<h1>$title</h1>"],
+                'frmBOF' => ['order'=>20,'type'=>'form',   'key'=>'frmUsers'],
+                'body'   => ['order'=>50,'type'=>'tabs',   'key'=>'tabUsers'],
+                'frmEOF' => ['order'=>90,'type'=>'html',   'html'=>"</form>"]]]],
+			'toolbars'=> ['tbUsers'=>['icons'=>[
+				'save'=> ['order'=>20,'hidden'=>$security>1?'0':'1',   'events'=>['onClick'=>"jq('#frmUsers').submit();"]],
+                'new' => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".jsLang('details')."', 'bizuno/users/edit', 0);"]],
+				'help'=> ['order'=>99,'index' =>'']]]],
+			'tabs'=> ['tabUsers'=>['divs'=>[
+                'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
+                    'body'  => ['order'=>30,'type'=>'fields','fields'=>$this->getViewUsers($structure, $settings)],
+                    'attach'=> ['order'=>80,'type'=>'attach','attr'=>['path'=>getModuleCache('bizuno', 'properties', 'usersAttachPath'),'prefix'=>$rID.'-']]]]]]],
+			'forms'   => ['frmUsers'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/users/save"]]],
+			'text'    => ['pw_title' => $rID?lang('password_lost'):lang('password')],
+            'jsHead'  => ['init'=>"var usersContact = ".json_encode([['id'=>$cID, 'primary_name'=>$name]]).";"],
+            'jsReady' => ['init'=>"ajaxForm('frmUsers');"]];
+		$data['settings'] = $mySettings; // pass for customization
         $layout = array_replace_recursive($layout, $data);
 	}
 
+    private function getViewUsers($fields, $settings)
+    {
+        $stores= getModuleCache('bizuno', 'stores');
+        array_unshift($stores, ['id'=>-1, 'text'=>lang('all')]);
+		$posi  = [['id'=>'top','text'=>lang('top')], ['id'=>'left','text'=>lang('left')]];
+        $defs  = ['type'=>'e','data'=>'usersContact'];
+		$fields['role_id']['attr']['type']= 'select';
+        $output= [
+            'admin_id'      => $fields['admin_id'],
+            'email'         => array_merge($fields['email'],   ['order'=>15,'break'=>true]),
+            'inactive'      => array_merge($fields['inactive'],['order'=>20,'break'=>true]),
+            'title'         => array_merge($fields['title'],   ['order'=>25,'break'=>true]),
+            'role_id'       => array_merge($fields['role_id'], ['order'=>30,'break'=>true,'values'=>listRoles(true, false)]),
+            'contact_id'    => ['order'=>35,'break'=>true,'label'=>lang('contacts_rep_id_i'),'defaults'=>$defs,'attr'=>['type'=>'contact','value'=>$fields['contact_id']['attr']['value']]],
+            'store_id'      => ['order'=>40,'break'=>true,'label'=>$this->lang['store_id'],'values'=>getModuleCache('bizuno', 'stores'),'attr'=>['type'=>'select','value'=>isset($settings['store_id'])?$settings['store_id']:'0']],
+            'restrict_store'=> ['order'=>45,'break'=>true,'label'=>$this->lang['restrict_store'],'values'=>$stores,'position'=>'after', 'attr'=>['type'=>'select', 'value'=>isset($settings['restrict_store'])?$settings['restrict_store']:'-1']],
+            'restrict_user' => ['order'=>50,'break'=>true,'label'=>$this->lang['restrict_user'], 'position'=>'after','attr'=>['type'=>'selNoYes','value'=>isset($settings['restrict_user'])?$settings['restrict_user']:'0']],
+            'icons'         => ['order'=>65,'break'=>true,'label'=>$this->lang['icon_set'],'values'=>getIcons(), 'attr'=>['type'=>'select','value'=>isset($settings['icons'])?$settings['icons']:'default']],
+            'theme'         => ['order'=>70,'break'=>true,'label'=>lang('theme'),          'values'=>getThemes(),'attr'=>['type'=>'select','value'=>isset($settings['theme'])?$settings['theme']:'default']],
+            'menu'          => ['order'=>75,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$posi,      'attr'=>['type'=>'select','value'=>isset($settings['menu']) ?$settings['menu'] :'default']],
+            'cols'          => ['order'=>80,'break'=>true,'label'=>$this->lang['dashboard_columns'],'attr'=>['value'=>isset($settings['cols'])?$settings['cols']:'3']]];
+            if (validateSecurity('bizuno', 'users', 3)) {
+            $output['password_new']    = ['order'=>55,'break'=>true,'label'=>lang('password_new'),    'attr'=>['type'=>'password']];
+            $output['password_confirm']= ['order'=>60,'break'=>true,'label'=>lang('password_confirm'),'attr'=>['type'=>'password']];
+        }
+        return $output;
+    }
+    
 	/**
 	 * This method saves the users data and updates the portal if required.
 	 * @return Post save action, refresh datagrid, clear form
@@ -217,10 +226,10 @@ class bizunoUsers
         if (!isset($values['role_id']) || !$values['role_id']) { return msgAdd($this->lang['err_role_undefined']); }
 		// build the users default settings
 		$settings = $rID ? json_decode(dbGetValue(BIZUNO_DB_PREFIX."users", 'settings', "admin_id=$rID"), true) : [];
+		$settings['profile']['icons']         = clean('icons', 'text',   'post');
 		$settings['profile']['theme']         = clean('theme', 'text',   'post');
-		$settings['profile']['colors']        = clean('colors','text',   'post'); // theme colors scheme
 		$settings['profile']['menu']          = clean('menu',  'text',   'post'); // menu position
-		$settings['profile']['cols']          = clean('cols',  'integer','post'); // dashboard columns
+		$settings['profile']['cols']          = clean('cols',  'integer','post'); // # of dashboard columns
 		$settings['profile']['store_id']      = clean('store_id','integer','post'); // home store for granularity
 		$settings['profile']['restrict_store']= clean('restrict_store','integer','post'); // restrict to store
 		$settings['profile']['restrict_user'] = clean('restrict_user', 'integer','post'); // restrict user
@@ -241,6 +250,14 @@ class bizunoUsers
             portalDelete($email); // disable access through the portal
         }
         if (!$rID) { $rID = $_POST['admin_id'] = $newID; }
+        $pw_new = clean('password_new',    'password','post');
+        $pw_eql = clean('password_confirm','password','post');
+		if (strlen($pw_new) > 0) { // check, see if reset password
+            require_once(BIZUNO_ROOT."portal/guest.php");
+            $guest  = new guest();
+            $pw_enc = $guest->passwordReset($pw_new, $pw_eql);
+            if ($pw_enc) { portalWrite('users', ['biz_pass' => $pw_enc], 'update', "biz_user='$email'"); }
+		}
 		msgDebug("\nrID = $rID and session admin_id = ".getUserCache('profile', 'admin_id', false, 0)."");
         $io = new io();
         if ($io->uploadSave('file_attach', getModuleCache('bizuno', 'properties', 'usersAttachPath')."rID_{$rID}_")) {

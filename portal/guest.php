@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-05-01
+ * @version    3.x Last Update: 2018-09-11
  * @filesource /portal/guest.php
  */
 
@@ -148,7 +148,7 @@ class guest
         $pData = dbGetRow(BIZUNO_DB_PREFIX.'users', "email='$email'");
         msgDebug("\nRead portal user data = ".print_r($pData, true));
 		$pID   = isset($pData['admin_id']) ? $pData['admin_id'] : 0; // portal user record ID
-        $portal= ['email'=>$email,'biz_id'=>1];
+        $portal= ['email'=>$email];
 		if (!$pID || $newUser) { // send welcome new user email
 			$fromEmail= getUserCache('profile', 'email');
 			$fromName = getUserCache('profile', 'title');
@@ -208,8 +208,8 @@ class guest
     {
         // add to users table for this portal
         dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."users ADD `password` VARCHAR(64) DEFAULT '' COMMENT 'tag:Password;order:15' AFTER `email`");
-        dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."users ADD `last_login` DATETIME DEFAULT '0000-00-00' COMMENT 'tag:LastLogin;order:66' AFTER `attach`");
-        dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."users ADD `date_created` DATETIME DEFAULT '0000-00-00' COMMENT 'tag:DateCreated;order:68' AFTER `last_login`");
+        dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."users ADD `last_login` DATETIME DEFAULT NULL COMMENT 'tag:LastLogin;order:66' AFTER `attach`");
+        dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."users ADD `date_created` DATETIME DEFAULT NULL COMMENT 'tag:DateCreated;order:68' AFTER `last_login`");
         dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."users ADD `date_updated` TIMESTAMP COMMENT 'tag:DateUpdated;order:72' AFTER `cache_date`");
         dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."users ADD `pw_reset` VARCHAR(255) DEFAULT '' COMMENT 'tag:PwReset;order:99' AFTER `settings`");
         // set the password now that user table exists

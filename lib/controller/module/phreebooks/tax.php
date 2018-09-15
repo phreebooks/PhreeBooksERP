@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-04-09
+ * @version    3.x Last Update: 2018-09-06
  * @filesource /lib/controller/module/phreebooks/tax.php
  */
 
@@ -42,11 +42,11 @@ class phreebooksTax
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
 		$type = clean('type', ['format'=>'char', 'default'=>'c'], 'get');
 		$layout = array_replace_recursive($layout,  ['type'=>'divHTML',
-			'divs' => ["tax$type" => ['order'=>50, 'type'=>'accordion','key' =>"accTax$type"]],
-			'accordion'=> ["accTax$type"=>  ['divs'=>  [
-                "divTax{$type}Manager"=> ['order'=>30,'label'=>pullTableLabel('inventory', 'tax_rate_id', $type),'type'=>'datagrid','key'=>"dgTax$type"],
-				"divTax{$type}Detail" => ['order'=>70,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;']]]],
-			'datagrid'=> ["dgTax$type" => $this->dgTax("dgTax$type", $type, $security)]]);
+			'divs'     => ["tax$type"=>['order'=>50,'type'=>'accordion','key'=>"accTax$type"]],
+			'accordion'=> ["accTax$type"=>['divs'=>[
+                "divTax{$type}Manager"=>['order'=>30,'label'=>pullTableLabel('inventory', 'tax_rate_id', $type),'type'=>'datagrid','key'=>"dgTax$type"],
+				"divTax{$type}Detail" =>['order'=>70,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;']]]],
+			'datagrid' => ["dgTax$type" => $this->dgTax("dgTax$type", $type, $security)]]);
 	}
 
     /**
@@ -96,41 +96,33 @@ class phreebooksTax
 			case '0': $f0_value = BIZUNO_DB_PREFIX."tax_rates.inactive='0'"; break;
 			case '1': $f0_value = BIZUNO_DB_PREFIX."tax_rates.inactive='1'"; break;
 		}
-		$data = [
-            'id'   => $name,
-			'rows' => $this->defaults['rows'],
-			'page' => $this->defaults['page'],
-			'attr' => ['idField'  => 'id',
-                'url'     => BIZUNO_AJAX."&p=phreebooks/tax/managerRows&type=$type",
-				'toolbar' => "#{$name}Bar",
-				'pageSize'=> getModuleCache('bizuno', 'settings', 'general', 'max_rows')],
+		$data = ['id'=>$name,'rows'=>$this->defaults['rows'],'page'=>$this->defaults['page'],
+			'attr'   => ['toolbar'=>"#{$name}Bar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=phreebooks/tax/managerRows&type=$type"],
 			'events' => [
                 'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accTax$type', 'dgTax$type', 'divTax{$type}Detail', '".lang('details')."', 'phreebooks/tax/edit&type=$type', rowData.id); }",
                 'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; } else {
                     if (typeof row.start_date=='undefined' || typeof row.end_date=='undefined') { return; }
                     if (compareDate(dbDate(row.start_date)) == 1 || compareDate(dbDate(row.end_date)) == -1) { return {class:'journal-waiting'}; } } }"],
 			'source' => [
-                'tables' =>  ['tax_rates'=>  ['table'=>BIZUNO_DB_PREFIX."tax_rates"]],
+                'tables' => ['tax_rates'=>['table'=>BIZUNO_DB_PREFIX."tax_rates"]],
 				'search' => [BIZUNO_DB_PREFIX."tax_rates.title", BIZUNO_DB_PREFIX."tax_rates.description"],
 				'actions'=> [
-                    "newTax$type" => ['order'=>10,'label'=>lang('New'),'html'=>['icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accTax$type', 'dgTax$type', 'divTax{$type}Detail', '".lang('details')."', 'phreebooks/tax/edit&type=$type', 0);"]]],
-					"clrSrch$type"=> ['order'=>30,'label'=>lang('New'),'html'=>['icon'=>'clear','events'=>['onClick'=>"jq('#f0_{$type}').val('0'); jq('#search_$type').val(''); ".$name."Reload();"]]],
-                    "blkTax$type" => ['order'=>80,'html'=>['icon'=>'merge','events'=>['onClick'=>"jsonAction('phreebooks/tax/bulkChange&type=$type', 0);"]]]],
+                    "newTax$type" => ['order'=>10,'label'=>lang('New'),'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accTax$type', 'dgTax$type', 'divTax{$type}Detail', '".lang('details')."', 'phreebooks/tax/edit&type=$type', 0);"]],
+					"clrSrch$type"=> ['order'=>30,'label'=>lang('New'),'icon'=>'clear','events'=>['onClick'=>"jq('#f0_{$type}').val('0'); jq('#search_$type').val(''); ".$name."Reload();"]],
+                    "blkTax$type" => ['order'=>80,'icon'=>'merge','events'=>['onClick'=>"jsonAction('phreebooks/tax/bulkChange&type=$type', 0);"]]],
 				'filters'=> [
-                    "f0_$type"    => ['order'=>10, 'sql'=>$f0_value,'html'=>['label'=>lang('status'),'values'=>$statusValues,'attr'=>['type'=>'select','value'=>$this->defaults['f0_'.$type]]]],
-                    "search$type" => ['order'=>90, 'html'=>  ['attr'=>['value'=>$this->defaults['search']]]],
+                    "f0_$type"    => ['order'=>10, 'sql'=>$f0_value,'label'=>lang('status'),'values'=>$statusValues,'attr'=>['type'=>'select','value'=>$this->defaults['f0_'.$type]]],
+                    "search$type" => ['order'=>90, 'attr'=>['value'=>$this->defaults['search']]],
 					"type$type"   => ['order'=>99, 'hidden'=>true, 'sql'=>"type='$type'"]],
 				'sort' => ['s0'   => ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
-				'footnotes' => ['status'=>lang('status').':
-                        <span class="journal-waiting">'.$this->lang['not_current'].'</span>
-                        <span class="row-inactive">'.lang('inactive').'</span>'],
-                'columns'=> [
-                    'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."tax_rates.id",      'attr'=>['hidden'=>true]],
-                    'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."tax_rates.inactive",'attr'=>['hidden'=>true]],
-                    'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>150], 'events'=>  ['formatter'=>$name.'Formatter'],
+				'footnotes'=> ['status'=>lang('status').':<span class="journal-waiting">'.$this->lang['not_current'].'</span><span class="row-inactive">'.lang('inactive').'</span>'],
+                'columns'  => [
+                    'id'      => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."tax_rates.id",      'attr'=>['hidden'=>true]],
+                    'inactive'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX."tax_rates.inactive",'attr'=>['hidden'=>true]],
+                    'action'  => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
                         'actions'   => [
-                            'edit'  => ['icon'=>'edit', 'size'=>'small', 'order'=>70, 'events'=> ['onClick'=>"accordionEdit('accTax$type', 'dgTax$type', 'divTax{$type}Detail', '".lang('details')."', 'phreebooks/tax/edit&type=$type', idTBD);"]],
-                            'delete'=> ['icon'=>'trash','size'=>'small', 'order'=>90, 'hidden'=>$security>3?false:true,
+                            'edit'  => ['icon'=>'edit', 'order'=>70,'events'=>['onClick'=>"accordionEdit('accTax$type', 'dgTax$type', 'divTax{$type}Detail', '".lang('details')."', 'phreebooks/tax/edit&type=$type', idTBD);"]],
+                            'delete'=> ['icon'=>'trash','order'=>90,'hidden'=>$security>3?false:true,
                                 'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/tax/delete', idTBD);"]]]],
                     'title'     => ['order'=>10, 'label' => pullTableLabel(BIZUNO_DB_PREFIX."tax_rates", 'title'), 'field'=>BIZUNO_DB_PREFIX."tax_rates.title",
                         'attr' =>  ['width'=>320, 'sortable'=>true, 'resizable'=>true]],
@@ -152,36 +144,23 @@ class phreebooksTax
      */
     private function dgTaxVendors($name, $type, $rates)
 	{
-		$data = [
-            'id'   => $name,
-			'type' => 'edatagrid',
-			'attr' => [
-                'toolbar'   => "#{$name}Toolbar",
-				'rownumbers'=> true,
-				'showFooter'=> true,
-                ],
-			'events' => [
-                'data'        => $rates,
+		$data = ['id' => $name,'type'=>'edatagrid',
+			'attr'    => ['toolbar'=>"#{$name}Toolbar",'rownumbers'=>true,'showFooter'=>true],
+			'events'  => ['data'=> $rates,
 				'onClickRow'  => "function(rowIndex) { jq('#$name').edatagrid('editRow', rowIndex); }",
 				'onAdd'       => "function(rowIndex, row) {  }",
 				'onBeforeEdit'=> "function(rowIndex) { curIndex = rowIndex; }",
 				'onEndEdit'   => "function (idx,row) { 
 	var ed = jq('#$name').datagrid('getEditor', {index:idx,field:'cID'});
 	jq('#$name').datagrid('getRows')[idx]['cTitle'] = jq(ed.target).combobox('getText');
-}",
-                ],
-			'source' => [
-                'actions' => ['new'=>  ['order'=>10, 'html'=>  ['icon'=>'add','events'=>  ['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
-                ],
+}"],
+			'source' => ['actions'=>['new'=>['order'=>10,'icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
 			'columns'=> [
-                'action'  => ['order'=>1, 'label'=>lang('action'), 'attr'=>  ['width'=>80],
-					'actions'=> [
-                        'invVendTrash'=>  ['icon'=>'trash','order'=>20,'size'=>'small','events'=>  ['onClick'=>"jq('#$name').edatagrid('destroyRow');"]],
-                        ],
-					'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"]],
-				'cID'=> ['order'=>10, 'label'=>pullTableLabel("contacts", 'short_name', 'v'),
-						'attr' => ['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'center'],
-						'events'=>  ['formatter'=>"function(value, row) { return row.cTitle; }",
+                'action' => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
+					'actions'=>['invVendTrash'=>['icon'=>'trash','order'=>20,'events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
+				'cID'=> ['order'=>10,'label'=>pullTableLabel("contacts", 'short_name', 'v'),
+						'attr'  => ['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'center'],
+						'events'=> ['formatter'=>"function(value, row) { return row.cTitle; }",
 							'editor'=>"{type:'combogrid',options:{width:130,panelWidth:750,delay:900,idField:'id',textField:'primary_name',mode:'remote',
 	url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type=v',selectOnNavigation:false,columns: [[
 	  {field:'id',          hidden:true},
@@ -190,12 +169,10 @@ class phreebooksTax
 	  {field:'city',        width:100,title:'".jsLang('address_book_city')."'},
 	  {field:'state',       width: 50,title:'".jsLang('address_book_state')."'},
 	]] }}"]],
-				'text'  => ['order'=>20,'label'=>lang('description'),'attr'=>  ['editor'=>'text','width'=>240,'resizable'=>true]],
-				'glAcct'=> ['order'=>30,'label'=>lang('gl_account'),'attr'=>  ['width'=>100,'resizable'=>true,'align'=>'center'],
-					'events'=>  ['editor'=>dgHtmlGLAcctData()]],
-				'rate'  => ['order'=>40,'label'=>lang('tax_rates_tax_rate'),'attr'=>  ['width'=>100,'resizable'=>true],
-					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(newVal){taxTotal$type(newVal);}} }"]]],
-            ];
+				'text'  => ['order'=>20,'label'=>lang('description'),'attr'=>['width'=>240,'resizable'=>true,'editor'=>'text']],
+				'glAcct'=> ['order'=>30,'label'=>lang('gl_account'), 'attr'=>['width'=>100,'resizable'=>true,'align' =>'center'],'events'=>['editor'=>dgHtmlGLAcctData()]],
+				'rate'  => ['order'=>40,'label'=>lang('tax_rates_tax_rate'),'attr'=>['width'=>100,'resizable'=>true],
+					'events'=>['editor'=>"{type:'numberbox',options:{onChange:function(newVal){taxTotal$type(newVal);}} }"]]]];
 		return $data;
 	}
 
@@ -219,20 +196,54 @@ class phreebooksTax
 			$struc['start_date']['attr']['value']= date('Y-m-d');
 			$struc['end_date']['attr']['value']  = localeCalculateDate(date('Y-m-d'), 0, 0, 10);
 		}
+        $jsBody = "function taxTotal$type(newVal) {
+	var total = 0;
+	if (typeof curIndex == 'undefined') return;
+	jq('#dgTaxVendors$type').datagrid('getRows')[curIndex]['rate'] = newVal;
+	var items = jq('#dgTaxVendors$type').datagrid('getData');
+	for (var i=0; i<items['rows'].length; i++) {
+		total += parseFloat(items['rows'][i]['rate']);
+	}
+	var footer= jq('#dgTaxVendors$type').datagrid('getFooterRows');
+	footer[0]['rate'] = formatNumber(total);
+	jq('#dgTaxVendors$type').datagrid('reloadFooter');
+}
+function taxPreSubmit{$type}(type) {
+	jq('#dgTaxVendors$type').edatagrid('saveRow');
+	var items = jq('#dgTaxVendors$type').datagrid('getData');
+	var serializedItems = JSON.stringify(items);
+	jq('#settings'+type).val(serializedItems);
+}";
 		unset($struc['settings']);
-		$struc['start_date']['classes']['datebox']= 'easyui-datebox';
-		$struc['end_date']['classes']['datebox']  = 'easyui-datebox';
 		$data = ['type'=>'divHTML',
-			'divs'    => ['detail'=>['order'=>10,'settings'=>['type'=>$type],'src'=>BIZUNO_LIB."view/module/phreebooks/tabAdminTax.php"]],
-			'toolbars'=> ['tbTax' =>['icons' => [
+			'divs'     => [
+                'toolbar'=>['order'=>10,'type'=>'toolbar','key'=>'tbTax'],
+                'body'   =>['order'=>50,'type'=>'divs','divs'=>[
+                    'formBOF' => ['order'=>15,'type'=>'form',    'key'   =>"frmTax$type"],
+                    'body'    => ['order'=>50,'type'=>'fields',  'fields'=>$this->getViewTax($struc, $type)],
+                    'datagrid'=> ['order'=>70,'type'=>'datagrid','key'   =>'dgTaxVendors'],
+                    'formEOF' => ['order'=>95,'type'=>'html',    'html'  =>"</form>"]]]],
+			'toolbars'=> ['tbTax'=>['icons'=>[
 				"taxSave$type" => ['order'=>20,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"taxPreSubmit$type('$type'); jq('#frmTax$type').submit();"]],
                 "taxNew$type"  => ['order'=>40,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"accordionEdit('accTax$type','dgTax$type','divTax{$type}Detail','".jsLang('details')."', 'phreebooks/tax/edit&type=$type', 0);"]]]]],
-			'forms'   => ["frmTax$type"=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/tax/save&type=$type"]]],
-			'datagrid'=> ['dgTaxVendors' => $this->dgTaxVendors("dgTaxVendors$type", $type, $rates)],
-			'fields'  => $struc];
+			'forms'   => ["frmTax$type"=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/tax/save&type=$type"]]],
+			'datagrid'=> ['dgTaxVendors'=>$this->dgTaxVendors("dgTaxVendors$type", $type, $rates)],
+			'fields'  => $struc,
+            'jsBody'  => ['init'=>$jsBody],
+            'jsReady' => ['init'=>"ajaxForm('frmTax$type');"]];
 		$layout = array_replace_recursive($layout, $data);
 	}
 
+    private function getViewTax($struc, $type)
+    {
+        return ['id'    .$type => array_merge($struc['id']),
+            'settings'  .$type => array_merge($struc['type']),
+            'title'     .$type => array_merge($struc['title'],     ['break'=>true]),
+            'inactive'  .$type => array_merge($struc['inactive'],  ['break'=>true]),
+            'start_date'.$type => array_merge($struc['start_date'],['col'=>2,'break'=>true]),
+            'end_date'  .$type => array_merge($struc['end_date'],  ['col'=>2,'break'=>true])];
+    }
+    
 	/**
      * Structure for saving user defined sales tax information
      * @param array $layout - Structure coming in
@@ -250,7 +261,7 @@ class phreebooksTax
 		$values['tax_rate'] = $settings['footer'][0]['rate'];
 		msgDebug("\n  writing values = ".print_r($values, true));
 		dbWrite(BIZUNO_DB_PREFIX."tax_rates", $values, $rID?'update':'insert', "id=$rID");
-		$layout = array_replace_recursive($layout, ['content' => ['action'=>'eval','actionData'=>"jq('#accTax$type').accordion('select', 0); jq('#dgTax$type').datagrid('reload'); jq('#divTax{$type}Detail').html('&nbsp;');"]]);
+		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accTax$type').accordion('select', 0); jq('#dgTax$type').datagrid('reload'); jq('#divTax{$type}Detail').html('&nbsp;');"]]);
 	}
 
 	/**
@@ -302,7 +313,7 @@ class phreebooksTax
     {
         require_once(BIZUNO_LIB . "controller/module/phreebooks/functions.php");
         $type  = clean('type', ['format'=>'char','default'=>'c'], 'get');
-        $taxAll= loadTaxes($type);
+//      $taxAll= loadTaxes($type);
         $subjects = [['id'=>'c','text'=>lang('contacts')],['id'=>'i','text'=>lang('inventory')]];
 		$icnGo = ['icon'=>'next', 'label'=>lang('go'),
 			'events'=>  ['onClick'=>"var data='&type=$type&subject='+jq('#subject').val()+'&srcID='+jq('#taxSrc').combogrid('getValue')+'&destID='+jq('#taxDest').combogrid('getValue');
@@ -319,12 +330,10 @@ class phreebooksTax
     });
 }";
 		$jsReady= "taxBulkChange('taxSrc', bizDefaults.taxRates.$type.rows);\ntaxBulkChange('taxDest', bizDefaults.taxRates.$type.rows);";
-		$data = [
-            'title'  => $this->lang['tax_bulk_title'],
-			'divs'   => ['taxChange'=> ['order'=>50,'type'=>'html', 'html'=>$html]],
+		$data = ['type'=>'popup','title'=>$this->lang['tax_bulk_title'],'attr'=>['id'=>'winTaxChange'],
+			'divs'   => ['body'=> ['order'=>50,'type'=>'html', 'html'=>$html]],
             'jsBody' => ['taxJSBody'=> $jsBody],
-            'jsReady'=> ['taxJSRdy' => $jsReady],
-			'content'=> ['action'   => 'window','id'=>'winTaxChange','title'=>$this->lang['tax_bulk_title']]];
+            'jsReady'=> ['taxJSRdy' => $jsReady]];
 		$layout = array_replace_recursive($layout, $data);
 	}
 
@@ -352,6 +361,6 @@ class phreebooksTax
 		msgAdd(sprintf($this->lang['tax_bulk_success'], $cnt), 'success');
         $table = $subject=='i' ? lang('inventory') : lang('contacts');
 		msgLog(lang("phreebooks").'-'.$this->lang['tax_bulk_title']." $table: $srcID => $destID)");
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#winTaxChange').window('close');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"bizWindowClose('winTaxChange');"]]);
 	}
 }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-10
+ * @version    3.x Last Update: 2018-09-05
  * @filesource /lib/controller/module/bizuno/dashboard.php
  */
 
@@ -178,7 +178,7 @@ class bizunoDashboard
 		$dashboard = $this->loadDashboard($mID, $dID, $settings);
         if (!$dashboard) { return msgAdd("ERROR: Dashboard $dID NOT FOUND!"); }
         $content = $dashboard->render();
-        if (strpos($content, "{$dID}Form")) { // if there is a form for settings, set the retrun key to submit form
+        if (strpos($content, "{$dID}Form")) { // if there is a form for settings, set the return key to submit form
             $content .= htmlJS("jq('#{$dID}Form').keypress(function(event) {
     var keycode=(event.keyCode ? event.keyCode : event.which);
     if (keycode=='13') { dashboardAttr('$mID:$dID', 0); }
@@ -226,6 +226,7 @@ class bizunoDashboard
      */
     private function listDashboards($menu_id='home')
     {
+        $cols = getColumns();
         $dashboard = $temp = $state = [];
         if (getUserCache('profile', 'admin_id')) {
             $result = dbGetMulti(BIZUNO_DB_PREFIX."users_profiles", "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND menu_id='$menu_id'", "column_id, row_id");
@@ -233,9 +234,10 @@ class bizunoDashboard
             $result = getUserCache('dashboards');
             $menu_id='portal';
         }
-        msgDebug("\nresult = ".print_r($result, true));
+        msgDebug("\ncols = $cols and menu_id = $menu_id and result = ".print_r($result, true));
         foreach ($result as $values) {
-            $temp[$values['column_id']][] = $values['dashboard_id'];
+            $colID = min($cols-1, $values['column_id']);
+            $temp[$colID][] = $values['dashboard_id'];
             $myDash = $this->loadDashboard($values['module_id'], $values['dashboard_id']);
             if (!is_object($myDash)) { continue; }
             if (!$myDash && getUserCache('profile', 'admin_id')) {
@@ -256,7 +258,7 @@ class bizunoDashboard
                 'href'       => BIZUNO_AJAX.'&p=bizuno/dashboard/settings&dID='.$values['dashboard_id'].'&mID='.$values['module_id'].'&menu='.$menu_id];
         }
         msgDebug("\nList dashboards for menu ID = $menu_id is: ".print_r($dashboard, true));
-        for ($i = 0; $i < getUserCache('profile', 'cols', false, 3); $i++) { $state[] = isset($temp[$i]) && is_array($temp[$i]) ? implode(',', $temp[$i]) : ''; }
+        for ($i = 0; $i < $cols; $i++) { $state[] = isset($temp[$i]) && is_array($temp[$i]) ? implode(',', $temp[$i]) : ''; }
         return ['Dashboard'=>$dashboard, 'State'=>implode(':', $state)];
     }
 
@@ -271,12 +273,13 @@ class bizunoDashboard
     {
         if (!$dashboard || !$module) { return; }
         msgDebug("\nloadDashboard for module = $module");
-        if (!getModuleCache($module, 'properties', 'status')) { return; }
-        msgDebug("\getModuleCache for dash = $dashboard and path ".getModuleCache($module, 'properties', 'path')."/dashboards/$dashboard/$dashboard.php");
+        if ($module <> 'portal' && !getModuleCache($module, 'properties', 'status')) { return; }
+        $path = $module=='portal' ? BIZUNO_ROOT.'/portal':  getModuleCache($module, 'properties', 'path');
+        msgDebug("\getModuleCache for dash = $dashboard and path {$path}/dashboards/$dashboard/$dashboard.php");
         $modSettings= getModuleCache($module, 'dashboards', $dashboard, 'settings', []);
         $settings   = array_replace_recursive($modSettings, $usrSettings); // merge the user settings on top of defaults
-        if (file_exists (getModuleCache($module, 'properties', 'path')."/dashboards/$dashboard/$dashboard.php")) {
-            require_once(getModuleCache($module, 'properties', 'path')."/dashboards/$dashboard/$dashboard.php");
+        if (file_exists ("$path/dashboards/$dashboard/$dashboard.php")) {
+            require_once("$path/dashboards/$dashboard/$dashboard.php");
             $fqcn = "\\bizuno\\$dashboard";
             $myDash = new $fqcn($settings);
             if ($this->checkSecurity($myDash)) { return $myDash; }

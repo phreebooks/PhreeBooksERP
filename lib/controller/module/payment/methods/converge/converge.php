@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-09
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/payment/methods/converge.php
  *
  * Source Information:
@@ -63,35 +63,33 @@ class converge
 		$noYes = [['id'=>'0','text'=>lang('no')], ['id'=>'1','text'=>lang('yes')]];
 		$auths = [['id'=>'Authorize/Capture','text'=>lang('capture')], ['id'=>'Authorize','text'=>lang('authorize')]];
         return [
-            'cash_gl_acct'=> ['label'=>$this->lang['set_gl_payment_c'], 'position'=>'after', 'jsBody'=>htmlComboGL("{$this->code}_cash_gl_acct"),
-				'attr' => ['size'=>'10', 'value'=>$this->settings['cash_gl_acct']]],
-			'disc_gl_acct'=> ['label'=>$this->lang['set_gl_discount_c'], 'position'=>'after', 'jsBody'=>htmlComboGL("{$this->code}_disc_gl_acct"),
-				'attr' => ['size'=>'10','value'=>$this->settings['disc_gl_acct']]],
-			'order'       => ['label'=>lang('order'), 'position'=>'after', 'attr'=>  ['type'=>'integer', 'size'=>'3','value'=>$this->settings['order']]],
-            'merchant_id' => ['label'=>$this->lang['merchant_id'],'position'=>'after', 'attr'=>['type'=>'text', 'size'=>'20','value'=>$this->settings['merchant_id']]],
-			'user_id'     => ['label'=>$this->lang['user_id'],    'position'=>'after', 'attr'=>['type'=>'text', 'size'=>'20','value'=>$this->settings['user_id']]],
-			'pin'         => ['label'=>$this->lang['pin'],        'position'=>'after', 'attr'=>['type'=>'text','value'=>$this->settings['pin']]],
-			'auth_type'   => ['label'=>$this->lang['auth_type'],  'values'=>$auths,    'attr'=>['type'=>'select','value'=>$this->settings['auth_type']]],
-			'prefix'      => ['label'=>$this->lang['set_prefix'], 'position'=>'after', 'attr'=>['size'=>'5','value'=>$this->settings['prefix']]],
-			'prefixAX'    => ['label'=>$this->lang['prefix_amex'],'position'=>'after', 'attr'=>['size'=>'5','value'=>$this->settings['prefixAX']]],
-			'allowRefund' => ['label'=>$this->lang['allow_refund'],'values'=>$noYes,   'attr'=>['type'=>'select','value'=>$this->settings['allowRefund']]]];
+            'cash_gl_acct'=> ['label'=>$this->lang['set_gl_payment_c'], 'position'=>'after','attr'=>['type'=>'ledger','id'=>"{$this->code}_cash_gl_acct",'value'=>$this->settings['cash_gl_acct']]],
+			'disc_gl_acct'=> ['label'=>$this->lang['set_gl_discount_c'],'position'=>'after','attr'=>['type'=>'ledger','id'=>"{$this->code}_disc_gl_acct",'value'=>$this->settings['disc_gl_acct']]],
+			'order'       => ['label'=>lang('order'),             'position'=>'after','attr'=>['type'=>'integer', 'size'=>'3','value'=>$this->settings['order']]],
+            'merchant_id' => ['label'=>$this->lang['merchant_id'],'position'=>'after','attr'=>['type'=>'text', 'size'=>'20','value'=>$this->settings['merchant_id']]],
+			'user_id'     => ['label'=>$this->lang['user_id'],    'position'=>'after','attr'=>['type'=>'text', 'size'=>'20','value'=>$this->settings['user_id']]],
+			'pin'         => ['label'=>$this->lang['pin'],        'position'=>'after','attr'=>['type'=>'text','value'=>$this->settings['pin']]],
+			'auth_type'   => ['label'=>$this->lang['auth_type'],  'values'=>$auths,   'attr'=>['type'=>'select','value'=>$this->settings['auth_type']]],
+			'prefix'      => ['label'=>$this->lang['set_prefix'], 'position'=>'after','attr'=>['size'=>'5','value'=>$this->settings['prefix']]],
+			'prefixAX'    => ['label'=>$this->lang['prefix_amex'],'position'=>'after','attr'=>['size'=>'5','value'=>$this->settings['prefixAX']]],
+			'allowRefund' => ['label'=>$this->lang['allow_refund'],'values'=>$noYes,  'attr'=>['type'=>'select','value'=>$this->settings['allowRefund']]]];
 	}
 
 	public function render(&$output, $data, $values=[], $dispFirst=false)
 	{
 		msgDebug("\nWorking with values = ".print_r($values, true));
-		$exp = pullExpDates();
+		$cc_exp = pullExpDates();
 		$this->viewData = [
             'trans_code'=> ['attr'=>['type'=>'hidden']],
 			'selCards'  => ['attr'=>['type'=>'select'],'events'=>['onChange'=>"convergeRefNum('stored');"]],
-			'save'      => ['label'=>lang('save'),              'break'=>true,'attr'=>['type'=>'checkbox','value'=>'1']],
-			'name'      => ['label'=>lang('payment_name') ,     'break'=>true,'attr'=>['size'=>'24']],
-			'number'    => ['label'=>lang('payment_number'),    'break'=>true,'attr'=>['size'=>'19'],     'events'=>['onChange'=>"convergeRefNum('number');"]],
-			'month'     => ['label'=>lang('payment_expiration'),'values'=>$exp['months'],'attr'=>['type'=>'select']],
-			'year'      => ['values'=>$exp['years'],            'break'=>true,'attr'=>['type'=>'select']],
-			'cvv'       => ['label'=>lang('payment_cvv'),                     'attr'=>['size'=>'5', 'maxlength'=>'4']]];
-		if (isset($values['method']) && $values['method']==$this->code 
-				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
+			'save'      => ['label'=>lang('save'),'break'=>true,'attr'=>['type'=>'checkbox','value'=>'1']],
+            'payment_id'=> ['attr'=>['type'=>'hidden']], // hidden
+            'name'      => ['options'=>['width'=>200],'break'=>true,'label'=>lang('payment_name')],
+            'number'    => ['options'=>['width'=>150],'break'=>true,'label'=>lang('payment_number'),'events'=>['onChange'=>"convergeRefNum('number');"]],
+            'month'     => ['label'=>lang('payment_expiration'),'options'=>['width'=>130],'values'=>$cc_exp['months'],'attr'=>['type'=>'select','value'=>date('m')]],
+            'year'      => ['break'=>true,'options'=>['width'=>70],'values'=>$cc_exp['years'],'attr'=>['type'=>'select','value'=>date('Y')]],
+            'cvv'       => ['options'=>['width'=> 45],'label'=>lang('payment_cvv')]];
+		if (!empty($values['method']) && $values['method']==$this->code && !empty($data['fields']['main']['id']['attr']['value'])) { // edit
 			$this->viewData['number']['attr']['value'] = isset($values['hint']) ? $values['hint'] : '****';
 			$invoice_num = $invoice_amex = $data['fields']['main']['invoice_num']['attr']['value'];
 			$gl_account  = $data['fields']['main']['gl_acct_id']['attr']['value'];
@@ -117,11 +115,11 @@ class converge
                 } else {
                     $checked     = 's';
                     $show_s      = true;
-                    $first_prefix= $this->viewData['selCards']['values'][0]['text'];
+                    $first_prefix= $this->viewData['selCards']['values'][0]['hint'];
                     $invoice_num = substr($first_prefix, 0, 2)=='37' ? $invoice_amex : $invoice_num;
                 }
             } else { $show_s = false; }
-            if (isset($values['trans_code']) && $values['trans_code']) {
+            if (!empty($values['trans_code'])) {
                 $invoice_num = isset($values['hint']) && substr($values['hint'], 0, 2)=='37' ? $invoice_amex : $invoice_num;
                 $this->viewData['trans_code']['attr']['value'] = $values['trans_code'];
                 $checked = 'c';
@@ -131,24 +129,21 @@ class converge
 		$output['jsBody'][] = "
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account', discGL:'$discount_gl', ref:'$invoice_num', refAX:'$invoice_amex'};
 function payment_$this->code() {
-	jq('#invoice_num').val(arrPmtMethod['$this->code'].ref);
-	jq('#gl_acct_id').combogrid('setValue', arrPmtMethod['$this->code'].cashGL);
-	jq('#totals_discount_gl').combogrid('setValue', arrPmtMethod['$this->code'].discGL);
+    bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
+    bizGridSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
+    bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
 }
 function convergeRefNum(type) {
-	if (type=='stored') {
-		var ccNum = jq('#{$this->code}selCards option:selected').text();
-	} else {
-		var ccNum = jq('#{$this->code}_number').val();
-	}
-	var prefix= ccNum.substr(0, 2);
+	if (type=='stored') { var ccNum = jq('#{$this->code}selCards').val(); }
+      else { var ccNum = jq('#{$this->code}_number').val();  }
+    var prefix= ccNum.substr(0, 2);
 	var newRef = prefix=='37' ? arrPmtMethod['$this->code'].refAX : arrPmtMethod['$this->code'].ref;
-	jq('#invoice_num').val(newRef);
+    bizTextSet('invoice_num', newRef);
 }";
-        if ($this->code == $dispFirst) { $output['jsReady'][] = "jq('#invoice_num').val('$invoice_num');"; }
+        if ($this->code == $dispFirst) { $output['jsReady'][] = "bizTextSet('invoice_num', '$invoice_num');"; }
         $output['body'] .= html5($this->code.'_action', ['label'=>lang('capture'),'hidden'=>($show_c?false:true),'attr'=>['type'=>'radio','value'=>'c','checked'=>$checked=='c'?true:false],
 	'events'=>  ['onChange'=>"jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').hide(); jq('#div{$this->code}c').show();"]]).
-html5($this->code.'_action', ['label'=>lang('stored'), 'hidden'=>($show_s?false:true),'attr'=>['type'=>'radio','value'=>'s','checked'=>$checked=='s'?true:false],
+html5($this->code.'_action', ['label'=>$this->lang['stored'], 'hidden'=>($show_s?false:true),'attr'=>['type'=>'radio','value'=>'s','checked'=>$checked=='s'?true:false],
 	'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}n').hide(); jq('#div{$this->code}s').show();"]]).
 html5($this->code.'_action', ['label'=>lang('new'),    'hidden'=>($show_n?false:true),'attr'=>['type'=>'radio','value'=>'n','checked'=>$checked=='n'?true:false],
 	'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').show();"]]).
@@ -205,8 +200,7 @@ $output['body'] .= '</div>
             'ssl_phone'             => substr(preg_replace("/[^0-9]/", "", $ledger->main['telephone1_b']), 0, 14),
             'ssl_email'             => isset($ledger->main['email_b']) ? $ledger->main['email_b'] : getModuleCache('bizuno', 'settings', 'company', 'email'),
             'ssl_show_form'         => 'FALSE',
-            'ssl_result_format'     => 'ASCII',
-            ];
+            'ssl_result_format'     => 'ASCII'];
 		msgDebug("\nConverge sale working with fields = ".print_r($fields, true));
         if (sizeof($submit_data) == 0) { return true; } // nothing to send to gateway
         if (!$resp = $this->queryMerchant($submit_data)) { return; }
@@ -298,8 +292,7 @@ $output['body'] .= '</div>
 			'ssl_merchant_id'     => $this->settings['merchant_id'],
 			'ssl_user_id'         => $this->settings['user_id'],
 			'ssl_pin'             => $this->settings['pin'],
-			'ssl_txn_id'          => $txID, // Unique identifier returned on the original transaction.
-            ];
+			'ssl_txn_id'          => $txID]; // Unique identifier returned on the original transaction.
 		return $this->queryMerchant($submit_data);
 	}
 
@@ -324,8 +317,7 @@ $output['body'] .= '</div>
 			'ssl_user_id'         => $this->settings['user_id'],
 			'ssl_pin'             => $this->settings['pin'],
 			'ssl_txn_id'          => $results['trans_code'], // Unique identifier returned on the original transaction.
-			'ssl_amount'          => number_format($amount, 2, '.', ''), // Amount to be refunded in full or partial. Must be less or equal to the original purchase, if not supplied original full amount is refunded.
-            ];
+			'ssl_amount'          => number_format($amount, 2, '.', '')]; // Amount to be refunded in full or partial. Must be less or equal to the original purchase, if not supplied original full amount is refunded.
 		return $this->queryMerchant($submit_data);
 	}
 
@@ -348,13 +340,13 @@ $output['body'] .= '</div>
 			msgLog(sprintf($this->lang['err_process_decline'], $resp->errorCode, $resp->errorMessage));
 			return false;
 		} elseif (isset($resp->ssl_result) && $resp->ssl_result == '0') { // update the db with the transaction ID
-            if (isset($resp->ssl_cvv2_response) && $resp->ssl_cvv2_response != 'M') {
+            if (!empty($resp->ssl_cvv2_response) && $resp->ssl_cvv2_response != 'M') {
                 msgAdd(sprintf($this->lang['err_cvv_mismatch'], $this->lang['CVV_'.$resp->ssl_cvv2_response]));
             }
-            if (isset($resp->ssl_avs_response) && !in_array($resp->ssl_avs_response, ['X','Y'])) {
+            if (!empty($resp->ssl_avs_response) && !in_array($resp->ssl_avs_response, ['X','Y'])) {
                 msgAdd(sprintf($this->lang['err_avs_mismatch'], $this->lang['AVS_'.$resp->ssl_avs_response]));
             }
-            $cvv = isset($resp->ssl_cvv2_response) ? $this->lang['CVV_'.$resp->ssl_cvv2_response] : 'n/a';
+            $cvv = !empty($resp->ssl_cvv2_response) ? $this->lang['CVV_'.$resp->ssl_cvv2_response] : 'n/a';
 			msgAdd(sprintf($this->lang['msg_approval_success'], $resp->ssl_result_message, $resp->ssl_approval_code, $cvv), 'success');
 			return ['txID'=>$resp->ssl_txn_id, 'txTime'=>$resp->ssl_txn_time, 'code'=>$resp->ssl_approval_code];
 		}

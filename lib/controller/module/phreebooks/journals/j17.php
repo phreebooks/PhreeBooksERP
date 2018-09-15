@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-14
+ * @version    3.x Last Update: 2018-08-24
  * @filesource /lib/controller/module/phreebooks/journals/j17.php
  */
 
@@ -86,11 +86,11 @@ class j17 extends jCommon
                 $data['fields']['main']['closed']= ['attr'=>  ['type'=>'hidden', 'value'=>'0']];
             }
             $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-                'billAD'  => ['order'=>20,'type'=>'address', 'classes'=>['blockView'], 'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields']['main'], '_b'),
+                'billAD'  => ['order'=>20,'type'=>'address','classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields']['main'], '_b'),
                     'label'=>lang('bill_to'),'settings'=>['suffix'=>'_b','search'=>true,'copy'=>false,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false]],
-                'props'   => ['order'=>40,'type'=>'fields',  'classes'=>['blockView'], 'attr'=>['id'=>'pbProps'], 'fields'=>$this->getProps($data)],
-                'totals'  => ['order'=>50,'type'=>'totals',  'classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']],
-                'payments'=> ['order'=>60,'classes'=>['blockView'],'attr'=>['id'=>'pbPayment'],'src'=>BIZUNO_LIB."view/module/payment/accPmtDetail.php"]]];
+                'props'   => ['order'=>40,'type'=>'fields', 'label'=>lang('details'),'classes'=>['blockView'],'attr'=>['id'=>'pbProps'],  'fields'=>$this->getProps($data)],
+                'totals'  => ['order'=>50,'type'=>'totals', 'label'=>lang('totals'), 'classes'=>['blockView'],'attr'=>['id'=>'pbTotals'], 'content'=>$data['totals_methods']],
+                'payments'=> ['order'=>60,'type'=>'payment','label'=>lang('bill_to'),'classes'=>['blockView'],'settings'=>['items'=>$data['items']]]]];
             $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
             $data['jsBody']['frmVal'] = "function preSubmit() {
 	var items = new Array();	
@@ -101,7 +101,7 @@ class j17 extends jCommon
 	if (!formValidate()) return false;
 	return true;
 }";
-            $data['jsReady']['divInit'] = "ajaxForm('frmJournal'); jq('#contactSel_b').next().find('input').focus();";
+            $data['jsReady']['divInit'] = "ajaxForm('frmJournal'); bizFocus('contactSel_b');";
         } else {
             unset($data['divs']['tbJrnl']);
             $data['divs']['divDetail']  = ['order'=>50,'type'=>'html','html'=>html5('contactSel', ['label'=>lang('search')])];
@@ -115,9 +115,8 @@ class j17 extends jCommon
         {field:'primary_name_b',title:'".jsLang('address_book_primary_name')."', width:200},
         {field:'city_b',        title:'".jsLang('address_book_city')."', width:100},
         {field:'state_b',       title:'".jsLang('address_book_state')."', width: 50},
-        {field:'total_amount',  title:'".jsLang('total')."', width:100, align:'right', formatter:function (value) {return formatCurrency(value);} }]]
-});
-if (jq('#contactSel').length) jq('#contactSel').next().find('input').focus();";            
+        {field:'total_amount',  title:'".jsLang('total')."', width:100, align:'right', formatter:function (value) {return formatCurrency(value);} }]] });";
+            $data['jsReady']['divInit'] = "ajaxForm('frmJournal'); bizFocus('contactSel');";
         }
     }
 
@@ -129,8 +128,7 @@ if (jq('#contactSel').length) jq('#contactSel').next().find('input').focus();";
     private function getProps($data)
     {
         $data['fields']['main']['sales_order_num'] = ['label'=>lang('journal_main_invoice_num_10'),'attr'=>['value'=>isset($this->soNum)?$this->soNum:'','readonly'=>'readonly']];
-        return [
-            'id'             => $data['fields']['main']['id'],
+        return ['id'         => $data['fields']['main']['id'],
             'journal_id'     => $data['fields']['main']['journal_id'],
             'so_po_ref_id'   => $data['fields']['main']['so_po_ref_id'],
             'terms'          => $data['fields']['main']['terms'],
@@ -141,16 +139,17 @@ if (jq('#contactSel').length) jq('#contactSel').next().find('input').focus();";
             'item_array'     => $data['item_array'],
             'xChild'         => ['attr'=>['type'=>'hidden']],
             'xAction'        => ['attr'=>['type'=>'hidden']],
+            'store_id'       => $data['fields']['main']['store_id'],
             // Displayed
-            'invoice_num'    => array_merge(['break'=>true], $data['fields']['main']['invoice_num']),
-            'post_date'      => array_merge(['break'=>true], $data['fields']['main']['post_date']),
-            'purch_order_id' => array_merge(['break'=>true], $data['fields']['main']['purch_order_id']),
-            'store_id'       => array_merge(['break'=>true], $data['fields']['main']['store_id']),
-            'rep_id'         => array_merge(['break'=>true], $data['fields']['main']['rep_id']),
-            'terms_text'     => $data['terms_text'],
-            'currency'       => array_merge(['break'=>true], $data['fields']['main']['currency']),
-            'closed'         => array_merge(['break'=>true], $data['fields']['main']['closed']),
-            'waiting'        => array_merge(['break'=>true], $data['fields']['main']['waiting'])];
+            'invoice_num'    => array_merge($data['fields']['main']['invoice_num'],   ['break'=>true,'order'=>10]),
+            'post_date'      => array_merge($data['fields']['main']['post_date'],     ['break'=>true,'order'=>20]),
+            'rep_id'         => array_merge($data['fields']['main']['rep_id'],        ['break'=>true,'order'=>30]),
+            'currency'       => array_merge($data['fields']['main']['currency'],      ['break'=>true,'order'=>40]),
+            'purch_order_id' => array_merge($data['fields']['main']['purch_order_id'],['break'=>true,'order'=>50]),
+            'terms_text'     => array_merge($data['terms_text'],                      ['break'=>true,'order'=>60]),
+            'waiting'        => array_merge($data['fields']['main']['waiting'],       ['break'=>true,'order'=>80]), // messages
+            'closed'         => array_merge($data['fields']['main']['closed'],        ['break'=>true,'order'=>90]),
+            ];
     }
 
 /*******************************************************************************************************************/

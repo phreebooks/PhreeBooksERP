@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-03-08
+ * @version    3.x Last Update: 2018-08-13
  * @filesource /lib/controller/module/phreebooks/reconcile.php
  */
 
@@ -32,17 +32,25 @@ class phreebooksReconcile
      */
     public function manager(&$layout=[])
     {
-		$dgName = 'dgReconcile';
         if (!$security = validateSecurity('phreebooks', 'recon', 3)) { return; }
-		$js = "
-lastIndex = -1;
-var pauseTotal = true;
-function preSubmit() {
-    var items = jq('#$dgName').treegrid('getData');
+		$htmlHead = html5('frmReconcile',['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/reconcile/save"]]).
+                    html5('item_array',  ['attr'=>['type'=>'hidden']]);
+		$data = ['title'=> lang('phreebooks_recon'),
+			'toolbars'=> ['tbRecon'=>['icons'=>['save'=>['order'=>40,'events'=>['onClick'=>"jq('#frmReconcile').submit();"]]]]],
+			'datagrid'=> ['manager'=>$this->tgReconcile('tgReconcile')],
+			'divs'    => [
+                'submenu'=> ['order'=>10,'type'=>'html',    'html'=>viewSubMenu('banking')],
+                'toolbar'=> ['order'=>20,'type'=>'toolbar', 'key' =>'tbRecon'],
+				'formBOF'=> ['order'=>40,'type'=>'html',    'html'=>$htmlHead],
+				'dgRecon'=> ['order'=>60,'type'=>'datagrid','key' =>'manager','label'=>lang('phreebooks_recon')],
+				'formEOF'=> ['order'=>90,'type'=>'html',    'html'=>'</form>']],
+            'jsHead'  => ['init'=>"jq.cachedScript('".BIZUNO_URL."controller/module/phreebooks/phreebooks.js?ver=".MODULE_BIZUNO_VERSION."');"],
+            'jsBody'  => ['preSubmit'=>"function preSubmit() {
+    var items = jq('#tgReconcile').treegrid('getData');
     var rowsChk = [];
     for (var i=0; i<items.length; i++) {
         if (items[i].id.substr(0, 4) == 'pID_') {
-            var node = jq('#$dgName').treegrid('getChildren', items[i].id);
+            var node = jq('#tgReconcile').treegrid('getChildren', items[i].id);
             for (var j=0; j<node.length; j++) rowsChk.push(node[j]);
         } else {
             rowsChk.push(items[i]);
@@ -51,95 +59,8 @@ function preSubmit() {
     var serializedItems = JSON.stringify(rowsChk);
     jq('#item_array').val(serializedItems);
     return true;
-}
-function reconInit(row, data) {
-    var stmtBal = formatCurrency(data.footer[0].total);
-    jq('#stmt_balance').val(stmtBal);
-    pauseTotal = true;
-    for (var i=0; i<data.rows.length; i++) {
-        if (data.rows[i]['rowChk'] > 0) { 
-            jq('#$dgName').treegrid('checkRow', data.rows[i].id);
-            reconCheck(data.rows[i]);
-        } else {
-            jq('#$dgName').treegrid('uncheckRow', data.rows[i].id); // this slows down load but necesary to clear parents during period or acct change
-//            reconUncheck(data.rows[i]); // this causes EXTREMELY SLOW page loads, should not be necessary
-        }
-    }
-    pauseTotal = false;
-    reconTotal();
-}
-function reconCheck(row) {
-    jq('#$dgName').treegrid('update',{ id:row.id, row:{rowChk: true} });
-    if (row.id.substr(0, 4) == 'pID_') {
-        var node = jq('#$dgName').treegrid('getChildren', row.id);
-        for (var j=0; j<node.length; j++) {
-            jq('#$dgName').treegrid('update',{ id:node[j].id, row:{rowChk: true} });
-            jq('#$dgName').treegrid('checkRow', node[j].id);
-        }
-    } else if (typeof row._parentId !== 'undefined') {
-        reconCheckChild(row._parentId);
-    }
-}
-function reconCheckChild(parentID) {
-    var node = jq('#$dgName').treegrid('getChildren', parentID);
-    var allChecked = true;
-    for (var j=0; j<node.length; j++) if (!node[j].rowChk) { allChecked = false; }
-    if (allChecked) jq('#$dgName').treegrid('update',{ id:parentID, row:{rowChk: true} });
-}
-function reconUncheck(row) {
-    jq('#$dgName').treegrid('update',{ id:row.id, row:{rowChk: false} });
-    if (row.id.substr(0, 4) == 'pID_') {
-        var node = jq('#$dgName').treegrid('getChildren', row.id);
-        for (var j=0; j<node.length; j++) {
-            jq('#$dgName').treegrid('update',{ id:node[j].id, row:{rowChk: false} });
-            jq('#$dgName').treegrid('uncheckRow', node[j].id);
-        }
-    } else if (typeof row._parentId !== 'undefined') {
-        jq('#$dgName').treegrid('update',{ id:row._parentId, row:{rowChk: false} });
-    }
-}
-function reconTotal() {
-    if (pauseTotal) { return; }
-    var openTotal  = 0;
-    var closedTotal= 0;
-    var items = jq('#$dgName').treegrid('getData');
-    for (var i=0; i<items.length; i++) {
-        if (isNaN(items[i]['total'])) alert('error in total = '+items[i]['total']);
-        if (items[i]['id'].substr(0, 4) == 'pID_') {
-            var node = jq('#$dgName').treegrid('getChildren', items[i]['id']);
-            for (var j=0; j<node.length; j++) {
-                ttl = parseFloat(node[j]['deposit']) - parseFloat(node[j]['withdrawal']);
-                if (node[j]['rowChk']) { closedTotal += ttl; }
-                else                    { openTotal += ttl; }
-            }
-        } else {
-            if (items[i]['rowChk']) { closedTotal += parseFloat(items[i]['total']); }
-            else                    { openTotal   += parseFloat(items[i]['total']); }
-        }
-    }
-    var stmt  = cleanCurrency(jq('#stmt_balance').val());
-    var footer= jq('#$dgName').treegrid('getFooterRows');
-    var gl    = parseFloat(footer[3]['total']);
-    footer[0]['total'] = stmt;
-    footer[1]['total'] = closedTotal;
-    footer[2]['total'] = openTotal;
-    footer[4]['total'] = stmt + openTotal - gl;
-    jq('#$dgName').datagrid('reloadFooter');
-}
-ajaxForm('frmReconcile')";
-		$htmlHead = html5('frmReconcile', ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/reconcile/save"]]).
-                    html5('item_array', ['attr'=>['type'=>'hidden']]);
-		$data = [
-            'pageTitle'=> lang('phreebooks_recon'),
-			'toolbars' => ['tbRecon'=>['icons'=>['save'=>['order'=>40,'events'=>['onClick'=>"jq('#frmReconcile').submit();"]]]]],
-			'datagrid' => ['manager'=>$this->tgReconcile($dgName)],
-			'divs'     => [
-                'submenu'  => ['order'=>10, 'type'=>'html', 'html'=>viewSubMenu('banking')],
-                'toolbar'  => ['order'=>20, 'type'=>'toolbar','key' =>'tbRecon'],
-				'headRecon'=> ['order'=>40, 'type'=>'html',   'html'=>$htmlHead],
-				'dgRecon'  => ['order'=>60, 'label'=>lang('phreebooks_recon'), 'type'=>'datagrid', 'key'=>'manager'],
-				'footRecon'=> ['order'=>90, 'type'=>'html', 'html'=>'</form>']],
-            'javascript' => ['reconcile'=>$js]];
+}"],
+            'jsReady' => ['init'=> "ajaxForm('frmReconcile');"]];
 		$layout = array_replace_recursive($layout, viewMain(), $data);
 	}
 
@@ -245,48 +166,32 @@ ajaxForm('frmReconcile')";
 			'period'=> getModuleCache('phreebooks', 'fy', 'period'),
 			'glAcct'=> getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash')];
 		$stmt_balance = dbGetValue(BIZUNO_DB_PREFIX."journal_history", 'stmt_balance', "period='{$this->defaults['period']}' AND gl_account='{$this->defaults['glAcct']}'");
-		return [
-            'type' => 'treegrid',
-			'id'    => $name,
-			'title' => lang('phreebooks_recon'),
-			'attr'  => [
-                'url'          => BIZUNO_AJAX."&p=phreebooks/reconcile/managerRows",
-				'toolbar'      => "#{$name}Toolbar",
-				'singleSelect' => false,
-				'showFooter'   => true,
-				'animate'      => true,
-				'pagination'   => false,
-				'width'        => 1000,
-//				'height'       => 600,
-				'idField'      =>'id',
-				'treeField'    =>'title'],
+		return ['id'=>$name, 'type'=>'treegrid', 'title'=>lang('phreebooks_recon'),
+			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'treeField'=>'title', 'singleSelect'=>false, 'showFooter'=>true, 'animate'=>true, 'pagination'=>false, 'width'=>1000,
+                'url' => BIZUNO_AJAX."&p=phreebooks/reconcile/managerRows"],
 			'events' => [
-                'onCheck'      => "function(row) { reconCheck(row); reconTotal(); }",
-                'onCheckAll'   => "function(rows){ for (var i=0; i<rows.length; i++) { reconCheck(rows[i]); } reconTotal(); }",
-                'onUncheck'    => "function(row) { reconUncheck(row); reconTotal(); }",
-                'onUncheckAll' => "function(rows){ for (var i=0; i<rows.length; i++) { reconUncheck(rows[i]); } reconTotal(); }",
-                'onLoadSuccess'=> "reconInit"],
+                'onLoadSuccess'=> "function(row, data){ reconInit(row, data); }",
+                'onCheck'      => "function(row)      { reconCheck(row); reconTotal(); }",
+                'onCheckAll'   => "function(rows)     { for (var i=0; i<rows.length; i++) { reconCheck(rows[i]); } reconTotal(); }",
+                'onUncheck'    => "function(row)      { reconUncheck(row); reconTotal(); }",
+                'onUncheckAll' => "function(rows)     { for (var i=0; i<rows.length; i++) { reconUncheck(rows[i]); } reconTotal(); }"],
 			'source' => [
-                'filters' => [
-                    'period'=> ['order'=>10,
-						'html'=> ['label'=>lang('period'), 'values'=>dbPeriodDropDown(false), 'attr'=>['type'=>'select','value'=>$this->defaults['period']]]],
-					'glAcct'=> ['order'=>20,
-						'html'=> ['label'=>pullTableLabel('journal_main', 'gl_acct_id'), 'values'=>dbGLDropDown(false,['0']), 'attr'=>['type'=>'select','value'=>$this->defaults['glAcct']]]]],
-				'fields' => [
-                    'stmt_balance' => ['order'=>70,
-						'html'=> ['label'=>lang('statement_balance'),'styles'=>  ['text-align'=>'right'], 'attr'=>  ['value'=>viewFormat($stmt_balance, 'currency')]]]]],
-			'columns' => [
+                'filters'=> [
+                    'period'=> ['order'=>10,'options'=>['width'=>300],'label'=>lang('period'),'break'=>true,'values'=>dbPeriodDropDown(false),'attr'=>['type'=>'select','value'=>$this->defaults['period']]],
+					'glAcct'=> ['order'=>20,'options'=>['width'=>350],'label'=>pullTableLabel('journal_main', 'gl_acct_id'),'values'=>dbGLDropDown(false,['0']), 'attr'=>['type'=>'select','value'=>$this->defaults['glAcct']]]],
+				'fields' => ['stmt_balance'=>['order'=>50,'label'=>lang('statement_balance'),'attr'=>['type'=>'currency','value'=>$stmt_balance]]]],
+			'columns'=> [
                 'id'         => ['order'=> 0,'attr'=>['hidden'=>true]],
 				'reconciled' => ['order'=> 0,'attr'=>['hidden'=>true]],
 				'reference'  => ['order'=>20,'label'=>lang('reference'),  'attr'=>['width'=>120,'resizable'=>true,'sortable'=>true]],
 				'post_date'  => ['order'=>30,'label'=>lang('date'),       'attr'=>['width'=> 80,'resizable'=>true,'sortable'=>true]],
 				'deposit'    => ['order'=>40,'label'=>lang('deposit'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'right'],
-					'events'=>  ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
 				'withdrawal' => ['order'=>50,'label'=>lang('withdrawal'), 'attr'=>['width'=>100,'resizable'=>true,'align'=>'right'],
-					'events'=>  ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
 				'title'      => ['order'=>60,'label'=>lang('description'),'attr'=>['width'=>275,'resizable'=>true]],
 				'total'      => ['order'=>70,'label'=>lang('total'),      'attr'=>['width'=>100,'resizable'=>true,'sortable'=>true,'align'=>'right'],
-					'events'=>  ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
 				'cleared'    => ['order'=>80,'attr'=>['checkbox'=>true]]]];
 	}
 	

@@ -17,13 +17,15 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-01
+ * @version    3.x Last Update: 2018-08-21
  * @filesource /controller/module/phreeform/functions.php
  */
 
 namespace bizuno;
 
 /**
+ * !!! DEPRECATED !!! use /view/main.php function viewProcess
+ * 
  * Processes a string of data with a user specified process, returns unprocessed if function not found
  * @param mixed $strData - data to process
  * @param string $Process - process to apply to the data
@@ -401,6 +403,8 @@ function prefixTables($field)
 }
 
 /**
+ * @todo !!! DEPRECATED !!! - NEEDS TO BE ROLLED INTO model/db.php function dbSqlDates
+ * 
  * Builds sql date string and description string based on passed criteria
  * date_prefs format:
  *   entry 1 => date range specification for switch statement
@@ -560,11 +564,11 @@ function phreeformCriteria($report, $xOnly=false)
   		$fc = '';
   		switch ($settings->default) {
 	  	  case 'range':
-	  	  	if ($settings->min) { // a from value entered, check
+	  	  	if (!empty($settings->min)) { // a from value entered, check
 	  	  		$sc .= prefixTables($settings->fieldname).">='$settings->min'";
 	  	  		$fc .= $settings->title." >= ".$settings->min;
 	  	  	}
-	  	  	if ($settings->max) { // a to value entered, check
+	  	  	if (!empty($settings->max)) { // a to value entered, check
 	  	  		if (strlen($sc)>0) { $sc .= ' AND '; $fc .= ' '.lang('and').' '; }
 	  	  		$sc .= prefixTables($settings->fieldname)."<='$settings->max'";
 	  	  		$fc .= $settings->title." <= ".$settings->max;
@@ -678,7 +682,7 @@ function BuildDataArray($sql, $report)
 	$GrpWorking = false;
 	$OutputArray= [];
 	foreach ($result as $myrow) { // Check to see if a total row needs to be displayed
-        $report->currentRow = $myrow; // save the current row for processing
+        $GLOBALS['currentRow'] = $myrow; // save the current row for processing
 		$report->currentValues = false; // reset the stored processing values to save sql's
 		if (isset($GrpField) && $GrpField) { // we're checking for group totals, see if this group is complete
 			if (($myrow[$GrpField] <> $GrpWorking) && $GrpWorking !== false) { // it's a new group so print totals
@@ -804,12 +808,10 @@ function phreeformFonts($show_default=true)
  */
 function convertHex($value)
 {
-//    msgDebug("\nConverting: $value and is string = ".(is_string($value)?'true':'false'));
     if (strpos($value, '#') === 0) { return $value; } // already in hex, strip the hash
     $colors = explode(':', $value);
     $output = NULL;
     foreach ($colors as $decimal) { $output .= str_pad(dechex($decimal), 2, "0", STR_PAD_LEFT); }
-//    msgDebug(" NOT detected hex, returning #$output");
     return '#'.$output;
 }
 

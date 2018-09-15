@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-07-09
+ * @version    3.x Last Update: 2018-09-13
  * @filesource /lib/model/encrypter.php
  */
 
@@ -202,7 +202,7 @@ final class encryption {
                 $values = explode(':', $encVal);
                 $text = !empty($values[0]) ? $values[0].': ' : '';
             }
-            $output[] = ['id'=>$row['id'], 'text'=>$text.$row['hint'].' - '.viewDate($row['exp_date'])];
+            $output[] = ['id'=>$row['id'], 'text'=>$text.$row['hint'].' - '.viewDate($row['exp_date']), 'hint'=>$row['hint']];
         }
         return $output;
     }

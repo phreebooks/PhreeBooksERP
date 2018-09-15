@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-06-29
+ * @version    3.x Last Update: 2018-06-29
  * @filesource /lib/controller/module/phreebooks/journals/j12.php
  */
 
@@ -136,21 +136,22 @@ class j12 extends jCommon
                     $row['bal']= $row['bal'] - $filled + $row['qty']; // so/po - filled prior + this order
                 }
                 if ($row['sku']) { // now fetch some inventory details for the datagrid
-                    $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['qty_stock', 'item_weight'], "sku='{$row['sku']}'");
+                    $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['inventory_type', 'qty_stock', 'item_weight'], "sku='{$row['sku']}'");
                     $inv_adj = in_array($this->journalID, [3,4,6,13,21]) ? -$row['qty'] : $row['qty'];
-                    $row['qty_stock']  = $inv['qty_stock'] + $inv_adj;
-                    $row['item_weight']= $inv['item_weight'];
+                    $row['qty_stock']     = $inv['qty_stock'] + $inv_adj;
+                    $row['inventory_type']= $inv['inventory_type'];
+                    $row['item_weight']   = $inv['item_weight'];
                 }
                 $dbData[] = $row;
             }
         }
-        if (!in_array($this->journalID, [2])) {
-            if ($debitCredit=='credit') { $map['credit_amount']= ['type'=>'field','index'=>'total']; }
-            if ($debitCredit=='debit')  { $map['debit_amount'] = ['type'=>'field','index'=>'total']; }
-        }
+        if ($debitCredit=='credit') { $map['credit_amount']= ['type'=>'field','index'=>'total']; }
+        if ($debitCredit=='debit')  { $map['debit_amount'] = ['type'=>'field','index'=>'total']; }
+        // add some extra fields needed for validation
+        $structure['journal_item']['inventory_type'] = ['attr'=>['type'=>'hidden']];
         $data['jsHead']['datagridData'] = formatDatagrid($dbData, 'datagridData', $structure['journal_item'], $map);
     }
-    
+
     /**
      * Tailors the structure for the specific journal
      * @param array $data - current working structure
@@ -161,7 +162,7 @@ class j12 extends jCommon
     {
         $data['datagrid']['item'] = $this->dgOrders('dgJournalItem', 'c');
         if ($this->action=='inv') {
-            $data['datagrid']['item']['source']['actions']['fillAll'] = ['order'=>10,'html'=>['icon'=>'select_all','size'=>'large','hidden'=>$security>1?false:true,'events'=>['onClick'=>"phreebooksSelectAll();"]]];
+            $data['datagrid']['item']['source']['actions']['fillAll'] = ['order'=>10,'icon'=>'select_all','size'=>'large','hidden'=>$security>1?false:true,'events'=>['onClick'=>"phreebooksSelectAll();"]];
         }
         $data['fields']['main']['gl_acct_id']['attr']['value'] = getModuleCache('phreebooks', 'settings', 'customers', 'gl_receivables');
         if (!$rID) { // new order
@@ -186,12 +187,12 @@ class j12 extends jCommon
             $this->soNum = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'invoice_num', "id={$data['fields']['main']['so_po_ref_id']['attr']['value']}");
         }
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields']['main'], '_b'),
+            'billAD' => ['order'=>20,'label'=>lang('address_book_type_b'),'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields']['main'], '_b'),
                 'settings'=>['suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false]],
-            'shipAD' => ['order'=>30,'type'=>'address','label'=>lang('ship_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_s'],'content'=>$this->cleanAddress($data['fields']['main'], '_s'),
+            'shipAD' => ['order'=>30,'label'=>lang('address_book_type_s'),'type'=>'address','label'=>lang('ship_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_s'],'content'=>$this->cleanAddress($data['fields']['main'], '_s'),
                 'settings'=>['suffix'=>'_s','search'=>true,'update'=>true,'validate'=>true,'drop'=>true]],
-            'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'fields'=>$this->getProps($data)],
-            'totals' => ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
+            'props'  => ['order'=>40,'label'=>lang('details'),'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'fields'=>$this->getProps($data)],
+            'totals' => ['order'=>50,'label'=>lang('totals'), 'type'=>'totals','classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
         $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
         $data['divs']['other']  = ['order'=>70,'type'=>'html','html'=>'<div id="shippingEst"></div><div id="shippingVal"></div>'];
     }
@@ -204,8 +205,7 @@ class j12 extends jCommon
     private function getProps($data)
     {
         $data['fields']['main']['sales_order_num'] = ['label'=>lang('journal_main_invoice_num_10'),'attr'=>['value'=>isset($this->soNum)?$this->soNum:'','readonly'=>'readonly']];
-        return [
-            'id'             => $data['fields']['main']['id'],
+        return ['id'         => $data['fields']['main']['id'],
             'journal_id'     => $data['fields']['main']['journal_id'],
             'so_po_ref_id'   => $data['fields']['main']['so_po_ref_id'],
             'terms'          => $data['fields']['main']['terms'],
@@ -216,19 +216,19 @@ class j12 extends jCommon
             'item_array'     => $data['item_array'],
             'xChild'         => ['attr'=>['type'=>'hidden']],
             'xAction'        => ['attr'=>['type'=>'hidden']],
+            'store_id'       => $data['fields']['main']['store_id'],
             // Displayed
-            'purch_order_id' => array_merge(['break'=>true], $data['fields']['main']['purch_order_id']),
-            'terms_text'     => $data['terms_text'],
-            'terms_edit'     => array_merge(['break'=>true], $data['terms_edit']),
-            'invoice_num'    => array_merge(['break'=>true], $data['fields']['main']['invoice_num']),
-            'waiting'        => array_merge(['break'=>true], $data['fields']['main']['waiting']),
-            'post_date'      => array_merge(['break'=>true], $data['fields']['main']['post_date']),
-            'terminal_date'  => array_merge(['break'=>true], $data['fields']['main']['terminal_date']),
-            'store_id'       => array_merge(['break'=>true], $data['fields']['main']['store_id']),
-            'sales_order_num'=> $this->journalID==12 ? array_merge(['break'=>true], $data['fields']['main']['sales_order_num']) : ['attr'=>['type'=>'hidden']],
-            'rep_id'         => array_merge(['break'=>true], $data['fields']['main']['rep_id']),
-            'currency'       => array_merge(['break'=>true], $data['fields']['main']['currency']),
-            'closed'         => array_merge(['break'=>true], $data['fields']['main']['closed'])];
+            'purch_order_id' => array_merge($data['fields']['main']['purch_order_id'], ['break'=>true,'order'=>10]),
+            'invoice_num'    => array_merge($data['fields']['main']['invoice_num'], ['break'=>true,'order'=>20]),
+            'waiting'        => array_merge($data['fields']['main']['waiting'], ['break'=>true,'order'=>25]),
+            'closed'         => array_merge($data['fields']['main']['closed'], ['break'=>true,'order'=>26]),
+            'terms_text'     => array_merge($data['terms_text'],['order'=>30]),
+            'terms_edit'     => array_merge($data['terms_edit'],['break'=>true,'order'=>31]),
+            'post_date'      => array_merge($data['fields']['main']['post_date'], ['break'=>true,'order'=>40]),
+            'terminal_date'  => array_merge($data['fields']['main']['terminal_date'], ['break'=>true,'order'=>41]),
+            'rep_id'         => array_merge($data['fields']['main']['rep_id'], ['break'=>true,'order'=>50]),
+            'currency'       => array_merge($data['fields']['main']['currency'], ['break'=>true,'order'=>70]),
+            'sales_order_num'=> array_merge($data['fields']['main']['sales_order_num'], ['break'=>true,'order'=>77])];
     }
 
 /*******************************************************************************************************************/

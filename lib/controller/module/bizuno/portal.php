@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft
+ * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    2.x Last Update: 2018-02-06
+ * @version    3.x Last Update: 2018-02-06
  * @filesource lib/controller/module/bizuno/portal.php
  */
 
@@ -68,7 +68,7 @@ class bizunoPortal extends guest
         setUserCache('quickBar', false, $qlinks);
         $usrEmail = getUserCache('profile', 'email', false, '');
         dbWriteCache($usrEmail); // save changes before invalidating cache
-        dbWrite(BIZUNO_DB_PREFIX.'users', ['cache_date'=>'0000-00-00'], 'update', "email='$usrEmail'");
+        dbWrite(BIZUNO_DB_PREFIX.'users', ['cache_date'=>''], 'update', "email='$usrEmail'");
         biz_user_logout();
 		header('Location: '.BIZUNO_HOME);
 	}
