@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-10
+ * @version    3.x Last Update: 2018-09-19
  * @filesource /view/main.php
  */
 
@@ -32,7 +32,7 @@ final class view extends portalView
         // declare global data until all modules are converted to new nested structure
         global $viewData;
         $viewData = $data;
-        $this->output = ['head'=>'','jsHead'=>[],'body'=>'','jsBody'=>[],'jsReady'=>[],'jsResize'=>[],'raw'=>''];
+        $this->output = ['head'=>[],'jsHead'=>[],'body'=>'','jsBody'=>[],'jsReady'=>[],'jsResize'=>[],'raw'=>''];
         parent::__construct();
         $this->render($data);
 	}
@@ -222,7 +222,7 @@ function viewFormat($value, $format = '')
 		case 'neg':       return -$value;
 		case 'n2wrd':     require_once(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/functions.php");
 			return viewCurrencyToWords($value);
-        case 'null0':     return ((real)$value == 0) ? '' : $value;
+        case 'null0':     return (round((real)$value, 4) == 0) ? '' : $value;
         case 'number':    return number_format((float)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'), getModuleCache('bizuno', 'settings', 'locale', 'number_decimal'), getModuleCache('bizuno', 'settings', 'locale', 'number_thousand'));
 		case 'printed':   return $value ? '' : lang('duplicate');
         case 'precise':   $output = number_format((real)$value, getModuleCache('bizuno', 'settings', 'locale', 'precision'));
@@ -290,7 +290,7 @@ function viewFormat($value, $format = '')
 function viewDate($raw_date = '', $long = false)
 {
 	// from db to locale display format
-    if (!$raw_date) { return ''; }
+    if (empty($raw_date) || $raw_date=='0000-00-00' || $raw_date=='0000-00-00 00:00:00') { return ''; }
 	$error  = false;
 	$year   = substr($raw_date,  0, 4);
 	$month  = substr($raw_date,  5, 2);

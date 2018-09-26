@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-07-01
+ * @version    3.x Last Update: 2018-09-18
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -643,13 +643,11 @@ function insertChartOfAccountsHistory($glAcct='', $glType='', $period=1)
 
 function chartSales($jID, $range='c', $pieces=10, $reps=false)
 {
-    require(BIZUNO_LIB.'controller/module/phreeform/functions.php');
-    // Calculate the range to collect data
     switch ($jID) {
         default:
         case 12: $type='c'; $filter = "journal_id IN (12,13)";
     }
-    $dates = phreeformSQLDate($range);
+    $dates = dbSqlDates($range);
     $filter .= " AND ".$dates['sql'];
     if ($reps && getUserCache('profile', 'contact_id', false, '0')) {
         if (getUserCache('security', 'admin', false, 0)<3) { $filter.= " AND rep_id='".getUserCache('profile', 'contact_id', false, '0')."'"; }

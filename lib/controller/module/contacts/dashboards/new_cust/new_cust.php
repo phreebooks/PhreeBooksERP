@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-10
+ * @version    3.x Last Update: 2018-09-18
  * @filesource /lib/controller/module/phreebooks/dashboards/new_cust/new_cust.php
  */
 
@@ -51,7 +51,6 @@ class new_cust
 
 	public function render()
     {
-        require(BIZUNO_LIB.'controller/module/phreeform/functions.php');
         $js = "function chart{$this->code}() {
     var data = new google.visualization.DataTable();
     data.addColumn('string', ' ');
@@ -72,7 +71,7 @@ google.charts.setOnLoadCallback(chart{$this->code});\n";
     
     private function getTotals($range='c')
     {
-        $dates = phreeformSQLDate($range, 'first_date');
+        $dates = dbSqlDates($range, 'first_date');
         if (!$stmt = dbGetResult("SELECT COUNT(*) AS count FROM ".BIZUNO_DB_PREFIX."contacts WHERE type='c' AND ".$dates['sql'])) { 
             return msgAdd(lang('err_bad_sql'));
         }

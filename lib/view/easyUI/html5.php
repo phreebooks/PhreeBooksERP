@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-13
+ * @version    3.x Last Update: 2018-09-19
  * @filesource /view/easyUI/html5.php
  */
 
@@ -107,20 +107,20 @@ final class html5 {
                 }
                 break;
             case 'table':
-                if (isset($prop['key'])) { // legacy to old style
+                if (isset($prop['key'])) {
                     $prop = array_merge($prop, $viewData['tables'][$prop['key']]);
                     $prop['attr']['id'] = $prop['key'];
                 }
                 $this->layoutTable($output, $prop);
                 break;
             case 'tabs':
-                if (isset($prop['key'])) {  // legacy to old style
+                if (isset($prop['key'])) {
                     $prop = array_merge($viewData['tabs'][$prop['key']], ['id'=>$prop['key']]);
                 }
                 $this->layoutTab($output, $prop);
                 break;
             case 'toolbar':
-                if (isset($prop['key'])) {  // legacy to old style
+                if (isset($prop['key'])) {
                     $prop = array_merge($viewData['toolbars'][$prop['key']], ['id' => $prop['key']]);
                 }
                 $this->layoutToolbar($output, $prop);
@@ -138,7 +138,7 @@ final class html5 {
                 if (!empty($prop['label'])) { $output['body'] .= '</fieldset>'; }
                 break;
             case 'tree':
-                if (isset($prop['key'])) {  // legacy to old style
+                if (isset($prop['key'])) { 
                     $prop['el'] = array_merge($viewData['tree'][$prop['key']], ['id' => $prop['key']]);
                 }
                 $this->layoutTree($output, $prop['el']);
@@ -825,66 +825,61 @@ final class html5 {
         } }
         if (!$attr['search']) { $structure['contactSel'] = ['attr'=>['type'=>'hidden']]; }
         else {
-            $attr['callback'] = 'contactsDetail';
+            $attr['callback'] = "contactsDetail(row.id, '{$attr['suffix']}', '{$attr['fill']}');";
             $structure['contactSel'] = ['defaults'=>$attr,'attr'=>['type'=>'contact']]; }
         // build pull down selection
-        if ($attr['clear']) { $output['body'] .= ' '.html5('', ['icon'=>'clear','size'=>'small','events'=>['onClick'=>"addressClear('{$attr['suffix']}')"]])."\n"; }
+        if ($attr['clear']) { $output['body'] .= ' '.html5('', ['icon'=>'clear','size'=>'small','events'=>['onClick'=>"addressClear('{$attr['suffix']}')"]]); }
         if ($attr['validate'] && getModuleCache('extShipping', 'properties', 'status')) {
-            $output['body'] .= ' '.html5('', ['icon'=>'truck','size'=>'small','label'=>lang('validate_address'),'events'=>['onClick'=>"shippingValidate('{$attr['suffix']}');"]])."\n";
+            $output['body'] .= ' '.html5('', ['icon'=>'truck','size'=>'small','label'=>lang('validate_address'),'events'=>['onClick'=>"shippingValidate('{$attr['suffix']}');"]]);
         }
         if ($attr['copy']) {
             $src = explode(':', $attr['copy']);
             if (empty($src[1])) { $src = ['_b', '_s']; } // defaults
-            $output['body'] .= ' '.html5('',['icon'=>'copy','size'=>'small','events'=>['onClick'=>"addressCopy('{$src[0]}', '{$src[1]}')"]])."\n";
+            $output['body'] .= ' '.html5('',['icon'=>'copy','size'=>'small','events'=>['onClick'=>"addressCopy('{$src[0]}', '{$src[1]}')"]]);
         }
-        $output['body'] .= "<br />\n";
+        $output['body'] .= "<br />";
 
-        $output['body'] .= '<div id="contactDiv'.$attr['suffix'].'"'.($attr['drop']?' style="display:none"':'').'>'."\n";
-        $output['body'] .= html5('contactSel'.$attr['suffix'], $structure['contactSel']);
-        $output['body'] .= '<span id="spanContactProps'.$attr['suffix'].'" style="display:none">&nbsp;';
-        if ($attr['props']) { $output['body'] .= html5('contactProps'.$attr['suffix'], ['icon'=>'settings', 'size'=>'small',
-            'events' => ['onClick'=>"windowEdit('contacts/main/properties&rID='+jq('#contact_id{$attr['suffix']}').val(), 'winContactProps', '".jsLang('details')."', 1000, 600);"]]);
-        }
-        $output['body'] .= '</span></div>';
-        // Address select (hidden by default)
-        $output['body'] .= '  <div id="addressDiv'.$attr['suffix'].'" style="display:none">'.html5('addressSel'.$attr['suffix'], ['attr'=>['type'=>'text']])."</div>\n";
-        $output['jsBody']['addrCombo'.$attr['suffix']] = "var addressVals{$attr['suffix']} = ".(isset($data['address'][$attr['suffix']]) ? $data['address'][$attr['suffix']] : "[]").";
-jq('#addressSel{$attr['suffix']}').combogrid({
-    width:     150,
-    panelWidth:750,
-    data:      addressVals{$attr['suffix']},
-    idField:   'id',
-    textField: 'primary_name',
-    onSelect:  function (id, data){ addressFill(data, '{$attr['suffix']}'); },
-    columns:   [[
-        {field:'address_id', hidden:true},
-        {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
-        {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
-        {field:'city',        title:'".jsLang('address_book_city')."', width:100},
-        {field:'state',       title:'".jsLang('address_book_state')."', width: 50},
-        {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
-        {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]]
-});";
-// show the address drop down if values are present
-        if (isset($data['address'][$attr['suffix']])) { $output['jsReady'][] = "jq('#addressDiv{$attr['suffix']}').show();"; }
         // Options Bar
         if ($attr['update']) { $output['body'] .= html5('AddUpdate'.$attr['suffix'], ['label'=>lang('add_update'),'attr'=>['type'=>'checkbox']]); }
         if ($attr['drop']) {
             $drop_attr = ['type'=>'checkbox'];
             if (isset($structure['drop_ship']['attr']['checked'])) { $drop_attr['checked'] = 'checked'; }
             $output['body'] .= "<br />".html5('drop_ship'.$attr['suffix'], ['label'=>lang('drop_ship'), 'attr'=>$drop_attr,
-                'events' => ['onClick'=>"jq('#contactDiv{$attr['suffix']}').toggle();"]])."\n";
+                'events' => ['onClick'=>"jq('#contactDiv{$attr['suffix']}').toggle();"]]);
         }
         $output['body'] .= "<br />";
+
+        $output['body'] .= '<div id="contactDiv'.$attr['suffix'].'"'.($attr['drop']?' style="display:none"':'').'>';
+        $output['body'] .= html5('contactSel'.$attr['suffix'], $structure['contactSel']);
+        $output['body'] .= '<span id="spanContactProps'.$attr['suffix'].'" style="display:none">';
+        if ($attr['props']) { $output['body'] .= html5('contactProps'.$attr['suffix'], ['icon'=>'settings', 'size'=>'small',
+            'events' => ['onClick'=>"windowEdit('contacts/main/properties&rID='+jq('#contact_id{$attr['suffix']}').val(), 'winContactProps', '".jsLang('details')."', 1000, 600);"]]);
+        }
+        $output['body'] .= '</span></div>'."\n";
+        // Address select (hidden by default)
+        $output['body'] .= '<div id="addressDiv'.$attr['suffix'].'" style="display:none">'.html5('addressSel'.$attr['suffix'], ['attr'=>['type'=>'text']])."</div>";
+        $output['jsBody']['addrCombo'.$attr['suffix']] = "var addressVals{$attr['suffix']} = ".(isset($data['address'][$attr['suffix']]) ? $data['address'][$attr['suffix']] : "[]").";
+jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField:'id', textField:'primary_name', data:addressVals{$attr['suffix']},
+    onSelect: function (id, data){ addressFill(data, '{$attr['suffix']}'); },
+    columns:  [[
+        {field:'address_id', hidden:true},
+        {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
+        {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
+        {field:'city',        title:'".jsLang('address_book_city')."', width:100},
+        {field:'state',       title:'".jsLang('address_book_state')."', width: 50},
+        {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
+        {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]] });";
+// show the address drop down if values are present
+        if (isset($data['address'][$attr['suffix']])) { $output['jsReady'][] = "jq('#addressDiv{$attr['suffix']}').show();"; }
         if ($attr['format'] == 'short') { foreach ($structure as $key => $value) {
             if (!empty($value['label'])) { $structure[$key]['options']['prompt'] = "'".jsLang($value['label'])."'"; }
             unset($structure[$key]['label']);
         } }
         // Address fields
-        $output['body'] .= '<div>'."\n";
-        if (isset($structure['contact_id'])) { $output['body'] .= html5('contact_id'.$attr['suffix'], $structure['contact_id'])."\n"; }
-        $output['body'] .= html5('address_id'.$attr['suffix'],  $structure['address_id'])."\n";
-        $output['body'] .= html5('primary_name'.$attr['suffix'],$structure['primary_name'])."<br />\n";
+        $output['body'] .= '<div>';
+        if (isset($structure['contact_id'])) { $output['body'] .= html5('contact_id'.$attr['suffix'], $structure['contact_id']); }
+        $output['body'] .= html5('address_id'.$attr['suffix'],  $structure['address_id']);
+        $output['body'] .= html5('primary_name'.$attr['suffix'],$structure['primary_name'])."<br />";
         $output['body'] .= html5('contact'.$attr['suffix'],     $structure['contact'])."<br />\n";
         $output['body'] .= html5('address1'.$attr['suffix'],    $structure['address1'])."<br />\n";
         $output['body'] .= html5('address2'.$attr['suffix'],    $structure['address2'])."<br />\n";
@@ -896,7 +891,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({
         if (!empty($structure['telephone2'])) { $output['body'] .= html5('telephone2'.$attr['suffix'],$structure['telephone2'])."<br />\n"; }
         if (!empty($structure['telephone3'])) { $output['body'] .= html5('telephone3'.$attr['suffix'],$structure['telephone3'])."<br />\n"; }
         if (!empty($structure['telephone4'])) { $output['body'] .= html5('telephone4'.$attr['suffix'],$structure['telephone4'])."<br />\n"; }
-        $output['body'] .= html5('email'.$attr['suffix'],       $structure['email'])."<br />\n";
+        $output['body'] .= html5('email'.$attr['suffix'],       array_merge_recursive($structure['email'], ['options'=>['multiline'=>true,'width'=>275,'height'=>60]]))."<br />\n";
         if (!empty($structure['website']))    { $output['body'] .= html5('website'   .$attr['suffix'],$structure['website'])."<br />\n"; }
         if ($attr['notes']) { $output['body'] .= html5('email'.$attr['suffix'],$structure['email']); }
         $output['body'] .= "  </div>\n";
@@ -1120,6 +1115,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({
             $tabDiv['styles']['padding'] = '5px';
             if (!empty($tabDiv['icon'])) { $tabDiv['attr']['iconCls'] = "icon-{$tabDiv['icon']}"; }
             $output['body'] .= "<!-- Begin tab $tabID -->\n";
+            unset($tabDiv['label']); // clear the label or it will be create a duplicate fieldset
             $this->buildDiv($output, $tabDiv);
             $output['body'] .= "<!-- End tab $tabID -->\n";
         }
@@ -1312,6 +1308,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({
         $prop['classes'][] = 'easyui-switchbutton';
         $prop['options']['onText']  = "'".jsLang('yes')."'";
         $prop['options']['offText'] = "'".jsLang('no')."'";
+        $prop['attr']['type'] = 'text';
         return $this->input($id, $prop);
     }
 
@@ -1321,7 +1318,8 @@ jq('#addressSel{$attr['suffix']}').combogrid({
     }
 
     public function inputContact($id, $prop) {
-        $defaults = ['type'=>'c','value'=>0,'suffix'=>'','store'=>0,'drop'=>false,'fill'=>false,'data'=>false];
+        $defaults = ['type'=>'c','value'=>0,'suffix'=>'','store'=>0,'drop'=>false,'fill'=>false,'data'=>false,
+            'callback'=>"contactsDetail(row.id, '', false);"];
         $attr = array_merge($defaults, $prop['defaults']);
         $url = "'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1";
         $url .= "&type=" .(!empty($attr['drop'])  ? 'c' : $attr['type']);
@@ -1333,7 +1331,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({
         $prop['options']['onBeforeLoad']  = "function (param) { var newValue=jq('#$id').combogrid('getValue'); if (newValue.length < 3) return false; }";
         if (!empty($attr['data'])) { $prop['options']['data'] = $attr['data']; }
         if (!empty($attr['callback'])) {
-            $prop['options']['onClickRow']= "function (idx, row) { {$attr['callback']}(row.id, '{$attr['suffix']}', '{$attr['fill']}'); }";
+            $prop['options']['onClickRow']= "function (idx, row) { {$attr['callback']} }";
         }
         $prop['options']['columns']       = "[[{field:'id', hidden:true},
     {field:'short_name',  title:'".jsLang('contacts_short_name')."', width:100},
@@ -1382,13 +1380,11 @@ jq('#addressSel{$attr['suffix']}').combogrid({
     }
 
     public function inputEmail($id, $prop) {
-        if (empty($prop['styles']['width']))  { $prop['styles']['width']  = '300px'; }
-//      if (empty($prop['styles']['height'])) { $prop['styles']['height']= '38px'; }
         $prop['classes'][] = 'easyui-textbox easyui-validatebox';
-        $prop['options']['prompt']  = "'".jsLang('email')."'";
-        $prop['options']['iconCls'] = "'icon-email'";
-        unset($prop['attr']['type']);
-        return $this->input($id, $prop);
+        $defaults = ['options'=>['multiline'=>true,'width'=>275,'height'=>60,'prompt'=>"'".jsLang('email')."'",'iconCls'=>"'icon-email'"]];
+        $prop1 = array_replace_recursive($defaults, $prop);
+        $prop1['attr']['type'] = 'text';
+        return $this->input($id, $prop1);
     }
 
     /**

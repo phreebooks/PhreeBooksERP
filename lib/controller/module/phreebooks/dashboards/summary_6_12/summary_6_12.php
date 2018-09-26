@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-10
+ * @version    3.x Last Update: 2018-09-18
  * @filesource /lib/controller/module/phreebooks/dashboards/summary_6_12/summary_6_12.php
  */
 
@@ -101,7 +101,6 @@ google.charts.setOnLoadCallback(chart{$this->code});\n";
     public function dataSales($range='l')
     {
         msgDebug("\nEntering dataSales range = $range");
-        require_once(BIZUNO_LIB.'controller/module/phreeform/functions.php');
         if ($range == 'x') {
             $lmFirst = date("Y-m-d", strtotime("first day of previous month"));
             $lmLast  = date("Y-m-d", strtotime("first day of this month"));
@@ -109,7 +108,7 @@ google.charts.setOnLoadCallback(chart{$this->code});\n";
                 'start_date'=> $lmFirst,
                 'end_date'  => $lmLast];
         } else {
-            $dates  = phreeformSQLDate($range);
+            $dates  = dbSqlDates($range);
         }
         // break into week/month chunks with week ending/month ending, create array with values = 0
         $arrIncs= $this->createDateRange($dates['start_date'], $dates['end_date']);

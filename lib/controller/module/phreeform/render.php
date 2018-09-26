@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-07-01
+ * @version    3.x Last Update: 2018-09-18
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -45,19 +45,6 @@ class phreeformRender
 			9  => '1:in_list',
 			10 => '1:less_than',
 			11 => '1:greater_than'];
-        $this->dateChoices = [ // used to build pulldowns for filtering
-			['id'=>'a', 'text'=>lang('all')],
-			['id'=>'b', 'text'=>lang('range')],
-			['id'=>'c', 'text'=>lang('today')],
-			['id'=>'d', 'text'=>lang('dates_this_week')],
-			['id'=>'e', 'text'=>lang('dates_wtd')],
-			['id'=>'l', 'text'=>lang('dates_this_period')],
-			['id'=>'f', 'text'=>lang('dates_month')],
-			['id'=>'g', 'text'=>lang('dates_mtd')],
-			['id'=>'h', 'text'=>lang('dates_quarter')],
-			['id'=>'i', 'text'=>lang('dates_qtd')],
-			['id'=>'j', 'text'=>lang('dates_this_year')],
-			['id'=>'k', 'text'=>lang('dates_ytd')]];
     }
 
     /**
@@ -104,11 +91,11 @@ class phreeformRender
 			'fields'   => [
                 'id'        => ['attr'=>['type'=>'hidden',  'value'=>$rID]],
 				'fromName'  => ['label'=>lang('from'),      'lblStyle'=>['min-width'=>'50px'],'attr' =>['size'=>32,'value'=>$emailData['fromName']]],
-				'fromEmail' => ['options'=>['width'=>350],  'lblStyle'=>['min-width'=>'50px'],'label'=>lang('email'),'attr'=>['size'=>64,'value'=>$emailData['fromEmail']]],
+				'fromEmail' => ['options'=>['width'=>350],  'lblStyle'=>['min-width'=>'50px'],'label'=>lang('email'),'attr'=>['type'=>'email','value'=>$emailData['fromEmail']]],
 				'toName'    => ['label'=>lang('to'),        'lblStyle'=>['min-width'=>'50px'],'attr' =>['size'=>32,'value'=>$emailData['toName']]],
-				'toEmail'   => ['options'=>['width'=>350],  'lblStyle'=>['min-width'=>'50px'],'label'=>lang('email'),'attr'=>['size'=>64,'value'=>$emailData['toEmail']]],
+				'toEmail'   => ['options'=>['width'=>350],  'lblStyle'=>['min-width'=>'50px'],'label'=>lang('email'),'attr'=>['type'=>'email','value'=>$emailData['toEmail']]],
 				'CCName'    => ['label'=>lang('email_cc'),  'lblStyle'=>['min-width'=>'50px'],'attr' =>['size'=>32]],
-				'CCEmail'   => ['options'=>['width'=>350],  'lblStyle'=>['min-width'=>'50px'],'label'=>lang('email'),'attr'=>['size'=>64]],
+				'CCEmail'   => ['options'=>['width'=>350],  'lblStyle'=>['min-width'=>'50px'],'label'=>lang('email'),'attr'=>['type'=>'email']],
 				'msgSubject'=> ['options'=>['width'=>600],  'lblStyle'=>['min-width'=>'50px'],'label'=>lang('email_subject'),'attr'=>['size'=>40,'value'=>$emailData['msgSubject']]],
 				'msgBody'   => ['label'=>lang('email_body'),'lblStyle'=>['min-width'=>'50px'],'attr' =>['type'=>'textarea','value'=>$emailData['msgBody'],'cols'=>'80','rows'=>'10']],
 				'reports'   => $reports],
@@ -116,7 +103,7 @@ class phreeformRender
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbOpen'],
 				'heading'=> ['order'=>15,'type'=>'html',   'html'=>"<h1>$report->title</h1>\n",'<div id="winPhreeForm">'],
                 'formBOF'=> ['order'=>20,'type'=>'form',   'key'=>'frmPhreeform'],
-                'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form></div>"],],
+                'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"]],
             'jsHead' => [
                 'phreeform' => "jq.cachedScript('".BIZUNO_URL."controller/module/phreeform/phreeform.js?ver=".MODULE_BIZUNO_VERSION."');",
                 'jqDownload'=> "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js');"],
@@ -264,8 +251,6 @@ class phreeformRender
         } else {
             $output .= html5('rID', $viewData['fields']['id']);
         }
-        $output .= "</form>\n";
-        $output .= "</div>\n";
         return $output;
     }
 
@@ -313,7 +298,7 @@ class phreeformRender
     private function filterDates($dateList='abcdelfghijk')
     {
         $output = [];
-        foreach ($this->dateChoices as $row) {
+        foreach (viewDateChoices() as $row) {
             if (strpos($dateList, $row['id']) !== false) { $output[] = $row; }
         }
         return $output;

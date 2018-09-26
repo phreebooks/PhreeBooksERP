@@ -53,7 +53,7 @@ class subtotal
 		$hide   = $this->hidden ? ';display:none' : '';
         $output['body'] .= '<div style="text-align:right'.$hide.'">'.html5('totals_subtotal',$fields['totals_subtotal']).html5('',['icon'=>'blank','size'=>'small'])."</div>\n";
         $output['jsHead'][]= "function totals_subtotal(begBalance) {
-taxRunning = 0;
+    taxRunning = 0;
     var newBalance = begBalance;
     var rowData    = jq('#dgJournalItem').edatagrid('getData');
     for (var rowIndex=0; rowIndex<rowData.total; rowIndex++) {

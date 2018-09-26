@@ -34,19 +34,6 @@ class phreeformMain
     {
 		$this->lang = getLang($this->moduleID);
 		$this->security = getUserCache('security', 'phreeform');
-		$this->dateChoices = [ // used to build pulldowns for filtering
-			['id'=>'a', 'text'=>lang('all')],
-			['id'=>'b', 'text'=>lang('range')],
-			['id'=>'c', 'text'=>lang('today')],
-			['id'=>'d', 'text'=>lang('dates_this_week')],
-			['id'=>'e', 'text'=>lang('dates_wtd')],
-			['id'=>'l', 'text'=>lang('dates_this_period')],
-			['id'=>'f', 'text'=>lang('dates_month')],
-			['id'=>'g', 'text'=>lang('dates_mtd')],
-			['id'=>'h', 'text'=>lang('dates_quarter')],
-			['id'=>'i', 'text'=>lang('dates_qtd')],
-			['id'=>'j', 'text'=>lang('dates_this_year')],
-			['id'=>'k', 'text'=>lang('dates_ytd')]];
 	}
 
 	/**

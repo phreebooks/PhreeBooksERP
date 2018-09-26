@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-10
+ * @version    3.x Last Update: 2018-09-25
  * @filesource /lib/model/db.php
  */
 
@@ -381,7 +381,7 @@ function dbWriteCache($usrEmail=false, $lang=false)
 function dbClearCache($email='')
 {
     $crit = $email ? "email='$email'" : '';
-    dbWrite(BIZUNO_DB_PREFIX.'users', ['cache_date'=>''], 'update', $crit);
+    dbWrite(BIZUNO_DB_PREFIX.'users', ['cache_date'=>'null'], 'update', $crit);
 }
 
 /**
@@ -828,8 +828,7 @@ function dbGetFiscalDates($period)
 	$result = dbGetRow(BIZUNO_DB_PREFIX."journal_periods", "period=$period");
 	msgDebug("\nCalculating fiscal dates with period = $period. Resulted in: ".print_r($result, true));
 	if (!$result) { // post_date is out of range of defined accounting periods
-		msgAdd(lang('err_gl_post_date_invalid'));
-		return false;
+		return msgAdd(lang('err_gl_post_date_invalid'));
 	}
 	return $result;
 }
@@ -963,16 +962,16 @@ function dbSqlDates($dateType='a', $df=false) {
             $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($dates['Today']).'; ';
             break;
         case "j": // This Year
-            $YrStrt = getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 12);
-            $temp = dbGetFiscalDates($YrStrt);
-            $dbeg = $temp['start_date'];
-            $temp = dbGetFiscalDates($YrStrt + 11);
-            $dend = localeCalculateDate($temp['end_date'], 1);
-            $sql  = "$df>='$dbeg' AND $df<'$dend'";
-            $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($temp['end_date']).'; ';
+            $YrStrt= getModuleCache('phreebooks', 'fy', 'period_min');
+            $temp1 = dbGetFiscalDates($YrStrt);
+            $dbeg  = $temp1['start_date'];
+            $temp2 = dbGetFiscalDates($YrStrt + 11);
+            $dend  = localeCalculateDate($temp2['end_date'], 1);
+            $sql   = "$df>='$dbeg' AND $df<'$dend'";
+            $desc  = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($temp['end_date']).'; ';
             break;
         case "k": // Year to Date
-            $YrStrt = getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 12);
+            $YrStrt = getModuleCache('phreebooks', 'fy', 'period_min');
             $temp = dbGetFiscalDates($YrStrt);
             $dbeg = $temp['start_date'];
             $dend = localeCalculateDate($dates['Today'], 1);
@@ -985,6 +984,35 @@ function dbSqlDates($dateType='a', $df=false) {
             $dend = localeCalculateDate($temp['end_date'], 1);
             $sql  = "$df>='$dbeg' AND $df<'$dend'";
             $desc = lang('period').' '.getModuleCache('phreebooks', 'fy', 'period').' ('.viewDate($dbeg).' '.lang('to').' '.viewDate($temp['end_date']).'); ';
+            break;
+        case 'm': // Last Fiscal Year
+            $minPer = getModuleCache('phreebooks', 'fy', 'period_min');
+            if ($minPer > 12) {
+                $temp1 = dbGetFiscalDates($minPer-12);
+                $dbeg  = $temp1['start_date'];
+                $temp2 = dbGetFiscalDates($minPer-1);
+                $dend  = localeCalculateDate($temp2['end_date'], 1);
+                $desc  = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($temp2['end_date']).'; ';
+            } else {
+                $dbeg = '2000-01-01';
+                $dend = '2000-12-31';
+                $desc = lang('date_range').' No Data Available';
+            }
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            break;
+        case 'n': // Last Fiscal Year to Date (through same month-day of last fiscal year)
+            $period = getModuleCache('phreebooks', 'fy', 'period_min');
+            if ($period > 12) {
+                $temp = dbGetFiscalDates($period-12);
+                $dbeg = $temp['start_date'];
+                $dend = localeCalculateDate($dates['Today'], 1, 0, -1);
+                $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($dend).'; ';
+            } else {
+                $dbeg = '2000-01-01';
+                $dend = '2000-12-31';
+                $desc = lang('date_range').' No Data Available';
+            }
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
             break;
         case 't': // Last 30 days
             $dbeg = localeCalculateDate($dates['Today'], -30);

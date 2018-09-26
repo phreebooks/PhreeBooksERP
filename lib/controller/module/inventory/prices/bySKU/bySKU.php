@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-16
+ * @version    3.x Last Update: 2018-09-18
  * @filesource /lib/controller/module/inventory/prices/bySKU.php
  */
 
@@ -103,7 +103,7 @@ function preSubmitPrices() {
 	return true;
 }";
         if ($inInv) { // we're in the inventory form, hide inventory_id field and set to current form value
-            $layout['jsReady'][$this->code] = "jq('#$this->code').val(jq('#id').val());";
+            $layout['jsReady'][$this->code] = "jq('#inventory_id$this->code').val(jq('#id').val());";
         } else {
             $iID = $layout['fields']['inventory_id']['attr']['value'];
             if ($iID) {
@@ -114,8 +114,8 @@ function preSubmitPrices() {
             $layout['fields']['inventory_id']['attr']['id']  = "inventory_id$this->code";
             $layout['fields']['inventory_id']['attr']['type']= 'inventory';
         }
-        $layout['divs']['divPrices'] = ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
-            'byCBody' => ['order'=>20,'type'=>'fields','label'=>$this->lang['title'],'fields'=>$this->getView($layout['fields'], $inInv)],
+        $layout['divs']['divPrices'] = ['order'=>10,'type'=>'divs','divs'=>[
+            'byCBody' => ['order'=>20,'label'=>$this->lang['title'],'type'=>'fields','fields'=>$this->getView($layout['fields'], $inInv)],
             'byCdg'   => ['order'=>50,'type'=>'datagrid','key'=>'dgPricesSet']]];
         $layout['jsHead'][$this->code] = $jsHead;
         $layout['datagrid']['dgPricesSet'] = $this->dgQuantity('dgPricesSet');
@@ -125,14 +125,14 @@ function preSubmitPrices() {
 
     private function getView($structure, $inInv)
     {
-        $output = [
+        return [
             'id'          .$this->code => $structure['id'], // hidden
             'item'        .$this->code => ['attr'=>['type'=>'hidden']],
             'inventory_id'.$this->code => $inInv ? ['attr'=>['type'=>'hidden']] : array_merge($structure['inventory_id'],['break'=>true]),
             'ref_id'      .$this->code => array_merge($structure['ref_id'],  ['break'=>true]),
             'currency'    .$this->code => array_merge($structure['currency'],['break'=>true])];
-        return $output;
     }
+
 	/**
 	 * This method saves the form contents for quantity pricing into the database, it is called from method: inventoryPrices:save 
 	 * @return true if successful, NULL and messageStack with error message if failed

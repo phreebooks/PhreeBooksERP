@@ -44,19 +44,6 @@ class phreeformDesign
 			9  => '1:in_list',
 			10 => '1:less_than',
 			11 => '1:greater_than'];
-        $this->dateChoices = [ // used to build pulldowns for filtering
-			['id'=>'a', 'text'=>lang('all')],
-			['id'=>'b', 'text'=>lang('range')],
-			['id'=>'c', 'text'=>lang('today')],
-			['id'=>'d', 'text'=>lang('dates_this_week')],
-			['id'=>'e', 'text'=>lang('dates_wtd')],
-			['id'=>'l', 'text'=>lang('dates_this_period')],
-			['id'=>'f', 'text'=>lang('dates_month')],
-			['id'=>'g', 'text'=>lang('dates_mtd')],
-			['id'=>'h', 'text'=>lang('dates_quarter')],
-			['id'=>'i', 'text'=>lang('dates_qtd')],
-			['id'=>'j', 'text'=>lang('dates_this_year')],
-			['id'=>'k', 'text'=>lang('dates_ytd')]];
         $this->emailChoices = [
             ['id'=>'user','text'=>lang('phreeform_current_user')],
             ['id'=>'gen', 'text'=>lang('address_book_contact_m')],
@@ -255,7 +242,7 @@ class phreeformDesign
         // build the date checkboxes
         $dateList = '<tr>';
         $cnt = 0;
-        foreach ($this->dateChoices as $value) {
+        foreach (viewDateChoices() as $value) {
             $cbHTML = $fields['DateList'];
             $cbHTML['label']         = $value['text'];
             $cbHTML['attr']['value'] = $value['id'];
@@ -375,12 +362,12 @@ class phreeformDesign
 			'DateList'      => ['position'=>'after', 'attr'=>  ['type'=>'checkbox', 'value'=>(isset($report->datelist)?$report->datelist:'a')]],
             'DateField'     => ['label'=>$this->lang['phreeform_date_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->datefield)?$report->datefield:'']],
-			'DateDefault'   => ['label'=>$this->lang['date_default_selected'],'values'=>$this->dateChoices, 'attr'=>  ['type'=>'select', 'value'=>(isset($report->datedefault) ? $report->datedefault : '')]],
+			'DateDefault'   => ['label'=>$this->lang['date_default_selected'],'values'=>viewDateChoices(), 'attr'=>['type'=>'select', 'value'=>(isset($report->datedefault) ? $report->datedefault : '')]],
             'PrintedField'  => ['label'=>$this->lang['lbl_set_printed_flag'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->setprintedfield)?$report->setprintedfield:'']],
             'ContactLog'    => ['label'=>$this->lang['lbl_phreeform_contact'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->contactlog)?$report->contactlog:'']],
-			'DefaultEmail'  => ['label'=>$this->lang['lbl_phreeform_email'],  'values'=>$this->emailChoices,'attr'=>  ['type'=>'select', 'value'=>(isset($report->defaultemail) ? $report->defaultemail : 'user')]],
+			'DefaultEmail'  => ['label'=>$this->lang['lbl_phreeform_email'],  'values'=>$this->emailChoices,'attr'=>['type'=>'select', 'value'=>(isset($report->defaultemail) ? $report->defaultemail : 'user')]],
             'FormBreakField'=> ['label'=>$this->lang['page_break_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->formbreakfield)?$report->formbreakfield:'']],
             'SkipNullField' => ['label'=>$this->lang['lbl_skip_null'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],

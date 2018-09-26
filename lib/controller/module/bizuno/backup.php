@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-20
+ * @version    3.x Last Update: 2018-09-24
  * @filesource /lib/controller/module/bizuno/backup.php
  */
 
@@ -175,7 +175,8 @@ class bizunoBackup
     
     public function bizunoUpgradeGo(&$layout=[])
     {
-        $pathLocal= BIZUNO_DATA."temp/bizuno.zip";
+        $pathLocal= BIZUNO_DATA."temp/";
+        $zipFile  = $pathLocal."bizuno.zip";
         $bizID    = getUserCache('profile', 'biz_id');
         $bizUser  = getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_user');
         $bizPass  = getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_pass');
@@ -185,19 +186,26 @@ class bizunoBackup
             'header' => "Content-type: application/x-www-form-urlencoded\r\n"."Content-Length: ".strlen($data)."\r\n",
             'content'=> $data]]);
         try {
-            $io = new io();
             $source = "https://www.phreesoft.com/wp-admin/admin-ajax.php?action=bizuno_ajax&p=myPortal/admin/upgradeBizuno&host=".BIZUNO_HOST;
-            $dest   = $pathLocal;
-            msgDebug("\nReady to fetch $source to myFiles/temp/bizuno.zip");
+            $dest   = $zipFile;
+            msgDebug("\nReady to fetch $source to $zipFile");
             @copy($source, $dest, $context);
-            if (@mime_content_type($pathLocal) == 'text/plain') { // something went wrong
-                $msg = json_decode(file_get_contents($pathLocal), true);
+            if (@mime_content_type($zipFile) == 'text/plain') { // something went wrong
+                $msg = json_decode(file_get_contents($zipFile), true);
                 if (is_array($msg)) { return msgAdd("Unknown Exception: ".print_r($msg, true)); }
                 else                { return msgAdd("Unknown Error: ".print_r($msg, true)); }
             }
-            if (file_exists($pathLocal) && $io->zipUnzip($pathLocal, BIZUNO_ROOT, false)) {
+            $io = new io();
+            if (file_exists($zipFile) && $io->zipUnzip($zipFile, $pathLocal, false)) {
+                msgDebug("\nUnzip successful, removing downloaded zipped file: $zipFile");
+                @unlink($zipFile);
+                $srcFolder = $this->guessFolder("temp/");
+                if (!$srcFolder) { return msgAdd("Could not find downloded upgrade folder, aborting!"); }
+                $io->folderMove("temp/$srcFolder/", '', true);
+                rmdir($pathLocal.$srcFolder);
                 // see if an upgrade file is present, if so execute it and delete
                 if (file_exists(BIZUNO_ROOT."bizunoUPG.php")) {
+                    msgDebug("\nDetected bizunoUPG.php file, Executing it for special actions!");
                     require (BIZUNO_ROOT."bizunoUPG.php");
                     unlink(BIZUNO_ROOT."bizunoUPG.php");
                 }
@@ -207,10 +215,28 @@ class bizunoBackup
         } catch (Exception $e) {
             return msgAdd("We had an exception upgrading Bizuno: ". print_r($e, true));
         }
-        @unlink($pathLocal);
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"alert('".$this->lang['msg_upgrade_success']."'); window.location='".BIZUNO_AJAX."&p=bizuno/portal/logout';"]]);
     }
-    
+
+    /**
+     * 
+     * @param type $path
+     * @return type
+     */
+    private function guessFolder($path)
+    {
+        $io    = new io();
+        $files = $io->folderRead($path);
+        msgDebug("\nTrying to read folder $path and got results: ".print_r($files, true));
+        foreach ($files as $file) {
+            if (!is_dir(BIZUNO_DATA.$path.$file)) { continue; }
+            $found = filemtime(BIZUNO_DATA.$path.$file) > time()-3600 ? true : false;
+            msgDebug("\nGuessing folder $path$file with timestamp: ".filemtime(BIZUNO_DATA.$path.$file)." compared to a minute ago: ".(time()-60)." to be within 60 seconds and result = ".($found ? 'ture' : 'false'));
+            if ($found) { return $file; }
+        }
+        msgAdd("Looking for unzipped upgrade files in folder ".BIZUNO_DATA."$path but could not find any. Please delete all folders in the directory and retry the upgrade.");
+    }
+
 	/**
      * Entry point for Bizuno db Restore page
      * @param array $layout - structure coming in

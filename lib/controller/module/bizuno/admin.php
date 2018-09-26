@@ -239,7 +239,7 @@ class bizunoAdmin
                 'settings'=> ['order'=>20,'label'=>lang('settings'),  'src'=>BIZUNO_LIB."view/tabAdminSettings.php"],
 				'tabs'    => ['order'=>40,'label'=>lang('extra_tabs'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=bizuno/tabs/manager'"]],
 				'tools'   => ['order'=>50,'label'=>lang('tools'),'type'=>'divs','divs'=>[
-                    'status' => ['order'=>20,'label'=>$this->lang['admin_status_update'], 'type'=>'divs','divs'=>[
+                    'status' => ['order'=>20,'label'=>$this->lang['admin_status_update'],'type'=>'divs','divs'=>[
                         'formBOF'=> ['order'=>10,'type'=>'form','key'=>'frmStatus'],
                         'body'   => ['order'=>50,'type'=>'fields','fields'=>$tools['status']],
                         'formEOF'=> ['order'=>85,'type'=>'html','html'=>"</form>"]]],
@@ -250,7 +250,7 @@ class bizunoAdmin
             'divs'   => ['footerLogo'  =>['order'=>99,'type'=>'html','html'=>'<div id="imdtl_company_logo"></div>']],
 			'forms'  => ['frmStatus'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/statusSave"]]],
             'jsBody' => ['company_logo'=>"imgManagerInit('company_logo', '$imgSrc', '$imgDir', 'images/');"],
-            'jsReady'=> ['init'=>"ajaxForm('frmReference');"]];
+            'jsReady'=> ['init'=>"ajaxForm('frmStatus');"]];
 		// add special fields
 		$data['module_install_btn']= ['attr'=>['type'=>'button','value'=>lang('install')]];
 		$data['module_remove_btn'] = ['attr'=>['type'=>'button','value'=>lang('remove')]];
@@ -270,7 +270,7 @@ class bizunoAdmin
 		}
 		ksort($status);
         $output = [
-            'status' => ['status_btn'=>['icon'=>'save','label'=>'save','events'=>['onClick'=>"jq('#frmReference').submit();"]]],
+            'status' => ['status_btn'=>['icon'=>'save','label'=>'save','events'=>['onClick'=>"jq('#frmStatus').submit();"]]],
             'encrypt'=> [
                 'desc'              => ['html'=>$this->lang['desc_encrypt_config'],'attr'=>['type'=>'raw']],
                 'encrypt_key_btn'   => ['label'=>'','events'=>['onClick'=>"encryptChange();"],'attr'=>['type'=>'button','value'=>lang('change')]],

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-23
+ * @version    3.x Last Update: 2018-09-16
  * @filesource /lib/controller/module/inventory/admin.php
  */
 
@@ -136,7 +136,7 @@ class inventoryAdmin
                 'settings'=> ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/tabAdminSettings.php"],
 				'fields'  => ['order'=>60,'label'=>lang('extra_fields'),'type'=>'html', 'html'=>'',
                     'options'=> ['href'=>"'".BIZUNO_AJAX."&p=bizuno/fields/manager&module=$this->moduleID&table=inventory'"]],
-                'tabDBs'  => ['order'=>70, 'label' => lang('dashboards'), 'attr' => ['module' => $this->moduleID, 'type' => 'dashboards'], 'src' => BIZUNO_LIB . "view/tabAdminMethods.php"],
+                'tabDBs'  => ['order'=>70,'label'=>lang('dashboards'), 'attr' => ['module' => $this->moduleID, 'type' => 'dashboards'], 'src' => BIZUNO_LIB . "view/tabAdminMethods.php"],
 				'tools'   => ['order'=>90,'label'=>lang('tools'),'type'=>'divs','divs'=>$this->getViewTools()]]]],
 			'fields' => [
                 'btnMethodAdd' => ['attr'=>  ['type'=>'button', 'value'=>lang('install')],'hidden'=>$security> 1?false:true],
@@ -150,15 +150,15 @@ class inventoryAdmin
     private function getViewTools()
     {
         $btnHistTest  = ['label'=>$this->lang['inv_tools_repair_test'], 'attr'=>['type'=>'button','value'=>$this->lang['inv_tools_btn_test']],
-            'events'=> ['onClick'=>"jsonAction('inventory/tools/historyTestRepair', 0, 'test');"]];
+            'events' => ['onClick'=>"jsonAction('inventory/tools/historyTestRepair', 0, 'test');"]];
         $btnHistFix   = ['label'=>$this->lang['inv_tools_repair_fix'], 'attr'=>['type'=>'button', 'value'=>$this->lang['inv_tools_btn_repair']],
-            'events'=> ['onClick'=>"jsonAction('inventory/tools/historyTestRepair', 0, 'fix');"]];
+            'events' => ['onClick'=>"jsonAction('inventory/tools/historyTestRepair', 0, 'fix');"]];
         $btnAllocFix  = ['label'=>'', 'attr'=>['type'=>'button', 'value'=>$this->lang['inv_tools_qty_alloc_label']],
-            'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/qtyAllocRepair');"]];
+            'events' => ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/qtyAllocRepair');"]];
         $btnJournalFix= ['label'=>'', 'attr'=>['type'=>'button', 'value'=>$this->lang['inv_tools_btn_so_po_fix']],
-            'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/onOrderRepair');"]];
+            'events' => ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/onOrderRepair');"]];
         $btnPriceAssy = ['label'=>'', 'attr'=>['type'=>'button', 'value'=>lang('go')],
-            'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/priceAssy');"]];
+            'events' => ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/priceAssy');"]];
         return [
                 'invVal'  => ['order'=>10,'label'=>$this->lang['inv_tools_val_inv'],'type'=>'divs','divs'=>[
                     'desc'  => ['order'=>10,'type'=>'html','html'=>"<p>".$this->lang['inv_tools_val_inv_desc']."</p>"],
@@ -167,13 +167,12 @@ class inventoryAdmin
                 'invAlloc'=> ['order'=>20,'label'=>$this->lang['inv_tools_qty_alloc'],'type'=>'divs','divs'=>[
                     'desc'  => ['order'=>20,'type'=>'html','html'=>"<p>".$this->lang['inv_tools_qty_alloc_desc']."</p>"],
                     'btnGo' => ['order'=>50,'type'=>'html','html'=>"<p>".html5('', $btnAllocFix)."</p>"]]],
-                'invVal'=> ['order'=>30,'label'=>$this->lang['inv_tools_repair_so_po'],'type'=>'divs','divs'=>[
+                'invSoPo' => ['order'=>30,'label'=>$this->lang['inv_tools_repair_so_po'],'type'=>'divs','divs'=>[
                     'desc'  => ['order'=>20,'type'=>'html','html'=>"<p>".$this->lang['inv_tools_validate_so_po_desc']."</p>"],
                     'btnGo' => ['order'=>50,'type'=>'html','html'=>"<p>".html5('', $btnJournalFix)."</p>"]]],
-                'invVal'=> ['order'=>40,'label'=>$this->lang['inv_tools_price_assy'],'type'=>'divs','divs'=>[
+                'invPrice'=> ['order'=>40,'label'=>$this->lang['inv_tools_price_assy'],'type'=>'divs','divs'=>[
                     'desc'  => ['order'=>20,'type'=>'html','html'=>"<p>".$this->lang['inv_tools_price_assy_desc']."</p>"],
-                    'btnGo' => ['order'=>50,'type'=>'html','html'=>"<p>".html5('', $btnPriceAssy)."</p>"]]],
-            ];
+                    'btnGo' => ['order'=>50,'type'=>'html','html'=>"<p>".html5('', $btnPriceAssy)."</p>"]]]];
     }
 
 	public function adminSave()

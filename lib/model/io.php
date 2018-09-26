@@ -44,200 +44,6 @@ final class io
 
 	}
 
-	/**
-	 * Read a file into an array
-	 * @param string $path - path and filename to the file of interest
-	 * @param string $mode - default 'rb', read only binary safe, see php fopen for other modes
-	 * @return array(data, size) - data is the file contents and size is the total length
-	 */
-	public function fileRead($path, $mode='rb')
-    {
-        $myPath = $this->myFolder.$path;
-		if (!$handle = @fopen($myPath, $mode)) {
-			return msgAdd(sprintf(lang('err_io_file_open'), $path));
-		}
-		$size = filesize($myPath);
-		$data = fread($handle, $size);
-		msgDebug("\n Read file of size = $size");
-		fclose($handle);
-		return array('data'=>$data, 'size'=>$size);
-	}
-
-    /**
-     * Reads a directory via the glob function
-     * @param string $path - path relative to users myFolder to read
-     * @return array - From empty to a list of files within the folder.
-     * 
-     */
-    public function fileReadGlob($path)
-    {
-        $files = glob($this->myFolder.$path."*");
-        $output= [];
-        if (is_array($files)) {
-            foreach ($files as $file) {
-                $fmTime = filemtime($file);
-                $output[] = [
-                    'name' => str_replace($this->myFolder, "", $file), // everything less the myFolder path, used to delete and navigate to
-                    'title'=> str_replace($this->myFolder.$path, "", $file), // just the filename, part matching the *
-                    'size' => viewFilesize($file),
-                    'mtime'=> $fmTime,
-                    'date' => date(getModuleCache('bizuno', 'settings', 'locale', 'date_short'), $fmTime)];
-            }
-        }
-        return $output;
-    }
-    
-	/**
-     * Writes a data string to a file location, if the path does not exist, it will be created.
-     * @param string $data File contents
-     * @param string $fn Full path to the file to be written from the myBiz folder
-     * @param boolean $verbose [default true] adds error messages if any part of the write fails, false suppresses messages
-     * @param boolean $append [default false] Causes the data to be appended to the file
-     * @param boolean $replace True to overwrite file if one exists, false will not overwrite existing file
-     * @return boolean
-     */
-    public function fileWrite($data, $fn, $verbose=true, $append=false, $replace=false)
-    {
-        if (strlen($data) < 1) { return; }
-        $filename = $this->myFolder.$fn;
-        if (!$append && $replace && file_exists($filename)) { @unlink($filename); }
-		$path = substr($filename, 0, strrpos($filename, '/') + 1); // pull the path from the full path and file
-        if (!is_dir($path)) { 
-            msgDebug("\nMaking folder: $path");
-            @mkdir($path,0775,true); }
-		if (!$handle = @fopen($filename, $append?'a':'w')) {
-            return $verbose ? msgAdd(sprintf(lang('err_io_file_open'), $fn)) : false;
-		}
-		if (false === @fwrite($handle, $data)) {
-            return $verbose ? msgAdd(sprintf(lang('err_io_file_write'), $fn)) : false;
-		}
-		fclose($handle);
-        msgDebug("\nSaved uploaded file to myFolder: $this->myFolder and filename: $fn");
-	}
-
-    public function fileMove($path, $srcID, $destID)
-    {
-        $files = $this->fileReadGlob($path.$srcID);
-        msgDebug("\nat fileMove read path: ".$path.$srcID." and returned with: ".print_r($files, true));
-        foreach ($files as $file) {
-            $newFile = str_replace($srcID, $destID, $file['name']);
-            if (!file_exists($this->myFolder.$newFile)) {
-                msgDebug("\nRenaming file in myFolder from: {$file['name']} to: $newFile");
-                rename($this->myFolder.$file['name'], $this->myFolder.$newFile);
-            } else { // file exists, create a new name
-                msgAdd("The attachment already exists on the destination location. It will be ignored!");
-            }
-        }
-    }
-
-	public function fileUpload()
-    {
-        msgDebug("\nSending with options = ".print_r($this->options, true));
-        require_once(BIZUNO_ROOT."apps/jquery-file-upload/server/php/UploadHandler.php");
-		$upload_handler = new \UploadHandler($this->options);
-        msgDebug("\nBack with result = ".print_r($upload_handler, true));
-	}
-
-	/**
-     * Deletes file(s) matching the path specified, wildcards are allowed for glob operations
-     * @param string $path - full path with filename (or file pattern)
-     * @return null
-     */
-    public function fileDelete($path=false)
-    {
-        if (!$path) { return msgAdd("No file specified to delete!"); }
-        $files = glob($this->myFolder.$path);
-        msgDebug("\nDeleting files: ".print_r($files,true));
-        if (is_array($files)) { 
-            foreach ($files as $filename) { @unlink($filename); }
-        }
-	}
-
-    /**
-     * Reads the contents of a folder , cleans out the . and .. directories
-     * @param string $path - path from the users home folder
-     * @return array - List of files/directories within the $path
-     */
-    public function folderRead($path)
-    {
-        $output = [];
-        if (!@is_dir($this->myFolder.$path)) { return $output; }
-        $temp = scandir($this->myFolder.$path);
-        foreach ($temp as $fn) {
-            if ($fn == '.' || $fn == '..') { continue; }
-            $output[] = $fn;
-        }
-        return $output;
-    }
-
-    /**
-     * Returns the glob of a folder
-     * !!! THIS RETURNS THE USER FOLDER IN THE ARRAY AS WELL !!! 
-     * @param string $path - File path to read, user folder will be prepended
-     * @return array, empty for non-folder or no files
-     */
-    public function folderReadGlob($path)
-    {
-        $output = [];
-        if (!@is_dir($this->myFolder.$path)) { return $output; }
-        $temp = glob($this->myFolder.$path);
-        foreach ($temp as $fn) {
-            if ($fn == '.' || $fn == '..') { continue; }
-            $output[] = $fn;
-        }
-        return $output;
-    }
-
-	/**
-     * Deletes a folder and all within it.
-     * @param string $dir - Name of the directory to delete
-     * @return boolean false
-     */
-    public function folderDelete($dir)
-    {
-        if (!is_dir($this->myFolder.$dir)) { return; }
-		$files = scandir($this->myFolder.$dir);
-		foreach ($files as $file) {
-            if ($file == "." || $file == "..") { continue; }
-			if (is_file($this->myFolder."$dir/$file")) {
-				unlink($this->myFolder."$dir/$file");
-			} else { // it's a directory
-				$subdir = scandir($this->myFolder."$dir/$file");
-                if (sizeof($subdir) > 2) { // directory is not empty, recurse
-                    $subDir = str_replace($this->myFolder, '', $dir);
-                    $this->folderDelete("$subDir/$file");
-                }
-				@rmdir($this->myFolder."$dir/$file");
-			}
-		}
-		@rmdir($this->myFolder.$dir);
-	}
-
-	/**
-     * Recursively copies the contents of the source to the destination
-     * @param string $dir_source - Source directory from the users root
-     * @param string $dir_dest - Destination directory from the users root
-     * @return string - boolean false
-     */
-    public function folderCopy($dir_source, $dir_dest)
-    {
-        $dir_source = $this->myFolder.$dir_source;
-        if (!is_dir($dir_source)) { return; }
-		$files = scandir($dir_source);
-		foreach ($files as $file) {
-            if ($file == "." || $file == "..") { continue; }
-			if (is_file($dir_source . $file)) {
-				$mTime = filemtime($dir_source . $file);
-				$aTime = fileatime($dir_source . $file); // preserve the file timestamps
-				copy($dir_source . $file, $dir_dest . $file);
-				touch($dir_dest . $file, $mTime, $aTime);
-			} else {
-				@mkdir($dir_dest . $file, 0755, true);
-				$this->folderCopy($dir_source . $file . "/", $dir_dest . $file . "/");
-			}
-		}
-	}
-
     /**
      * Deletes a module attachment file and resets the attach flag if no more attachments are present
      */
@@ -303,6 +109,294 @@ final class io
 	}
 
 	/**
+     * Deletes file(s) matching the path specified, wildcards are allowed for glob operations
+     * @param string $path - full path with filename (or file pattern)
+     * @return null
+     */
+    public function fileDelete($path=false)
+    {
+        if (!$path) { return msgAdd("No file specified to delete!"); }
+        $files = glob($this->myFolder.$path);
+        msgDebug("\nDeleting files: ".print_r($files,true));
+        if (is_array($files)) { 
+            foreach ($files as $filename) { @unlink($filename); }
+        }
+	}
+
+    /**
+     * DEPRECATED, CAN BE DELETED AFTER 2018-10-01
+     * Recursively moves the contents of a folder to another folder.
+     * @param type $path
+     * @param type $srcID
+     * @param type $destID
+     */
+    public function fileMove($path, $srcID, $destID)
+    {
+        $files = $this->fileReadGlob($path.$srcID);
+        msgDebug("\nat fileMove read path: ".$path.$srcID." and returned with: ".print_r($files, true));
+        foreach ($files as $file) {
+            $newFile = str_replace($srcID, $destID, $file['name']);
+            if (!file_exists($this->myFolder.$newFile)) {
+                msgDebug("\nRenaming file in myFolder from: {$file['name']} to: $newFile");
+                rename($this->myFolder.$file['name'], $this->myFolder.$newFile);
+            } else { // file exists, create a new name
+                msgAdd("The file already exists on the destination location. It will be ignored!");
+            }
+        }
+    }
+
+	/**
+	 * Read a file into an array
+	 * @param string $path - path and filename to the file of interest
+	 * @param string $mode - default 'rb', read only binary safe, see php fopen for other modes
+	 * @return array(data, size) - data is the file contents and size is the total length
+	 */
+	public function fileRead($path, $mode='rb')
+    {
+        $myPath = $this->myFolder.$path;
+		if (!$handle = @fopen($myPath, $mode)) {
+			return msgAdd(sprintf(lang('err_io_file_open'), $path));
+		}
+		$size = filesize($myPath);
+		$data = fread($handle, $size);
+		msgDebug("\n Read file of size = $size");
+		fclose($handle);
+		return array('data'=>$data, 'size'=>$size);
+	}
+
+    /**
+     * Reads a directory via the glob function
+     * @param string $path - path relative to users myFolder to read
+     * @return array - From empty to a list of files within the folder.
+     * 
+     */
+    public function fileReadGlob($path)
+    {
+        $files = glob($this->myFolder.$path."*");
+        $output= [];
+        if (is_array($files)) {
+            foreach ($files as $file) {
+                $fmTime = filemtime($file);
+                $output[] = [
+                    'name' => str_replace($this->myFolder, "", $file), // everything less the myFolder path, used to delete and navigate to
+                    'title'=> str_replace($this->myFolder.$path, "", $file), // just the filename, part matching the *
+                    'size' => viewFilesize($file),
+                    'mtime'=> $fmTime,
+                    'date' => date(getModuleCache('bizuno', 'settings', 'locale', 'date_short'), $fmTime)];
+            }
+        }
+        return $output;
+    }
+
+    /**
+     * 
+     */
+	public function fileUpload()
+    {
+        msgDebug("\nSending with options = ".print_r($this->options, true));
+        require_once(BIZUNO_ROOT."apps/jquery-file-upload/server/php/UploadHandler.php");
+		$upload_handler = new \UploadHandler($this->options);
+        msgDebug("\nBack with result = ".print_r($upload_handler, true));
+	}
+
+	/**
+     * Writes a data string to a file location, if the path does not exist, it will be created.
+     * @param string $data File contents
+     * @param string $fn Full path to the file to be written from the myBiz folder
+     * @param boolean $verbose [default true] adds error messages if any part of the write fails, false suppresses messages
+     * @param boolean $append [default false] Causes the data to be appended to the file
+     * @param boolean $replace True to overwrite file if one exists, false will not overwrite existing file
+     * @return boolean
+     */
+    public function fileWrite($data, $fn, $verbose=true, $append=false, $replace=false)
+    {
+        if (strlen($data) < 1) { return; }
+        $filename = $this->myFolder.$fn;
+        if (!$append && $replace && file_exists($filename)) { @unlink($filename); }
+		$path = substr($filename, 0, strrpos($filename, '/') + 1); // pull the path from the full path and file
+        if (!is_dir($path)) { 
+            msgDebug("\nMaking folder: $path");
+            @mkdir($path,0775,true); }
+		if (!$handle = @fopen($filename, $append?'a':'w')) {
+            return $verbose ? msgAdd(sprintf(lang('err_io_file_open'), $fn)) : false;
+		}
+		if (false === @fwrite($handle, $data)) {
+            return $verbose ? msgAdd(sprintf(lang('err_io_file_write'), $fn)) : false;
+		}
+		fclose($handle);
+        msgDebug("\nSaved uploaded file to myFolder: $this->myFolder and filename: $fn");
+	}
+
+	/**
+     * Recursively copies the contents of the source to the destination
+     * @param string $dir_source - Source directory from the users root
+     * @param string $dir_dest - Destination directory from the users root
+     * @return string - boolean false
+     */
+    public function folderCopy($dir_source, $dir_dest)
+    {
+        $dir_source = $this->myFolder.$dir_source;
+        if (!is_dir($dir_source)) { return; }
+		$files = scandir($dir_source);
+		foreach ($files as $file) {
+            if ($file == "." || $file == "..") { continue; }
+			if (is_file($dir_source . $file)) {
+				$mTime = filemtime($dir_source . $file);
+				$aTime = fileatime($dir_source . $file); // preserve the file timestamps
+				copy($dir_source . $file, $dir_dest . $file);
+				touch($dir_dest . $file, $mTime, $aTime);
+			} else {
+				@mkdir($dir_dest . $file, 0755, true);
+				$this->folderCopy($dir_source . $file . "/", $dir_dest . $file . "/");
+			}
+		}
+	}
+
+	/**
+     * Deletes a folder and all within it.
+     * @param string $dir - Name of the directory to delete
+     * @return boolean false
+     */
+    public function folderDelete($dir)
+    {
+        if (!is_dir($this->myFolder.$dir)) { return; }
+		$files = scandir($this->myFolder.$dir);
+		foreach ($files as $file) {
+            if ($file == "." || $file == "..") { continue; }
+			if (is_file($this->myFolder."$dir/$file")) {
+				unlink($this->myFolder."$dir/$file");
+			} else { // it's a directory
+				$subdir = scandir($this->myFolder."$dir/$file");
+                if (sizeof($subdir) > 2) { // directory is not empty, recurse
+                    $subDir = str_replace($this->myFolder, '', $dir);
+                    $this->folderDelete("$subDir/$file");
+                }
+				@rmdir($this->myFolder."$dir/$file");
+			}
+		}
+		@rmdir($this->myFolder.$dir);
+	}
+
+    /**
+     * Recursively moves the contents of a folder to another folder.
+     * @param type $path
+     * @param type $srcID
+     * @param type $destID
+     */
+    public function folderMove($dir_source, $dir_dest, $replace=false)
+    {
+        $srcPath = $this->myFolder.$dir_source;
+        if (!is_dir($srcPath)) { return; }
+		$files = scandir($srcPath);
+//        msgDebug("\nat folderMove read path: $srcPath and returned with: ".print_r($files, true));
+		foreach ($files as $file) {
+            if ($file == "." || $file == "..") { continue; }
+			if ($replace && is_file($srcPath.$file)) {
+				rename($srcPath . $file, $dir_dest . $file);
+			} else { // folder
+                if (!is_dir($dir_dest.$file)) { @mkdir($dir_dest.$file, 0755, true); }
+				$this->folderMove($dir_source."$file/", $dir_dest."$file/", $replace);
+                rmdir($dir_source."$file/");
+			}
+		}
+    }
+
+    /**
+     * Reads the contents of a folder , cleans out the . and .. directories
+     * @param string $path - path from the users home folder
+     * @return array - List of files/directories within the $path
+     */
+    public function folderRead($path)
+    {
+        $output = [];
+        if (!@is_dir($this->myFolder.$path)) { return $output; }
+        $temp = scandir($this->myFolder.$path);
+        foreach ($temp as $fn) {
+            if ($fn == '.' || $fn == '..') { continue; }
+            $output[] = $fn;
+        }
+        return $output;
+    }
+
+    /**
+     * Returns the glob of a folder
+     * !!! THIS RETURNS THE USER FOLDER IN THE ARRAY AS WELL !!! 
+     * @param string $path - File path to read, user folder will be prepended
+     * @return array, empty for non-folder or no files
+     */
+    public function folderReadGlob($path)
+    {
+        $output = [];
+        msgDebug("\nTrying to read contents of $this->myFolder$path");
+        if (!@is_dir($this->myFolder.$path)) { return $output; }
+        $temp = glob($this->myFolder.$path);
+        foreach ($temp as $fn) {
+            if ($fn == '.' || $fn == '..') { continue; }
+            $output[] = $fn;
+        }
+        return $output;
+    }
+
+    /**
+     * 
+     * @param type $host
+     * @param type $user
+     * @param type $pass
+     * @param type $port
+     * @return type
+     */
+    public function ftpConnect($host, $user='', $pass='', $port=21) {
+        msgDebug("Ready to write to url $host to port $port with user $user");
+        if (!$con = ftp_connect($host, $port)){ return msgAdd("Failed to connect to FTP server: $host through port $port"); }
+        if (!ftp_login($con, $user, $pass))   { return msgAdd("Failed to log in to FTP server with user: $user"); }
+        return $con;
+    }
+
+    /**
+     * 
+     * @param type $con
+     * @param type $local_file
+     * @param type $remote_file
+     * @return boolean
+     */
+    public function ftpUploadFile($con, $local_file, $remote_file='') {
+        $success = true;
+        if (!$remote_file) { $remote_file = $local_file; }
+        msgDebug("Ready to open file $local_file and send to remote file name $remote_file");
+        $fp = fopen(BIZUNO_DATA.$local_file, 'r');
+        if (!ftp_fput ($con, $remote_file, $fp, FTP_ASCII)) { 
+            return msgAdd("There was a problem while uploading $local_file through ftp to the remote server!");
+            $success = false;
+        }
+        ftp_close($con);
+        fclose($fp);
+        return $success;
+    }
+
+    /**
+     * Saves an uploaded file, validates first, creates path if not there
+     * @param string $index - index of the $_FILES array where the file is located
+     * @param string $dest - destination path/filename where the uploaded files are to be placed
+     * @param string $type [default text] Sets the type of file to expect
+     * @param string $ext [default txt] checks to make sure the extension is what was expected
+     * @param boolean $verbose [default true] set to false to suppress error reporting
+     * @param boolean $replace [default false] set to true to replace the file if it already exists
+     * @return boolean true on success, false (with msg) on error
+     */
+    public function uploadSave($index, $dest, $replace=false)
+    {
+        if (!isset($_FILES[$index])) {
+            return msgDebug("\nTried to save uploaded file but nothing uploaded!");
+        }
+        if (!$this->validateUpload($index, '', '', false)) { return; }
+        $data = file_get_contents($_FILES[$index]['tmp_name']);
+        $filename = clean($_FILES[$index]['name'], 'filename');
+        $path = $dest.str_replace(' ', '_', $filename);
+        $this->fileWrite($data, $path, false, false, $replace);
+        return true;
+    }
+
+	/**
 	 * This method tests an uploaded file for validity
 	 * @param string $index - Index of $_FILES array to find the uploaded file
 	 * @param string $type [default ''] validates the type of file updated
@@ -340,29 +434,6 @@ final class io
 		if ($type_match || $ext_match) { return true; }
 		msgAdd("Unknown upload validation error.");
 	}
-
-    /**
-     * Saves an uploaded file, validates first, creates path if not there
-     * @param string $index - index of the $_FILES array where the file is located
-     * @param string $dest - destination path/filename where the uploaded files are to be placed
-     * @param string $type [default text] Sets the type of file to expect
-     * @param string $ext [default txt] checks to make sure the extension is what was expected
-     * @param boolean $verbose [default true] set to false to suppress error reporting
-     * @param boolean $replace [default false] set to true to replace the file if it already exists
-     * @return boolean true on success, false (with msg) on error
-     */
-    public function uploadSave($index, $dest, $replace=false)
-    {
-        if (!isset($_FILES[$index])) {
-            return msgDebug("\nTried to save uploaded file but nothing uploaded!");
-        }
-        if (!$this->validateUpload($index, '', '', false)) { return; }
-        $data = file_get_contents($_FILES[$index]['tmp_name']);
-        $filename = clean($_FILES[$index]['name'], 'filename');
-        $path = $dest.str_replace(' ', '_', $filename);
-        $this->fileWrite($data, $path, false, false, $replace);
-        return true;
-    }
 
 	/**
 	 * This method retrieves data from a remote server using cURL
@@ -409,27 +480,6 @@ final class io
 		return $request;
 	}
     
-    public function ftpConnect($host, $user='', $pass='', $port=21) {
-        msgDebug("Ready to write to url $host to port $port with user $user");
-        if (!$con = ftp_connect($host, $port)){ return msgAdd("Failed to connect to FTP server: $host through port $port"); }
-        if (!ftp_login($con, $user, $pass))   { return msgAdd("Failed to log in to FTP server with user: $user"); }
-        return $con;
-    }
-
-    public function ftpUploadFile($con, $local_file, $remote_file='') {
-        $success = true;
-        if (!$remote_file) { $remote_file = $local_file; }
-        msgDebug("Ready to open file $local_file and send to remote file name $remote_file");
-        $fp = fopen(BIZUNO_DATA.$local_file, 'r');
-        if (!ftp_fput ($con, $remote_file, $fp, FTP_ASCII)) { 
-            return msgAdd("There was a problem while uploading $local_file through ftp to the remote server!");
-            $success = false;
-        }
-        ftp_close($con);
-        fclose($fp);
-        return $success;
-    }
-
     /**
      * 
      * @param string $method - method to use @PhreeSoft to gather user account info
@@ -468,7 +518,7 @@ final class io
 		if (!class_exists('ZipArchive')) { return msgAdd(lang('err_io_no_zip_class')); }
 		$zip = new \ZipArchive;
         $path = BIZUNO_DATA.$this->dest_dir.$this->dest_file;
-//        msgDebug("\nCreating Zip Archive in destination path = $path");
+        msgDebug("\nCreating Zip Archive in destination path = $path");
 		$res = $zip->open($path, \ZipArchive::CREATE);
 		if ($res !== true) {
 			msgAdd(lang('GEN_BACKUP_FILE_ERROR') . $this->dest_dir);
@@ -515,13 +565,13 @@ final class io
      */
     public function zipUnzip($file, $dest_path='')
     {
-        if (!class_exists('ZipArchive')) { return msgAdd(lang('err_io_no_zip_class'));}
+        if (!class_exists('ZipArchive'))  { return msgAdd(lang('err_io_no_zip_class'));}
         if (!$dest_path) { $dest_path = $this->dest_dir; }
-        if (!file_exists($file)) { return msgAdd("Cannot find file $file"); }
+        if (!file_exists($file))          { return msgAdd("Cannot find file $file"); }
 		msgDebug("\nUnzipping from: $file to $dest_path");
 		$zip = new \ZipArchive;
-        if (!$zip->open($file)) { return msgAdd("Problem opening the file $file"); }
-		$zip->extractTo($dest_path);
+        if (!$zip->open($file))           { return msgAdd("Problem opening the file $file"); }
+		if (!$zip->extractTo($dest_path)) { return msgAdd("Problem extracting the file $file"); }
 		$zip->close();
 		return true;
 	}

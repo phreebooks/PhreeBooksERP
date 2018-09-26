@@ -22,10 +22,12 @@ Bizuno Accounting, by PhreeSoft, Inc., is a full featured double-entry accountin
 
 == Installation ==
 
+After uploading the files to your server, navigate to your root url and follow the on screen instructions. You will need to have your database credentials to install PhreeBooks 5.
+
 = Minimum Requirements =
 
 * PHP   version 5.4 or greater (PHP 5.6 or greater is recommended, tested with PHP 7)
-* MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended)
+* MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended, tested with MySQL 5.6 & 5.7)
 
 1. Upload the file to your web site directory. PhreeBooks 5 can be installed in a subdirectory within your web site root directory.
 1. Navigate to the PhreeBooks 5 root folder. The portal should be displayed.

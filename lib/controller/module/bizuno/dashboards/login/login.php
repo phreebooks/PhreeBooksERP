@@ -46,14 +46,12 @@ class login
         $portal= explode('.', $_SERVER['SERVER_ADDR']);
         $email = clean('bizuno_user_email', 'email', 'cookie');
         $focus = $email ? 'UserID' : 'UserPW';
-		$data  = [
-            'type'     => 'html',
-			'title'=> lang('login'),
-			'username' => ['attr'=>['type'=>'email','value'=>$email]],
+		$data  = ['type'=>'html', 'title'=>lang('login'),
+			'username' => ['options'=>['width'=>300,'height'=>30,'validType'=>'email'],'attr'=>['type'=>'email','value'=>$email]],
 			'password' => ['attr'=>['type'=>'password']],
 			'language' => ['label'=>lang('language'), 'values'=>viewLanguages(), 'attr'=>['type'=>'select']],
-			'email'    => ['label'=>lang('email'), 'attr'=>['type'=>'email','required'=>'0','validType'=>'email','size'=>'40']],
-			'image_title' => ['label'=>getModuleCache('bizuno', 'properties', 'title'),'attr'=>['type'=>'img', 'src'=>BIZUNO_LOGO, 'height'=>'50']],
+			'email'    => ['label'=>lang('email'),'options'=>['width'=>300,'height'=>30,'validType'=>'email'],'attr'=>['type'=>'email']],
+			'image_title' => ['label'=>getModuleCache('bizuno', 'properties', 'title'),'attr'=>['type'=>'img','src'=>BIZUNO_LOGO, 'height'=>'50']],
 			'btnLogin' => ['attr'=>['type'=>'button','value'=>lang('login')],'styles'=>['cursor'=>'pointer'],
 				'events' => ['onClick'=> "if (jq('#userLoginForm').form('validate')) jq('#userLoginForm').submit();"]],
 			'btnLost' => ['attr'=>['type'=>'button','value'=>lang('password_lost')],'styles'=>['cursor'=>'pointer'],

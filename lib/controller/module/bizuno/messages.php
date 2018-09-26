@@ -116,11 +116,17 @@ class bizunoMessages
         $quickBar = getUserCache('quickBar');
         if (!empty($quickBar['child']['sysMsg']['attr']['value'])) { 
             $quickBar['child']['sysMsg']['attr']['value']--;
-            if ($quickBar['child']['sysMsg']['attr']['value'] < 1) { unset($quickBar['child']['sysMsg']['attr']['value']); } // prevents showing 0
+            if ($quickBar['child']['sysMsg']['attr']['value'] < 1) { // prevents showing 0
+                unset($quickBar['child']['sysMsg']['attr']['value']);
+                $newCnt = '';
+            } else {
+                $newCnt = $quickBar['child']['sysMsg']['attr']['value'];
+            }
             setUserCache('quickBar', false, $quickBar);
         }
         $data = ['type'=>'popup','title'=>$row['subject'],'attr'=>['id'=>'winSysMsg'],
-			'divs'=>['body'=>['order'=>50,'type'=>'html','html'=>$response['sysMsg']]]];
+			'divs'   =>['body'=>['order'=>50,'type'=>'html','html'=>$response['sysMsg']]],
+            'jsReady'=>['init'=>"jq('#sysMsg').html('$newCnt'); jq('#dgMessage').datagrid('reload');"]];
 		$layout = array_replace_recursive($layout, $data);
 	}
 
@@ -134,11 +140,23 @@ class bizunoMessages
         if (!$security = validateSecurity('bizuno', 'message', 4)) { return; }
 		$rID = clean('rID', 'integer', 'get');
         if (!$rID) { return msgAdd(lang('err_delete_name_prompt')); }
-		$title = dbGetValue(BIZUNO_DB_PREFIX."phreemsg", 'msg_id', "id=$rID");
+        $msgCnt = '';
+		$row    = dbGetRow(BIZUNO_DB_PREFIX."phreemsg", "id=$rID");
+        $quickBar = getUserCache('quickBar');
+        if (!$row['status'] && !empty($quickBar['child']['sysMsg']['attr']['value'])) { 
+            $quickBar['child']['sysMsg']['attr']['value']--;
+            if ($quickBar['child']['sysMsg']['attr']['value'] < 1) { // prevents showing 0
+                unset($quickBar['child']['sysMsg']['attr']['value']);
+                $msgCnt = "jq('#sysMsg').html(''); ";
+            } else {
+                $msgCnt = "jq('#sysMsg').html('{$quickBar['child']['sysMsg']['attr']['value']}'); ";
+            }
+            setUserCache('quickBar', false, $quickBar);
+        }
+        $title = $row['msg_id'];
+        dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."phreemsg"." WHERE id=$rID");
 		msgLog(lang('table').' '.BIZUNO_DB_PREFIX."phreemsg".'-'.lang('delete')." $title ($rID)");
-		$data = [
-            'content' => ['action'=>'eval','actionData'=>"jq('#dgMessage').datagrid('reload');"],
-			'dbAction'=> [BIZUNO_DB_PREFIX."phreemsg"=>"DELETE FROM ".BIZUNO_DB_PREFIX."phreemsg"." WHERE id=$rID"]];
+		$data = ['content'=>['action'=>'eval','actionData'=>$msgCnt."jq('#dgMessage').datagrid('reload');"]];
         $layout = array_replace_recursive($layout, $data);
 	}
 }

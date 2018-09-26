@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-09-18
  * @filesource /lib/controller/module/phreebooks/totals/discountChk/discountChk.php
  */
 
@@ -53,7 +53,7 @@ class discountChk
 		$totalDisc = 0;
 		$rows = clean($request['item_array'], 'json');
 		foreach ($rows as $row) {
-			$discount = clean($row['discount'], 'float');
+			$discount = clean($row['discount'], 'currency');
             if ($discount == 0) { continue; }
 			// need to bump up total paid to include discount
 			foreach ($items as $key => $item) {

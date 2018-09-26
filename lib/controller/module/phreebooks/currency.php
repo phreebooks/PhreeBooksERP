@@ -169,7 +169,6 @@ class phreebooksCurrency
 			unset($charts['defaults'][$oldISO]);
             setModuleCache('phreebooks', 'chart', false, $charts);
 		}
-//        if (getModuleCache('phreebooks', 'settings', 'general', 'auto_currency')) { $this->update(true); }
         $currencies[$iso] = $values;
         setModuleCache('phreebooks', 'currency', 'iso', $currencies);
         dbWriteCache();

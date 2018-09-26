@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-09-21
  * @filesource /lib/controller/module/phreebooks/journals/j16.php
  */
 
@@ -78,6 +78,7 @@ class j16 extends jCommon
         unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
+        unset($data['jsReady']['focus']);
         $isWaiting = isset($data['fields']['main']['waiting']['attr']['checked']) && $data['fields']['main']['waiting']['attr']['checked'] ? '1' : '0';
         $data['fields']['main']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
@@ -86,7 +87,7 @@ class j16 extends jCommon
         $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
     }
 
-    private function getViewAdj()
+/*    private function getViewAdj()
     {
         $output['body'] .= '<div style="float:right;width:30%">';
         foreach ($viewData['totals_methods'] as $methID) {
@@ -108,8 +109,8 @@ class j16 extends jCommon
         $output['body'] .= html5('invoice_num',    $viewData['fields']['main']['invoice_num'])."\n";
         $output['body'] .= html5('store_id',       $viewData['fields']['main']['store_id'])."\n";
         $output['body'] .= html5('post_date',      $viewData['fields']['main']['post_date'])."\n";
+    }*/
 
-    }
     /**
      * Configures the journal entry properties (other than address and items)
      * @param array $data - current working structure
@@ -124,9 +125,8 @@ class j16 extends jCommon
             'item_array'     => $data['item_array'],
             'store_id'       => $data['fields']['main']['store_id'],
             // Displayed
-            'invoice_num'    => array_merge($data['fields']['main']['invoice_num'], ['break'=>true,'order'=>20]),
-            'post_date'      => array_merge($data['fields']['main']['post_date'], ['break'=>true,'order'=>40]),
-            ];
+            'invoice_num'    => array_merge($data['fields']['main']['invoice_num'],['break'=>true,'order'=>20]),
+            'post_date'      => array_merge($data['fields']['main']['post_date'],  ['break'=>true,'order'=>40])];
     }
 /*******************************************************************************************************************/
 // START Post Journal Function

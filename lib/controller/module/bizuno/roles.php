@@ -180,13 +180,13 @@ class bizunoRoles
     public function save(&$layout=[])
     {
         $request = $_POST;
-		$rID = clean('id', 'integer', 'post');
-        $restrict = clean('restrict', 'boolean', 'post');
+		$rID     = clean('id', 'integer', 'post');
+        $restrict= clean('restrict', 'boolean', 'post');
         if (!$security = validateSecurity('bizuno', 'roles', $rID?3:2)) { return; }
-		$values = requestData(dbLoadStructure(BIZUNO_DB_PREFIX."roles"));
-		$dup = dbGetValue(BIZUNO_DB_PREFIX."roles", 'id', "title='".addslashes($values['title'])."' AND id<>$rID");
+		$values  = requestData(dbLoadStructure(BIZUNO_DB_PREFIX."roles"));
+		$dup     = dbGetValue(BIZUNO_DB_PREFIX."roles", 'id', "title='".addslashes($values['title'])."' AND id<>$rID");
         if ($dup) { return msgAdd(lang('error_duplicate_id')); }
-		$settings = [];
+		$settings= [];
         $settings['restrict'] = $restrict;
 		foreach ($request as $key => $value) { //extract the security
 			if (substr($key, 0, 4) == 'sID:') { // it's a valid security ID

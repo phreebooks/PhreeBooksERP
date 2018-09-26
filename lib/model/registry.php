@@ -186,11 +186,13 @@ final class bizRegistry
         $messages = [];
         // check for new version of Bizuno
         msgDebug("\nComparing this version: ".MODULE_BIZUNO_VERSION." with Phreesoft.com version: {$myAcct['bizuno']['version']}");
-        if (version_compare(MODULE_BIZUNO_VERSION, $myAcct['bizuno']['version']) < 0) {
-            $messages[] = ['msg_id'=>'BIZ:'.$myAcct['bizuno']['version'], 'subject'=>"Bizuno Version {$myAcct['bizuno']['version']} Released!"];
+        // Check for new version AND add message/download icon ONLY if host doen't handle the upgrade
+        if (in_array(BIZUNO_HOST, ['phreebooks']) && version_compare(MODULE_BIZUNO_VERSION, $myAcct['bizuno']['version']) < 0) {
+            $messages[] = ['msg_id'=>'BIZ:'.$myAcct['bizuno']['version'], 'subject'=>"Bizuno Library Version {$myAcct['bizuno']['version']} Released!"];
             $this->addUpgrade = true; // add the download icon
         }
         $myPurchases = $this->reSortExtensions($myAcct);
+        msgDebug("\nmyPurchases = ".print_r($myPurchases, true));
         foreach ($myPurchases as $mID => $settings) {
             if (empty($settings['paid']) && getModuleCache($mID, 'properties', 'status', false, 0)) { // set status to disabled
                 msgDebug("\nDisabling status for business ID = ".getUserCache('profile', 'biz_id')." and module: $mID");
@@ -198,9 +200,11 @@ final class bizRegistry
                 continue;
             }
 //          if (!empty($myAcct[$mID]['msg'])) { $messages[] = $myAcct[$mID]['msg']; } // check for messages and add to msgSys, expirations, news updates
-//          if (version_compare($settings['version'], getModuleCache($mID, 'settings', 'version', false, 0))) { // compare versions, add messages if reminder to renew or expired
-//              $messages[] = ['msg_id'=>"EXT:$mID:".$myAcct['bizuno']['version'], 'subject'=>"Extension: $mID Version {$myAcct['bizuno']['version']} Released!"];
-//          }
+            msgDebug("\ncomparing extension $mID local version ".getModuleCache($mID, 'properties', 'version', false, 0)." with PhreeSoft.com version {$settings['version']}");
+            if (!$settings['paid'] || !getModuleCache($mID, 'properties', 'version')) { continue; }
+            if (version_compare($settings['version'], getModuleCache($mID, 'properties', 'version', false, 0))) { // compare versions, add messages if reminder to renew or expired
+                $messages[] = ['msg_id'=>"EXT:$mID:{$settings['version']}", 'subject'=>"Extension: $mID Version {$settings['version']} is Available!"];
+            }
         }
         msgSysWrite($messages);
     }

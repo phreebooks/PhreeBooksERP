@@ -40,13 +40,13 @@ class contactsAdmin
 			'quickBar'   => ['child'=>['home'=>['child'=>[
                 'mgr_e' => ['order'=>45,'label'=>lang('employees'),'icon'=>'employee','events'=>['onClick'=>"hrefClick('contacts/main/manager&type=e');"]]]]]],
 			'menuBar'    => ['child'=>[
-                'customers'=> ['order'=>10,'label'=>lang('customers'),'group'=>'cust','icon'=>'sales','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=customers');"],'child'=>[
-                    'mgr_c'=> ['order'=>10,'label'=>lang('contacts_type_c_mgr'),'icon'=>'users',  'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=c');"]],
-                    'mgr_i'=> ['order'=>20,'label'=>lang('contacts_type_i_mgr'),'icon'=>'chat',   'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=i');"]],
-                    'rpt_c'=> ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc','events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=cust');"]]]],
+                'customers'=> ['order'=>10,'label'=>lang('customers'),'group'=>'cust','icon'=>'sales', 'events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=customers');"],'child'=>[
+                    'mgr_c'=> ['order'=>10,'label'=>lang('contacts_type_c_mgr'),'icon'=>'users',       'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=c');"]],
+                    'mgr_i'=> ['order'=>20,'label'=>lang('contacts_type_i_mgr'),'icon'=>'chat',        'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=i');"]],
+                    'rpt_c'=> ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc',     'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=cust');"]]]],
 				'vendors'  => ['order'=>20,'label'=>lang('vendors'),'group'=>'vend','icon'=>'purchase','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=vendors');"],'child'=>[
-                    'mgr_v'=> ['order'=>20,'label'=>lang('contacts_type_v_mgr'),'icon'=>'users',  'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=v');"]],
-                    'rpt_v'=> ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc','events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=vend');"]]]]]],
+                    'mgr_v'=> ['order'=>20,'label'=>lang('contacts_type_v_mgr'),'icon'=>'users',       'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=v');"]],
+                    'rpt_v'=> ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc',     'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=vend');"]]]]]],
 			'hooks' => ['phreebooks'=>['tools'=>[
                 'fyCloseHome'=> ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50],
                 'fyClose'    => ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50]]]],

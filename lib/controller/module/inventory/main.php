@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-04
+ * @version    3.x Last Update: 2018-09-24
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -634,14 +634,16 @@ function preSubmit() {
         if (!$security = validateSecurity('inventory', 'inv_mgr', 4)) { return; }
 		$rID = clean('rID', 'integer', 'get');
         if (!$rID) { return msgAdd('Bad Record ID!'); }
+        $action = "jq('#accInventory').accordion('select', 0); jq('#dgInventory').datagrid('reload'); jq('#divInventoryDetail').html('&nbsp;');";
 		$item = dbGetRow(BIZUNO_DB_PREFIX."inventory", "id=$rID");
+        if (!$item) { return ['content'=>['action'=>'eval','actionData'=>$action]]; }
 		$sku    = clean($item['sku'], 'text');
 		// Check to see if this item is part of an assembly
 		$block0 = dbGetValue(BIZUNO_DB_PREFIX."inventory_assy_list", 'id', "sku='$sku'");
         if ($block0) { return msgAdd($this->lang['err_inv_delete_assy']); }
 		$block1 = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "sku='$sku'");
         if ($sku && $block1 && strpos(COG_ITEM_TYPES, $item['inventory_type']) !== false) { return msgAdd($this->lang['err_inv_delete_gl_entry']); }
-		$data = ['content' => ['action'=>'eval','actionData'=>"jq('#accInventory').accordion('select', 0); jq('#dgInventory').datagrid('reload'); jq('#divInventoryDetail').html('&nbsp;');"],
+		$data = ['content' => ['action'=>'eval','actionData'=>$action],
 			'dbAction'=> [
                 "inventory"          => "DELETE FROM ".BIZUNO_DB_PREFIX."inventory WHERE id='$rID'",
 				"inventory_prices"   => "DELETE FROM ".BIZUNO_DB_PREFIX."inventory_prices WHERE inventory_id='$rID'",

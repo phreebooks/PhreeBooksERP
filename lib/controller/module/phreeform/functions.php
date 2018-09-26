@@ -66,6 +66,28 @@ function AddSep($value, $Process)
 }
 
 /**
+ * used to build drop downs for filtering
+ * @return type
+ */
+function viewDateChoices()
+{
+    return [
+        ['id'=>'a', 'text'=>lang('all')],
+        ['id'=>'b', 'text'=>lang('range')],
+        ['id'=>'c', 'text'=>lang('today')],
+        ['id'=>'d', 'text'=>lang('dates_this_week')],
+        ['id'=>'e', 'text'=>lang('dates_wtd')],
+        ['id'=>'l', 'text'=>lang('dates_this_period')],
+        ['id'=>'f', 'text'=>lang('dates_month')],
+        ['id'=>'g', 'text'=>lang('dates_mtd')],
+        ['id'=>'h', 'text'=>lang('dates_quarter')],
+        ['id'=>'i', 'text'=>lang('dates_qtd')],
+        ['id'=>'j', 'text'=>lang('dates_this_year')],
+        ['id'=>'k', 'text'=>lang('dates_ytd')],
+        ['id'=>'m', 'text'=>lang('dates_lfy')],
+        ['id'=>'n', 'text'=>lang('dates_lfytd')]];
+}
+/**
  * This function adds a separator to a string for formatting addresses, etc. These are the default separators
  * @param mixed $value - value to add separator to
  * @param string $Process - Process to apply
@@ -369,7 +391,7 @@ function sqlFilter(&$report)
 	$report->sqlCritDesc = '';
     if (!isset($report->datefield)) { $report->datefield = ''; }
 	if (isset($report->datedefault)) {
-		$dates = phreeformSQLDate($report->datedefault, prefixTables($report->datefield));
+		$dates = dbSqlDates($report->datedefault, prefixTables($report->datefield));
         if ($dates['sql']) { $strCrit[] = $dates['sql']; }
 		$report->sqlCritDesc.= $dates['description'];
 		$report->datedefault = substr($report->datedefault, 0, 1).":{$dates['start_date']}:{$dates['end_date']}";
@@ -414,6 +436,7 @@ function prefixTables($field)
  * @param string $df - database fieldname for the sql date search
  * @return return associative  array ('sql', 'description', 'start_date', 'end_date');
  */
+/*
 function phreeformSQLDate($date_prefs='c', $df=false)
 {
   	global $report;
@@ -522,7 +545,7 @@ function phreeformSQLDate($date_prefs='c', $df=false)
 		break;
 	}
 	return ['sql'=>$d,'description'=>$fildesc,'start_date'=>$ds,'end_date'=>$de];
-}
+} */
 
 /**
  * Tests for the existence of tables in variables (for formulas)

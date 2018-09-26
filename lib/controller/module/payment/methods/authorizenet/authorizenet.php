@@ -17,12 +17,12 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-09-18
  * @filesource /lib/controller/module/payment/methods/authorizenet.php
  *
  * Source Information:
  * @link http://developer.authorize.net/api/ - Main Website
- * @link http://www.authorize.net/content/dam/authorize/documents/AIM_guide.pdf - AIM Documentation
+ * @link https://developer.authorize.net/api/reference/index.html - API Documentation
  */
 
 namespace bizuno;
@@ -125,7 +125,7 @@ function payment_$this->code() {
     bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
 }
 function authorizenetRefNum(type) {
-	if (type=='stored') { var ccNum = bizSelGet('{$this->code}selCards'); }
+	if (type=='stored') { var ccNum = jq('#{$this->code}selCards').val(); }
       else { var ccNum = bizTextGet('{$this->code}_number');  }
 	var prefix= ccNum.substr(0, 2);
 	var newRef = prefix=='37' ? arrPmtMethod['$this->code'].refAX : arrPmtMethod['$this->code'].ref;

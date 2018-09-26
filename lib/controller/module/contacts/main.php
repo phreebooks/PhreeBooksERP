@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-10
+ * @version    3.x Last Update: 2018-09-19
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -609,7 +609,7 @@ cgMerge('mergeDest');";
         // merge the attachments
         msgDebug("\nMoving file at path: ".getModuleCache('contacts', 'properties', 'attachPath')." from rID_{$srcID}_ to rID_{$destID}_");
         $io = new io();
-        $io->fileMove(getModuleCache('contacts', 'properties', 'attachPath'), "rID_{$srcID}_", "rID_{$destID}_");
+        $io->folderMove(getModuleCache('contacts', 'properties', 'attachPath'), "rID_{$srcID}_", "rID_{$destID}_");
 		msgAdd($message, 'success');
 		msgLog(lang("contacts").'-'.lang('merge')." - $srcID => $destID");
 		$data = ['content'=>['action'=>'eval','actionData'=>"bizWindowClose('winMerge'); jq('#dgContacts').datagrid('reload');"]];
@@ -975,7 +975,7 @@ cgMerge('mergeDest');";
         $type  = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID");
         $notes = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'notes',"ref_id=$rID AND type='m'");
         $fldLog= [
-            'crm_date'  => ['order'=>10,'label'=>lang('date'),  'break'=>true,'classes'=>['easyui-datebox'],'attr'=>['type'=>'text', 'value'=>viewDate(date('Y-m-d'))]],
+            'crm_date'  => ['order'=>10,'label'=>lang('date'),  'break'=>true,'attr'=>['type'=>'date', 'value'=>viewDate(date('Y-m-d'))]],
             'crm_rep_id'=> ['order'=>20,'label'=>lang('contacts_log_entered_by'),'break'=>true,'values'=>viewRoleDropdown(),'attr'=>['type'=>'select','value'=>getUserCache('profile', 'contact_id', false, '0')]],
             'crm_action'=> ['order'=>30,'label'=>lang('action'),'break'=>true,'values'=>viewKeyDropdown(getModuleCache('contacts', 'crm_actions'), true),'attr'=>['type'=>'select']],
             'crm_note'  => ['order'=>40,'label'=>'','break'=>true,'attr'=>['type'=>'textarea','rows'=>5]]];
@@ -1207,33 +1207,35 @@ cgMerge('mergeDest');";
     
     private function getTermsDiv($defType='c')
     {
-		$type   = clean('type',['format'=>'char','default'=>$defType],'get');
-		$cID    = clean('id',  ['format'=>'integer','default'=>0],    'get');
-		$encoded= clean('data',['format'=>'text','default'=>false],   'get');
-		$terms  = explode(':', $encoded);
+		$type   = clean('type',['format'=>'char',   'default'=>$defType],'get');
+		$cID    = clean('id',  ['format'=>'integer','default'=>0],       'get');
+		$encoded= clean('data',['format'=>'text',   'default'=>false],   'get');
         if     (!$encoded && $cID)      { $encoded = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'terms', "id=$cID"); }
         elseif (!$encoded && $type=='v'){ $encoded = getModuleCache('phreebooks', 'settings', 'vendors', 'terms'); }
         elseif (!$encoded)              { $encoded = getModuleCache('phreebooks', 'settings', 'customers', 'terms'); }
+		$terms  = explode(':', $encoded);
+        $defNET = isset($terms[3]) && $terms[0]==3 ? $terms[3] : '30';
+        $defDOM = isset($terms[3]) && $terms[0]==4 ? clean($terms[3], 'date') : date('Y-m-d');
         $fields = [
-            'terms_type'  => ['position'=>'after','attr'=>['type'=>'radio','value'=>$terms[0]]],
-            'terms_disc'  => ['attr'=>['type'=>'input','value'=>isset($terms[1]) ? $terms[1] : '0', 'size'=>'4','maxlength'=>'3']],
-            'terms_early' => ['attr'=>['type'=>'input','value'=>isset($terms[2]) ? $terms[2] : '0', 'size'=>'4','maxlength'=>'3']],
-            'terms_net'   => ['attr'=>['type'=>'input','value'=>isset($terms[3]) ? $terms[3] : '30','size'=>'4','maxlength'=>'3']],
-            'terms_date'  => ['order'=>61,'break'=>true,'attr'=>['type'=>'date', 'value'=>date('Y-m-d')]],
+            'terms_type'  => ['position'=>'after',      'attr'=>['type'=>'radio','value'=>$terms[0]]],
+            'terms_disc'  => ['options'=>['width'=>40], 'attr'=>['type'=>'input','value'=>isset($terms[1]) ? $terms[1] : '0', 'maxlength'=>'3']],
+            'terms_early' => ['options'=>['width'=>40], 'attr'=>['type'=>'input','value'=>isset($terms[2]) ? $terms[2] : '0', 'maxlength'=>'3']],
+            'terms_net'   => ['options'=>['width'=>40], 'attr'=>['type'=>'input','value'=>$defNET,'maxlength'=>'3']],
+            'terms_date'  => ['order'=>61,'break'=>true,'attr'=>['type'=>'date', 'value'=>$defDOM]],
             'credit_limit'=> ['label'=>lang('contacts_terms_credit_limit'),'position'=>'after','styles'=>['text-align'=>'right'],'attr'=>['type'=>'input','format' =>'currency','value'=>isset($terms[4])?$terms[4]:'1000']]];
         $custom = ' - '.sprintf(lang('contacts_terms_discount'), html5('terms_disc', $fields['terms_disc']), html5('terms_early', $fields['terms_early'])).' '.sprintf(lang('contacts_terms_net'), html5('terms_net',$fields['terms_net']));
         $output = [
-            'radio0' => ['order'=>10,'break'=>true,'label'=>lang('contacts_terms_default'),'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>0,'checked'=>$terms[0]==0?true:false]],
-            'r0Text' => ['order'=>11,'break'=>true,'html'=>' ['.viewTerms('0', false, $terms[0]).']','attr'=>['type'=>'raw']],
-            'radio3' => ['order'=>20,'label'=>lang('contacts_terms_custom'), 'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>3,'checked'=>$terms[0]==3?true:false]],
-            'r1Disc' => ['order'=>21,'break'=>true,'html'=>$custom,'attr'=>['type'=>'raw']],
-            'radio6' => ['order'=>30,'break'=>true,'label'=>lang('contacts_terms_now'),    'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>6,'checked'=>$terms[0]==6?true:false]],
-            'radio2' => ['order'=>40,'break'=>true,'label'=>lang('contacts_terms_prepaid'),'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>2,'checked'=>$terms[0]==2?true:false]],
-            'radio1' => ['order'=>50,'break'=>true,'label'=>lang('contacts_terms_cod'),    'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>1,'checked'=>$terms[0]==1?true:false]],
-            'radio4' => ['order'=>60,'label'=>lang('contacts_terms_dom'),    'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>4,'checked'=>$terms[0]==4?true:false]],
-            'r4dom'  => $fields['terms_date'],
-            'radio5' => ['order'=>70,'break'=>true,'label'=>lang('contacts_terms_eom'),    'position'=>'after','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>5,'checked'=>$terms[0]==5?true:false]],
-            'credit' => $fields['credit_limit']];
+            'radio0'    => ['order'=>10,'break'=>true,'label'=>lang('contacts_terms_default'),'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>0,'checked'=>$terms[0]==0?true:false]],
+            'r0Text'    => ['order'=>11,'break'=>true,'html'=>' ['.viewTerms('0', false, $terms[0]).']','attr'=>['type'=>'raw']],
+            'radio3'    => ['order'=>20,'label'=>lang('contacts_terms_custom'),               'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>3,'checked'=>$terms[0]==3?true:false]],
+            'r1Disc'    => ['order'=>21,'break'=>true,'html'=>$custom,'attr'=>['type'=>'raw']],
+            'radio6'    => ['order'=>30,'break'=>true,'label'=>lang('contacts_terms_now'),    'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>6,'checked'=>$terms[0]==6?true:false]],
+            'radio2'    => ['order'=>40,'break'=>true,'label'=>lang('contacts_terms_prepaid'),'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>2,'checked'=>$terms[0]==2?true:false]],
+            'radio1'    => ['order'=>50,'break'=>true,'label'=>lang('contacts_terms_cod'),    'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>1,'checked'=>$terms[0]==1?true:false]],
+            'radio4'    => ['order'=>60,'label'=>lang('contacts_terms_dom'),                  'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>4,'checked'=>$terms[0]==4?true:false]],
+            'terms_date'=> $fields['terms_date'],
+            'radio5'    => ['order'=>70,'break'=>true,'label'=>lang('contacts_terms_eom'),    'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>5,'checked'=>$terms[0]==5?true:false]],
+            'credit'    => $fields['credit_limit']];
         return $output;
     }
 }

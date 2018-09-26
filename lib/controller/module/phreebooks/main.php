@@ -254,7 +254,9 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
     if (!formValidate()) return false;
     return true;
 }"],
-            'jsReady' => ['divInit'=>"ajaxForm('frmJournal'); jq('#dgJournalItem').edatagrid('addRow'); bizFocus('contactSel_b');"]];
+            'jsReady' => [
+                'divInit'=>"ajaxForm('frmJournal'); jq('#dgJournalItem').edatagrid('addRow');",
+                'focus'  => "bizFocus('contactSel_b');"]];
 		// see if there are any extra actions
 		if (substr($xAction, 0, 8) == 'journal:') {
 			$temp = explode(':', $xAction);
@@ -995,10 +997,11 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 					'label' => pullTableLabel('journal_main', 'journal_id'), 'attr'=>  ['width'=>120, 'resizable'=>true]];
 
 				$journalID = clean('journalID', 'integer', 'post');
+                $jVals = $this->selJournals(); // needs to be here for generating $this->blocked_journals
                 if     ($journalID)              { $sql = BIZUNO_DB_PREFIX."journal_main.journal_id=$journalID"; }
                 elseif ($this->blocked_journals) { $sql = BIZUNO_DB_PREFIX."journal_main.journal_id NOT IN ($this->blocked_journals)"; }
                 else                             { $sql = ''; }
-				$data['source']['filters']['journalID']= ['order'=>55,'break'=>true,'sql'=>$sql, 'label'=>pullTableLabel('journal_main', 'journal_id'),'values'=>$this->selJournals(),'attr'=>['type'=>'select','value'=>$journalID]];
+				$data['source']['filters']['journalID']= ['order'=>55,'break'=>true,'sql'=>$sql, 'label'=>pullTableLabel('journal_main', 'journal_id'),'values'=>$jVals,'attr'=>['type'=>'select','value'=>$journalID]];
 
 //				$data['source']['filters']['hdcol1'] = ['order'=>56,              'classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('fieldname')]];
 //				$data['source']['filters']['hdcol2'] = ['order'=>57,              'classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('operator')]];

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-07
+ * @version    3.x Last Update: 2018-09-19
  * @filesource lib/controller/functions.php
  */
 
@@ -116,6 +116,7 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 function myExceptionHandler($e)
 {
     if (defined('BIZUNO_DEBUG') && constant('BIZUNO_DEBUG')===true) {
+        msgDebug("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
         msgTrap();
         msgDebugWrite();
         exit("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
@@ -490,7 +491,7 @@ function validateSecurity($module, $index, $min_level=1, $verbose=true)
 	$access_level = getUserCache('security', $index, false, 0);
     if (!is_numeric($access_level)) { $access_level = 0; } // catches if index is null or undefined, returns array
 	$approved = ($access_level >= $min_level) ? $access_level : 0;
-    if (!$approved && $verbose) { msgAdd(lang('err_no_permission')." [$index]"); }
+    if (!$approved && $verbose) { msgAdd(lang('err_no_permission')." [$index]", 'trap'); }
 	return $approved;
 }
 

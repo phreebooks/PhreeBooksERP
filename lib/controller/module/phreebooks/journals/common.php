@@ -1137,7 +1137,7 @@ class jCommon
 			case 19: $qty1 = lang('qty');      $qty2 = lang('balance');  $ord1 = 25; $ord2 = 20; break;
 			case 21: $qty1 = lang('qty');      $qty2 = lang('balance');  $ord1 = 25; $ord2 = 20; break;
 		}
-		$data['columns']['qty'] = ['order'=>$ord1, 'label'=>$qty1, 'attr'=>  ['value'=>1,'width'=>80,'resizable'=>true,'align'=>'center'],
+		$data['columns']['qty'] = ['order'=>$ord1, 'label'=>$qty1, 'attr'=>['value'=>1,'width'=>80,'resizable'=>true,'align'=>'center'],
 			'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('qty'); } } }"]];
 		$data['columns']['bal'] = ['order'=>$ord2, 'label'=>$qty2,
 			'attr' => ['width'=>80,'resizable'=>true,'align'=>'center','hidden'=>($this->rID || $this->action=='inv')?false:true]];
