@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/bizuno/dashboards/my_notes/my_notes.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_MY_NOTES_VERSION','1.0');
+define('DASHBOARD_MY_NOTES_VERSION','3.1');
 
 class my_notes
 {
@@ -51,9 +51,7 @@ class my_notes
     {
         $data = [
             $this->code.'_0' => ['label'=>lang('note'),'classes'=>['easyui-validatebox'],'attr'=>['type'=>'text','required'=>'true','size'=>50]],
-            $this->code.'_button' => ['attr'   => ['type'   => 'button', 'value' => lang('new')],'styles' => ['cursor' => 'pointer'],
-                'events' => ['onClick'=> "dashboardAttr('$this->moduleID:$this->code', 0);"]],
-            'delete_icon' => ['icon'=>'trash', 'size'=>'small']];
+            $this->code.'_button' => ['attr'=>['type'=>'button','value'=>lang('new')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]];
         $html  = '<div>';
         $html .= '  <div id="'.$this->code.'_attr" style="display:none">';
         $html .= '    <form id="'.$this->code.'Form" action="">';
@@ -64,19 +62,17 @@ class my_notes
         // Build content box
         $index = 1;
         if (!isset($this->settings['data'])) { unset($this->settings['users']); unset($this->settings['roles']); $this->settings = ['data' => $this->settings]; } // OLD WAY
+        $html .= html5('', ['classes'=>['easyui-datalist'],'attr'=>['type'=>'ul']])."\n";
         if (!empty($this->settings['data'])) {
             foreach ($this->settings['data'] as $entry) {
-                $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"];
-                $html .= '  <div>';
-                $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>';
-                $html .= '    <div style="min-height:16px;">&#9679; '.$entry.'</div>';
-                $html .= '  </div>';
+                $html .= html5('', ['attr'=>['type'=>'li']]).'<span style="float:left">';
+				$html .= "&#9679; $entry".'</span><span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span></li>';
                 $index++;
             }
         } else {
-            $html .= '  <div>'.lang('no_results').'</div>'."\n";
+            $html .= '<li><span>'.lang('no_results')."</span></li>";
         }
-        $html .= '</div><div style="min-height:4px;">&nbsp;</div>'."\n";
+        $html .= '</ul></div>';
         return $html;
     }
 

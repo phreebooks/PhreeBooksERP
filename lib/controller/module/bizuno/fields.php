@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-13
+ * @version    3.x Last Update: 2018-10-26
  * @filesource /lib/controller/module/bizuno/fields.php
  */
 
@@ -95,12 +95,11 @@ class bizunoFields
     {
 		return ['id' => $name,
             'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'field', 'url'=>BIZUNO_AJAX."&p=bizuno/fields/managerRows&module=$module&table=$table"],
-			'events' => ['onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accFields', 'dgFields', 'divFieldDetail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', rowData.id); }"],
-			'source' => ['actions'=>['newField'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"accordionEdit('accFields','dgFields','divFieldDetail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', 0);"]]]],
+			'events' => ['onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accFields', 'dgFields', 'detail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', rowData.id); }"],
+			'source' => ['actions'=>['newField'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"accordionEdit('accFields','dgFields','detail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', 0);"]]]],
 			'columns'=> [
                 'id' => ['order'=>0,'attr'=>['hidden'=>true]],
-				'action' => ['order'=>1, 'label'=>lang('action'),
-					'attr'   => ['width'=>40, 'formatter'=>$name.'Formatter'],
+				'action' => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>40, 'formatter'=>$name.'Formatter'],
 					'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> ['delete' => ['order'=>90,'icon'=>'trash','hidden'=>$security==4?false:true,
 						'events' => ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/fields/delete&table=$table', 0, 'idTBD');"]]]],
@@ -153,7 +152,7 @@ class bizunoFields
                 'body'   => ['order'=>50,'type'=>'html',   'html'=>$this->getViewFields($props, $module, $table, $field)],
                 'formEOF'=> ['order'=>85,'type'=>'html',   'html'=>"</form>"]]]],
 			'toolbars'=> ['tbField'=>['icons' =>[
-                'new' => ['order'=>20,'events'=>['onClick'=>"accordionEdit('accFields','dgFields','divFieldDetail','".lang('details')."','bizuno/fields/edit&module=$module&table=$table', 0);"]],
+                'new' => ['order'=>20,'events'=>['onClick'=>"accordionEdit('accFields','dgFields','detail','".lang('details')."','bizuno/fields/edit&module=$module&table=$table', 0);"]],
 				'save'=> ['order'=>40,'events'=>['onClick'=>"jq('#frmField').submit();"]]]]],
 			'forms'   => ['frmField'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/fields/save"]]],
 			'jsHead'  => [
@@ -193,8 +192,7 @@ class bizunoFields
             'float_select'	  => ['label'=>lang('precision')."<br />",'values'=>$floats, 'attr'=>['type'=>'select']],
             'float_default'	  => ['label'=>lang('default')."<br />", 'attr'=>['value'=>isset($props['attr']['value'])?$props['attr']['value']:'0']],
             'radio_default'	  => ['label'=>$this->lang['xf_lbl_radio_default']."<br />", 'attr'=>['type'=>'textarea']],
-            'checkbox_default'=> ['label'=>lang('default')."<br />",'values'=>$checks,'attr'=>['type'=>'select']],
-            'icnSave'         => ['icon'=>'save', 'size'=>'large', 'events'=>  ['onClick'=>"jq('#frmField').submit();"]]];
+            'checkbox_default'=> ['label'=>lang('default')."<br />",'values'=>$checks,'attr'=>['type'=>'select']]];
 		switch ($props['attr']['type']) {
 			case 'varchar':
 			case 'text':
@@ -229,7 +227,6 @@ class bizunoFields
 				break;
 			default:
 		}
-        $output  = html5('',        $fields['icnSave']);
         $output .= html5('module',  $fields['module']);
         $output .= html5('table',   $fields['table']);
         $output .= html5('id',      $fields['id']);
@@ -252,11 +249,11 @@ class bizunoFields
         $output .= '  <tr class="panel-header"><th colspan="2">'.lang('attributes')."</th></tr>";
 
         $output .= "  <tr><td>";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_text'];
+        $fields['type']['label'] = $this->lang['xf_lbl_text'];
         $fields['type']['attr']['checked'] = $type=='text' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'text'; // radio button type
         $output .= html5('type', $fields['type'])."<br />";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_html'];
+        $fields['type']['label'] = $this->lang['xf_lbl_html'];
         $fields['type']['attr']['checked'] = $type=='html' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'html';
         $output .= html5('type', $fields['type'])."<br />";
@@ -265,15 +262,15 @@ class bizunoFields
         $output .= html5('text_default', $fields['text_default']);
         $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
         $output .= "  <tr><td>";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_link_url'];
+        $fields['type']['label'] = $this->lang['xf_lbl_link_url'];
         $fields['type']['attr']['checked'] = $type=='link_url' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'link_url';
         $output .= html5('type', $fields['type'])."<br />";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_link_image'];
+        $fields['type']['label'] = $this->lang['xf_lbl_link_image'];
         $fields['type']['attr']['checked'] = $type=='link_image' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'link_image';
         $output .= html5('type', $fields['type'])."<br />";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_link_inventory'];
+        $fields['type']['label'] = $this->lang['xf_lbl_link_inventory'];
         $fields['type']['attr']['checked'] = $type=='link_inventory' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'link_inventory';
         $output .= html5('type', $fields['type']);
@@ -281,7 +278,7 @@ class bizunoFields
         $output .= html5('link_default', $fields['link_default']);
         $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
         $output .= "  <tr><td>";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_int'];
+        $fields['type']['label'] = $this->lang['xf_lbl_int'];
         $fields['type']['attr']['checked'] = $type=='integer' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'integer';
         $output .= html5('type', $fields['type']);
@@ -290,7 +287,7 @@ class bizunoFields
         $output .= html5('int_default', $fields['int_default']);
         $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
         $output .= "  <tr><td>";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_float'];
+        $fields['type']['label'] = $this->lang['xf_lbl_float'];
         $fields['type']['attr']['checked'] = $type=='float' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'float';
         $output .= html5('type', $fields['type']);
@@ -300,15 +297,15 @@ class bizunoFields
         $output .= html5('float_default', $fields['float_default']);
         $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
         $output .= "  <tr><td>";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_checkbox_multi'];
+        $fields['type']['label'] = $this->lang['xf_lbl_checkbox_multi'];
         $fields['type']['attr']['checked'] = $type=='checkbox_multi' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'checkbox_multi';
         $output .= html5('type', $fields['type'])."<br />";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_select'];
+        $fields['type']['label'] = $this->lang['xf_lbl_select'];
         $fields['type']['attr']['checked'] = $type=='select' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'select';
         $output .= html5('type', $fields['type'])."<br />";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_radio'];
+        $fields['type']['label'] = $this->lang['xf_lbl_radio'];
         $fields['type']['attr']['checked'] = $type=='radio' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'radio';
         $output .= html5('type', $fields['type'])."</td>";
@@ -316,7 +313,7 @@ class bizunoFields
         $output .= html5('radio_default', $fields['radio_default']);
         $output .= '  </td></tr><tr><td colspan="2"><hr /></td></tr>';
         $output .= "  <tr><td>";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_checkbox'];
+        $fields['type']['label'] = $this->lang['xf_lbl_checkbox'];
         $fields['type']['attr']['checked'] = $type=='checkbox' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'checkbox';
         $output .= html5('type', $fields['type']);
@@ -332,11 +329,11 @@ class bizunoFields
         $fields['type']['attr']['checked'] = $type=='time' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'time';
         $output .= html5('type', $fields['type'])."<br />";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_datetime'];
+        $fields['type']['label'] = $this->lang['xf_lbl_datetime'];
         $fields['type']['attr']['checked'] = $type=='datetime' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'datetime';
         $output .= html5('type', $fields['type'])."<br />";
-        $fields['type']['label'] = $viewData['lang']['xf_lbl_timestamp'];
+        $fields['type']['label'] = $this->lang['xf_lbl_timestamp'];
         $fields['type']['attr']['checked'] = $type=='timestamp' ? 'checked' : false;
         $fields['type']['attr']['value'] = 'timestamp';
         $output .= html5('type', $fields['type']);
@@ -458,7 +455,7 @@ class bizunoFields
 		dbGetResult($sql);
 		msgAdd(lang('extra_fields')." (".($old_field?lang('update'):lang('add')).") ".lang('msg_database_write'), 'success');
 		msgLog(lang('extra_fields')." (".($old_field?lang('update'):lang('add')).") $table.$new_field");
-		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accFields').accordion('select', 0); jq('#dgFields').datagrid('reload'); jq('#divFieldDetail').html('&nbsp;');"]]);
+		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accFields').accordion('select', 0); jq('#dgFields').datagrid('reload'); jq('#detail').html('&nbsp;');"]]);
 	}
 
 	/**

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-13
+ * @version    3.x Last Update: 2018-10-23
  * @filesource /lib/controller/module/phreebooks/reconcile.php
  */
 
@@ -154,48 +154,6 @@ class phreebooksReconcile
 	}
 
 	/**
-     * Creates treegrid structure for reconciliation
-     * @param string $name - DOM field name
-     * @return array - treegrid ready to render
-     */
-    private function tgReconcile($name)
-    {
-		$this->defaults = [
-            'sort'  => 'reference',
-			'order' => '',
-			'period'=> getModuleCache('phreebooks', 'fy', 'period'),
-			'glAcct'=> getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash')];
-		$stmt_balance = dbGetValue(BIZUNO_DB_PREFIX."journal_history", 'stmt_balance', "period='{$this->defaults['period']}' AND gl_account='{$this->defaults['glAcct']}'");
-		return ['id'=>$name, 'type'=>'treegrid', 'title'=>lang('phreebooks_recon'),
-			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'treeField'=>'title', 'singleSelect'=>false, 'showFooter'=>true, 'animate'=>true, 'pagination'=>false, 'width'=>1000,
-                'url' => BIZUNO_AJAX."&p=phreebooks/reconcile/managerRows"],
-			'events' => [
-                'onLoadSuccess'=> "function(row, data){ reconInit(row, data); }",
-                'onCheck'      => "function(row)      { reconCheck(row); reconTotal(); }",
-                'onCheckAll'   => "function(rows)     { for (var i=0; i<rows.length; i++) { reconCheck(rows[i]); } reconTotal(); }",
-                'onUncheck'    => "function(row)      { reconUncheck(row); reconTotal(); }",
-                'onUncheckAll' => "function(rows)     { for (var i=0; i<rows.length; i++) { reconUncheck(rows[i]); } reconTotal(); }"],
-			'source' => [
-                'filters'=> [
-                    'period'=> ['order'=>10,'options'=>['width'=>300],'label'=>lang('period'),'break'=>true,'values'=>dbPeriodDropDown(false),'attr'=>['type'=>'select','value'=>$this->defaults['period']]],
-					'glAcct'=> ['order'=>20,'options'=>['width'=>350],'label'=>pullTableLabel('journal_main', 'gl_acct_id'),'values'=>dbGLDropDown(false,['0']), 'attr'=>['type'=>'select','value'=>$this->defaults['glAcct']]]],
-				'fields' => ['stmt_balance'=>['order'=>50,'label'=>lang('statement_balance'),'attr'=>['type'=>'currency','value'=>$stmt_balance]]]],
-			'columns'=> [
-                'id'         => ['order'=> 0,'attr'=>['hidden'=>true]],
-				'reconciled' => ['order'=> 0,'attr'=>['hidden'=>true]],
-				'reference'  => ['order'=>20,'label'=>lang('reference'),  'attr'=>['width'=>120,'resizable'=>true,'sortable'=>true]],
-				'post_date'  => ['order'=>30,'label'=>lang('date'),       'attr'=>['width'=> 80,'resizable'=>true,'sortable'=>true]],
-				'deposit'    => ['order'=>40,'label'=>lang('deposit'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'right'],
-					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'withdrawal' => ['order'=>50,'label'=>lang('withdrawal'), 'attr'=>['width'=>100,'resizable'=>true,'align'=>'right'],
-					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'title'      => ['order'=>60,'label'=>lang('description'),'attr'=>['width'=>275,'resizable'=>true]],
-				'total'      => ['order'=>70,'label'=>lang('total'),      'attr'=>['width'=>100,'resizable'=>true,'sortable'=>true,'align'=>'right'],
-					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-				'cleared'    => ['order'=>80,'attr'=>['checkbox'=>true]]]];
-	}
-	
-	/**
      * Saves the user selections for banking reconciliation
      * @return user message with status
      */
@@ -254,5 +212,47 @@ class phreebooksReconcile
         }
 		msgAdd(lang('msg_database_write'),'success');
 		msgLog(lang('phreebooks_recon').' - '.lang('save')." ($glAcct)");
+	}
+    
+    /**
+     * Creates treegrid structure for reconciliation
+     * @param string $name - DOM field name
+     * @return array - treegrid ready to render
+     */
+    private function tgReconcile($name)
+    {
+		$this->defaults = [
+            'sort'  => 'reference',
+			'order' => '',
+			'period'=> getModuleCache('phreebooks', 'fy', 'period'),
+			'glAcct'=> getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash')];
+		$stmt_balance = dbGetValue(BIZUNO_DB_PREFIX."journal_history", 'stmt_balance', "period='{$this->defaults['period']}' AND gl_account='{$this->defaults['glAcct']}'");
+		return ['id'=>$name, 'type'=>'treegrid', 'title'=>lang('phreebooks_recon'),
+			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'treeField'=>'title', 'singleSelect'=>false, 'showFooter'=>true, 'animate'=>true, 'pagination'=>false, 'width'=>1000,
+                'url' => BIZUNO_AJAX."&p=phreebooks/reconcile/managerRows"],
+			'events' => [
+                'onLoadSuccess'=> "function(row, data){ reconInit(row, data); }",
+                'onCheck'      => "function(row)      { reconCheck(row); reconTotal(); }",
+                'onCheckAll'   => "function(rows)     { for (var i=0; i<rows.length; i++) { reconCheck(rows[i]); } reconTotal(); }",
+                'onUncheck'    => "function(row)      { reconUncheck(row); reconTotal(); }",
+                'onUncheckAll' => "function(rows)     { for (var i=0; i<rows.length; i++) { reconUncheck(rows[i]); } reconTotal(); }"],
+			'source' => [
+                'filters'=> [
+                    'period'=> ['order'=>10,'options'=>['width'=>300],'label'=>lang('period'),'break'=>true,'values'=>dbPeriodDropDown(false),'attr'=>['type'=>'select','value'=>$this->defaults['period']]],
+					'glAcct'=> ['order'=>20,'options'=>['width'=>350],'label'=>pullTableLabel('journal_main', 'gl_acct_id'),'values'=>dbGLDropDown(false,['0']), 'attr'=>['type'=>'select','value'=>$this->defaults['glAcct']]]],
+				'fields' => ['stmt_balance'=>['order'=>50,'label'=>lang('statement_balance'),'attr'=>['type'=>'currency','value'=>$stmt_balance]]]],
+			'columns'=> [
+                'id'         => ['order'=> 0,'attr'=>['hidden'=>true]],
+				'reconciled' => ['order'=> 0,'attr'=>['hidden'=>true]],
+				'reference'  => ['order'=>20,'label'=>lang('reference'),  'attr'=>['width'=>120,'resizable'=>true,'sortable'=>true]],
+				'post_date'  => ['order'=>30,'label'=>lang('date'),       'attr'=>['width'=> 80,'resizable'=>true,'sortable'=>true]],
+				'deposit'    => ['order'=>40,'label'=>lang('deposit'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'right'],
+					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+				'withdrawal' => ['order'=>50,'label'=>lang('withdrawal'), 'attr'=>['width'=>100,'resizable'=>true,'align'=>'right'],
+					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+				'title'      => ['order'=>60,'label'=>lang('description'),'attr'=>['width'=>275,'resizable'=>true]],
+				'total'      => ['order'=>70,'label'=>lang('total'),      'attr'=>['width'=>100,'resizable'=>true,'sortable'=>true,'align'=>'right'],
+					'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+				'cleared'    => ['order'=>80,'attr'=>['checkbox'=>true]]]];
 	}
 }

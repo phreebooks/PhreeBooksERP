@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/bizuno/dashboards/todays_audit/todays_audit.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_TODAYS_AUDIT_VERSION','1.0');
+define('DASHBOARD_TODAYS_AUDIT_VERSION','3.1');
 
 class todays_audit
 {
@@ -81,7 +81,7 @@ class todays_audit
 		$result = dbGetMulti(BIZUNO_DB_PREFIX."audit_log", $filter, $order, ['date','user_id','log_entry'], $this->settings['num_rows']);
 		if (sizeof($result) > 0) {
 			foreach ($result as $entry) {
-				$html .= '  <div>'.substr($entry['date'], 0).($this->settings['reps'] ? ' - ' : ' ('.$this->getTitle($entry['user_id']).') ');
+				$html .= '  <div>'.substr($entry['date'], 11).($this->settings['reps'] ? ' - ' : ' ('.$this->getTitle($entry['user_id']).') ');
                 $html .= viewText($entry['log_entry'], $this->settings['trim']?$this->settings['trim']:999)."</div>\n";
 			}
 		} else {

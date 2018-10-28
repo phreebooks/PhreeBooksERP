@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /lib/controller/module/phreebooks/journals/j15.php
  */
 
@@ -41,18 +41,22 @@ class j15 extends jCommon
 /*******************************************************************************************************************/
     /**
      * Pulls the data for the specified journal and populates the structure
-     * @param array $data - current working structure
      * @param array $structure - table structures
-     * @param integer $rID - record id of the transaction to load from the database
      */
-    public function getDataMain(&$data, $structure, $rID=0)
+    public function getDataMain(&$structure)
     {
-        $dbMain = dbGetRow(BIZUNO_DB_PREFIX.'journal_main', "id='$rID'");
-        dbStructureFill($data['fields']['main'], $dbMain);
-        $data['items'] = dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id='$rID'");
+        dbStructureFill($structure, $this->main);
+    }
+    
+    /**
+     * Tailors the structure for the specific journal
+     */
+    public function getDataItem()
+    {
+        $structure = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
         $dbData = [];
-        if (sizeof($data['items']) > 0) { // calculate some form fields that are not in the db
-            foreach ($data['items'] as $key => $row) {
+        if (sizeof($this->items) > 0) { // calculate some form fields that are not in the db
+            foreach ($this->items as $key => $row) {
                 if ($row['gl_type'] <> 'adj') { continue; } // not an adjustment record
                 $values = dbGetRow(BIZUNO_DB_PREFIX."inventory", "sku='{$row['sku']}'");
                 $row['qty_stock'] = $values['qty_stock']-$row['qty'];
@@ -62,23 +66,25 @@ class j15 extends jCommon
             }
         }
         $map['credit_amount'] = ['type'=>'field','index'=>'total'];
-        $data['jsHead']['datagridData'] = formatDatagrid($dbData, 'datagridData', $structure['journal_item'], $map);
+        $this->dgDataItem = formatDatagrid($dbData, 'datagridData', $structure, $map);
     }
-    
+
     /**
-     * Tailors the structure for the specific journal
-     * @param array $data - current working structure
-     * @param integer $rID - Database record id of the journal main record
-     * @param integer $security - Users security level
+     * Customizes the layout for this particular journal
+     * @param array $data - Current working structure
+     * @param integer $rID - current db record ID
      */
-    public function getDataItem(&$data, $rID=0, $cID=0, $security=0)
+    public function customizeView(&$data, $rID=0)
     {
-        if (!$rID && getModuleCache('extShipping', 'properties', 'status')) { $data['fields']['main']['waiting']['attr']['value'] ='1'; } // to be seen by ship manager to print label
+        $fldKeys = ['id','journal_id','recur_id','recur_frequency','item_array',
+            'invoice_num','post_date','so_po_ref_id','method_code']; // source store ID, destination store added in extension
+        $data['jsHead']['datagridData'] = $this->dgDataItem;
+        if (!$rID && getModuleCache('extShipping', 'properties', 'status')) { $data['fields']['waiting']['attr']['value'] ='1'; } // to be seen by ship manager to print label
         $data['datagrid']['item'] = $this->dgAdjust('dgJournalItem');
-        $data['fields']['main']['waiting']['attr']['type'] = '1'; // for ship manager
-        $data['fields']['main']['so_po_ref_id']['values']  = getModuleCache('bizuno', 'stores');
-        $data['fields']['main']['so_po_ref_id']['attr']['type'] = 'select';
-        $data['fields']['main']['so_po_ref_id']['events']['onChange'] = "jq('#dgJournalItem').edatagrid('endEdit', curIndex); crmDetail(this.value, '_b');";
+        $data['fields']['waiting']['attr']['type'] = '1'; // for ship manager
+        $data['fields']['so_po_ref_id']['values']  = getModuleCache('bizuno', 'stores');
+        $data['fields']['so_po_ref_id']['attr']['type'] = 'select';
+        $data['fields']['so_po_ref_id']['events']['onChange'] = "jq('#dgJournalItem').edatagrid('endEdit', curIndex); crmDetail(this.value, '_b');";
         $data['datagrid']['item']['events']['onBeforeEdit']= "function(rowIndex) {
     var edtURL = jq(this).edatagrid('getColumnOption','sku');
     edtURL.editor.options.url = bizunoAjax+'&p=inventory/main/managerRows&clr=1&bID='+jq('#so_po_ref_id').val();
@@ -93,36 +99,17 @@ class j15 extends jCommon
                 }
             }
         }
-        $shipMeth = $data['fields']['main']['method_code']['attr']['value'];
-        $data['fields']['main']['method_code'] = ['label'=>lang('journal_main_method_code'),'options'=>['width'=>300],'values'=>$choices,'attr'=>['type'=>'select','value'=>$shipMeth]];
+        $shipMeth = $data['fields']['method_code']['attr']['value'];
+        $data['fields']['method_code'] = ['label'=>lang('journal_main_method_code'),'options'=>['width'=>300],'values'=>$choices,'attr'=>['type'=>'select','value'=>$shipMeth]];
         unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
-        $isWaiting = isset($data['fields']['main']['waiting']['attr']['checked']) && $data['fields']['main']['waiting']['attr']['checked'] ? '1' : '0';
-        $data['fields']['main']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
+        $isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? '1' : '0';
+        $data['fields']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'props' => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'fields'=>$this->getProps($data)],
-            'totals'=> ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
+            'props' => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'keys'=>$fldKeys],
+            'totals'=> ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
         $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
-    }
-
-    /**
-     * Configures the journal entry properties (other than address and items)
-     * @param array $data - current working structure
-     * @return array - List of fields to show with the structure
-     */
-    private function getProps($data)
-    {
-        return ['id'         => $data['fields']['main']['id'],
-            'journal_id'     => $data['fields']['main']['journal_id'],
-            'recur_id'       => $data['fields']['main']['recur_id'],
-            'recur_frequency'=> $data['recur_frequency'],
-            'item_array'     => $data['item_array'],
-            // Displayed
-            'invoice_num'    => array_merge($data['fields']['main']['invoice_num'], ['break'=>true,'order'=>20]),
-            'post_date'      => array_merge($data['fields']['main']['post_date'],   ['break'=>true,'order'=>40]),
-            'so_po_ref_id'   => array_merge($data['fields']['main']['so_po_ref_id'],['break'=>true,'order'=>58]),
-            'method_code'    => array_merge($data['fields']['main']['method_code'], ['break'=>true,'order'=>70])]; // source store ID, destination store added in extension
     }
 
 /*******************************************************************************************************************/
@@ -133,8 +120,8 @@ class j15 extends jCommon
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
-        $this->postMain();
-        $this->postItem();
+        if (!$this->postMain())              { return; }
+        if (!$this->postItem())              { return; }
         if (!$this->postInventory())         { return; }
         if (!$this->postJournalHistory())    { return; }
         if (!$this->setStatusClosed('post')) { return; }
@@ -147,8 +134,8 @@ class j15 extends jCommon
         msgDebug("\n/********* unPosting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         if (!$this->unPostJournalHistory())    { return; }	// unPost the chart values before inventory where COG rows are removed
         if (!$this->unPostInventory())         { return; }
-		$this->unPostMain();
-        $this->unPostItem();
+		if (!$this->unPostMain())              { return; }
+        if (!$this->unPostItem())              { return; }
         if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
 		return true;

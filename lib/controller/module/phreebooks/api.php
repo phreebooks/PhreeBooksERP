@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2018-10-21
  * @filesource /lib/controller/module/phreebooks/api.php
  */
 
@@ -64,6 +64,7 @@ class phreebooksApi
 
     private function getViewBB()
     {
+        $precision       = getModuleCache('phreebooks', 'currency', 'iso')[getUserCache('profile', 'currency', false, 'USD')]['dec_len'];
         $bb_value        = ['styles'=>["text-align"=>"right"],'attr'=>['size'=>"13", 'value'=>0],'events'=>['onChange'=>"begBalTotal();"]];
         $bb_debit_total  = ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
         $bb_credit_total = ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
@@ -72,13 +73,15 @@ class phreebooksApi
 		$coa_types = selGLTypes();
         $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_history", "period=1", "gl_account");
 		$beg_bal = [];
-		foreach ($result as $row) { $beg_bal[$row['gl_account']] = [
-            'desc'     => getModuleCache('phreebooks', 'chart', 'accounts')[$row['gl_account']]['title'],
-            'type'     => $row['gl_type'],
-            'desc_type'=> lang('gl_acct_type_'.$row['gl_type']),
-            'value'    => $coa_types[$row['gl_type']]['asset'] ? $row['beginning_balance'] : -$row['beginning_balance'],
-            'asset'    => $coa_types[$row['gl_type']]['asset']];
-		}
+		foreach ($result as $row) {
+            $balance = round($row['beginning_balance'], $precision);
+            $beg_bal[$row['gl_account']] = [
+                'desc'     => getModuleCache('phreebooks', 'chart', 'accounts')[$row['gl_account']]['title'],
+                'type'     => $row['gl_type'],
+                'desc_type'=> lang('gl_acct_type_'.$row['gl_type']),
+                'value'    => empty($balance) ? $balance : ($coa_types[$row['gl_type']]['asset'] ? $balance : -$balance),
+                'asset'    => $coa_types[$row['gl_type']]['asset']];
+            }
         $output = '<table style="border-style:none;margin-left:auto;margin-right:auto;">
          <thead class="panel-header">
           <tr>
@@ -132,9 +135,9 @@ class phreebooksApi
 	jq('input[name^=debits]').each(function() { debits += cleanCurrency(jq(this).val()); });
 	jq('input[name^=credits]').each(function(){ credits+= cleanCurrency(jq(this).val()); });
 	balance = debits - credits;
-	jq('#bb_debit_total').val(formatCurrency(debits));
-	jq('#bb_credit_total').val(formatCurrency(credits));
-	jq('#bb_balance_total').val(formatCurrency(balance));
+    bizTextSet('bb_debit_total',  debits,  'currency');
+    bizTextSet('bb_credit_total', credits, 'currency');
+    bizTextSet('bb_balance_total',balance, 'currency');
 	if (balance == 0) jq('#bb_balance_total').css({color:'#000000'});
 	else jq('#bb_balance_total').css({color:'red'});
 }";
@@ -199,6 +202,7 @@ class phreebooksApi
 			$dbData[$glAcct] = ['beginning_balance'=>-$amount, 'last_update'=>$today];
 		}
         $balance = abs(round($debits-$credits, getModuleCache('bizuno', 'settings', 'locale', 'number_precision', 2)));
+        msgDebug("\nCalculated balance (expecting zero after rounding) = $balance");
         if ($balance <> 0) { return msgAdd("Cannot update beginning balances as the debits are not equal to the credits."); }
         foreach ($dbData as $gl => $sql) { dbWrite(BIZUNO_DB_PREFIX.'journal_history', $sql, 'update', "period=1 AND gl_account='$gl'"); }
         $phreebooks = new journal();

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-11
+ * @version    3.x Last Update: 2018-10-03
  * @filesource /portal/guest.php
  */
 
@@ -129,7 +129,7 @@ class guest
         msgDebug("\nRead extensions folder ".BIZUNO_EXT." with result = ".print_r($extensions, true));
         foreach ($extensions as $name) { if (file_exists(BIZUNO_EXT."$name/admin.php")) { $modList[$name] = BIZUNO_EXT."$name/"; } }
         $myModules = is_dir(BIZUNO_CUSTOM) ? scandir(BIZUNO_CUSTOM) : []; // load custom modules
-        msgDebug("\nRead custom folder ".BIZUNO_CUSTOM." with result = ".print_r($myModules, true));
+        msgDebug("\nRead custom folder with result = ".print_r($myModules, true));
         foreach ($myModules as $name) { if (file_exists(BIZUNO_CUSTOM."/$name/admin.php")) { $modList[$name] = BIZUNO_CUSTOM."/$name/"; } }
         return $modList;
     }

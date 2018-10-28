@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-03-06
+ * @version    3.x Last Update: 2018-10-09
  * @filesource /controller/module/phreeform/io.php
  */
 
@@ -41,57 +41,60 @@ class phreeformIo
      */
     public function manager(&$layout=[])
     {
-		$data = [
+        $selMods = [['id'=>'locale','text'=>'Bizuno (Core)']];
+        $selLangs= [['id'=>'en_US', 'text'=>lang('language_title')]];
+        $fields= [
+            'selModule'   => ['label'=>lang('module'),  'values'=>$selMods, 'attr'=>['type'=>'select']],
+            'selLang'     => ['label'=>lang('language'),'values'=>$selLangs,'attr'=>['type'=>'select']],
+            'btnSearch'   => ['attr' =>['type'=>'button', 'value'=>lang('search')],'events'=>['onClick'=>'importSearch()']],
+            'fileUpload'  => ['label'=>lang('select_file'),'attr'=>['type'=>'file']],
+            'new_name'    => ['label'=>'('.lang('optional').') '.lang('msg_entry_rename'),'attr'=>['width'=>'80']],
+            'btnUpload'   => ['attr' =>['type'=>'button','value'=>lang('upload')],'events'=>['onClick'=>"jq('#imp_name').val(''); jq('#frmImport').submit();"]],
+            'cbReplace'   => ['label'=>$this->lang['msg_replace_existing'],'position'=>'after','attr'=>['type'=>'checkbox']],
+            'btnImport'   => ['attr' =>['type'=>'button','value'=>$this->lang['btn_import_selected']],'events'=>['onClick'=>"jq('#imp_name').val(jq('#selReports option:selected').val()); jq('#frmImport').submit();"]],
+            'btnImportAll'=> ['attr' =>['type'=>'button','value'=>$this->lang['btn_import_all']],'events'=>['onClick'=>"jq('#imp_name').val('all'); jq('#frmImport').submit();"]],
+        ];
+		$data  = [
             'title'=> lang('import'),
             'toolbars' => ['tbImport'=>['icons'=>[
                 'back' => ['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=phreeform/main/manager'"]]]]],
-		    'forms'    => ['frmImport'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreeform/io/importReport"]]],
 		    'divs'     => [
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbImport'],
                 'heading'=> ['order'=>15,'type'=>'html',   'html'=>"<h1>".$this->lang['phreeform_import']."</h1>"],
-                'formBOF'=> ['order'=>20,'type'=>'forn',   'key'=>'frmImport'],
-                'body'   => ['order'=>50,'type'=>'html',   'html'=>$this->getViewMgr()],
+                'formBOF'=> ['order'=>20,'type'=>'form',   'key'=>'frmImport'],
+                'body'   => ['order'=>50,'type'=>'html',   'html'=>$this->getViewMgr($fields)],
                 'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"],],
+		    'forms'    => ['frmImport'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreeform/io/importReport"]]],
+            'fields'   => $fields,
             'jsReady'  => ['init'=>"ajaxForm('frmImport');"]];
 		$layout = array_replace_recursive($layout, viewMain(), $data);
 	}
 
-    private function getViewMgr()
+    private function getViewMgr($fields=[])
     {
-        $selMods     = [['id'=>'locale','text'=>'Bizuno (Core)']];
-		$selLangs    = [['id'=>'en_US', 'text'=>lang('language_title')]];
-        $selModule   = ['label'=>lang('module'),  'values'=>$selMods, 'attr'=>  ['type'=>'select']];
-        $selLang     = ['label'=>lang('language'),'values'=>$selLangs,'attr'=>  ['type'=>'select']];
-        $btnSearch   = ['attr' =>['type'=>'button', 'value'=>lang('search')],'events'=>  ['onClick'=>'importSearch()']];
-        $fileUpload  = ['label'=>lang('select_file'),'attr'=>  ['type'=>'file']];
-        $new_name    = ['label'=>'('.lang('optional').') '.lang('msg_entry_rename'), 'attr'=>['width'=>'80']];
-        $btnUpload   = ['attr' =>['type'=>'button','value'=>lang('upload')],'events'=>['onClick'=>"jq('#imp_name').val(''); jq('#frmImport').submit();"]];
-        $cbReplace   = ['label'=>$this->lang['msg_replace_existing'],'position'=>'after','attr'=>['type'=>'checkbox', 'value'=>'1']];
-        $btnImport   = ['attr' =>['type'=>'button','value'=>$this->lang['btn_import_selected']],'events'=>['onClick'=>"jq('#imp_name').val(jq('#selReports option:selected').val()); jq('#frmImport').submit();"]];
-        $btnImportAll= ['attr' =>['type'=>'button', 'value'=>$this->lang['btn_import_all']],'events'=>['onClick'=>"jq('#imp_name').val('all'); jq('#frmImport').submit();"]];
 
         return html5('imp_name',['attr'=>['type'=>'hidden']]).'
  <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
   <tbody>
    <tr>
-    <td>'.html5('new_name', $new_name).'</td>
-    <td>'.html5('cbReplace', $cbReplace).'</td>
+    <td>'.html5('new_name', $fields['new_name']).'</td>
+    <td>'.html5('cbReplace', $fields['cbReplace']).'</td>
    </tr>
    <tr class="panel-header"><th colspan="2">&nbsp;</th></tr>
    <tr>
-    <td>'.html5('fileUpload', $fileUpload).'</td>
-    <td style="text-align:right;">'.html5('btnUpload', $btnUpload).'</td>
+    <td>'.html5('fileUpload', $fields['fileUpload']).'</td>
+    <td style="text-align:right;">'.html5('btnUpload', $fields['btnUpload']).'</td>
    </tr>
    <tr class="panel-header"><th colspan="2">'.$this->lang['phreeform_reports_available'].'</th></tr>
    <tr>
-     <td>'.html5('selModule',$selModule).html5('selLang',$selLang).html5('btnSearch',$btnSearch).'</td>
-     <td style="text-align:right;">'.html5('btnImportAll',$btnImportAll).'</td>
+     <td>'.html5('selModule',$fields['selModule']).html5('selLang',$fields['selLang']).html5('btnSearch',$fields['btnSearch']).'</td>
+     <td style="text-align:right;">'.html5('btnImportAll',$fields['btnImportAll']).'</td>
    </tr>
    <tr><td colspan="2">'.ReadDefReports('selReports').'</td></tr>
-   <tr><td colspan="2" style="text-align:right;">'.html5('btnImport',$btnImport)."</td></tr>
+   <tr><td colspan="2" style="text-align:right;">'.html5('btnImport',$fields['btnImport'])."</td></tr>
   </tbody>\n</table>";
     }
-    
+
     /**
      * Imports a report from either the default list of from an uploaded file
      * @param array $layout - Structure coming in

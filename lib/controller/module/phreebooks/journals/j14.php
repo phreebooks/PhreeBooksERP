@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /lib/controller/module/phreebooks/journals/j14.php
  */
 
@@ -41,111 +41,92 @@ class j14 extends jCommon
 /*******************************************************************************************************************/
     /**
      * Pulls the data for the specified journal and populates the structure
-     * @param array $data - current working structure
      * @param array $structure - table structures
-     * @param integer $rID - record id of the transaction to load from the database
      */
-    public function getDataMain(&$data, $structure, $rID=0)
-    {
-        // handled later when rest of unique fields have been set
+    public function getDataMain(&$structure) {
+        dbStructureFill($structure, $this->main);
     }
 
     /**
      * Tailors the structure for the specific journal
-     * @param array $data - current working structure
-     * @param integer $rID - Database record id of the journal main record
-     * @param integer $security - Users security level
      */
-    public function getDataItem(&$data, $rID=0, $cID=0)
-    {
-        $data['datagrid']['item'] = $this->dgAssy('dgJournalItem'); // place different as this dg is on the right, not bottom
-        unset($data['fields']['item']['sku']['attr']['size']);
-        $data['fields']['item']['sku']['classes']['combogrid'] = 'easyui-combogrid';
-        $data['fields']['item']['sku']['options']['url'] = "'".BIZUNO_AJAX."&p=inventory/main/managerRows&filter=assy&clr=1&bID='+jq('#store_id').val(),
-            width:150, panelWidth:550, delay:500, idField:'sku', textField:'sku', mode:'remote',
-            onClickRow: function (id, data) { 
-                    jq('#description').val(data.description_short);
-                    jq('#gl_account').val(data.gl_inv);
-                    jq('#gl_acct_id').val(data.gl_inv);
-                    bizNumSet('qty_stock', data.qty_stock);
-                    jq('#dgJournalItem').datagrid({ url:'".BIZUNO_AJAX."&p=inventory/main/managerBOMList&rID='+data.id });
-                    jq('#dgJournalItem').datagrid('reload');
-                    bizNumSet('qty', 1);
-                },
-            columns:[[
-                    {field:'sku',              title:'".jsLang('sku')."',                width:100},
-                    {field:'description_short',title:'".jsLang('description')."',        width:200},
-                    {field:'qty_stock',        title:'".jsLang('inventory_qty_stock')."',width:100,align:'right'},
-                    {field:'qty_po',           title:'".jsLang('inventory_qty_po')."',   width:100,align:'right'}]]";
-        unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
-        unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
-        unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
-        $data['fields']['main']['gl_acct_id'] = ['attr'=>['type'=>'hidden']];
-        $data['fields']['item']['gl_account']['attr']['type'] = 'hidden';
-        $data['fields']['item']['qty']['label']  = lang('qty_to_assemble');
-        $data['fields']['item']['qty']['events'] = ['onChange'=>"assyUpdateBalance();"];
-        $data['qty_stock']= ['label'=>pullTableLabel('inventory', 'qty_stock'),'attr'=>['size'=>'10','readonly'=>'readonly']];
-        $data['balance']  = ['label'=>lang('balance'),'attr'=>['size'=>'10', 'readonly'=>'readonly']];
-        $isWaiting = isset($data['fields']['main']['waiting']['attr']['checked']) && $data['fields']['main']['waiting']['attr']['checked'] ? '1' : '0';
-        $data['fields']['main']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
+    public function getDataItem($rID=0) { 
+        $structure = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
+        $structure['sku']['attr']['type']        = 'inventory';
+        $structure['sku']['defaults']['idField'] = "'sku'";
+        $structure['sku']['defaults']['url']     = "'".BIZUNO_AJAX."&p=inventory/main/managerRows&filter=assy&clr=1&bID='+jq('#store_id').val()";
+        $structure['sku']['defaults']['callback']= "bizTextSet('description', data.description_short);
+    jq('#gl_account').val(data.gl_inv);
+    jq('#gl_acct_id').val(data.gl_inv);
+    bizNumSet('qty_stock', data.qty_stock);
+    jq('#dgJournalItem').datagrid({ url:'".BIZUNO_AJAX."&p=inventory/main/managerBOMList&rID='+data.id });
+    jq('#dgJournalItem').datagrid('reload');
+    bizNumSet('qty', 1);";
+        $structure['qty_stock']    = ['order'=>80,'break'=>true,'options'=>['width'=>100],'label'=>pullTableLabel('inventory', 'qty_stock'),'attr'=>['type'=>'float','readonly'=>'readonly']];
+        $structure['balance']      = ['order'=>90,'break'=>true,'options'=>['width'=>100],'label'=>lang('balance'),'attr'=>['type'=>'float', 'readonly'=>'readonly']];
+        $structure['gl_account']['attr']['type'] = 'hidden';
+        $structure['sku']['order'] = 15;
+        $structure['qty']['order'] = 85;
+        $structure['trans_code']['order'] = 95;
+        $structure['qty']['label'] = lang('qty_to_assemble');
+        $structure['qty']['events']= ['onChange'=>"assyUpdateBalance();"];
+        $structure['description']['attr']['type'] = 'text';
         if ($rID) { // merge the data
-            $dbMain = dbGetRow(BIZUNO_DB_PREFIX.'journal_main', "id='$rID'");
-            $data['fields']['main']['id']['attr']['value']          = $rID;
-            $data['fields']['main']['store_id']['attr']['value']    = $dbMain['store_id'];
-            $data['fields']['main']['post_date']['attr']['value']   = $dbMain['post_date'];
-            $data['fields']['main']['invoice_num']['attr']['value'] = $dbMain['invoice_num'];
             $dbItem = dbGetRow(BIZUNO_DB_PREFIX.'journal_item', "ref_id='$rID' AND gl_type='asy'");
-            $data['fields']['item']['gl_account']['attr']['value']  = $dbItem['gl_account'];
-            $data['fields']['item']['sku']['attr']['value']         = $dbItem['sku'];
-            $data['fields']['item']['qty']['attr']['value']         = $dbItem['qty'];
-            $data['fields']['item']['trans_code']['attr']['value']  = $dbItem['trans_code'];
-            $data['fields']['item']['description']['attr']['value'] = $dbItem['description'];
-            $stock = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$dbItem['sku']}'");
-            $data['qty_stock']['attr']['value'] = $stock - $dbItem['qty'];
-            $data['balance']['attr']['value']   = $stock;
+            dbStructureFill($structure, $dbItem);
+            $stock = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['qty_stock', 'description_short'], "sku='{$dbItem['sku']}'");
+            $structure['qty_stock']['attr']['value']  = $stock['qty_stock'] - $dbItem['qty'];
+            $structure['balance']['attr']['value']    = $stock['qty_stock'];
+            $structure['description']['attr']['value']= $stock['description_short'];
+            // below doesn't work, probably shoudl add to jsHead and reference variable with data:var
+//            $data = [['sku'=>$dbItem['sku'],'description_short'=>$stock['description_short']]];
+//            $structure['sku']['defaults']['data']   = json_encode($data);
         }
-        $data['divs']['divDetail']= ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'fields'=>$this->getProps($data)],
-            'dgItems'=> ['order'=>50,'type'=>'datagrid','classes'=>['blockView'],'styles'=>['width'=>'600px'],'key'=>'item'],
-            'totals' => ['order'=>60,'type'=>'totals','classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
-        $data['jsBody']['frmVal'] = "function preSubmit() {
-	var item = {sku:jq('#sku').combogrid('getValue'),qty:jq('#qty').val(),description:jq('#description').val(),total:0,gl_account:jq('#gl_account').val()};
+        $this->items = $structure;
+    }
+
+    /**
+     * Customizes the layout for this particular journal
+     * @param array $data - Current working structure
+     * @param integer $rID - current db record ID
+     */
+    public function customizeView(&$data)
+    {
+        $fldKeys = ['id','journal_id','gl_account','gl_acct_id','recur_id','item_array','xChild','xAction','store_id',
+            'sku','description','post_date','invoice_num','trans_code','qty','qty_stock','balance'];
+        unset($data['toolbars']['tbPhreeBooks']['icons']['print'],$data['toolbars']['tbPhreeBooks']['icons']['recur'],$data['toolbars']['tbPhreeBooks']['icons']['payment']);
+        $data['datagrid']['item'] = $this->dgAssy('dgJournalItem'); // place different as this dg is on the right, not bottom
+        // Just pull in some of the item structure
+        $data['fields']['sku']       = $this->items['sku'];
+        $data['fields']['description']= $this->items['description'];
+        $data['fields']['gl_account']= $this->items['gl_account'];
+        $data['fields']['trans_code']= $this->items['trans_code'];
+        $data['fields']['qty']       = $this->items['qty'];
+        $data['fields']['qty_stock'] = $this->items['qty_stock'];
+        $data['fields']['balance']   = $this->items['balance'];
+        $isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? '1' : '0';
+        $data['fields']['waiting']   = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
+        // reorganize some fields
+        $data['fields']['gl_acct_id']['attr']['type'] = 'hidden';
+        $data['fields']['description']['order']= 45;
+        $data['fields']['description']['options']['width'] = 300;
+        $data['divs']['divDetail']   = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
+            'props'  => ['order'=>40,'type'=>'fields',  'classes'=>['blockView'],'attr'=>  ['id'=>'pbProps'], 'keys'=>$fldKeys],
+            'dgItems'=> ['order'=>50,'type'=>'datagrid','classes'=>['blockView'],'styles'=>['width'=>'600px'],'key' =>'item'],
+            'totals' => ['order'=>60,'type'=>'totals',  'classes'=>['blockView'],'attr'=>  ['id'=>'pbTotals'],'content'=>$data['totals']]]];
+        $data['jsHead']['preSubmit'] = "function preSubmit() {
+    if (sku = '') return false;
+	var item = {sku:jq('#sku').val(),qty:jq('#qty').val(),description:jq('#description').val(),total:0,gl_account:jq('#gl_account').val()};
 	var items = {total:1,rows:[item]};
 	var serializedItems = JSON.stringify(items);
 	jq('#item_array').val(serializedItems);
 	if (!formValidate()) return false;
 	return true;
 }";
-        $data['jsReady']['divInit'] = "ajaxForm('frmJournal'); bizFocus('sku');";
+        $data['jsReady']['init'] = "ajaxForm('frmJournal');";
+        $data['jsReady']['focus']= "bizFocus('sku');";
     }
 
-    /**
-     * Configures the journal entry properties (other than address and items)
-     * @param array $data - current working structure
-     * @return array - List of fields to show with the structure
-     */
-    private function getProps($data)
-    {
-        return ['id'     => $data['fields']['main']['id'],
-            'journal_id' => $data['fields']['main']['journal_id'],
-            'gl_account' => $data['fields']['item']['gl_account'],
-            'gl_acct_id' => $data['fields']['main']['gl_acct_id'],
-            'recur_id'   => $data['fields']['main']['recur_id'],
-            'item_array' => $data['item_array'],
-            'xChild'     => ['attr'=>['type'=>'hidden']],
-            'xAction'    => ['attr'=>['type'=>'hidden']],
-            'store_id'   => $data['fields']['main']['store_id'],
-            // Displayed
-            'sku'        => array_merge($data['fields']['item']['sku'], ['break'=>true,'order'=>10]),
-            'description'=> array_merge($data['fields']['item']['description'], ['break'=>true,'order'=>20]),
-            'post_date'  => array_merge($data['fields']['main']['post_date'], ['break'=>true,'order'=>30]),
-            'invoice_num'=> array_merge($data['fields']['main']['invoice_num'], ['break'=>true,'order'=>40]),
-            'trans_code' => array_merge($data['fields']['item']['trans_code'], ['break'=>true,'order'=>50]),
-            'qty'        => array_merge($data['fields']['item']['qty'], ['break'=>true,'order'=>70]),
-            'qty_stock'  => array_merge($data['qty_stock'], ['break'=>true,'order'=>72]),
-            'balance'    => array_merge($data['balance'], ['order'=>74])];
-    }
-    
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
@@ -154,8 +135,8 @@ class j14 extends jCommon
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
-        $this->postMain();
-        $this->postItem();
+        if (!$this->postMain())              { return; }
+        if (!$this->postItem())              { return; }
         if (!$this->postInventory())         { return; }
         if (!$this->postJournalHistory())    { return; }
         if (!$this->setStatusClosed('post')) { return; }
@@ -168,8 +149,8 @@ class j14 extends jCommon
         msgDebug("\n/********* unPosting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         if (!$this->unPostJournalHistory())    { return; }	// unPost the chart values before inventory where COG rows are removed
         if (!$this->unPostInventory())         { return; }
-		$this->unPostMain();
-        $this->unPostItem();
+		if (!$this->unPostMain())              { return; }
+        if (!$this->unPostItem())              { return; }
         if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
 		return true;

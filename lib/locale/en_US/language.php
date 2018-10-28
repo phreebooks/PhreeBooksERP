@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-11
+ * @version    3.x Last Update: 2018-10-16
  * @filesource /local/en_US/language.php
  */
 
@@ -126,6 +126,7 @@ $langCore = [
 	'collect' => 'Collect',
 	'color' => 'Color',
 	'color_codes' => 'Color Codes',
+	'common' => 'Common',
 	'company' => 'My Business',
 	'completed' => 'Completed',
     'confirm' => 'Confirm',
@@ -282,6 +283,7 @@ $langCore = [
 	'owner' => 'Owner',
 	'paid' => 'Paid',
 	'page' => 'Page',
+    'pay_to' => 'Pay To',
 	'payment' => 'Payment',
 	'payment_discount' => 'Payment Discount',
 	'payment_due' => 'Payment Amount Due',
@@ -627,6 +629,7 @@ $langCore = [
 	'month' => 'Month',
 	'num_of_num' => '(showing %s of %s)',
 	'phreeform_email_body' => 'Attached is your %s from %s<br /><br />To view the attachment, you must have pdf reader software installed on your computer.',
+    'search_open_journal' => 'Enter the %s to search for open records:',
 	'phreeform_output_none' => 'There was not any data in this report based on the criteria provided!',
 	/**************************************  Tables  **********************************************************/
 	'address_book' => 'Address Book', // Table address_book
@@ -677,8 +680,8 @@ $langCore = [
 	'contacts_rep_id_i' => 'Link to Contact',
 	'contacts_rep_id_v' => 'Buyer',
 	'contacts_account_number' => 'Account Number',
-	'contacts_price_sheet' => 'Default Price Sheet',
-	'contacts_tax_rate_id' => 'Default Tax Rate',
+	'contacts_price_sheet' => 'Price Sheet',
+	'contacts_tax_rate_id' => 'Tax Rate',
 	'contacts_first_date' => 'Creation Date',
 	'contacts_last_date_1' => 'Date 1',
 	'contacts_last_date_2' => 'Date 2',
@@ -707,7 +710,7 @@ $langCore = [
 	'inventory_description_purchase' => 'Purchase Details',
 	'inventory_description_purchase_tip' => 'Information need by venders to purchase item.',
 	'inventory_description_sales' => 'Sales Description',
-	'inventory_description_sales_tip' => 'Usefull customer information and used in web cart description.',
+	'inventory_description_sales_tip' => 'Useful customer information and used in web cart description.',
 	'inventory_image_with_path' => 'Image (with path)',
 	'inventory_gl_sales' => 'GL Sales Acct',
 	'inventory_gl_inv' => 'GL Inv Acct',
@@ -728,7 +731,7 @@ $langCore = [
 	'inventory_qty_po' => 'Qty on PO',
 	'inventory_qty_so' => 'Qty on SO',
 	'inventory_qty_alloc' => 'Qty Allocated',
-	'inventory_qty_min' => 'Minimum Stock Level',
+	'inventory_qty_min' => 'Min Stock Level',
 	'inventory_qty_restock' => 'Reorder Qty',
 	'inventory_vendor_id' => 'Preferred Vendor',
 	'inventory_lead_time' => 'Lead Time',
@@ -780,7 +783,7 @@ $langCore = [
     'journal_main_store_id_15' =>'Destination Store',
 	'journal_main_tax_rate_id' => 'Tax Rate ID',
 	'journal_main_total_amount' => 'Total Amount',
-	'journal_main_currencies_rate' => 'Currencies Exc Rate',
+	'journal_main_currency_rate' => 'Exchange Rate',
 	'journal_main_so_po_ref_id' => 'SO/PO Record ID',
 	'journal_main_invoice_num' => 'Reference',
 	'journal_main_invoice_num_2' => 'Reference #',

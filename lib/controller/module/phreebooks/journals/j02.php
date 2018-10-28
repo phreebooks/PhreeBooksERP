@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /lib/controller/module/phreebooks/journals/j02.php
  */
 
@@ -42,18 +42,43 @@ class j02 extends jCommon
 /*******************************************************************************************************************/
     /**
      * Pulls the data for the specified journal and populates the structure
-     * @param array $data - current working structure
      * @param array $structure - table structures
-     * @param integer $rID - record id of the transaction to load from the database
      */
-    public function getDataMain(&$data, $structure, $rID=0)
+    public function getDataMain(&$structure)
     {
-        $dbData = dbGetRow(BIZUNO_DB_PREFIX.'journal_main', "id='$rID'");
-        dbStructureFill($data['fields']['main'], $dbData);
-        $data['items'] = dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id='$rID'");
-        $this->addGLNotes($data['items']);
-        msgDebug("\n read line items = ".print_r($data['items'], true));
-        $data['jsHead']['datagridData'] = formatDatagrid($data['items'], 'datagridData', $structure['journal_item']);
+        dbStructureFill($structure, $this->main);
+    }
+
+    /**
+     * Tailors the structure for the specific journal
+     */
+    public function getDataItem()
+    {
+        $structure = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
+        $this->addGLNotes($this->item);
+        $this->dgDataItem = formatDatagrid($this->item, 'datagridData', $structure);
+    }
+
+    /**
+     * Customizes the layout for this particular journal
+     * @param array $data - Current working structure
+     * @param integer $rID - current db record ID
+     * @param integer $security - users security setting
+     */
+    public function customizeView(&$data, $rID=0)
+    {
+        $fldKeys = ['id','journal_id','recur_id','recur_frequency','item_array','store_id','invoice_num','post_date'];
+        $data['jsHead']['datagridData'] = $this->dgDataItem;
+        $data['datagrid']['item'] = $this->dgLedger('dgJournalItem');
+        $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
+            'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields'], '_b'),
+                'settings'=>['type'=>'ceiv','suffix'=>'_b','search'=>true,'required'=>false,'store'=>false]],
+            'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
+            'totals' => ['order'=>50,'type'=>'totals','classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
+        $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
+        unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
+        unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
+        if ($rID) { unset($data['toolbars']['tbPhreeBooks']['icons']['recur']); }
     }
 
     /**
@@ -81,46 +106,6 @@ class j02 extends jCommon
         }
 	}
 
-    /**
-     * Tailors the structure for the specific journal
-     * @param array $data - current working structure
-     * @param integer $rID - Database record id of the journal main record
-     * @param integer $security - Users security level
-     */
-    public function getDataItem(&$data, $rID=0, $cID=0)
-    {
-        $data['datagrid']['item'] = $this->dgLedger('dgJournalItem');
-        $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields']['main'], '_b'),
-                'settings'=>['suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','store'=>false]],
-            'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'], 'fields' =>$this->getProps($data)],
-            'totals' => ['order'=>50,'type'=>'totals','classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
-        $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
-        unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
-        unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
-        if ($rID) { unset($data['toolbars']['tbPhreeBooks']['icons']['recur']); }
-    }
-
-    /**
-     * Configures the journal entry properties (other than address and items)
-     * @param array $data - current working structure
-     * @return array - List of fields to show with the structure
-     */
-    private function getProps($data)
-    {
-        return ['id'         => $data['fields']['main']['id'],
-            'journal_id'     => $data['fields']['main']['journal_id'],
-            'recur_id'       => $data['fields']['main']['recur_id'],
-            'recur_frequency'=> $data['recur_frequency'],
-            'item_array'     => $data['item_array'],
-            'followup'       => ['attr'=>['type'=>'hidden']],
-            'store_id'       => $data['fields']['main']['store_id'],
-            // Displayed
-            'invoice_num'    => array_merge($data['fields']['main']['invoice_num'], ['break'=>true,'order'=>20]),
-            'post_date'      => array_merge($data['fields']['main']['post_date'], ['break'=>true,'order'=>40]),
-            ];
-    }
-    
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
@@ -129,8 +114,8 @@ class j02 extends jCommon
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
-        $this->postMain();
-        $this->postItem();
+        if (!$this->postMain())              { return; }
+        if (!$this->postItem())              { return; }
         if (!$this->postInventory())         { return; }
         if (!$this->postJournalHistory())    { return; }
         if (!$this->setStatusClosed('post')) { return; }
@@ -143,8 +128,8 @@ class j02 extends jCommon
         msgDebug("\n/********* unPosting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         if (!$this->unPostJournalHistory())    { return; }	// unPost the chart values before inventory where COG rows are removed
         if (!$this->unPostInventory())         { return; }
-		$this->unPostMain();
-        $this->unPostItem();
+		if (!$this->unPostMain())              { return; }
+        if (!$this->unPostItem())              { return; }
         if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
 		return true;

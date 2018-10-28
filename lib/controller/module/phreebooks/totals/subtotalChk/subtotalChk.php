@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-01
  * @filesource /controller/module/phreebooks/totals/subtotalChk/subtotalChk.php
  */
 
@@ -48,7 +48,7 @@ class subtotalChk {
 	public function render(&$output)
     {
         $this->fields = [
-            'totals_subtotal'    => ['label'=>$this->lang['subtotal'],'attr'=>['type'=>'currency','size'=>'15','value'=>'0','readonly'=>'readonly']],
+            'totals_subtotal'    => ['label'=>$this->lang['subtotal'],'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']],
             'totals_subtotal_opt'=> ['icon'=>'blank','size'=>'small']];
 		$output['body'] .= '<div style="text-align:right">'
             .html5('totals_subtotal', $this->fields['totals_subtotal'])

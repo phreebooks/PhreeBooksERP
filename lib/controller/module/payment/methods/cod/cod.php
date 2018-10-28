@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2017-08-27
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /lib/controller/module/payment/methods/cod.php
  */
 
@@ -49,11 +49,10 @@ class cod
 
 	public function render(&$output, $data, $values=[], $dispFirst=false)
 	{
-		if (isset($values['method']) && $values['method']==$this->code 
-				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
-			$invoice_num = $data['fields']['main']['invoice_num']['attr']['value'];
-			$gl_account  = $data['fields']['main']['gl_acct_id']['attr']['value'];
-			$discount_gl = $this->getDiscGL($data['fields']['main']['id']['attr']['value']);
+		if (isset($values['method']) && $values['method']==$this->code && !empty($data['fields']['id']['attr']['value'])) { // edit
+			$invoice_num = $data['fields']['invoice_num']['attr']['value'];
+			$gl_account  = $data['fields']['gl_acct_id']['attr']['value'];
+			$discount_gl = $this->getDiscGL($data['fields']['id']['attr']['value']);
 		} else {
 			$invoice_num = $this->settings['prefix'].date('Ymd');
 			$gl_account  = $this->settings['cash_gl_acct'];

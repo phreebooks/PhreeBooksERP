@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/phreebooks/totals/fee_order/fee_order.php
  */
 
@@ -71,16 +71,11 @@ class fee_order
 	public function render(&$output, $data)
     {
 		$this->fields = [
-            'totals_fee_order_id' => ['label'=>'', 'attr'=>  ['type'=>'hidden']],
+            'totals_fee_order_id' => ['label'=>'', 'attr'=>['type'=>'hidden']],
 			'totals_fee_order_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
-			'totals_fee_order_opt'=> ['icon'=>'settings', 'size'=>'small',
-				'events' => ['onClick'=>"jq('#phreebooks_totals_fee_order').toggle('slow');"]],
-			'totals_fee_order_pct'=> ['label'=>lang('percent'), 'attr'=>  ['type'=>'text', 'size'=>'5'],
-				'events' => ['onClick'=>"fee_orderType='pct'; totalUpdate();"],],
-			'totals_fee_order'    => ['label'=>$this->lang['label'], 'format'=>'currency',
-				'events' => ['onClick'=>"fee_orderType='amt'; totalUpdate();"],
-				'attr'   => ['size'=>'15', 'value'=>'0', 'style'=>'text-align:right']],
-                ];
+			'totals_fee_order_opt'=> ['icon' =>'settings','size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_fee_order').toggle('slow');"]],
+			'totals_fee_order_pct'=> ['label'=>lang('percent'),'attr'=>['type'=>'text','size'=>'5'],'events'=>['onClick'=>"fee_orderType='pct'; totalUpdate();"]],
+			'totals_fee_order'    => ['label'=>$this->lang['label'],'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly'],'events'=>['onClick'=>"fee_orderType='amt'; totalUpdate();"]]];
 		if (isset($data['items'])) {
             foreach ($data['items'] as $row) { // fill in the data if available
                 if ($row['gl_type'] == $this->settings['gl_type']) {

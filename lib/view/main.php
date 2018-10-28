@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-19
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /view/main.php
  */
 
@@ -137,10 +137,6 @@ final class view extends portalView
         if (!isset($data['jsBody']))   { $data['jsBody']  = []; }
         if (!isset($data['jsReady']))  { $data['jsReady'] = []; }
         if (!isset($data['jsResize'])) { $data['jsResize']= []; }
-//        if (isset($this->output['js'])){ // old way
-//            $this->output['jsBody'] = array_replace($this->output['jsBody'], $this->output['js']); // merge old way in
-//            unset($this->output['js']);
-//        }
         // gather everything together
         $jsHead  = array_merge($this->output['jsHead'],  $data['jsHead'],  $html5->jsHead);
         $jsBody  = array_merge($this->output['jsBody'],  $data['jsBody'],  $html5->jsBody);
@@ -683,7 +679,7 @@ function adminStructure($module, $structure=[], $lang=[])
 	$iconBack = ['icon'=>'back','events'=>  ['onClick'=>"hrefClick('bizuno/settings/manager');"]];
 	$data = [
         'security'   => getUserCache('security', 'admin', false, 0),
-		'title'  => $title,
+		'title'      => $title,
 		'statsModule'=> $module,
 		'toolbars'   => ['tbAdmin'=> ['icons'=>  ['save' => ['order'=>20, 'events'=>  ['onClick'=>"jq('#frmAdmin').submit();"]]]]],
 		'forms'      => ['frmAdmin'=>  ['attr'=> ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=$module/admin/adminSave"]]],
@@ -713,13 +709,15 @@ function adminStructure($module, $structure=[], $lang=[])
  * @param string $tabID - id of the tab container to insert tabs
  * @return string - Updated $data with custom tabs HTML added
  */
-function customTabs(&$data, &$structure, $module, $tabID)
+function customTabs(&$data, $module, $tabID)
 {
+    $structure = $data['fields'];
+    // @todo Use sortOrder function
 	$temp = []; // sort the fields
     foreach ($structure as $key => $value) { $temp[$key] = isset($value['order']) ? $value['order'] : 50; }
 	array_multisort($temp, SORT_ASC, $structure);
 	$tabs = getModuleCache($module, 'tabs');
-    if (sizeof($tabs) == 0) { return; }
+    if (empty($tabs)) { return; }
 	foreach ($structure as $key => $field) { // pull out the groups
         if (isset($field['tab']) && $field['tab'] > 0) { $tabs[$field['tab']]['groups'][$field['group']]['fields'][$key] = $field; }
 	}
@@ -757,6 +755,7 @@ function customTabs(&$data, &$structure, $module, $tabID)
         }
 		$data['tabs'][$tabID]['divs']["tab_".$tID] = ['type'=>'html', 'order'=>isset($tab['sort_order']) ? $tab['sort_order'] : 50, 'label'=>$tab['title'], 'html'=>$html];
 	}
+    $data['fields'] = $structure;
 }
 
 /**
@@ -892,10 +891,7 @@ function htmlAddress(&$output, $prop)
 function htmlDatagrid(&$output, $prop, $idx=false)
 {
     global $html5;
-    if ($idx) {  // legacy to old style
-        $prop = ['el' => $prop['datagrid'][$idx]];
-    }
-    $html5->layoutDatagrid($output, $prop['el']);
+    $html5->layoutDatagrid($output, $prop, $idx);
 }
 
 /**

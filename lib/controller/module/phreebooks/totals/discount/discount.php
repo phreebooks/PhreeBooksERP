@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-18
+ * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/phreebooks/totals/discount/discount.php
  */
 
@@ -75,7 +75,7 @@ class discount
 		  "totals_{$this->code}_gl" => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
 		  "totals_{$this->code}_opt"=> ['icon'=>'settings', 'size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_".$this->code."').toggle('slow');"]],
 		  "totals_{$this->code}_pct"=> ['label'=>lang('percent'),'options'=>['width'=>60,'value'=>'0.00'],'events'=>['onBlur'=>"discountType='pct'; totalUpdate();"],'attr'=>['type'=>'float','size'=>5]],
-		  "totals_{$this->code}"    => ['label'=>$this->lang['title'],'attr'=>['type'=>'currency','size'=>15,'value'=>0],
+		  "totals_{$this->code}"    => ['label'=>$this->lang['label'],'attr'=>['type'=>'currency','value'=>0],
 			'events' => ['onBlur'=>"discountType='amt'; totalUpdate();"]]];
 		if (isset($data['items'])) {
             foreach ($data['items'] as $row) { // fill in the data if available

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-16
+ * @version    3.x Last Update: 2018-10-19
  * @filesource /lib/controller/module/inventory/prices/quantity.php
  */
 
@@ -82,11 +82,11 @@ function preSubmitPrices() {
         $defAttr= ['label'=>lang('default'),'attr'=>['type'=>'checkbox','value'=>1]];
         if (!empty($structure['settings']['default'])) { $defAttr['attr']['checked'] = true; }
         return [
-            'id'          .$this->code => $structure['id'], // hidden
-            'item'        .$this->code => ['attr'=>['type'=>'hidden']],
-            'title'       .$this->code => array_merge($structure['title'],['break'=>true]),
-            'default'     .$this->code => array_merge($defAttr,  ['break'=>true]),
-            'currency'    .$this->code => array_merge($structure['currency'],['break'=>true])];
+            'id'      .$this->code => $structure['id'], // hidden
+            'item'    .$this->code => ['attr'=>['type'=>'hidden']],
+            'title'   .$this->code => array_merge($structure['title'],['break'=>true]),
+            'default' .$this->code => array_merge($defAttr,  ['break'=>true]),
+            'currency'.$this->code => array_merge($structure['currency'],['break'=>true])];
     }
 	/**
 	 * This method saves the form contents for quantity pricing into the database, it is called from method: inventoryPrices:save 

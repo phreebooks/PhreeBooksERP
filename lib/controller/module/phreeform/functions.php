@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-21
+ * @version    3.x Last Update: 2018-10-19
  * @filesource /controller/module/phreeform/functions.php
  */
 
@@ -302,8 +302,7 @@ function phreeformImport($RptName='', $RptFileName='', $import_path='', $verbose
 		'security'   => $report->security,
 		'create_date'=> date('Y-m-d'),
 		'last_update'=> date('Y-m-d'),
-		'doc_data'   => '<PhreeformReport>'.object_to_xml($report).'</PhreeformReport>',
-        ];
+		'doc_data'   => '<PhreeformReport>'.object_to_xml($report).'</PhreeformReport>'];
 	$rID = dbWrite(BIZUNO_DB_PREFIX."phreeform", $sql_array, $rID?'update':'insert', "id=$rID");
 	return ['rID'=>$rID, 'title'=>$report->title];
 }
@@ -391,6 +390,7 @@ function sqlFilter(&$report)
 	$report->sqlCritDesc = '';
     if (!isset($report->datefield)) { $report->datefield = ''; }
 	if (isset($report->datedefault)) {
+        msgDebug("\nWorking with datedefault = $report->datedefault");
 		$dates = dbSqlDates($report->datedefault, prefixTables($report->datefield));
         if ($dates['sql']) { $strCrit[] = $dates['sql']; }
 		$report->sqlCritDesc.= $dates['description'];

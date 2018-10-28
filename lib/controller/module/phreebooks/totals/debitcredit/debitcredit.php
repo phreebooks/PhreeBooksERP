@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/phreebooks/totals/debitcredit/debitcredit.php
  */
 
@@ -48,8 +48,8 @@ class debitCredit
 
 	public function render(&$output) {
 		$this->fields = [
-            'totals_debit' =>['label'=>lang('total_debits'), 'styles'=>['text-align'=>'right'],'attr'=>['size'=>'15','value'=>'0']],
-		    'totals_credit'=>['label'=>lang('total_credits'),'styles'=>['text-align'=>'right'],'attr'=>['size'=>'15','value'=>'0']]];
+            'totals_debit' =>['label'=>lang('total_debits'), 'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']],
+		    'totals_credit'=>['label'=>lang('total_credits'),'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']]];
 		$output['body'] .= '<div style="text-align:right">'."
 	".html5('totals_debit', $this->fields['totals_debit'])."<br />
 	".html5('totals_credit',$this->fields['totals_credit'])."</div>\n";

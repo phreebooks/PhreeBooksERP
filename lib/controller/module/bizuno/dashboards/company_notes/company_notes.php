@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-04-19
+ * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/bizuno/dashboards/company_notes/company_notes.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_COMPANY_NOTES_VERSION','2.0');
+define('DASHBOARD_COMPANY_NOTES_VERSION','3.1');
 
 class company_notes 
 {
@@ -65,14 +65,8 @@ class company_notes
     {
         $security = getUserCache('security', 'admin', false, 0);
         $data = [
-            $this->code.'_0' => ['label' => lang('note'),
-                'classes'=> ['easyui-validatebox'],
-                'attr'   => ['type'=>'text', 'required'=>'true', 'size'=>50]],
-            $this->code.'_button' => [
-                'attr'   => ['type'   => 'button', 'value' => lang('new')],
-                'styles' => ['cursor' => 'pointer'],
-                'events' => ['onClick'=> "dashboardAttr('$this->moduleID:$this->code', 0);"]],
-        'delete_icon' => ['icon'=>'trash', 'size'=>'small']];
+            $this->code.'_0'     =>['label'=>lang('note'),'classes'=>['easyui-validatebox'],'attr'=>['type'=>'text','required'=>'true','size'=>50]],
+            $this->code.'_button'=>['attr'=>['type'=>'button','value'=>lang('new')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]];
         $html  = '<div>';
         $html .= '  <div id="'.$this->code.'_attr" style="display:none">';
         if ($security > 1) {
@@ -85,19 +79,18 @@ class company_notes
         // Build content box
         $index = 1;
         if (!isset($this->settings['data'])) { unset($this->settings['users']); unset($this->settings['roles']); $this->settings = ['data' => $this->settings]; } // OLD WAY
+        $html .= html5('', ['classes'=>['easyui-datalist'],'attr'=>['type'=>'ul']])."\n";
         if (!empty($this->settings['data'])) {
             foreach ($this->settings['data'] as $entry) {
-              $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"];
-              $html .= '  <div>';
-              if ($security > 2) { $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>'; }
-              $html .= '    <div style="min-height:16px;">&#9679; '.$entry.'</div>';
-              $html .= '  </div>';
-              $index++;
+                $html .= '<li><span style="float:left">'."&#9679; $entry".'</span>';
+                if ($security > 2) { $html .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span>'; }
+                $html .= '</li>';
+                $index++;
             }
         } else {
-            $html .= '  <div>'.lang('no_results').'</div>'."\n";
+            $html .= '<li><span>'.lang('no_results')."</span></li>";
         }
-        $html .= '</div><div style="min-height:4px;"> </div>'."\n";
+        $html .= '</ul></div>';
         $js = '
 jq("#'.$this->code.'Form").keypress(function(event) {
     var keycode = (event.keyCode ? event.keyCode : event.which);

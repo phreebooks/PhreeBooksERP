@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-13
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /controller/module/phreebooks/totals/tax_order/tax_order.php
  */
 
@@ -86,13 +86,14 @@ class tax_order
 
 	public function render(&$output, $data=[])
     {
-        $jID   = $data['fields']['main']['journal_id']['attr']['value'];
+        $jID   = $data['fields']['journal_id']['attr']['value'];
 		$type  = in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
 		$hide  = $this->hidden ? ';display:none' : '';
         $defTax= $type=='v' ? $this->settings['tax_id_v'] : $this->settings['tax_id_c'];
+        $tax_id= !empty($data['fields']['tax_rate_id']['attr']['value']) ? $data['fields']['tax_rate_id']['attr']['value'] : $defTax;
 		$this->fields = [
-            'totals_tax_order'     => ['label'=>pullTableLabel('journal_main','tax_rate_id',$this->cType).' '.$this->lang['extra_title'],'attr'=>['type'=>'currency','value'=>0,'size'=>'15','readonly'=>'readonly']],
-            'tax_rate_id'          => ['attr' =>['type'=>'tax'],'defaults'=>['value'=>$defTax,'type'=>$type]],
+            'totals_tax_order'     => ['label'=>pullTableLabel('journal_main','tax_rate_id',$this->cType).' '.$this->lang['extra_title'],'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']],
+            'tax_rate_id'          => ['attr' =>['type'=>'tax'],'defaults'=>['value'=>$tax_id,'type'=>$type]],
             'totals_tax_order_text'=> ['attr' =>['value'=>'textTBD','size'=>'16','readonly'=>'readonly']],
             'totals_tax_order_gl'  => ['label'=>lang('gl_account'), 'attr'=>['type'=>'text', 'value'=>'glTBD','readonly'=>'readonly']],
             'totals_tax_order_amt' => ['attr' =>['value'=>'amtTBD','size'=>'15','style'=>'text-align:right','readonly'=>'readonly']],

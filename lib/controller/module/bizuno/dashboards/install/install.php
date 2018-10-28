@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-12
+ * @version    3.x Last Update: 2018-09-26
  * @filesource /lib/controller/module/bizuno/dashboards/install/install.php
  */
 
@@ -56,14 +56,14 @@ class install
             $html .= html5('UserEmail', ['label'=>'User Email','attr'=>['size'=>40]])."<br />";
             $html .= html5('UserPass', ['label'=>'Password', 'attr'=>['type'=>'password']])."</fieldset>";
         }
-        if (!dbTableExists(BIZUNO_DB_PREFIX.'users')) { // collect username and database info as db has not been initialized
+        if (!dbTableExists(BIZUNO_DB_PREFIX.'users') && !in_array(BIZUNO_HOST,['phreesoft','wordpress'])) { // collect username and database info as db has not been initialized
             $lang['dbDesc']  = "Since your db tables have not been set, we'll need your database credentials to make sure we can connect to your db.";
             $html .= "<fieldset><legend>Database Settings</legend>".$lang['dbDesc']."<br />";
-            $html .= html5('dbHost', ['label'=>'Database Host','attr'=>['value'=>$GLOBALS['dbPortal']['host']]])."<br />";
-            $html .= html5('dbName', ['label'=>'Database Name','attr'=>['value'=>$GLOBALS['dbPortal']['name']]])."<br />";
-            $html .= html5('dbUser', ['label'=>'Database User name','attr'=>['value'=>$GLOBALS['dbPortal']['user']]])."<br />";
-            $html .= html5('dbPass', ['label'=>'Database Password','attr'=>['value'=>$GLOBALS['dbPortal']['pass']]])."<br />";
-            $html .= html5('dbPrfx', ['label'=>'Database Prefix','attr'=>['value'=>$GLOBALS['dbPortal']['prefix']]])."</fieldset>";
+            $html .= html5('dbHost', ['label'=>'Database Host',     'attr'=>['value'=>$GLOBALS['dbPortal']['host']]])  ."<br />";
+            $html .= html5('dbName', ['label'=>'Database Name',     'attr'=>['value'=>$GLOBALS['dbPortal']['name']]])  ."<br />";
+            $html .= html5('dbUser', ['label'=>'Database User name','attr'=>['value'=>$GLOBALS['dbPortal']['user']]])  ."<br />";
+            $html .= html5('dbPass', ['label'=>'Database Password', 'attr'=>['value'=>$GLOBALS['dbPortal']['pass']]])  ."<br />";
+            $html .= html5('dbPrfx', ['label'=>'Database Prefix',   'attr'=>['value'=>$GLOBALS['dbPortal']['prefix']]])."</fieldset>";
         }
 		$html .= '<div style="text-align:center">'.html5('btnInstall', $data['btnInstall']).'</div></form></div>';
         $html .= htmlJS("ajaxForm('frmInstall');");

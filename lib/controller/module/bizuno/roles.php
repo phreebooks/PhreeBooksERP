@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-17
+ * @version    3.x Last Update: 2018-10-19
  * @filesource /lib/controller/module/bizuno/roles.php
  */
 
@@ -82,43 +82,6 @@ class bizunoRoles
 	}
 
 	/**
-     * Datagrid structure for roles manager
-     * @param string $name - DOM id of the datagrid
-     * @param integer $security - security setting for the user
-     * @return array - datagrid structure
-     */
-    private function dgRoles($name, $security=0)
-    {
-        $this->managerSettings();
-        return ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
-			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=bizuno/roles/managerRows"],
-			'events' => [
-                'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; }}",
-				'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', rowData.id); }"],
-			'source' => [
-                'tables' => ['roles'=>['table'=>BIZUNO_DB_PREFIX."roles"]],
-				'actions' => [
-                    'newRole'  => ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', 0);"]],
-					'clrSearch'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]],
-				'search' => [BIZUNO_DB_PREFIX."roles".'.title'],
-				'sort'   => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
-				'filters'=> ['search' => ['order'=>'90','attr'=>['value'=>$this->defaults['search']]]]],
-			'columns' => [
-                'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.id",      'attr'=>['hidden'=>true]],
-				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.inactive",'attr'=>['hidden'=>true]],
-				'action'  => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
-					'actions'=> [
-						'edit' => ['order'=>20,'icon'=>'edit',
-							'events'=> ['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', idTBD);"]],
-						'copy' => ['order'=>40,'icon'=>'copy',
-							'events'=> ['onClick'=>"var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/roles/copy', idTBD, title);"]],
-						'delete' => ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,
-							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/roles/delete', idTBD);"]]]],
-				'title'=> ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."roles.title", 'label'=>pullTableLabel(BIZUNO_DB_PREFIX."roles", 'title'),
-					'attr' => ['sortable'=>true,'resizable'=>true]]]];
-	}
-
-	/**
      * Structure to handle editing roles
      * @param array $layout - structure coming in
      * @return modified $layout
@@ -130,14 +93,14 @@ class bizunoRoles
 		$dbData= dbGetRow(BIZUNO_DB_PREFIX."roles", "id='$rID'");
 		$dbData['settings'] = json_decode($dbData['settings'], true);
         msgDebug("\nRead from db = ".print_r($dbData, true));
-		$roles = dbLoadStructure(BIZUNO_DB_PREFIX."roles");
-		unset($roles['settings']);
-		dbStructureFill($roles, $dbData);
+		$structure = dbLoadStructure(BIZUNO_DB_PREFIX."roles");
+		unset($structure['settings']);
+		dbStructureFill($structure, $dbData);
 		$data = ['type'=>'divHTML','title'=>lang('roles').' - '.($rID ? $dbData['title'] : lang('new')),
 			'divs'    => ['detail'=>['order'=>10,'type'=>'divs','divs'=>[
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbRoles'],
                 'formBOF'=> ['order'=>15,'type'=>'form',   'key'=>'frmRoles'],
-                'body'   => ['order'=>40,'type'=>'fields', 'fields'=>$this->getViewRoles($roles, $dbData['settings'])],
+                'body'   => ['order'=>40,'type'=>'fields', 'fields'=>$this->getViewRoles($structure, $dbData['settings'])],
                 'tabs'   => ['order'=>60,'type'=>'tabs',   'key'=>'tabRoles'],
                 'formEOF'=> ['order'=>85,'type'=>'html',   'html'=>"</form>"]]]],
 			'toolbars'=> ['tbRoles'=>['icons'=>[
@@ -146,6 +109,7 @@ class bizunoRoles
 				'help' => ['order'=>99,'index' =>'']]]],
 			'tabs'    => ['tabRoles'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]]],
 			'forms'   => ['frmRoles'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/roles/save"]]],
+            'fields'  => $structure,
             'jsHead'  => ['init'=>"function autoFill() {\n	var setting = jq('#selFill').val();
 	jq('#frmRoles :input').each(function() { if (jq(this).attr('id').substr(0, 4) == 'sID:') jq(this).val(setting); });\n}"],
             'jsReady' => ['init'=>"ajaxForm('frmRoles');"]];
@@ -248,5 +212,42 @@ class bizunoRoles
 			'dbAction' => [BIZUNO_DB_PREFIX."roles"=>"DELETE FROM ".BIZUNO_DB_PREFIX."roles"." WHERE id='$rID'"],
             ];
         $layout = array_replace_recursive($layout, $data);
+	}
+    
+    /**
+     * Datagrid structure for roles manager
+     * @param string $name - DOM id of the datagrid
+     * @param integer $security - security setting for the user
+     * @return array - datagrid structure
+     */
+    private function dgRoles($name, $security=0)
+    {
+        $this->managerSettings();
+        return ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
+			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=bizuno/roles/managerRows"],
+			'events' => [
+                'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; }}",
+				'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', rowData.id); }"],
+			'source' => [
+                'tables' => ['roles'=>['table'=>BIZUNO_DB_PREFIX."roles"]],
+				'actions' => [
+                    'newRole'  => ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', 0);"]],
+					'clrSearch'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]],
+				'search' => [BIZUNO_DB_PREFIX."roles".'.title'],
+				'sort'   => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
+				'filters'=> ['search' => ['order'=>'90','attr'=>['value'=>$this->defaults['search']]]]],
+			'columns' => [
+                'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.id",      'attr'=>['hidden'=>true]],
+				'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.inactive",'attr'=>['hidden'=>true]],
+				'action'  => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
+					'actions'=> [
+						'edit' => ['order'=>20,'icon'=>'edit',
+							'events'=> ['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', idTBD);"]],
+						'copy' => ['order'=>40,'icon'=>'copy',
+							'events'=> ['onClick'=>"var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/roles/copy', idTBD, title);"]],
+						'delete' => ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,
+							'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/roles/delete', idTBD);"]]]],
+				'title'=> ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."roles.title", 'label'=>pullTableLabel(BIZUNO_DB_PREFIX."roles", 'title'),
+					'attr' => ['sortable'=>true,'resizable'=>true]]]];
 	}
 }

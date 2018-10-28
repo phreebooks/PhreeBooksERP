@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2017-08-27
+ * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/phreebooks/totals/balanceBeg/balanceBeg.php
  * 
  */
@@ -51,7 +51,7 @@ class balanceBeg
     {
 		// ajax request with GL acct/post_date to get starting balance
 		// need to modify post_date and gl_account field to call javascript call
-		$this->fields = ['totals_balanceBeg'=>['label'=>$this->lang['title'],'attr'=>['type'=>'currency','size'=>'15','value'=>'0','readonly'=>'readonly']]];
+		$this->fields = ['totals_balanceBeg'=>['label'=>$this->lang['title'],'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']]];
 		$output['body'] .= '<div style="text-align:right">'."\n"
                 .html5('totals_balanceBeg',$this->fields['totals_balanceBeg']).html5('', ['icon'=>'blank', 'size'=>'small'])."</div>\n";
         $output['jsHead'][] = "function totals_balanceBeg(begBalance) { return cleanCurrency(jq('#totals_balanceBeg').val()); }

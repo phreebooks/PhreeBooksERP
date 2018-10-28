@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-19
+ * @version    3.x Last Update: 2018-10-10
  * @filesource lib/controller/functions.php
  */
 
@@ -218,6 +218,31 @@ function setUserCache($group='', $lvl1='', $value='')
 }
 
 /**
+ * 
+ * @param type $uIDs
+ * @param type $rIDs
+ * @return type
+ */
+function setUserRole($uIDs=[], $rIDs=[]) {
+    $users   = 'u:'.getUserCache('profile', 'admin_id',false, 0);
+    $roles   = 'g:'.getUserCache('profile', 'role_id', false, 0);
+    if     (in_array(-1, $uIDs)) { $users = 'u:-1'; }
+    elseif (in_array(0,  $uIDs)) { $users = 'u:0'; }
+    elseif (sizeof($uIDs))       { $users = "u:".implode(":", $uIDs); }
+    if     (in_array(-1, $rIDs)) { $roles = 'g:-1'; }
+    elseif (in_array(0,  $rIDs)) { $roles = 'g:0'; }
+    elseif (sizeof($rIDs))       { $roles = "g:".implode(":", $rIDs);  }
+    msgDebug("\nroles = $roles and users = $users");
+    if ($users == 'u:0' && $roles == 'r:0') {
+        msgAdd($this->lang['msg_extDocs_no_security']);
+        $security = 'u:-1;g:-1';
+    } else {
+        $security = "$users;$roles";
+    }
+    return $security;
+}
+
+/**
  * Clears values in the users registry
  * @global type $bizunoUser - Global user cache array
  * @param type $group - group within users cache
@@ -394,14 +419,15 @@ function getSearch($indices=['q', 'search']) {
  * @param type $sortKey [default: order] Specifies the key to use as the base for the sort order
  * @return array - Sorted array by key
  */
-function sortOrder($arrToSort=[], $sortKey='order')
+function sortOrder($arrToSort=[], $sortKey='order', $order='asc')
 {
     $temp = [];
     if (!is_array($arrToSort)) { return $arrToSort; }
     foreach ($arrToSort as $key => $value) { 
         $temp[$key] = isset($value[$sortKey]) ? $value[$sortKey] : 999;
     }
-	array_multisort($temp, SORT_ASC, $arrToSort);
+    $type = $order=='desc' ? SORT_DESC : SORT_ASC;
+	array_multisort($temp, $type, $arrToSort);
     return $arrToSort;
 }
 
@@ -491,8 +517,21 @@ function validateSecurity($module, $index, $min_level=1, $verbose=true)
 	$access_level = getUserCache('security', $index, false, 0);
     if (!is_numeric($access_level)) { $access_level = 0; } // catches if index is null or undefined, returns array
 	$approved = ($access_level >= $min_level) ? $access_level : 0;
-    if (!$approved && $verbose) { msgAdd(lang('err_no_permission')." [$index]", 'trap'); }
+    if (!$approved && $verbose) { msgAdd(lang('err_no_permission')." [$index]"); }
 	return $approved;
+}
+
+function validateUsersRoles($security=false) {
+    if (empty($security)) { return false; }
+    if ($security == 'u:0;g:0') { return msgAdd('Orphaned database record. Please check your security settings!'); }
+    $types = explode(';', $security);
+    $users = explode(":", substr($types[0], 2)); // users first
+    if (in_array(-1, $users)) { return true;  }
+    if (in_array(getUserCache('profile', 'admin_id', false, 0), $users)){ return true;  }
+    $roles = explode(":", substr($types[1], 2)); // roles next
+    if (in_array(-1, $roles)) { return true;  }
+    if (in_array(getUserCache('profile', 'role_id', false, 0), $roles)) { return true;  }
+    return false;
 }
 
 /**
@@ -680,18 +719,56 @@ function getDefaultFormID($jID = 0)
  * @param string $url
  * @return string - HTML img tag for displaying an image
  */
-function viewFavicon($url, $title='')
+function viewFavicon($url, $title='', $event=false)
 {
+    global $io;
+    $target= $event ? "style=\"cursor:pointer\" onClick=\"window.open('$url', '_blank');\" " : '';
 	$parts = parse_url($url);
     if (empty($parts['host'])) { return ''; }
-    try {
-        $result = @file_get_contents("http://www.google.com/s2/favicons?domain={$parts['host']}");
+    if (file_exists(BIZUNO_DATA."cache/icons/{$parts['host']}.fav")) { // load the icon
+        $img = file_get_contents(BIZUNO_DATA."cache/icons/{$parts['host']}.fav");
+    } else {
+        $arr = getFavIcon($url); // try full $url
+        if (empty($arr)) { $arr = getFavIcon($parts['host'], $parts['scheme']); } // if empty try domain
+        if (empty($arr)) { // not found, use Google to guess
+//          msgAdd("Google site: {$parts['scheme']}://{$parts['host']} with icon = null, trying Google");
+            try { $result = @file_get_contents("http://www.google.com/s2/favicons?domain={$parts['host']}"); }
+            catch (Exception $ex) { return msgAdd("caught Google exception => ".print_r($ex, true)); }
+        } else {
+            if (strpos(strtolower($arr[0]['href']), 'http') === false) { // it's relative, add url
+                $host  = "{$parts['scheme']}://{$parts['host']}";
+                $result= @file_get_contents($host.$arr[0]['href']);
+                if (!$result && !empty($parts['path'])) { // might be in a sub-folder
+                    $host .= substr($parts['path'], 0, strrpos($parts['path'], '/'));
+                    $result= @file_get_contents($host.$arr[0]['href']);
+                }
+            } else {
+                $result= @file_get_contents($arr[0]['href']);
+            }
+//          msgAdd("site: {$parts['scheme']}://{$parts['host']} with icon = ".htmlspecialchars($arr[0]['href']));
+        }
         $img = base64_encode($result);
-        return '<img src="data:image/png;base64,'.$img.'" alt="'.$title.'" />';
-    } catch (Exception $ex) {
-
+        if ($img) { $io->fileWrite($img, "cache/icons/{$parts['host']}.fav"); }
     }
-    return '';
+    if (empty($img)) { $img = base64_encode(file_get_contents(BIZUNO_LIB."images/icon_16.png")); }
+    return '<img src="data:image/png;base64,'.$img.'" width="32" height="32" alt="'.$title.'" '.$target.'/>';
+}
+
+function getFavIcon($host, $scheme=false)
+{
+    if ($scheme) { $host = "$scheme://$host"; }
+    msgDebug("\nTrying url: $host"); 
+    $site = @file_get_contents($host);
+    $doc = new \DOMDocument('1.0', 'UTF-8');
+    $internalErrors = libxml_use_internal_errors(true); // set error level
+    $doc->strictErrorChecking = false;
+    if (empty($site)) { return; }
+    $doc->loadHTML($site);
+    libxml_use_internal_errors($internalErrors); // Restore error level
+    $xml = simplexml_import_dom($doc);
+    $arr = $xml->xpath('//link[@rel="icon"]');
+    if (empty($arr)) { $arr = $xml->xpath('//link[@rel="shortcut icon"]'); } // try other option
+    return $arr;
 }
 
 /**

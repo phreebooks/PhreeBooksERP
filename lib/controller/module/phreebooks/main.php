@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-10
+ * @version    3.x Last Update: 2018-10-18
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -40,13 +40,7 @@ class phreebooksMain
         if ($this->rID && $this->action <> 'inv') { $_GET['jID'] = $this->journalID = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'journal_id', "id=$this->rID"); }
         else { $this->journalID = clean('jID', 'integer', 'get'); }
         if (!defined('JOURNAL_ID')) { define('JOURNAL_ID', $this->journalID); }
-        $this->journal= $this->getJournal($this->journalID);
-        $this->journal->lang = $this->lang;
-        $this->journal->rID = $this->rID;
-        $this->journal->action = $this->action;
-        $this->journal->totals = $this->loadTotals($this->journalID);
-        $typeInferred = in_array($this->journalID, [2,3,4,6,7,17,20,21]) ? 'v' : 'c';
-		$this->type   = $this->journal->type = clean('type', ['format'=>'char', 'default'=>$typeInferred], 'get');
+		$this->type   = clean('type', ['format'=>'char', 'default'=>in_array($this->journalID, [2,3,4,6,7,17,20,21]) ? 'v' : 'c'], 'get');
         if (!defined('CONTACT_TYPE')) { define('CONTACT_TYPE', $this->type); }
 		$this->helpIndex = "phreebooks.main.intro.$this->journalID";
 		switch ($this->journalID) {
@@ -164,7 +158,7 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
         $_POST['search'] = $search_text = getSearch();
 		switch ($this->journalID) {
 			case 17:
-			case 20: $jID= '6,7'; break;
+            case 20: $jID= '6,7';  break;
 			case 18:
 			case 22: $jID='12,13'; break;
 		}
@@ -214,51 +208,113 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
      */
     public function edit(&$layout=[])
     {
-        $rID       = $this->rID = clean('rID', 'integer', 'get');
-		$cID       = clean('cID', 'integer', 'get'); // contact record for banking stuff
-		$references= (array)explode(":", clean('iID', 'text', 'get'));
-		$xAction   = clean('xAction','text', 'get');
-		$min_level = $this->action=='inv' || !$rID ? 2 : 1; // if converting SO/PO then add else read-only and above
-        if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", $min_level)) { return []; }
+        $rID        = $this->rID = clean('rID', ['format'=>'integer','default'=>0], 'get');
+		$cID        = clean('cID', 'integer', 'get'); // contact record for banking stuff
+		$references = (array)explode(":", clean('iID', 'text', 'get'));
+		$xAction    = clean('xAction','text', 'get');
+		$prefix     =  $rID && $this->action<>'inv' ? "rID_{$rID}_" : "rID_0_";
+		$min_level  = !$rID || $this->action=='inv' ? 2 : 1; // if converting SO/PO then add else read-only and above
+        if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", $min_level)) { return; }
         if (!$cID && sizeof($references) && !empty($references[0])) { // attempt to pull contact_id from prechecked records
 			$cID = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'contact_id_b', "id={$references[0]}");
 		}
-		$structure = [
-            'journal_main' => dbLoadStructure(BIZUNO_DB_PREFIX.'journal_main', $this->journalID),
-			'journal_item' => dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID)];
-		// fix map to address links
-		$prefix= $rID && $this->action<>'inv' ? "rID_{$rID}_" : "rID_0_";
+        $default_gl = $this->type=='v' ? getModuleCache('phreebooks', 'settings', 'vendors', 'gl_purchases') : getModuleCache('phreebooks', 'settings', 'customers', 'gl_sales');
+        $default_tax= 0;
+        $preSubmit  = "function preSubmit() {\n\tjq('#dgJournalItem').edatagrid('saveRow');\n\ttotalUpdate();\n\t
+var items = jq('#dgJournalItem').datagrid('getData');\n\tjq('#item_array').val(JSON.stringify(items));\n\t
+if (!formValidate()) return false;\n\treturn true;\n}";
+        $jsHead     = $jsBody = '';
+        $jsReady    = "ajaxForm('frmJournal');\njq('#dgJournalItem').edatagrid('addRow');\n";
+        
+		$structure  = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_main', $this->journalID);
+        // complete the structure
+        $structure['invoice_num']['tip'] = lang('msg_leave_null_to_assign_ref');
+        $structure['rep_id']['values']   = viewRoleDropdown();
+        if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) { 
+            $structure['currency']['callback']    = 'ordersCurrency';
+            $structure['currency']['attr']['type']= 'selCurrency';
+            unset($structure['currency_rate']['attr']['type']); // show the exchange rate
+        }
+
+        // These need to be fixed in the db table comments
+		$structure['gl_acct_id']['attr']['type']= 'ledger';
+        $structure['purch_order_id']['order']   = 10;
+        $structure['invoice_num']['order']      = 20;
+        $structure['waiting']['order']          = 25;
+        $structure['closed']['order']           = 26;
+        $structure['terms_text']['order']       = 30;
+        $structure['terms_edit']['order']       = 31;
+        $structure['post_date']['order']        = 40;
+        $structure['terminal_date']['order']    = 41;
+        $structure['rep_id']['order']           = 50;
+        $structure['currency']['order']         = 70;
+
+        $ledger = new journal($rID, $this->journalID, false, $cID, $structure, $this->action);
+        $ledger->journal->type  = $this->type;
+        $ledger->journal->lang  = $this->lang;
+        $ledger->journal->rID   = $this->rID;
+        $ledger->journal->totals= $this->loadTotals($this->journalID);
+        $ledger->currencyConvert('toPost');
+
+        dbStructureFill($structure, $ledger->main);
+		if ($rID > 0 || $cID > 0 || $this->action=='bulk') {
+            msgDebug("\nReading unique journal $this->journalID data");
+            if ($rID) { $jsReady .= "jq('#spanContactProps_b').show();"; }
+            $cID    = $structure['contact_id_b']['attr']['value'];
+            $defs   = $cID ? dbGetValue(BIZUNO_DB_PREFIX.'contacts', ['gl_account','tax_rate_id'], "id=$cID") : ['gl_account'=>$default_gl,'tax_rate_id'=>$default_tax];
+            $jsBody.= "var def_contact_gl_acct = '{$defs['gl_account']}';\nvar def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']).";\n";
+		} else { // new entry
+			$jsHead .= "var datagridData = ".json_encode(['total'=>0, 'rows'=>[]]).";\n";
+            if ($this->action<>'inv') { $jsReady .= "bizCheckBox('AddUpdate_b');"; }
+            $jsBody .= "var def_contact_gl_acct = '$default_gl';\nvar def_contact_tax_id = ".($default_tax ? $default_tax : 0).";\n";
+		}
+
+        // Add some new non-db fields
+		$structure['terms_text']     = ['label'=>lang('terms'),'attr'=>['value'=>viewTerms($structure['terms']['attr']['value'], true, $this->type),'readonly'=>'readonly']];
+		$structure['terms_edit']     = ['icon'=>'settings','label'=>lang('terms'),'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=$this->type', $cID, jq('#terms').val());"]];
+		$structure['journal_msg']    = ['html'=>'','attr'=>['type'=>'raw']];
+        $structure['override_user']  = ['attr'=>['type'=>'hidden']];
+		$structure['override_pass']  = ['attr'=>['type'=>'hidden']];
+		$structure['recur_frequency']= ['attr'=>['type'=>'hidden']];
+		$structure['item_array']     = ['attr'=>['type'=>'hidden']];
+        $structure['xChild']         = ['attr'=>['type'=>'hidden']];
+        $structure['xAction']        = ['attr'=>['type'=>'hidden']];
+
+        // gather the totals methods
+		$jsHead  .= "bizDefaults.phreebooks = { journalID:$this->journalID,type:'$this->type' };\n";
+		$jsHead  .= "var totalsMethods = ".json_encode($ledger->journal->totals).";\n";
+		$jsTotals = "var taxRunning = 0;\nfunction totalUpdate() {\n\tvar curTotal = 0;\n";
+        foreach ($ledger->journal->totals as $methID) { $jsTotals .= "\tcurTotal = totals_{$methID}(curTotal);\n"; }
+		$jsTotals.= "}";
+		$jsHead  .= $jsTotals;
+        // Get the item data
+        msgDebug("\nGoing to getDataItem, rID = $rID and cID = $cID");
+        $ledger->getDataItem($rID, $cID, $security);
+
 		$data  = ['type'=>'divHTML',
 			'divs'    => [
+                'status'   => ['order'=> 5,'styles'=>['float'=>'right'],'type'=>'fields','keys'=>['journal_msg']],
                 'tbJrnl'   => ['order'=>10,'type'=>'toolbar','key' =>'tbPhreeBooks'],
                 'formBOF'  => ['order'=>15,'type'=>'form',   'key' =>'frmJournal'],
-                'divAttach'=> ['order'=>80,'type'=>'attach', 'attr'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>$prefix]],
+                'divAttach'=> ['order'=>80,'type'=>'attach', 'defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>$prefix]],
                 'formEOF'  => ['order'=>99,'type'=>'html',   'html'=>'</form>']],
-			'toolbars' => ['tbPhreeBooks'=>['icons'=>[
+			'toolbars'=> ['tbPhreeBooks'=>['icons'=>[
                 'jSave'=> ['order'=>10,'label'=>lang('save'),  'icon'=>'save','type'=>'menu','hidden'=>$security>1?false:true,
 					'events'=> ['onClick'=>"jq('#frmJournal').submit();"],'child'=>$this->renderMenuSave($security)],
 				'recur'=> ['order'=>50,'label'=>lang('recur'), 'tip'=>lang('recur_new'),'hidden'=>$security>1?false:true,'events'=>['onClick'=>"var data=jq('input[name=radioRecur]:checked').val()+':'+jq('#recur_id').val(); windowEdit('phreebooks/main/popupRecur&data='+data, 'winRecur', '".jsLang('recur')."', 450, 300);"]],
 				'new'  => ['order'=>60,'label'=>lang('new'),   'hidden'=>$security>1?false:true,'events'=>['onClick'=>"journalEdit($this->journalID, 0);"]],
 				'trash'=> ['order'=>70,'label'=>lang('delete'),'hidden'=>$rID && $security==4?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/main/delete&jID=$this->journalID', $rID);"]],
 				'help' => ['order'=>99,'label'=>lang('help'),  'align'=>'right','index' =>$this->helpIndex]]]],
-			'forms'    => ['frmJournal'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/main/save&jID=$this->journalID"]]],
-            'fields'   => [
-    			'main' => $structure['journal_main'],
-        		'item' => $structure['journal_item']],
-			'journal_msg'=> '',
-            'jsBody'   => ['frmVal'=>"function preSubmit() {
-    jq('#dgJournalItem').edatagrid('saveRow');
-    totalUpdate();
-    var items = jq('#dgJournalItem').datagrid('getData');
-    jq('#item_array').val(JSON.stringify(items));
-    if (!formValidate()) return false;
-    return true;
-}"],
-            'jsReady' => [
-                'divInit'=>"ajaxForm('frmJournal'); jq('#dgJournalItem').edatagrid('addRow');",
-                'focus'  => "bizFocus('contactSel_b');"]];
-		// see if there are any extra actions
-		if (substr($xAction, 0, 8) == 'journal:') {
+			'forms'   => ['frmJournal'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/main/save&jID=$this->journalID"]]],
+            'fields'  => $structure,
+            'items'   => $ledger->items,
+            'totals'  => $ledger->journal->totals, 
+            'jsHead'  => ['init'=>$jsHead, 'preSubmit'=>$preSubmit],
+            'jsBody'  => ['init'=>$jsBody],
+            'jsReady' => ['init'=>$jsReady, 'focus'=>"bizFocus('contactSel_b');"]];
+        // Customize the layout for this journalID
+        $ledger->customizeView($data, $rID, $cID, $security);
+		if (substr($xAction, 0, 8) == 'journal:') { // see if there are any extra actions
 			$temp = explode(':', $xAction);
 			if (isset($temp[1])) {
 				$data['toolbars']['tbPhreeBooks']['icons']['jSave']['events']['onClick'] = "jq('#xAction').val('journal:{$temp[1]}'); jq('#frmJournal').submit();";
@@ -266,65 +322,7 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
 				unset($data['toolbars']['tbPhreeBooks']['icons']['new']);
 			}
 		}
-		// customize the content depending on the journal being used, first set some defaults
-        if ($rID) { $data['jsReady']['showProps'] = "jq('#spanContactProps_b').show();"; }
-        $this->setDefaults($data);
-		if ($rID > 0 || $cID > 0 || $this->action=='bulk') {
-            msgDebug("\nReading unique journal $this->journalID data");
-            $this->journal->getDataMain($data, $structure, $rID, $cID);
-		} else { // new entry
-			$data['jsHead']['datagridData'] = "var datagridData = ".json_encode(['total'=>0, 'rows'=>[]]).";\n";
-			$dbData = [];
-			if (in_array($this->journalID, [3,4,6,13,15,21])) { // pre-set the ship to address
-				$dbData = addressLoad($aID=0, $suffix='_s', $ap=true);
-                foreach ($dbData as $field => $value) { $data['fields']['main'][$field]['attr']['value'] = $value; }
-			}
-            if (in_array($this->journalID, [17,18,20,22])) { // unset attachments since new entry
-                unset($data['divs']['divAttach']);
-            }
-		}
-        msgDebug("\ngetting customization, cID = $cID");
-        $default_gl = $this->type=='v' ? getModuleCache('phreebooks', 'settings', 'vendors', 'gl_purchases') : getModuleCache('phreebooks', 'settings', 'customers', 'gl_sales');
-        $default_tax = 0;
-        if (!$rID) { // new order
-            $data['jsReady']['checkBill']= "bizCheckBox('AddUpdate_b');";
-            $data['jsBody']['frmInit']  = "var def_contact_gl_acct = '$default_gl'; var def_contact_tax_id  = ".($default_tax ? $default_tax : 0).";";
-        } else {
-            $cID  = $data['fields']['main']['contact_id_b']['attr']['value'];
-            $defs = $cID ? dbGetValue(BIZUNO_DB_PREFIX.'contacts', ['gl_account','tax_rate_id'], "id=$cID") : ['gl_account'=>$default_gl,'tax_rate_id'=>$default_tax];
-            $data['jsBody']['frmInit'] = "
-var def_contact_gl_acct = '{$defs['gl_account']}';
-var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']).";";
-        }
-        $data['fields']['main']['currency']['attr']['type'] = 'hidden';
-        $data['fields']['main']['currency']['excRate'] = !empty($data['fields']['main']['currency_rate']['attr']['value']) ? $data['fields']['main']['currency_rate']['attr']['value'] : 1;
-		$data['terms_text'] = ['label'=>lang('terms'),
-			'attr'=>['type'=>'text', 'value'=>viewTerms($data['fields']['main']['terms']['attr']['value'], true, $this->type), 'readonly'=>'readonly']];
-		$data['terms_edit'] = ['icon'=>'settings', 'size'=>'small', 'label'=>lang('terms'),
-			'events'=> ['onClick'=>"jsonAction('contacts/main/editTerms&type=$this->type', $cID, jq('#terms').val());"]];
-		$data['item_add'] = ['icon'=>'add', 'size'=>'small',
-			'events'=> ['onClick' => "itemAddShort();"]];
-		$data['override_user']  = ['label'=>'', 'attr'=>['type'=>'hidden']];
-		$data['override_pass']  = ['label'=>'', 'attr'=>['type'=>'hidden']];
-		$data['recur_frequency']= ['label'=>'', 'attr'=>['type'=>'hidden']];
-		$data['item_array']     = ['label'=>'', 'attr'=>['type'=>'hidden']];
-        // gather the totals methods
-		$data['totals_methods'] = $this->journal->totals;
-        if (in_array($this->journalID, [17,18,19])) { $data['payment_methods'] = getModuleCache('payment', 'methods'); }
-		$jsTotals  = "var taxRunning = 0;\n";
-        $jsTotals .= "function totalUpdate() {\n";
-		$jsTotals .= "  var curTotal = 0;\n";
-        foreach ($this->journal->totals as $methID) { $jsTotals .= "  curTotal = totals_{$methID}(curTotal);\n"; }
-		$jsTotals .= "}";
-		$data['jsHead']['phreebooks']   = "bizDefaults.phreebooks = { journalID:$this->journalID,type:'$this->type' };";
-		$data['jsHead']['totalsMethods']= "var totalsMethods = ".json_encode($this->journal->totals).";";
-		$data['jsHead']['totalUpdate']  = $jsTotals;
-		// now specialize by journal ID, items and final customization
-        msgDebug("\nGoing to getDataItem, cID = $cID");
-        $this->journal->getDataItem($data, $rID, $cID, $security);
-        // set the status messages before the toolbar
-        $data['divs']['status'] = ['order'=>0,'styles'=>['float'=>'right'],'type'=>'html','html'=>$data['journal_msg'],'attr'=>['id'=>'pbStatus']];
-        msgDebug("\nFinished edit processing with method_code = ".print_r($data['fields']['main']['method_code'], true));
+        msgDebug("\nFinished edit processing!");
 		$layout = array_replace_recursive($layout, $data);
 	}
 
@@ -411,8 +409,9 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		$current_total = 0;
         foreach ($ledger->item as $row) { $current_total += $row['debit_amount'] + $row['credit_amount']; } // subtotal of all rows
 		msgDebug("\nStarting to build total GL rows, starting subtotal = $current_total");
-		$ledger->main['sales_tax'] = 0; // clear the sales tax before building new values
-		foreach ($this->journal->totals as $methID) {
+		$ledger->main['sales_tax'] = $ledger->main['discount'] = 0; // clear the sales tax and discount before building new values
+		$ledger->totals = $this->loadTotals($this->journalID);
+        foreach ($ledger->totals as $methID) {
             $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
             require_once("{$path}$methID.php");
             $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
@@ -492,7 +491,8 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		msgAdd(sprintf(lang('msg_gl_post_success'), $invoiceRef, $ledger->main['invoice_num']), 'success');
 		msgLog($journalRef.'-'.lang('save')." $invoiceRef ".$ledger->main['invoice_num']." - $billName (rID={$ledger->main['id']}) ".lang('total').": ".viewFormat($ledger->main['total_amount'], 'currency'));
 		$jsonAction = "jq('#accJournal').accordion('select',0); jq('#dgPhreeBooks').datagrid('reload'); jq('#divJournalDetail').html('&nbsp;');";
-		switch ($xAction) { // post processing extra stuff to do
+        if (in_array($ledger->main['journal_id'], [2,3,4,6,9,10,12,20,22])) { $jsonAction = "jq('#jSave').splitbutton('destroy'); ".$jsonAction; } // only for splitbutton, else errors and halts script
+        switch ($xAction) { // post processing extra stuff to do
 			case 'payment':
 				switch ($this->journalID) {
 					case  6: $next_journal = 20; break;
@@ -512,7 +512,7 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
                     default: $next_journal = false;
 				}
                 if ($next_journal) {
-                    $jsonAction = "jq('#dgPhreeBooks').datagrid('reload'); journalEdit($next_journal, {$ledger->main['id']}, 0, 'inv');";
+                    $jsonAction = "jq('#dgPhreeBooks').datagrid('reload'); journalEdit($next_journal, 0, 0, 'inv', '', {$ledger->main['id']});";
                 }
 				break;
 			case 'journal:12':
@@ -610,7 +610,8 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 			$current_total = 0;
             foreach ($ledger->item as $row) { $current_total += $row['debit_amount'] + $row['credit_amount']; } // subtotal of all rows
 			msgDebug("\n\nStarting to build total GL rows, starting subtotal = $current_total");
-			foreach ($this->journal->totals as $methID) {
+            $ledger->totals = $this->loadTotals($this->journalID);
+			foreach ($ledger->totals as $methID) {
                 $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
                 require_once("{$path}$methID.php");
                 $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
@@ -731,16 +732,18 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		elseif ($new_data['total'] > $new_data['credit_limit']) { $statusBg='yellow'; $statusMsg=$this->lang['msg_contact_status_over_limit']; }
 		else                                                    { $statusBg='green';  $statusMsg=$this->lang['msg_contact_status_good']; }
         $statusHtml = '<p style="font-weight:bold;text-align:center;background-color:'.$statusBg.'">'.$statusMsg."</p>";
-        $notes = !empty($contact['notes']) ? str_replace("\n", "<br />", $contact['notes']) : '&nbsp;';
-        $fldNotes = ['notes'=>['label'=>lang('notes'),'attr'=>['type'=>'p','value'=>$notes]]];
 		$data = ['type'=>'popup','attr'=>['id'=>'winStatus'],
             'title'=> sprintf(lang('tbd_summary'), lang('contacts_type', $contact['type'])),
 			'divs' => [
                 'status' => ['order'=>10,'type'=>'html','html'=>$statusHtml],
-                'terms'  => ['order'=>20,'label'=>pullTableLabel(BIZUNO_DB_PREFIX."contacts", 'terms'),'type'=>'fields','fields'=>$this->getStatusTerms($new_data)],
                 'history'=> ['order'=>30,'label'=>lang('history'),'type'=>'fields','classes'=>['blockView'],'fields'=>$this->getStatusHistory($contact, $new_data)],
-                'balance'=> ['order'=>40,'label'=>lang('account'),'type'=>'fields','classes'=>['blockView'],'fields'=>$this->getStatusBalance($new_data)],
-                'notes'  => ['order'=>50,'label'=>lang('notes'),  'type'=>'fields','fields'=>$fldNotes]]];
+                'terms'  => ['order'=>40,'label'=>lang('terms'),  'type'=>'fields','classes'=>['blockView'],'fields'=>$this->getStatusTerms($new_data)],
+                'balance'=> ['order'=>50,'label'=>lang('account'),'type'=>'fields','classes'=>['blockView'],'fields'=>$this->getStatusBalance($new_data)]]];
+        $notes = !empty($contact['notes']) ? str_replace("\n", "<br />", $contact['notes']) : false;
+        if ($notes) {
+            $fldNotes = ['notes'=>['label'=>lang('notes'),'attr'=>['type'=>'p','value'=>$notes]]];
+            $data['divs']['notes'] = ['order'=>20,'label'=>lang('notes'),  'type'=>'fields','fields'=>$fldNotes];
+        }
 		$layout = array_replace_recursive($layout, $data);
 	}
 
@@ -817,7 +820,7 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 		return sizeof($sql) > 1 ? "(".implode(' OR ', $sql).")" : array_shift($sql);
 	}
 
-	/**
+    /**
      * Datagrid manager structure for all PhreeBooks journals
      * @param string $name - datagrid HTML id
      * @param integer $security - Security level to set tool bar and access permissions
@@ -929,9 +932,6 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 							'events' => ['onClick'=>"var jID=jq('#journal_id').val(); winOpen('phreeformOpen', 'phreeform/render/open&group={$formGroup}&date=a&xfld=journal_main.id&xcr=equal&xmin=idTBD&rName=primary_name_b&rEmail=email_b');"]],
 						'edit'       => ['order'=>20,'icon'=>'edit',   'label'=>lang('edit'),
 							'events' => ['onClick' => "journalEdit(jrnlTBD, idTBD);"]],
-						'trash'      => ['order'=>30,'icon'=>'trash','label'=>lang('delete'),'hidden'=>$security==4?false:true,
-							'display'=>"(row.journal_id!='12' && row.journal_id!='6') || (row.journal_id=='12' && (row.closed=='0' || row.total_amount==0)) || (row.journal_id=='6' && (row.closed=='0' || row.total_amount==0))",
-							'events' => ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/main/delete&jID={$this->journalID}', idTBD);"]],
 						'toggle'     => ['order'=>40,'icon'=>'toggle','label'=>lang('toggle_status'),'hidden'=> $security>2?false:true, 
 							'events' => ['onClick' => "jsonAction('phreebooks/main/toggleWaiting&jID=jrnlTBD', idTBD);"],
 							'display'=> "row.journal_id=='4' || row.journal_id=='10' || row.journal_id=='12'"],
@@ -956,7 +956,10 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
 						'payment'    => ['order'=>80,'icon'=>'payment','label'=>lang('payment'),
 							'events' => ['onClick' => "setPmtJournal(jrnlTBD, cIDTBD, idTBD);"],
 							'display'=> "row.closed=='0' && (row.journal_id=='6' || row.journal_id=='7' || row.journal_id=='12' || row.journal_id=='13')"],
-						'attach'     => ['order'=>90,'icon'=>'attachment','display'=>"row.attach=='1'"]]], // info only
+                        'attach'     => ['order'=>85,'icon'=>'attachment','display'=>"row.attach=='1'"], // info only
+						'trash'      => ['order'=>90,'icon'=>'trash','label'=>lang('delete'),'hidden'=>$security==4?false:true,
+							'display'=>"(row.journal_id!='12' && row.journal_id!='6') || (row.journal_id=='12' && (row.closed=='0' || row.total_amount==0)) || (row.journal_id=='6' && (row.closed=='0' || row.total_amount==0))",
+							'events' => ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/main/delete&jID={$this->journalID}', idTBD);"]]]],
 				'post_date' => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX.'journal_main.post_date', 'format'=>'date',
 					'label' => pullTableLabel('journal_main', 'post_date'),'attr'=>['sortable'=>true, 'resizable'=>true]],
 				'invoice_num' => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX.'journal_main.invoice_num',
@@ -1347,33 +1350,6 @@ var def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']
         }
         return $totals;
 	}
-
-    /**
-     * Sets the default fields values based on user settings and PhreeBooks expectations
-     * @param array $data - working structure
-     */
-    private function setDefaults(&$data)
-    {
-		$data['fields']['main']['journal_id']['attr']['value'] = $this->journalID;
-		$data['fields']['main']['post_date']['attr']['value']  = date('Y-m-d');
-        if (in_array($this->journalID, [3, 6, 9])) {
-            $data['fields']['main']['terminal_date']['attr']['value'] = getTermsDate('', $this->type);
-        } else {
-            $data['fields']['main']['terminal_date']['attr']['value'] = date('Y-m-d');
-        }
-		$termsType = in_array($this->journalID, [3,4,6,7,17,20,21]) ? 'vendors' : 'customers';
-		$data['fields']['main']['terms']['attr']['value']    = getModuleCache('phreebooks', 'settings', $termsType, 'terms');
-		$data['fields']['main']['gl_acct_id']['attr']['type']= 'ledger';
-        $data['fields']['main']['currency']['attr']['type']  = 'currency';
-        $data['fields']['main']['currency']['func']          = 'ordersCurrency';
-		$data['fields']['main']['rep_id']['attr']['value']   = getUserCache('profile', 'contact_id', false, 0);
-		$data['fields']['main']['rep_id']['values']          = viewRoleDropdown();
-		$data['fields']['main']['currency']['break']         = true;
-		$data['fields']['main']['waiting']['break']          = true;
-		$data['fields']['main']['closed']['break']           = true;
-		$data['fields']['main']['invoice_num']['tooltip']    = lang('msg_leave_null_to_assign_ref');
-        $data['fields']['main']['currency']['excRate']       = 1;
-    }
 
     public function setInvoiceNum(&$layout=[])
     {

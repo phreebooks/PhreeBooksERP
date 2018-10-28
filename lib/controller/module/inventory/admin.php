@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-16
+ * @version    3.x Last Update: 2018-09-28
  * @filesource /lib/controller/module/inventory/admin.php
  */
 
@@ -36,28 +36,27 @@ class inventoryAdmin
 			'stock'   => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[4],
 			'nonstock'=> getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[34],
 			'cogs'    => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[32],
-			'method'  => 'f',
-            ];
+			'method'  => 'f'];
 		$this->settings = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
 		$this->structure = [
-            'url'          => BIZUNO_URL."controller/module/$this->moduleID/",
-            'version'      => MODULE_BIZUNO_VERSION,
-			'category'     => 'bizuno',
-			'required'     => '1',
-			'dirMethods'   => 'prices',
-			'attachPath'   => 'data/inventory/uploads/',
-			'menuBar' => ['child'=>[
+            'url'       => BIZUNO_URL."controller/module/$this->moduleID/",
+            'version'   => MODULE_BIZUNO_VERSION,
+			'category'  => 'bizuno',
+			'required'  => '1',
+			'dirMethods'=> 'prices',
+			'attachPath'=> 'data/inventory/uploads/',
+            'api'       => ['path'=>'inventory/api/inventoryAPI'],
+			'menuBar'   => ['child'=>[
                 'inventory'=> ['order'=>30,   'label'=>lang('inventory'),'group'=>'inv','icon'=>'inventory','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=inventory');"],'child'=>[
-                    'inv_mgr' => ['order'=>20,'label'=>lang('gl_acct_type_4_mgr'), 'icon'=>'inventory',  'events'=>['onClick'=>"hrefClick('inventory/main/manager');"]],
-                    'rpt_inv' => ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc',    'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=inv');"]]]],
+                    'inv_mgr' => ['order'=>20,'label'=>lang('gl_acct_type_4_mgr'), 'icon'=>'inventory','events'=>['onClick'=>"hrefClick('inventory/main/manager');"]],
+                    'rpt_inv' => ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc',  'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=inv');"]]]],
                 'customers' => ['child'=>[
-                    'prices_c'=> ['order'=>70,'label'=>lang('contacts_type_c_prc'),'icon'=>'price',     'events'=>['onClick'=>"hrefClick('inventory/prices/manager&type=c');"]]]],
+                    'prices_c'=> ['order'=>70,'label'=>lang('contacts_type_c_prc'),'icon'=>'price',    'events'=>['onClick'=>"hrefClick('inventory/prices/manager&type=c');"]]]],
                 'vendors' => ['child'=>[
-                    'prices_v'=> ['order'=>70,'label'=>lang('contacts_type_v_prc'),'icon'=>'price',     'events'=>['onClick'=>"hrefClick('inventory/prices/manager&type=v');"]]]]]],
+                    'prices_v'=> ['order'=>70,'label'=>lang('contacts_type_v_prc'),'icon'=>'price',    'events'=>['onClick'=>"hrefClick('inventory/prices/manager&type=v');"]]]]]],
 			'hooks' => ['phreebooks'=>['tools'=>[
                 'fyCloseHome'=>['page'=>'tools', 'class'=>'inventoryTools', 'order'=>50],
-                'fyClose'    =>['page'=>'tools', 'class'=>'inventoryTools', 'order'=>50]]]],
-			'api' => ['path'=>'inventory/api/inventoryAPI']];
+                'fyClose'    =>['page'=>'tools', 'class'=>'inventoryTools', 'order'=>50]]]]];
 		$this->phreeformProcessing = [
             'inv_sku'   => ['text'=>lang('sku'),  'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
 			'inv_image' => ['text'=>lang('image'),'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],

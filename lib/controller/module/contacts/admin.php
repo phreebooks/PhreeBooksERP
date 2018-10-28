@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-04
+ * @version    3.x Last Update: 2018-09-28
  * @filesource /lib/controller/module/contacts/admin.php
  */
 
@@ -32,14 +32,15 @@ class contactsAdmin
 		$this->lang     = getLang($this->moduleID);
 		$this->settings = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
 		$this->structure= [
-            'url'        => BIZUNO_URL."controller/module/$this->moduleID/",
-            'version'    => MODULE_BIZUNO_VERSION,
-			'category'   => 'bizuno',
-			'required'   => '1',
-			'attachPath' => 'data/contacts/uploads/',
-			'quickBar'   => ['child'=>['home'=>['child'=>[
+            'url'       => BIZUNO_URL."controller/module/$this->moduleID/",
+            'version'   => MODULE_BIZUNO_VERSION,
+			'category'  => 'bizuno',
+			'required'  => '1',
+			'attachPath'=> 'data/contacts/uploads/',
+            'api'       => ['path'=>'contacts/api/contactsAPI'],
+			'quickBar'  => ['child'=>['home'=>['child'=>[
                 'mgr_e' => ['order'=>45,'label'=>lang('employees'),'icon'=>'employee','events'=>['onClick'=>"hrefClick('contacts/main/manager&type=e');"]]]]]],
-			'menuBar'    => ['child'=>[
+			'menuBar'   => ['child'=>[
                 'customers'=> ['order'=>10,'label'=>lang('customers'),'group'=>'cust','icon'=>'sales', 'events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=customers');"],'child'=>[
                     'mgr_c'=> ['order'=>10,'label'=>lang('contacts_type_c_mgr'),'icon'=>'users',       'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=c');"]],
                     'mgr_i'=> ['order'=>20,'label'=>lang('contacts_type_i_mgr'),'icon'=>'chat',        'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=i');"]],
@@ -47,10 +48,9 @@ class contactsAdmin
 				'vendors'  => ['order'=>20,'label'=>lang('vendors'),'group'=>'vend','icon'=>'purchase','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=vendors');"],'child'=>[
                     'mgr_v'=> ['order'=>20,'label'=>lang('contacts_type_v_mgr'),'icon'=>'users',       'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=v');"]],
                     'rpt_v'=> ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc',     'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=vend');"]]]]]],
-			'hooks' => ['phreebooks'=>['tools'=>[
+			'hooks'     => ['phreebooks'=>['tools'=>[
                 'fyCloseHome'=> ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50],
-                'fyClose'    => ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50]]]],
-			'api' => ['path'=>'contacts/api/contactsAPI']];
+                'fyClose'    => ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50]]]]];
 		$this->phreeformProcessing = [
             'contactID'  => ['text'=>lang('contacts_short_name'),      'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
 			'contactName'=> ['text'=>lang('address_book_primary_name'),'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat']];

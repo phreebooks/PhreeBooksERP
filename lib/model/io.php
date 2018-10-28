@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-18
+ * @version    3.x Last Update: 2018-10-03
  * @filesource /lib/model/io.php
  */
 
@@ -83,7 +83,10 @@ final class io
                 // unzip the file to remove security encryption
                 if (!$output = $this->fileRead($src . $fn, 'rb')) { return false; }
 				$this->mimeType = $this->guessMimetype($src.$fn);
-                if ($delete_source) { @unlink($src . $fn); }
+                if ($delete_source) {
+                    msgDebug("\nUnlinking file: $src$fn");
+                    @unlink($this->myFolder.$src.$fn);
+                }
 				msgDebug("\n Downloading filename {$src}{$fn} of size = ".$output['size']);
 				break;
 			default:
@@ -124,8 +127,8 @@ final class io
 	}
 
     /**
-     * DEPRECATED, CAN BE DELETED AFTER 2018-10-01
-     * Recursively moves the contents of a folder to another folder.
+     * Recursively moves the all files matching source pattern to destination pattern
+     * Used in merging contacts, etc.
      * @param type $path
      * @param type $srcID
      * @param type $destID
@@ -140,7 +143,7 @@ final class io
                 msgDebug("\nRenaming file in myFolder from: {$file['name']} to: $newFile");
                 rename($this->myFolder.$file['name'], $this->myFolder.$newFile);
             } else { // file exists, create a new name
-                msgAdd("The file already exists on the destination location. It will be ignored!");
+                msgAdd("The file ($newFile) already exists on the destination location. It will be ignored!");
             }
         }
     }
@@ -215,7 +218,7 @@ final class io
         if (!$append && $replace && file_exists($filename)) { @unlink($filename); }
 		$path = substr($filename, 0, strrpos($filename, '/') + 1); // pull the path from the full path and file
         if (!is_dir($path)) { 
-            msgDebug("\nMaking folder: $path");
+            msgDebug("\nMaking folder: BIZUNO_DATA/$fn");
             @mkdir($path,0775,true); }
 		if (!$handle = @fopen($filename, $append?'a':'w')) {
             return $verbose ? msgAdd(sprintf(lang('err_io_file_open'), $fn)) : false;
@@ -224,7 +227,7 @@ final class io
             return $verbose ? msgAdd(sprintf(lang('err_io_file_write'), $fn)) : false;
 		}
 		fclose($handle);
-        msgDebug("\nSaved uploaded file to myFolder: $this->myFolder and filename: $fn");
+        msgDebug("\nSaved uploaded file to filename: BIZUNO_DATA/$fn");
 	}
 
 	/**
@@ -518,7 +521,7 @@ final class io
 		if (!class_exists('ZipArchive')) { return msgAdd(lang('err_io_no_zip_class')); }
 		$zip = new \ZipArchive;
         $path = BIZUNO_DATA.$this->dest_dir.$this->dest_file;
-        msgDebug("\nCreating Zip Archive in destination path = $path");
+        msgDebug("\nCreating Zip Archive in destination path = BIZUNO_DATA/$this->dest_dir$this->dest_file");
 		$res = $zip->open($path, \ZipArchive::CREATE);
 		if ($res !== true) {
 			msgAdd(lang('GEN_BACKUP_FILE_ERROR') . $this->dest_dir);

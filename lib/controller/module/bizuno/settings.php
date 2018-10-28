@@ -72,7 +72,7 @@ class bizunoSettings
                     $hasDashboards = getModuleCache($module_id, 'dashboards') ? 1 : 0;
                     $props = getModuleCache($module_id, 'properties');
                     msgDebug("\nproperties = ".print_r($props, true));
-                    if ($settings['paid'] && BIZUNO_HOST<>'phreesoft' && version_compare($settings['version'], $props['version'])){
+                    if ($settings['paid'] && BIZUNO_HOST<>'phreesoft' && version_compare($settings['version'], $props['version']) > 0) {
                         $modStatus .= html5("download_$module_id", ['icon'=>'download','events'=>['onClick'=>"jsonAction('bizuno/settings/loadExtension', 0, '$module_id');"]]);
                     }
 					if (!empty($settings['settings']) || $hasDashboards || !empty($props['dirMethods'])) { // check to see if the module has admin settings
@@ -131,7 +131,7 @@ class bizunoSettings
 				'active'     => getModuleCache($module, 'properties', 'status'),
 				'settings'   => isset($admin->settings) && sizeof($admin->settings) ? true : false];
             if (strpos($path, BIZUNO_CUSTOM."$module/")===0) { 
-                $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>false]);
+                $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>true,'version'=>-1]);
             }
             if ($cat=='bizuno') { $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>true,'version'=>MODULE_BIZUNO_VERSION]); }
 		}

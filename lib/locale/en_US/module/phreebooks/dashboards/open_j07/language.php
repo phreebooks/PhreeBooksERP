@@ -1,6 +1,6 @@
 <?php
 /*
- * PhreeBooks journal class for all Journals, typically searching
+ * Language translation for phreebooks dashboard - open_j07
  *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -16,24 +16,11 @@
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
- * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-15
- * @filesource /lib/controller/module/phreebooks/journals/j00.php
+ * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
+ * @version    3.x Last Update: 2018-10-10
+ * @filesource lib/locale/en_US/module/phreebooks/dashboards/open_j07/language.php
  */
 
-namespace bizuno;
-
-require_once(BIZUNO_LIB."controller/module/phreebooks/journals/common.php");
-
-class j00 extends jCommon
-{
-    public $journalID = 0;
-
-	function __construct($main=[], $item=[])
-    {
-		parent::__construct();
-        $this->main = $main;
-		$this->item = $item;
-	}
-
-}
+$lang = [
+    'title'      => 'Open Vendor Credits',
+    'description'=> 'Lists open vendor credits (refunds). A link to review each entry in a separate window is also provided. Settings are available for enhanced security and control.'];

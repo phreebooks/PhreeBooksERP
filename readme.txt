@@ -37,6 +37,7 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Upgrade Notice ==
 
+2018-10-28 - 5.1.6 - No database changes, overwrite current files with new version
 2018-09-26 - 5.1.4 - No database changes, overwrite current files with new version
 2018-09-15 - 5.1.0 - No database changes. Optional to delete /view/* folder and replace with new version. Many files are no longer needed or used.
 2018-07-14 - 5.0.5 - No database changes, overwrite current files with new version
@@ -58,6 +59,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.1.6 =
+2018-10-28 - Incorporate Bizuno Library 3.0.6. Bugs from GUI updates, fixed dashboards, two new dashboards
 = 5.1.4 =
 2018-09-26 - Incorporate Bizuno Library 3.0.4. Major update on auto-upgrade of core and extensions (if purchased)
 = 5.1.0 =

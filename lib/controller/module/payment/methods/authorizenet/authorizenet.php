@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-18
+ * @version    3.x Last Update: 2018-10-19
  * @filesource /lib/controller/module/payment/methods/authorizenet.php
  *
  * Source Information:
@@ -75,16 +75,15 @@ class authorizenet
 			'selCards'  => ['attr'=>['type'=>'select'],'events'=>['onChange'=>"authorizenetRefNum('stored');"]],
 			'save'      => ['label'=>lang('save'),'break'=>true,'attr'=>['type'=>'checkbox', 'value'=>'1']],
             'name'      => ['options'=>['width'=>200],'break'=>true,'label'=>lang('payment_name')],
-            'number'    => ['options'=>['width'=>150],'break'=>true,'label'=>lang('payment_number'),'events'=>['onChange'=>"convergeRefNum('number');"]],
+            'number'    => ['options'=>['width'=>200],'break'=>true,'label'=>lang('payment_number'),'events'=>['onChange'=>"convergeRefNum('number');"]],
             'month'     => ['label'=>lang('payment_expiration'),'options'=>['width'=>130],'values'=>$cc_exp['months'],'attr'=>['type'=>'select','value'=>date('m')]],
             'year'      => ['break'=>true,'options'=>['width'=>70],'values'=>$cc_exp['years'],'attr'=>['type'=>'select','value'=>date('Y')]],
             'cvv'       => ['options'=>['width'=> 45],'label'=>lang('payment_cvv')]];
-		if (isset($values['method']) && $values['method']==$this->code 
-				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
+		if (isset($values['method']) && $values['method']==$this->code && !empty($data['fields']['id']['attr']['value'])) { // edit
 			$this->viewData['number']['attr']['value'] = isset($values['hint']) ? $values['hint'] : '****';
-			$invoice_num = $invoice_amex = $data['fields']['main']['invoice_num']['attr']['value'];
-			$gl_account  = $data['fields']['main']['gl_acct_id']['attr']['value'];
-			$discount_gl = $this->getDiscGL($data['fields']['main']['id']['attr']['value']);
+			$invoice_num = $invoice_amex = $data['fields']['invoice_num']['attr']['value'];
+			$gl_account  = $data['fields']['gl_acct_id']['attr']['value'];
+			$discount_gl = $this->getDiscGL($data['fields']['id']['attr']['value']);
             $show_s = false;  // since it's an edit, all adjustments need to be made at the gateway, this prevents duplicate charges when re-posting a transaction
             $show_c = false;
             $show_n = false;
@@ -96,7 +95,7 @@ class authorizenet
 			$discount_gl = $this->settings['disc_gl_acct'];
             $show_n = true;
             $checked = 'n';
-            $cID = isset($data['fields']['main']['contact_id_b']['attr']['value']) ? $data['fields']['main']['contact_id_b']['attr']['value'] : 0;
+            $cID = isset($data['fields']['contact_id_b']['attr']['value']) ? $data['fields']['contact_id_b']['attr']['value'] : 0;
             if ($cID) { // find if stored values
                 $encrypt = new encryption();
                 $this->viewData['selCards']['values'] = $encrypt->viewCC('contacts', $cID);
@@ -159,13 +158,14 @@ $output['body'] .= '</div>
 
     public function paymentAuth($fields, $ledger)
     {
+        $refs = $this->guessInv($ledger);
         $submit_data = [
             'x_type'        => 'AUTH_ONLY',
             'x_amount'      => $ledger->main['total_amount'],
             'x_card_num'    => $fields['number'],
             'x_exp_date'    => $fields['month'] . substr($fields['year'], -2),
-            'x_invoice_num' => $ledger->main['invoice_num'],
-            'x_po_num'      => $ledger->main['invoice_num'],
+            'x_invoice_num' => $refs['inv'],
+            'x_po_num'      => $refs['po'],
             'x_first_name'  => $fields['first_name'],
             'x_last_name'   => $fields['last_name'],
             'x_company'     => $ledger->main['primary_name_b'],
@@ -191,7 +191,7 @@ $output['body'] .= '</div>
 	 */
 	public function sale($fields, $ledger)
     {
-        msgDebug("\nAuthorize.net sale working with fields = ".print_r($fields, true));
+        $refs = $this->guessInv($ledger);
 		$submit_data = [];
 		switch ($fields['action']) {
 			case 'c': // capture previously authorized transaction
@@ -208,8 +208,8 @@ $output['body'] .= '</div>
                     'x_amount'      => $ledger->main['total_amount'],
                     'x_card_num'    => $fields['number'],
                     'x_exp_date'    => $fields['month'] . substr($fields['year'], -2),
-                    'x_invoice_num' => $ledger->main['invoice_num'],
-                    'x_po_num'      => $ledger->main['invoice_num'],
+                    'x_invoice_num' => $refs['inv'],
+                    'x_po_num'      => $refs['po'],
                     'x_first_name'  => $fields['first_name'],
                     'x_last_name'   => $fields['last_name'],
                     'x_company'     => $ledger->main['primary_name_b'],
@@ -227,7 +227,7 @@ $output['body'] .= '</div>
 				msgAdd($this->lang['msg_capture_manual'].' '.$this->lang['msg_website']);
 				break;
 		}
-		msgDebug("\nAuthorize.net sale working with fields = ".print_r($fields, true));
+//		msgDebug("\nAuthorize.net sale working with fields = ".print_r($fields, true));
         if (sizeof($submit_data) == 0) { return true; } // nothing to send to gateway
         if (!$resp = $this->queryMerchant($submit_data)) { return; }
 		return $resp;
@@ -324,11 +324,30 @@ $output['body'] .= '</div>
 
 	private function getDiscGL($data)
 	{
-		if (isset($data['fields']['main'])) {
-            foreach ($data['fields']['main'] as $row) {
+		if (isset($data['fields'])) {
+            foreach ($data['fields'] as $row) {
                 if ($row['gl_type'] == 'dsc') { return $row['gl_account']; }
             }
         }
 		return $this->settings['disc_gl_acct']; // not found, return default
 	}
+
+    /**
+     * Tries to guess the invoice number and po number of the first pmt record of the item array
+     * @param type $ledger
+     * @return type
+     */
+    private function guessInv($ledger)
+    {
+        $refs = ['inv'=>$ledger->main['invoice_num'], 'po'=>$ledger->main['invoice_num']];
+        if (empty($ledger->item)) { return $refs; }
+        foreach ($ledger->item as $row) {
+            if ($row['gl_type'] <> 'pmt') { continue; } // just the first row
+            $vals = explode(' ', $row['description']);
+            if (!empty($vals[1])) { $refs['inv']= $vals[1]; }
+            if (!empty($vals[3])) { $refs['po'] = $vals[3]; }
+            break;
+        }
+        return $refs;
+    }
 }

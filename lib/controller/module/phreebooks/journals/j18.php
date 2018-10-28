@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /lib/controller/module/phreebooks/journals/j18.php
  */
 
@@ -42,30 +42,36 @@ class j18 extends jCommon
     /**
      * Pulls the data for the specified journal and populates the structure
      * @param array $data - current working structure
-     * @param array $structure - table structures
-     * @param integer $rID - record id of the transaction to load from the database
      */
-    public function getDataMain(&$data, $structure, $rID=0, $cID=0)
+    public function getDataMain(&$structure)
     {
-        $content = $this->action=='bulk' ? jrnlGetBulkData() : jrnlGetPaymentData($rID, $cID);
-        if (sizeof($content['main']) > 0) { foreach ($content['main'] as $field => $value) { $data['fields']['main'][$field]['attr']['value'] = $value; } }
-        $data['items'] = (sizeof($content['items']) > 0) ? $content['items'] : [];
+        dbStructureFill($structure, $this->main);
     }
     
     /**
      * Tailors the structure for the specific journal
-     * @param array $data - current working structure
-     * @param integer $rID - Database record id of the journal main record
-     * @param integer $security - Users security level
      */
-    public function getDataItem(&$data, $rID=0, $cID=0, $security=0)
+    public function getDataItem() { }
+
+    /**
+     * Customizes the layout for this particular journal
+     * @param array $data - Current working structure
+     * @param integer $rID - current db record ID
+     * @param integer $cID - current customer db record ID
+     */
+    public function customizeView(&$data, $rID=0, $cID=0)
     {
-        if (!empty($data['bulk']) || !empty($data['fields']['main']['contact_id_b']['attr']['value'])) {
-            $data['fields']['main']['terminal_date']['attr']['type'] = 'hidden';
+        $fldKeys = ['id','journal_id','so_po_ref_id','terms','override_user','override_pass','recur_id','recur_frequency','item_array','xChild','xAction','store_id',
+            'purch_order_id','invoice_num','waiting','closed','terms_text','post_date','rep_id','currency','currency_rate'];
+        unset($data['divs']['divAttach']);
+        $data['payments'] = getModuleCache('payment', 'methods');
+        if (!empty($data['bulk']) || !empty($data['fields']['contact_id_b']['attr']['value'])) {
+            $data['fields']['purch_order_id']['attr']['type']= 'hidden';
+            $data['fields']['terminal_date']['attr']['type'] = 'hidden';
             $dgStructure= $this->action=='bulk' ? $this->dgBankingBulk('dgJournalItem') : $this->dgBanking('dgJournalItem');
             // pull out just the pmt rows to build datagrid
             $dgData = [];
-            foreach ($data['items'] as $row) { if ($row['gl_type'] == 'pmt') { $dgData[] = $row; } }
+            foreach ($this->items as $row) { if ($row['gl_type'] == 'pmt') { $dgData[] = $row; } }
             $map['credit_amount']= ['type'=>'field', 'index'=>'amount'];
             $data['jsHead']['datagridData'] = formatDatagrid($dgData, 'datagridData', $dgStructure['columns'], $map);
             unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
@@ -75,24 +81,24 @@ class j18 extends jCommon
                 $temp->render($data); // add payment methods and continue
             }
             if ($rID || $cID) { $data['datagrid']['item'] = $dgStructure; }
-            if (isset($data['fields']['main']['waiting']['attr']['checked']) && $data['fields']['main']['waiting']['attr']['checked'] == 'checked') {
-                $data['fields']['main']['waiting']= ['attr'=>['type'=>'hidden', 'value'=>'1']];
+            if (isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] == 'checked') {
+                $data['fields']['waiting']= ['attr'=>['type'=>'hidden', 'value'=>'1']];
             } else {
-                $data['fields']['main']['waiting']= ['attr'=>['type'=>'hidden', 'value'=>'0']];
+                $data['fields']['waiting']= ['attr'=>['type'=>'hidden', 'value'=>'0']];
             }
-            if (isset($data['fields']['main']['closed']['attr']['checked']) && $data['fields']['main']['closed']['attr']['checked'] == 'checked') {
-                $data['fields']['main']['closed'] = ['attr'=>['type'=>'hidden', 'value'=>'1']];
+            if (isset($data['fields']['closed']['attr']['checked']) && $data['fields']['closed']['attr']['checked'] == 'checked') {
+                $data['fields']['closed'] = ['attr'=>['type'=>'hidden', 'value'=>'1']];
             } else {
-                $data['fields']['main']['closed'] = ['attr'=>['type'=>'hidden', 'value'=>'0']];
+                $data['fields']['closed'] = ['attr'=>['type'=>'hidden', 'value'=>'0']];
             }
             $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-                'billAD'  => ['order'=>20,'type'=>'address','classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields']['main'], '_b'),
-                    'label'=>lang('bill_to'),'settings'=>['suffix'=>'_b','search'=>true,'copy'=>false,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false]],
-                'props'   => ['order'=>40,'type'=>'fields', 'label'=>lang('details'),'classes'=>['blockView'],'attr'=>['id'=>'pbProps'],  'fields'=>$this->getProps($data)],
-                'totals'  => ['order'=>50,'type'=>'totals', 'label'=>lang('totals'), 'classes'=>['blockView'],'attr'=>['id'=>'pbTotals'], 'content'=>$data['totals_methods']],
-                'payments'=> ['order'=>60,'type'=>'payment','label'=>lang('bill_to'),'classes'=>['blockView'],'settings'=>['items'=>$data['items']]]]];
+                'billAD'  => ['order'=>20,'type'=>'address','classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields'], '_b'),
+                    'label'=>lang('bill_to'),'settings'=>['suffix'=>'_b','clear'=>false,'props'=>false,'required'=>true,'store'=>false]],
+                'props'   => ['order'=>40,'type'=>'fields', 'label'=>lang('details'),'classes'=>['blockView'],'attr'=>['id'=>'pbProps'],  'keys'=>$fldKeys],
+                'totals'  => ['order'=>50,'type'=>'totals', 'label'=>lang('totals'), 'classes'=>['blockView'],'attr'=>['id'=>'pbTotals'], 'content'=>$data['totals']],
+                'payments'=> ['order'=>60,'type'=>'payment','label'=>lang('bill_to'),'classes'=>['blockView'],'settings'=>['items'=>$this->items]]]];
             $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
-            $data['jsBody']['frmVal'] = "function preSubmit() {
+            $data['jsHead']['preSubmit'] = "function preSubmit() {
 	var items = new Array();	
 	var dgData = jq('#dgJournalItem').datagrid('getData');
 	for (var i=0; i<dgData.rows.length; i++) if (dgData.rows[i]['checked']) items.push(dgData.rows[i]);
@@ -101,11 +107,11 @@ class j18 extends jCommon
 	if (!formValidate()) return false;
 	return true;
 }";
-            $data['jsReady']['divInit'] = "ajaxForm('frmJournal'); bizFocus('contactSel_b');";
+            unset($data['jsReady']['focus']);
         } else {
             unset($data['divs']['tbJrnl']);
-            $data['divs']['divDetail']  = ['order'=>50,'type'=>'html','html'=>html5('contactSel', ['attr'=>['type'=>'input']])];
-            $data['jsBody']['selVendor']= "jq('#contactSel').combogrid({width:120,panelWidth:500,delay:500,iconCls:'icon-search',hasDownArrow:false,
+            $data['divs']['divDetail']  = ['order'=>50,'type'=>'html','html'=>"<p>".sprintf(lang('search_open_journal'),lang('contacts_type_c'))."</p>".html5('contactSel', ['attr'=>['value'=>'']])];
+            $data['jsReady']['selVendor']= "jq('#contactSel').combogrid({width:200,panelWidth:500,delay:500,iconCls:'icon-search',hasDownArrow:false,
     idField:'contact_id_b',textField:'primary_name_b',mode:'remote',
     url:       '".BIZUNO_AJAX."&p=phreebooks/main/managerRowsBank&jID=".JOURNAL_ID."', 
     onBeforeLoad:function (param) { var newValue = jq('#contactSel').combogrid('getValue'); if (newValue.length < 2) return false; },
@@ -116,39 +122,9 @@ class j18 extends jCommon
         {field:'city_b',        title:'".jsLang('address_book_city')."', width:100},
         {field:'state_b',       title:'".jsLang('address_book_state')."', width: 50},
         {field:'total_amount',  title:'".jsLang('total')."', width:100, align:'right', formatter:function (value) {return formatCurrency(value);} }]] });";
-            $data['jsReady']['divInit'] = "ajaxForm('frmJournal'); bizFocus('contactSel');";
+            $data['jsReady']['focus'] = "bizFocus('contactSel');";
         }
-    }
-
-    /**
-     * Configures the journal entry properties (other than address and items)
-     * @param array $data - current working structure
-     * @return array - List of fields to show with the structure
-     */
-    private function getProps($data)
-    {
-        $data['fields']['main']['sales_order_num'] = ['label'=>lang('journal_main_invoice_num_10'),'attr'=>['value'=>isset($this->soNum)?$this->soNum:'','readonly'=>'readonly']];
-        return ['id'         => $data['fields']['main']['id'],
-            'journal_id'     => $data['fields']['main']['journal_id'],
-            'so_po_ref_id'   => $data['fields']['main']['so_po_ref_id'],
-            'terms'          => $data['fields']['main']['terms'],
-            'override_user'  => $data['override_user'],
-            'override_pass'  => $data['override_pass'],
-            'recur_id'       => $data['fields']['main']['recur_id'],
-            'recur_frequency'=> $data['recur_frequency'],
-            'item_array'     => $data['item_array'],
-            'xChild'         => ['attr'=>['type'=>'hidden']],
-            'xAction'        => ['attr'=>['type'=>'hidden']],
-            'store_id'       => $data['fields']['main']['store_id'],
-            // Displayed
-            'invoice_num'    => array_merge($data['fields']['main']['invoice_num'],   ['break'=>true,'order'=>10]),
-            'post_date'      => array_merge($data['fields']['main']['post_date'],     ['break'=>true,'order'=>20]),
-            'rep_id'         => array_merge($data['fields']['main']['rep_id'],        ['break'=>true,'order'=>30]),
-            'currency'       => array_merge($data['fields']['main']['currency'],      ['break'=>true,'order'=>40]),
-            'purch_order_id' => array_merge($data['fields']['main']['purch_order_id'],['break'=>true,'order'=>50]),
-            'terms_text'     => array_merge($data['terms_text'],                      ['break'=>true,'order'=>60]),
-            'waiting'        => array_merge($data['fields']['main']['waiting'],       ['break'=>true,'order'=>80]), // messages
-            'closed'         => array_merge($data['fields']['main']['closed'],        ['break'=>true,'order'=>90])];
+        $data['jsReady']['init'] = "ajaxForm('frmJournal');";
     }
 
 /*******************************************************************************************************************/
@@ -159,8 +135,8 @@ class j18 extends jCommon
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
-        $this->postMain();
-        $this->postItem();
+        if (!$this->postMain())              { return; }
+        if (!$this->postItem())              { return; }
         if (!$this->postInventory())         { return; }
         if (!$this->postJournalHistory())    { return; }
         if (!$this->setStatusClosed('post')) { return; }
@@ -173,8 +149,8 @@ class j18 extends jCommon
         msgDebug("\n/********* unPosting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         if (!$this->unPostJournalHistory())    { return; }	// unPost the chart values before inventory where COG rows are removed
         if (!$this->unPostInventory())         { return; }
-		$this->unPostMain();
-        $this->unPostItem();
+		if (!$this->unPostMain())              { return; }
+        if (!$this->unPostItem())              { return; }
         if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
 		return true;

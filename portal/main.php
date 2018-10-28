@@ -17,14 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-12
+ * @version    3.x Last Update: 2018-09-26
  * @filesource /portal/main.php
  */
 
 namespace bizuno;
 
 // set some sitewide constants
-define('COG_ITEM_TYPES', 'si,sr,ms,mi,ma,sa');
+define('COG_ITEM_TYPES', 'ma,mi,ms,sa,si,sr');
 
 require_once(BIZUNO_ROOT."portal/functions.php");
 require_once(BIZUNO_LIB ."controller/functions.php");
@@ -42,10 +42,11 @@ class main //extends controller
 
 	function __construct() 
     {
-		global $msgStack, $cleaner, $html5;
+		global $msgStack, $cleaner, $html5, $io;
         $msgStack = new messageStack();
         $cleaner  = new cleaner();
         $html5    = new html5();
+        $io       = new io();
         $GLOBALS['myDevice'] = detectDevice(); // 'desktop' or 'mobile';
 //      $GLOBALS['myDevice'] = 'mobile'; // for testing mobile behavior on desktop devices
         $this->initDB();
@@ -73,7 +74,7 @@ class main //extends controller
         msgDebug(" ... after db connection connected = ".($db->connected?'true':'false'));
     }
 
-    private function validateUser($userID='', $userPW='')
+    private function validateUser()
     {
         global $bizunoUser, $bizunoLang;
         $bizunoUser = $this->setGuestCache();
@@ -83,8 +84,8 @@ class main //extends controller
         msgDebug("\nEntering validateUser with session = ".print_r($session, true)." and lang = ".$bizunoUser['profile']['language']);
         if ($session && constant('BIZUNO_DB_NAME') !== '') { $this->setSession($session); }
         else { // not logged in, try to log in
-            if (!$email= clean('UserID',['format'=>'email','default'=>$userID], 'post')) { return; }
-            if (!$pass = clean('UserPW',['format'=>'text', 'default'=>$userPW], 'post')) { return; }
+            if (!$email= clean('UserID','email','post')) { return; }
+            if (!$pass = clean('UserPW','text', 'post')) { return; }
             if (!biz_validate_user_creds($email, $pass)) { return; }
             $bizunoUser['profile']['email'] = $email;
             $cookie = "[\"{$bizunoUser['profile']['email']}\",0,".time()."]";

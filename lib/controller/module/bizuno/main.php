@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-17
+ * @version    3.x Last Update: 2018-09-28
  * @filesource /lib/controller/module/bizuno/main.php
  * 
  * @todo BUG - context sensitive help, look at current module, page, method to send to Phreehelp
@@ -164,8 +164,8 @@ $(function() {
      */
     public function encryptionForm(&$layout) {
         if (!validateSecurity('bizuno', 'profile', 1)) { return; }
-		$icnSave= ['icon'=>'save', 'label'=>lang('save'), 'events'=>  ['onClick'=>"jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());"]];
-		$inpEncr= ['attr'=>['type'=>'password']];
+		$icnSave= ['icon'=>'save','events'=>['onClick'=>"jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());"]];
+		$inpEncr= ['options'=>['value'=>"''"],'attr'=>['type'=>'password']];
 		$html   = lang('msg_enter_encrypt_key').'<br />'.html5('pwEncrypt', $inpEncr).html5('', $icnSave);
 		$js     = "bizFocus('pwEncrypt');
 jq('#winEncrypt').keypress(function(event) {
@@ -173,7 +173,7 @@ jq('#winEncrypt').keypress(function(event) {
     if (keycode=='13') jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());
 });";
         $html .= htmlJS($js);
-		$layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>  ['divEncrypt'=>  ['order'=>50,'type'=>'html','html'=>$html]]]);
+		$layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['divEncrypt'=>['order'=>50,'type'=>'html','html'=>$html]]]);
 	}
 	
 	/**

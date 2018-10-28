@@ -173,6 +173,7 @@ class db extends \PDO
 				'dbfield'=> $table.'.'.$row['Field'], //id,
 				'dbType' => $row['Type'],
 				'field'  => $row['Field'],
+                'break'  => true,
 				'null'   => $row['Null'], //NO,
 				'collate'=> $row['Collation'],
 				'key'    => $row['Key'], //PRI,
@@ -679,10 +680,10 @@ function dbTableRead($data)
 		$sqlTables .= ' '.$table['table'];
 		$sqlTables .= isset($table['links'])&& strlen($table['links'])>0? ' ON '.$table['links'] : '';
 	}
-	$criteria = array();
+	$criteria = [];
 	if (!empty($data['source']['filters'])) {
         foreach ($data['source']['filters'] as $key => $value) {
-		if ($key == 'search') {
+            if ($key == 'search') {
                 if ($value['attr']['value']) {
                     $search_text = addslashes($value['attr']['value']);
                     $criteria[] = "(".implode(" LIKE '%$search_text%' OR ", $data['source']['search'])." LIKE '%$search_text%')";
@@ -968,7 +969,7 @@ function dbSqlDates($dateType='a', $df=false) {
             $temp2 = dbGetFiscalDates($YrStrt + 11);
             $dend  = localeCalculateDate($temp2['end_date'], 1);
             $sql   = "$df>='$dbeg' AND $df<'$dend'";
-            $desc  = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($temp['end_date']).'; ';
+            $desc  = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($temp2['end_date']).'; ';
             break;
         case "k": // Year to Date
             $YrStrt = getModuleCache('phreebooks', 'fy', 'period_min');
@@ -1052,16 +1053,11 @@ function dbSqlDates($dateType='a', $df=false) {
  * @param boolean $showSelect - [default false] Shows Select option (appears first if set to true)
  * @return array - list of users in array ready for view in a html list element
  */
-function listUsers($active_only=true, $showNone=true, $showAll=true, $showSelect=false)
+function listUsers($active_only=true, $showNone=true, $showAll=true)
 {
 	$output = [];
-    if ($showSelect){ $output[] = ['id'=>'',  'text'=>lang('select')]; }
-    // New way
-    if ($showNone)  { $output[] = ['id'=>'0', 'text'=>lang('none')]; }
-    if ($showAll)   { $output[] = ['id'=>'-1','text'=>lang('all')]; }
-    // Old way
-//  if ($showAll)   { $output[] = ['id'=>'0', 'text'=>lang('all')]; }
-//  if ($showNone)  { $output[] = ['id'=>'-1','text'=>lang('none')]; }
+    if ($showAll)  { $output[] = ['id'=>'-1','text'=>lang('all')]; }
+    if ($showNone) { $output[] = ['id'=>'0', 'text'=>lang('none')]; }
 	$result = dbGetMulti(BIZUNO_DB_PREFIX."users", $active_only ? "inactive='0'" : '', 'title');
     foreach ($result as $row) { $output[] = ['id'=>$row['admin_id'], 'text'=>$row['title']]; }
 	return $output;
@@ -1072,13 +1068,34 @@ function listUsers($active_only=true, $showNone=true, $showAll=true, $showSelect
  * @param boolean $active_only - Restrict list to active roles only, default true
  * @return array - list of roles in array ready for view in a html list element
  */
-function listRoles($active_only=true, $showAll=true)
+function listRoles($active_only=true, $showNone=true, $showAll=true)
 {
 	$output = [];
-    if ($showAll)  { $output[] = ['id'=>'-1', 'text'=>lang('all')]; }
+    if ($showAll)  { $output[] = ['id'=>'-1','text'=>lang('all')]; }
+    if ($showNone) { $output[] = ['id'=>'0', 'text'=>lang('none')]; }
 	$result = dbGetMulti(BIZUNO_DB_PREFIX."roles", $active_only ? "inactive='0'" : '', 'title');
     foreach ($result as $row) { $output[] = ['id'=>$row['id'], 'text'=>$row['title']]; }
 	return $output;
+}
+
+/**
+ * Converts the variable type to a string replacement, mostly used to build JavaScript variables
+ * @param mixed $value - The value to encode
+ * @return mixed - Value encoded
+ */
+function encodeType($value)
+{
+	switch (gettype($value)) {
+		case "boolean": return $value ? 'true' : 'false';
+		default:
+		case "resource":
+		case "integer":
+		case "double": return $value; // no quotes required
+		case "NULL":
+		case "string": return "'".str_replace("'", "\'", $value)."'"; // add quotes
+		case "array":
+		case "object": return json_encode($value);
+	}
 }
 
 /**
@@ -1102,24 +1119,4 @@ function validateTab($mID, $tID, $title, $order=50)
 	$tabs[$id] = ['table_id'=>$tID, 'title'=>$title, 'sort_order'=>$order];
     setModuleCache($mID, 'tabs', false, $tabs);
 	return $id;
-}
-
-/**
- * Converts the variable type to a string replacement, mostly used to build JavaScript variables
- * @param mixed $value - The value to encode
- * @return mixed - Value encoded
- */
-function encodeType($value)
-{
-	switch (gettype($value)) {
-		case "boolean": return $value ? 'true' : 'false';
-		default:
-		case "resource":
-		case "integer":
-		case "double": return $value; // no quotes required
-		case "NULL":
-		case "string": return "'".str_replace("'", "\'", $value)."'"; // add quotes
-		case "array":
-		case "object": return json_encode($value);
-	}
 }

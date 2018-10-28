@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-18
+ * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/phreebooks/totals/discountChk/discountChk.php
  */
 
@@ -85,12 +85,10 @@ class discountChk
     {
 		$this->fields = [
             'totals_discount_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
-            'totals_discount_opt'=> ['icon'=>'settings', 'size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_discount').toggle('slow');"]],
-            'totals_discount'    => ['label'=>lang('discount'), 'format'=>'currency','events'=>['onClick'=>"discountType='amt'; totalUpdate();"],
-                'attr'   => ['size'=>'15', 'value'=>'0', 'style'=>'text-align:right', 'readonly'=>'readonly']]];
+            'totals_discount_opt'=> ['icon' =>'settings','size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_discount').toggle('slow');"]],
+            'totals_discount'    => ['label'=>lang('discount'),'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly'],'events'=>['onClick'=>"discountType='amt'; totalUpdate();"]]];
         msgDebug("\nSettings for discountChk = ".print_r($this->settings, true));
 		if (isset($data['items'])) { foreach ($data['items'] as $row) { // fill in the data if available
-            msgDebug("\nRow = ".print_r($row, true));
 			if ($row['gl_type'] == $this->settings['gl_type']) {
                 msgDebug("\nGL TYPE MATCH "); // never hits this loop as the dsc row has been removed
 				$this->fields['totals_discount_id']['attr']['value'] = $row['id'];

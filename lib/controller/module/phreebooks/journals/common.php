@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-07-20
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -57,7 +57,7 @@ class jCommon
      */
     protected function postMain()
     {
-        if (!$mID = dbWrite(BIZUNO_DB_PREFIX."journal_main", $this->main)) { return; }
+        if (!$mID = dbWrite(BIZUNO_DB_PREFIX."journal_main", $this->main)) { return msgAdd('Database error posting main record, see trace!', 'trap'); }
         if (!isset($this->main['id']) || !$this->main['id']) { $this->main['id'] = $mID; }
         return true;
     }
@@ -71,7 +71,7 @@ class jCommon
         for ($i = 0; $i < count($this->item); $i++) {
             $this->item[$i]['ref_id'] = $this->main['id'];	// link the rows to the journal main id
             msgDebug("\n  journal item = " . print_r($this->item[$i], true));
-            if  (!$iID = dbWrite(BIZUNO_DB_PREFIX."journal_item", $this->item[$i])) { return; }
+            if  (!$iID = dbWrite(BIZUNO_DB_PREFIX."journal_item", $this->item[$i])) { return msgAdd('Database error posting item record, see trace!', 'trap'); }
             if (!isset($this->item[$i]['id']) || !$this->item[$i]['id']) { $this->item[$i]['id'] = $this->item[$i]['id'] = $iID; }
         }
         return true;
@@ -116,8 +116,7 @@ class jCommon
                 $query_data = [
                     'credit_amount'=> "credit_amount + ".$values['credit'],
                     'debit_amount' => "debit_amount + ".$values['debit'],
-                    'last_update'  => "'{$this->main['post_date']}'",
-                    ];
+                    'last_update'  => "'{$this->main['post_date']}'"];
                 $result = dbWrite(BIZUNO_DB_PREFIX."journal_history", $query_data, 'update', "gl_account='$gl_acct' AND period={$this->main['period']}", false);
                 if ($result <> 1) { return $this->msgPostError(sprintf(lang('err_gl_post_balance'), $values['debit']+$values['credit'], $gl_acct ? $gl_acct : lang('not_specified'))); }
             }
@@ -158,8 +157,7 @@ class jCommon
 				'gl_account'    => $gl_acct,
 				'credit_amount' => isset($values['credit']) ? $values['credit'] : 0,
 				'debit_amount'  => isset($values['debit'])  ? $values['debit']  : 0,
-				'post_date'     => $this->main['post_date'],
-                ];
+				'post_date'     => $this->main['post_date']];
 			$temp_array['id'] = dbWrite(BIZUNO_DB_PREFIX."journal_item", $temp_array);
 			$this->item[] = $temp_array;
 		}
@@ -201,11 +199,7 @@ class jCommon
 		if ($ref_id) { // start by retrieving the po/so item list
 			$stmt1  = dbGetResult("SELECT id, sku, qty FROM ".BIZUNO_DB_PREFIX."journal_item WHERE ref_id=$ref_id AND gl_type='itm'");
 			$result1= $stmt1->fetchAll(\PDO::FETCH_ASSOC);
-			foreach ($result1 as $row) {
-                if ($row['sku']) {
-                    $item_array[$row['id']] = ['sku'=>$row['sku'], 'ordered' => $row['qty'], 'processed' => 0];
-                }
-            }
+			foreach ($result1 as $row) { if ($row['sku']) { $item_array[$row['id']] = ['sku'=>$row['sku'], 'ordered' => $row['qty'], 'processed' => 0]; } }
             // retrieve the total number of units processed (received/shipped) less this order (may be multiple sales/purchases)
 			$sql = "SELECT i.item_ref_id AS id, i.sku, i.qty FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
 				WHERE m.so_po_ref_id=$ref_id AND i.gl_type='itm'";
@@ -213,11 +207,8 @@ class jCommon
 			$stmt2  = dbGetResult($sql);
 			$result2= $stmt2->fetchAll(\PDO::FETCH_ASSOC);
 			foreach ($result2 as $row) { if ($row['sku']) {
-				if (!isset($item_array[$row['id']]['processed'])) {
-					$item_array[$row['id']] = ['ordered'=>0, 'processed'=>$row['qty']];
-				} else {
-					$item_array[$row['id']]['processed'] += $row['qty'];
-				}
+                if (!isset($item_array[$row['id']]['processed'])) { $item_array[$row['id']] = ['ordered'=>0, 'processed'=>$row['qty']]; }
+				else                                              { $item_array[$row['id']]['processed'] += $row['qty']; }
             } }
 		}
 		$this->so_po_balance_array = $item_array;
@@ -1087,10 +1078,10 @@ class jCommon
 				'date_1'        => ['order'=>0, 'attr'=>['hidden'=>'true']],
 				'action'        => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index) { return {$name}Formatter(value,row,index); }"],
 					'actions' => [
-                        'trash'   => ['order'=>20,'icon'=>'trash',   'events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"],
-							'display' => "typeof row.item_ref_id==='undefined' || row.item_ref_id=='0' || row.item_ref_id==''"],
+						'settings'=> ['order'=>10,'icon'=>'settings','events'=>['onClick'=>"var rowIndex=jq('#$name').datagrid('getRowIndex', jq('#$name').datagrid('getSelected')); inventoryProperties(rowIndex);"]],
 						'price'   => ['order'=>40,'icon'=>'price',   'events'=>['onClick'=>"var rowIndex=jq('#$name').datagrid('getRowIndex', jq('#$name').datagrid('getSelected')); inventoryGetPrice(rowIndex, '$type');"]],
-						'settings'=> ['order'=>60,'icon'=>'settings','events'=>['onClick'=>"var rowIndex=jq('#$name').datagrid('getRowIndex', jq('#$name').datagrid('getSelected')); inventoryProperties(rowIndex);"]]]],
+                        'trash'   => ['order'=>90,'icon'=>'trash',   'events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"],
+							'display' => "typeof row.item_ref_id==='undefined' || row.item_ref_id=='0' || row.item_ref_id==''"]]],
 				'sku'=> ['order'=>30, 'label'=>pullTableLabel('journal_item', 'sku', $this->journalID),
 					'attr' => ['width'=>150, 'sortable'=>true, 'resizable'=>true, 'align'=>'center', 'value'=>''],
 					'events'=>  ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',

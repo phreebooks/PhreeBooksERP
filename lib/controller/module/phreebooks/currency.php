@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-13
+ * @version    3.x Last Update: 2018-10-21
  * @filesource /lib/controller/module/phreebooks/currency.php
  */
 
@@ -86,8 +86,7 @@ class phreebooksCurrency
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbCurrency'],
                 'formBOF'=> ['order'=>15,'type'=>'form',   'key'=>'frmCurrency'],
                 'body'   => ['order'=>50,'type'=>'fields', 'fields'=>$this->getViewCurrency($values)],
-                'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"],
-                ],
+                'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"]],
 			'toolbars' => ['tbCurrency'=>  ['icons' => [
                 "currencySave" => ['order'=>10,'icon'=>'save','label'=>lang('save'),
 					'events'=>  ['onClick'=>"jq('body').addClass('loading'); jq('#frmCurrency').submit();"]]]]],
@@ -151,8 +150,7 @@ class phreebooksCurrency
 			'sep'    => clean('sep',    ['format'=>'text', 'default'=>''], 'post'),
 			'dec_len'=> clean('dec_len','integer','post'),
 			'pfxneg' => clean('pfxneg', ['format'=>'text', 'default'=>''], 'post'),
-			'sfxneg' => clean('sfxneg', ['format'=>'text', 'default'=>''], 'post'),
-            ];
+			'sfxneg' => clean('sfxneg', ['format'=>'text', 'default'=>''], 'post')];
 		// check for new default, if so error check journal before replacing
 		if ($is_def && getUserCache('profile', 'currency', false, 'USD') != $iso) { // new default
 			$id = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id');

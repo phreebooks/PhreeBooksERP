@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-24
+ * @version    3.x Last Update: 2018-10-19
  * @filesource /lib/controller/module/bizuno/backup.php
  */
 
@@ -263,8 +263,7 @@ class bizunoBackup
 				'heading'=> ['order'=>15,'type'=>'html',    'html'=>"<h1>".lang('bizuno_restore')."</h1>\n"],
 				'restore'=> ['order'=>50,'type'=>'divs','divs'=>[
                     'dgRstr'=> ['order'=>20,'type'=>'datagrid','key'=>'dgRestore'],
-                    'body'  => ['order'=>40,'type'=>'fields','fields'=>$this->getViewRestore()],
-                ]]],
+                    'body'  => ['order'=>40,'type'=>'fields','fields'=>$this->getViewRestore()]]]],
 			'datagrid'=> ['dgRestore' => $this->dgRestore('dgRestore')],
             'jsHead'  => ['init'=>$jsHead],
             'jsBody'  => ['init'=>$jsBody]];
@@ -279,7 +278,7 @@ class bizunoBackup
     {
         $fldFile = ['label'=>lang('msg_io_upload_select'),'attr'=>['type'=>'file','name'=>'files[]','multiple'=>true]];
         $btnUpld = ['break'=>true,'styles'=>['display'=>'none'],'attr'=>['type'=>'button','value'=>lang('upload')]];
-        $barProg = ['attr'=>['type'=>'raw','html'=>'<progress style="display:none"></progress>']];
+        $barProg = ['html'=>'<progress style="display:none"></progress>','attr'=>['type'=>'raw']];
         return ['fldFile'=>$fldFile, 'btnUpld'=>$btnUpld, 'barProg'=>$barProg];
     }
     

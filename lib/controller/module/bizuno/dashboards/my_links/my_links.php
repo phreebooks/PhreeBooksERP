@@ -17,14 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-18
+ * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/bizuno/dashboards/my_links/my_links.php
  * 
  */
 
 namespace bizuno;
 
-define('DASHBOARD_MY_LINKS_VERSION','1.0');
+define('DASHBOARD_MY_LINKS_VERSION','3.1');
 
 class my_links
 {
@@ -50,45 +50,22 @@ class my_links
 
     public function render()
     {
+		$index    = 1;
+        if (empty($this->settings['data'])) { $rows[] = '<li><span>'.lang('no_results')."</span></li>"; }
+        else { foreach ($this->settings['data'] as $title => $hyperlink) {
+            $html  = '<span style="float:left">'.viewFavicon($hyperlink, $title, true)." $title</span>";
+            $html .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span>';
+            $rows[]= $html;
+            $index++;
+        } }
         $data = [
-            $this->code.'_0' => ['label' => lang('title'),
-                'classes'=> ['easyui-validatebox'],
-                'attr'   => ['type'=>'text', 'required'=>'true', 'size'=>30]],
-            $this->code.'_1' => ['label' => lang('url'),
-                'classes'=> ['easyui-validatebox'],
-                'attr'   => ['type'=>'text', 'required'=>'true', 'size'=>50]],
-            $this->code.'_button' => [
-                'attr'   => ['type'   => 'button', 'value' => lang('new')],
-                'styles' => ['cursor' => 'pointer'],
-                'events' => ['onClick'=> "dashboardAttr('$this->moduleID:$this->code', 0);"],
-                ],
-            'delete_icon' => ['icon'=>'trash', 'size'=>'small'],
-            ];
-        $html  = '<div>';
-        $html .= '  <div id="'.$this->code.'_attr" style="display:none">';
-        $html .= '    <form id="'.$this->code.'Form" action="">';
-        $html .= '      <div style="white-space:nowrap">'.html5($this->code.'_0',      $data[$this->code.'_0']).'</div>';
-        $html .= '      <div style="white-space:nowrap">'.html5($this->code.'_1',      $data[$this->code.'_1']).'</div>';
-        $html .= '      <div style="text-align:right;">' .html5($this->code.'_button', $data[$this->code.'_button']).'</div>';
-        $html .= '    </form>';
-        $html .= '  </div>';
-        // Build content box
-        $index = 1;
-        if (!isset($this->settings['data'])) { unset($this->settings['users']); unset($this->settings['roles']); $this->settings = ['data' => $this->settings]; } // OLD WAY
-        if (!empty($this->settings['data'])) {
-            foreach ($this->settings['data'] as $title => $hyperlink) {
-                $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"];
-                $html .= '  <div>';
-                $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>';
-                $html .= '    <div style="min-height:16px;">'.viewFavicon($hyperlink, $title).' <a href="'.$hyperlink.'" target="_blank">'.$title.'</a></div>';
-                $html .= '  </div>';
-                $index++;
-            }
-        } else {
-            $html .= '  <div>'.lang('no_results').'</div>'."\n";
-        }
-        $html .= '</div><div style="min-height:4px;">&nbsp;</div>'."\n";
-        return $html;
+            'divs'  => [$this->code=> ['order'=>50,'type'=>'list','key'=>$this->code]],
+            'fields'=> [
+                $this->code.'_0'  => ['label'=>lang('title'),'attr'=>['required'=>'true']],
+                $this->code.'_1'  => ['label'=>lang('url')." including http:// or https://",'attr'=>['required'=>'true']],
+                $this->code.'_btn'=> ['attr'=>['type'=>'button','value'=>lang('new')],'styles'=>['text-align'=>'right'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
+            'lists' => [$this->code=> $rows]];
+  		return $data;
     }
 
     public function save()

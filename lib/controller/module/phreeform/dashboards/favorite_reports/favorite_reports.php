@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2018-10-10
  * @filesource /controller/module/phreeform/dashboards/favorite_reports/favorite_reports.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_FAVORITE_REPORTS_VERSION','1.0');
+define('DASHBOARD_FAVORITE_REPORTS_VERSION','3.1');
 
 require_once(BIZUNO_LIB."controller/module/phreeform/functions.php");
 
@@ -51,37 +51,32 @@ class favorite_reports
         $result = dbGetMulti(BIZUNO_DB_PREFIX."phreeform", "mime_type IN ('rpt','frm')", "title"); // load the report list
         $data_array = [['id'=>'', 'text'=>lang('select')]];
         foreach ($result as $row) {
-            if (phreeformSecurity($row['security'])) {
-                $data_array[] = ['id'=>$row['id'], 'text'=>$row['title']];
-            }
+            if (phreeformSecurity($row['security'])) { $data_array[] = ['id'=>$row['id'], 'text'=>$row['title']]; }
         }
         $data = [
-            $this->code.'_0'   => ['label'=>lang('select'), 'values'=>$data_array, 'attr'=>  ['type'=>'select']],
-            $this->code.'_btn' => ['attr'=>  ['type'=>'button', 'value'=>lang('add')],
-              'styles' => ['cursor'=>'pointer'], 'events'=>  ['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]],
-            'delete_icon' => ['icon'=>'trash', 'size'=>'small'],
-            ];
+            $this->code.'_0'  => ['label'=>lang('select'),'values'=>$data_array,'attr'=>['type'=>'select']],
+            $this->code.'_btn'=> ['attr'=>['type'=>'button', 'value'=>lang('add')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]];
         $html  = '<div>';
         $html .= '  <div id="'.$this->code.'_attr" style="display:none">';
         $html .= '    <form id="'.$this->code.'Form" action="">';
-        $html .= '      <div style="white-space:nowrap">'.html5($this->code.'_0',   $data[$this->code.'_0']).'</div>';
-        $html .= '      <div style="text-align:right;">' .html5($this->code.'_btn', $data[$this->code.'_btn']).'</div>';
+        $html .= '      <div style="white-space:nowrap">'.html5($this->code.'_0',  $data[$this->code.'_0']).'</div>';
+        $html .= '      <div style="text-align:right;">' .html5($this->code.'_btn',$data[$this->code.'_btn']).'</div>';
         $html .= '    </form>';
         $html .= '  </div>';
         // Build content box
         if (!isset($this->settings['data'])) { unset($this->settings['users']); unset($this->settings['roles']); $this->settings=['data'=>$this->settings]; } // OLD WAY
+        $html .= html5('', ['classes'=>['easyui-datalist'],'attr'=>['type'=>'ul']])."\n";
         if (!empty($this->settings['data'])) {
             foreach ($this->settings['data'] as $id => $title) {
-                $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $id);"];
-                $html .= '  <div>';
-                $html .= '    <div style="float:right;height:17px;">'.html5('delete_icon', $data['delete_icon']).'</div>';
-                $html .= '    <div style="min-height:17px;"><a href="'.BIZUNO_AJAX.'&p=phreeform/render/open&rID='.$id.'" target="_blank">'.$title.'</a></div>';
-                $html .= '  </div>';
+                $mime  = dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'mime_type', "id=$id");
+                $html .= html5('', ['attr'=>['type'=>'li']]).'<span style="float:left">';
+                $html .= html5('', ['icon'=>viewMimeIcon($mime),'events'=>['onClick'=>"winOpen('phreeform', 'phreeform/render/open&rID=$id');"]]);
+				$html .= viewText($title).'</span><span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $id);"]]).'</span></li>';
             }
         } else {
-            $html .= '  <div>'.lang('no_results').'</div>'."\n";
+            $html .= '<li><span>'.lang('no_results')."</span></li>";
         }
-        $html .= '</div><div style="min-height:4px;"></div>';
+        $html .= '</ul></div>';
         return $html;
     }
 

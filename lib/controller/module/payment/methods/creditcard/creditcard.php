@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /lib/controller/module/payment/methods/creditcard.php
  */
 
@@ -58,16 +58,15 @@ class creditcard
 			'selCards'  => ['attr'=>['type'=>'select'],'events'=>['onChange'=>"creditcardRefNum('stored');"]],
 			'save'      => ['label'=>lang('save'),'break'=>true,'attr'=>['type'=>'checkbox','value'=>'1']],
             'name'      => ['options'=>['width'=>200],'break'=>true,'label'=>lang('payment_name')],
-            'number'    => ['options'=>['width'=>150],'break'=>true,'label'=>lang('payment_number'),'events'=>['onChange'=>"convergeRefNum('number');"]],
+            'number'    => ['options'=>['width'=>200],'break'=>true,'label'=>lang('payment_number'),'events'=>['onChange'=>"convergeRefNum('number');"]],
             'month'     => ['label'=>lang('payment_expiration'),'options'=>['width'=>130],'values'=>$cc_exp['months'],'attr'=>['type'=>'select','value'=>date('m')]],
             'year'      => ['break'=>true,'options'=>['width'=>70],'values'=>$cc_exp['years'],'attr'=>['type'=>'select','value'=>date('Y')]],
             'cvv'       => ['options'=>['width'=> 45],'label'=>lang('payment_cvv')]];
-		if (isset($values['method']) && $values['method']==$this->code 
-				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
+		if (isset($values['method']) && $values['method']==$this->code && isset($data['fields']['id']['attr']['value'])) { // edit
 			$this->viewData['number']['attr']['value'] = isset($values['hint']) ? $values['hint'] : '****';
-			$invoice_num = $invoice_amex = $data['fields']['main']['invoice_num']['attr']['value'];
-			$gl_account  = $data['fields']['main']['gl_acct_id']['attr']['value'];
-			$discount_gl = $this->getDiscGL($data['fields']['main']['id']['attr']['value']);
+			$invoice_num = $invoice_amex = $data['fields']['invoice_num']['attr']['value'];
+			$gl_account  = $data['fields']['gl_acct_id']['attr']['value'];
+			$discount_gl = $this->getDiscGL($data['fields']['id']['attr']['value']);
             $show_s = false;  // since it's an edit, all adjustments need to be made at the gateway, this prevents duplicate charges when re-posting a transaction
             $show_n = false;
             $checked = 'w';
@@ -78,7 +77,7 @@ class creditcard
 			$discount_gl = $this->settings['disc_gl_acct'];
             $show_n = true;
             $checked = 'n';
-            $cID = isset($data['fields']['main']['contact_id_b']['attr']['value']) ? $data['fields']['main']['contact_id_b']['attr']['value'] : 0;
+            $cID = isset($data['fields']['contact_id_b']['attr']['value']) ? $data['fields']['contact_id_b']['attr']['value'] : 0;
             if ($cID) { // find if stored values
                 $encrypt = new encryption();
                 $this->viewData['selCards']['values'] = $encrypt->viewCC('contacts', $cID);
@@ -231,8 +230,8 @@ $output['body'] .= '</div>
 */
 	private function getDiscGL($data)
 	{
-		if (isset($data['fields']['main'])) {
-            foreach ($data['fields']['main'] as $row) {
+		if (isset($data['fields'])) {
+            foreach ($data['fields'] as $row) {
                 if ($row['gl_type'] == 'dsc') { return $row['gl_account']; }
             }
         }

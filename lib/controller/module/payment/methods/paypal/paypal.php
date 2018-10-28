@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /lib/controller/module/payment/methods/paypal.php
  */
 
@@ -88,23 +88,22 @@ class paypal
 			'selCards'  => ['attr'=>['type'=>'select'],'events'=>['onChange'=>"paypalRefNum('stored');"]],
 			'save'      => ['label'=>lang('save'),'break'=>true,'attr'=>['type'=>'checkbox','value'=>'1']],
             'name'      => ['options'=>['width'=>200],'break'=>true,'label'=>lang('payment_name')],
-            'number'    => ['options'=>['width'=>160],'break'=>true,'label'=>lang('payment_number'),'events'=>['onChange'=>"convergeRefNum('number');"]],
+            'number'    => ['options'=>['width'=>200],'break'=>true,'label'=>lang('payment_number'),'events'=>['onChange'=>"convergeRefNum('number');"]],
             'month'     => ['label'=>lang('payment_expiration'),'options'=>['width'=>130],'values'=>$cc_exp['months'],'attr'=>['type'=>'select','value'=>date('m')]],
             'year'      => ['break'=>true,'options'=>['width'=>70],'values'=>$cc_exp['years'],'attr'=>['type'=>'select','value'=>date('Y')]],
             'cvv'       => ['options'=>['width'=>45],'label'=>lang('payment_cvv'),'attr'=>['type'=>'text','size'=>'4']]];
-		if (isset($values['method']) && $values['method']==$this->code 
-				&& isset($data['fields']['main']['id']['attr']['value']) && $data['fields']['main']['id']['attr']['value']) { // edit
+		if (isset($values['method']) && $values['method']==$this->code && !empty($data['fields']['id']['attr']['value'])) { // edit
 			$this->viewData['number']['attr']['value'] = isset($values['hint']) ? $values['hint'] : '****';
-			$invoice_num = $data['fields']['main']['invoice_num']['attr']['value'];
-			$gl_account  = $data['fields']['main']['gl_acct_id']['attr']['value'];
-			$discount_gl = $this->getDiscGL($data['fields']['main']['id']['attr']['value']);
+			$invoice_num = $data['fields']['invoice_num']['attr']['value'];
+			$gl_account  = $data['fields']['gl_acct_id']['attr']['value'];
+			$discount_gl = $this->getDiscGL($data['fields']['id']['attr']['value']);
 		} else { // defaults
 			$invoice_num = $this->settings['prefix'].date('Ymd');
 			$gl_account  = $this->settings['cash_gl_acct'];
 			$discount_gl = $this->settings['disc_gl_acct'];
 		}
 		$checked = 'n';
-		$cID = isset($data['fields']['main']['contact_id_b']['attr']['value']) ? $data['fields']['main']['contact_id_b']['attr']['value'] : 0;
+		$cID = isset($data['fields']['contact_id_b']['attr']['value']) ? $data['fields']['contact_id_b']['attr']['value'] : 0;
 		if ($cID) { // find if stored values
             require_once(BIZUNO_LIB."model/encrypter.php");
 			$encrypt = new encryption();

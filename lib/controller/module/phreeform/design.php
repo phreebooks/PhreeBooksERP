@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-08
+ * @version    3.x Last Update: 2018-10-08
  * @filesource /controller/module/phreeform/design.php
  */
 
@@ -71,6 +71,7 @@ class phreeformDesign
 			$dbData = ['id'=>0,'title'=>'','mime_type'=>$type,'security'=>'u:-1;g:-1','create_date'=>date('Y-m-d'),'settings'=>'','report'=>$this->setNewReport($type)];
 		}
         $fields = $this->editLayout($report);
+        $viewSet= $this->getViewSettings($type);
 		$data   = ['type'=>'page','title'=>$this->lang['phreeform_title_edit'].' - '.($rID ? $dbData['title'] : lang('new')),
 			'reportType'=> $type,
 			'divs'      => [
@@ -94,8 +95,10 @@ class phreeformDesign
                     'fields'  => ['order'=>20,'type'=>'html','html'=>$this->getViewFilters($fields, $type, $notes)],
                     'dgSort'  => ['order'=>40,'type'=>'datagrid','key'=>'sort'],
                     'dgFilter'=> ['order'=>50,'type'=>'datagrid','key'=>'filters']]],
-				'settings'=> ['order'=>50,'label'=>lang('settings'),'type'=>'html','html'=>$this->getViewSettings($fields, $type)]]]],
-//			'fields'    => $fields,
+				'settings'=> ['order'=>50,'label'=>lang('settings'),'type'=>'divs','divs'=>[
+                    'fields'=>['order'=>10,'type'=>'fields','keys'=>$viewSet['fields']],
+                    'notes' =>['order'=>95,'type'=>'html','html'=>$viewSet['notes']]]]]]],
+			'fields'    => $fields,
 			'datagrid'  => [
                 'tables' => $this->dgTables ('dgTables'),
 				'fields' => $this->dgFields ('dgFields', $type),
@@ -124,11 +127,11 @@ class phreeformDesign
                 'dragNdrop'=> "jq('#dgTables').datagrid('enableDnd'); jq('#dgFields').datagrid('enableDnd'); jq('#dgGroups').datagrid('enableDnd'); jq('#dgSort').datagrid('enableDnd'); jq('#dgFilters').datagrid('enableDnd');",
                 ]];
         // set up the security
-		$temp   = explode(";", $report->security);
-		$users  = substr($temp[0], 2);
-		$groups = substr($temp[1], 2);
-        if ($users <> '-1') { $data['jsReady']['secUser'] = "jq('#SecurityUsers').combobox('setValue', " .json_encode(explode(":", $users)) .");"; }
-        if ($groups<> '-1') { $data['jsReady']['secGroup']= "jq('#SecurityGroups').combobox('setValue', ".json_encode(explode(":", $groups)).");"; }
+		$temp  = explode(";", $report->security);
+		$users = substr($temp[0], 2);
+		$roles = substr($temp[1], 2);
+        if ($users <> '-1') { $data['jsReady']['secUser'] = "jq('#users').combobox('setValue', ".json_encode(explode(":", $users)).");"; }
+        if ($roles <> '-1') { $data['jsReady']['secGroup']= "jq('#roles').combobox('setValue', ".json_encode(explode(":", $roles)).");"; }
         if ($type == 'rpt') { $data['tabs']['filters']['divs']['dgGroup'] = ['order'=>30,'type'=>'datagrid','key'=>'groups']; }
 		$layout = array_replace_recursive($layout, viewMain(), $data);
 	}
@@ -152,31 +155,31 @@ class phreeformDesign
     private function getViewPage($fields, $type)
     {
         $output = html5('id',$fields['id'])
-        .html5('reporttype', $fields['rptType'])
+        .html5('reporttype', $fields['rpttype'])
         .html5('tables',     ['attr'=>['type'=>'hidden']])
         .html5('fieldlist',  ['attr'=>['type'=>'hidden']])
         .html5('grouplist',  ['attr'=>['type'=>'hidden']])
         .html5('sortlist',   ['attr'=>['type'=>'hidden']])
         .html5('filterlist', ['attr'=>['type'=>'hidden']])
-        .html5('xChild',     ['attr'=>['type'=>'hidden']]);
+        .html5('xChild',     ['attr'=>['type'=>'hidden','value'=>'']]);
         $output .= '
         <table style="border-style:none;margin-left:auto;margin-right:auto;">
             <tbody>
-                <tr><td colspan="3">'.html5('title', $fields['Title']).'</td></tr>
+                <tr><td colspan="3">'.html5('title', $fields['title']).'</td></tr>
                 <tr class="panel-header"><th>'.lang('description').'</th><th colspan="2">'.$this->lang['phreeform_page_layout'].'</th></tr>
                 <tr>
-                    <td rowspan="2">'.html5('description', $fields['Description']).'</td>
-                    <td>'            .html5('page[size]',  $fields['PageSize']).'</td>
+                    <td rowspan="2">'.html5('description', $fields['description']).'</td>
+                    <td>'            .html5('page[size]',  $fields['pagesize']).'</td>
                 </tr>
-                <tr><td>'.html5('page[orientation]',     $fields['PageOrient']).'</td></tr>
+                <tr><td>'.html5('page[orientation]',     $fields['pageorient']).'</td></tr>
                 <tr class="panel-header"><th>'.lang('email_body')."</th><th>".$this->lang['phreeform_margin_page'].'</th></tr>
                 <tr>
-                    <td rowspan="4">'.html5('emailmessage',     $fields['EmailBody']).'</td>
-                    <td>'            .html5('page[margin][top]',$fields['MarginTop']).' '.lang('mm').'</td>
+                    <td rowspan="4">'.html5('emailmessage',     $fields['emailbody']).'</td>
+                    <td>'            .html5('page[margin][top]',$fields['margintop']).' '.lang('mm').'</td>
                 </tr>
-                <tr><td>'.html5('page[margin][bottom]',$fields['MarginBottom']).' '.lang('mm').'</td></tr>
-                <tr><td>'.html5('page[margin][left]',  $fields['MarginLeft'])  .' '.lang('mm').'</td></tr>
-                <tr><td>'.html5('page[margin][right]', $fields['MarginRight']) .' '.lang('mm').'</td></tr>
+                <tr><td>'.html5('page[margin][bottom]',$fields['marginbottom']).' '.lang('mm').'</td></tr>
+                <tr><td>'.html5('page[margin][left]',  $fields['marginleft'])  .' '.lang('mm').'</td></tr>
+                <tr><td>'.html5('page[margin][right]', $fields['marginright']) .' '.lang('mm').'</td></tr>
             </tbody>
         </table>';
         if ($type == 'rpt') { $output .= '
@@ -188,48 +191,48 @@ class phreeformDesign
     <tbody>
         <tr>
             <td>'.$this->lang['name_business'].'</td>
-            <td>'.html5('heading[show]', $fields['HeadingShow']) .'</td>
-            <td>'.html5('heading[font]', $fields['HeadingFont']) .'</td>
-            <td>'.html5('heading[size]', $fields['HeadingSize']) .'</td>
-            <td>'.html5('heading[color]',$fields['HeadingColor']).'</td>
-            <td>'.html5('heading[align]',$fields['HeadingAlign']).'</td>
+            <td>'.html5('heading[show]', $fields['headingshow']) .'</td>
+            <td>'.html5('heading[font]', $fields['headingfont']) .'</td>
+            <td>'.html5('heading[size]', $fields['headingsize']) .'</td>
+            <td>'.html5('heading[color]',$fields['headingcolor']).'</td>
+            <td>'.html5('heading[align]',$fields['headingalign']).'</td>
         </tr>
         <tr>
-            <td>'.$this->lang['phreeform_page_title1'].' '.html5('title1[text]', $fields['Title1Text']).'</td>
-            <td>'.html5('title1[show]', $fields['Title1Show']) .'</td>
-            <td>'.html5('title1[font]', $fields['Title1Font']) .'</td>
-            <td>'.html5('title1[size]', $fields['Title1Size']) .'</td>
-            <td>'.html5('title1[color]',$fields['Title1Color']).'</td>
-            <td>'.html5('title1[align]',$fields['Title1Align']).'</td>
+            <td>'.$this->lang['phreeform_page_title1'].' '.html5('title1[text]', $fields['title1text']).'</td>
+            <td>'.html5('title1[show]', $fields['title1show']) .'</td>
+            <td>'.html5('title1[font]', $fields['title1font']) .'</td>
+            <td>'.html5('title1[size]', $fields['title1size']) .'</td>
+            <td>'.html5('title1[color]',$fields['title1color']).'</td>
+            <td>'.html5('title1[align]',$fields['title1align']).'</td>
         </tr>
         <tr>
-            <td>'.$this->lang['phreeform_page_title2'].' '.html5('title2[text]', $fields['Title2Text']).'</td>
-            <td>'.html5('title2[show]', $fields['Title2Show']) .'</td>
-            <td>'.html5('title2[font]', $fields['Title2Font']) .'</td>
-            <td>'.html5('title2[size]', $fields['Title2Size']) .'</td>
-            <td>'.html5('title2[color]',$fields['Title2Color']).'</td>
-            <td>'.html5('title2[align]',$fields['Title2Align']).'</td>
+            <td>'.$this->lang['phreeform_page_title2'].' '.html5('title2[text]', $fields['title2text']).'</td>
+            <td>'.html5('title2[show]', $fields['title2show']) .'</td>
+            <td>'.html5('title2[font]', $fields['title2font']) .'</td>
+            <td>'.html5('title2[size]', $fields['title2size']) .'</td>
+            <td>'.html5('title2[color]',$fields['title2color']).'</td>
+            <td>'.html5('title2[align]',$fields['title2align']).'</td>
         </tr>
         <tr>
             <td colspan="2">'.$this->lang['phreeform_filter_desc'].'</td>
-            <td>'.html5('filter[font]', $fields['FilterFont']) .'</td>
-            <td>'.html5('filter[size]', $fields['FilterSize']) .'</td>
-            <td>'.html5('filter[color]',$fields['FilterColor']).'</td>
-            <td>'.html5('filter[align]',$fields['FilterAlign']).'</td>
+            <td>'.html5('filter[font]', $fields['filterfont']) .'</td>
+            <td>'.html5('filter[size]', $fields['filtersize']) .'</td>
+            <td>'.html5('filter[color]',$fields['filtercolor']).'</td>
+            <td>'.html5('filter[align]',$fields['filteralign']).'</td>
         </tr>
         <tr>
             <td colspan="2">'.$this->lang['phreeform_heading'].'</td>
-            <td>'.html5('data[font]', $fields['DataFont']) .'</td>
-            <td>'.html5('data[size]', $fields['DataSize']) .'</td>
-            <td>'.html5('data[color]',$fields['DataColor']).'</td>
-            <td>'.html5('data[align]',$fields['DataAlign']).'</td>
+            <td>'.html5('data[font]', $fields['datafont']) .'</td>
+            <td>'.html5('data[size]', $fields['datasize']) .'</td>
+            <td>'.html5('data[color]',$fields['datacolor']).'</td>
+            <td>'.html5('data[align]',$fields['dataalign']).'</td>
         </tr>
         <tr>
             <td colspan="2">'.lang('totals').'</td>
-            <td>'.html5('totals[font]', $fields['TotalFont']) .'</td>
-            <td>'.html5('totals[size]', $fields['TotalSize']) .'</td>
-            <td>'.html5('totals[color]',$fields['TotalColor']).'</td>
-            <td>'.html5('totals[align]',$fields['TotalAlign']).'</td>
+            <td>'.html5('totals[font]', $fields['totalfont']) .'</td>
+            <td>'.html5('totals[size]', $fields['totalsize']) .'</td>
+            <td>'.html5('totals[color]',$fields['totalcolor']).'</td>
+            <td>'.html5('totals[align]',$fields['totalalign']).'</td>
         </tr>
     </tbody>
 </table>';
@@ -243,10 +246,10 @@ class phreeformDesign
         $dateList = '<tr>';
         $cnt = 0;
         foreach (viewDateChoices() as $value) {
-            $cbHTML = $fields['DateList'];
+            $cbHTML = $fields['datelist'];
             $cbHTML['label']         = $value['text'];
             $cbHTML['attr']['value'] = $value['id'];
-            if (strpos($fields['DateList']['attr']['value'], $value['id']) !== false) {
+            if (strpos($fields['datelist']['attr']['value'], $value['id']) !== false) {
                 $cbHTML['attr']['checked'] = 'checked';
             }
             $dateList .= '<td>'.html5('datelist[]', $cbHTML).'</td>';
@@ -257,62 +260,42 @@ class phreeformDesign
         $output  = '<table style="border-style:none;width:100%">'."\n";
         $output .= '  <thead class="panel-header"><tr><th colspan="3">'.$this->lang['phreeform_date_info']."</th></tr></thead>\n";
         $output .= '  <tbody>'."\n";
-        $fields['DatePeriod']['attr']['value'] = 'p';
-        if ($fields['DateList']['attr']['value'] == 'z') {
-            $fields['DatePeriod']['attr']['checked'] = 'checked';
+        $fields['dateperiod']['attr']['value'] = 'p';
+        if ($fields['datelist']['attr']['value'] == 'z') {
+            $fields['dateperiod']['attr']['checked'] = 'checked';
         } else {
-            unset($fields['DatePeriod']['attr']['checked']);
+            unset($fields['dateperiod']['attr']['checked']);
         }
-        $output .= '	<tr><td colspan="3">'.html5('DatePeriod', $fields['DatePeriod']).' '.$this->lang['use_periods']."</td></tr>\n";
+        $output .= '	<tr><td colspan="3">'.html5('dateperiod', $fields['dateperiod']).' '.$this->lang['use_periods']."</td></tr>\n";
         $output .= '	<tr><td colspan="3">'."<hr></td></tr>\n";
-        $fields['DatePeriod']['attr']['value'] = 'd';
-        if ($fields['DateList']['attr']['value'] != 'z') {
-            $fields['DatePeriod']['attr']['checked'] = 'checked';
+        $fields['dateperiod']['attr']['value'] = 'd';
+        if ($fields['datelist']['attr']['value'] != 'z') {
+            $fields['dateperiod']['attr']['checked'] = 'checked';
         } else {
-            unset($fields['DatePeriod']['attr']['checked']);
+            unset($fields['dateperiod']['attr']['checked']);
         }
-        $output .= '	<tr><td colspan="3">'.html5('DatePeriod', $fields['DatePeriod']).' '.$this->lang['phreeform_date_list']."</td></tr>\n";
+        $output .= '	<tr><td colspan="3">'.html5('dateperiod', $fields['dateperiod']).' '.$this->lang['phreeform_date_list']."</td></tr>\n";
         $output .= $dateList."\n";
-        $output .= '	<tr><td colspan="2">'.html5('datedefault', $fields['DateDefault'])."</td>\n";
-        $output .= "	    <td>".html5('datefield', $fields['DateField'])."</td></tr>\n";
+        $output .= '	<tr><td colspan="2">'.html5('datedefault', $fields['datedefault'])."</td>\n";
+        $output .= "	    <td>".html5('datefield', $fields['datefield'])."</td></tr>\n";
         $output .= "  </tbody>\n";
         $output .= "</table>\n";
         $output .= '<u><b>'.lang('notes').'</b></u>'.$notes;
         return $output;
     }
     
-    private function getViewSettings($fields, $type)
+    private function getViewSettings($type)
     {
         $notes  = '';
-        $output = '<table style="border-style:none;margin-left:auto;margin-right:auto;">
- <thead class="panel-header"><tr><th>'.lang('settings')."</th></tr></thead>\n<tbody>\n";
         if ($type == 'rpt') {
-            $output .= '  <tr><td>'.html5('truncate',                   $fields['TextTruncate'])."</td></tr>\n";
-            $output .= '  <tr><td>'.html5('totalonly',                  $fields['TotalOnly'])."</td></tr>\n";
-        } elseif ($fields['rptType']['attr']['value'] == 'frm') {
-            $output .= '  <tr><td>'.html5('serialform',                 $fields['Serial'])."</td></tr>\n";
-            $output .= '  <tr><td><sup>1</sup>'.html5('setprintedfield',$fields['PrintedField'])."</td></tr>\n";
-            $output .= '  <tr><td><sup>2</sup>'.html5('contactlog',     $fields['ContactLog'])."</td></tr>\n";
-            $output .= '  <tr><td>'.html5('defaultemail',               $fields['DefaultEmail'])."</td></tr>\n";
-            $output .= '  <tr><td>'.html5('formbreakfield',             $fields['FormBreakField'])."</td></tr>\n";
-            $output .= '  <tr><td>'.html5('skipnullfield',              $fields['SkipNullField'])."</td></tr>\n";
+            $output = ['truncate', 'totalonly'];
+        } elseif ($type == 'frm') {
+            $output = ['serial', 'printedfield', 'contactlog', 'defaultemail', 'formbreakfield', 'skipnullfield'];
             $notes .= '<br /><sup>1</sup>'.$this->lang['msg_printed_set'];
             $notes .= '<br /><sup>2</sup>'.$this->lang['tip_phreeform_contact_log'];
         }
-        $output .= '
-  <tr><td>'.html5('special_class',$fields['SpecialClass'])."</td></tr>
-  <tr><td>".html5('groupname',    $fields['Group'])."</td></tr>
-  <tr><td>".$this->lang['msg_download_filename'].'<br />'.html5('filenameprefix', $fields['FilenamePrefix']).html5('filenamefield', $fields['FilenameField'])."</td></tr>
- </tbody>\n</table>".'
-<table style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
- <thead class="panel-header">
-  <tr><th colspan="2">'.lang('security')."</th></tr>
-  <tr><th>".lang('users').'</th><th>'.lang('groups')."</th></tr>
- </thead>\n<tbody>
-  <tr><td>".html5('user_all', $fields['SecUsersAll']) .'</td><td>'.html5('group_all', $fields['SecGroupsAll']).'</td></tr>
-  <tr><td width="50%">'.html5('users[]', $fields['SecurityUsers']).'</td><td width="50%">'.html5('groups[]',$fields['SecurityGroups'])."</td></tr>
- </tbody>\n</table>\n";
-        return $output . $notes;
+        $output = array_merge($output, ['specialclass','groupname','filenameprefix','filenamefield','users','roles']);
+        return ['fields'=>$output, 'notes'=>$notes];
     }
 
     /**
@@ -349,82 +332,74 @@ class phreeformDesign
             default:    $groups = getModuleCache('phreeform', 'rptGroups'); break; // default to report
         }
 		$data = [
-            'id'            => ['attr'=>['type'=>'hidden', 'value'=>isset($report->id)?$report->id:'0']],
-			'Title'         => ['label'=>lang('title'), 'attr'=>  ['size'=>64, 'maxlength'=>64, 'value'=>(isset($report->title) ? $report->title :'')]],
-			'Description'   => ['attr'=>['type'=>'textarea', 'cols'=>80, 'rows'=>4, 'value'=>(isset($report->description) ?$report->description :'')]],
-			'SpecialClass'  => ['label'=>$this->lang['phreeform_special_class'], 'attr'=>  ['size'=>32, 'maxlength'=>32, 'value'=>(isset($report->special_class) ? $report->special_class :'')]],
-            'EmailSubject'  => ['attr'=>['width'=>60, 'value'=>isset($report->emailsubject)?$report->emailmessage:'']],
-			'EmailBody'     => ['attr'=>['type'=>'textarea', 'cols'=>80, 'rows'=>4, 'value'=>(isset($report->emailmessage)?$report->emailmessage:'')]],
-			'rptType'       => ['attr'=>['type'=>'hidden', 'value'=>isset($report->reporttype)?$report->reporttype:'rpt']],
-			'Serial'        => ['label'=>$this->lang['lbl_serial_form'], 'attr'=>  ['type'=>'checkbox']],
-			'Group'         => ['label'=>lang('group_list'), 'values'=>$groups,'attr'=>['type'=>'select', 'value'=>$report->groupname]],
-			'DatePeriod'    => ['attr'=>['type'=>'radio']],
-			'DateList'      => ['position'=>'after', 'attr'=>  ['type'=>'checkbox', 'value'=>(isset($report->datelist)?$report->datelist:'a')]],
-            'DateField'     => ['label'=>$this->lang['phreeform_date_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+            'id'            => ['attr'=>['type'=>'hidden','value'=>isset($report->id)?$report->id:'0']],
+			'rpttype'       => ['attr'=>['type'=>'hidden','value'=>isset($report->reporttype)?$report->reporttype:'rpt']],
+			'title'         => ['break'=>true,'label'=>lang('title'),'attr'=>['size'=>64,'maxlength'=>64,'value'=>(isset($report->title) ? $report->title :'')]],
+			'description'   => ['break'=>true,'attr'=>['type'=>'textarea','value'=>(isset($report->description) ?$report->description :'')]],
+			'specialclass'  => ['break'=>true,'label'=>$this->lang['phreeform_special_class'],'attr'=>['value'=>(isset($report->special_class) ? $report->special_class :'')]],
+            'emailsubject'  => ['break'=>true,'attr'=>['width'=>60, 'value'=>isset($report->emailsubject)?$report->emailmessage:'']],
+			'emailbody'     => ['break'=>true,'attr'=>['type'=>'textarea', 'cols'=>80, 'rows'=>4, 'value'=>(isset($report->emailmessage)?$report->emailmessage:'')]],
+			'serial'        => ['break'=>true,'label'=>$this->lang['lbl_serial_form'],'attr'=>['type'=>'checkbox']],
+			'groupname'     => ['break'=>true,'label'=>lang('group_list'), 'values'=>$groups,'attr'=>['type'=>'select', 'value'=>$report->groupname]],
+			'dateperiod'    => ['break'=>true,'attr'=>['type'=>'radio']],
+			'datelist'      => ['break'=>true,'position'=>'after','attr'=>['type'=>'checkbox', 'value'=>(isset($report->datelist)?$report->datelist:'a')]],
+            'datefield'     => ['break'=>true,'label'=>$this->lang['phreeform_date_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->datefield)?$report->datefield:'']],
-			'DateDefault'   => ['label'=>$this->lang['date_default_selected'],'values'=>viewDateChoices(), 'attr'=>['type'=>'select', 'value'=>(isset($report->datedefault) ? $report->datedefault : '')]],
-            'PrintedField'  => ['label'=>$this->lang['lbl_set_printed_flag'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+			'datedefault'   => ['break'=>true,'label'=>$this->lang['date_default_selected'],'values'=>viewDateChoices(), 'attr'=>['type'=>'select','value'=>(isset($report->datedefault) ? $report->datedefault : '')]],
+            'printedfield'  => ['break'=>true,'label'=>$this->lang['lbl_set_printed_flag'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->setprintedfield)?$report->setprintedfield:'']],
-            'ContactLog'    => ['label'=>$this->lang['lbl_phreeform_contact'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+            'contactlog'    => ['break'=>true,'label'=>$this->lang['lbl_phreeform_contact'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->contactlog)?$report->contactlog:'']],
-			'DefaultEmail'  => ['label'=>$this->lang['lbl_phreeform_email'],  'values'=>$this->emailChoices,'attr'=>['type'=>'select', 'value'=>(isset($report->defaultemail) ? $report->defaultemail : 'user')]],
-            'FormBreakField'=> ['label'=>$this->lang['page_break_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+			'defaultemail'  => ['break'=>true,'label'=>$this->lang['lbl_phreeform_email'],  'values'=>$this->emailChoices,'attr'=>['type'=>'select','value'=>(isset($report->defaultemail) ? $report->defaultemail : 'user')]],
+            'formbreakfield'=> ['break'=>true,'label'=>$this->lang['page_break_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->formbreakfield)?$report->formbreakfield:'']],
-            'SkipNullField' => ['label'=>$this->lang['lbl_skip_null'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+            'skipnullfield' => ['break'=>true,'label'=>$this->lang['lbl_skip_null'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->skipnullfield)?$report->skipnullfield:'']],
-			'FilenamePrefix'=> ['label'=>lang('prefix'),    'attr'=>['size'=>10, 'value'=>(isset($report->filenameprefix) ? $report->filenameprefix : '')]],
-            'FilenameField' => ['label'=>lang('fieldname'),'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+			'truncate'      => ['break'=>true,'label'=>$this->lang['truncate_fit'],   'attr'=>['type'=>'checkbox', 'checked'=>(isset($report->truncate) ?'1':'0')]],
+			'totalonly'     => ['break'=>true,'label'=>$this->lang['show_total_only'],'attr'=>['type'=>'checkbox', 'checked'=>(isset($report->totalonly)?'1':'0')]],
+			'filenameprefix'=> ['break'=>true,'label'=>lang('prefix'),    'attr'=>['size'=>10, 'value'=>(isset($report->filenameprefix) ? $report->filenameprefix : '')]],
+            'filenamefield' => ['break'=>true,'label'=>lang('fieldname'),'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->filenamefield)?$report->filenamefield:'']],
-			'BreakField'    => ['label'=>lang('phreeform_field_break'),'attr'=>['maxlength'=>64]],
-			'SecurityUsers' => ['options'=>['multiple'=>'true'],'values'=>listUsers(true, true, false),'attr'=>['type'=>'select','id'=>'SecurityUsers','size'=>10]],
-			'SecurityGroups'=> ['options'=>['multiple'=>'true'],'values'=>listRoles(true, false),      'attr'=>['type'=>'select','id'=>'SecurityGroups','size'=>10]],
-			'SecUsersAll'   => ['label'=>lang('all_users'), 'attr'=>['type'=>'checkbox','checked'=>true]],
-			'SecGroupsAll'  => ['label'=>lang('all_groups'),'attr'=>['type'=>'checkbox','checked'=>true]],
-			'PageSize'      => ['label'=>$this->lang['phreeform_paper_size'],   'options'=>['width'=>100],'values'=>phreeformPages($this->lang),      'attr'=>['type'=>'select',  'value'=>(isset($report->page->size)          ?$report->page->size           :'LETTER:216:279')]],
-			'PageOrient'    => ['label'=>$this->lang['phreeform_orientation'],  'options'=>['width'=>100],'values'=>phreeformOrientation($this->lang),'attr'=>['type'=>'select',  'value'=>(isset($report->page->orientation)   ?$report->page->orientation    :'P')]],
-			'MarginTop'     => ['label'=>$this->lang['phreeform_margin_top'],   'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->top)   ?$report->page->margin->top    :'8')]],
-			'MarginBottom'  => ['label'=>$this->lang['phreeform_margin_bottom'],'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->bottom)?$report->page->margin->bottom :'8')]],
-			'MarginLeft'    => ['label'=>$this->lang['phreeform_margin_left'],  'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->left)  ?$report->page->margin->left   :'8')]],
-			'MarginRight'   => ['label'=>$this->lang['phreeform_margin_right'], 'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->right) ?$report->page->margin->right  :'8')]],
-			'TextTruncate'  => ['label'=>$this->lang['truncate_fit'],   'attr'=>['type'=>'checkbox', 'checked'=>(isset($report->truncate) ?'1':'0')]],
-			'TotalOnly'     => ['label'=>$this->lang['show_total_only'],'attr'=>['type'=>'checkbox', 'checked'=>(isset($report->totalonly)?'1':'0')]],
-			'HeadingShow'   => ['attr'=>['type'=>'checkbox','checked'=>(isset($report->heading->show)             ?'1':'0')]],
-			'HeadingFont'   => ['values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->heading->font) ?$report->heading->font :'helvetica')]],
-			'HeadingSize'   => ['values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->heading->size) ?$report->heading->size :'12')]],
-			'HeadingColor'  => ['options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->heading->color)?convertHex($report->heading->color):'#000000')]],
-			'HeadingAlign'  => ['values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select','value'=>(isset($report->heading->align)?$report->heading->align:'C')]],
-			'Title1Show'    => ['attr'=>['type'=>'checkbox', 'checked'=>(isset($report->title1->show)              ?'1':'0')]],
-			'Title1Text'    => ['attr'=>['type'=>'text', 'value'=>(isset($report->title1->text)                    ?$report->title1->text:'%reportname%')]],
-			'Title1Font'    => ['values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->title1->font)  ?$report->title1->font :'helvetica')]],
-			'Title1Size'    => ['values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->title1->size)  ?$report->title1->size :'10')]],
-			'Title1Color'   => ['options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->title1->color) ?convertHex($report->title1->color):'#000000')]],
-			'Title1Align'   => ['values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select', 'value'=>(isset($report->title1->align)?$report->title1->align:'C')]],
-			'Title2Show'    => ['attr'=>['type'=>'checkbox', 'checked'=>(isset($report->title2->show)              ?'1':'0')]],
-			'Title2Text'    => ['attr'=>['type'=>'text', 'value'=>(isset($report->title2->text)                    ?$report->title2->text:'Report Generated %date%')]],
-			'Title2Font'    => ['values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->title2->font)  ?$report->title2->font :'helvetica')]],
-			'Title2Size'    => ['values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->title2->size)  ?$report->title2->size :'10')]],
-			'Title2Color'   => ['options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->title2->color) ?convertHex($report->title2->color):'#000000')]],
-			'Title2Align'   => ['values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select','value'=>(isset($report->title2->align)?$report->title2->align:'C')]],
-			'FilterFont'    => ['values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->filter->font)  ?$report->filter->font :'helvetica')]],
-			'FilterSize'    => ['values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->filter->size)  ?$report->filter->size :'8')]],
-			'FilterColor'   => ['options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->filter->color) ?convertHex($report->filter->color):'#000000')]],
-			'FilterAlign'   => ['values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select','value'=>(isset($report->filter->align)?$report->filter->align:'L')]],
-			'DataFont'      => ['values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->data->font)    ?$report->data->font :'helvetica')]],
-			'DataSize'      => ['values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->data->size)    ?$report->data->size :'10')]],
-			'DataColor'     => ['options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->data->color)  ?convertHex($report->data->color):'#000000')]],
-			'DataAlign'     => ['values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select','value'=>(isset($report->data->align)  ?$report->data->align:'C')]],
-			'TotalFont'     => ['values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->totals->font)  ?$report->totals->font :'helvetica')]],
-			'TotalSize'     => ['values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->totals->size)  ?$report->totals->size :'10')]],
-			'TotalColor'    => ['options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->totals->color) ?convertHex($report->totals->color):'#000000')]],
-			'TotalAlign'    => ['values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select','value'=>(isset($report->totals->align)?$report->totals->align:'L')]]];
+			'breakfield'    => ['break'=>true,'label'=>lang('phreeform_field_break'),'attr'=>['maxlength'=>64]],
+			'users'         => ['break'=>true,'label'=>lang('users'),'options'=>['multiple'=>'true'],'values'=>listUsers(),'attr'=>['type'=>'select','name'=>'users[]']],
+			'roles'         => ['break'=>true,'label'=>lang('roles'),'options'=>['multiple'=>'true'],'values'=>listRoles(),'attr'=>['type'=>'select','name'=>'roles[]']],
+			'pagesize'      => ['break'=>true,'label'=>$this->lang['phreeform_paper_size'],   'options'=>['width'=>100],'values'=>phreeformPages($this->lang),      'attr'=>['type'=>'select',  'value'=>(isset($report->page->size)          ?$report->page->size           :'LETTER:216:279')]],
+			'pageorient'    => ['break'=>true,'label'=>$this->lang['phreeform_orientation'],  'options'=>['width'=>100],'values'=>phreeformOrientation($this->lang),'attr'=>['type'=>'select',  'value'=>(isset($report->page->orientation)   ?$report->page->orientation    :'P')]],
+			'margintop'     => ['break'=>true,'label'=>$this->lang['phreeform_margin_top'],   'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->top)   ?$report->page->margin->top    :'8')]],
+			'marginbottom'  => ['break'=>true,'label'=>$this->lang['phreeform_margin_bottom'],'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->bottom)?$report->page->margin->bottom :'8')]],
+			'marginleft'    => ['break'=>true,'label'=>$this->lang['phreeform_margin_left'],  'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->left)  ?$report->page->margin->left   :'8')]],
+			'marginright'   => ['break'=>true,'label'=>$this->lang['phreeform_margin_right'], 'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->right) ?$report->page->margin->right  :'8')]],
+			'headingshow'   => ['break'=>true,'attr'=>['type'=>'checkbox','checked'=>(isset($report->heading->show)?'1':'0')]],
+			'headingfont'   => ['break'=>true,'values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->heading->font) ?$report->heading->font :'helvetica')]],
+			'headingsize'   => ['break'=>true,'values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->heading->size) ?$report->heading->size :'12')]],
+			'headingcolor'  => ['break'=>true,'options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->heading->color)?convertHex($report->heading->color):'#000000')]],
+			'headingalign'  => ['break'=>true,'values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select','value'=>(isset($report->heading->align)?$report->heading->align:'C')]],
+			'title1show'    => ['break'=>true,'attr'=>['type'=>'checkbox', 'checked'=>(isset($report->title1->show)?'1':'0')]],
+			'title1text'    => ['break'=>true,'attr'=>['type'=>'text', 'value'=>(isset($report->title1->text)      ?$report->title1->text:'%reportname%')]],
+			'title1font'    => ['break'=>true,'values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->title1->font)  ?$report->title1->font :'helvetica')]],
+			'title1size'    => ['break'=>true,'values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->title1->size)  ?$report->title1->size :'10')]],
+			'title1color'   => ['break'=>true,'options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->title1->color) ?convertHex($report->title1->color):'#000000')]],
+			'title1align'   => ['break'=>true,'values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select', 'value'=>(isset($report->title1->align)?$report->title1->align:'C')]],
+			'title2show'    => ['break'=>true,'attr'=>['type'=>'checkbox', 'checked'=>(isset($report->title2->show)?'1':'0')]],
+			'title2text'    => ['break'=>true,'attr'=>['type'=>'text', 'value'=>(isset($report->title2->text)      ?$report->title2->text:'Report Generated %date%')]],
+			'title2font'    => ['break'=>true,'values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->title2->font)  ?$report->title2->font :'helvetica')]],
+			'title2size'    => ['break'=>true,'values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->title2->size)  ?$report->title2->size :'10')]],
+			'title2color'   => ['break'=>true,'options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->title2->color) ?convertHex($report->title2->color):'#000000')]],
+			'title2align'   => ['break'=>true,'values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select','value'=>(isset($report->title2->align)?$report->title2->align:'C')]],
+			'filterfont'    => ['break'=>true,'values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->filter->font)  ?$report->filter->font :'helvetica')]],
+			'filtersize'    => ['break'=>true,'values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->filter->size)  ?$report->filter->size :'8')]],
+			'filtercolor'   => ['break'=>true,'options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->filter->color) ?convertHex($report->filter->color):'#000000')]],
+			'filteralign'   => ['break'=>true,'values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select','value'=>(isset($report->filter->align)?$report->filter->align:'L')]],
+			'datafont'      => ['break'=>true,'values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->data->font)    ?$report->data->font :'helvetica')]],
+			'datasize'      => ['break'=>true,'values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->data->size)    ?$report->data->size :'10')]],
+			'datacolor'     => ['break'=>true,'options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->data->color)  ?convertHex($report->data->color):'#000000')]],
+			'dataalign'     => ['break'=>true,'values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select','value'=>(isset($report->data->align)  ?$report->data->align:'C')]],
+			'totalfont'     => ['break'=>true,'values'=>$selFont, 'options'=>['width'=>150],'attr'=>['type'=>'select','value'=>(isset($report->totals->font)  ?$report->totals->font :'helvetica')]],
+			'totalsize'     => ['break'=>true,'values'=>$selSize, 'options'=>['width'=> 75],'attr'=>['type'=>'select','value'=>(isset($report->totals->size)  ?$report->totals->size :'10')]],
+			'totalcolor'    => ['break'=>true,'options'=>['width'=>70],'attr'=>['type'=>'color','value'=>(isset($report->totals->color) ?convertHex($report->totals->color):'#000000')]],
+			'totalalign'    => ['break'=>true,'values'=>$selAlign,'options'=>['width'=>100],'attr'=>['type'=>'select','value'=>(isset($report->totals->align)?$report->totals->align:'L')]]];
 		// set the checkboxes
         if (isset($report->serialform) && $report->serialform) { $data['Serial']['attr']['checked'] = 'checked'; }
-		// set up the security
-		$temp   = explode(";", $report->security);
-		$users  = substr($temp[0], 2);
-		$groups = substr($temp[1], 2);
-        if ($users <> '-1') { unset($data['SecUsersAll']['attr']['checked']); }
-        if ($groups<> '-1') { unset($data['SecGroupsAll']['attr']['checked']); }
 		// set the session tables for dynamic field generation
         $tmp = [];
         if (isset($report->tables) && is_array($report->tables)) { foreach ($report->tables as $table) { $tmp[] = $table->tablename; } }
@@ -442,38 +417,28 @@ class phreeformDesign
      */
     public function save(&$layout=[]) 
     {
-        $request = $_POST;
-        if (isset($request['serialform']) && $request['serialform']) { $request['serialform'] = '1'; }
 		$rID   = clean('id', 'integer', 'post');
-		$xChild= isset($request['xChild']) ? clean($request['xChild'], 'text') : false;
         if (!$security = validateSecurity('phreeform', 'phreeform', $rID?3:2)) { return; }
+        
+        $request = $_POST;
+		$xChild= clean('xChild', ['format'=>'text','default'=>false], 'post');
+        if (!empty($request['serialform'])) { $request['serialform'] = '1'; }
 		$report = array_to_object($request);
-		if (strlen($report->tables))     { $temp = clean($report->tables, 'jsonObj');     $report->tables    = $temp->rows; }
-		if (strlen($report->fieldlist))  { $temp = clean($report->fieldlist, 'jsonObj');  $report->fieldlist = $temp->rows; }
-		if (strlen($report->grouplist))  { $temp = clean($report->grouplist, 'jsonObj');  $report->grouplist = $temp->rows; }
-		if (strlen($report->sortlist))   { $temp = clean($report->sortlist, 'jsonObj');   $report->sortlist  = $temp->rows; }
-		if (strlen($report->filterlist)) { $temp = clean($report->filterlist, 'jsonObj'); $report->filterlist= $temp->rows; }
+		if (strlen($report->tables))     { $temp = clean($report->tables,    'jsonObj'); $report->tables    = $temp->rows; }
+		if (strlen($report->fieldlist))  { $temp = clean($report->fieldlist, 'jsonObj'); $report->fieldlist = $temp->rows; }
+		if (strlen($report->grouplist))  { $temp = clean($report->grouplist, 'jsonObj'); $report->grouplist = $temp->rows; }
+		if (strlen($report->sortlist))   { $temp = clean($report->sortlist,  'jsonObj'); $report->sortlist  = $temp->rows; }
+		if (strlen($report->filterlist)) { $temp = clean($report->filterlist,'jsonObj'); $report->filterlist= $temp->rows; }
 		if (is_array($report->fieldlist)){ foreach ($report->fieldlist as $key => $value) {
 			msgDebug("\n Processing fieldlist key = $key");
             if (isset($value->settings) && is_string($value->settings)) { $report->fieldlist[$key]->settings = json_decode($value->settings); }
         } }
 		msgDebug("\n\nDecrypted get object = ".print_r($report, true));
 		// security
-		$users = 'u:-1';
-        if     (!empty($request['user_all']))  { $users = 'u:-1'; }
-        elseif (!isset($request['users'])) { $users = 'u:0'; } // none
-        elseif ( isset($request['users']) && $request['users'][0] <> '')  { $users = 'u:'.implode(':', $request['users']); }
-		$groups = 'g:-1';
-        if     (!empty($request['group_all'])) { $groups = 'g:-1'; }
-        elseif (!isset($request['groups'])) { $groups = 'g:0'; } // none
-        elseif ( isset($request['groups']) && $request['groups'][0] <> '') { $groups = 'g:'.implode(':', $request['groups']); }
-		$report->security = "$users;$groups";
-		unset($report->user_all);
-		unset($report->group_all);
-		unset($report->users);
-		unset($report->groups);
+        $report->security = setUserRole($request['users'], $request['roles']);
+		unset($report->users, $report->roles);
 		// date choices
-        if (isset($request['DatePeriod']) && $request['DatePeriod'] == 'p') { $report->datelist = 'z'; } // periods only
+        if (isset($request['dateperiod']) && $request['dateperiod'] == 'p') { $report->datelist = 'z'; } // periods only
 		else {
 			$temp = '';
             if (!isset($report->datelist)) { $report->datelist = ''; }
@@ -481,22 +446,15 @@ class phreeformDesign
             foreach ($report->datelist as $key => $value) { $temp .= $value; }
 			$report->datelist = $temp;
 		}
-		unset($report->DatePeriod);
+		unset($report->dateperiod);
 		unset($report->id);
 		$xmlReport = "<PhreeformReport>\n".object_to_xml($report)."</PhreeformReport>";
 		// fix for easyui leaving stuff in datagrid submit
 		$xmlReport = str_replace("<_selected><![CDATA[1]]></_selected>\n", '', $xmlReport);
 		$parent_id = dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'id', "group_id='$report->groupname' AND mime_type='dir'");
 		msgDebug("\n for group = $report->groupname Found parent_id = $parent_id");
-		$sqlData  = [
-            'parent_id'  => $parent_id,
-			'group_id'   => $report->groupname,
-			'mime_type'  => $report->reporttype,
-			'title'      => $report->title,
-			'last_update'=> date('Y-m-d'),
-			'security'   => $report->security,
-			'doc_data'   => $xmlReport,
-            ];
+		$sqlData  = ['parent_id'=>$parent_id, 'group_id'=>$report->groupname, 'mime_type'=>$report->reporttype, 'title'=>$report->title,
+			'last_update'=>date('Y-m-d'), 'security'=>$report->security, 'doc_data'=>$xmlReport];
         if (!$rID) { $sqlData['create_date'] = date('Y-m-d'); }
 		msgDebug("\n\nDecrypted report xml string = ".$xmlReport);
 		$result = dbWrite(BIZUNO_DB_PREFIX."phreeform", $sqlData, $rID?'update':'insert', "id=$rID");
@@ -506,7 +464,7 @@ class phreeformDesign
 		switch ($xChild) { // child screens to spawn
             case 'print': $jsonAction .= " winOpen('phreeformOpen', 'phreeform/render/open&rID=$rID');"; break;
 		}
-        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>$jsonAction]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>$jsonAction]]);
 	}
 
 	/**
@@ -773,8 +731,10 @@ jq('#frmFieldSettings').submit(function (e) {
 			$data['fields']['img_file']['attr']['value'] = $settings->img_file;
 		}
         $data['divs']['field_settings']['divs']['body'] = ['order'=>50,'type'=>'html','html'=>$this->getFieldProperties($data)];
-        if (isset($data['jsHead']['dataFieldValues'])) {
-        //	$output['jsBody'][] = $viewData['jsHead']['dataFieldValues'];
+        if (in_array($fData->type, ['Img'])) {
+            $imgSrc = isset($data['fields']['img_file']['attr']['value']) ? $data['fields']['img_file']['attr']['value'] : "";
+            $imgDir = dirname($imgSrc).'/';
+            $data['jsReady'][] = "imgManagerInit('img_file', '$imgSrc', '$imgDir', 'images/');";
         }
 		if (in_array($fData->type, ['CBlk', 'LtrTpl', 'Tbl', 'TBlk', 'Ttl'])) {
             if (!isset($settings->boxfield)) { $settings->boxfield = (object)[]; }
@@ -830,11 +790,8 @@ jq('#frmFieldSettings').submit(function (e) {
                 $output .= $this->box_build_attributes($viewData, false, false);
                 break;
             case 'Img':
-                $imgSrc = isset($viewData['fields']['img_file']['attr']['value']) ? $viewData['fields']['img_file']['attr']['value'] : "";
-                $imgDir = dirname($imgSrc).'/';
                 $output .= '<table style="border-collapse:collapse;margin-left:auto;margin-right:auto;"><tbody>';
                 $output .= '  <tr><td><div id="imdtl_img_file"></div>'.html5('img_file', $viewData['fields']['img_file']).'</td></tr></tbody></table>';
-                $output['jsBody'][] = "imgManagerInit('img_file', '$imgSrc', '$imgDir', 'images/');";
                 break;
             case 'Line':
                 $output .= '<table style="border-collapse:collapse;margin-left:auto;margin-right:auto;">';

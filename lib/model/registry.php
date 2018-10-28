@@ -131,7 +131,7 @@ final class bizRegistry
 //      msgDebug("\nbizunoMod for module $module has properties: ".print_r($bizunoMod[$module]['properties'], true));
         $GLOBALS['updateModuleCache'][$module] = true;
     }
-    
+
     /**
      * Initializes user registry
      * @global array $bizunoUser
@@ -175,15 +175,16 @@ final class bizRegistry
         $GLOBALS['updateUserCache'] = true;
         return true;
     }
-    
+
     /**
      * Contacts PhreeSoft with module list and get subscription status
      */
     private function initAccount(&$bizunoMod)
     {
-        $mySub = new io();
-        $myAcct= $mySub->apiPhreeSoft('getMyExtensions');
-        $messages = [];
+        if (!empty($GLOBALS['skipUpgradeCheck'])) { return; }
+        $mySub   = new io();
+        $myAcct  = $mySub->apiPhreeSoft('getMyExtensions');
+        $messages= [];
         // check for new version of Bizuno
         msgDebug("\nComparing this version: ".MODULE_BIZUNO_VERSION." with Phreesoft.com version: {$myAcct['bizuno']['version']}");
         // Check for new version AND add message/download icon ONLY if host doen't handle the upgrade
@@ -202,7 +203,7 @@ final class bizRegistry
 //          if (!empty($myAcct[$mID]['msg'])) { $messages[] = $myAcct[$mID]['msg']; } // check for messages and add to msgSys, expirations, news updates
             msgDebug("\ncomparing extension $mID local version ".getModuleCache($mID, 'properties', 'version', false, 0)." with PhreeSoft.com version {$settings['version']}");
             if (!$settings['paid'] || !getModuleCache($mID, 'properties', 'version')) { continue; }
-            if (version_compare($settings['version'], getModuleCache($mID, 'properties', 'version', false, 0))) { // compare versions, add messages if reminder to renew or expired
+            if (!in_array(BIZUNO_HOST, ['phreesoft']) && version_compare($settings['version'], getModuleCache($mID, 'properties', 'version', false, 0))) { // compare versions, add messages if reminder to renew or expired
                 $messages[] = ['msg_id'=>"EXT:$mID:{$settings['version']}", 'subject'=>"Extension: $mID Version {$settings['version']} is Available!"];
             }
         }
@@ -508,6 +509,7 @@ final class bizRegistry
     private function reSortExtensions($myAcct)
     {
         $output = [];
+        if (empty($myAcct['extensions'])) { return []; }
         foreach ($myAcct['extensions'] as $cat) {
             foreach ($cat as $mID => $props) { $output[$mID] = $props; }
         }

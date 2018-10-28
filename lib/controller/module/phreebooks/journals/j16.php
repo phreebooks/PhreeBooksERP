@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-21
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /lib/controller/module/phreebooks/journals/j16.php
  */
 
@@ -41,18 +41,22 @@ class j16 extends jCommon
 /*******************************************************************************************************************/
     /**
      * Pulls the data for the specified journal and populates the structure
-     * @param array $data - current working structure
      * @param array $structure - table structures
-     * @param integer $rID - record id of the transaction to load from the database
      */
-    public function getDataMain(&$data, $structure, $rID=0)
+    public function getDataMain(&$structure)
     {
-        $dbMain = dbGetRow(BIZUNO_DB_PREFIX.'journal_main', "id='$rID'");
-        dbStructureFill($data['fields']['main'], $dbMain);
-        $data['items'] = dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id='$rID'");
-        $dbData = [];
-        if (sizeof($data['items']) > 0) { // calculate some form fields that are not in the db
-            foreach ($data['items'] as $key => $row) {
+        dbStructureFill($structure, $this->main);
+    }
+    
+    /**
+     * Tailors the structure for the specific journal
+     */
+    public function getDataItem()
+    {
+        $structure= dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
+        $dbData   = [];
+        if (sizeof($this->items) > 0) { // calculate some form fields that are not in the db
+            foreach ($this->items as $key => $row) {
                 if ($row['gl_type'] <> 'adj') { continue; } // not an adjustment record
                 $values = dbGetRow(BIZUNO_DB_PREFIX."inventory", "sku='{$row['sku']}'");
                 $row['qty_stock'] = $values['qty_stock']-$row['qty'];
@@ -62,72 +66,31 @@ class j16 extends jCommon
             }
         }
         $map['debit_amount'] = ['type'=>'field','index'=>'total'];
-        $data['jsHead']['datagridData'] = formatDatagrid($dbData, 'datagridData', $structure['journal_item'], $map);
+        $this->dgDataItem = formatDatagrid($dbData, 'datagridData', $structure, $map);
     }
-    
+
     /**
-     * Tailors the structure for the specific journal
-     * @param array $data - current working structure
-     * @param integer $rID - Database record id of the journal main record
-     * @param integer $security - Users security level
+     * Customizes the layout for this particular journal
+     * @param array $data - Current working structure
      */
-    public function getDataItem(&$data, $rID=0, $cID=0, $security=0)
+    public function customizeView(&$data)
     {
+        $fldKeys = ['id','journal_id','recur_id','recur_frequency','item_array','store_id','invoice_num','post_date'];
+        $data['jsHead']['datagridData'] = $this->dgDataItem;
         $data['datagrid']['item'] = $this->dgAdjust('dgJournalItem');
 //        $data['itemDGSrc'] = BIZUNO_LIB."view/module/phreebooks/accInvAdjDetail.php"; // should be ok, may need to ref old template getViewAdj below
         unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
         unset($data['jsReady']['focus']);
-        $isWaiting = isset($data['fields']['main']['waiting']['attr']['checked']) && $data['fields']['main']['waiting']['attr']['checked'] ? '1' : '0';
-        $data['fields']['main']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
+        $isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? '1' : '0';
+        $data['fields']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'props' => ['order'=>40,'type'=>'fields','classes'=>['blockView'], 'attr'=>['id'=>'pbProps'],'fields'=>$this->getProps($data)],
-            'totals'=> ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals_methods']]]];
+            'props' => ['order'=>40,'type'=>'fields','classes'=>['blockView'], 'attr'=>['id'=>'pbProps'],'keys'=>$fldKeys],
+            'totals'=> ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
         $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
     }
 
-/*    private function getViewAdj()
-    {
-        $output['body'] .= '<div style="float:right;width:30%">';
-        foreach ($viewData['totals_methods'] as $methID) {
-            $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
-            require_once("{$path}$methID.php");
-            $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
-            $fqcn = "\\bizuno\\$methID";
-            $totals = new $fqcn($totSet);
-            $content = $totals->render($output, $viewData);
-        }
-        $output['body'] .= "</div>";
-        // Hidden fields
-        $output['body'] .= html5('id',             $viewData['fields']['main']['id'])."\n";
-        $output['body'] .= html5('journal_id',     $viewData['fields']['main']['journal_id']);
-        $output['body'] .= html5('item_array',     $viewData['item_array']);
-        $output['body'] .= html5('recur_id',       $viewData['fields']['main']['recur_id']);
-        $output['body'] .= html5('recur_frequency',$viewData['recur_frequency']);
-        // Displayed fields
-        $output['body'] .= html5('invoice_num',    $viewData['fields']['main']['invoice_num'])."\n";
-        $output['body'] .= html5('store_id',       $viewData['fields']['main']['store_id'])."\n";
-        $output['body'] .= html5('post_date',      $viewData['fields']['main']['post_date'])."\n";
-    }*/
-
-    /**
-     * Configures the journal entry properties (other than address and items)
-     * @param array $data - current working structure
-     * @return array - List of fields to show with the structure
-     */
-    private function getProps($data)
-    {
-        return ['id'         => $data['fields']['main']['id'],
-            'journal_id'     => $data['fields']['main']['journal_id'],
-            'recur_id'       => $data['fields']['main']['recur_id'],
-            'recur_frequency'=> $data['recur_frequency'],
-            'item_array'     => $data['item_array'],
-            'store_id'       => $data['fields']['main']['store_id'],
-            // Displayed
-            'invoice_num'    => array_merge($data['fields']['main']['invoice_num'],['break'=>true,'order'=>20]),
-            'post_date'      => array_merge($data['fields']['main']['post_date'],  ['break'=>true,'order'=>40])];
-    }
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
@@ -136,8 +99,8 @@ class j16 extends jCommon
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
-        $this->postMain();
-        $this->postItem();
+        if (!$this->postMain())              { return; }
+        if (!$this->postItem())              { return; }
         if (!$this->postInventory())         { return; }
         if (!$this->postJournalHistory())    { return; }
         if (!$this->setStatusClosed('post')) { return; }
@@ -150,8 +113,8 @@ class j16 extends jCommon
         msgDebug("\n/********* unPosting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         if (!$this->unPostJournalHistory())    { return; }	// unPost the chart values before inventory where COG rows are removed
         if (!$this->unPostInventory())         { return; }
-		$this->unPostMain();
-        $this->unPostItem();
+		if (!$this->unPostMain())              { return; }
+        if (!$this->unPostItem())              { return; }
         if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
 		return true;

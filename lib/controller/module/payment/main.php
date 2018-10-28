@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-19
  * @filesource /lib/controller/module/payment/main.php
  */
 
@@ -79,11 +79,11 @@ class paymentMain
         $cc_exp= pullExpDates();
         $output = [
             'payment_id'  => ['order'=>10,'attr'=>['type'=>'hidden']], // hidden
-            'payment_name'=> ['order'=>20,'break'=>true,'label'=>lang('payment_name')],
-            'payment_num' => ['order'=>30,'break'=>true,'label'=>lang('payment_number')],
+            'payment_name'=> ['order'=>20,'break'=>true,'options'=>['width'=>200],'label'=>lang('payment_name')],
+            'payment_num' => ['order'=>30,'break'=>true,'options'=>['width'=>200],'label'=>lang('payment_number')],
             'payment_mon' => ['order'=>40,'label'=>lang('payment_expiration'),'options'=>['width'=>150],'values'=>$cc_exp['months'],'attr'=>['type'=>'select','value'=>date('m')]],
             'payment_year'=> ['order'=>50,'break'=>true,'options'=>['width'=>80],'values'=>$cc_exp['years'],'attr'=>['type'=>'select','value'=>date('Y')]],
-            'payment_cvv' => ['order'=>60,'label'=>lang('payment_cvv'),'attr'=>['type'=>'text','size'=>'4']]];
+            'payment_cvv' => ['order'=>60,'options'=>['width'=>60],'label'=>lang('payment_cvv'),'attr'=>['type'=>'text','size'=>'4']]];
         return $output;
     }
 
@@ -221,7 +221,7 @@ class paymentMain
         $merchant = new $fqcn($pmtSet);
         $txID = '1';
 		if (method_exists($merchant, 'paymentAuth')) {
-            if (!$response = $merchant->paymentAuth($fields, $amount)) { return; }
+            if (!$response = $merchant->paymentAuth($fields, $ledger)) { return; }
             $txID = $response['txID'];
 		}
         return $txID;

@@ -1,6 +1,6 @@
 <?php
 /*
- * PhreeBooks Dashboard - Open Customer Sales/Invoices
+ * PhreeBooks Dashboard - Open Customer Credits
  *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -18,24 +18,24 @@
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-10
- * @filesource /lib/controller/module/phreebooks/dashboards/open_j12/open_j12.php
+ * @filesource /lib/controller/module/phreebooks/dashboards/open_j13/open_j13.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_OPEN_J12_VERSION','3.1');
+define('DASHBOARD_OPEN_J13_VERSION','3.1');
 
-class open_j12
+class open_j13
 {
     public $moduleID = 'phreebooks';
     public $methodDir= 'dashboards';
-    public $code     = 'open_j12';
+    public $code     = 'open_j13';
     public $category = 'customers';
 	
 	function __construct($settings)
     {
 		$this->security= getUserCache('security', 'j12_mgr', false, 0);
-        $defaults      = ['jID'=>12,'max_rows'=>20,'users'=>'-1','roles'=>'-1','reps'=>'0','num_rows'=>5,'limit'=>1,'order'=>'desc'];
+        $defaults      = ['jID'=>13,'max_rows'=>20,'users'=>'-1','roles'=>'-1','reps'=>'0','num_rows'=>5,'limit'=>1,'order'=>'desc'];
         $this->settings= array_replace_recursive($defaults, $settings);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $this->trim    = 20; // length to trim primary_name to fit in frame

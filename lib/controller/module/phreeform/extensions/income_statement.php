@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2018-10-19
  * @filesource /controller/module/phreeform/extensions/income_statement.php
  */
 
@@ -30,7 +30,7 @@ class income_statement
 	function __construct($report)
     {
 		// find the period range within the fiscal year from the first period to current requested period
-		$this->period       = clean($report->period, 'integer');
+		$this->period       = $report->period;
 		$this->year         = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", 'fiscal_year', "period=$this->period");
 		$this->period_first = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", 'period', "fiscal_year=$this->year ORDER BY period");
 		// check for prior year data present

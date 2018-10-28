@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-18
+ * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/phreebooks/dashboards/new_cust/new_cust.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_NEW_CUST_VERSION','2.0');
+define('DASHBOARD_NEW_CUST_VERSION','3.1');
 
 class new_cust
 {
@@ -60,7 +60,7 @@ class new_cust
       ['".jslang('dates_wtd')."',".$this->getTotals('e')."],
       ['".jslang('dates_mtd')."',".$this->getTotals('g')."]
     ]);
-    data.setColumnProperties(0, {style:'font-style:bold;font-size:22px;text-align:center'});
+    data.setColumnProperties(0, {style:'font-style:bold;text-align:center'});
     var table = new google.visualization.Table(document.getElementById('{$this->code}_chart'));
     table.draw(data, {showRowNumber:false, width:'50%', height:'100%'});
 }

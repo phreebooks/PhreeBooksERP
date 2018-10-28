@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-13
+ * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/bizuno/messages.php
  */
 
@@ -155,8 +155,8 @@ class bizunoMessages
         }
         $title = $row['msg_id'];
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."phreemsg"." WHERE id=$rID");
-		msgLog(lang('table').' '.BIZUNO_DB_PREFIX."phreemsg".'-'.lang('delete')." $title ($rID)");
-		$data = ['content'=>['action'=>'eval','actionData'=>$msgCnt."jq('#dgMessage').datagrid('reload');"]];
-        $layout = array_replace_recursive($layout, $data);
+		msgLog(lang('message').' - '.lang('delete')." $title ($rID)");
+		$data  = ['content'=>['action'=>'eval','actionData'=>$msgCnt."jq('#dgMessage').datagrid('reload');"]];
+        $layout= array_replace_recursive($layout, $data);
 	}
 }

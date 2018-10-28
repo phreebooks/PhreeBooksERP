@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-18
+ * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -85,12 +85,12 @@ function processPhreeBooks($value, $format = '')
 				$report->currentValues['aging'] = calculate_aging(clean($value, 'integer'), $dates[1], $dates[2]);
 				$report->currentValues['aging']['curBal'] = $report->currentValues['aging']['beg_bal']; // set the current balance
 			}
-            if ($format=='age_00') { return $report->currentValues['aging']['balance_0']; } // aging for level 1
-            if ($format=='age_30') { return $report->currentValues['aging']['balance_30']; }// aging for level 2
-            if ($format=='age_60') { return $report->currentValues['aging']['balance_60']; }// aging for level 3
-            if ($format=='age_90') { return $report->currentValues['aging']['balance_90']; }// aging for level 4
-            if ($format=='begBal') { return $report->currentValues['aging']['beg_bal']; }   // beginning balance
-            if ($format=='endBal') { return $report->currentValues['aging']['end_bal']; }   // ending balance
+            if ($format=='age_00') { return $report->currentValues['aging']['balance_0'];  } // aging for level 1
+            if ($format=='age_30') { return $report->currentValues['aging']['balance_30']; } // aging for level 2
+            if ($format=='age_60') { return $report->currentValues['aging']['balance_60']; } // aging for level 3
+            if ($format=='age_90') { return $report->currentValues['aging']['balance_90']; } // aging for level 4
+            if ($format=='begBal') { return $report->currentValues['aging']['beg_bal'];    } // beginning balance
+            if ($format=='endBal') { return $report->currentValues['aging']['end_bal'];    } // ending balance
 			break;
         // ************ Bank Processing *******************
         case 'bnkReg':
@@ -274,96 +274,45 @@ function isBlankRow($row, $testList=[])
 	return true;
 }
 
+function getPaymentInfo($mID, $jID) {
+    $paid = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(debit_amount)-SUM(credit_amount) AS credits", "item_ref_id=$mID AND gl_type='pmt'", false);
+    if (!$paid) { $paid = 0; }
+    if (in_array($jID, [6,7])) { $paid = -$paid; }
+    return $paid;
+}
+
 /**
- * This function takes a posted banking payment ID and/or a contact ID and retrieves the posted data or list of current 
- * @uses - Used when editing banking information for customers and vendors, handles outstanding invoices for single/bulk payment
- * @param integer $rID - table: journal_main field: id, will be zero for unposted entry, will be journal_main id for editing posted entries
- * @param integer $cID - table: contact field: id, doesn't matter if rID != 0, will be contact id for new entries
- * @return array $output - journal_main, journal_item values if rID; contact info, open invoices if cID 
+ * This function maps the contacts record and main address information to the journal_main table fields.
+ * @param integer $cID - table contact field id of contact to retrieve 
+ * @param string $suffix - specifies billing or shipping fields to populate 
+ * @return array $output -  mapped fields of contact to journal
  */
-function jrnlGetPaymentData($rID=0, $cID=0)
+function mapContactToJournal($cID = 0, $suffix='_b')
 {
-    $preChecked= (array)explode(":", clean('iID', 'text', 'get'));
-	$output = ['main'=>[],'items'=>[]];
-	$itemIdx = 0;
-	if ($rID > 0) { // pull posted record info
-		$output['main']        = dbGetRow(BIZUNO_DB_PREFIX."journal_main", "id='$rID'");
-		$output['main']['type']= in_array($output['main']['journal_id'], [17, 20, 21]) ? 'v' : 'c';
-		$cID                   = $output['main']['contact_id_b'];
-		$items                 = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "ref_id='$rID'");
-		if (sizeof($items) > 0) {
-			$debitCredit = in_array(JOURNAL_ID, [20,22]) ? 'debit' : 'credit';
-			$temp = [];
-			foreach ($items as $key => $row) {
-				if (!in_array($row['gl_type'], ['pmt','dsc'])) {
-					$output['items'][] = $row; // keep ttl, frt and others for edit to fill details
-					continue;
-				}
-				if (empty($temp[$row['item_ref_id']])) {
-                    if (empty($row['discount'])) { $row['discount'] = 0; }
-                    if (empty($row['amount']))   { $row['amount']   = 0; }
-					$temp[$row['item_ref_id']] = $row;
-				}
-				switch($row['gl_type']) {
-					case 'pmt': 
-						$temp[$row['item_ref_id']]['amount']     = $row[$debitCredit.'_amount'];
-						$temp[$row['item_ref_id']]['post_date']  = $row['date_1'];
-						$temp[$row['item_ref_id']]['invoice_num']= $row['trans_code'];
-						break;
-					case 'dsc':
-						$temp[$row['item_ref_id']]['discount'] = $debitCredit=='debit' ? $row['credit_amount']: $row['debit_amount'];
-                        $output['items'][] = $row; // save the discount row for edits
-						break;
-				}
-			}
-			foreach ($temp as $row) {
-				$row['total']  = $row['amount'] - $row['discount'];
-				$row['checked']= true;
-				$row['idx']    = $itemIdx; // for edatagrid with checkboxes to key off of
-				$itemIdx++;
-				$output['items'][] = $row;
-			}
-		}
-	} elseif ($cID > 0) {
-		$output['main'] = mapContactToJournal($cID, '_b');
-    } else { return false; }
-	// pull contact info and open invoices
-	$jID = (isset($output['main']['type']) && $output['main']['type']=='v') ? '6,7' : '12,13';
-    if ($output['main']['type']=='v' && validateSecurity('phreebooks', 'j2_mgr', 1)) { $jID .= ',2'; }
-    $today = date('Y-m-d');
-	$criteria = "contact_id_b='$cID' AND journal_id IN ($jID) AND closed='0'";
-	$result = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $criteria, "post_date");
-	msgDebug("\nFound number of open invoices = ".sizeof($result));
-	foreach ($result as $row) {
-        if (in_array($row['journal_id'], [2])) { glFindAPacct($row); }
-        if (in_array($row['journal_id'], [7,13])) { $row['total_amount'] = -$row['total_amount']; } // added jID=13 for cash receipts
-		$row['total_amount'] += getPaymentInfo($row['id'], $row['journal_id']);
-        if (in_array(JOURNAL_ID, [17,22])) { $row['total_amount'] = -$row['total_amount']; } // need to negate for reverse cash flow
-		$dates= localeDueDate($row['post_date'], $row['terms'], $output['main']['type']);
-        msgDebug("\npost date = {$row['post_date']} and early date = {$dates['early_date']}");
-        $discount = $today <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
-		$output['items'][] = [
-            'idx'         => $itemIdx,
-			'id'          => 0,
-			'invoice_num' => $row['invoice_num'],
-			'contact_id'  => $row['contact_id_b'],
-			'primary_name'=> $row['primary_name_b'],
-			'item_ref_id' => $row['id'],
-			'gl_type'     => 'pmt',
-			'waiting'     => in_array($row['journal_id'], [6,7]) ? $row['waiting'] : 0,
-			'qty'         => 1,
-			'description' => sprintf(lang('phreebooks_pmt_desc_short'), $row['invoice_num'], $row['purch_order_id'] ? $row['purch_order_id'] : lang('none')),
-			'amount'      => roundAmount($row['total_amount']),
-			'gl_account'  => $row['gl_acct_id'],
-			'post_date'   => $row['post_date'],
-			'date_1'      => $dates['net_date'],
-			'discount'    => $discount,
-			'total'       => roundAmount($row['total_amount']) - $discount,
-			'checked'     => in_array($row['id'], $preChecked) ? true : false];
-		$itemIdx++;
-	}
-	msgDebug("\nReturning from jrnlGetPaymentData with item array: ".print_r($output, true));
-	return $output;
+    if (!$cID) {
+        msgAdd("function mapContactToJournal - Failed mapping contact to journal record");
+        return [];
+    }
+    $aData = dbGetRow(BIZUNO_DB_PREFIX."address_book", "ref_id='$cID' AND type LIKE '%m'");
+    $output = ['post_date'    => date('Y-m-d'),
+        'rep_id'              => getUserCache('profile', 'contact_id', false, 0),
+        'contact_id'.$suffix  => $cID,
+        'address_id'.$suffix  => $aData['address_id'],
+        'primary_name'.$suffix=> $aData['primary_name'],
+        'contact'.$suffix     => $aData['contact'],
+        'address1'.$suffix    => $aData['address1'],
+        'address2'.$suffix    => $aData['address2'],
+        'city'.$suffix        => $aData['city'],
+        'state'.$suffix       => $aData['state'],
+        'postal_code'.$suffix => $aData['postal_code'],
+        'country'.$suffix     => $aData['country'],
+        'telephone1'.$suffix  => $aData['telephone1'],
+        'email'.$suffix       => $aData['email']];
+    $cData = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id='$cID'");
+    $output['type']    = $cData['type'];
+    $output['terms']   = isset($cData['terms']) && $cData['terms'] ? $cData['terms'] : '0';
+    $output['currency']= isset($cData['currencyISO']) && $cData['currencyISO'] ? $cData['currencyISO'] : getUserCache('profile', 'currency', false, 'USD');
+    return $output;
 }
 
 /**
@@ -375,9 +324,9 @@ function glFindAPacct(&$row)
 {
     msgDebug("\nIn glFindAPacct");
     if (empty($row['id'])) { return ''; }
-	$iRows = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "ref_id='{$row['id']}'");
-	foreach ($iRows as $item) {
-		$type = getModuleCache('phreebooks', 'chart', 'accounts')[$item['gl_account']]['type'];
+    $iRows = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "ref_id='{$row['id']}'");
+    foreach ($iRows as $item) {
+        $type = getModuleCache('phreebooks', 'chart', 'accounts')[$item['gl_account']]['type'];
         msgDebug("\ngl_account = {$item['gl_account']} and type = $type");
         if ($type <> 20) { continue; } // Accounts Payable type gl account
         if (empty($row['gl_acct_id'])) {
@@ -388,92 +337,7 @@ function glFindAPacct(&$row)
             $row['gl_acct_id'] = ''; // clear the GL since there are more than 1
             return;
         }
-	}
-}
-
-function getPaymentInfo($mID, $jID) {
-    $paid = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(debit_amount)-SUM(credit_amount) AS credits", "item_ref_id=$mID AND gl_type='pmt'", false);
-    if (!$paid) { $paid = 0; }
-    if (in_array($jID, [6,7])) { $paid = -$paid; }
-    msgDebug("\nPaid array = ".print_r($paid, true));
-    return $paid;
-}
-
-/**
- * Loads records to create a bulk payment
- * @return array - list of payments that need to be made
- */
-function jrnlGetBulkData()
-{
-    $output = ['main'=>[], 'items'=>[]];
-	$itemIdx = 0;
-	$post_date = localeCalculateDate(date('Y-m-d'), 1);
-	$jID = '6,7';
-    if (validateSecurity('phreebooks', 'j2_mgr', 1)) { $jID .= ',2'; }
-	$criteria = "journal_id IN ($jID) AND closed='0' AND post_date<'$post_date' AND contact_id_b>0";
-	$result = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $criteria, "post_date");
-	msgDebug("\nFound number of open invoices = ".sizeof($result));
-	foreach ($result as $row) {
-        if (in_array($row['journal_id'], [2])) { glFindAPacct($row); }
-        if (in_array($row['journal_id'], [7,13])) { $row['total_amount'] = -$row['total_amount']; } // added jID=13 for cash receipts
-        $paid = getPaymentInfo($row['id'], $row['journal_id']);
-        $dates= localeDueDate($row['post_date'], $row['terms'], 'v');
-        $discount = $row['post_date'] <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
-		$output['items'][] = [
-            'idx'         => $itemIdx,
-			'id'          => 0,
-			'inv_num'     => $row['invoice_num'],
-			'contact_id'  => $row['contact_id_b'],
-		    'primary_name'=> $row['primary_name_b'],
-			'item_ref_id' => $row['id'],
-			'gl_type'     => 'pmt',
-		    'waiting'     => $row['waiting'],
-			'qty'         => 1,
-			'description' => sprintf(lang('phreebooks_pmt_desc_short'), $row['invoice_num'], $row['purch_order_id'] ? $row['purch_order_id'] : lang('none')),
-			'amount'      => $row['total_amount'] + $paid,
-			'gl_account'  => $row['gl_acct_id'],
-			'inv_date'    => $row['post_date'],
-			'date_1'      => $dates['net_date'],
-			'discount'    => $discount,
-			'total'       => $row['total_amount'] + $paid - $discount,
-			'checked'     => $row['waiting'] ? false : true];
-		$itemIdx++;
-	}
-	msgDebug("\nReturning from jrnlGetBulkData with item array: ".print_r($output, true));
-	return $output;
-}
-
-/**
- * This function maps the contacts record and main address information to the journal_main table fields.
- * @param integer $cID - table contact field id of contact to retrieve 
- * @param string $suffix - specifies billing or shipping fields to populate 
- * @return array $output -  mapped fields of contact to journal
- */
-function mapContactToJournal($cID = 0, $suffix='_b')
-{
-	if (!$cID) {
-		msgAdd("function mapContactToJournal - Failed mapping contact to journal record");
-		return [];
-	}
-	$result = dbGetRow(BIZUNO_DB_PREFIX."address_book", "ref_id='$cID' AND type LIKE '%m'");
-	$output = [
-        'contact_id'.$suffix  => $cID,
-		'address_id'.$suffix  => $result['address_id'],
-		'primary_name'.$suffix=> $result['primary_name'],
-		'contact'.$suffix     => $result['contact'],
-		'address1'.$suffix    => $result['address1'],
-		'address2'.$suffix    => $result['address2'],
-		'city'.$suffix        => $result['city'],
-		'state'.$suffix       => $result['state'],
-		'postal_code'.$suffix => $result['postal_code'],
-		'country'.$suffix     => $result['country'],
-		'telephone1'.$suffix  => $result['telephone1'],
-		'email'.$suffix       => $result['email']];
-	$result = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id='$cID'");
-	$output['type']    = $result['type'];
-	$output['terms']   = isset($result['terms']) && $result['terms'] ? $result['terms'] : '0';
-	$output['currency']= isset($result['currencyISO']) && $result['currencyISO'] ? $result['currencyISO'] : getUserCache('profile', 'currency', false, 'USD');
-	return $output;
+    }
 }
 
 /**
@@ -668,11 +532,11 @@ function chartSales($jID, $range='c', $pieces=10, $reps=false)
         if ($cnt < $pieces-1) {
             $name = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'primary_name', "ref_id=$cID AND type='m'");
             if (defined('DEMO_MODE')) { $name = randomNames($type); }
-            $struc[] = [$name, $total];
+            $struc[] = [$name, max($total, 0)];
         } else { $runningTotal += $total; }
         $cnt++;
     }
-    $struc[] = [lang('other'), $runningTotal];
+    $struc[] = [lang('other'), max($runningTotal, 0)];
     msgDebug("\nOutput = ".print_r($struc, true));
     return $struc;
 }

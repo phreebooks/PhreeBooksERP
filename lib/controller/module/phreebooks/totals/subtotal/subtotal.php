@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/phreebooks/totals/subtotal/subtotal.php
  */
  
@@ -49,7 +49,7 @@ class subtotal
 
 	public function render(&$output)
     {
-		$fields = ['totals_subtotal'=>['label'=>lang('subtotal'),'attr'=>['type'=>'currency','size'=>'15','value'=>'0','readonly'=>'readonly']]];
+		$fields = ['totals_subtotal'=>['label'=>lang('subtotal'),'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']]];
 		$hide   = $this->hidden ? ';display:none' : '';
         $output['body'] .= '<div style="text-align:right'.$hide.'">'.html5('totals_subtotal',$fields['totals_subtotal']).html5('',['icon'=>'blank','size'=>'small'])."</div>\n";
         $output['jsHead'][]= "function totals_subtotal(begBalance) {

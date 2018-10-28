@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-15
  * @filesource /controller/module/phreebooks/totals/tax_item/tax_item.php
  */
 
@@ -39,11 +39,11 @@ class tax_item
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
 		$this->fields = [
             'totals_tax_item' => ['label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->cType).' '.$this->lang['extra_title'],
-                'attr'=>['type'=>'currency','value'=>0,'size'=>'15','readonly'=>'readonly']],
-            'totals_tax_item_text'=> ['attr'=>  ['value'=>'textTBD','size'=>'16','readonly'=>'readonly']],
-            'totals_tax_item_gl'  => ['label'=>lang('gl_account'), 'attr'=>  ['type'=>'text', 'value'=>'glTBD','size'=>'5','readonly'=>'readonly']],
-            'totals_tax_item_amt' => ['attr'=>  ['value'=>'amtTBD','size'=>'10','style'=>'text-align:right','readonly'=>'readonly']],
-            'totals_tax_item_opt' => ['icon'=>'settings', 'size'=>'small','events'=> ['onClick'=>"jq('#phreebooks_totals_tax_item').toggle('slow');"]]];
+                'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']],
+            'totals_tax_item_text'=> ['attr' =>['value'=>'textTBD','size'=>'16','readonly'=>'readonly']],
+            'totals_tax_item_gl'  => ['label'=>lang('gl_account'),'attr'=>['type'=>'text', 'value'=>'glTBD','size'=>'5','readonly'=>'readonly']],
+            'totals_tax_item_amt' => ['attr' =>['value'=>'amtTBD','size'=>'10','style'=>'text-align:right','readonly'=>'readonly']],
+            'totals_tax_item_opt' => ['icon' =>'settings','size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_tax_item').toggle('slow');"]]];
 	}
 
     public function settingsStructure()
@@ -111,7 +111,7 @@ class tax_item
     
     public function jsTotal($data=[])
     {
-		$jID = $data['fields']['main']['journal_id']['attr']['value'];
+		$jID = $data['fields']['journal_id']['attr']['value'];
 		$type= in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
 		$row = "<tr><td>".html5('totals_tax_item_text[]',$this->fields['totals_tax_item_text'])."</td>";
 //		$row.= "<td>"    .html5('totals_tax_item_gl[]',  $this->fields['totals_tax_item_gl'])  ."</td>";

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-18
+ * @version    3.x Last Update: 2018-10-23
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -177,7 +177,6 @@ class phreeformRender
                     $output .= "</tr>\n";
                 } 
             }
-
             if ($viewData['report']->reporttype == 'rpt' && !empty($viewData['report']->grouplist)) {
                 $i = 1;
                 $group_list    = [['id' => '0', 'text' => lang('none')]];
@@ -295,11 +294,11 @@ class phreeformRender
 		return $output;
 	}
 
-    private function filterDates($dateList='abcdelfghijk')
+    private function filterDates($datelist='abcdelfghijk')
     {
         $output = [];
         foreach (viewDateChoices() as $row) {
-            if (strpos($dateList, $row['id']) !== false) { $output[] = $row; }
+            if (strpos($datelist, $row['id']) !== false) { $output[] = $row; }
         }
         return $output;
     }
@@ -314,7 +313,7 @@ class phreeformRender
     public function render(&$layout=[])
     {
         global $report;
-        $data = [];
+        $data     = [];
 		$rID      = clean('rID', 'integer', 'request'); // could come in as $_POST or $_GET
         if (!$rID) { return msgAdd("Not enough data provided to generate the report/form. rID = $rID"); }
 		$format   = clean('fmt', 'text', 'post');
@@ -325,10 +324,10 @@ class phreeformRender
             if (!$this->loadSpecialClass($report->special_class)) { return; }
 		}
 		$delivery       = clean('delivery',  ['format'=>'char', 'default'=>'D'], 'post');
-		$from_email     = clean('fromEmail', ['format'=>'email','default'=>getUserCache('profile', 'email')], 'post');
-		$from_name      = clean('fromName',  ['format'=>'text', 'default'=>getUserCache('profile', 'title')], 'post');
-		$to_email       = clean('toEmail',   ['format'=>'email','default'=>clean('rEmail','email','get')], 'post');
-		$to_name        = clean('toName',    ['format'=>'text', 'default'=>clean('rName', 'text', 'get')], 'post');
+		$from_email     = clean('fromEmail', ['format'=>'email','default'=>getUserCache('profile','email')],'post');
+		$from_name      = clean('fromName',  ['format'=>'text', 'default'=>getUserCache('profile','title')],'post');
+		$to_email       = clean('toEmail',   ['format'=>'email','default'=>clean('rEmail','email','get')],  'post');
+		$to_name        = clean('toName',    ['format'=>'text', 'default'=>clean('rName', 'text', 'get')],  'post');
 		$cc_email       = clean('CCEmail',   'email','post');
 		$cc_name        = clean('CCName',    'text', 'post');
 		$message_subject= $report->title.' '.lang('from').' '.getModuleCache('bizuno', 'settings', 'company', 'primary_name');
@@ -341,34 +340,28 @@ class phreeformRender
 				$report->fieldlist = [];
 				foreach ($_POST['fld_fld'] as $key => $value) {
 					$report->fieldlist[] = (object)[
-                        'fieldname'   => clean($_POST['fld_fld'][$key], 'text'),
-						'description' => clean($_POST['fld_desc'][$key],'text'),
-						'visible'     => clean($_POST['fld_vis'][$key], 'text'),
-						'columnwidth' => clean($_POST['fld_clmn'][$key],'text'),
-						'columnbreak' => clean($_POST['fld_brk'][$key], 'text'),
-						'processing'  => clean($_POST['fld_proc'][$key],'text'),
-						'formatting'  => clean($_POST['fld_fmt'][$key], 'text'),
-						'align'       => clean($_POST['fld_algn'][$key],'text'),
-						'total'       => clean($_POST['fld_tot'][$key], 'text')];
+                        'fieldname'  => clean($_POST['fld_fld'][$key], 'text'),
+						'description'=> clean($_POST['fld_desc'][$key],'text'),
+						'visible'    => clean($_POST['fld_vis'][$key], 'text'),
+						'columnwidth'=> clean($_POST['fld_clmn'][$key],'text'),
+						'columnbreak'=> clean($_POST['fld_brk'][$key], 'text'),
+						'processing' => clean($_POST['fld_proc'][$key],'text'),
+						'formatting' => clean($_POST['fld_fmt'][$key], 'text'),
+						'align'      => clean($_POST['fld_algn'][$key],'text'),
+						'total'      => clean($_POST['fld_tot'][$key], 'text')];
 				}
 			}
 			if (isset($report->grouplist) && is_array($report->grouplist)) { foreach ($report->grouplist as $key => $value) {
 				$report->grouplist[$key]->default = (isset($_POST['critGrpSel']) && $_POST['critGrpSel'] == ($key+1)) ? 1 : 0;
             } }
 		}
-        if     (isset($_GET['date']))        { $report->datedefault = clean('date', 'text', 'get'); } // should be encoded, this first as it means date override
-        elseif (isset($_POST['critDateSel'])){ $report->datedefault = $_POST['critDateSel'].':'.$_POST['critDateMin'].':'.$_POST['critDateMax']; }
-		elseif (isset($_POST['period']))     {
-			$period = clean($_POST['period'], 'integer');
-			if ($period != getModuleCache('phreebooks', 'fy', 'period')) {
-				$result = dbGetRow(BIZUNO_DB_PREFIX.'journal_periods', "period=$period");
-				$report->datedefault = "z:{$result['start_date']}:{$result['end_date']}";
-				$report->period = $result['period'];
-			} else {
-				$report->datedefault = "z:".getModuleCache('phreebooks', 'fy', 'period_start').":".getModuleCache('phreebooks', 'fy', 'period_end');
-				$report->period = $period;
-			}
-		}
+        $date    = clean('date',       ['format'=>'text','default'=>''], 'get');
+        $critDate= clean('critDateSel',['format'=>'text','default'=>''], 'post');
+        $period  = clean('period',     ['format'=>'integer','default'=>getModuleCache('phreebooks', 'fy', 'period')], 'post');
+        msgDebug("\nTrying to get details for date = $date and critDate = $critDate and period = $period");
+        if     (!empty($date))     { $report->datedefault = $date; } // should be encoded, this first as it means date override
+        elseif (!empty($critDate)) { $report->datedefault = "$critDate:".$_POST['critDateMin'].':'.$_POST['critDateMax']; }
+        elseif (!empty($period))   { $report->period = $period; $report->datedefault = $period; }
 		if (isset($report->sortlist) && is_array($report->sortlist)) { foreach ($report->sortlist as $key => $value) {
 			$report->sortlist[$key]->default = (isset($_POST['critSortSel']) && $_POST['critSortSel'] == ($key+1)) ? 1 : 0;
         } }
@@ -421,24 +414,27 @@ class phreeformRender
 			$mail = new bizunoMailer($to_email, $to_name, $message_subject, $email_text, $from_email, $from_name);
             if ($cc_email) { $mail->addToCC($cc_email, $cc_name); }
 			$mail->attach($temp_file);
-            if ($mail->sendMail()) { msgAdd(sprintf(lang('msg_email_sent'), $to_name), 'success'); }
-			unlink($temp_file);
-			if (isset($report->contactlog) && $report->contactlog) { // Update the contact record with information
-				if (isset($report->xfilterlist[0]) && $report->xfilterlist[0]->default=='equal') {
-					$vals = explode('.', $report->xfilterlist[0]->fieldname);
-					$cID  = dbGetValue(BIZUNO_DB_PREFIX.$vals[0], $report->contactlog, "{$vals[1]}={$report->xfilterlist[0]->min}", false);
-					if ($cID) {
-						$sql_data = [
-                            'contact_id' => $cID,
-							'entered_by' => getUserCache('profile', 'contact_id', false, '0'),
-							'log_date'   => date('Y-m-d H:i:s'),
-							'action'     => $this->lang['mail_out'],
-							'notes'      => "Email: $to_name ($to_email), $message_subject"];
-						msgDebug("Ready to write sql data: ".print_r($sql_data, true));
-						dbWrite(BIZUNO_DB_PREFIX.'contacts_log', $sql_data);
-					}
-				}
-			}
+            if ($mail->sendMail()) { 
+                msgAdd(sprintf(lang('msg_email_sent'), $to_name), 'success');
+                $data = ['content'=>['action'=>'eval','actionData'=>"window.close();"]];
+                unlink($temp_file);
+                if (!empty($report->contactlog)) { // Update the contact record with information
+                    if (isset($report->xfilterlist[0]) && $report->xfilterlist[0]->default=='equal') {
+                        $vals = explode('.', $report->xfilterlist[0]->fieldname);
+                        $cID  = dbGetValue(BIZUNO_DB_PREFIX.$vals[0], $report->contactlog, "{$vals[1]}={$report->xfilterlist[0]->min}", false);
+                        if ($cID) {
+                            $sql_data = [
+                                'contact_id' => $cID,
+                                'entered_by' => getUserCache('profile', 'contact_id', false, '0'),
+                                'log_date'   => date('Y-m-d H:i:s'),
+                                'action'     => $this->lang['mail_out'],
+                                'notes'      => "Email: $to_name ($to_email), $message_subject"];
+                            msgDebug("Ready to write sql data: ".print_r($sql_data, true));
+                            dbWrite(BIZUNO_DB_PREFIX.'contacts_log', $sql_data);
+                        }
+                    }
+                }
+            }
 		}
 		$layout = array_replace_recursive($layout, $data);
 	}

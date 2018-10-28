@@ -38,6 +38,10 @@ th                       { text-align:center; font-weight:bold;}
 body.loading             { overflow: hidden; }
 body.loading .modal      { display:block; }
 .areaView                { display:block; width:100%; position:relative; }
+.block25                 { width:25%; display:inline-block; position:relative; vertical-align:top; min-width:200px; min-height:550px; margin:3px; }
+.block33                 { width:32%; display:inline-block; position:relative; vertical-align:top; min-width:400px; min-height:550px; margin:3px; }
+.block50                 { width:49%; display:inline-block; position:relative; vertical-align:top; min-width:600px; min-height:550px; margin:3px; }
+
 .blockView               { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; } /* border:solid 1px red; */
 .blockViewR              { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; text-align:right; } /* border:solid 1px red; */
 .menuHide                { display:none; }

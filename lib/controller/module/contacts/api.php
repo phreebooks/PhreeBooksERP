@@ -126,8 +126,9 @@ class contactsApi
                 if (strpos($tag, 'MainAddress')===0) { $amData[$template[$tag]]= trim($value); }
                 if (strpos($tag, 'ShipAddress')===0) { $asData[$template[$tag]]= trim($value); }
             } }
-            if (!isset($cData['short_name'])) { return msgAdd("The Contact ID field cannot be found and is a required field. The operation was aborted!"); }
-			if (!$cData['short_name'] || !$cData['type']) {
+            // commented out to skip blank rows
+//            if (!isset($cData['short_name'])) { return msgAdd("The Contact ID field cannot be found and is a required field. The operation was aborted!"); }
+			if (empty($cData['short_name']) || empty($cData['type'])) {
 				msgAdd(sprintf("Missing Contact ID and/or Type on row: %s. The row will be skipped!", $cnt+1));
 			} else {
 				// clean out the un-importable fields
@@ -141,6 +142,7 @@ class contactsApi
                         msgAdd('Your permissions prevent altering an existing record, the entry will be skipped!'); continue;
                     }
 					dbWrite(BIZUNO_DB_PREFIX.'contacts', $cData, 'update', "id=$cID");
+                    $isNew = false;
 					$updCnt++;
 				} else {
 					$type  = $cData['type'];
@@ -148,20 +150,22 @@ class contactsApi
                     if (!isset($cData['gl_account']) || !$cData['gl_account']) { $cData['gl_account'] = $defGL; }
 					$cData['first_date'] = date('Y-m-d');
 					$cID = dbWrite(BIZUNO_DB_PREFIX.'contacts', $cData);
+                    $isNew = true;
 					$newCnt++;
 				}
-
 				$mID = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'address_id', "ref_id=$cID AND type='m'");
-                if (!isset($amData['primary_name'])) { $amData['primary_name'] = $cData['short_name']; }
-				$amData['ref_id']= $cID;
-				$amData['type']  = 'm';
-				dbWrite(BIZUNO_DB_PREFIX.'address_book', $amData, $mID?'update':'insert', "address_id=$mID");
-				if (!empty($asData['primary_name'])) {
-					$sID = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'address_id', "ref_id=$cID AND type='s' AND primary_name='{$asData['primary_name']}'");
-					$asData['ref_id']= $cID;
-					$asData['type']  = 's';
-					dbWrite(BIZUNO_DB_PREFIX.'address_book', $asData, $sID?'update':'insert', "address_id=$sID");
-				}
+                if ($isNew || !empty($amData['primary_name'])) {
+                    if (!isset($amData['primary_name'])) { $amData['primary_name'] = $cData['short_name']; }
+                    $amData['ref_id']= $cID;
+                    $amData['type']  = 'm';
+                    dbWrite(BIZUNO_DB_PREFIX.'address_book', $amData, $mID?'update':'insert', "address_id=$mID");
+                    if (!empty($asData['primary_name'])) {
+                        $sID = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'address_id', "ref_id=$cID AND type='s' AND primary_name='{$asData['primary_name']}'");
+                        $asData['ref_id']= $cID;
+                        $asData['type']  = 's';
+                        dbWrite(BIZUNO_DB_PREFIX.'address_book', $asData, $sID?'update':'insert', "address_id=$sID");
+                    }
+                }
 			}
 			$cnt++;
 		}

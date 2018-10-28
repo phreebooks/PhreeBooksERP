@@ -51,7 +51,7 @@ class bizunoAdmin
                     'help'   => ['order'=>50,'label'=>lang('help'),    'icon'=>'help',    'required'=>true,'events'=>['onClick'=>"winHref('bizuno_help', 'https://www.bizuno.com?p=bizuno/portal/helpMain')"]],
                     'message'=> ['order'=>60,'label'=>lang('messages'),'icon'=>'email',   'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
                     'ticket' => ['order'=>70,'label'=>lang('support'), 'icon'=>'support', 'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/tools/ticketMain');"],'hidden'=>defined('BIZUNO_SUPPORT_EMAIL')?false:true],
-                    'logout' => ['order'=>90,'label'=>lang('logout'),  'icon'=>'logout',  'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/portal/logout');"]]]]]],
+                    'logout' => ['order'=>90,'label'=>lang('logout'),  'icon'=>'logout',  'required'=>true,'events'=>['onClick'=>"jsonAction('bizuno/portal/logout');"]]]]]],
 			'menuBar' => ['child'=>[
                 'tools' => ['order'=>70,'label'=>lang('tools'),'icon'=>'tools','group'=>'tool','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=tools');"],'child'=>[
                     'imgmgr' => ['order'=>75,'label'=>lang('image_manager'),'icon'=>'mimeImg', 'events'=>['onClick'=>"jsonAction('bizuno/image/manager');"]],

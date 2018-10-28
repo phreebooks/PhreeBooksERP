@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-18
+ * @version    3.x Last Update: 2018-10-21
  * @filesource /lib/controller/module/phreebooks/journal.php
  */
 
@@ -35,20 +35,35 @@ class journal
 	public  $updateContact_b= false; // do not automatically add/update contact billing
 	public  $updateContact_s= false; // do not automatically add/update contact shipping
 	public  $updatePayment  = false; // do not automatically add/update payment information
-    private $lowestPeriod   = '999';
+    private $lowestPeriod   = 999;
 	public  $affectedGlAccts= []; // list the gl accounts that are touched for calculating journal balances
     public  $postList       = [];
     
-	function __construct($mID=0, $jID=0, $post_date=false)
+	function __construct($mID=0, $jID=0, $post_date=false, $cID=0, $structure=[], $action=false)
     {
+        $this->structure= $structure;
+        $this->action   = $action;
+        $this->journalID= $jID;
         $this->setDefaults($jID, $post_date);
-        if ($mID > 0) { 
-            $data = $this->getPostData($mID);
-            $this->main = $data['main'];
-            $this->item = $data['item'];
+        $this->getDbData($mID, $cID);
+        if (!empty($jID)) {
+            $this->journal  = $this->getJournal($jID, $this->main, $this->item);
+            $this->journal->action = $action;
+            $this->journal->items  = $this->items;
         }
 	}
     
+    public function getDataItem($rID, $cID, $security)
+    {
+        $this->journal->getDataItem($rID, $cID, $security);
+        $this->items = $this->journal->items;
+    }
+
+    public function customizeView(&$data, $rID, $cID, $security)
+    {
+        $this->journal->customizeView($data, $rID, $cID, $security);
+    }
+
     /**
      * Handles the main posting of all journals, this is the entry point for any module/extension
      * @param string $action - choices are insert [default] or delete
@@ -105,7 +120,7 @@ class journal
      * @param array $item - table journal_item record data, one or more elements
      * @return object - journal object
      */
-    private function getJournal($jID, $main, $item)
+    public function getJournal($jID, $main=[], $item=[])
     {
         $jName = $this->getJournalName($jID);
         require_once(BIZUNO_LIB."controller/module/phreebooks/journals/$jName.php");
@@ -120,7 +135,7 @@ class journal
      */
     private function getJournalName($jID)
     {
-        return $jName  = "j".substr('0'.$jID, -2);
+        return $jName = "j".substr('0'.$jID, -2);
     }
     
     /**
@@ -133,9 +148,9 @@ class journal
         foreach ($mIDs as $mID) {
             if (sizeof($this->postList) == 0) { // first time through, post data is local, may need to fetch unPost data if edit
                 $data = ['main'=>$this->main, 'item'=>$this->item]; // set the new post data
-                $uData= $this->getPostData($mID); // make sure to unpost the original post
+                $uData= $this->getDbRecord($mID); // make sure to unpost the original post
             } else {
-                $data = $this->getPostData($mID);
+                $data = $this->getDbRecord($mID);
                 $uData= ['main'=>[], 'item'=>[]]; // unpost is the same as post for linked journal entries
             }
             $idx    = padRef($data['main']['post_date'], $mID, $data['main']['journal_id']);
@@ -159,19 +174,56 @@ class journal
         if (method_exists($ledger, 'quickPost')) { if ($ledger->quickPost($data)) { return true; } }
         return false;
     }
-    
+
+    /**
+     * 
+     * @param integer $rID - main database record ID
+     * @param integer $cID - contact database record ID
+     */
+    private function getDbData($rID=0, $cID=0)
+    {
+        msgDebug("\nEntering getDbData with journalID = $this->journalID and rID = $rID and cID = $cID and action = $this->action");
+        if (in_array($this->journalID, [17,18,20,22])) { // banking journals
+            $dbData = $this->action=='bulk' ? $this->jrnlGetBulkData() : $this->jrnlGetPaymentData($rID, $cID);
+            $this->main = array_replace_recursive($this->main, $dbData['main']);
+            $this->item = $this->items = $dbData['items'];
+        } elseif ($rID > 0 || $this->action=='inv') {
+            $mainID     = $this->action=='inv' ? clean('iID', 'integer', 'get') : $rID;
+            $this->main = dbGetRow(BIZUNO_DB_PREFIX.'journal_main', "id=$mainID");
+            if ($this->action == 'inv') { // clear some fields to convert purchase/sales order or quote to receive/invoice
+                if (in_array($this->journalID, [3,4,6,7])) {
+                    $this->main['purch_order_id']= $this->main['invoice_num'];
+                } else {
+                    $this->main['soNum']    = $this->main['invoice_num'];
+                }
+                $this->main['journal_id']   = $this->journalID;
+                $this->main['so_po_ref_id'] = $this->main['id'];
+                $this->main['id']           = '';
+                $this->main['post_date']    = date('Y-m-d');
+                $this->main['terminal_date']= date('Y-m-d'); // get default based on type
+                $this->main['invoice_num']  = '';
+                if (in_array($this->journalID, [12]) && getModuleCache('extShipping', 'properties', 'status')) { $this->main['waiting'] = '1'; } // set waiting to ship flag
+// @todo this should be a setting as some want the rep to flow from the Sales Order for commissions while others just care about who fills the order.
+//              $this->main['rep_id']       = getUserCache('profile', 'contact_id', false, '0');
+            }
+            $this->item = $this->items = $mainID ? dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id=$mainID") : [];
+        }
+//      msgDebug("\nLeaving getDbData with main record = " .print_r($this->main,  true));
+//      msgDebug("\nRead from db item records = ".print_r($this->items, true));
+    }
+
     /**
      * Pulls the post data from the database based on the main record ID
      * @param integer $mID
      * @return array [main, item]
      */
-    private function getPostData($mID=0)
+    private function getDbRecord($mID=0)
     {
 		$main = $item = [];
         if ($mID > 0) {
 			$main = dbGetRow(BIZUNO_DB_PREFIX."journal_main", "id=$mID");
             $item = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "ref_id=$mID", 'id');
-//            $this->currencyConvert('toPost'); // don't need as preflight is only for current post
+//          $this->currencyConvert('toPost'); // don't need as preflight is only for current post
 		}
         return ['main'=>$main, 'item'=>$item];
     }
@@ -184,6 +236,7 @@ class journal
     private function setDefaults($jID=0, $post_date=false)
     {
         if (!$post_date) { $post_date = date('Y-m-d'); }
+		$termsType  = in_array($this->journalID, [3,4,6,7,17,20,21]) ? 'vendors' : 'customers';
         $this->main = [
             'id'           => 0,  // default to new order
 			'journal_id'   => $jID ? $jID : 0,
@@ -193,18 +246,169 @@ class journal
 			'invoice_num'  => '', // default to new reference number
 			'sales_tax'    => 0,
             'total_amount' => 0,
-			'terms'        => '0', // default terms
+			'terms'        => getModuleCache('phreebooks', 'settings', $termsType, 'terms'), // default terms
 			'gl_acct_id'   => '',
 			'currency'     => getUserCache('profile', 'currency', false, 'USD'),
 			'currency_rate'=> 1,
 			'closed'       => 0,
 			'waiting'      => 0,
 			'post_date'    => $post_date,
+            'terminal_date'=> date('Y-m-d'),
 			'period'       => calculatePeriod($post_date),
 			'admin_id'     => getUserCache('profile', 'admin_id', false, 0),
+            'rep_id'       => getUserCache('profile', 'contact_id', false, '0'),
             'contact_id_b' => 0,
             'contact_id_s' => 0];
-		$this->item = [];
+        if (in_array($this->journalID, [3,4,6,13,15,21])) { $this->setShip2Biz(); } // pre-set the ship to address
+		$this->items = $this->item = [];
+    }
+
+    /**
+     * 
+     * @param type $structure
+     */
+    private function setShip2Biz()
+    {
+        $dbData = addressLoad(0, '_s', true);
+        foreach ($dbData as $idx => $value) {
+            if (array_key_exists($idx, $this->structure)) { $this->main[$idx] = $value; }
+        }
+    }
+
+    /**
+     * This function takes a posted banking payment ID and/or a contact ID and retrieves the posted data or list of current 
+     * @uses - Used when editing banking information for customers and vendors, handles outstanding invoices for single/bulk payment
+     * @param integer $rID - table: journal_main field: id, will be zero for unposted entry, will be journal_main id for editing posted entries
+     * @param integer $cID - table: contact field: id, doesn't matter if rID != 0, will be contact id for new entries
+     * @return array $output - journal_main, journal_item values if rID; contact info, open invoices if cID 
+     */
+    private function jrnlGetPaymentData($rID=0, $cID=0)
+    {
+        $preChecked= (array)explode(":", clean('iID', 'text', 'get'));
+        $output = ['main'=>[],'items'=>[]];
+        $itemIdx= 0;
+        $type   = in_array($this->journalID, [17, 20, 21]) ? 'v' : 'c';
+        if ($rID > 0) { // pull posted record info
+            $output['main']        = dbGetRow(BIZUNO_DB_PREFIX."journal_main", "id='$rID'");
+            $cID                   = $output['main']['contact_id_b'];
+            $items                 = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "ref_id='$rID'");
+            if (sizeof($items) > 0) {
+                $debitCredit = in_array(JOURNAL_ID, [20,22]) ? 'debit' : 'credit';
+                $temp = [];
+                foreach ($items as $key => $row) {
+                    if (!in_array($row['gl_type'], ['pmt','dsc'])) {
+                        $output['items'][] = $row; // keep ttl, frt and others for edit to fill details
+                        continue;
+                    }
+                    if (empty($temp[$row['item_ref_id']])) {
+                        if (empty($row['discount'])) { $row['discount'] = 0; }
+                        if (empty($row['amount']))   { $row['amount']   = 0; }
+                        $temp[$row['item_ref_id']] = $row;
+                    }
+                    switch($row['gl_type']) {
+                        case 'pmt': 
+                            $temp[$row['item_ref_id']]['amount']     = $row[$debitCredit.'_amount'];
+                            $temp[$row['item_ref_id']]['post_date']  = $row['date_1'];
+                            $temp[$row['item_ref_id']]['invoice_num']= $row['trans_code'];
+                            break;
+                        case 'dsc':
+                            $temp[$row['item_ref_id']]['discount'] = $debitCredit=='debit' ? $row['credit_amount']: $row['debit_amount'];
+                            $output['items'][] = $row; // save the discount row for edits
+                            break;
+                    }
+                }
+                foreach ($temp as $row) {
+                    $row['total']  = $row['amount'] - $row['discount'];
+                    $row['checked']= true;
+                    $row['idx']    = $itemIdx; // for edatagrid with checkboxes to key off of
+                    $itemIdx++;
+                    $output['items'][] = $row;
+                }
+            }
+        } elseif ($cID > 0) {
+            $output['main'] = mapContactToJournal($cID, '_b');
+        } else { return $output; }
+        // pull contact info and open invoices
+        $jID    = $type=='v' ? '6,7' : '12,13';
+        if ($type=='v' && validateSecurity('phreebooks', 'j2_mgr', 1)) { $jID .= ',2'; }
+        $today  = date('Y-m-d');
+        $criteria = "contact_id_b='$cID' AND journal_id IN ($jID) AND closed='0'";
+        $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $criteria, "post_date");
+        msgDebug("\nFound number of open invoices = ".sizeof($result));
+        foreach ($result as $row) {
+            if (in_array($row['journal_id'], [2])) { glFindAPacct($row); }
+            if (in_array($row['journal_id'], [7,13])) { $row['total_amount'] = -$row['total_amount']; } // added jID=13 for cash receipts
+            $row['total_amount'] += getPaymentInfo($row['id'], $row['journal_id']);
+            if (in_array(JOURNAL_ID, [17,22])) { $row['total_amount'] = -$row['total_amount']; } // need to negate for reverse cash flow
+            $dates= localeDueDate($row['post_date'], $row['terms'], $type);
+//          msgDebug("\npost date = {$row['post_date']} and early date = {$dates['early_date']}");
+            $discount = $today <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
+            $output['items'][] = [
+                'idx'         => $itemIdx,
+                'id'          => 0,
+                'invoice_num' => $row['invoice_num'],
+                'contact_id'  => $row['contact_id_b'],
+                'primary_name'=> $row['primary_name_b'],
+                'item_ref_id' => $row['id'],
+                'gl_type'     => 'pmt',
+                'waiting'     => in_array($row['journal_id'], [6,7]) ? $row['waiting'] : 0,
+                'qty'         => 1,
+                'description' => sprintf(lang('phreebooks_pmt_desc_short'), $row['invoice_num'], $row['purch_order_id'] ? $row['purch_order_id'] : lang('none')),
+                'amount'      => roundAmount($row['total_amount']),
+                'gl_account'  => $row['gl_acct_id'],
+                'post_date'   => $row['post_date'],
+                'date_1'      => $dates['net_date'],
+                'discount'    => $discount,
+                'total'       => roundAmount($row['total_amount']) - $discount,
+                'checked'     => in_array($row['id'], $preChecked) ? true : false];
+            $itemIdx++;
+        }
+        msgDebug("\nReturning from jrnlGetPaymentData with item array: ".print_r($output, true));
+        return $output;
+    }
+
+    /**
+     * Loads records to create a bulk payment
+     * @return array - list of payments that need to be made
+     */
+    public function jrnlGetBulkData()
+    {
+        $output   = ['main'=>[], 'items'=>[]];
+        $itemIdx  = 0;
+        $post_date= localeCalculateDate(date('Y-m-d'), 1);
+        $jID      = '6,7';
+        if (validateSecurity('phreebooks', 'j2_mgr', 1)) { $jID .= ',2'; }
+        $criteria = "journal_id IN ($jID) AND closed='0' AND post_date<'$post_date' AND contact_id_b>0";
+        $result   = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $criteria, "post_date");
+        msgDebug("\nFound number of open invoices = ".sizeof($result));
+        foreach ($result as $row) {
+            if (in_array($row['journal_id'], [2])) { glFindAPacct($row); }
+            if (in_array($row['journal_id'], [7,13])) { $row['total_amount'] = -$row['total_amount']; } // added jID=13 for cash receipts
+            $paid    = getPaymentInfo($row['id'], $row['journal_id']);
+            $dates   = localeDueDate($row['post_date'], $row['terms'], 'v');
+            $discount= $row['post_date'] <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
+            $output['items'][] = [
+                'idx'         => $itemIdx,
+                'id'          => 0,
+                'inv_num'     => $row['invoice_num'],
+                'contact_id'  => $row['contact_id_b'],
+                'primary_name'=> $row['primary_name_b'],
+                'item_ref_id' => $row['id'],
+                'gl_type'     => 'pmt',
+                'waiting'     => $row['waiting'],
+                'qty'         => 1,
+                'description' => sprintf(lang('phreebooks_pmt_desc_short'), $row['invoice_num'], $row['purch_order_id'] ? $row['purch_order_id'] : lang('none')),
+                'amount'      => $row['total_amount'] + $paid,
+                'gl_account'  => $row['gl_acct_id'],
+                'inv_date'    => $row['post_date'],
+                'date_1'      => $dates['net_date'],
+                'discount'    => $discount,
+                'total'       => $row['total_amount'] + $paid - $discount,
+                'checked'     => $row['waiting'] ? false : true];
+            $itemIdx++;
+        }
+        msgDebug("\nReturning from jrnlGetBulkData with item array: ".print_r($output, true));
+        return $output;
     }
 
     /**
@@ -229,31 +433,27 @@ class journal
      * @param string $action - Not Used currently
      * @return boolean null - affects values in journal_main and journal_item
      */
-    private function currencyConvert($action=false)
+    public function currencyConvert($action=false)
     {
 		msgDebug("\nEntering currency Convert with action = $action");
-        if ($this->main['currency'] == getUserCache('profile', 'currency', false, 'USD')) { return msgDebug(", returning as the currency is already the default!"); } // is already default currency
+        if ( $this->main['currency'] == getUserCache('profile', 'currency', false, 'USD')) { return msgDebug(", returning as the currency is already the default!"); } // is already default currency
         if (!$this->main['currency_rate']) { return msgAdd('Invalid exchange rate!'); }
 		$mainFields = ['discount','sales_tax','total_amount']; // table journal_main
 		$itemFields = ['debit_amount','credit_amount','full_price']; // table journal_item
-//		switch ($action) {
-//			case 'toPost':
-//				msgDebug(", converting to currency: {$this->main['currency']} and rate {$this->main['currency_rate']}");
-//                foreach ($mainFields as $field) { $this->main[$field] = $this->main[$field] * $this->main['currency_rate']; }
-//				foreach ($this->item as $idx => $row) { foreach ($itemFields as $field) {
-//					$this->item[$idx][$field] = $this->item[$idx][$field] * $this->main['currency_rate'];
-//                } }
-//				break;
-//			case 'toDefault':
-            msgDebug(", converting from currency: {$this->main['currency']} and rate {$this->main['currency_rate']}");
-			foreach ($mainFields as $field) {
-                if (isset($this->main[$field])) { $this->main[$field] = $this->main[$field] / $this->main['currency_rate']; }
-			}
-			foreach ($this->item as $idx => $row) { foreach ($itemFields as $field) {
-                if (isset($row[$field])) { $this->item[$idx][$field] = $this->item[$idx][$field] / $this->main['currency_rate']; }
-            } }
-//				break;
-//		}
+		switch ($action) {
+			case 'toPost':
+				msgDebug(", converting to currency: {$this->main['currency']} and rate {$this->main['currency_rate']}");
+                foreach ($mainFields as $field) { $this->main[$field] = $this->main[$field] * $this->main['currency_rate']; }
+				foreach ($this->item as $idx => $row) { foreach ($itemFields as $field) {
+					$this->item[$idx][$field] = $this->item[$idx][$field] * $this->main['currency_rate']; } }
+				break;
+			case 'toDefault':
+                msgDebug(", converting from currency: {$this->main['currency']} and rate {$this->main['currency_rate']}");
+                foreach ($mainFields as $field) { if (isset($this->main[$field])) { $this->main[$field] = $this->main[$field] / $this->main['currency_rate']; } }
+                foreach ($this->item as $idx => $row) { foreach ($itemFields as $field) {
+                    if (isset($row[$field])) { $this->item[$idx][$field] = $this->item[$idx][$field] / $this->main['currency_rate']; } } }
+				break;
+		}
 	}
 
     /**
@@ -273,8 +473,9 @@ class journal
 		require_once(BIZUNO_LIB."controller/module/contacts/main.php");
 		$contact = new contactsMain(); // should not need to pass variables
 		$_POST['id_'.$type]    = $this->main['id_'.$type]    = $cID; // map the journal fields to contact fields
-		$_POST['terms_'.$type] = $this->main['terms_'.$type] = $this->main['terms'];
-		$_POST['rep_id_'.$type] = !empty($this->main['rep_id']) ? $this->main['rep_id'] : ''; // map the rep ID
+        // By commenting these, the terms and rep DO NOT UPDATE the contat record. This must be done through the Contacts Manager
+//		$_POST['terms_'.$type] = $this->main['terms_'.$type] = $this->main['terms'];
+//		$_POST['rep_id_'.$type] = !empty($this->main['rep_id']) ? $this->main['rep_id'] : ''; // map the rep ID
 		msgDebug("\nAdding/updating contact with this->main = ".print_r($this->main, true));
 		$success = $contact->dbContactSave($cType, "_$type");
         if (!$success) { return; } // record creation failed (permission, problem, etc), stop here

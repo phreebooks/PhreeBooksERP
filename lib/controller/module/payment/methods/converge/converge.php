@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-19
  * @filesource /lib/controller/module/payment/methods/converge.php
  *
  * Source Information:
@@ -36,8 +36,8 @@
 
 namespace bizuno;
 
-if (!defined('PAYMENT_CONVERGE_URL'))     define('PAYMENT_CONVERGE_URL',     'https://www.myvirtualmerchant.com/VirtualMerchant/processxml.do');
-if (!defined('PAYMENT_CONVERGE_URL_TEST'))define('PAYMENT_CONVERGE_URL_TEST','https://demo.myvirtualmerchant.com/VirtualMerchantDemo/processxml.do');
+if (!defined('PAYMENT_CONVERGE_URL'))     { define('PAYMENT_CONVERGE_URL',     'https://www.myvirtualmerchant.com/VirtualMerchant/processxml.do'); }
+if (!defined('PAYMENT_CONVERGE_URL_TEST')){ define('PAYMENT_CONVERGE_URL_TEST','https://demo.myvirtualmerchant.com/VirtualMerchantDemo/processxml.do'); }
 
 require_once(BIZUNO_LIB."model/encrypter.php");
 
@@ -85,15 +85,15 @@ class converge
 			'save'      => ['label'=>lang('save'),'break'=>true,'attr'=>['type'=>'checkbox','value'=>'1']],
             'payment_id'=> ['attr'=>['type'=>'hidden']], // hidden
             'name'      => ['options'=>['width'=>200],'break'=>true,'label'=>lang('payment_name')],
-            'number'    => ['options'=>['width'=>150],'break'=>true,'label'=>lang('payment_number'),'events'=>['onChange'=>"convergeRefNum('number');"]],
+            'number'    => ['options'=>['width'=>200],'break'=>true,'label'=>lang('payment_number'),'events'=>['onChange'=>"convergeRefNum('number');"]],
             'month'     => ['label'=>lang('payment_expiration'),'options'=>['width'=>130],'values'=>$cc_exp['months'],'attr'=>['type'=>'select','value'=>date('m')]],
             'year'      => ['break'=>true,'options'=>['width'=>70],'values'=>$cc_exp['years'],'attr'=>['type'=>'select','value'=>date('Y')]],
             'cvv'       => ['options'=>['width'=> 45],'label'=>lang('payment_cvv')]];
-		if (!empty($values['method']) && $values['method']==$this->code && !empty($data['fields']['main']['id']['attr']['value'])) { // edit
+		if (!empty($values['method']) && $values['method']==$this->code && !empty($data['fields']['id']['attr']['value'])) { // edit
 			$this->viewData['number']['attr']['value'] = isset($values['hint']) ? $values['hint'] : '****';
-			$invoice_num = $invoice_amex = $data['fields']['main']['invoice_num']['attr']['value'];
-			$gl_account  = $data['fields']['main']['gl_acct_id']['attr']['value'];
-			$discount_gl = $this->getDiscGL($data['fields']['main']['id']['attr']['value']);
+			$invoice_num = $invoice_amex = $data['fields']['invoice_num']['attr']['value'];
+			$gl_account  = $data['fields']['gl_acct_id']['attr']['value'];
+			$discount_gl = $this->getDiscGL($data['fields']['id']['attr']['value']);
             $show_s = false;  // since it's an edit, all adjustments need to be made at the gateway, this prevents duplicate charges when re-posting a transaction
             $show_c = false;
             $show_n = false;
@@ -105,7 +105,7 @@ class converge
 			$discount_gl = $this->settings['disc_gl_acct'];
             $show_n = true;
             $checked = 'n';
-            $cID = isset($data['fields']['main']['contact_id_b']['attr']['value']) ? $data['fields']['main']['contact_id_b']['attr']['value'] : 0;
+            $cID = isset($data['fields']['contact_id_b']['attr']['value']) ? $data['fields']['contact_id_b']['attr']['value'] : 0;
             if ($cID) { // find if stored values
                 $encrypt = new encryption();
                 $this->viewData['selCards']['values'] = $encrypt->viewCC('contacts', $cID);
@@ -168,6 +168,7 @@ $output['body'] .= '</div>
 
     public function paymentAuth($fields, $ledger)
     {
+        $refs = $this->guessInv($ledger);
         $submit_data = [
             'ssl_transaction_type'  => 'CCAUTHONLY',
             'ssl_merchant_id'       => $this->settings['merchant_id'],
@@ -182,7 +183,7 @@ $output['body'] .= '</div>
             'ssl_exp_date'          => $fields['month'] . substr($fields['year'], -2), // requires 2 digit year
             'ssl_amount'            => $ledger->main['total_amount'],
             'ssl_cvv2cvc2'          => $fields['cvv'],
-            'ssl_invoice_number'    => $ledger->main['invoice_num'],
+            'ssl_invoice_number'    => $refs = ['inv'],
 //			'ssl_card_present'      => '', // recommended for POS
 //			'ssl_customer_code'     => '', // Customer code for purchasing card transactions
             'ssl_salestax'          => isset($ledger->main['sales_tax']) ? $ledger->main['sales_tax'] : 0,
@@ -353,13 +354,37 @@ $output['body'] .= '</div>
 		msgAdd($this->lang['err_process_failed'].' - '.$resp->ssl_result_message);
 	}
 
+    /**
+     * 
+     * @param type $data
+     * @return type
+     */
 	private function getDiscGL($data)
 	{
-		if (isset($data['fields']['main'])) {
-            foreach ($data['fields']['main'] as $row) {
+		if (isset($data['fields'])) {
+            foreach ($data['fields'] as $row) {
                 if ($row['gl_type'] == 'dsc') { return $row['gl_account']; }
             }
         }
 		return $this->settings['disc_gl_acct']; // not found, return default
 	}
+
+    /**
+     * Tries to guess the invoice number and po number of the first pmt record of the item array
+     * @param type $ledger
+     * @return type
+     */
+    private function guessInv($ledger)
+    {
+        $refs = ['inv'=>$ledger->main['invoice_num'], 'po'=>$ledger->main['invoice_num']];
+        if (empty($ledger->item)) { return $refs; }
+        foreach ($ledger->item as $row) {
+            if ($row['gl_type'] <> 'pmt') { continue; } // just the first row
+            $vals = explode(' ', $row['description']);
+            if (!empty($vals[1])) { $refs['inv']= $vals[1]; }
+            if (!empty($vals[3])) { $refs['po'] = $vals[3]; }
+            break;
+        }
+        return $refs;
+    }
 }

@@ -184,4 +184,15 @@ jq('#winImgMgr').window({'title':'".addslashes($title)."'});";
 		}
 		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#winImgMgr').window('refresh','$href');"]]);
 	}
+    
+    public function view(&$layout=[])
+    {
+        $bID   = clean('rID', 'integer', 'get');
+        $img   = clean('data', 'path', 'get');
+        $html  = html5('', ['styles'=>['max-width'=>'100%;','max-height'=>'100%;'],'events'=>['onClick'=>"jq('#winImage').window('close');"],
+            'attr'=>['type'=>'img','src'=>BIZUNO_URL_FS."src=$bID/images/$img"]]); 
+        $data  = ['type'=>'popup','title'=>lang('terms'),'attr'=>['id'=>'winImage'], // ,'width'=>600,'height'=>600
+			'divs'=>['winImage'=>['order'=>50,'type'=>'html','html'=>$html]]];
+		$layout= array_replace_recursive($layout, $data);
+    }
 }

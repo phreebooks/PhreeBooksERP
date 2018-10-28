@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/bizuno/dashboards/reminder/reminder.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_REMINDER_VERSION','1.0');
+define('DASHBOARD_REMINDER_VERSION','3.1');
 
 class reminder
 {
@@ -107,23 +107,20 @@ class reminder
         if ($needsUpdate) {
             dbWrite(BIZUNO_DB_PREFIX."users_profiles", ['settings'=>json_encode($this->settings)], 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code'");
         }
-        $data = ['delete_icon' => ['icon'=>'trash', 'size'=>'small']];
-        $index= 1;
+        $index = 1;
         $html  = '<div>';
         $html .= '  <div id="'.$this->code.'_attr" style="display:none"><p>'.$this->lang['msg_settings_info'].'</p></div>';
-        if (!empty($this->settings['current'])) {
+        $html .= html5('', ['classes'=>['easyui-datalist'],'attr'=>['type'=>'ul']])."\n";
+          if (!empty($this->settings['current'])) {
             foreach ($this->settings['current'] as $entry) {
-                $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"];
-                $html .= '  <div>';
-                $html .= '    <div style="float:right;height:16px;">'.html5('delete_icon', $data['delete_icon']).'</div>';
-                $html .= '    <div style="min-height:16px;">'.viewFormat($entry['date'], 'date').' - '.$entry['title'].'</div>';
-                $html .= '  </div>';
+                $html .= html5('', ['attr'=>['type'=>'li']]).'<span style="float:left">';
+				$html .= viewFormat($entry['date'], 'date').' - '.$entry['title'].'</span><span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span></li>';
                 $index++;
             }
         } else {
-            $html .= '<div>'.lang('no_results').'</div>'."\n";
+            $html .= '<li><span>'.lang('no_results')."</span></li>";
         }
-        $html .= '</div><div style="min-height:4px;">&nbsp;</div>';
+        $html .= '</ul></div>';
         return $html;
     }
 

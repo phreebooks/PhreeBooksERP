@@ -46,7 +46,6 @@ $lang = [
 	'new_report' => 'New Report',
     // Messages
     'msg_printed_set' => 'Sets the field selected to 1 after each form has been generated. The field must be in the same table as the form page break field.',
-	'msg_recently_added_docs' => 'Recently Added Documents',
 	'msg_download_filename' => 'Download Filename Source:',
 	'msg_replace_existing' => 'Replace existing file, if present',
     // Error Messages
@@ -58,6 +57,9 @@ $lang = [
     'btn_import_all' => 'Import All From This List',
 	'btn_import_selected' => 'Import Selected Report',
     // General
+    'my_reports' => 'My Reports',
+    'my_favorites' => 'My Favorites',
+	'recent_reports' => 'Recent Reports/Forms',
     'name_business' => 'Business Name',
     'filter_list' => 'Filter List',
 	'use_periods' => 'Use Accounting Periods',

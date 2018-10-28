@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-11
+ * @version    3.x Last Update: 2018-10-26
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
@@ -684,7 +684,7 @@ class bizunoApi
     protected function installStoreFields()
     {
 		$id = validateTab($module_id='inventory', 'inventory', lang('details'), 60);
-        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'description_long')){ dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD description_long TEXT COMMENT 'type:htmlarea;label:Long Description;tag:DescriptionLong;tab:$id;order:10'"); }
+        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'description_long')){ dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD description_long TEXT COMMENT 'type:textarea;label:Long Description;tag:DescriptionLong;tab:$id;order:10'"); }
 		$id = validateTab($module_id='inventory', 'inventory', lang('estore'), 80);
         if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'manufacturer'))    { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD manufacturer VARCHAR(24) NOT NULL DEFAULT '' COMMENT 'label:Manufacturer;tag:Manufacturer;tab:$id;order:40'"); }
         if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'model'))           { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD model VARCHAR(24) NOT NULL DEFAULT '' COMMENT 'label:Model;tag:Model;tab:$id;order:41'"); }

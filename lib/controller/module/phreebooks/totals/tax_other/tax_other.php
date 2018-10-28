@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/phreebooks/totals/tax_other/tax_other.php
  */
 
@@ -74,10 +74,10 @@ class tax_other
 			'totals_tax_other_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
 			'totals_tax_other_opt'=> ['icon'=>'settings','size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_tax_other').toggle('slow');"]],
 			'totals_tax_other'    => ['label'=>lang('inventory_tax_rate_id_c').' '.$this->lang['extra_title'], 'events'=>['onBlur'=>"totalUpdate();"],
-				'attr' => ['type'=>'currency','size'=>'15','value'=>0]]];
+				'attr' => ['type'=>'currency','value'=>0]]];
         if (!empty($data['items'])) { foreach ($data['items'] as $row) { // fill in the data if available
             if ($row['gl_type'] == $this->settings['gl_type']) {
-                $this->fields['totals_tax_other_id']['attr']['value'] = $row['id'];
+                $this->fields['totals_tax_other_id']['attr']['value'] = !empty($row['id']) ? $row['id'] : 0;
                 $this->fields['totals_tax_other_gl']['attr']['value'] = $row['gl_account'];
                 $this->fields['totals_tax_other']['attr']['value']    = $row['credit_amount'] + $row['debit_amount'];
             }

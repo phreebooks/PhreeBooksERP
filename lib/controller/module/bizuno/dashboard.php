@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/bizuno/dashboard.php
  */
 
@@ -39,7 +39,7 @@ class bizunoDashboard
     public function manager(&$layout=[])
     {
         $menu_id= clean('menuID', ['format'=>'text','default'=>'home'], 'get');
-		$title  = sprintf($this->lang['edit_dashboard'], $menu_id=='home' ? lang('home') : getUserCache('menu', $menu_id, 'title'));
+		$title  = sprintf($this->lang['edit_dashboard'], $menu_id=='home' ? lang('home') : getUserCache('menuBar', 'child', $menu_id)['label']);
 		$data   = [
             'title'  => lang('dashboards'),
 			'menu_id'=> $menu_id,
@@ -75,8 +75,7 @@ class bizunoDashboard
 				$html .= '<tr><td colspan="4"><hr /></td></tr>'."\n";
 			}
 			$html .= $footer;
-			$title = getUserCache('menu', $cat, 'title', lang($cat));
-			$data['tabs']['tabSettings']['divs'][$cat] = ['order'=>$order,'label'=>$title,'type'=>'html','html'=>$html];
+			$data['tabs']['tabSettings']['divs'][$cat] = ['order'=>$order,'label'=>lang($cat),'type'=>'html','html'=>$html];
 			$order++;
 		}
 		$layout = array_replace_recursive($layout, viewMain(), $data);
@@ -178,13 +177,24 @@ class bizunoDashboard
 		$dashboard = $this->loadDashboard($mID, $dID, $settings);
         if (!$dashboard) { return msgAdd("ERROR: Dashboard $dID NOT FOUND!"); }
         $content = $dashboard->render();
-        if (strpos($content, "{$dID}Form")) { // if there is a form for settings, set the return key to submit form
-            $content .= htmlJS("jq('#{$dID}Form').keypress(function(event) {
-    var keycode=(event.keyCode ? event.keyCode : event.which);
-    if (keycode=='13') { dashboardAttr('$mID:$dID', 0); }
-});");
+        if (is_string($content)) { // plain old HTML
+            $html = $content;
+            if (strpos($html, "{$dID}Form")) { // if there is a form for settings, set the return key to submit form
+                $html .= htmlJS("jq('#{$dID}Form').keypress(function(event) { var keycode=(event.keyCode ? event.keyCode : event.which); if (keycode=='13') { dashboardAttr('$mID:$dID', 0); } });");
+            }
+            $data = ['type'=>'divHTML','divs'=>[$dID=>['order'=>50,'type'=>'html','html'=>$html]]];
+        } else { // it's a structure, process it
+            $data = array_replace_recursive(['type'=>'divHTML'], $content);
+            if (!empty($data['fields'])) { // build the settings menu
+                $html  = '<div id="'.$dID.'_attr" style="display:none"><form id="'.$dID.'Form" action="">';
+                foreach ($data['fields'] as $id => $prop) { $html .= html5($id, $prop); }
+                $html .= '</form></div>';
+                $html .= htmlJS("jq('#{$dID}Form').keypress(function(event) { var keycode=(event.keyCode ? event.keyCode : event.which); if (keycode=='13') { dashboardAttr('$mID:$dID', 0); } });");
+                $data['divs']['settings'] = ['order'=>10,'type'=>'html','html'=>$html];
+            }
         }
-        $layout = array_replace_recursive($layout, ['type'=>'raw', 'content'=>$content]);
+        $layout = array_replace_recursive($layout, $data);
+        msgDebug("\nlayout after processing = ".print_r($layout, true));
 	}
 
 	/**

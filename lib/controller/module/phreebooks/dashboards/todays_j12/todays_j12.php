@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2018-10-09
  * @filesource /lib/controller/module/phreebooks/dashboards/todays_j12/todays_j12.php
  */
 
@@ -76,26 +76,24 @@ class todays_j12
 		$order  = $this->settings['order']=='desc' ? 'post_date DESC, invoice_num DESC' : 'post_date, invoice_num';
 		$result = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $filter, $order, ['id','journal_id','total_amount','currency','currency_rate','post_date','invoice_num', 'primary_name_b'], $this->settings['num_rows']);
 		$total = 0;
+        $html .= html5('', ['classes'=>['easyui-datalist'],'attr'=>['type'=>'ul']])."\n";
 		if (sizeof($result) > 0) {
 			foreach ($result as $entry) {
                 $jTotal = $entry['journal_id'] == 13 ? -$entry['total_amount'] : $entry['total_amount'];
 				$currencies->iso  = $entry['currency'];
 				$currencies->rate = $entry['currency_rate'];
-				$html .= '  <div>';
-				$html .= '    <div style="float:right;">'.viewFormat($jTotal, 'currency').'</div>';
-				$html .= '    <div>'.viewDate($entry['post_date']).' #<a href='.BIZUNO_HOME.'&p=phreebooks/main/manager&jID='.$this->settings['jID'].'&rID='.$entry['id'].'" target="_blank">'.$entry['invoice_num'].'</a> ';
-				$html .= viewText($entry['primary_name_b'], $this->trim).'</div>';
-				$html .= '  </div>';
+                $html .= html5('', ['attr'=>['type'=>'li']]).'<span style="float:left">';
+                $html .= html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
+				$html .= viewText($entry['primary_name_b'], $this->trim).'</span><span style="float:right">'.viewFormat($jTotal, 'currency').'</span></li>';
 				$total += $jTotal;
 			}
 			$currencies->iso  = getUserCache('profile', 'currency', false, 'USD');
 			$currencies->rate = 1;
-			$html .= '<div style="float:right"><b>'.viewFormat($total, 'currency').'</b></div>';
-			$html .= '<div><b>'.lang('total')."</b></div>\n";
+			$html .= '<li><div style="float:right"><b>'.viewFormat($total, 'currency').'</b></div><div style="float:left"><b>'.lang('total')."</b></div></li>\n";
 		} else {
-			$html .= '  <div>'.lang('no_results')."</div>\n";
+			$html .= '<li><span>'.lang('no_results')."</span></li>";
 		}
-		$html .= '</div>';
+		$html .= '</ul></div>';
 		return $html;
 	}
 
