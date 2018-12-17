@@ -107,6 +107,7 @@ class discount
         discountType= '';
     } else { // amt
         var discount= cleanCurrency(jq('#totals_{$this->code}').val());
+        if (isNaN(discount)) { discount = 0; }
         var percent = begBalance ? 100 * (1 - ((begBalance - discount) / begBalance)) : 0;
         percent     = percent.toFixed(decLen+1);
         bizTextSet('totals_{$this->code}_pct', percent);

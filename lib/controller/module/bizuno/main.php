@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-28
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/bizuno/main.php
  * 
  * @todo BUG - context sensitive help, look at current module, page, method to send to Phreehelp
@@ -207,6 +207,7 @@ jq('#winEncrypt').keypress(function(event) {
      */
     public function fileDownload()
     {
+        global $io;
         if (!validateSecurity('bizuno', 'phreeform', 1)) { return; } // changed to 'phreeform' security to enable download across Bizuno modules
         $path = clean('pathID', 'path', 'get');
 		$file = clean('fileID', 'file', 'get');
@@ -220,8 +221,7 @@ jq('#winEncrypt').keypress(function(event) {
 		}
 		msgLog(lang('download').' - '.$file);
 		msgDebug("\n".lang('download').' - '.$file);
-		$output = new io();
-		$output->download('file', $dir, $file);
+		$io->download('file', $dir, $file);
 	}
 
 	/**
@@ -230,12 +230,12 @@ jq('#winEncrypt').keypress(function(event) {
      */
     public function fileDelete(&$layout=[])
     {
+        global $io;
         if (!validateSecurity('bizuno', 'admin', 4)) { return; }
         $dgID = clean('rID', 'text', 'get');
 		$file = clean('data','text', 'get');
-		$output = new io();
         msgDebug("\nDeleting dgID = $dgID and file = $file");
-		$output->fileDelete($file);
+		$io->fileDelete($file);
 		msgLog(lang('delete').' - '.$file);
 		msgDebug("\n".lang('delete').' - '.$file);
 		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-15
+ * @version    3.x Last Update: 2018-12-17
  * @filesource portal/view.php
  */
 
@@ -83,10 +83,9 @@ class portalView
         $logoPath = getModuleCache('bizuno', 'settings', 'company', 'logo');
         $src      = $logoPath ? BIZUNO_URL_FS."&src=".getUserCache('profile', 'biz_id')."/images/$logoPath" : BIZUNO_LOGO;
         $htmlLogo = ['label'=>getModuleCache('bizuno', 'properties', 'title'),'events'=>['onClick'=>"hrefClick('');"],'attr'=>['type'=>'img','src'=>$src,'height'=>'48']];
-        $portal   = explode('.', $_SERVER['SERVER_ADDR']);
-        $version  = PHREEBOOKS_VERSION."-{$portal[3]}-".getUserCache('profile', 'language')."-".getUserCache('profile', 'currency', false, 'No ISO');
+        $version  = PHREEBOOKS_VERSION." (Bizuno Library ".MODULE_BIZUNO_VERSION.") ".getUserCache('profile', 'language')."-".getUserCache('profile', 'currency', false, 'No ISO');
         $company  = getModuleCache('bizuno', 'settings', 'company', 'primary_name').' - '.lang('period').': '.getModuleCache('phreebooks', 'fy', 'period').' | '.$version;
-        $company .= ' - '.getModuleCache('bizuno', 'properties', 'title').' | '.lang('copyright').' &copy;'.date('Y').' <a href="http://www.PhreeSoft.com" target="_blank">PhreeSoft&trade;</a>';
+        $company .= ' | '.lang('copyright').' &copy;'.date('Y').' <a href="http://www.PhreeSoft.com" target="_blank">PhreeSoft&trade;</a>';
         if ($GLOBALS['bizunoModule'] <> 'bizuno') { $company .= '-'.$GLOBALS['bizunoModule'].' '.getModuleCache($GLOBALS['bizunoModule'], 'properties', 'status'); }
         $bizSearch= '<div style="text-align:center;padding-top:5px"><input class="easyui-searchbox" data-options="prompt:\''.lang('search').'\'" style="width:300px;text-align:center"></div>';
         if ($region == 'left') { $bizSearch= str_replace('padding-top:5px', 'padding-top:15px', $bizSearch); }

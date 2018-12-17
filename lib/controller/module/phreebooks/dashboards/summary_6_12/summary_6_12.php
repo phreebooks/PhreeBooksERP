@@ -61,7 +61,7 @@ class summary_6_12
 	public function render()
     {
         $total_v = $total_c = 0;
-//        require_once(BIZUNO_LIB."controller/module/phreebooks/functions.php");
+//        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhreeBooks', 'function');
         $btnSave = ['attr'=>['type'=>'button','value'=>lang('save')],    'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]];
         $iconExp = ['attr'=>['type'=>'button','value'=>lang('download')],'events'=>['onClick'=>"jq('#sum_6_12').submit();"]];
         $settings= $this->settingsStructure();

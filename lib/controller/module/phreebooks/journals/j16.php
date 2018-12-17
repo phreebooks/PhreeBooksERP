@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-15
+ * @version    3.x Last Update: 2018-11-12
  * @filesource /lib/controller/module/phreebooks/journals/j16.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreebooks/journals/common.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journals/common.php", 'jCommon');
 
 class j16 extends jCommon
 {
@@ -233,7 +233,7 @@ class j16 extends jCommon
 		$on_order = jsLang('inventory', 'qty_po');
         $store_id = getUserCache('profile', 'store_id', false, 0);
 		return ['id'=>$name, 'type'=>'edatagrid',
-			'attr' => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true, 'singleSelect'=>true, 'idField'=>'id'],
+			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true, 'singleSelect'=>true, 'idField'=>'id'],
 			'events' => ['data'=> "datagridData",
 				'onLoadSuccess'=> "function(row) { totalUpdate(); }",
 				'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
@@ -244,34 +244,27 @@ class j16 extends jCommon
 				'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
 				'onDestroy'    => "function(rowIndex) { totalUpdate(); curIndex = undefined; }",
 				'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
-			'source' => [
-                'actions' => ['newItem' =>['order'=>10,'icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
+			'source' => ['actions'=>['newItem'=>['order'=>10,'icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
 			'columns'=> [
-                'id'         => ['order'=>0, 'attr'=>  ['hidden'=>true]],
-				'gl_account' => ['order'=>0, 'attr'=>  ['hidden'=>true]],
-				'unit_cost'  => ['order'=>0, 'attr'=>  ['editor'=>'text', 'hidden'=>true]],
+                'id'         => ['order'=>0, 'attr'=>['hidden'=>true]],
+				'gl_account' => ['order'=>0, 'attr'=>['hidden'=>true]],
+				'unit_cost'  => ['order'=>0, 'attr'=>['editor'=>'text', 'hidden'=>true]],
 				'action'     => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
 					'actions'=> ['trash' => ['order'=>20,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
-				'sku'=> ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true,'align'=>'center'],
-					'events'=>  ['editor'=>"{type:'combogrid',options:{
-						width: 150, panelWidth: 540, delay: 500, idField: 'sku', textField: 'sku', mode: 'remote',
-						url:        '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID=$store_id',
-						onClickRow: function (idx, data) { adjFill(data); },
-						columns:[[{field:'sku',              title:'".jsLang('sku')."',width:100},
-								  {field:'description_short',title:'".jsLang('description')."',width:200},
-								  {field:'qty_stock',        title:'$on_hand', align:'right',width:90},
-								  {field:'qty_po',           title:'$on_order',align:'right',width:90}]]
-					}}"]],
-				'qty_stock' => ['order'=>30,'label'=>$on_hand,'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
-					'events'=>  ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
-				'qty' => ['order'=>40,'label'=>lang('journal_item_qty', $this->journalID),'attr' =>['width'=>100,'resizable'=>true,'align'=>'center'],
-					'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ adjCalc('qty'); } } }"]],
-				'balance' => ['order'=>50, 'label'=>lang('balance'),'styles'=>['text-align'=>'right'],
-					'attr' => ['width'=>100, 'disabled'=>true, 'resizable'=>true, 'align'=>'center'],
-					'events'=>  ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
-				'total' => ['order'=>60, 'label'=>lang('total'),'format'=>'currency',
-                    'attr'=>['width'=>120,'resizable'=>true,'align'=>'center'],
-					'events'=>['editor'=>"{type:'numberbox'}"]],
-				'description' => ['order'=>70,'label'=>lang('description'),'attr'=>['width'=>250,'editor'=>'text','resizable'=>true]]]];
+				'sku'        => ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true,'align'=>'center'],
+					'events' => ['editor'=>"{type:'combogrid',options:{ width:150, panelWidth:540, delay:500, idField:'sku', textField:'sku', mode:'remote',
+    url:        '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID=$store_id',
+    onClickRow: function (idx, data) { adjFill(data); },
+    columns:    [[{field:'sku',title:'".jsLang('sku')."',width:100},{field:'description_short',title:'".jsLang('description')."',width:200},{field:'qty_stock',title:'$on_hand', align:'right',width:90},{field:'qty_po',title:'$on_order',align:'right',width:90}]]
+}}"]],
+				'qty_stock'  => ['order'=>30,'label'=>$on_hand,'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
+					'events' => ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
+				'qty'        => ['order'=>40,'label'=>lang('journal_item_qty', $this->journalID),'attr' =>['width'=>100,'resizable'=>true,'align'=>'center'],
+					'events' => ['editor'=>"{type:'numberbox',options:{onChange:function(){ adjCalc('qty'); } } }"]],
+				'balance'    => ['order'=>50,'label'=>lang('balance'),'styles'=>['text-align'=>'right'], 'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
+					'events' => ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
+				'total'      => ['order'=>60, 'label'=>lang('total'),'format'=>'currency','attr'=>['width'=>120,'resizable'=>true,'align'=>'center'],
+					'events' => ['editor'=>"{type:'numberbox',options:{onChange:function (newValue,oldValue) { var idx=bizDGgetIndex('dgJournalItem'); pbSetTotal(idx, cleanCurrency(newValue)); }}}"]],
+				'description'=> ['order'=>70,'label'=>lang('description'),'attr'=>['width'=>250,'editor'=>'text','resizable'=>true]]]];
 	}
 }

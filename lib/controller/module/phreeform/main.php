@@ -23,7 +23,7 @@
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreeform/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformSecurity', 'function');
 
 class phreeformMain 
 {
@@ -197,9 +197,9 @@ jq('#treePhreeform').tree('expand',  node.target); }";
         if (!$rID || !$title) { return msgAdd($this->lang['err_copy_fail']); }
 		$row = dbGetRow(BIZUNO_DB_PREFIX."phreeform", "id=$rID");
 		unset($row['id']);
-		unset($row['last_update']);
 		$row['title'] = $title;
 		$row['create_date'] = date('Y-m-d');
+		$row['last_update'] = date('Y-m-d');
         $report = parseXMLstring($row['doc_data']);
 		$report->title = $title;
 		$row['doc_data'] = '<PhreeformReport>'.object_to_xml($report).'</PhreeformReport>';

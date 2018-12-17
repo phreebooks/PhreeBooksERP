@@ -23,7 +23,7 @@
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreeform/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformSecurity', 'function');
 
 class phreeformIo
 {

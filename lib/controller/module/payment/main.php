@@ -111,7 +111,7 @@ class paymentMain
 		$rID = clean('rID', 'integer', 'get');
         if (!$rID) { return msgAdd('The record was not found!'); }
 		msgLog(lang('payment')." ".lang('edit')." ($rID)");
-        require_once(BIZUNO_LIB."model/encrypter.php");
+        bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
 		$encrypt= new encryption();
         $fields = [];
         if (!$encrypt->decryptCC($rID, $fields)) { return false; } // update $fields with stored data
@@ -141,7 +141,7 @@ class paymentMain
 			'number'=>str_replace(' ', '', $nmbr),            'month'=>clean('payment_mon', 'integer','post'),
 			'year'  =>clean('payment_year','integer','post'), 'cvv'  =>clean('payment_cvv', 'integer','post')]; // record in contacts table
         msgDebug("\nWorking with payment fields: ".print_r($fields, true));
-        require_once(BIZUNO_LIB."model/encrypter.php");
+        bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
 		$encrypt = new encryption();
 		$encrypt->encryptCC($fields);
 		msgAdd(lang('msg_record_saved'), 'success');
@@ -274,9 +274,9 @@ class paymentMain
     private function process($method, $ledger=[])
     {
         $request=$_POST;
-        require_once(BIZUNO_LIB."model/encrypter.php");
+        bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
         $methods = getModuleCache('payment', 'methods');
-        require_once($methods[$method]['path']."$method.php");
+        bizAutoLoad($methods[$method]['path']."$method.php");
 		$encrypt= new encryption();
 		$name   = clean($method."_name",  'text', 'post');
 		$action = clean($method."_action",'char', 'post');

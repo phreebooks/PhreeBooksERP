@@ -23,7 +23,7 @@
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."model/encrypter.php");
+bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
 
 class creditcard
 {

@@ -289,8 +289,8 @@ class bizunoDashboard
         $modSettings= getModuleCache($module, 'dashboards', $dashboard, 'settings', []);
         $settings   = array_replace_recursive($modSettings, $usrSettings); // merge the user settings on top of defaults
         if (file_exists ("$path/dashboards/$dashboard/$dashboard.php")) {
-            require_once("$path/dashboards/$dashboard/$dashboard.php");
             $fqcn = "\\bizuno\\$dashboard";
+            bizAutoLoad("$path/dashboards/$dashboard/$dashboard.php", $fqcn);
             $myDash = new $fqcn($settings);
             if ($this->checkSecurity($myDash)) { return $myDash; }
         } elseif (getUserCache('profile', 'admin_id')) { // delete from profile as the dashboard is no longer there

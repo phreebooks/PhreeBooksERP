@@ -23,8 +23,8 @@
 
 namespace bizuno;
 
-require_once("cleaner.php");
-$cleaner= new cleaner;
+bizAutoLoad("cleaner.php", 'cleaner');
+$cleaner= new cleaner();
 
 $isoLang = clean('lang', ['format'=>'cmd', 'default'=>'en_US'], 'get'); // get the locale ISO code
 require("en_US/language.php"); // get the core language file

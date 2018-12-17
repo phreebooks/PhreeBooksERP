@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/bizuno/dashboards/daily_tip/daily_tip.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_DAILY_TIP_VERSION','1.0');
+define('DASHBOARD_DAILY_TIP_VERSION','3.0');
 
 class daily_tip
 {
@@ -42,7 +42,7 @@ class daily_tip
 
 	public function render()
     {
-        $io   = new io();
+        global $io;
         $resp = $io->cURLGet("https://www.bizuno.com","p=bizuno/portal/getTip",'get');
         msgDebug("\nReceived back from cURL: ".print_r($resp, true));
 		$tip  = json_decode($resp, true);

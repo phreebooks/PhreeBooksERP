@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-21
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/phreebooks/currency.php
  */
 
@@ -85,7 +85,7 @@ class phreebooksCurrency
 			'divs'     => [
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbCurrency'],
                 'formBOF'=> ['order'=>15,'type'=>'form',   'key'=>'frmCurrency'],
-                'body'   => ['order'=>50,'type'=>'fields', 'fields'=>$this->getViewCurrency($values)],
+                'body'   => ['order'=>50,'type'=>'fields', 'fields'=>$this->getViewCurrency($values, $iso)],
                 'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"]],
 			'toolbars' => ['tbCurrency'=>  ['icons' => [
                 "currencySave" => ['order'=>10,'icon'=>'save','label'=>lang('save'),
@@ -98,17 +98,17 @@ class phreebooksCurrency
  //   htmlToolbar($output, $viewData, 'tbCurrency');
 //$output['body'] .= html5('frmCurrency', $viewData['forms']['frmCurrency'])."
     
-    private function getViewCurrency($values)
+    private function getViewCurrency($values, $iso)
     {
-        $title  = ['label'=>lang('title'),   'attr'=>['value'=>$values['title']]];
-        $code   = ['label'=>lang('code'),    'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']];
-        $is_def = ['label'=>lang('default'), 'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getUserCache('profile', 'currency', false, 'USD')==$iso?true:false]];
-        $xrate  = ['label'=>lang('exc_rate'),'attr'=>['value'=>$values['value']]];
+        $title  = ['label'=>lang('title'),            'attr'=>['value'=>$values['title']]];
+        $code   = ['label'=>lang('code'),             'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']];
+        $is_def = ['label'=>lang('default'),          'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getUserCache('profile', 'currency', false, 'USD')==$iso?true:false]];
+        $xrate  = ['label'=>lang('exc_rate'),         'attr'=>['value'=>$values['value']]];
         $dec_len= ['label'=>$this->lang['dec_length'],'attr'=>['value'=>$values['dec_len']]];
         $dec_pt = ['label'=>$this->lang['dec_point'], 'attr'=>['value'=>$values['dec_pt']]];
-        $sep    = ['label'=>lang('separator'),'attr'=>['value'=>$values['sep']]];
-        $prefix = ['label'=>lang('prefix'),  'attr'=>['value'=>$values['prefix']]];
-        $suffix = ['label'=>lang('suffix'),  'attr'=>['value'=>$values['suffix']]];
+        $sep    = ['label'=>lang('separator'),        'attr'=>['value'=>$values['sep']]];
+        $prefix = ['label'=>lang('prefix'),           'attr'=>['value'=>$values['prefix']]];
+        $suffix = ['label'=>lang('suffix'),           'attr'=>['value'=>$values['suffix']]];
         $pfxneg = ['label'=>$this->lang['neg_prefix'],'attr'=>['value'=>isset($values['pfxneg']) ? $values['pfxneg'] : '-']];
         $sfxneg = ['label'=>$this->lang['neg_suffix'],'attr'=>['value'=>isset($values['sfxneg']) ? $values['sfxneg'] : '']];
         return [

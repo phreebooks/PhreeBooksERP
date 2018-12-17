@@ -17,20 +17,21 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-19
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/model/registry.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_ROOT."portal/guest.php");
+bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
 
 final class bizRegistry 
 {    
 	/**
      * Initializes the registry class
      */
-    function __construct() { 
+    function __construct() {
+        $this->dbVersion = MODULE_BIZUNO_VERSION;
         $this->guest = new guest();
     }
 
@@ -59,7 +60,7 @@ final class bizRegistry
     }
     
     /**
-     * 
+     * Load original configuration, properties get reloaded but other 
      * @return type
      */
     private function initSettings()
@@ -73,6 +74,9 @@ final class bizRegistry
                 unset($modSettings[$row['config_key']]['hooks']); // will clear hooks to be rebuilt later
             }
         }
+        // get the Bizuno database version and retain for upgrade check
+        $this->dbVersion = !empty($modSettings['bizuno']['properties']['version']) ? $modSettings['bizuno']['properties']['version'] : '1.0';
+        msgDebug("\ndbVersion has been stored for bizuno module with $this->dbVersion");
         return $modSettings;
     }
 
@@ -86,7 +90,6 @@ final class bizRegistry
         foreach ($modList as $module => $path) {
             if (isset($bizunoMod[$module])) { $this->initModule($module, $path); }
         }
-        ksort($bizunoMod);        
     }
 
     /**
@@ -105,8 +108,8 @@ final class bizRegistry
             return msgAdd("initModule cannot find module $module at path: $path");
         }
         msgDebug("\nBuilding registry for module $module and path $path");
-        require_once("{$path}admin.php");
         $fqcn  = "\\bizuno\\{$module}Admin";
+        bizAutoLoad("{$path}admin.php", $fqcn);
         $admin = new $fqcn();
         if (isset($admin->structure['settings'])) {
             $bizunoMod[$module]['settings'] = getStructureValues($admin->structure['settings']); // for legacy Bizuno 1.x
@@ -128,7 +131,10 @@ final class bizRegistry
         unset($admin->structure['hooks']);
         unset($admin->structure['api']);
         $bizunoMod[$module]['properties']= $admin->structure;
+        // Restore Bizuno database version for upgrade check. If the dbVersion is the same, then nothing is done
+        if ($module=='bizuno') { $bizunoMod['bizuno']['properties']['version'] = $this->dbVersion; }
 //      msgDebug("\nbizunoMod for module $module has properties: ".print_r($bizunoMod[$module]['properties'], true));
+        msgDebug("\ndbVersion has been set in bizuno module to $this->dbVersion");
         $GLOBALS['updateModuleCache'][$module] = true;
     }
 
@@ -182,8 +188,8 @@ final class bizRegistry
     private function initAccount(&$bizunoMod)
     {
         if (!empty($GLOBALS['skipUpgradeCheck'])) { return; }
-        $mySub   = new io();
-        $myAcct  = $mySub->apiPhreeSoft('getMyExtensions');
+        $io      = new io(); // needs to be here as global may not be set up yet
+        $myAcct  = $io->apiPhreeSoft('getMyExtensions');
         $messages= [];
         // check for new version of Bizuno
         msgDebug("\nComparing this version: ".MODULE_BIZUNO_VERSION." with Phreesoft.com version: {$myAcct['bizuno']['version']}");
@@ -195,9 +201,14 @@ final class bizRegistry
         $myPurchases = $this->reSortExtensions($myAcct);
         msgDebug("\nmyPurchases = ".print_r($myPurchases, true));
         foreach ($myPurchases as $mID => $settings) {
+            msgDebug("\nChecking status for business ID = ".getUserCache('profile', 'biz_id')." and module: $mID with installed status = ".getModuleCache($mID, 'properties', 'status', false, 0));
             if (empty($settings['paid']) && getModuleCache($mID, 'properties', 'status', false, 0)) { // set status to disabled
                 msgDebug("\nDisabling status for business ID = ".getUserCache('profile', 'biz_id')." and module: $mID");
-                setModuleCache($mID, 'properties', 'status', 0);
+                $this->setModuleStatus($mID, 0);
+                continue;
+            } elseif (!empty($settings['paid']) && !getModuleCache($mID, 'properties', 'status', false, 0)) { // set status to disabled
+                msgDebug("\nEnabling status for business ID = ".getUserCache('profile', 'biz_id')." and module: $mID");
+                $this->setModuleStatus($mID, $settings['version']);
                 continue;
             }
 //          if (!empty($myAcct[$mID]['msg'])) { $messages[] = $myAcct[$mID]['msg']; } // check for messages and add to msgSys, expirations, news updates
@@ -210,6 +221,18 @@ final class bizRegistry
         msgSysWrite($messages);
     }
 
+    private function setModuleStatus($mID, $status=0)
+    {
+        global $bizunoMod;
+        if ($status) { 
+            $props= dbGetValue(BIZUNO_DB_PREFIX.'configuration', 'config_value', "config_key='$mID'");
+            $vals = json_decode($props, true);
+            $vals['properties']['status'] = $status;
+            $bizunoMod[$mID] = $vals;
+            $GLOBALS['updateModuleCache'][$mID] = true;
+        } else { setModuleCache($mID, 'properties', 'status', 0); }
+    }
+    
     /**
      * Load any system wide language to the registry language cache
      * @global type $structure
@@ -449,8 +472,8 @@ final class bizRegistry
             } else {
                 $url   = isset($structure['url']) ? "{$structure['url']}$folderID/$method/" : '';
             }
-            require_once("{$path}$method.php");
             $fqcn = "\\bizuno\\$method";
+            bizAutoLoad("{$path}$method.php", $fqcn);
             $clsMeth = new $fqcn($settings['settings']);
             $bizunoMod[$module][$folderID][$method] = [
                 'id'         => $method,

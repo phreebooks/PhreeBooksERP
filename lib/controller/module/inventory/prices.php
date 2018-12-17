@@ -115,9 +115,9 @@ class inventoryPrices
         } else {
             foreach (getModuleCache('inventory', 'prices') as $mID => $settings) {
                 if (!$settings['status']) { continue; }
-                require_once(getModuleCache('inventory', 'prices')[$mID]['path']."$mID.php");
-                $priceSet = getModuleCache('inventory','prices',$mID,'settings');
                 $fqcn = "\\bizuno\\$mID";
+                bizAutoLoad(getModuleCache('inventory','prices')[$mID]['path']."$mID.php", $fqcn);
+                $priceSet = getModuleCache('inventory','prices',$mID,'settings');
                 $tmp = new $fqcn($priceSet);
                 if (strlen($mod) == 0 || (isset($tmp->structure['hooks']) && array_key_exists($mod, $tmp->structure['hooks']))) {
                     if (getModuleCache('inventory', 'prices')[$mID]['status']) { $meths[] = ['id'=>$mID, 'text'=>$settings['title']]; }
@@ -169,9 +169,9 @@ class inventoryPrices
                 'save' => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"if (preSubmitPrices()) divSubmit('inventory/prices/save&type=$this->type&mID=$mID', 'divPricesSet');"]]]]],
 			'fields'  => $structure,
             'values'  => ['qtySource'=>$this->qtySource, 'qtyAdj'=>$this->qtyAdj, 'qtyRnd'=>$this->qtyRnd]];
-		require_once(getModuleCache('inventory', 'prices')[$mID]['path']."$mID.php");
-        $priceSet = getModuleCache('inventory','prices',$mID,'settings');
         $fqcn = "\\bizuno\\$mID";
+		bizAutoLoad(getModuleCache('inventory', 'prices')[$mID]['path']."$mID.php", $fqcn);
+        $priceSet = getModuleCache('inventory','prices',$mID,'settings');
         $meth = new $fqcn($priceSet);
         $meth->priceRender($data, $settings);
 		$layout = array_replace_recursive($layout, $data);
@@ -189,9 +189,9 @@ class inventoryPrices
         $_POST['contact_type'.$mID] = $this->type;
         if (!$mID) { return msgAdd('Cannot save, no method passed!'); }
         if (!$security = validateSecurity('inventory', 'prices_'.$this->type, $rID?3:2)) { return; }
-		require_once(getModuleCache('inventory', 'prices')[$mID]['path']."$mID.php");
-        $priceSet = getModuleCache('inventory','prices',$mID,'settings');
         $fqcn = "\\bizuno\\$mID";
+		bizAutoLoad(getModuleCache('inventory', 'prices')[$mID]['path']."$mID.php", $fqcn);
+        $priceSet = getModuleCache('inventory','prices',$mID,'settings');
         $meth = new $fqcn($priceSet);
         if ($meth->priceSave()) { msgAdd(lang('msg_record_saved'), 'success'); }
 		$layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"jq('#accPrices').accordion('select', 0); jq('#dgPricesMgr').datagrid('reload'); jq('#divPricesSet').html('&nbsp;');"]]);
@@ -353,9 +353,9 @@ class inventoryPrices
             foreach (getModuleCache('inventory', 'prices') as $meth => $settings) { // start with the sorted methods
                 msgDebug("\nlooking at method = $meth with settings: ".print_r($settings, true));
                 if (isset($settings['path'])) {
-                    require_once($settings['path']."$meth.php");
-                    $priceSet = getModuleCache('inventory','prices',$meth,'settings');
                     $fqcn = "\\bizuno\\$meth";
+                    bizAutoLoad($settings['path']."$meth.php", $fqcn);
+                    $priceSet = getModuleCache('inventory','prices',$meth,'settings');
                     $est = new $fqcn($priceSet);
                     if (method_exists($est, 'priceQuote')) { $est->priceQuote($prices, $values); }
                 }

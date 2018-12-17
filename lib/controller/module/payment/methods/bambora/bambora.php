@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2017-12-26
+ * @version    3.x Last Update: 2018-12-10
  * @filesource /lib/controller/module/payment/methods/bambora.php
  *
  * Source Information:
@@ -36,8 +36,8 @@ if (!defined('PAYMENT_BAMBORA_URL_CAPTURE')) { define('PAYMENT_BAMBORA_URL_CAPTU
 if (!defined('PAYMENT_BAMBORA_URL_PAYMENT_TEST')) { define('PAYMENT_BAMBORA_URL_PAYMENT_TEST','https://api.na.bambora.com/v1/payments'); }
 if (!defined('PAYMENT_BAMBORA_URL_CAPTURE_TEST')) { define('PAYMENT_BAMBORA_URL_CAPTURE_TEST','https://api.na.bambora.com/v1/payments/RECORD_ID/completions'); }
 
-require_once(BIZUNO_LIB."controller/module/payment/common.php");
-require_once(BIZUNO_LIB."model/encrypter.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/payment/common.php", 'paymentCommon');
+bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
 
 class bambora extends paymentCommon
 {
@@ -183,11 +183,11 @@ class bambora extends paymentCommon
 
 	private function queryMerchant($url, $data=[], $opts=[])
     {
+        global $io;
 		msgDebug("\nRequest to send to Bambora: ".print_r($data, true));
         $jsonData= json_encode($data);
-		$channel = new io();
         $reqOpts = ['CURLOPT_HTTPHEADER'=>array_merge($opts, ['Content-Type: application/json', 'Content-Length: '.strlen($jsonData)])];
-        if (!$strJSON = $channel->cURLGet($url, $jsonData, 'post', $reqOpts)) { return; }
+        if (!$strJSON = $io->cURLGet($url, $jsonData, 'post', $reqOpts)) { return; }
         msgDebug("\nReceived raw data back from Bambora: ".print_r($strJSON, true));
         $resp = json_decode($strJSON);
         msgDebug("\njson decoded: ".print_r($resp, true));

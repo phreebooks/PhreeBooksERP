@@ -17,14 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-28
+ * @version    3.x Last Update: 2018-12-16
  * @filesource /index.php
  */
 
 namespace bizuno;
 
-define('MODULE_BIZUNO_VERSION','3.0.6');
-define('PHREEBOOKS_VERSION','5.1.6'); // keep the sub-rev x.x.# at same level
+define('MODULE_BIZUNO_VERSION','3.1.0');
+define('PHREEBOOKS_VERSION','5.2.0'); // keep the sub-rev x.x.# at same level as Bizuno
 
 ini_set('display_errors', true);
 //error_reporting(E_ALL);
@@ -67,7 +67,7 @@ $GLOBALS['dbBizuno'] = $GLOBALS['dbPortal'] = ['type'=>'mysql','host'=>BIZUNO_DB
 define('BIZUNO_3P_QZ_TRAY',BIZUNO_EXT ."extShipping/qz-tray/");
 define('BIZUNO_3P_TCPDF',  BIZUNO_ROOT.'apps/TCPDF/');
 
-define('BIZUNO_DEBUG', true);
+define('BIZUNO_DEBUG', false);
 
 require("portal/main.php");
 $ctl = new main();

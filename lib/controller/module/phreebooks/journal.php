@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-21
+ * @version    3.x Last Update: 2018-12-17
  * @filesource /lib/controller/module/phreebooks/journal.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreebooks/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhreeBooks', 'function');
 
 /**
  * Main journal class wrapper, calls appropriate journal class as needed
@@ -123,8 +123,8 @@ class journal
     public function getJournal($jID, $main=[], $item=[])
     {
         $jName = $this->getJournalName($jID);
-        require_once(BIZUNO_LIB."controller/module/phreebooks/journals/$jName.php");
         $fqcn = "\\bizuno\\$jName";
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journals/$jName.php", $fqcn);
         return new $fqcn($main, $item);
     }
     
@@ -423,6 +423,14 @@ class journal
             msgDebug("\nChecking post dates, this = {$this->main['post_date']} and so_po_ref id = $refDate");
             if ($refDate > $this->main['post_date']) { return msgAdd(lang('err_gl_bad_post_date')); }
         }
+        // check for same po_num by same customer
+        if (in_array($this->main['journal_id'], [9,10,12,13]) && !empty($this->main['purch_order_id'])) {
+            $filter[] = "contact_id_b = {$this->main['contact_id_b']} AND journal_id='{$this->main['journal_id']}'";
+            $filter[] = "purch_order_id='".addslashes($this->main['purch_order_id'])."'";
+            if (!empty($this->main['id'])) { $filter[] = "id<>{$this->main['id']}"; }
+			$dup = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id', implode(' AND ', $filter));
+            if ($dup) { return msgAdd(sprintf(lang('err_gl_invoice_num_dup'), lang('journal_main_purch_order_id'), $this->main['purch_order_id'])); }
+        }
 		$this->currencyConvert('toDefault');
         if ($action!=='delete') { if (!$this->setInvoice()) { return; } }
         return true;
@@ -470,7 +478,7 @@ class journal
 		$cType = in_array($this->main['journal_id'], [3,4,6,7,17,20,21]) ? 'v' : 'c';
         if ($aID) { $aType = dbGetValue(BIZUNO_DB_PREFIX."address_book", 'type', "address_id=$aID"); }
             else  { $aType = $type=='b' ? ($cID ? 'b' : 'm') : 's'; }
-		require_once(BIZUNO_LIB."controller/module/contacts/main.php");
+		bizAutoLoad(BIZUNO_LIB."controller/module/contacts/main.php", 'contactsMain');
 		$contact = new contactsMain(); // should not need to pass variables
 		$_POST['id_'.$type]    = $this->main['id_'.$type]    = $cID; // map the journal fields to contact fields
         // By commenting these, the terms and rep DO NOT UPDATE the contat record. This must be done through the Contacts Manager
@@ -621,7 +629,7 @@ class journal
         $debit_total  = round($result['debit'],  4);
 		$credit_total = round($result['credit'], 4);
         if (abs($debit_total - $credit_total) > $tolerance || abs($adjustment) > $tolerance) { 
-            return msgAdd(sprintf(lang('err_gl_out_of_balance'), $balance_total, $debit_total, $credit_total, $period));
+            return msgAdd(sprintf(lang('err_gl_out_of_balance'), $balance_total, $debit_total, $credit_total, $period), 'trap');
         }
         if (abs($balance_total) > 0.001) { // Rounding errors in beginning balance
 			msgDebug("\n\n\n      Adjusting balance for beginning balance not zero, adjustment = {$result['balance']} and adjusting gl account = $adj_gl_account");

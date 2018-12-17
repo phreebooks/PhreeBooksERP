@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-15
+ * @version    3.x Last Update: 2018-12-13
  * @filesource lib/controller/module/bizuno/profile.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/bizuno/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/bizuno/functions.php", 'getIcons', 'function');
 
 class bizunoProfile
 {
@@ -95,7 +95,7 @@ class bizunoProfile
             'password_confirm'=> ['order'=>40,'break'=>true,'label'=>lang('password_confirm'),   'attr'=>['type'=>'password']],
             'icons'           => ['order'=>45,'break'=>true,'label'=>$this->lang['icon_set'],'values'=>getIcons(), 'attr'=>['type'=>'select','value'=>isset($settings['icons'] )?$settings['icons']:'default']],
             'theme'           => ['order'=>50,'break'=>true,'label'=>lang('theme'),          'values'=>getThemes(),'attr'=>['type'=>'select','value'=>isset($settings['theme']) ?$settings['theme']:'default']],
-            'menu'            => ['order'=>55,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$positions, 'attr'=>['type'=>'select','value'=>isset($settings['menu'])  ?$settings['menu'] :'default']],
+            'menu'            => ['order'=>55,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$positions, 'attr'=>['type'=>'select','value'=>isset($settings['menu'])  ?$settings['menu'] :'left']],
             'cols'            => ['order'=>60,'break'=>true,'label'=>$this->lang['dashboard_columns'],'attr'=>['value'=>isset($settings['cols'])  ?$settings['cols']  :'3']]];
     }
 
@@ -119,7 +119,7 @@ class bizunoProfile
 		if (strlen($pw_cur) > 0 && biz_validate_user_creds($email, $pw_cur)) { // check, see if reset password
             $pw_new = clean('password_new',    'password','post');
             $pw_eql = clean('password_confirm','password','post');
-            require_once(BIZUNO_ROOT."portal/guest.php");
+            bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
             $guest  = new guest();
             $pw_enc = $guest->passwordReset($pw_new, $pw_eql);
             if ($pw_enc) { portalWrite('users', ['biz_pass' => $pw_enc], 'update', "biz_user='$email'"); }
@@ -215,7 +215,7 @@ class bizunoProfile
         $dateStart = clean('dateStart',['format'=>'date','default'=>date('Y-m-d')], 'post');
         $recur     = clean('recur',    'char', 'post');
         $dateNext  = $dateStart;
-        require_once(BIZUNO_LIB."controller/module/bizuno/dashboards/reminder/reminder.php");
+        bizAutoLoad(BIZUNO_LIB."controller/module/bizuno/dashboards/reminder/reminder.php", 'reminder');
         $dashB     = new reminder();
         $result    = dbGetRow(BIZUNO_DB_PREFIX."users_profiles", "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='reminder'");
         $settings  = clean($result['settings'], 'json');

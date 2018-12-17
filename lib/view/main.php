@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-15
+ * @version    3.x Last Update: 2018-11-29
  * @filesource /view/main.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_ROOT."portal/view.php");
+bizAutoLoad(BIZUNO_ROOT."portal/view.php", 'portalView');
 
 final class view extends portalView
 {
@@ -178,32 +178,19 @@ function viewFormat($value, $format = '')
 			return $result ? $result : '';
 		case 'contactType':return pullTableLabel(BIZUNO_DB_PREFIX."contacts", 'type', $value);
         case 'curNull0':
-            if ((real)$value == 0) { return ''; }
-            // if not null format like currency
         case 'currency':
-        case 'curLong':  if (!is_numeric($value)) { return $value; }
-            if (!isset($currencies->iso))  { $currencies->iso  = getUserCache('profile', 'currency', false, 'USD'); }
-            if (!isset($currencies->rate)) { $currencies->rate = 1; }
-            $iso = getUserCache('profile', 'currency', false, 'USD');
-            $values = getModuleCache('phreebooks', 'currency', 'iso', $iso);
-            $xRate  = 1; // this is a to do
-            $format_number = number_format($value * $xRate, $values['dec_len'], $values['dec_pt'], $values['sep']);
-            $zero = number_format(0, $values['dec_len']); // to handle -0.00
-            if ($format_number == '-'.$zero) { $format_number = $zero; }
-            if ($format=='curLong' || $iso <> getUserCache('profile', 'currency', false, 'USD')) { // show prefix and sufix if not default, or full format
-                if (!empty($values['prefix'])) { $format_number  = $values['prefix'].' '.$format_number; }
-                if (!empty($values['suffix'])) { $format_number .= ' '.$values['suffix']; }
-            }
-            return $format_number;
+        case 'curLong':
+        case 'curExc':     return viewCurrency($value, $format);
 		case 'date':
-		case 'datetime':  return viewDate($value);
+        case 'datetime':   return viewDate($value);
         case 'encryptName':if (!getUserCache('profile', 'admin_encrypt')) { return ''; }
-			require_once(BIZUNO_LIB."model/encrypter.php");
+			bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
             $enc = new encryption();
 			$result = $enc->decrypt(getUserCache('profile', 'admin_encrypt'), $value);
 			msgDebug("\nDecrypted: ".print_r($result, true));
 			$values = explode(':', $result);
 			return is_array($values) ? $values[0] : '';
+        case 'glActive':  return !empty(getModuleCache('phreebooks', 'chart', 'accounts', $value, '')['inactive']) ? lang('yes') : '';
 		case 'glType':    return lang('gl_acct_type_'.$value);
         case 'glTitle':   return getModuleCache('phreebooks', 'chart', 'accounts', $value, $value)['title'];
 		case 'inv_sku':	  $result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku', "id='$value'");
@@ -216,8 +203,7 @@ function viewFormat($value, $format = '')
 		case 'j_desc':    return isset($bizunoLang["journal_main_journal_id_$value"]) ? $bizunoLang["journal_main_journal_id_$value"] : $value;
         case 'json':      return json_decode($value, true);
 		case 'neg':       return -$value;
-		case 'n2wrd':     require_once(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/functions.php");
-			return viewCurrencyToWords($value);
+        case 'n2wrd':     return bizAutoLoad(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/functions.php") ? viewCurrencyToWords($value) : $value;
         case 'null0':     return (round((real)$value, 4) == 0) ? '' : $value;
         case 'number':    return number_format((float)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'), getModuleCache('bizuno', 'settings', 'locale', 'number_decimal'), getModuleCache('bizuno', 'settings', 'locale', 'number_thousand'));
 		case 'printed':   return $value ? '' : lang('duplicate');
@@ -236,13 +222,16 @@ function viewFormat($value, $format = '')
 	}
 	if (getModuleCache('phreeform', 'formatting', $format, 'function')) {
 		$func = getModuleCache('phreeform', 'formatting')[$format]['function'];
-		if (!function_exists(__NAMESPACE__."\\$func")) {
+        $fqfn = __NAMESPACE__."\\$func";
+		if (!function_exists($fqfn)) {
 			$module = getModuleCache('phreeform', 'formatting')[$format]['module'];
 			$path = getModuleCache($module, 'properties', 'path');
-			require_once("{$path}functions.php");
+            if (!bizAutoLoad("{$path}functions.php", $fqfn, 'function')) {
+                msgDebug("\nFATAL ERROR looking for file {$path}functions.php and function $func and format $format, but did not find", 'trap');
+                return $value;
+            }
 		}
-        $fqfn = "\\bizuno\\$func";
-		return $fqfn($value, $format);
+        return $fqfn($value, $format);
 	}
 	if (substr($format, 0, 5) == 'dbVal') { // retrieve a specific db field value from the reference $value field
         if (!$value) { return ''; }
@@ -360,7 +349,7 @@ function viewInvSales($sku='')
  * @param boolean $addNull - inserts at the beginning a choice to not select a value and return a value of 0 if selected
  * @return array $output - contains array compatible with function HTML5 to render a drop down input element
  */
-function viewKeyDropdown($source, $addNull=false) 
+function viewKeyDropdown($source, $addNull=false)
 {
 	$output = $addNull ? [['id'=>'', 'text'=>lang('none')]] : [];
     if (is_array($source)) { foreach ($source as $key => $value) { $output[] = ['id'=>$key, 'text'=>$value]; } }
@@ -378,12 +367,11 @@ function viewProcess($strData, $Process=false)
     msgDebug("\nEntering viewProcess with $strData = $strData and process = $Process");
     if ($Process && getModuleCache('phreeform', 'processing', $Process, 'function')) {
 		$func = getModuleCache('phreeform', 'processing')[$Process]['function'];
-		if (!function_exists(__NAMESPACE__.'\\'.$func)) {
-			$module = getModuleCache('phreeform', 'processing')[$Process]['module'];
-			require_once(getModuleCache($module, 'properties', 'path')."functions.php");
-		}
         $fqfn = "\\bizuno\\$func";
-		return $fqfn($strData, $Process);
+		$mID  = getModuleCache('phreeform', 'processing')[$Process]['module'];
+		if (bizAutoLoad(getModuleCache($mID, 'properties', 'path')."functions.php", $fqfn, 'function')) {
+            return $fqfn($strData, $Process);
+        }
 	}
 	return $strData;
 }
@@ -422,7 +410,7 @@ function viewLanguages($skipDefault=false)
 	$langs   = scandir(BIZUNO_LIB."locale/");
 	foreach ($langs as $lang) {
 		if (!in_array($lang, ['.', '..', 'en_US']) && is_dir(BIZUNO_LIB."locale/$lang")) {
-			require_once(BIZUNO_LIB."locale/$lang/language.php");
+			require(BIZUNO_LIB."locale/$lang/language.php");
 			$output[] = ['id'=>$lang, 'text'=>isset($langCore['language_title']) ? $langCore['language_title'] : $lang];
 		}
 	}
@@ -548,7 +536,34 @@ function viewTerms($terms_encoded='', $short=true, $type='c', $inc_limit=false)
 }
 
 /**
- * This function builds the currency dropdown based on the locale XML file.
+ * ISO source is always the default currency as all values are stored that way. Setting isoDest forces the default to be converted to that ISO
+ * @global array $currencies - details of the ISO currency ->iso and ->rate OR ->isoDest ISO currency override
+ * @param float $value
+ * @param string $format - How to format the data
+ * @return string - Formatted data to $currencies->iso or $currencies->isoDest
+ */
+function viewCurrency($value, $format='currency')
+{
+    global $currencies;
+    if ($format=='curNull0' && (real)$value == 0) { return ''; }
+    $defISO = getUserCache('profile', 'currency', false, 'USD');
+    if (!is_numeric($value))         { return $value; }
+    if ( empty($currencies->iso))    { $currencies->iso = $defISO; }
+    if (!empty($currencies->isoDest)){ $currencies->iso = $currencies->isoDest; unset($currencies->rate); } // force current rate
+    $isoVals= getModuleCache('phreebooks', 'currency', 'iso', $currencies->iso);
+    if ( empty($currencies->rate))   { $currencies->rate= !empty($isoVals['value']) ? $isoVals['value'] : 1; }
+    $newNum = number_format($value * $currencies->rate, $isoVals['dec_len'], $isoVals['dec_pt'], $isoVals['sep']);
+    $zero   = number_format(0, $isoVals['dec_len']); // to handle -0.00
+    if ($newNum == '-'.$zero) { $newNum = $zero; }
+//  if ($format=='curLong' || $currencies->iso <> $defISO) { // show prefix and sufix if not default, or full format
+        if (!empty($isoVals['prefix'])) { $newNum  = $isoVals['prefix'].' '.$newNum; }
+        if (!empty($isoVals['suffix'])) { $newNum .= ' '.$isoVals['suffix']; }
+//  }
+    return $newNum;
+}
+
+/**
+ * This function builds the currency drop down based on the locale XML file.
  * @return multitype:multitype:NULL
  */
 function viewCurrencyDropdown()
@@ -828,18 +843,10 @@ function htmlComboContact($id, $props=[])
  */
 function dgHtmlGLAcctData()
 {
-	return "{type:'combogrid',options:{
-		data:       bizDefaults.glAccounts.rows,
-        mode:      'local',
-		width:      300,
-		panelWidth: 450,
-		idField:    'id',
-		textField:  'title',
-        inputEvents:jq.extend({},jq.fn.combogrid.defaults.inputEvents,{ keyup:function(e){ glComboSearch(jq(this).val()); } }),
-		columns:[[{field:'id',   title:'".jsLang('gl_account')."',width: 80},
-				  {field:'title',title:'".jsLang('title')."',     width:200},
-				  {field:'type', title:'".jsLang('type')."',      width:160}]]
-		}}";
+	return "{type:'combogrid',options:{ data:pbChart, mode:'local', width:300, panelWidth:450, idField:'id', textField:'title',
+inputEvents:jq.extend({},jq.fn.combogrid.defaults.inputEvents,{ keyup:function(e){ glComboSearch(jq(this).val()); } }),
+rowStyler:  function(index,row){ if (row.inactive=='1') { return { class:'row-inactive' }; } },
+columns:    [[{field:'id',title:'".jsLang('gl_account')."',width:80},{field:'title',title:'".jsLang('title')."',width:200},{field:'type',title:'".jsLang('type')."',width:160}]]}}";
 }
 
 /**
@@ -993,7 +1000,7 @@ function formatDatagrid($dbData, $name, $structure=[], $override=[])
                         default:
                     }
                 }
-//          	if (is_array($value) || is_object($value)) continue; // skip if the element is an array or object
+//          	if (is_array($value) || is_object($value))     { continue; } // skip if the element is an array or object
                 if (is_array($value) || is_object($value))     { $value = json_encode($value); } // skip if the element is an array or object
                 if (isset($structure[$field]['attr']['type'])) { $value = viewFormat($value, $structure[$field]['attr']['type']); }
                 $temp[$field] = $value;

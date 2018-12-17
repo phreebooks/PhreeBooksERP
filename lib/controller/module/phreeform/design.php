@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-08
+ * @version    3.x Last Update: 2018-12-07
  * @filesource /controller/module/phreeform/design.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreeform/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformSecurity', 'function');
 
 class phreeformDesign
 {
@@ -67,8 +67,10 @@ class phreeformDesign
 			$report->id= $rID;
 			msgDebug("\nRead report: ".print_r($report, true));
 		} else {
-            $type   = clean('type', 'cmd', 'get');
-			$dbData = ['id'=>0,'title'=>'','mime_type'=>$type,'security'=>'u:-1;g:-1','create_date'=>date('Y-m-d'),'settings'=>'','report'=>$this->setNewReport($type)];
+            $report = (object)[];
+            $report->reporttype = $type = clean('type', 'cmd', 'get');
+            $report->security = 'u:-1;g:-1';
+			$dbData = ['id'=>0,'title'=>'','mime_type'=>$type,'security'=>$report->security,'create_date'=>date('Y-m-d'),'settings'=>'','report'=>$this->setNewReport($type)];
 		}
         $fields = $this->editLayout($report);
         $viewSet= $this->getViewSettings($type);
@@ -94,7 +96,8 @@ class phreeformDesign
 				'filters' => ['order'=>40,'label'=>lang('filters'),'type'=>'divs','divs'=>[
                     'fields'  => ['order'=>20,'type'=>'html','html'=>$this->getViewFilters($fields, $type, $notes)],
                     'dgSort'  => ['order'=>40,'type'=>'datagrid','key'=>'sort'],
-                    'dgFilter'=> ['order'=>50,'type'=>'datagrid','key'=>'filters']]],
+                    'dgGroups'=> ['order'=>50,'type'=>'datagrid','key'=>'groups'],
+                    'dgFilter'=> ['order'=>60,'type'=>'datagrid','key'=>'filters']]],
 				'settings'=> ['order'=>50,'label'=>lang('settings'),'type'=>'divs','divs'=>[
                     'fields'=>['order'=>10,'type'=>'fields','keys'=>$viewSet['fields']],
                     'notes' =>['order'=>95,'type'=>'html','html'=>$viewSet['notes']]]]]]],
@@ -102,8 +105,8 @@ class phreeformDesign
 			'datagrid'  => [
                 'tables' => $this->dgTables ('dgTables'),
 				'fields' => $this->dgFields ('dgFields', $type),
-				'groups' => $this->dgGroups ('dgGroups', $type),
 				'sort'   => $this->dgOrder  ('dgSort',   $type),
+				'groups' => $this->dgGroups ('dgGroups', $type),
 				'filters'=> $this->dgFilters('dgFilters',$type)],
             'jsHead'    => [
                 'phreeform'  => "jq.cachedScript('".BIZUNO_URL."controller/module/phreeform/phreeform.js?ver=".MODULE_BIZUNO_VERSION."');",
@@ -286,15 +289,15 @@ class phreeformDesign
     
     private function getViewSettings($type)
     {
-        $notes  = '';
+        $notes = '';
         if ($type == 'rpt') {
-            $output = ['truncate', 'totalonly'];
+            $output = ['truncate', 'totalonly']; // , 'calccurrency'
         } elseif ($type == 'frm') {
             $output = ['serial', 'printedfield', 'contactlog', 'defaultemail', 'formbreakfield', 'skipnullfield'];
             $notes .= '<br /><sup>1</sup>'.$this->lang['msg_printed_set'];
             $notes .= '<br /><sup>2</sup>'.$this->lang['tip_phreeform_contact_log'];
         }
-        $output = array_merge($output, ['specialclass','groupname','filenameprefix','filenamefield','users','roles']);
+        $output = array_merge($output, ['special_class','groupname','filenameprefix','filenamefield','users','roles']);
         return ['fields'=>$output, 'notes'=>$notes];
     }
 
@@ -336,11 +339,11 @@ class phreeformDesign
 			'rpttype'       => ['attr'=>['type'=>'hidden','value'=>isset($report->reporttype)?$report->reporttype:'rpt']],
 			'title'         => ['break'=>true,'label'=>lang('title'),'attr'=>['size'=>64,'maxlength'=>64,'value'=>(isset($report->title) ? $report->title :'')]],
 			'description'   => ['break'=>true,'attr'=>['type'=>'textarea','value'=>(isset($report->description) ?$report->description :'')]],
-			'specialclass'  => ['break'=>true,'label'=>$this->lang['phreeform_special_class'],'attr'=>['value'=>(isset($report->special_class) ? $report->special_class :'')]],
+			'special_class' => ['break'=>true,'label'=>$this->lang['phreeform_special_class'],'attr'=>['value'=>(isset($report->special_class) ? $report->special_class :'')]],
             'emailsubject'  => ['break'=>true,'attr'=>['width'=>60, 'value'=>isset($report->emailsubject)?$report->emailmessage:'']],
 			'emailbody'     => ['break'=>true,'attr'=>['type'=>'textarea', 'cols'=>80, 'rows'=>4, 'value'=>(isset($report->emailmessage)?$report->emailmessage:'')]],
 			'serial'        => ['break'=>true,'label'=>$this->lang['lbl_serial_form'],'attr'=>['type'=>'checkbox']],
-			'groupname'     => ['break'=>true,'label'=>lang('group_list'), 'values'=>$groups,'attr'=>['type'=>'select', 'value'=>$report->groupname]],
+			'groupname'     => ['break'=>true,'label'=>lang('group_list'), 'values'=>$groups,'attr'=>['type'=>'select', 'value'=>(isset($report->groupname)?$report->groupname:'')]],
 			'dateperiod'    => ['break'=>true,'attr'=>['type'=>'radio']],
 			'datelist'      => ['break'=>true,'position'=>'after','attr'=>['type'=>'checkbox', 'value'=>(isset($report->datelist)?$report->datelist:'a')]],
             'datefield'     => ['break'=>true,'label'=>$this->lang['phreeform_date_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
@@ -355,8 +358,9 @@ class phreeformDesign
                 'attr'      => ['type'=>'select','value'=>isset($report->formbreakfield)?$report->formbreakfield:'']],
             'skipnullfield' => ['break'=>true,'label'=>$this->lang['lbl_skip_null'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->skipnullfield)?$report->skipnullfield:'']],
-			'truncate'      => ['break'=>true,'label'=>$this->lang['truncate_fit'],   'attr'=>['type'=>'checkbox', 'checked'=>(isset($report->truncate) ?'1':'0')]],
-			'totalonly'     => ['break'=>true,'label'=>$this->lang['show_total_only'],'attr'=>['type'=>'checkbox', 'checked'=>(isset($report->totalonly)?'1':'0')]],
+			'truncate'      => ['break'=>true,'label'=>$this->lang['truncate_fit'],      'attr'=>['type'=>'checkbox','checked'=>(!empty($report->truncate)    ?'1':'0')]],
+			'totalonly'     => ['break'=>true,'label'=>$this->lang['show_total_only'],   'attr'=>['type'=>'checkbox','checked'=>(!empty($report->totalonly)   ?'1':'0')]],
+//			'calccurrency'  => ['break'=>true,'label'=>$this->lang['calculate_currency'],'attr'=>['type'=>'checkbox','checked'=>(!empty($report->calccurrency)?'1':'0')]],
 			'filenameprefix'=> ['break'=>true,'label'=>lang('prefix'),    'attr'=>['size'=>10, 'value'=>(isset($report->filenameprefix) ? $report->filenameprefix : '')]],
             'filenamefield' => ['break'=>true,'label'=>lang('fieldname'),'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->filenamefield)?$report->filenamefield:'']],

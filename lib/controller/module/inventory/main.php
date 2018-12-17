@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-14
+ * @version    3.x Last Update: 2018-12-04
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -270,12 +270,12 @@ class inventoryMain
         $structure['dg_assy'] = ['attr'=>['type'=>'hidden']];
         $structure['dg_assy'] = ['attr'=>['type'=>'hidden']];
         if (validateSecurity('inventory', 'prices_c', 1, false)) {
-            $structure['show_prices_c'] = ['order'=>51,'icon'=>'price','label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=c&itemCost='+jq('#item_cost').numberbox('getValue')+'&fullPrice='+jq('#full_price').numberbox('getValue'), $rID);"]];
+            $structure['show_prices_c'] = ['order'=>42,'icon'=>'price','label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=c&itemCost='+bizTextGet('item_cost')+'&fullPrice='+bizTextGet('full_price'), $rID);"]];
             unset($structure['full_price']['break']);
             $fldCustomer[] = 'show_prices_c';
         }
         if (validateSecurity('inventory', 'prices_v', 1, false)) {
-            $structure['show_prices_v'] = ['order'=>30,'icon'=>'price','break'=>true,'label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=v', $rID);"]];
+            $structure['show_prices_v'] = ['order'=>42,'icon'=>'price','break'=>true,'label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=v&itemCost='+bizTextGet('item_cost')+'&fullPrice='+bizTextGet('full_price'), $rID);"]];
             unset($structure['item_cost']['break']);
             $fldVendor[] = 'show_prices_v';
         }
@@ -286,28 +286,6 @@ class inventoryMain
         }
         $imgSrc = $structure['image_with_path']['attr']['value'];
         $imgDir = dirname($structure['image_with_path']['attr']['value']).'/';
-        // these need to be fixed in the database table comments
-        $structure['qty_stock']['col']       = 2;
-        $structure['qty_po']['col']          = 2;
-        $structure['qty_so']['col']          = 2;
-        $structure['qty_alloc']['col']       = 2;
-        $structure['lead_time']['col']       = 2;
-        $structure['item_weight']['col']     = 2;
-        $structure['image_with_path']['col'] = 4;
-        $structure['inventory_type']['order']= 10;
-        $structure['cost_method']['order']   = 20;
-        $structure['gl_sales']['order']      = 30;
-        $structure['gl_inv']['order']        = 40;
-        $structure['gl_cogs']['order']       = 50;
-        $structure['vendor_id']['order']     = 58;
-        $structure['price_sheet_v']['order'] = 28;
-		$structure['image_with_path']['attr']['type']= 'hidden';
-		$structure['gl_sales']['attr']['type']       = 'ledger';
-		$structure['gl_inv']['attr']['type']         = 'ledger';
-		$structure['gl_cogs']['attr']['type']        = 'ledger';
-		$structure['tax_rate_id_v']['attr']['type']  = 'select';
-		$structure['tax_rate_id_c']['attr']['type']  = 'select';
-		$structure['vendor_id']['attr']['type']      = 'select';
         // complete the structure and validate
 		$structure['qty_stock']['attr']['readonly']  = 'readonly';
 		$structure['qty_po']['attr']['readonly']     = 'readonly';
@@ -318,13 +296,12 @@ class inventoryMain
         if ($rID) {
             $locked = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "sku='{$structure['sku']['attr']['value']}'"); // was inventory_history but if a SO exists will not lock sku field and can change
             $title  = $structure['sku']['attr']['value'].' - '.$structure['description_short']['attr']['value'];
-            $structure['where_used']= ['order'=>4,'icon'=>'tools','break'=>true,'label'=>lang('inventory_where_used'),'hidden'=>$rID?false:true,'events'=>['onClick'=>"jsonAction('inventory/main/usage', $rID);"]];
+            $structure['where_used']= ['order'=>11,'icon'=>'tools','break'=>true,'label'=>lang('inventory_where_used'),'hidden'=>$rID?false:true,'events'=>['onClick'=>"jsonAction('inventory/main/usage', $rID);"]];
             unset($structure['sku']['break']);
             $fldGeneral[] = 'where_used';
             if (in_array($inventory_type, ['ma','sa']) ) { 
-                $structure['assy_cost'] = ['order'=>31,'icon'=>'payment','break'=>true,'label'=>lang('inventory_assy_cost'),'events'=>['onClick'=>"jsonAction('inventory/main/getCostAssy', $rID);"]];
+                $structure['assy_cost'] = ['order'=>41,'icon'=>'payment','label'=>lang('inventory_assy_cost'),'events'=>['onClick'=>"jsonAction('inventory/main/getCostAssy', $rID);"]];
                 $fldVendor[] = 'assy_cost';
-                unset($structure['show_prices_v']['break']);
             }
         } else { // set some defaults
             $locked = false;
@@ -345,7 +322,7 @@ class inventoryMain
 			$structure['cost_method']['attr']['disabled']   = 'disabled';
 		}
 		if (sizeof(getModuleCache('inventory', 'prices'))) {
-			require_once(BIZUNO_LIB."controller/module/inventory/prices.php");
+			bizAutoLoad(BIZUNO_LIB."controller/module/inventory/prices.php", 'inventoryPrices');
 			$tmp = new inventoryPrices();
 			$structure['price_sheet_c']['values'] = $tmp->quantityList('c', true);
 			$structure['price_sheet_v']['values'] = $tmp->quantityList('v', true);
@@ -850,8 +827,8 @@ var dataJ12 = ".json_encode($history['sales']).";";
 
     private function dgJ04J10($jID=10)
     {
-        $hide_cost = validateSecurity('phreebooks', "j6_mgr", 1, false) ? false : true;
-        $stores = sizeof(getModuleCache('bizuno', 'stores')) > 1 ? true : false;
+        $hide_cost= validateSecurity('phreebooks', "j6_mgr", 1, false) ? false : true;
+        $stores   = getModuleCache('extStores', 'properties', 'status', '', 0);
         if ($jID==4) {
             $props = ['name'=>'dgJ04','title'=>lang('open_journal_4'), 'data'=>'dataPO'];
             $label = jsLang('fill_purchase');
@@ -873,7 +850,7 @@ var dataJ12 = ".json_encode($history['sales']).";";
                         'edit'=>['order'=>20,'icon'=>'edit','size'=>'small','label'=>lang('edit'),'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD');"]],
                         'fill'=>['order'=>40,'icon'=>$icon, 'size'=>'small','label'=>$label,      'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD&jID=$invID&bizAction=inv');"]]]],
 				'invoice_num'=> ['order'=>20,'label'=>lang('journal_main_invoice_num_10'),'attr'=>['width'=>200,'resizable'=>true]],
-                'store_id'   => ['order'=>30,'hidden'=>$stores?false:true,'label'=>lang('contacts_short_name_b'),'attr'=>['width'=>150,'resizable'=>true]],
+                'store_id'   => ['order'=>30,'label'=>lang('contacts_short_name_b'),'attr'=>['hidden'=>$stores?false:true,'width'=>150,'resizable'=>true]],
                 'post_date'  => ['order'=>40,'label'=>lang('post_date'),'attr'=>['width'=>200,'resizable'=>true]],
 				'qty'        => ['order'=>50,'label'=>lang('balance'),  'attr'=>['width'=>150,'resizable'=>true,'align'=>'center']],
 				'date_1'     => ['order'=>60,'label'=>jsLang('journal_item_date_1',10),'attr'=>['width'=>200,'resizable'=>true,'align'=>'center']]]];

@@ -17,14 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-19
+ * @version    3.x Last Update: 2018-12-13
  * @filesource lib/controller/module/bizuno/users.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB ."controller/module/bizuno/functions.php");
-require_once(BIZUNO_ROOT."portal/guest.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/bizuno/functions.php", 'getIcons', 'function');
+bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
 
 class bizunoUsers
 {
@@ -145,7 +145,7 @@ class bizunoUsers
             'restrict_user' => ['order'=>50,'break'=>true,'label'=>$this->lang['restrict_user'], 'position'=>'after','attr'=>['type'=>'selNoYes','value'=>isset($settings['restrict_user'])?$settings['restrict_user']:'0']],
             'icons'         => ['order'=>65,'break'=>true,'label'=>$this->lang['icon_set'],'values'=>getIcons(), 'attr'=>['type'=>'select','value'=>isset($settings['icons'])?$settings['icons']:'default']],
             'theme'         => ['order'=>70,'break'=>true,'label'=>lang('theme'),          'values'=>getThemes(),'attr'=>['type'=>'select','value'=>isset($settings['theme'])?$settings['theme']:'default']],
-            'menu'          => ['order'=>75,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$posi,      'attr'=>['type'=>'select','value'=>isset($settings['menu']) ?$settings['menu'] :'default']],
+            'menu'          => ['order'=>75,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$posi,      'attr'=>['type'=>'select','value'=>isset($settings['menu']) ?$settings['menu'] :'left']],
             'cols'          => ['order'=>80,'break'=>true,'label'=>$this->lang['dashboard_columns'],'attr'=>['value'=>isset($settings['cols'])?$settings['cols']:'3']]];
             if (validateSecurity('bizuno', 'users', 3)) {
             $output['password_new']    = ['order'=>55,'break'=>true,'label'=>lang('password_new'),    'attr'=>['type'=>'password']];
@@ -160,6 +160,7 @@ class bizunoUsers
 	 */
 	public function save(&$layout=[])
     {
+        global $io;
         $rID  = clean('admin_id','integer','post');
         $email= clean('email',   'email',  'post');
         if (!$security = validateSecurity('bizuno', 'users', $rID?3:2)) { return; }
@@ -201,13 +202,12 @@ class bizunoUsers
         $pw_new = clean('password_new',    'password','post');
         $pw_eql = clean('password_confirm','password','post');
 		if (strlen($pw_new) > 0) { // check, see if reset password
-            require_once(BIZUNO_ROOT."portal/guest.php");
+            bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
             $guest  = new guest();
             $pw_enc = $guest->passwordReset($pw_new, $pw_eql);
             if ($pw_enc) { portalWrite('users', ['biz_pass' => $pw_enc], 'update', "biz_user='$email'"); }
 		}
 		msgDebug("\nrID = $rID and session admin_id = ".getUserCache('profile', 'admin_id', false, 0)."");
-        $io = new io();
         if ($io->uploadSave('file_attach', getModuleCache('bizuno', 'properties', 'usersAttachPath')."rID_{$rID}_")) {
             dbWrite(BIZUNO_DB_PREFIX.'users', ['attach'=>'1'], 'update', "id=$rID");
         }

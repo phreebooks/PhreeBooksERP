@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-19
+ * @version    3.x Last Update: 2018-11-16
  * @filesource /lib/controller/module/bizuno/backup.php
  */
 
@@ -175,6 +175,7 @@ class bizunoBackup
     
     public function bizunoUpgradeGo(&$layout=[])
     {
+        global $io;
         $pathLocal= BIZUNO_DATA."temp/";
         $zipFile  = $pathLocal."bizuno.zip";
         $bizID    = getUserCache('profile', 'biz_id');
@@ -195,7 +196,6 @@ class bizunoBackup
                 if (is_array($msg)) { return msgAdd("Unknown Exception: ".print_r($msg, true)); }
                 else                { return msgAdd("Unknown Error: ".print_r($msg, true)); }
             }
-            $io = new io();
             if (file_exists($zipFile) && $io->zipUnzip($zipFile, $pathLocal, false)) {
                 msgDebug("\nUnzip successful, removing downloaded zipped file: $zipFile");
                 @unlink($zipFile);
@@ -203,19 +203,13 @@ class bizunoBackup
                 if (!$srcFolder) { return msgAdd("Could not find downloded upgrade folder, aborting!"); }
                 $io->folderMove("temp/$srcFolder/", '', true);
                 rmdir($pathLocal.$srcFolder);
-                // see if an upgrade file is present, if so execute it and delete
-                if (file_exists(BIZUNO_ROOT."bizunoUPG.php")) {
-                    msgDebug("\nDetected bizunoUPG.php file, Executing it for special actions!");
-                    require (BIZUNO_ROOT."bizunoUPG.php");
-                    unlink(BIZUNO_ROOT."bizunoUPG.php");
-                }
             } else {
                 return msgAdd('There was a problem retrieving the upgrade, please visit PhreeSoft community forum for assistance.');
             }
         } catch (Exception $e) {
             return msgAdd("We had an exception upgrading Bizuno: ". print_r($e, true));
         }
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"alert('".$this->lang['msg_upgrade_success']."'); window.location='".BIZUNO_AJAX."&p=bizuno/portal/logout';"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"alert('".$this->lang['msg_upgrade_success']."'); jsonAction('bizuno/portal/logout');"]]);
     }
 
     /**
@@ -225,7 +219,7 @@ class bizunoBackup
      */
     private function guessFolder($path)
     {
-        $io    = new io();
+        global $io;
         $files = $io->folderRead($path);
         msgDebug("\nTrying to read folder $path and got results: ".print_r($files, true));
         foreach ($files as $file) {
@@ -244,6 +238,7 @@ class bizunoBackup
      */
     public function managerRestore(&$layout)
     {
+        global $io;
         $delFile = clean('del', 'text', 'get');
         if (!$security = validateSecurity('bizuno', 'backup', 4)) { return; }
         $jsHead = '<script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-file-upload/js/vendor/jquery.ui.widget.js"></script>
@@ -267,7 +262,6 @@ class bizunoBackup
 			'datagrid'=> ['dgRestore' => $this->dgRestore('dgRestore')],
             'jsHead'  => ['init'=>$jsHead],
             'jsBody'  => ['init'=>$jsBody]];
-        $io = new io();
         if ($delFile) { $io->fileDelete($this->dirBackup.$delFile); }
 		$data['bkFiles'] = $io->folderRead($this->dirBackup);
 		msgDebug('found files: '.print_r($data['bkFiles'], true));
@@ -311,8 +305,8 @@ class bizunoBackup
      */
     public function uploadRestore(&$layout)
     {
+        global $io;
         if (!$security = validateSecurity('bizuno', 'backup', 2)) { return; }
-		$io = new io();
 		$io->options = [
             'script_url' => BIZUNO_ROOT."apps/jquery-file-upload/server/php/index.php",
 			'upload_dir' => BIZUNO_DATA.$this->dirBackup,
@@ -336,6 +330,6 @@ class bizunoBackup
         if (!file_exists(BIZUNO_DATA.$dbFile)) { return msgAdd("Bad filename passed! ".BIZUNO_DATA.$dbFile); }
 		// set execution time limit to a large number to allow extra time
         dbRestore($dbFile);
-        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"alert('".$this->lang['msg_restore_success']."'); window.location='".BIZUNO_AJAX."&p=bizuno/portal/logout';"]]);
+        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"alert('".$this->lang['msg_restore_success']."'); jsonAction('bizuno/portal/logout');"]]);
 	}
 }

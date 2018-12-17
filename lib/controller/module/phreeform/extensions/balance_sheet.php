@@ -23,8 +23,8 @@
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreebooks/functions.php");
-require_once(BIZUNO_LIB."controller/module/phreeform/extensions/income_statement.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhreeBooks', 'function');
+bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/extensions/income_statement.php", 'income_statement');
 
 // this file contains special function calls to generate the data array needed to build reports not possible
 // with the current reportbuilder structure.

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-04
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/contacts/tools.php
  */
 
@@ -104,13 +104,13 @@ class contactsTools
     
     public function chartSalesGo()
     {
+        global $io;
         $rID   = clean('rID', 'integer','get');
         $type  = clean('type','char',   'get');
         $title = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'primary_name', "ref_id=$rID");
         $struc = $this->chartSalesData($rID, $type);
 		$output= [];
         foreach ($struc as $row) { $output[] = implode(",", $row); }
-		$io    = new io();
 		$io->download('data', implode("\n", $output), "Contact-Sales-$title.csv");
     }
 
@@ -215,9 +215,9 @@ class contactsTools
      */
     public function syncAttachments()
     {
+        global $io;
         $verbose = clean('verbose', 'integer', 'get');
         $deleted = $repaired = 0;
-        $io = new io();
         $files = $io->folderRead(getModuleCache('contacts', 'properties', 'attachPath'));
         foreach ($files as $attachment) {
             $tID = substr($attachment, 4); // remove rID_

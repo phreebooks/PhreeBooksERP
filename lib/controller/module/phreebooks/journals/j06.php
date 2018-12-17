@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-22
+ * @version    3.x Last Update: 2018-11-07
  * @filesource /lib/controller/module/phreebooks/journals/j06.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreebooks/journals/common.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journals/common.php", 'jCommon');
 
 class j06 extends jCommon
 {
@@ -164,9 +164,9 @@ class j06 extends jCommon
         $data['fields']['purch_order_id']['attr']['readonly'] = 'readonly';
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
             'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields'], '_b'),
-                'settings'=>['type'=>'v','suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false]],
+                'settings'=>['type'=>'v','suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false,'cols'=>false]],
             'shipAD' => ['order'=>30,'type'=>'address','label'=>lang('ship_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_s'],'content'=>$this->cleanAddress($data['fields'], '_s'),
-                'settings'=>['type'=>'v','suffix'=>'_s','search'=>true,'update'=>true,'validate'=>true,'drop'=>true]],
+                'settings'=>['type'=>'v','suffix'=>'_s','search'=>true,'update'=>true,'validate'=>true,'drop'=>true,'cols'=>false]],
             'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'keys'=>$fldKeys],
             'totals' => ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
         $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];

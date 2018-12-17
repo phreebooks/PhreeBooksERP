@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-23
+ * @version    3.x Last Update: 2018-11-06
  * @filesource /view/easyUI/html5.php
  */
 
@@ -99,9 +99,9 @@ final class html5 {
             case 'payment':$this->layoutPayment($output, $prop); break;
             case 'payments':
                 foreach ($viewData['payments'] as $methID) {
-                    require_once(BIZUNO_LIB."controller/module/payment/methods/$methID/$methID.php");
-                    $totSet = getModuleCache('payment','methods',$methID,'settings');
                     $fqcn   = "\\bizuno\\$methID";
+                    bizAutoLoad(BIZUNO_LIB."controller/module/payment/methods/$methID/$methID.php", $fqcn);
+                    $totSet = getModuleCache('payment','methods',$methID,'settings');
                     $totals = new $fqcn($totSet);
                     $totals->render($output, $viewData);
                 }
@@ -129,9 +129,9 @@ final class html5 {
                 if (!empty($prop['label'])) { $output['body'] .= $this->layoutFieldset($prop); }
                 foreach ($viewData['totals'] as $methID) {
                     $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
-                    require_once("{$path}$methID.php");
-                    $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
                     $fqcn = "\\bizuno\\$methID";
+                    bizAutoLoad("{$path}$methID.php", $fqcn);
+                    $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
                     $totals = new $fqcn($totSet);
                     $totals->render($output, $viewData);
                 }
@@ -640,7 +640,7 @@ final class html5 {
         }
         $output['settings']= ['order'=>90,'label'=>lang('bizuno_company'),'icon'=>'settings','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=settings');"]];
         $output['help']    = ['order'=>98,'label'=>lang('help'),  'icon'=>'help'];
-        $output['logout']  = ['order'=>99,'label'=>lang('logout'),'icon'=>'logout','events'=>['onClick'=>"hrefClick('bizuno/portal/logout');"]];
+        $output['logout']  = ['order'=>99,'label'=>lang('logout'),'icon'=>'logout','events'=>['onClick'=>"jsonAction('bizuno/portal/logout');"]];
         return $output;
     }
 
@@ -809,12 +809,12 @@ final class html5 {
      * @param type $props
      */
     public function layoutAddress(&$output, $props) {
-        $defaults  = ['type'=>'c','format'=>'short','suffix' =>'','search'=>false,'props'=>true,'clear'=>true,'copy'=>false,
+        $defaults = ['type'=>'c','format'=>'short','suffix' =>'','search'=>false,'props'=>true,'clear'=>true,'copy'=>false,'cols'=>true,
             'update'=>false,'validate'=>false,'required'=>false,'store'=>true,'drop' =>false,'fill'=>'none','notes'=>false];
-        $attr      = array_replace($defaults, $props['settings']);
+        $attr     = array_replace($defaults, $props['settings']);
         msgDebug("\nsettings coming in   = ".print_r($props['settings'], true));
         msgDebug("\nsettings after merge = ".print_r($attr, true));
-        $structure = $props['content'];
+        $structure= $props['content'];
         $structure['country']['attr']['type'] = 'country'; // triggers the combogrid
         if ($attr['format'] != 'long') { unset($structure['country']['label']); }
         $structure['email']['attr']['size'] = 32; // keep this from overlapping with other divs
@@ -822,7 +822,7 @@ final class html5 {
             if (getModuleCache('contacts', 'settings', 'address_book', $field)) { $structure[$field]['attr']['required'] = 1; }
         } }
         // Tool bar
-        $toolbar = [];
+        $toolbar  = [];
         if ($attr['clear']) { $toolbar[] = html5('', ['icon'=>'clear','events'=>['onClick'=>"addressClear('{$attr['suffix']}')"]]); }
         if ($attr['validate'] && getModuleCache('extShipping', 'properties', 'status')) {
             $toolbar[] = ' '.html5('', ['icon'=>'truck','label'=>lang('validate_address'),'events'=>['onClick'=>"shippingValidate('{$attr['suffix']}');"]]);
@@ -874,25 +874,23 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
             if (!empty($value['label'])) { $structure[$key]['options']['prompt'] = "'".jsLang($value['label'])."'"; }
             unset($structure[$key]['label']);
         } }
-        // Address fields
-        if (isset($structure['contact_id'])) { $output['body'] .= html5('contact_id'.$attr['suffix'], $structure['contact_id']); }
-        $output['body'] .= html5('address_id'.$attr['suffix'],  $structure['address_id']);
-        $output['body'] .= html5('primary_name'.$attr['suffix'],$structure['primary_name']);
-        $output['body'] .= html5('contact'.$attr['suffix'],     $structure['contact']);
-        $output['body'] .= html5('address1'.$attr['suffix'],    $structure['address1']);
-        $output['body'] .= html5('address2'.$attr['suffix'],    $structure['address2']);
-        $output['body'] .= html5('city'.$attr['suffix'],        $structure['city']);
-        $output['body'] .= html5('state'.$attr['suffix'],       $structure['state']);
-        $output['body'] .= html5('postal_code'.$attr['suffix'], $structure['postal_code']);
-        $output['body'] .= html5('country'.$attr['suffix'],     $structure['country']);
-        $output['body'] .= html5('telephone1'.$attr['suffix'],  $structure['telephone1']);
-        if (!empty($structure['telephone2'])) { $output['body'] .= html5('telephone2'.$attr['suffix'],$structure['telephone2']); }
-        if (!empty($structure['telephone3'])) { $output['body'] .= html5('telephone3'.$attr['suffix'],$structure['telephone3']); }
-        if (!empty($structure['telephone4'])) { $output['body'] .= html5('telephone4'.$attr['suffix'],$structure['telephone4']); }
-        $output['body'] .= html5('email'.$attr['suffix'],       array_merge_recursive($structure['email'], ['options'=>['multiline'=>true,'width'=>275,'height'=>60]]));
-        if (!empty($structure['website']))    { $output['body'] .= html5('website'   .$attr['suffix'],$structure['website']); }
-        if ($attr['notes']) { $output['body'] .= html5('email'.$attr['suffix'],$structure['email']); }
-        $output['body'] .= "  </div>\n";
+        $output['body'] .= "</div>\n";
+
+        if (isset($structure['email'])) { $structure['email'] = array_merge_recursive($structure['email'], ['options'=>['multiline'=>true,'width'=>275,'height'=>60]]); }
+        $data = [];
+        // Address block
+        $col1 = ['contact_id','address_id','primary_name','contact','address1','address2','city','state','postal_code','country'];
+        foreach ($col1 as $idx) { if (isset($structure[$idx])) {
+            $data['fields'][$idx.$attr['suffix']] = $structure[$idx];
+        } }
+        // Contact block
+        $col2 = ['telephone1','telephone2','telephone3','telephone4','email','website'];
+        foreach ($col2 as $idx) { if (isset($structure[$idx])) {
+            $data['fields'][$idx.$attr['suffix']] = $attr['cols'] ? array_merge($structure[$idx], ['col'=>2]) : array_merge($structure[$idx], ['col'=>1]);
+        } }
+        $output['body'] .= $this->layoutFields([], $data);
+        // @todo is the below line ever used?
+//      if ($attr['notes']) { $output['body'] .= html5('notes'.$attr['suffix'],$structure['notes']); }
     }
 
     /**
@@ -1069,8 +1067,6 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         $js .= implode(",\n", $options) . "\n});";
         $output['jsBody'][] = $js;
         $output['body'] .= "</div><!-- EOF Datagrid -->\n";
-
-
     }
 
     /**
@@ -1108,9 +1104,12 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     public function layoutFieldset($props) {
         switch ($GLOBALS['myDevice']) {
             case 'mobile':
-            case 'tablet': return '<fieldset style="width:100%;min-width:0;"><legend>'.$props['label'].'</legend>';
-            default:       return '<fieldset><legend>'.$props['label'].'</legend>';
+            case 'tablet': // was style="width:100%;min-width:0;"
+                $props['styles']['width']    = "100%";
+                $props['styles']['min-width']= "0";
+            default:
         }
+        return '<fieldset'.$this->addAttrs($props).'><legend>'.$props['label'].'</legend>';
     }
 
     public function layoutList($layout, $props) {
@@ -1192,10 +1191,10 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
                 if (!$dispFirst) { $dispFirst = $method; }
                 $style = $dispFirst == $method ? '' : ' style="display:none;"'; 
                 $output['body'] .= '<div id="div_'.$method.'" class="layout-expand-over"'.$style.'>'."\n";
-                require_once($settings['path']."$method.php");
-                $pmtSet = getModuleCache('payment','methods',$method,'settings');
-                $fqcn = "\\bizuno\\$method";
-                $temp = new $fqcn($pmtSet);
+                $fqcn  = "\\bizuno\\$method";
+                bizAutoLoad($settings['path']."$method.php", $fqcn);
+                $pmtSet= getModuleCache('payment','methods',$method,'settings');
+                $temp  = new $fqcn($pmtSet);
                 $temp->render($output, $viewData, $viewDataValues, $dispFirst);
                 $output['body'] .= "</div>\n";
             }
@@ -1407,6 +1406,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         $prop['classes'][] = 'easyui-textbox'; // needs to be textbox to allow currency characters
         $prop['styles']['text-align'] = 'right';
         if (isset($prop['attr']['value'])) { $prop['attr']['value'] = viewFormat($prop['attr']['value'], 'currency'); }
+        if (empty($prop['options']['width'])) { $prop['options']['width'] = 125; }
         unset($prop['attr']['type'], $prop['attr']['size']);
         $this->mapEvents($prop);
         return $this->input($id, $prop);
@@ -1434,7 +1434,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     public function inputFile($id, $prop) {
         unset($prop['break'], $prop['attr']['type']);
         $prop['classes'][] = 'easyui-filebox';
-        if (empty($prop['options']['width'])) { $prop['options']['width'] = 400; }
+        if (empty($prop['options']['width'])) { $prop['options']['width'] = 350; }
         $this->mapEvents($prop);
         return $this->input($id, $prop);
     }
@@ -1619,6 +1619,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
 
     public function selCurrency($id, $prop) {
         msgDebug("currency = ".print_r(getModuleCache('phreebooks', 'currency'), true));
+        if (empty($prop['attr']['value'])) { $prop['attr']['value'] = getUserCache('profile', 'currency', false, 'USD'); }
 		if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
 			$prop['attr']['type'] = 'select';
 			$prop['values']       = viewDropdown(getModuleCache('phreebooks', 'currency', 'iso'), "code", "title");
@@ -1676,9 +1677,9 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
             foreach ($prop['options'] as $key => $value) { $tmp[] = "$key:$value"; }
             $prop['attr']['data-options'] = "{".implode(',', $tmp)."}";
         }
-        foreach ($prop['attr'] as $key => $value) {
+        if (!empty($prop['attr'])) { foreach ($prop['attr'] as $key => $value) {
             $field .= ' '.$key.'="'.str_replace('"', '\"', $value).'"'; // was str_replace('"', '&quot;', $value)
-        }
+        } }
         if (!empty($prop['classes'])) { $field .= $this->addClasses($prop['classes']); }
         if (!empty($prop['styles']))  { $field .= $this->addStyles($prop['styles']); }
         if (!empty($prop['events']))  { $field .= $this->addEvents($prop['events']); }

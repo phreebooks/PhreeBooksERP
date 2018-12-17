@@ -43,9 +43,9 @@ $output['body'] .= " <tbody>\n";
 $methods = $module ? getModuleCache($module, $dirMeth) : [];
 msgDebug("\nprop = ".print_r($prop, true));
 foreach ($methods as $method => $settings) {
-    require_once("{$settings['path']}$method.php");
-    if (empty($settings['settings'])) { $settings['settings'] = []; }
     $fqcn = "\\bizuno\\$method";
+    bizAutoLoad("{$settings['path']}$method.php", $fqcn);
+    if (empty($settings['settings'])) { $settings['settings'] = []; }
     $clsMeth = new $fqcn($settings['settings']);
     if (isset($clsMeth->hidden) && $clsMeth->hidden) { continue; }
     $output['body'] .= "  <tr>\n";

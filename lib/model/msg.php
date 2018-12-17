@@ -54,7 +54,7 @@ final class messageStack
 	function add($message, $level='error', $title='') 
     {
 		switch ($level) {
-            case 'trap':    msgTrap();
+            case 'trap':    $this->trap = true;
 			default:
             case 'error':   $this->error['error'][]  = ['text'=>$message]; break;
 			case 'caution':
@@ -87,7 +87,7 @@ final class messageStack
      * @global object $db - the connected database, used to track # of sql's
      * @param string $text - string to add to the debug string, preceed with \n (newline) to time stamp and display current stats
      */
-    function debug($text)
+    function debug($text, $trap=false)
     {
 		global $db;
         if (is_array($text)) { $text = "\n".print_r($text, true); }
@@ -98,19 +98,21 @@ final class messageStack
 		} else {
 			$this->trace .= $text;
 		}
+        if ($trap=='trap') { $this->trap = true; }
 	}
 
 	/**
      * Write the debug file to the users home folder
      * @global object $db - connected database
      * @param sting $filename - [default ''] filename to write, if left blank, the default filename will be written
-     * @param boolean $append - [default: false] Whether to append the debug to the current trace file or erase it and save just the current information
+     * @param boolean $append - [default false] Whether to append the debug to the current trace file or erase it and save just the current information
+     * @param boolean $force  - [default false] Forces the debug file to be written in all cases
      * @return boolean false, problems are contained in the messageStack
      */
-    function debugWrite($filename=false, $append=false)
+    function debugWrite($filename=false, $append=false, $force=false)
     {
 		global $db;
-        if (!$this->trap || strlen($this->trace) < 1) { return; }
+        if (!$force && (!$this->trap || strlen($this->trace) < 1)) { return; }
 		$this->trace .= "\n\nMessageStack array contains: ".print_r($this->error, true);
 		$this->trace .= "\n\nPage trace stats: Execution Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms, ".$db->total_count." queries taking ".(int)($db->total_time * 1000)." ms";
 		$dest = $filename ? $filename : $this->debug_file;
@@ -167,10 +169,10 @@ function msgLog($msg)
 /**
  * Wrapper to add a message to the debug trace file
  */
-function msgDebug($msg)
+function msgDebug($msg, $trap=false)
 {
 	global $msgStack;
-	$msgStack->debug($msg);
+	$msgStack->debug($msg, $trap=false);
 }
 
 /**
@@ -178,10 +180,10 @@ function msgDebug($msg)
  * @param filename - [default: false] set a full path from myFolder to change from writing file at myFolder/trace.txt
  * @param append - [default: false] set to true to append to current file
  */
-function msgDebugWrite($filename=false, $append=false)
+function msgDebugWrite($filename=false, $append=false, $force=false)
 {
 	global $msgStack;
-	$msgStack->debugWrite($filename, $append);
+	$msgStack->debugWrite($filename, $append, $force);
 }
 
 /**

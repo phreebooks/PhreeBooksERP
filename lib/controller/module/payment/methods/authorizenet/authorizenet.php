@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-19
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/payment/methods/authorizenet.php
  *
  * Source Information:
@@ -29,7 +29,7 @@ namespace bizuno;
 
 if (!defined('PAYMENT_AUTHORIZENET_URL'))      { define('PAYMENT_AUTHORIZENET_URL', 'https://secure2.authorize.net/gateway/transact.dll'); }
 if (!defined('PAYMENT_AUTHORIZENET_URL_TEST')) { define('PAYMENT_AUTHORIZENET_URL_TEST', 'https://test.authorize.net/gateway/transact.dll'); }
-require_once(BIZUNO_LIB."model/encrypter.php");
+bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
 
 class authorizenet
 {
@@ -275,6 +275,7 @@ $output['body'] .= '</div>
 
 	private function queryMerchant($submit_data=[])
     {
+        global $io;
 		$txnReq = array_merge([
             'x_login'          => $this->settings['user_id'],
             'x_tran_key'       => $this->settings['txn_key'],
@@ -298,8 +299,7 @@ $output['body'] .= '</div>
         }
         $request = implode('&', $output);
         // Post order info data to Authorize.net via CURL - Requires that PHP has CURL support installed
-		$channel = new io;
-        if (!$result = $channel->cURLGet($url, $request, 'post')) { return; }
+        if (!$result = $io->cURLGet($url, $request, 'post')) { return; }
         if (substr($result,0,1) == $this->encapChar) { $result = substr($result,1); }
         $result = preg_replace('/.{*}' . $this->encapChar . '$/', '', $result);
         $resp = explode($this->encapChar . $this->delimiter . $this->encapChar, $result);

@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-13
+ * @version    3.x Last Update: 2018-11-12
  * @filesource /lib/controller/module/phreebooks/tools.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreebooks/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhreeBooks', 'function');
 
 class phreebooksTools
 {
@@ -37,24 +37,24 @@ class phreebooksTools
 
     public function jrnlData(&$layout=[])
     {
+        global $io;
         $total_v= $total_c= 0;
         $output = [];
 //      $code   = clean('code', 'text', 'get'); // not used yet // 6_12 : dashbaord summary_6_12
         $range  = clean('range','cmd',  'get');
-        require_once(BIZUNO_LIB.'controller/module/phreebooks/dashboards/summary_6_12/summary_6_12.php');
         $fqdn   = "\\bizuno\\summary_6_12";
+        bizAutoLoad(BIZUNO_LIB.'controller/module/phreebooks/dashboards/summary_6_12/summary_6_12.php', $fqdn);
         $dash   = new $fqdn();
         $data   = $dash->dataSales($range);
-        $raw[] = [jslang('Date'), jsLang('purchases'), jsLang('sales')];
+        $raw[]  = [jslang('Date'), jsLang('purchases'), jsLang('sales')];
         foreach ($data as $date => $values) {
             $total_v += $values['v'];
             $total_c += $values['c'];
-            $raw[] = [viewFormat($date, 'date'), viewFormat($values['v'],'currency'), viewFormat($values['c'],'currency')];
+            $raw[]    = [viewFormat($date, 'date'), viewFormat($values['v'],'currency'), viewFormat($values['c'],'currency')];
         }
         $raw[] = [jslang('total'), viewFormat($total_v,'currency'), viewFormat($total_c,'currency')];
         if (sizeof($raw) < 2) { return msgAdd('There are no sales this period!'); }
         foreach ($raw as $row) { $output[] = '"'.implode('","', $row).'"'; }
-		$io = new io();
 		$io->download('data', implode("\n", $output), "JournalData-".date('Y-m-d').".csv");
     }
 
@@ -260,10 +260,10 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         if (!isset($task['page']))     { $task['page']     = 'tools'; }
         $admin = $task['mID'].ucfirst($task['page']);
         $method= isset($task['method']) ? $task['method'] : 'fyCloseNext';
-        require_once(getModuleCache($task['mID'], 'properties', 'path')."/{$task['page']}.php");
+        $fqcn = "\\bizuno\\$admin";
+        bizAutoLoad(getModuleCache($task['mID'], 'properties', 'path')."/{$task['page']}.php", $fqcn);
         msgDebug("\n********************* Starting taskID $taskID, admin $admin and method $method and task details: ".print_r($task, true));
         unset($cron['msg']); // clear the message queue
-        $fqcn = "\\bizuno\\$admin";
         $thisTask = new $fqcn();
         $msg = $thisTask->$method($task['settings'], $cron);
         
@@ -282,7 +282,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
             msgLog("PhreeBooks Tools - Close Fiscal Year {$cron['fy']}");
             $msg  = "The fiscal year close is complete!<br />The log file can be found in the Tools -> Business Backup file list.<br />Please log out and back in to refresh your cache.<br />";
             $cron['msg'][] = $msg;
-            $msg .= '<p style="text-align:center">'.html5('', ['attr'=>['type'=>'button', 'value'=>lang('logout')], 'events'=>['onClick'=>"hrefClick('bizuno/portal/logout');"]])."</p>";
+            $msg .= '<p style="text-align:center">'.html5('', ['attr'=>['type'=>'button', 'value'=>lang('logout')], 'events'=>['onClick'=>"jsonAction('bizuno/portal/logout');"]])."</p>";
             $data = ['content'=>['percent'=>100,'msg'=>$msg,'baseID'=>'fyClose','urlID'=>'phreebooks/tools/fyCloseNext']];
 		} else { // return to update progress bar and start next step
 			$percent = min(99, floor(100*$cron['cnt']/$cron['total'])); // don't allow 100% of ajax won't trigger next step
@@ -398,7 +398,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
     {
         ini_set("max_execution_time", 300); // 5 minutes per post
         if (!validateSecurity('phreebooks', 'j2_mgr', 3)) { return; }
-		require_once(BIZUNO_LIB."controller/module/phreebooks/journal.php");
+		bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journal.php", 'journal');
         dbTransactionStart();
         $repost = new journal($rID, false);
         if ($repost->Post()) {
@@ -496,7 +496,12 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
             $trialBalance += $row['beginning_balance']; // zero test gathering
         }
         if (abs($trialBalance) > $tolerance) {
-            msgAdd("Trial balance for period $period is out of balance by $trialBalance. It will be adjusted and testing will continue.");
+            // sometimes this will happen from results in FY roll-over where prior year agregate exceeds tolerance, only show message if amount is large
+            // enough to warrant concern which means there is a bigger problem
+            if (abs($trialBalance) > 100*$tolerance) {
+                msgAdd("Trial balance for period $period is out of balance by $trialBalance. Retained earnings account $re_acct will be adjusted and testing will continue.");
+            }
+            // Make the correction anyway as when FY's are closed this will eventually become the newe actual
             dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."journal_history SET beginning_balance = beginning_balance - $trialBalance WHERE period=$period AND gl_account='$re_acct'");
         }
         // get all from journal_item for given period

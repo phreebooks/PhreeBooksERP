@@ -244,7 +244,7 @@ class PDF extends \TCPDF
         if (!isset($Params->ordinate)){ $Params->ordinate = '8'; }
         if (!isset($Params->width))   { $Params->width    = ''; }
         if (!isset($Params->height))  { $Params->height   = ''; }
-        if ( isset($Params->settings->processing)) { $path = ProcessData($path, $Params->settings->processing); }
+        if ( isset($Params->settings->processing)) { $path = viewProcess($path, $Params->settings->processing); }
 		$ext = strtolower(substr($path, strrpos($path, '.')+1));
 		if (is_file($path) && ($ext == 'jpg' || $ext == 'jpeg' || $ext == 'png')) {
 			$this->Image($path, $Params->abscissa, $Params->ordinate, $Params->width, $Params->height);
@@ -344,7 +344,7 @@ class PDF extends \TCPDF
 			case '0': $style['bgcolor'] = false; break;
 			case '1': $style['bgcolor'] = $this->convertRGB($Params->settings->fcolor); break;
 		}
-        if (isset($Params->settings->processing)) { $data = ProcessData($data, $Params->settings->processing); }
+        if (isset($Params->settings->processing)) { $data = viewProcess($data, $Params->settings->processing); }
         if (isset($Params->settings->formatting)) { $data = viewFormat ($data, $Params->settings->formatting); }
         $data = clean($data, 'alpha_num'); // need to remove all special characters
 		$this->write1DBarcode($data, $Params->settings->barcode, $Params->abscissa, $Params->ordinate, $Params->width, $Params->height, 0.4, $style, 'N');
@@ -378,7 +378,7 @@ class PDF extends \TCPDF
 		}
         if ($Params->type <> 'PgNum') { $TextField = isset($Params->settings->text) ? $Params->settings->text : ''; }
             else { $TextField = $this->GroupPageNo().' '.lang('of').' '.$this->PageGroupAlias(); } // fix for multi-page multi-group forms
-        if (isset($Params->settings->processing)) { $TextField = ProcessData($TextField, $Params->settings->processing); }
+        if (isset($Params->settings->processing)) { $TextField = viewProcess($TextField, $Params->settings->processing); }
         if (isset($Params->settings->formatting)) { $TextField = viewFormat ($TextField, $Params->settings->formatting); }
         if ($TextField) { $this->MultiCell($Params->width, $Params->height, $TextField, $Border, $Params->settings->align, $Fill); }
 	}
@@ -473,7 +473,7 @@ class PDF extends \TCPDF
 			if ($Heading) {
                 if ($align == 'A') { $align = $Params->settings->boxfield[$key]->align; } // auto align
 			} else {
-				if (isset($Params->settings->boxfield[$key]->processing)) $value = ProcessData($value, $Params->settings->boxfield[$key]->processing);
+				if (isset($Params->settings->boxfield[$key]->processing)) $value = viewProcess($value, $Params->settings->boxfield[$key]->processing);
 				if (isset($Params->settings->boxfield[$key]->formatting)) $value = viewFormat ($value, $Params->settings->boxfield[$key]->formatting);
 			}
 			$this->MultiCell($Params->settings->boxfield[$key]->width, $CellHeight, $value, 0, $align, $fillReq?true:false);

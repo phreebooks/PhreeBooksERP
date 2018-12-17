@@ -17,16 +17,16 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-21
+ * @version    3.x Last Update: 2018-11-09
  * @filesource /lib/controller/module/phreebooks/api.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/contacts/main.php");
-require_once(BIZUNO_LIB."controller/module/inventory/main.php");
-require_once(BIZUNO_LIB."controller/module/phreebooks/journal.php");
-require_once(BIZUNO_LIB."controller/module/phreebooks/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/contacts/main.php", 'contactsMain');
+bizAutoLoad(BIZUNO_LIB."controller/module/inventory/main.php", 'inventoryMain');
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journal.php", 'journal');
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhreeBooks', 'function');
 
 class phreebooksApi
 {
@@ -64,35 +64,31 @@ class phreebooksApi
 
     private function getViewBB()
     {
+        $beg_bal = $coa_asset = [];
+        foreach (selGLTypes() as $type) { $coa_asset[$type['id']] = $type['asset']; }
         $precision       = getModuleCache('phreebooks', 'currency', 'iso')[getUserCache('profile', 'currency', false, 'USD')]['dec_len'];
         $bb_value        = ['styles'=>["text-align"=>"right"],'attr'=>['size'=>"13", 'value'=>0],'events'=>['onChange'=>"begBalTotal();"]];
         $bb_debit_total  = ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
         $bb_credit_total = ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
         $bb_balance_total= ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
         $btnSaveBegBal   = ['icon'=>'save','size'=>'large','events'=>['onClick'=>"jq('body').addClass('loading'); jq('#frmBegBal').submit();"]];
-		$coa_types = selGLTypes();
-        $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_history", "period=1", "gl_account");
-		$beg_bal = [];
+        $result          = dbGetMulti(BIZUNO_DB_PREFIX."journal_history", "period=1", "gl_account");
 		foreach ($result as $row) {
             $balance = round($row['beginning_balance'], $precision);
             $beg_bal[$row['gl_account']] = [
                 'desc'     => getModuleCache('phreebooks', 'chart', 'accounts')[$row['gl_account']]['title'],
                 'type'     => $row['gl_type'],
                 'desc_type'=> lang('gl_acct_type_'.$row['gl_type']),
-                'value'    => empty($balance) ? $balance : ($coa_types[$row['gl_type']]['asset'] ? $balance : -$balance),
-                'asset'    => $coa_types[$row['gl_type']]['asset']];
+                'value'    => empty($balance) ? $balance : ($coa_asset[$row['gl_type']] ? $balance : -$balance),
+                'asset'    => $coa_asset[$row['gl_type']]];
             }
-        $output = '<table style="border-style:none;margin-left:auto;margin-right:auto;">
-         <thead class="panel-header">
-          <tr>
-           <th>'.lang('journal_main_gl_acct_id').'</th>
-           <th nowrap="nowrap">'.lang('description')               .'</th>
-           <th nowrap="nowrap">'.lang('journal_item_gl_type')      .'</th>
-           <th nowrap="nowrap">'.lang('journal_item_debit_amount') .'</th>
-           <th nowrap="nowrap">'.lang('journal_item_credit_amount').'</th>
-          </tr>
-         </thead>
-         <tbody>'."\n";
+        $output = '<table style="border-style:none;margin-left:auto;margin-right:auto;"><thead class="panel-header"><tr>
+    <th>'.lang('journal_main_gl_acct_id').'</th>
+    <th nowrap="nowrap">'.lang('description')               .'</th>
+    <th nowrap="nowrap">'.lang('journal_item_gl_type')      .'</th>
+    <th nowrap="nowrap">'.lang('journal_item_debit_amount') .'</th>
+    <th nowrap="nowrap">'.lang('journal_item_credit_amount').'</th>
+</tr></thead><tbody>'."\n";
         foreach ($beg_bal as $glAcct => $values) {
             $output .= "  <tr>\n";
             $output .= '   <td align="center">'.$glAcct."</td>\n";
@@ -108,21 +104,15 @@ class phreebooksApi
             }
             $output .= "</tr>\n";
         }
-        $output .= '
-         </tbody>
-         <tfoot class="panel-header">
-          <tr>
-           <td colspan="3" align="right">'.lang('total').'</td>
-           <td style="text-align:right">'.html5('bb_debit_total',  $bb_debit_total) .'</td>
-           <td style="text-align:right">'.html5('bb_credit_total', $bb_credit_total).'</td>
-          </tr>
-          <tr>
-           <td colspan="4" style="text-align:right">'.lang('balance').'</td>
-           <td style="text-align:right">'.html5('bb_balance_total', $bb_balance_total).'</td>
-           <td colspan="4" style="text-align:right">'.html5('btnSaveBegBal', $btnSaveBegBal)."</td>
-          </tr>
-         </tfoot>
-        </table>";
+        $output .= '</tbody><tfoot class="panel-header"><tr>
+    <td colspan="3" align="right">'.lang('total').'</td>
+    <td style="text-align:right">'.html5('bb_debit_total',  $bb_debit_total) .'</td>
+    <td style="text-align:right">'.html5('bb_credit_total', $bb_credit_total).'</td>
+</tr><tr>
+    <td colspan="4" style="text-align:right">'.lang('balance').'</td>
+    <td style="text-align:right">'.html5('bb_balance_total', $bb_balance_total).'</td>
+    <td colspan="4" style="text-align:right">'.html5('btnSaveBegBal', $btnSaveBegBal)."</td>
+</tr></tfoot></table>";
         return $output;
     }
 

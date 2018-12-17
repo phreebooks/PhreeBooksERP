@@ -59,8 +59,9 @@ $map = [
 		'TotalPrice'          => ['field'=>'credit_amount','format'=>'float']],
 	'Payment' => [
         'Method'              => ['field'=>'method_code','format'=>'text'],
+        'Title'               => ['field'=>'title','format'=>'text'],
+		'Status'              => ['field'=>'status','format'=>'text'], // possible values are unpaid, auth, and cap [default: unpaid]
 		'Authorization'       => ['field'=>'auth_code','format'=>'text'], // Authorization code from credit cards that need to be captured to complete the sale
 		'TransactionID'       => ['field'=>'transaction_id','format'=>'text'], // Transaction from credit cards that need to be captured to complete the sale
-		'Status'              => ['field'=>'status','format'=>'text'], // possible values are unpaid, auth, and cap [default: unpaid]
 		'Hint'                => ['field'=>'hint','format'=>'text']], // format nnnn********nnnn (i.e. 4321********9876 )
     ];

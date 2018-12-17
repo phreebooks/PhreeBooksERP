@@ -26,7 +26,7 @@ After uploading the files to your server, navigate to your root url and follow t
 
 = Minimum Requirements =
 
-* PHP   version 5.4 or greater (PHP 5.6 or greater is recommended, tested with PHP 7)
+* PHP   version 5.4 or greater (PHP 5.6 or greater is recommended, tested with PHP 7.2)
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended, tested with MySQL 5.6 & 5.7)
 
 1. Upload the file to your web site directory. PhreeBooks 5 can be installed in a subdirectory within your web site root directory.
@@ -37,6 +37,7 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Upgrade Notice ==
 
+2018-12-17 - 5.2.0 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
 2018-10-28 - 5.1.6 - No database changes, overwrite current files with new version
 2018-09-26 - 5.1.4 - No database changes, overwrite current files with new version
 2018-09-15 - 5.1.0 - No database changes. Optional to delete /view/* folder and replace with new version. Many files are no longer needed or used.
@@ -59,6 +60,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.2.0 =
+2018-12-17 - Incorporate Bizuno Library 3.1.0. Work on mobile versions, bug fixes and improved security
 = 5.1.6 =
 2018-10-28 - Incorporate Bizuno Library 3.0.6. Bugs from GUI updates, fixed dashboards, two new dashboards
 = 5.1.4 =

@@ -17,14 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-18
+ * @version    3.x Last Update: 2018-11-21
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreebooks/journal.php"); // pulls functions also
-require_once(BIZUNO_LIB."controller/module/payment/main.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journal.php", 'journal'); // pulls functions also
+bizAutoLoad(BIZUNO_LIB."controller/module/payment/main.php", 'paymentMain');
 
 class phreebooksMain
 {
@@ -235,20 +235,6 @@ if (!formValidate()) return false;\n\treturn true;\n}";
             $structure['currency']['attr']['type']= 'selCurrency';
             unset($structure['currency_rate']['attr']['type']); // show the exchange rate
         }
-
-        // These need to be fixed in the db table comments
-		$structure['gl_acct_id']['attr']['type']= 'ledger';
-        $structure['purch_order_id']['order']   = 10;
-        $structure['invoice_num']['order']      = 20;
-        $structure['waiting']['order']          = 25;
-        $structure['closed']['order']           = 26;
-        $structure['terms_text']['order']       = 30;
-        $structure['terms_edit']['order']       = 31;
-        $structure['post_date']['order']        = 40;
-        $structure['terminal_date']['order']    = 41;
-        $structure['rep_id']['order']           = 50;
-        $structure['currency']['order']         = 70;
-
         $ledger = new journal($rID, $this->journalID, false, $cID, $structure, $this->action);
         $ledger->journal->type  = $this->type;
         $ledger->journal->lang  = $this->lang;
@@ -280,13 +266,15 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         $structure['xChild']         = ['attr'=>['type'=>'hidden']];
         $structure['xAction']        = ['attr'=>['type'=>'hidden']];
 
-        // gather the totals methods
+        // Set the Head , set defaults, gather the totals methods, etc.
 		$jsHead  .= "bizDefaults.phreebooks = { journalID:$this->journalID,type:'$this->type' };\n";
 		$jsHead  .= "var totalsMethods = ".json_encode($ledger->journal->totals).";\n";
 		$jsTotals = "var taxRunning = 0;\nfunction totalUpdate() {\n\tvar curTotal = 0;\n";
         foreach ($ledger->journal->totals as $methID) { $jsTotals .= "\tcurTotal = totals_{$methID}(curTotal);\n"; }
 		$jsTotals.= "}";
 		$jsHead  .= $jsTotals;
+        // strip inactive accounts from the gl chart
+        $pbChart  = "var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { if (value['inactive'] == '0') { pbChart.push(value); } });";
         // Get the item data
         msgDebug("\nGoing to getDataItem, rID = $rID and cID = $cID");
         $ledger->getDataItem($rID, $cID, $security);
@@ -309,7 +297,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
             'fields'  => $structure,
             'items'   => $ledger->items,
             'totals'  => $ledger->journal->totals, 
-            'jsHead'  => ['init'=>$jsHead, 'preSubmit'=>$preSubmit],
+            'jsHead'  => ['init'=>$jsHead, 'preSubmit'=>$preSubmit, 'pbChart'=>$pbChart],
             'jsBody'  => ['init'=>$jsBody],
             'jsReady' => ['init'=>$jsReady, 'focus'=>"bizFocus('contactSel_b');"]];
         // Customize the layout for this journalID
@@ -413,9 +401,9 @@ if (!formValidate()) return false;\n\treturn true;\n}";
 		$ledger->totals = $this->loadTotals($this->journalID);
         foreach ($ledger->totals as $methID) {
             $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
-            require_once("{$path}$methID.php");
-            $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
             $fqcn = "\\bizuno\\$methID";
+            bizAutoLoad("{$path}$methID.php", $fqcn);
+            $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
             $totalEntry = new $fqcn($totSet);
             if (method_exists($totalEntry, 'glEntry')) { $totalEntry->glEntry($request, $ledger->main, $ledger->item, $current_total); }
 		}
@@ -613,9 +601,9 @@ if (!formValidate()) return false;\n\treturn true;\n}";
             $ledger->totals = $this->loadTotals($this->journalID);
 			foreach ($ledger->totals as $methID) {
                 $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
-                require_once("{$path}$methID.php");
-                $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
                 $fqcn = "\\bizuno\\$methID";
+                bizAutoLoad("{$path}$methID.php", $fqcn);
+                $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
                 $totalEntry = new $fqcn($totSet);
                 if (method_exists($totalEntry, 'glEntry')) { $totalEntry->glEntry($request, $ledger->main, $ledger->item, $current_total); }
 			}
@@ -686,9 +674,9 @@ if (!formValidate()) return false;\n\treturn true;\n}";
 			$method = $delOrd->main['method_code'];
             $methPath = getModuleCache('payment', 'methods', $method, 'path');
 			if (!$methPath) { return msgAdd("Cannot apply credit since the method is not installed!"); }
-            require_once("$methPath{$method}.php");
-            $pmtSet = getModuleCache('payment','methods',$method,'settings');
             $fqcn = "\\bizuno\\$method";
+            bizAutoLoad("$methPath{$method}.php", $fqcn);
+            $pmtSet = getModuleCache('payment','methods',$method,'settings');
             $processor = new $fqcn($pmtSet);
 			if ($delOrd->main['post_date'] == date('Y-m-d')) {
                 if (method_exists($processor, 'paymentVoid')) { if (!$processor->paymentVoid($delOrd->main['id'])) { return; } }
@@ -763,7 +751,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         $output = [];
         $output['inv_orders'] = ['order'=>10,'label'=>$this->lang['status_orders_invoice'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
         if (sizeof($new_data['inv_orders']) >1) { $output['inv_orders'] = array_merge($output['inv_orders'], ['values'=>$new_data['inv_orders'], 
-            'attr'=>['type'=>'select'],'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jSale, newVal, 0, 'inv');"]]); }
+            'attr'=>['type'=>'select'],'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jSale, 0, 0, 'inv', '', newVal);"]]); }
         $output['open_quotes'] = ['order'=>20,'label'=>$this->lang['status_open_j9'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
 		if (sizeof($new_data['open_quotes'])>1) { $output['open_quotes']= array_merge($output['open_quotes'],['values'=>$new_data['open_quotes'],
              'attr'=>['type'=>'select'],'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jQuote, newVal);"]]); }
@@ -860,9 +848,11 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                 if (getUserCache('security', 'j4_mgr')) { $jID_values[] = ['id'=>'4','text'=>lang('journal_main_journal_id_4')]; }
                 if (getUserCache('security', 'j6_mgr')) { $jID_values[] = ['id'=>'6','text'=>lang('journal_main_journal_id_6')]; }
                 if (getUserCache('security', 'j7_mgr')) { $jID_values[] = ['id'=>'7','text'=>lang('journal_main_journal_id_7')]; }
+                $jID_statuses[] = ['id'=>'w','text'=>lang('confirmed_waiting')];
 				switch ($this->defaults['status']) {
-					case '0': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.closed='0'"; break;
-					case '1': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.closed='1'"; break;
+                    case '0': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.closed='0'";  break;
+                    case '1': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.closed='1'";  break;
+					case 'w': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.waiting='1'"; break;
 				}
 				break;
 			case  9:
@@ -882,9 +872,11 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                 if (getUserCache('security', 'j10_mgr')) { $jID_values[] = ['id'=>'10','text'=>lang('journal_main_journal_id_10')]; }
                 if (getUserCache('security', 'j12_mgr')) { $jID_values[] = ['id'=>'12','text'=>lang('journal_main_journal_id_12')]; }
                 if (getUserCache('security', 'j13_mgr')) { $jID_values[] = ['id'=>'13','text'=>lang('journal_main_journal_id_13')]; }
+                $jID_statuses[] = ['id'=>'w','text'=>lang('confirmed_unshipped')];
 				switch ($this->defaults['status']) {
-					case '0': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.closed='0'"; break;
-					case '1': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.closed='1'"; break;
+                    case '0': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.closed='0'";  break;
+                    case '1': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.closed='1'";  break;
+					case 'w': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.waiting='1'"; break;
 					default:  break;
 				}
 				break;
@@ -939,7 +931,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
 							'events' => ['onClick' => "windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".$this->lang['expected_delivery_dates']."', 500, 400);"],
 							'display'=> "row.journal_id=='4' || row.journal_id=='10'"],
 						'invoice'    => ['order'=>70,'icon'=>'invoice',   'label'=>$this->lang['set_invoice_num'],
-							'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_invoice_num']."'); jsonAction('phreebooks/main/setInvoiceNum&jID=6', idTBD, invNum);"],
+							'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_invoice_num']."'); if (invNum) { jsonAction('phreebooks/main/setInvoiceNum&jID=6', idTBD, invNum); }"],
 							'display'=> "row.waiting=='1' && row.journal_id=='6'"],
 						'reference'  => ['order'=>70,'icon'=>'invoice',   'label'=>$this->lang['set_ref_num'],
 							'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_ref_num']."'); jsonAction('phreebooks/main/setReferenceNum&jID=18', idTBD, invNum);"],
@@ -1234,7 +1226,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
     {
         if (empty($jID)) { $jID = 12; }
         $jName = "j".substr('0'.$jID, -2);
-        if (!class_exists($jName)) { require_once(BIZUNO_LIB."controller/module/phreebooks/journals/$jName.php"); }
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journals/$jName.php", $jName);
         $fqcn = "\\bizuno\\$jName";
         return new $fqcn();
     }

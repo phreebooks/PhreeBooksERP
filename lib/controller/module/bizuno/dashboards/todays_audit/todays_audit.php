@@ -37,7 +37,7 @@ class todays_audit
     {
 		$this->security= getUserCache('security', 'profile', 0);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
-        $defaults      = ['max_rows'=>20,'users'=>'-1','roles'=>'-1','reps'=>'0','num_rows'=>5,'trim'=>1,'order'=>'desc'];
+        $defaults      = ['max_rows'=>20,'users'=>'-1','roles'=>'-1','reps'=>'0','num_rows'=>5,'trim'=>20,'order'=>'desc'];
         $this->settings= array_replace_recursive($defaults, $settings);
 	}
 

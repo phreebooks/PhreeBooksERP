@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2018-12-10
  * @filesource /lib/view/tabAdminSettings.php
  */
 
@@ -31,8 +31,9 @@ if (isset($viewData['settings'])) {
         $title = getModuleCache($category, 'properties', 'title', false, jsLang($category));
 		$output['body'] .= '      <div title="'.$title.'" style="padding:20px;">'."\n";
 		foreach ($settings as $key => $value) {
+            if (!empty($value['attr']['type']) && $value['attr']['type'] == 'password') { $value['attr']['value'] = ''; }
 			$output['body'] .= html5($category."_".$key, $value);
-            if (!isset($value['attr']['type']) || $value['attr']['type'] != 'hidden') { $output['body'] .= "<br />\n"; }
+            if ( empty($value['attr']['type']) || $value['attr']['type'] != 'hidden')   { $output['body'] .= "<br />\n"; }
 		}
 		$output['body'] .= "      </div>\n";
 	}

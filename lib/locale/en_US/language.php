@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-16
+ * @version    3.x Last Update: 2018-11-07
  * @filesource /local/en_US/language.php
  */
 
@@ -79,8 +79,9 @@ $langCore = [
 	'add' => 'Add',
     'add_folder' => 'Add Folder',
 	'add_update' => 'Add/Update',
-    'align' => 'Align',
     'adjustment' => 'Adjustment',
+    'admin'=>'Administrate',
+    'align' => 'Align',
 	'all' => 'All',
 	'all_users' => 'All Users',
 	'all_groups' => 'All Groups',
@@ -131,6 +132,8 @@ $langCore = [
 	'completed' => 'Completed',
     'confirm' => 'Confirm',
     'confirmed' => 'Confirmed',
+    'confirmed_waiting' => 'Confirmed/Waiting',
+    'confirmed_unshipped' => 'Confirmed/Unshipped',
 	'contacts' => 'Contacts',
 	'contains' => 'Contains',
 	'contents' => 'Contents',
@@ -199,6 +202,7 @@ $langCore = [
 	'full' => 'Full',
 	'general' => 'General',
 	'gl_account' => 'GL Account',
+	'gl_acct_active' => 'GL Account Status',
 	'gl_acct_title' => 'GL Account Title',
 	'go' => 'Go',
 	'greater_than' => 'Greater Than',
@@ -587,9 +591,9 @@ $langCore = [
 	'unrecon_total' => 'Unreconciled Amount',
 	// Shipping
 	'drop_ship' => 'Drop Ship',
-	'num_boxes' => 'Number of Boxes',
-	'residential_address' => 'Residential Address',
-	'ship_from' => 'Ship From:',
+	'num_boxes' => '# of Boxes',
+	'residential_address' => 'Residential',
+	'ship_from' => 'Ship From',
 	'ship_to' => 'Ship To',
 	'list_price' => 'List Price',
 	'rate_quote' => 'Rate Quote',

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-15
+ * @version    3.x Last Update: 2018-12-10
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -132,7 +132,8 @@ class jCommon
     protected function unSetJournalHistory()
     {
         for ($i=0; $i<count($this->item); $i++) {
-            // Update chart of accounts history 
+            if (empty($this->item[$i]['credit_amount'])){ $this->item[$i]['credit_amount']= 0; }
+            if (empty($this->item[$i]['debit_amount'])) { $this->item[$i]['debit_amount'] = 0; }
             $sql = "UPDATE ".BIZUNO_DB_PREFIX."journal_history SET 
                 credit_amount=credit_amount-{$this->item[$i]['credit_amount']}, debit_amount=debit_amount-{$this->item[$i]['debit_amount']} 
                 WHERE gl_account='{$this->item[$i]['gl_account']}' AND period={$this->main['period']}";
@@ -716,7 +717,7 @@ class jCommon
 			return $unit_cost;
 		}
 		$sql = "SELECT remaining, unit_cost FROM ".BIZUNO_DB_PREFIX."inventory_history"." WHERE sku='$sku' AND remaining>0";
-        if (sizeof(getModuleCache('bizuno', 'stores') > 0)) { $sql .= " AND store_id='{$this->main['store_id']}'"; }
+        if (sizeof(getModuleCache('bizuno', 'stores')) > 0) { $sql .= " AND store_id='{$this->main['store_id']}'"; }
 		$sql .= " ORDER BY id" . ($defaults['cost_method'] == 'l' ? ' DESC' : '');
 		$stmt = dbGetResult($sql);
 		$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -854,15 +855,15 @@ class jCommon
 			$assy_cost += $item_cost;
 			// generate inventory assembly part record and insert into db
 			$temp_array = [
-                'ref_id'      => $this->main['id'],
-				'gl_type'     => 'asi',	// assembly item code
-				'sku'         => $row['sku'],
-				'qty'         => $row['qty'],
-				'description' => $row['description'],
-				'gl_account'  => $row['gl_inv'],
-				'post_date'   => $this->main['post_date']];
-            if ($qty < 0) { $temp_array['debit_amount']  = -$item_cost; }
-            else          { $temp_array['credit_amount'] =  $item_cost; }
+                'ref_id'       => $this->main['id'],
+				'gl_type'      => 'asi',	// assembly item code
+				'sku'          => $row['sku'],
+				'qty'          => $row['qty'],
+				'description'  => $row['description'],
+				'gl_account'   => $row['gl_inv'],
+                'debit_amount' => $qty<0 ? -$item_cost : 0,
+                'credit_amount'=> $qty>0 ?  $item_cost : 0,
+				'post_date'    => $this->main['post_date']];
 			$temp_array['id'] = dbWrite(BIZUNO_DB_PREFIX."journal_item", $temp_array);
 			msgDebug("\nAdding to assembly item to this->item = ".print_r($temp_array, true));
 			$this->item[] = $temp_array;
@@ -908,9 +909,7 @@ class jCommon
 		// remove these types of rows since they are regenerated as part of the Post
 		$removal_gl_types = ['cog', 'asi'];
 		$temp_rows = [];
-		foreach ($this->item as $value) {
-          if (!in_array($value['gl_type'], $removal_gl_types)) { $temp_rows[] = $value; }
-		}
+		foreach ($this->item as $value) { if (!in_array($value['gl_type'], $removal_gl_types)) { $temp_rows[] = $value; } }
 		$this->item = $temp_rows;
 		msgDebug(" and ended with ".count($this->item)." rows.");
 	}

@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-24
+ * @version    3.x Last Update: 2018-12-10
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB . "controller/module/phreebooks/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhreeBooks', 'function');
 
 class phreebooksAdmin {
 
@@ -94,7 +94,7 @@ class phreebooksAdmin {
                         'save' => ['order' => 50, 'page' => 'admin', 'class' => 'phreebooksAdmin', 'method' => 'usersSave']]]],
             'api' => ['path' => 'phreebooks/api/journalAPI', 'attr' => ['jID' => 12]]]; // default to import sales
         $this->phreeformProcessing = [
-            'subTotal'  => ['text'=>lang('subtotal'),                  'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'subTotal'  => ['text'=>lang('subtotal'),                  'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'invBalance'=> ['text'=>lang('balance'),                   'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'invRefNum' => ['text'=>lang('journal_main_invoice_num_2'),'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'invUnit'   => ['text'=>$this->lang['pb_inv_unit'],        'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
@@ -129,9 +129,10 @@ class phreebooksAdmin {
             'isLBgt'    => ['text'=>$this->lang['ly_budget'],          'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'isLBtd'    => ['text'=>$this->lang['pb_is_last_bdgt_ytd'],'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks']];
         $this->phreeformFormatting = [
-            'j_desc' => ['text'=>lang('journal_main_journal_id'),      'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
-            'glType' => ['text'=>lang('gl_acct_type'),                 'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
-            'glTitle'=> ['text'=>lang('gl_acct_title'),                'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat']];
+            'j_desc'    => ['text'=>lang('journal_main_journal_id'),    'group'=>$this->lang['title'],'module'=>'bizuno',      'function'=>'viewFormat'],
+            'glType'    => ['text'=>lang('gl_acct_type'),               'group'=>$this->lang['title'],'module'=>'bizuno',      'function'=>'viewFormat'],
+            'glTitle'   => ['text'=>lang('gl_acct_title'),              'group'=>$this->lang['title'],'module'=>'bizuno',      'function'=>'viewFormat'],
+            'glActive'  => ['text'=>lang('gl_acct_active'),             'group'=>$this->lang['title'],'module'=>'bizuno',      'function'=>'viewFormat']];
         $this->notes = [$this->lang['note_phreebooks_install_1'],$this->lang['note_phreebooks_install_2'],$this->lang['note_phreebooks_install_3']];
     }
 
@@ -199,7 +200,7 @@ class phreebooksAdmin {
      */
     public function adminHome(&$layout = []) {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
-        require_once(BIZUNO_LIB."controller/module/phreebooks/currency.php");
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/currency.php", 'phreebooksCurrency');
         $currency = new phreebooksCurrency();
         $tools = $this->getViewTools($security);
         $data = [
@@ -334,7 +335,7 @@ class phreebooksAdmin {
      * Saves the user defined settings
      */
     public function adminSave() {
-        readModuleSettings($this->moduleID, $this->settings);
+        readModuleSettings($this->moduleID, $this->settingsStructure());
     }
 
     public function managerFY(&$layout=[])
@@ -399,8 +400,8 @@ class phreebooksAdmin {
      */
     public function installFirst()
     {
-        require_once(BIZUNO_LIB."controller/module/phreebooks/currency.php");
-        require_once(BIZUNO_LIB."controller/module/phreebooks/chart.php");
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/currency.php", 'phreebooksCurrency');
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/chart.php", 'phreebooksChart');
         $cur = new phreebooksCurrency();
         $coa = new phreebooksChart();
         msgDebug("\n  Loading chart of accounts");

@@ -398,7 +398,7 @@ function pullTableLabel($table, $field, $suffix='')
     elseif (isset($bizunoLang[$table.'_'.$field]))             { return $bizunoLang[$table.'_'.$field]; }
     elseif (isset($bizunoLang[$field]))                        { return $bizunoLang[$field]; }
 	// If we are here, the translation could not be found, send email to devs to fix this and return $field.
-//  require_once(BIZUNO_LIB."model/mail.php");
+//  bizAutoLoad(BIZUNO_LIB."model/mail.php", 'bizunoMailer');
 //	$body = 'Missing translation from function pullTableLabel, path='.$_GET['p']." missing field=$field with suffix=$suffix";
 //	$mail = new bizunoMailer('dave.premo@phreesoft.com', 'Bizuno Devs', 'Missing Translation', $body, 'kevin.premo@gmail.com', 'Bizuno App');
 //	$mail->sendMail();

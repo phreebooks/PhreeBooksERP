@@ -23,7 +23,7 @@
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreebooks/journals/common.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journals/common.php", 'jCommon');
 
 class j14 extends jCommon
 {

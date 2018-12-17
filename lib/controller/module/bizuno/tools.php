@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-07-14
+ * @version    3.x Last Update: 2018-12-14
  * @filesource /lib/controller/module/bizuno/tools.php
  */
 
@@ -46,29 +46,15 @@ class bizunoTools {
      */
     public function ticketMain(&$layout=[])
     {
-        $data = ['type'=>'page','title'=>lang('support'),
-			'divs'  => ['tcktMain'=>['order'=>50,'type'=>'divs','divs'=>[
-                'head'   => ['order'=>10,'type'=>'html',  'html'  =>"<h1>".lang('support')."</h1>"],
-                'formBOF'=> ['order'=>15,'type'=>'form',  'key'   =>'frmTicket'],
-                'body'   => ['order'=>50,'type'=>'fields','fields'=>$this->getViewSupport()],
-                'formEOF'=> ['order'=>85,'type'=>'html',  'html'  =>"</form>"]]]],
-			'forms'=> ['frmTicket'=>['attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=bizuno/tools/ticketSave",'enctype'=>"multipart/form-data"]]]];
-        $layout = array_replace_recursive($layout, viewMain(), $data);
-        
-    }
-
-    private function getViewSupport()
-    {
 		$reasons = [['id'=>'none', 'text' => lang('select')]];
         foreach ($this->reasons as $key => $value) { $reasons[] = ['id'=>$key, 'text'=>$value]; }
         $values  = dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id=".getUserCache('profile', 'admin_id', false, 0));
-        $machines= [['id'=>'pc','text'=>'PC'],['id'=>'mac','text'=>'MAC'],['id'=>'mobile','text'=>'Mobile Phone'],['id'=>'tablet','text'=>'Tablet'],['id'=>'other','text'=>'Other (list below)']];
+        $machines= [['id'=>'pc','text'=>'PC'],['id'=>'mac','text'=>'Mac'],['id'=>'mobile','text'=>'Mobile Phone'],['id'=>'tablet','text'=>'Tablet'],['id'=>'other','text'=>'Other (list below)']];
         $os      = [['id'=>'windows','text'=>'Windows'],['id'=>'osx','text'=>'Apple OSX'],['id'=>'ios','text'=>'iPhone IOS'],['id'=>'android','text'=>'Android'],['id'=>'other','text'=>'Other (list below)']];
         $browsers= [['id'=>'firefox','text'=>'Firefox'],['id'=>'chrome','text'=>'Chrome'],['id'=>'safari','text'=>'Safari'],['id'=>'edge','text'=>'MS Edge'],['id'=>'ie','text'=>'Internet Explorer'],['id'=>'other','text'=>'Other (list below)']];
-        return [
-            'ticketDate' => ['order'=>10,'break'=>true,'attr'=>['type'=>'hidden','value'=>date('Y-m-d')]],
+        $fields = [
             'ticketURL'  => ['order'=>15,'break'=>true,'attr'=>['type'=>'hidden','value'=>$_SERVER['HTTP_HOST']]],
-            '$langDesc'  => ['order'=>20,'break'=>true,'html'=>$this->lang['ticket_desc'],'attr'=>['type'=>'raw']],
+            'langDesc'   => ['order'=>20,'break'=>true,'html'=>$this->lang['ticket_desc'],'attr'=>['type'=>'raw']],
             'selReason'  => ['order'=>25,'break'=>true,'label'=>lang('reason'), 'values'=>$reasons, 'attr'=>['type'=>'select']],
             'selMachine' => ['order'=>30,'break'=>true,'label'=>lang('Machine'),'values'=>$machines,'attr'=>['type'=>'select']],
             'selOS'      => ['order'=>35,'break'=>true,'label'=>lang('OS'),     'values'=>$os,      'attr'=>['type'=>'select']],
@@ -77,8 +63,19 @@ class bizunoTools {
             'ticketEmail'=> ['order'=>50,'break'=>true,'label'=>lang('email'),'attr'=>['value'=>$values['email'],'size'=>60]],
             'ticketPhone'=> ['order'=>55,'break'=>true,'label'=>lang('telephone')],
             'ticketDesc' => ['order'=>60,'break'=>true,'label'=>lang('description'),'attr'=>['type'=>'textarea','rows'=>8,'cols'=>60]],
-            'ticketFile' => ['order'=>65,'break'=>true,'label'=>$this->lang['ticket_attachment'],'attr'=>['type'=>'file']],
-            'btnSubmit'  => ['order'=>70,'events'=>['onClick'=>"jq('#frmTicket').submit();"],'attr'=>['type'=>'button','value'=>lang('submit')]]];
+            'ticketFile' => ['order'=>65,'label'=>$this->lang['ticket_attachment'],'attr'=>['type'=>'file']], // break is auto-removed
+            'ticketPhone'=> ['order'=>70,'html'=>"<br />",'attr'=>['type'=>'raw']],
+            'btnSubmit'  => ['order'=>75,'events'=>['onClick'=>"jq('#frmTicket').submit();"],'attr'=>['type'=>'button','value'=>lang('submit')]]];
+        $data = ['type'=>'page','title'=>lang('support'),
+			'divs'  => ['tcktMain'=>['order'=>50,'type'=>'divs','divs'=>[
+                'head'   => ['order'=>10,'type'=>'html',  'html'=>"<h1>".lang('support')."</h1>"],
+                'formBOF'=> ['order'=>15,'type'=>'form',  'key' =>'frmTicket'],
+                'body'   => ['order'=>50,'type'=>'fields','keys'=>array_keys($fields)],
+                'formEOF'=> ['order'=>85,'type'=>'html',  'html'=>"</form>"]]]],
+			'forms' => ['frmTicket'=>['attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=bizuno/tools/ticketSave",'enctype'=>"multipart/form-data"]]],
+            'fields'=> $fields];
+        $layout = array_replace_recursive($layout, viewMain(), $data);
+        
     }
 
 	/**
@@ -88,22 +85,22 @@ class bizunoTools {
      */
     public function ticketSave(&$layout=[])
     {
-        require_once(BIZUNO_LIB."model/mail.php");
+        bizAutoLoad(BIZUNO_LIB."model/mail.php", 'bizunoMailer');
         $user = clean('ticketUser', 'text', 'post');
-		$url  = clean('ticketURL',  'text', 'post');
 		$email= clean('ticketEmail','text', 'post');
+		$url  = clean('ticketURL',  'text', 'post');
 		$tel  = clean('ticketPhone','text', 'post');
 		$type = clean('selReason',  'text', 'post');
 		$box  = clean('selMachine', 'text', 'post');
 		$os   = clean('selOS',      'text', 'post');
 		$brwsr= clean('selBrowser', 'text', 'post');
-		$date = clean('ticketDate', 'text', 'post');
 		$msg  = str_replace("\n", '<br />', clean('ticketDesc', 'text', 'post'));
-		$message = "Support Ticket Request<br /><br />From: $user ($url)<br />Email: $email<br />";
-		$message.= "Phone: $tel<br />Date: $date<br />Reason: $type<br />Machine: $box<br />OS: $os<br />Browser: $brwsr<br />Message: $msg<br />";
+        $bizName = getModuleCache('bizuno', 'settings', 'company', 'primary_name');
+        $subject = "Support Ticket: $bizName - $user ($email)";
+		$message = "$msg<br /><br />Reason: $type<br />Phone: $tel<br />Ref: $url ($box; $os; $brwsr)";
         if (!$this->supportEmail) { return msgAdd("You do not have a support email address defined for your business , Please visit the PhreeSoft website for support."); }
-        $toName = defined('BIZUNO_SUPPORT_NAME') ? BIZUNO_SUPPORT_NAME : $this->supportEmail;
-		$mail = new bizunoMailer($this->supportEmail, $toName, "Support Request ($url)", $message, $email, "$user ($url)");
+        $toName  = defined('BIZUNO_SUPPORT_NAME') ? BIZUNO_SUPPORT_NAME : $this->supportEmail;
+		$mail    = new bizunoMailer($this->supportEmail, $toName, $subject, $message, $email, $user);
 		if (isset($_FILES['ticketFile']['name']) && $_FILES['ticketFile']['name']) {
 			$io  = new \bizuno\io();
 			$type= $io->guessMimetype($_FILES['ticketFile']['name']);
@@ -123,7 +120,7 @@ class bizunoTools {
     public function encryptionChange()
     {
         if (!validateSecurity('bizuno', 'admin', 4)) { return; }
-        require_once(BIZUNO_LIB."model/encrypter.php");
+        bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
 		$old_key = clean('orig','password', 'get');
 		$new_key = clean('new', 'password', 'get');
 		$confirm = clean('dup', 'password', 'get');
@@ -176,16 +173,16 @@ class bizunoTools {
      */
     public function impExpMain(&$layout=[])
     {
-        if (!$security  = validateSecurity('bizuno', 'impexp', 1)) { return; }
-		$title = lang('bizuno_impexp');
+        if (!$security = validateSecurity('bizuno', 'impexp', 1)) { return; }
+		$title= lang('bizuno_impexp');
 		$data = [
             'title'=> $title,
 			'toolbars' =>['tbImpExp'=>['icons'=>['help'=>['order'=>99,'index'=>'']]]],
 			'divs' => [
                 'submenu'=> ['order'=>10,'type'=>'html',   'html'=>viewSubMenu('tools')],
-                'toolbar'=> ['order'=>20,'type'=>'toolbar','key'=>'tbImpExp'],
+                'toolbar'=> ['order'=>20,'type'=>'toolbar','key' =>'tbImpExp'],
 				'heading'=> ['order'=>30,'type'=>'html',   'html'=>"<h1>$title</h1>\n"],
-				'biz_io' => ['order'=>60,'type'=>'tabs',   'key'=>'tabImpExp']],
+				'biz_io' => ['order'=>60,'type'=>'tabs',   'key' =>'tabImpExp']],
 			'tabs'=> [
                 'tabImpExp'=> ['divs'=>  ['module'=> ['order'=>10,'label'=>lang('module'),'type'=>'tabs', 'key'=>'tabAPI']]],
                 'tabAPI'   => ['styles'=>['height'=>'300px'],'attr'=>  ['tabPosition'=>'left', 'fit'=>true, 'headerWidth'=>250]]],
@@ -194,8 +191,8 @@ class bizunoTools {
 		foreach ($apis as $settings) {
             $parts = explode('/', $settings['path']);
             if (file_exists (getModuleCache($parts[0], 'properties', 'path')."/{$parts[1]}.php")) {
-                require_once(getModuleCache($parts[0], 'properties', 'path')."/{$parts[1]}.php");
                 $fqcn = "\\bizuno\\".$parts[0].ucfirst($parts[1]);
+                bizAutoLoad(getModuleCache($parts[0], 'properties', 'path')."/{$parts[1]}.php", $fqcn);
                 $tmp = new $fqcn();
                 $tmp->{$parts[2]}($data); // looks like phreebooksAPI($data)
             }
@@ -245,5 +242,48 @@ class bizunoTools {
         msgDebug("\nExecuting sql: DELETE FROM ".BIZUNO_DB_PREFIX."audit_log WHERE `date`<='$dateFull'");
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."audit_log WHERE `date`<='$dateFull'");
         return "Finished processing table audit_log";
+    }
+    
+    public function repairComments($verbose=true)
+    {
+        $tables = [];
+        include(BIZUNO_LIB."controller/module/bizuno/install/tables.php"); // loads $tables
+        $this->getExtTables($tables);
+        foreach ($tables as $table => $tProps) { // as defined by code
+            if (!dbTableExists(BIZUNO_DB_PREFIX.$table)) { continue; }
+            $stmt = dbGetResult("SHOW FULL COLUMNS FROM ".BIZUNO_DB_PREFIX."$table");
+            if (!$stmt) { return msgAdd("No results for table $table! Bailing"); }
+            $structure = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+//          msgDebug("\nTable $table returned structure: ".print_r($structure, true));
+            foreach ($structure as $field) {
+                $default = in_array($field['Default'], ['CURRENT_TIMESTAMP']) ? $field['Default'] : "'{$field['Default']}'"; // don't quote mysql reserved words
+                $params  = $field['Type'].' ';
+                $params .= $field['Null']=='NO'      ? 'NOT NULL '         : 'NULL ';
+                $params .= !empty($field['Default']) ? "DEFAULT $default " : '';
+                $params .= $field['Extra']           ? $field['Extra'].' ' : '';
+                $newComment = !empty($tProps['fields'][$field['Field']]['comment']) ? $tProps['fields'][$field['Field']]['comment'] : $field['Comment'];
+                if ($newComment == $field['Comment']) { continue; } // if not changed, do nothing
+//              msgDebug("\nWriting sql to db: ALTER TABLE `".BIZUNO_DB_PREFIX."$table` CHANGE `{$field['Field']}` `{$field['Field']}` $params COMMENT '$newComment'");
+                dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."$table` CHANGE `{$field['Field']}` `{$field['Field']}` $params COMMENT '$newComment'");
+            }
+        }
+        if ($verbose) { msgAdd("finished!"); }
+    }
+
+    private function getExtTables(&$tables=[])
+    {
+        if (!is_dir(BIZUNO_EXT)) { return; }
+        $dirs = scandir(BIZUNO_EXT);
+        msgDebug("\nScanning extensions returned: ".print_r($dirs, true));
+        foreach ($dirs as $ext) {
+            if (in_array($ext, ['.', '..']) || !is_dir(BIZUNO_EXT.$ext)) { continue; }
+            include_once(BIZUNO_EXT."$ext/admin.php");
+            if (!class_exists("\\bizuno\\{$ext}Admin")) { continue; }
+            $fqcn  = "\\bizuno\\{$ext}Admin";
+            $admin = new $fqcn();
+            if (!empty($admin->tables)) {
+                msgDebug("\nUpdating table list for extension $ext");
+                $tables = array_merge($tables, $admin->tables); }
+        }
     }
 }

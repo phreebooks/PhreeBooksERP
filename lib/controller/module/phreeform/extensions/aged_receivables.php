@@ -66,9 +66,9 @@ class aged_receivables
         if (isset($GrpField)) { // we're checking for group totals, see if this group is complete
           if (!isset($myrow[$GrpField])) $myrow[$GrpField] = '';
           if (($myrow[$GrpField] <> $GrpWorking) && $GrpWorking !== false) { // it's a new group so print totals
-            $OutputArray[$RowCnt][0] = 'g:' . ProcessData($GrpWorking, $GrpFieldProcessing);
+            $OutputArray[$RowCnt][0] = 'g:' . viewProcess($GrpWorking, $GrpFieldProcessing);
             foreach($Seq as $offset => $TotalCtl) {
-              $OutputArray[$RowCnt][$offset+1] = ($TotalCtl['total'] == '1') ? ProcessData($TotalCtl['grptotal'], $TotalCtl['processing']) : ' ';
+              $OutputArray[$RowCnt][$offset+1] = ($TotalCtl['total'] == '1') ? viewProcess($TotalCtl['grptotal'], $TotalCtl['processing']) : ' ';
               $Seq[$offset]['grptotal'] = ''; // reset the total
             }
             $RowCnt++; // go to next row
@@ -81,7 +81,7 @@ class aged_receivables
   //echo 'new myrow = '; print_r($myrow); echo '<br /><br />';
         foreach($Seq as $key => $TableCtl) { // 
           if (!isset($report->totalonly) || $report->totalonly != '1') { // insert data into output array and set to next column
-            $OutputArray[$RowCnt][$ColCnt] = ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
+            $OutputArray[$RowCnt][$ColCnt] = viewProcess($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
             $OutputArray[$RowCnt][$ColCnt] = viewFormat($OutputArray[$RowCnt][$ColCnt], $TableCtl['formatting']);
           }
           $ColCnt++;
@@ -94,7 +94,7 @@ class aged_receivables
         $ColCnt = 1;
       }
       if ($GrpWorking !== false) { // if we collected group data show the final group total
-          $OutputArray[$RowCnt][0] = 'g:' . ProcessData($GrpWorking, $GrpFieldProcessing);
+          $OutputArray[$RowCnt][0] = 'g:' . viewProcess($GrpWorking, $GrpFieldProcessing);
           foreach ($Seq as $TotalCtl) {
               $OutputArray[$RowCnt][$ColCnt] = ($TotalCtl['total'] == '1') ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : ' ';
               $ColCnt++;

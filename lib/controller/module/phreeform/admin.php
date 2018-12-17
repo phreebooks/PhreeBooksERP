@@ -17,14 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-28
+ * @version    3.x Last Update: 2018-12-10
  * @filesource /controller/module/phreeform/admin.php
  */
 
 namespace bizuno;
 
-define('MODULE_PHREEFORM_VERSION','1.0');
-require_once(BIZUNO_LIB."controller/module/phreeform/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformSecurity', 'function');
 
 class phreeformAdmin
 {
@@ -80,6 +79,6 @@ class phreeformAdmin
      */
     public function adminSave()
     {
-		readModuleSettings($this->moduleID, $this->settings);
+		readModuleSettings($this->moduleID, $this->settingsStructure());
 	}
 }

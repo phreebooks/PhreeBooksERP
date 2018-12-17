@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-16
+ * @version    3.x Last Update: 2018-11-07
  * @filesource /lib/controller/module/phreebooks/chart.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreebooks/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhreeBooks', 'function');
 
 class phreebooksChart
 {
@@ -46,7 +46,7 @@ class phreebooksChart
         $jsHead = "var dgChartData = jq.extend(true, {}, bizDefaults.glAccounts);
 function chartRefresh() {
     jq('#accGL').accordion('select', 0);
-    jq('#dgChart').datagrid({ data:jq.extend(true, {}, bizDefaults.glAccounts) });
+    jq('#dgChart').datagrid('loadData', jq.extend(true, {}, bizDefaults.glAccounts));
 }";
 		$data = ['type'=>'divHTML',
 			'divs'     => ['gl'=>['order'=>50,'type'=>'accordion','key'=>"accGL"]],
@@ -122,46 +122,30 @@ function loadPreview() {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
 		$rID = clean('rID', ['format'=>'text','default'=>'0'], 'get'); // default to new gl account
         if ($rID) { $val = getModuleCache('phreebooks', 'chart', 'accounts')[$rID]; }
+        $fields = [
+            'gl_previous'=> ['order'=>10,'col'=>1,'break'=>true,'label'=>lang('gl_account'),'attr'=>['type'=>$rID?'text':'hidden','readonly'=>'readonly', 'value'=>isset($val['id'])?$val['id']:'']],
+            'gl_desc'    => ['order'=>20,'col'=>1,'break'=>true,'label'=>lang('title'),     'attr'=>['size'=>60, 'value'=>isset($val['title'])?$val['title']:'']],
+            'gl_inactive'=> ['order'=>30,'col'=>1,'break'=>true,'label'=>lang('inactive'),  'attr'=>['type'=>'checkbox','checked'=>!empty($val['inactive'])?true:false]],
+            'gl_type'    => ['order'=>40,'col'=>1,'break'=>true,'options'=>['width'=>250],'label'=>lang('type'),'values'=>selGLTypes(),'attr'=>['type'=>'select','value'=>isset($val['type'])?$val['type']:'']],
+//          'gl_cur'     => ['order'=>50,'col'=>1,'break'=>true,'label'=>lang('currency'),  'attr'=>['type'=>'selCurrency','value'=>isset($val['cur']) ?$val['cur'] :'']],
+            'gl_account' => ['order'=>10,'col'=>$rID?2:1,'break'=>true,'label'=>$this->lang['new_gl_account']],
+            'gl_header'  => ['order'=>20,'col'=>2,'break'=>true,'label'=>lang('heading'),'attr'=>['type'=>'checkbox','checked'=>!empty($val['heading'])?true:false]],
+            'gl_parent'  => ['order'=>30,'col'=>2,'break'=>true,'label'=>$this->lang['primary_gl_acct'],'attr'=>['type'=>'ledger','value'=>isset($val['parent'])?$val['parent']:'']]];
 		$data = ['type'=>'divHTML',
 			'divs'    => [
-                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'   =>'tbGL'],
-                'formBOF'=> ['order'=>15,'type'=>'form',   'key'   =>'frmGLEdit'],
-                'body'   => ['order'=>50,'type'=>'fields', 'fields'=>$this->getViewGL($val)],
-                'formEOF'=> ['order'=>95,'type'=>'html',   'html'  =>"</form>"]],
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbGL'],
+                'formBOF'=> ['order'=>15,'type'=>'form',   'key' =>'frmGLEdit'],
+                'body'   => ['order'=>50,'type'=>'fields', 'keys'=>['gl_previous','gl_inactive','gl_account','gl_desc','gl_type','gl_header','gl_parent']], // removed 'gl_cur'
+                'formEOF'=> ['order'=>95,'type'=>'html',   'html'=>"</form>"]],
 			'toolbars'=> ['tbGL'=>['icons'=>[
                 "glSave"=> ['order'=>10,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"jq('#frmGLEdit').submit();"]],
 				"glNew" => ['order'=>20,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"accordionEdit('accGL', 'dgChart', 'divGLDetail', '".lang('details')."', 'phreebooks/chart/edit', 0);"]]]]],
 			'forms'   => ['frmGLEdit'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/chart/save"]]],
+            'fields'  => $fields,
             'jsBody'  => ["ajaxForm('frmGLEdit');"]];
-        if (!$rID) { $data['fields']['gl_previous']['attr']['type'] = 'hidden'; }
 		$layout = array_replace_recursive($layout, $data);
 	}
  
-    private function getViewGL($val)
-    {
-		$currencies = [];
-        foreach (getModuleCache('phreebooks', 'currency', 'iso') as $iso => $value) { $currencies[] = ['id'=>$iso, 'text'=>$value['title']]; }
-        $gl_previous= ['label'=>lang('gl_account'),'attr'=>['readonly'=>'readonly', 'value'=>isset($val['id'])?$val['id']:'']];
-        $gl_inactive= ['label'=>lang('inactive'),  'attr'=>['type'=>'checkbox']];
-        $gl_account = ['label'=>$this->lang['new_gl_account']];
-        $gl_desc    = ['label'=>lang('title'),     'attr'=>['size'=>60, 'value'=>isset($val['title'])?$val['title']:'']];
-        $gl_type    = ['label'=>lang('type'),    'values'=>selGLTypes(),'attr'=>['type'=>'select', 'value'=>isset($val['type'])? $val['type']:'']];
-        $gl_cur     = ['label'=>lang('currency'),'values'=>$currencies, 'attr'=>['type'=>'select', 'value'=>isset($val['cur']) ? $val['cur'] :'']];
-        $gl_header  = ['label'=>lang('heading'),'postion'=>'after','attr'=>['type'=>'checkbox']];
-        $gl_parent  = ['label'=>$this->lang['primary_gl_acct'],'attr'=>['type'=>'ledger','value'=>isset($val['parent'])?$val['parent']:'']];
-        if (!empty($val['inactive'])){ $val['gl_inactive']['attr']['checked']= 'checked'; }
-        if (!empty($val['heading'])) { $val['gl_header']['attr']['checked']  = 'checked'; }
-        return [
-            'gl_previous'=> array_merge($gl_previous,['col'=>1,'break'=>true]),
-            'gl_inactive'=> array_merge($gl_inactive,['col'=>1,'break'=>true]),
-            'gl_account' => array_merge($gl_account, ['col'=>1,'break'=>true]),
-            'gl_desc'    => array_merge($gl_desc,    ['col'=>1,'break'=>true]),
-            'gl_type'    => array_merge($gl_type,    ['col'=>2,'break'=>true]),
-            'gl_cur'     => array_merge($gl_cur,     ['col'=>2,'break'=>true]),
-            'gl_header'  => array_merge($gl_header,  ['col'=>2]),
-            'gl_parent'  => array_merge($gl_parent,  ['col'=>2,'break'=>true])];
-    }
-
 	/**
      * Structure for saving user changes of the chart of accounts 
      * @param array $layout - Structure coming in
@@ -233,18 +217,21 @@ function loadPreview() {
 		$rID = clean('rID', 'text', 'get');
         if (!$rID) { return msgAdd(lang('bad_data')); }
 		// Can't delete gl account if it was used in a journal entry
-        $glAccounts = getModuleCache('phreebooks', 'chart', 'accounts');
-		$glRecord = $glAccounts[$rID];
+        $glAccounts= getModuleCache('phreebooks', 'chart', 'accounts');
+		$glRecord  = $glAccounts[$rID];
         if (dbGetValue(BIZUNO_DB_PREFIX."journal_main",'id',"gl_acct_id='$rID'")) { return msgAdd(sprintf($this->lang['err_gl_chart_delete'], 'journal_main')); }
         if (dbGetValue(BIZUNO_DB_PREFIX."journal_item",'id',"gl_account='$rID'")) { return msgAdd(sprintf($this->lang['err_gl_chart_delete'], 'journal_item')); }
         if (dbGetValue(BIZUNO_DB_PREFIX."contacts",    'id',"gl_account='$rID'")) { return msgAdd(sprintf($this->lang['err_gl_chart_delete'], 'contacts')); }
         if (dbGetValue(BIZUNO_DB_PREFIX."inventory",   'id',"gl_sales='$rID' OR gl_inv='$rID' OR gl_cogs='$rID'")) { return msgAdd(sprintf($this->lang['err_gl_chart_delete'], 'inventory')); }
-		unset($glAccounts[$rID]);
+		if (!getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[44]) { return msgAdd("Sorry, you cannot delete your retained earnings account."); }
+        $maxPeriod = dbGetValue(BIZUNO_DB_PREFIX."journal_history", 'MAX(period) as period', "", false);
+        if (dbGetValue(BIZUNO_DB_PREFIX."journal_history", "beginning_balance", "gl_account='$rID' AND period=$maxPeriod")) { return msgAdd("The GL account cannot be deleted if the last fiscal year ending balance is not zero!"); }
+        unset($glAccounts[$rID]);
 		// remove acct from journal_history table
 		dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."journal_history WHERE gl_account='$rID'");
         setModuleCache('phreebooks', 'chart', 'accounts', $glAccounts);
-		msgLog(lang('gl_acct').' - '.lang('delete').": ".$glRecord['id'].' '.$glRecord['title']);
-		msgAdd(lang('gl_acct').' - '.lang('delete').": ".$glRecord['id'].' '.$glRecord['title'], 'success');
+		msgLog(lang('phreebooks_chart_of_accts').' - '.lang('delete')." (".$glRecord['id'].') '.$glRecord['title']);
+		msgAdd(lang('phreebooks_chart_of_accts').' - '.lang('delete')." (".$glRecord['id'].') '.$glRecord['title'], 'success');
 		$layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"reloadSessionStorage(chartRefresh);"]]);
 	}
 
@@ -286,6 +273,7 @@ function loadPreview() {
 		dbGetResult("TRUNCATE ".BIZUNO_DB_PREFIX."journal_history");
 		buildChartOfAccountsHistory();
 		msgAdd($this->lang['msg_gl_replace_success'], 'success');
+        msgLog($this->lang['msg_gl_replace_success']);
 		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 'actionData'=>"reloadSessionStorage(chartRefresh);"]]);
 	}
 
@@ -305,6 +293,7 @@ function loadPreview() {
 		dbGetResult("TRUNCATE ".BIZUNO_DB_PREFIX."journal_history");
 		buildChartOfAccountsHistory();
 		msgAdd($this->lang['msg_gl_replace_success'], 'success');
+        msgLog($this->lang['msg_gl_replace_success']);
 		$layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval', 'actionData'=>"reloadSessionStorage(chartRefresh);"]]);
 	}
 

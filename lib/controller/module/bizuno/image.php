@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-13
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/bizuno/image.php
  */
 
@@ -35,6 +35,7 @@ class bizunoImage
 	 */
 	public function manager(&$layout=[])
     {
+        global $io;
         if (!validateSecurity('bizuno', 'profile', 1)) { return; }
 		$search = clean('imgSearch', 'text', 'get');
 		$target = clean('imgTarget', 'text', 'get');
@@ -44,8 +45,7 @@ class bizunoImage
 			switch ($action) {
                 case 'parent':  $path   = dirname($path); break;
                 case 'refresh': $search = '';             break;
-                case 'upload':  $io     = new io(); 
-                    return $io->uploadSave('imgFile', "images/$path/");
+                case 'upload':  return $io->uploadSave('imgFile', "images/$path/");
 			}
 			if (substr($action, 0, 6) == 'newdir') {
 				$parts = explode(":", $action);

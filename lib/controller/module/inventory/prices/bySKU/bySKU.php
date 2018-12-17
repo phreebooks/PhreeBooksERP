@@ -23,7 +23,7 @@
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/inventory/prices.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/inventory/prices.php", 'inventoryPrices');
 
 class bySKU extends inventoryPrices
 {

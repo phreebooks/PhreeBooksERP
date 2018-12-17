@@ -13,11 +13,11 @@
  * versions in the future. If you wish to customize Bizuno for your
  * needs please refer to http://www.phreesoft.com for more information.
  *
- * @name       Bizuno ERP
+ * @name       Bizuno
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-10
+ * @version    3.x Last Update: 2018-12-10
  * @filesource lib/controller/functions.php
  */
 
@@ -28,6 +28,22 @@ namespace bizuno;
  */
 //function bizShutdown() { msgTrap(); msgDebugWrite(); }
 //register_shutdown_function("\\bizuno\\bizShutdown"); 
+
+/**
+ * Autoloads files, if it's already loaded, returns true. if not, tests for files existence before requiring else dies.
+ * @param string $path - Path to load file
+ * @param string $method - [Default: false] A method within the file to test for the loaded presence
+ * @param string $type - [Default: class] Whether 'class or 'functions' are being tested
+ * @return boolean - true if already loaded, script dies with notice if the file is not there
+ */
+function bizAutoLoad($path, $method='', $type='class') {
+    if (!empty($method)) { $method = __NAMESPACE__.'\\'. str_replace(__NAMESPACE__, '', $method); } // check for just one namespace
+    if     ($type=='class'    && !empty($method) && class_exists   ($method)) { return true; }
+    elseif ($type=='function' && !empty($method) && function_exists($method)) { return true; }
+    if (file_exists($path)) { require_once($path); }
+    else { return false; } // msgAdd("Fatal Error - File: $path does not exist!", 'trap'); } Causes issues with failed loads in PhreeForm
+    return true;
+}
 
 /**
  * Composer gathers the module and mods, sorts them and executes in sequence.
@@ -50,7 +66,7 @@ function compose($module, $page, $method, &$layout=[])
             continue;
         }
         msgDebug("\nWorking with controller: $controller");
-        require_once($controller);
+        bizAutoLoad($controller, $fqdn);
         $process = new $fqdn();
         if (!isset($modProps['method'])) { $modProps['method'] = $method; }
         if (method_exists($process, $modProps['method'])) {
@@ -134,10 +150,11 @@ function myExceptionHandler($e)
 function detectDevice()
 {
     $tablet_browser = $mobile_browser = 0;
-    if (preg_match('/(tablet|ipad|playbook)|(android(?!.*(mobi|opera mini)))/i', strtolower($_SERVER['HTTP_USER_AGENT']))) { $tablet_browser++; }
-    if (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile)/i', strtolower($_SERVER['HTTP_USER_AGENT']))) { $mobile_browser++; }
+    $agent = !empty($_SERVER['HTTP_USER_AGENT']) ? $_SERVER['HTTP_USER_AGENT'] : '';
+    if (preg_match('/(tablet|ipad|playbook)|(android(?!.*(mobi|opera mini)))/i', strtolower($agent))) { $tablet_browser++; }
+    if (preg_match('/(up.browser|up.link|mmp|symbian|smartphone|midp|wap|phone|android|iemobile)/i', strtolower($agent))) { $mobile_browser++; }
     if ((strpos(strtolower($_SERVER['HTTP_ACCEPT']),'application/vnd.wap.xhtml+xml') > 0) or ((isset($_SERVER['HTTP_X_WAP_PROFILE']) or isset($_SERVER['HTTP_PROFILE'])))) { $mobile_browser++; }
-    $mobile_ua = strtolower(substr($_SERVER['HTTP_USER_AGENT'], 0, 4));
+    $mobile_ua = strtolower(substr($agent, 0, 4));
     $mobile_agents = [
         'w3c ','acs-','alav','alca','amoi','audi','avan','benq','bird','blac',
         'blaz','brew','cell','cldc','cmd-','dang','doco','eric','hipt','inno',
@@ -149,7 +166,7 @@ function detectDevice()
         'tosh','tsm-','upg1','upsi','vk-v','voda','wap-','wapa','wapi','wapp',
         'wapr','webc','winw','winw','xda ','xda-'];
     if (in_array($mobile_ua,$mobile_agents)) { $mobile_browser++; }
-    if (strpos(strtolower($_SERVER['HTTP_USER_AGENT']),'opera mini') > 0) {
+    if (strpos(strtolower($agent),'opera mini') > 0) {
         $mobile_browser++;
         //Check for tablets on opera mini alternative headers
         $stock_ua = strtolower(isset($_SERVER['HTTP_X_OPERAMINI_PHONE_UA'])?$_SERVER['HTTP_X_OPERAMINI_PHONE_UA']:(isset($_SERVER['HTTP_DEVICE_STOCK_UA'])?$_SERVER['HTTP_DEVICE_STOCK_UA']:''));
@@ -313,21 +330,27 @@ function clearModuleCache($module, $group=false, $lvl1=false)
 
 /**
  * Reads the user defined settings for a given module and updates the registry
- * @param type $module
- * @param type $structure
- * @param type $silent
+ * @param string $module - Module index name
+ * @param array $structure - Structure of the settings for the given module
+ * @return null - Sets module cache for with the users selections
  */
-function readModuleSettings($module, $structure=[], $silent=false)
+function readModuleSettings($module, $structure=[])
 {
     $settings = [];
     foreach ($structure as $group => $values) { 
-        foreach ($values as $setting => $value) { 
-            $settings[$group][$setting] = clean($group."_".$setting, ['format'=>isset($value['format'])?$value['format']:'text'], 'post');
+        foreach ($values as $setting => $props) {
+            $fldVal = clean($group."_".$setting, ['format'=>isset($props['attr']['format']) ? $props['attr']['format'] : 'text'], 'post');
+            if (!empty($props['attr']['type']) && $props['attr']['type']=='password' && empty($fldVal)) {
+                msgDebug("\nSkipped group: $group and setting = $setting");
+                $settings[$group][$setting] = !empty($props['attr']['value']) ? $props['attr']['value'] : '';
+            } else {
+                $settings[$group][$setting] = $fldVal;
+            }
         }
     }
     msgDebug("\nSaving settings array: ".print_r($settings, true));
     setModuleCache($module, 'settings', false, $settings);
-    if (!$silent) { msgAdd(lang('msg_settings_saved'), 'success'); }
+    msgAdd(lang('msg_settings_saved'), 'success');
 }
 
 /**
@@ -715,7 +738,7 @@ function getDefaultFormID($jID = 0)
 }
 
 /**
- * Returns with the image tag from a url with a html inline icon base 64 encoded
+ * Returns with the image tag from a URL with a HTML in line icon base 64 encoded
  * @param string $url
  * @return string - HTML img tag for displaying an image
  */

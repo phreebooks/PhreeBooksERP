@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-19
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/payment/methods/converge.php
  *
  * Source Information:
@@ -39,7 +39,7 @@ namespace bizuno;
 if (!defined('PAYMENT_CONVERGE_URL'))     { define('PAYMENT_CONVERGE_URL',     'https://www.myvirtualmerchant.com/VirtualMerchant/processxml.do'); }
 if (!defined('PAYMENT_CONVERGE_URL_TEST')){ define('PAYMENT_CONVERGE_URL_TEST','https://demo.myvirtualmerchant.com/VirtualMerchantDemo/processxml.do'); }
 
-require_once(BIZUNO_LIB."model/encrypter.php");
+bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
 
 class converge
 {
@@ -324,6 +324,7 @@ $output['body'] .= '</div>
 
 	private function queryMerchant($request=[])
     {
+        global $io;
         $tags = '';
 		foreach ($request as $key => $value) {
             if ($value <> '') { $tags .= "<$key>".urlencode(str_replace('&', '+', $value))."</$key>"; }
@@ -331,8 +332,7 @@ $output['body'] .= '</div>
 		$data = "xmldata=<txn>$tags</txn>";
 		msgDebug("\nRequest to send to Converge: $data");
 		$url = $this->mode=='test' ? PAYMENT_CONVERGE_URL_TEST : PAYMENT_CONVERGE_URL;
-		$channel = new io;
-        if (!$strXML = $channel->cURLGet($url, $data)) { return; }
+        if (!$strXML = $io->cURLGet($url, $data)) { return; }
         msgDebug("\nReceived raw data back from Converge: ".print_r($strXML, true));
 		$resp = parseXMLstring($strXML);
 		msgDebug("\nReceived back from Converge: ".print_r($resp, true));

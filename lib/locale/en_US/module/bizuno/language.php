@@ -106,6 +106,7 @@ $lang = [
     'wrong_code_time' => "This is the wrong code or time expired.",
     'password_changed' => 'Your password has been successfully changed.',
     // PhreeForm processing/separators
+//    'pf_proc_cur_exc' => 'Convert to Currency',
     'pf_proc_json' => 'JSON Decode',
     'pf_proc_neg' => 'Negate',
 	'pf_proc_lc' => 'Lowercase',
@@ -215,6 +216,8 @@ $lang = [
 	'admin_encrypt_old' => 'Current Encryption key',
 	'admin_encrypt_new' => 'New Encryption key',
 	'admin_encrypt_confirm' => 'Re-enter new key ',
+    'admin_fix_comments' => 'Check/Repair database comments to latest structure',
+    'desc_update_comments' => '<p>This tool iterrates through your database tables to update the comments used to set positioning, styling and formatting the database fields. Generally this tool does not need to be run more than once or only after recommended by PhreeSoft after an update. If no changes are necessary, this tool will not touch your database.</p><p>Remember to backup your database before running this tool.</p>',
 	'db_engine' => 'DB Engine',
 	'db_rows' => 'Number of Rows',
 	'db_collation' => 'Collation',

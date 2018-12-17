@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-28
+ * @version    3.x Last Update: 2018-12-10
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -43,9 +43,9 @@ class bizunoSettings
      */
     public function manager(&$layout=[])
     {
+        global $io;
         if (!$security = validateSecurity('bizuno', 'admin', 2)) { return; }
         $focus   = clean('cat', ['format'=>'text', 'default'=>'bizuno'], 'get');
-        $io      = new io();
         $libMods = $io->apiPhreeSoft('getMyExtensions'); // pull the master list/subscribed list of modules from phreesoft.com
         msgDebug("\nReceived from PhreeSoft: ".print_r($libMods, true));
         if (!$libMods || !isset($libMods['extensions'])) { $libMods = ['extensions'=>[]]; }
@@ -78,7 +78,7 @@ class bizunoSettings
 					if (!empty($settings['settings']) || $hasDashboards || !empty($props['dirMethods'])) { // check to see if the module has admin settings
                         $modStatus .= html5("prop_$module_id", ['icon'=>'settings','events'=>['onClick'=>"location.href='".$this->BIZUNO_HOME."&p=$module_id/admin/adminHome'"]]);
 					}
-                    if ($security == 4 && !$required) {
+                    if ($security == 5 && !$required) {
                         $modStatus .= html5("remove_$module_id", ['attr'=>['type'=>'button','value'=>lang('remove')],
                            'events'=>['onClick'=>"if (confirm('".$this->lang['msg_module_delete_confirm']."')) jsonAction('bizuno/settings/moduleRemove', '$module_id');"]]);
                     }
@@ -114,12 +114,12 @@ class bizunoSettings
     private function getLocal()
     {
         $output = [];
-        require_once(BIZUNO_ROOT."portal/guest.php");
+        bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
         $guest   = new guest();
         $modList = $guest->getModuleList();
 		foreach ($modList as $module => $path) {
-            require_once("{$path}admin.php");
             $fqcn = "\\bizuno\\{$module}Admin";
+            bizAutoLoad("{$path}admin.php", $fqcn);
             $admin= new $fqcn();
 			$cat  = !empty($admin->structure['category']) ? $admin->structure['category'] : 'misc';
 			$output[$cat][$module] = [
@@ -129,7 +129,7 @@ class bizunoSettings
 //              'version'    => isset($admin->structure['version']) ? $admin->structure['version'] : '', // if uncommented, replaces newest version with installed version, breaks upgrade
                 'loaded'     => true,
 				'active'     => getModuleCache($module, 'properties', 'status'),
-				'settings'   => isset($admin->settings) && sizeof($admin->settings) ? true : false];
+				'settings'   => isset($admin->settings) && is_array($admin->settings) ? true : false];
             if (strpos($path, BIZUNO_CUSTOM."$module/")===0) { 
                 $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>true,'version'=>-1]);
             }
@@ -140,6 +140,7 @@ class bizunoSettings
     
     public function loadExtension(&$layout=[])
     {
+        global $io;
         $moduleID= clean('data', 'filename', 'get');
         $bizID   = getUserCache('profile', 'biz_id');
         $bizUser = getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_user');
@@ -153,7 +154,6 @@ class bizunoSettings
             $source = "https://www.phreesoft.com/wp-admin/admin-ajax.php?action=bizuno_ajax&p=myPortal/admin/loadExtension&mID=$moduleID";
             $dest   = BIZUNO_DATA."temp/$moduleID.zip";
             copy ($source, $dest, $context);
-            $io = new io();
             if (file_exists(BIZUNO_DATA."temp/$moduleID.zip")) {
                 $io->folderDelete(BIZUNO_EXT.$moduleID); // remove all current contents
                 $io->zipUnzip(BIZUNO_DATA."temp/$moduleID.zip", BIZUNO_EXT.$moduleID, false);
@@ -215,8 +215,8 @@ class bizunoSettings
             $path = rtrim($path, '/') . '/';
             msgDebug("\n\nInstalling module: $module at path: $path");
             if (!file_exists("{$path}admin.php")) { return msgAdd(sprintf("There was an error finding file %s", "{$path}admin.php")); }
-            require_once("{$path}admin.php");
             $fqcn = "\\bizuno\\{$module}Admin";
+            bizAutoLoad("{$path}admin.php", $fqcn);
             $adm = new $fqcn();
             $bizunoMod[$module]['settings']            = isset($adm->settings) ? $adm->settings : [];
             $bizunoMod[$module]['properties']          = $adm->structure;
@@ -269,8 +269,8 @@ class bizunoSettings
         $path = getModuleCache($module, 'properties', 'path');
         $cat  = getModuleCache($module, 'properties', 'category', false, 'bizuno');
         if (file_exists("$path/admin.php")) {
-            require_once("$path/admin.php");
             $fqcn = "\\bizuno\\{$module}Admin";
+            bizAutoLoad("$path/admin.php", $fqcn);
             $mod_admin = new $fqcn();
             $this->adminDelDirs($mod_admin);
             if (isset($mod_admin->tables)) { $this->adminDelTables($mod_admin->tables); }
@@ -309,9 +309,9 @@ class bizunoSettings
 		msgDebug("\nInstalling method $method with methodDir = $subDir");
         $path = getModuleCache($module, 'properties', 'path')."$subDir/$method/$method.php";
         if (file_exists(BIZUNO_CUSTOM."$module/$subDir/$method/$method.php")) { $path = BIZUNO_CUSTOM."$module/$subDir/$method/$method.php"; }
-        require_once($path);
-        $methSet = getModuleCache($module,$subDir,$method,'settings');
         $fqcn = "\\bizuno\\$method";
+        bizAutoLoad($path, $fqcn);
+        $methSet = getModuleCache($module,$subDir,$method,'settings');
         $clsMeth = new $fqcn($methSet);
         if (method_exists($clsMeth, 'install')) { $clsMeth->install($layout); }
         $properties = getModuleCache($module, $subDir, $method);
@@ -335,9 +335,9 @@ class bizunoSettings
 		$method = clean('method','text', 'get');
         if (!$module || !$subDir || !$method) { return msgAdd("Not all the information was provided!"); }
         $properties = getModuleCache($module, $subDir, $method);
-        require_once("{$properties['path']}$method.php");
-        $methSet = getModuleCache($module,$subDir,$method,'settings');
         $fqcn = "\\bizuno\\$method";
+        bizAutoLoad("{$properties['path']}$method.php", $fqcn);
+        $methSet = getModuleCache($module,$subDir,$method,'settings');
         $objMethod = new $fqcn($methSet);
         msgDebug('received raw data = '.print_r(file_get_contents("php://input"), true));
         $structure = method_exists($objMethod, 'settingsStructure') ? $objMethod->settingsStructure() : [];
@@ -371,9 +371,9 @@ class bizunoSettings
         if (!$module || !$subDir) { return msgAdd("Bad method data provided!"); }
 		$properties = getModuleCache($module, $subDir, $method);
         if ($properties) {
-			require_once("{$properties['path']}$method.php");
-            $methSet = getModuleCache($module,$subDir,$method,'settings');
             $fqcn = "\\bizuno\\$method";
+			bizAutoLoad("{$properties['path']}$method.php", $fqcn);
+            $methSet = getModuleCache($module,$subDir,$method,'settings');
             $clsMeth = new $fqcn($methSet);
             if (method_exists($clsMeth, 'remove')) { $clsMeth->remove(); }
             $properties['status'] = 0;
@@ -496,7 +496,7 @@ class bizunoSettings
      */
     function adminAddRpts($path='')
     {
-        require_once(BIZUNO_LIB."controller/module/phreeform/functions.php");
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformImport', 'function');
         $error = false;
         msgDebug("\nAdding reports to path = $path");
         if ($path <> BIZUNO_LIB) { $path = "$path/"; }

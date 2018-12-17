@@ -23,7 +23,7 @@
 
 namespace bizuno;
 
-require_once(BIZUNO_ROOT."portal/mail.php");
+bizAutoLoad(BIZUNO_ROOT."portal/mail.php", 'portalMail');
 
 class bizunoMailer extends portalMail
 {

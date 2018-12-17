@@ -311,8 +311,8 @@ function taxPreSubmit{$type}(type) {
      */
     public function bulkChange(&$layout=[])
     {
-        require_once(BIZUNO_LIB . "controller/module/phreebooks/functions.php");
         $type  = clean('type', ['format'=>'char','default'=>'c'], 'get');
+//      bizAutoLoad(BIZUNO_LIB . "controller/module/phreebooks/functions.php", 'loadTaxes', 'function');
 //      $taxAll= loadTaxes($type);
         $subjects = [['id'=>'c','text'=>lang('contacts')],['id'=>'i','text'=>lang('inventory')]];
 		$icnGo = ['icon'=>'next', 'label'=>lang('go'),

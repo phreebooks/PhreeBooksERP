@@ -25,7 +25,7 @@ namespace bizuno;
 
 define('DASHBOARD_FAVORITE_REPORTS_VERSION','3.1');
 
-require_once(BIZUNO_LIB."controller/module/phreeform/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformSecurity', 'function');
 
 class favorite_reports
 {

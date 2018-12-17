@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-23
+ * @version    3.x Last Update: 2018-12-10
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -153,6 +153,11 @@ class contactsMain
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
 		$rID = clean('rID', 'integer', 'get');
 		$structure = dbLoadStructure(BIZUNO_DB_PREFIX."contacts", $this->type);
+        
+        // remove after 2019-01-01
+        $structure['inactive']['attr']['type'] = 'select';
+        $structure['inactive']['attr']['value']= '0';
+        
 		// merge data with structure
 		$cData = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id=$rID");
 		dbStructureFill($structure, $cData);
@@ -163,35 +168,18 @@ class contactsMain
             $title = $structure['short_name']['attr']['value'].' - '.$aValue['primary_name'];
         } else {
             $title = lang('new');
-			$structure['gl_account']['attr']['value'] = $this->contact['gl_account'];
-			$structure['terms']['attr']['value']      = '0';
+			$structure['gl_account']['attr']['value']= $this->contact['gl_account'];
+			$structure['terms']['attr']['value']     = '0';
 		}
         $fldGeneral = ['id','type','short_name','inactive','rep_id','tax_rate_id','contact_first','contact_last','price_sheet',
             'flex_field_1','store_id','account_number','gov_id_number','gl_account','terms','terms_text','terms_edit','recordID'];
-        // These need to be fixed in the db comments
-        $structure['contact_first']['col']       = 2;
-        $structure['contact_last']['col']        = 2;
-        $structure['account_number']['col']      = 2;
-        $structure['tax_rate_id']['col']         = 3;
-        $structure['gov_id_number']['col']       = 3;
-        $structure['gl_account']['col']          = 3;
-        $structure['terms']['col']               = 3;
-        $structure['flex_field_1']['col']        = 2;
-        $structure['flex_field_1']['order']      = 31;
-        $structure['store_id']['attr']['type']   = 'hidden'; // fixed in tables.php
-        $structure['gl_account']['attr']['type'] = 'ledger';
-		$structure['rep_id']['attr']['type']     = 'select';
-		$structure['tax_rate_id']['attr']['type']= 'select';
-		$structure['price_sheet']['attr']['type']= 'select';
-
-		// set some special cases
-		$structure['type']['attr']['value'] = $this->type;
-		$structure['short_name']['tooltip'] = lang('msg_leave_null_to_assign_ref');
-        $structure['inactive']['label']     = lang('status');
-        $structure['inactive']['values']    = $this->status_choices;
-		$structure['rep_id']['values']      = viewRoleDropdown();
-		$structure['tax_rate_id']['values'] = viewSalesTaxDropdown($this->type=='b'?'c':$this->type, 'inventory');
-		unset($structure['rep_id']['attr']['size']);
+        // set some special cases
+		$structure['type']['attr']['value']= $this->type;
+		$structure['short_name']['tooltip']= lang('msg_leave_null_to_assign_ref');
+        $structure['inactive']['label']    = lang('status');
+        $structure['inactive']['values']   = $this->status_choices;
+		$structure['rep_id']['values']     = viewRoleDropdown();
+		$structure['tax_rate_id']['values']= viewSalesTaxDropdown($this->type=='b'?'c':$this->type, 'inventory');
 		unset($structure['tax_rate_id']['attr']['size']);
         // set some new fields
         $structure['terms_text']= ['col'=>3,'label'=>pullTableLabel("contacts", 'terms', $this->type),
@@ -200,7 +188,7 @@ class contactsMain
         $structure['recordID']  = ['order'=>99,'break'=>true,'html'=>'<p>Record ID: '.$structure['id']['attr']['value']."</p>",'attr'=>['type'=>'raw']];
         if (sizeof(getModuleCache('inventory', 'prices'))) {
 			unset($structure['price_sheet']['attr']['size']);
-			require_once(BIZUNO_LIB."controller/module/inventory/prices.php");
+			bizAutoLoad(BIZUNO_LIB."controller/module/inventory/prices.php", 'inventoryPrices');
 			$tmp = new inventoryPrices();
 			$structure['price_sheet']['values'] = $tmp->quantityList($this->type=='b'?'c':$this->type, true);
 		}
@@ -233,7 +221,7 @@ class contactsMain
 			'tabs'     => ['tabContacts'=>['divs'=>[
                 'general'=> ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
                     'genMain'  => ['order'=>20,'type'=>'fields', 'label'   =>lang('general'),'keys'=>$fldGeneral],
-                    'genAddr'  => ['order'=>50,'type'=>'address','content' =>$structure['address_book'],'settings'=>['suffix'=>'m','required'=>true]],
+                    'genAddr'  => ['order'=>50,'type'=>'address','content' =>$structure['address_book'],'settings'=>['suffix'=>'m','required'=>true,'cols'=>true]],
                     'getAttach'=> ['order'=>80,'type'=>'attach', 'defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>"rID_{$rID}_"]]]],
 				'crm_add' => ['order'=>20,'label'=>lang('contacts'), 'type'=>'html', 'html'=>'', 'attr'=>['id'=>'crmDiv'],
 					'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/crmDetails&rID=$rID'"]],
@@ -251,6 +239,7 @@ class contactsMain
 		customTabs($data, 'contacts', 'tabContacts');
         $this->editCustomType($data, $rID); // customize based on type
         $layout = array_replace_recursive($layout, $data);
+        msgDebug("\nrep_id has properties: ".print_r($data['fields']['rep_id'], true));
 	}
     
     /**
@@ -292,6 +281,7 @@ class contactsMain
                 $fldGeneral = ['id','type','short_name','inactive','contact_first','contact_last',
                     'flex_field_1','store_id','gov_id_number','recordID'];
                 $data['tabs']['tabContacts']['divs']['general']['divs']['genMain']['keys'] = $fldGeneral;
+                $data['fields']['flex_field_1']['order'] = 15;
 //                unset($data['fields']['rep_id'],$data['fields']['account_number'],$data['fields']['tax_rate_id'],$data['fields']['gl_account']);
 //                unset($data['fields']['terms'],$data['fields']['terms_edit'],$data['fields']['terms_text']);
 				break;
@@ -452,6 +442,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
      */
     public function mergeSave(&$layout=[])
     {
+        global $io;
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 3)) { return; }
 		$srcID = clean('rID', 'integer', 'get'); // record ID to merge
 		$destID= clean('data','integer', 'get'); // record ID to keep
@@ -474,7 +465,6 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
 		$message .= 'deleted contact; ';
         // merge the attachments
         msgDebug("\nMoving file at path: ".getModuleCache('contacts', 'properties', 'attachPath')." from rID_{$srcID}_ to rID_{$destID}_");
-        $io = new io();
         $io->fileMove(getModuleCache('contacts', 'properties', 'attachPath'), "rID_{$srcID}_", "rID_{$destID}_");
 		msgAdd($message, 'success');
 		msgLog(lang("contacts").'-'.lang('merge')." - $srcID => $destID");
@@ -568,7 +558,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     public function details(&$layout=[])
     {
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
-		$rID    = clean('rID',   'integer', 'get');
+		$rID    = clean('rID', 'integer','get');
 		$prefix = clean('prefix','text', 'get');
 		$suffix = clean('suffix','text', 'get');
 		$fill   = clean('fill',  'char', 'get');
@@ -603,12 +593,9 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         $rID = clean('rID', 'integer', 'get');
         if (!$rID) { return msgAdd("Bad cID passed!"); }
         compose('contacts', 'main', 'edit', $layout);
-        unset($layout['divs']['formBOF']);
-		unset($layout['divs']['formEOF']);
-        unset($layout['divs']['tbContact']);
-        unset($layout['attachPath']);
-        unset($layout['jsHead']);
-        unset($layout['jsReady']);
+        unset($layout['divs']['formBOF'], $layout['divs']['formEOF'], $layout['divs']['toolbar']);
+        unset($layout['tabs']['tabContacts']['divs']['general']['divs']['getAttach']);
+        unset($layout['jsHead'], $layout['jsReady']);
 	}
 
 	/**

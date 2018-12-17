@@ -160,7 +160,7 @@ class income_statement
 		    $sqlIdx  = 0;
 		    foreach ($report->fieldlist as $field) {
                     if (isset($field->visible) && $field->visible) {
-                    $value = isset($field->processing) ? ProcessData($gl_acct, $field->processing) : $gl_acct;
+                    $value = isset($field->processing) ? viewProcess($gl_acct, $field->processing) : $gl_acct;
                     $rowData[] = isset($field->formatting) ? viewFormat($value, $field->formatting) : $value;
                     if (isset($field->total) && $field->total) {
                         if (!isset($this->totals[$sqlIdx])) { $this->totals[$sqlIdx] = 0; }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/bizuno/messages.php
  */
 
@@ -100,6 +100,7 @@ class bizunoMessages
      */
     public function read(&$layout=[])
     {
+        global $io;
         if (!$security = validateSecurity('bizuno', 'message', 1)) { return; }
 		$rID = clean('rID', 'integer', 'get');
         $row = dbGetRow(BIZUNO_DB_PREFIX.'phreemsg', "id=$rID");
@@ -107,7 +108,6 @@ class bizunoMessages
         if (!empty($row['body'])) { // message is here, just show it
             $response['sysMsg'] = $row['body'];
         } else { // go the PhreeSoft servers to try to retrieve it
-            $io = new io();
             $response = $io->apiPhreeSoft('getSysMessage', ['msgID'=>$row['msg_id']]);
             if (!$response || !isset($response['sysMsg'])) { $response = ['sysMsg'=>"Error communicating with PhreeSoft servers! Please check your account settings."]; }            
         }

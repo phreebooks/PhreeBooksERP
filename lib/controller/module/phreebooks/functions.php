@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2018-11-14
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -43,23 +43,24 @@ function selChoices()
  */
 function selGLTypes()
 {
-	return [
-         '0'=>  ['id'=> 0, 'text'=>lang('gl_acct_type_0'), 'asset'=>true],  // Cash
-		 '2'=>  ['id'=> 2, 'text'=>lang('gl_acct_type_2'), 'asset'=>true],  // Accounts Receivable
-		 '4'=>  ['id'=> 4, 'text'=>lang('gl_acct_type_4'), 'asset'=>true],  // Inventory
-		 '6'=>  ['id'=> 6, 'text'=>lang('gl_acct_type_6'), 'asset'=>true],  // Other Current Assets
-		 '8'=>  ['id'=> 8, 'text'=>lang('gl_acct_type_8'), 'asset'=>true],  // Fixed Assets
-		'10'=>  ['id'=>10, 'text'=>lang('gl_acct_type_10'),'asset'=>false], // Accumulated Depreciation
-		'12'=>  ['id'=>12, 'text'=>lang('gl_acct_type_12'),'asset'=>true],  // Other Assets
-		'20'=>  ['id'=>20, 'text'=>lang('gl_acct_type_20'),'asset'=>false], // Accounts Payable
-		'22'=>  ['id'=>22, 'text'=>lang('gl_acct_type_22'),'asset'=>false], // Other Current Liabilities
-		'24'=>  ['id'=>24, 'text'=>lang('gl_acct_type_24'),'asset'=>false], // Long Term Liabilities
-		'30'=>  ['id'=>30, 'text'=>lang('gl_acct_type_30'),'asset'=>false], // Income
-		'32'=>  ['id'=>32, 'text'=>lang('gl_acct_type_32'),'asset'=>true],  // Cost of Sales
-		'34'=>  ['id'=>34, 'text'=>lang('gl_acct_type_34'),'asset'=>true],  // Expenses
-		'40'=>  ['id'=>40, 'text'=>lang('gl_acct_type_40'),'asset'=>false], // Equity - Doesn't Close
-		'42'=>  ['id'=>42, 'text'=>lang('gl_acct_type_42'),'asset'=>false], // Equity - Gets Closed
-		'44'=>  ['id'=>44, 'text'=>lang('gl_acct_type_44'),'asset'=>false]]; // Equity - Retained Earnings
+	$types = [
+        ['id'=> 0, 'text'=>lang('gl_acct_type_0'), 'asset'=>true],  // Cash
+		['id'=> 2, 'text'=>lang('gl_acct_type_2'), 'asset'=>true],  // Accounts Receivable
+		['id'=> 4, 'text'=>lang('gl_acct_type_4'), 'asset'=>true],  // Inventory
+		['id'=> 6, 'text'=>lang('gl_acct_type_6'), 'asset'=>true],  // Other Current Assets
+		['id'=> 8, 'text'=>lang('gl_acct_type_8'), 'asset'=>true],  // Fixed Assets
+		['id'=>10, 'text'=>lang('gl_acct_type_10'),'asset'=>false], // Accumulated Depreciation
+		['id'=>12, 'text'=>lang('gl_acct_type_12'),'asset'=>true],  // Other Assets
+		['id'=>20, 'text'=>lang('gl_acct_type_20'),'asset'=>false], // Accounts Payable
+		['id'=>22, 'text'=>lang('gl_acct_type_22'),'asset'=>false], // Other Current Liabilities
+		['id'=>24, 'text'=>lang('gl_acct_type_24'),'asset'=>false], // Long Term Liabilities
+		['id'=>30, 'text'=>lang('gl_acct_type_30'),'asset'=>false], // Income
+		['id'=>32, 'text'=>lang('gl_acct_type_32'),'asset'=>true],  // Cost of Sales
+		['id'=>34, 'text'=>lang('gl_acct_type_34'),'asset'=>true],  // Expenses
+		['id'=>40, 'text'=>lang('gl_acct_type_40'),'asset'=>false], // Equity - Doesn't Close
+		['id'=>42, 'text'=>lang('gl_acct_type_42'),'asset'=>false], // Equity - Gets Closed
+		['id'=>44, 'text'=>lang('gl_acct_type_44'),'asset'=>false]];// Equity - Retained Earnings
+    return sortOrder($types, 'text');
 }
 
 /**
@@ -112,7 +113,7 @@ function processPhreeBooks($value, $format = '')
             if (!$rID) { return ''; }
 			$main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id='$rID'");
 			$jID  = $main['journal_id']; 
-			$total_inv = in_array($jID, [6,13]) ? -$main['total_amount'] : $main['total_amount'];
+			$total_inv = $main['total_amount'];
 			$total_paid= 0;
 			$result = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "item_ref_id='$rID' AND gl_type='pmt'");
 			foreach ($result as $row) {
@@ -341,6 +342,30 @@ function glFindAPacct(&$row)
 }
 
 /**
+ * Determines the fiscal calendar period based on a passed date
+ * @param string $post_date - date to retrieve period information
+ * @param boolean $verbose - [default true] set to false to suppress user messages
+ * @return integer - fiscal year period based on the submitted date
+ */
+function calculatePeriod($post_date, $verbose=true)
+{
+    if (getModuleCache('phreebooks', 'fy', 'period')) {
+        $post_time_stamp         = strtotime($post_date);
+        $period_start_time_stamp = strtotime(getModuleCache('phreebooks', 'fy', 'period_start'));
+        $period_end_time_stamp   = strtotime(getModuleCache('phreebooks', 'fy', 'period_end'));
+        if (($post_time_stamp >= $period_start_time_stamp) && ($post_time_stamp <= $period_end_time_stamp)) {
+            return getModuleCache('phreebooks', 'fy', 'period', false, 0);
+        } 
+    }
+    $period = dbGetValue(BIZUNO_DB_PREFIX.'journal_periods', 'period', "start_date<='$post_date' AND end_date>='$post_date'");
+    if (!$period) { // post_date is out of range of defined accounting periods
+        return msgAdd(sprintf(lang('err_gl_post_date_invalid'), $post_date));
+    }
+    if ($verbose) { msgAdd(lang('msg_gl_post_date_out_of_period'), 'caution'); }
+    return $period;
+}
+
+/**
  * This function automatically updates the period and sets the new constants in the configuration db table
  * @param boolean $verbose
  * @return boolean
@@ -348,12 +373,12 @@ function glFindAPacct(&$row)
 function periodAutoUpdate($verbose=true)
 {
 	$period = calculatePeriod(date('Y-m-d'), false);
-    if (!getModuleCache('phreebooks', 'fy', 'period') || $period == getModuleCache('phreebooks', 'fy', 'period')) { return true; } // we're in the current period
+    if ($period == getModuleCache('phreebooks', 'fy', 'period')) { return true; } // we're in the current period
 	if (!$period) { // we're outside of the defined fiscal years
         if ($verbose) { msgAdd(sprintf(lang('err_gl_post_date_invalid'), $period), 'trap'); }
         $tmpSec = getUserCache('security', 'admin', false, 0);
         setUserCache('security', 'admin', 3);
-        require_once(BIZUNO_LIB."controller/module/phreebooks/tools.php");
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/tools.php", 'phreebooksTools');
         $tools = new phreebooksTools();
         $tools->fyAdd(); // auto-add new fiscal year
         setUserCache('security', 'admin', $tmpSec); // restore user permissions
@@ -389,30 +414,6 @@ function getPeriodInfo($period)
         'fy_period_max'=> $fy_max['period']];
     msgDebug("\nCalculating period information, returning with values: ".print_r($output, true));
     return $output;
-}
-
-/**
- * Determines the fiscal calendar period based on a passed date
- * @param string $post_date - date to retrieve period information
- * @param boolean $verbose - [default true] set to false to suppress user messages
- * @return integer - fiscal year period based on the submitted date
- */
-function calculatePeriod($post_date, $verbose=true)
-{
-    if (!getModuleCache('phreebooks', 'fy', 'period')) { return '999'; }
-	$post_time_stamp         = strtotime($post_date);
-	$period_start_time_stamp = strtotime(getModuleCache('phreebooks', 'fy', 'period_start'));
-	$period_end_time_stamp   = strtotime(getModuleCache('phreebooks', 'fy', 'period_end'));
-	if (($post_time_stamp >= $period_start_time_stamp) && ($post_time_stamp <= $period_end_time_stamp)) {
-		return getModuleCache('phreebooks', 'fy', 'period', false, 0);
-	} else {
-		$period = dbGetValue(BIZUNO_DB_PREFIX.'journal_periods', 'period', "start_date<='$post_date' AND end_date>='$post_date'");
-		if (!$period) { // post_date is out of range of defined accounting periods
-            return msgAdd(sprintf(lang('err_gl_post_date_invalid'), $post_date));
-		}
-        if ($verbose) { msgAdd(lang('msg_gl_post_date_out_of_period'), 'caution'); }
-		return $period;
-	}
 }
 
 /**

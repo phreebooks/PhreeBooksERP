@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-23
+ * @version    3.x Last Update: 2018-11-11
  * @filesource /controller/module/phreeform/render.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreeform/functions.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformImport', 'function');
 
 class phreeformRender 
 {
@@ -208,12 +208,10 @@ class phreeformRender
                 $output .= "	</tr>\n";
                 }
             if ($viewData['report']->reporttype == 'rpt') {
-                $props = ['attr'=>  ['type'=>'checkbox', 'value'=>'1']];
-                if (!empty($viewData['report']->truncate)) { $props['attr']['checked'] = 'checked'; }
-                $output .= "	<tr>\n";
-                $output .= "	  <td>".$this->lang['truncate_fit']."</td>\n";
-                $output .= '	  <td colspan="3">'.html5('critTruncate', $props);
-                $output .= "	</tr>\n";
+                $props = ['attr'=>['type'=>'checkbox']];
+                if (!empty($viewData['report']->truncate)) { $props['attr']['checked'] = true; }
+                $output .= "<tr><td>".$this->lang['truncate_fit'].'</td><td colspan="3">'.html5('critTruncate', $props)."</tr>\n";
+                $output .= '<tr><td>'.lang('currency').'</td><td colspan="3">'.html5('iso', ['attr'=>['type'=>'selCurrency']])."</tr>\n";
             }
             if (isset($viewData['report']->filterlist) && $viewData['report']->filterlist <> '') {
                 foreach ($viewData['report']->filterlist as $key => $LineItem) { // retrieve the dropdown based on the params field (dropdown type)
@@ -222,7 +220,7 @@ class phreeformRender
                     $choices = [];
                     foreach ($CritBlocks as $value) { $choices[] = ['id'=>$value, 'text'=>lang($value)]; }
                     if (!empty($LineItem->visible)) {
-                        $field_0 = html5('critFltrSel'.$key, ['values'=>$choices, 'attr'=>  ['type'=>'select', 'value'=>isset($LineItem->default)?$LineItem->default:'']]);
+                        $field_0 = html5('critFltrSel'.$key, ['values'=>$choices, 'attr'=>['type'=>'select','value'=>isset($LineItem->default)?$LineItem->default:'']]);
                         $field_1 = html5('fromvalue'  .$key, ['attr'=>['value'=>isset($LineItem->min)?$LineItem->min:'', 'size'=>"21", 'maxlength'=>"20"]]);
                         $field_2 = html5('tovalue'    .$key, ['attr'=>['value'=>isset($LineItem->max)?$LineItem->max:'', 'size'=>"21", 'maxlength'=>"20"]]);
                         $output .= "	<tr".($LineItem->visible ? '' : ' style="display:none"').">\n";
@@ -388,6 +386,7 @@ class phreeformRender
 				break;
 			case 'rpt':
 				$ReportData = '';
+                $report->iso = clean('iso', 'alpha_num', 'post');
 				$result = $this->BuildSQL($report);
 				if ($result['level'] == 'success') { // Generate the output data array
 					$sql = $result['data'];
@@ -410,7 +409,7 @@ class phreeformRender
 			fclose($handle);
             chmod($temp_file, 0644);
 			// send the email
-            require_once(BIZUNO_LIB."model/mail.php");
+            bizAutoLoad(BIZUNO_LIB."model/mail.php", 'bizunoMailer');
 			$mail = new bizunoMailer($to_email, $to_name, $message_subject, $email_text, $from_email, $from_name);
             if ($cc_email) { $mail->addToCC($cc_email, $cc_name); }
 			$mail->attach($temp_file);
@@ -449,7 +448,7 @@ class phreeformRender
     private function BuildForm($report, $delivery_method = 'D') 
     {
 		global $report;
-		require_once(BIZUNO_LIB."controller/module/phreeform/renderForm.php");
+		bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/renderForm.php", 'PDF');
 		// check for at least one field selected to show
 		if (!$report->fieldlist) { // No fields are checked to show, that's bad
 			return msgAdd(lang('PHREEFORM_NOROWS'), 'caution');
@@ -508,7 +507,7 @@ class phreeformRender
 				$tField = '';
 				foreach ($report->fieldlist[$i]->settings->boxfield as $entry) {
 					$value  = getModuleCache('bizuno', 'settings', 'company', $entry->fieldname);
-					$value  = isset($entry->processing) ? ProcessData($value, $entry->processing): $value;
+					$value  = isset($entry->processing) ? viewProcess($value, $entry->processing): $value;
 					$value  = isset($entry->formatting) ? viewFormat ($value, $entry->formatting): $value;
 					$tField.= isset($entry->separator)  ? AddSep($value, $entry->separator)      : $value;
 					msgDebug("\n Adding $value to textfield which is now $tField");
@@ -576,7 +575,7 @@ class phreeformRender
 						$result   = $stmt->fetch(\PDO::FETCH_ASSOC);
 						$tField   = '';
 						for ($i = 0; $i < sizeof($field->settings->boxfield); $i++) {
-							$temp   = isset($field->settings->boxfield[$i]->processing)? ProcessData($result['r'.$i], $field->settings->boxfield[$i]->processing) : $result['r'.$i];
+							$temp   = isset($field->settings->boxfield[$i]->processing)? viewProcess($result['r'.$i], $field->settings->boxfield[$i]->processing) : $result['r'.$i];
 							$temp   = isset($field->settings->boxfield[$i]->formatting)? viewFormat ($temp, $field->settings->boxfield[$i]->formatting): $temp;
 							$tField.= isset($field->settings->boxfield[$i]->separator) ? AddSep     ($temp, $field->settings->boxfield[$i]->separator) : $temp;
 						}
@@ -595,7 +594,7 @@ class phreeformRender
                     msgDebug("\nResult fo template sql = ".print_r($result, true));
                     $tField   = $field->settings->ltrText;
                     for ($i = 0; $i < sizeof($field->settings->boxfield); $i++) {
-                        $temp   = isset($field->settings->boxfield[$i]->processing)? ProcessData($result['r'.$i], $field->settings->boxfield[$i]->processing) : $result['r'.$i];
+                        $temp   = isset($field->settings->boxfield[$i]->processing)? viewProcess($result['r'.$i], $field->settings->boxfield[$i]->processing) : $result['r'.$i];
                         $temp   = isset($field->settings->boxfield[$i]->formatting)? viewFormat ($temp, $field->settings->boxfield[$i]->formatting): $temp;
                         $tField = str_replace($field->settings->boxfield[$i]->title, $temp, $tField);
                     }
@@ -617,7 +616,7 @@ class phreeformRender
                     $data = $special_form->load_table_data($TableObject->boxfield);
                 } elseif (!empty($TableObject->settings->fieldname)) { // for field encoded data, typically json
                     msgDebug("\nProcessing Data for table: ".print_r($report->FieldValues["d$key"], true));
-                    $vals = ProcessData($report->FieldValues["d$key"], $TableObject->settings->processing);
+                    $vals = viewProcess($report->FieldValues["d$key"], $TableObject->settings->processing);
                     $data = $this->setEncodedList($TableObject->settings->boxfield, $vals);
                 } else {
                     $tblField = $this->setFieldList($TableObject->settings->boxfield);
@@ -653,7 +652,7 @@ class phreeformRender
 						$data = $stmt->fetch(\PDO::FETCH_ASSOC);
 						$report->FieldValues = $data['form_total'];
 					}
-					$temp = isset($field->settings->boxfield[0]->processing) ? ProcessData($report->FieldValues, $field->settings->boxfield[0]->processing) : $report->FieldValues;
+					$temp = isset($field->settings->boxfield[0]->processing) ? viewProcess($report->FieldValues, $field->settings->boxfield[0]->processing) : $report->FieldValues;
                     if (!isset($field->settings->boxfield[0]->formatting)) { $field->settings->boxfield[0]->formatting = ''; }
 					$report->fieldlist[$key]->settings->text = viewFormat($temp, $field->settings->boxfield[0]->formatting);
 				}
@@ -713,10 +712,7 @@ class phreeformRender
 			if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1 && strpos($report->sqlTable, BIZUNO_DB_PREFIX."journal_main") !== false) {
 				$stmt  = dbGetResult("SELECT currency, currency_rate $TrailingSQL");
 				$result= $stmt->fetch(\PDO::FETCH_ASSOC);
-				$posted_currencies = [
-                    'currency'     => $result['currency'],
-					'currency_rate'=> $result['currency_rate'],
-                    ];
+				$posted_currencies = ['currency'=>$result['currency'], 'currency_rate'=>$result['currency_rate']];
 			}
 			foreach ($report->fieldlist as $field) {
                 msgDebug("\nWorking with field $field->type and values: ".print_r($field, true));
@@ -725,7 +721,7 @@ class phreeformRender
 						$oneline = formatReceipt($field->text, $field->width, $field->align, $oneline);
 						break;
 					case 'Data':
-						$value   = viewFormat (ProcessData(array_shift($report->FieldValues), $field->settings->boxfield[0]->processing), $field->settings->boxfield[0]->formatting);
+						$value   = viewFormat (viewProcess(array_shift($report->FieldValues), $field->settings->boxfield[0]->processing), $field->settings->boxfield[0]->formatting);
 						$oneline = formatReceipt($value, $field->width, $field->align, $oneline);
 						break;
 					case 'TBlk':
@@ -737,7 +733,7 @@ class phreeformRender
 							$result    = dbGetResult("SELECT $strTxtBlk $TrailingSQL");
 							$TextField = '';
 							for ($i = 0; $i < sizeof($field->settings->boxfield); $i++) {
-								$temp = $field->settings->boxfield[$i]->processing ? ProcessData($result->fields['r'.$i], $field->settings->boxfield[$i]->processing) : $result->fields['r'.$i];
+								$temp = $field->settings->boxfield[$i]->processing ? viewProcess($result->fields['r'.$i], $field->settings->boxfield[$i]->processing) : $result->fields['r'.$i];
 								$temp = $field->settings->boxfield[$i]->formatting ? viewFormat($temp, $field->settings->boxfield[$i]->formatting) : $temp;
 								$TextField .= AddSep($temp, $field->settings->boxfield[$i]->separator);
 							}
@@ -755,7 +751,7 @@ class phreeformRender
             $data = $special_form->load_table_data($field->boxfield);
         } elseif (isset($field->settings->fieldname) && $field->settings->fieldname) {
             $fld = 'd'.$field->type;
-            $data = viewFormat (ProcessData($report->FieldValues[$fld], $field->settings->processing), $field->settings->formatting);
+            $data = viewFormat (viewProcess($report->FieldValues[$fld], $field->settings->processing), $field->settings->formatting);
         } else {
             $tblField = $this->setFieldList($field->settings->boxfield);
             if (!$stmt = dbGetResult("SELECT $tblField $TrailingSQL")) { return msgAdd("Error selecting table data! See trace file."); }
@@ -783,7 +779,7 @@ class phreeformRender
 							$temp = [];
 							foreach ($value as $data_key => $data_element) {
 								$offset = substr($data_key, 1);
-								$value  = viewFormat (ProcessData($data_element, $field->settings->boxfield[$offset]->processing), $field->settings->boxfield[$offset]->formatting);
+								$value  = viewFormat (viewProcess($data_element, $field->settings->boxfield[$offset]->processing), $field->settings->boxfield[$offset]->formatting);
 								$temp[].= formatReceipt($value, $field->settings->boxfield[$offset]->width, $field->settings->boxfield[$offset]->align);
 							}
 							$oneline .= implode("", $temp). "\n";
@@ -798,7 +794,7 @@ class phreeformRender
 						foreach ($StoredTable->data as $value) {
 							$temp = [];
 							foreach ($value as $data_key => $data_element) {
-								$value   = viewFormat (ProcessData($data_element, $report->boxfield[$data_key]->processing), $report->boxfield[$data_key]->formatting);
+								$value   = viewFormat (viewProcess($data_element, $report->boxfield[$data_key]->processing), $report->boxfield[$data_key]->formatting);
 								$temp[] .= formatReceipt($value, $field->width, $field->align);
 							}
 							$oneline = implode("", $temp);
@@ -817,7 +813,7 @@ class phreeformRender
                             $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
 							$report->FieldValues = $result['form_total'];
 						}
-						$value   = viewFormat(ProcessData($report->FieldValues, $report->boxfield[0]->processing), $report->boxfield[0]->formatting);
+						$value   = viewFormat(viewProcess($report->FieldValues, $report->boxfield[0]->processing), $report->boxfield[0]->formatting);
 						$oneline = formatReceipt($value, $field->width, $field->align, $oneline);
 						break;
 				}
@@ -864,28 +860,28 @@ class phreeformRender
 	}
 	
     /**
-     * Extracts the information from a report structure and builds the database SQL to retrieve data
+     * Reports only - Extracts the information from a report structure and builds the database SQL to retrieve data
      * @param object $report - Report structure
-     * @return array - sql statement ready to execute and descriptive text with the filters for the report header
+     * @return array - SQL statement ready to execute and descriptive text with the filters for the report header
      */
     private function BuildSQL($report)
-    { // for reports only
-        $displayed = $hidden = [];
+    {
+        $display = $hidden = [];
         $index = 0;
         for ($i = 0; $i < sizeof($report->fieldlist); $i++) {
             if (!empty($report->fieldlist[$i]->visible)) {
-                $displayed[] = prefixTables($report->fieldlist[$i]->fieldname) . " AS c" . $index;
+                $display[] = prefixTables($report->fieldlist[$i]->fieldname) . " AS c" . $index;
                 $index++;
             } else {
                 $hidden[] = prefixTables($report->fieldlist[$i]->fieldname);
             }
         }
-        if (empty($displayed)) { return ['level'=>'error','message'=>lang('PHREEFORM_NOROWS')]; }
-        $displayed = array_merge($displayed, $hidden); // add the hidden rows at end for processing
-        $strField = implode(', ', $displayed);
-        $filterdesc = lang('filters').': ';
+        if (empty($display)) { return ['level'=>'error','message'=>lang('PHREEFORM_NOROWS')]; }
+        $displayed = array_merge($display, $hidden); // add the hidden rows at end for processing
+        $strField  = implode(', ', $displayed);
+        $filterdesc= lang('filters').': ';
         //fetch the groupings and build first level of SORT BY string (for sub totals)
-        $strGroup = NULL;
+        $strGroup  = NULL;
         if (isset($report->grouplist)) { for ($i = 0; $i < sizeof($report->grouplist); $i++) {
             if ($report->grouplist[$i]->default) {
                 $strGroup   .= prefixTables($report->grouplist[$i]->fieldname);
@@ -919,7 +915,7 @@ class phreeformRender
     private function GeneratePDFFile($data, $report, $delivery_method = 'D')
     { // for pdf reports only
         global $report;
-        require_once(BIZUNO_LIB."controller/module/phreeform/renderReport.php");
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/renderReport.php", 'PDF');
         $pdf = new PDF();
         $pdf->ReportTable($data);
         $ReportName = ReplaceNonAllowedCharacters($report->title).'.pdf';
@@ -945,7 +941,7 @@ class phreeformRender
      */
     private function GenerateHTMLFile($data, $report)
     { // for html reports only
-        require_once(BIZUNO_LIB."controller/module/phreeform/renderHTML.php");
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/renderHTML.php", 'HTML');
         $html = new HTML($data, $report);
         return ['content'=>['action'=>'divHTML','divID'=>'bodyCenter','html'=>$html->output]];
     }
@@ -1065,6 +1061,7 @@ class phreeformRender
      */
     private function emailProps($report='')
     {
+        $xKeys = $xVals = [];
         $fromName  = getUserCache('profile', 'title');
 		$fromEmail = getUserCache('profile', 'email');
         if (isset($report->defaultemail)) { switch ($report->defaultemail) {
@@ -1103,10 +1100,10 @@ class phreeformRender
             if ($fName)  { $output['toName'] = $data[$fName]; }
             if ($fEmail) { $output['toEmail']= $data[$fEmail]; }
 //			if (is_array($sParts) && isset($sParts[1])) {
-                foreach ($data as $key => $val) {
+                if (!empty($data)) { foreach ($data as $key => $val) {
                     $xKeys[] = "%$key%";
                     $xVals[] = $val;
-                }
+                } }
                 $title  = !empty($report->filenameprefix)? $report->filenameprefix: '';
                 $title .= !empty($data[$sParts[1]])      ? $data[$sParts[1]]      : $report->title;
 				$output['msgSubject'] = sprintf($this->lang['phreeform_email_subject'], $title, getModuleCache('bizuno', 'settings', 'company', 'primary_name'));
@@ -1118,9 +1115,9 @@ class phreeformRender
     
     private function loadSpecialClass($special_class) {
         if (file_exists (BIZUNO_LIB."controller/module/phreeform/extensions/$special_class.php")) {
-			require_once(BIZUNO_LIB."controller/module/phreeform/extensions/$special_class.php");
+			bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/extensions/$special_class.php");
         } elseif (file_exists(BIZUNO_DATA."data/phreeform/extensions/$special_class.php")) {
-			require_once(BIZUNO_DATA."data/phreeform/extensions/$special_class.php");
+			bizAutoLoad(BIZUNO_DATA."data/phreeform/extensions/$special_class.php");
         } else {
             return msgAdd("Cannot find special class: $special_class");
         }

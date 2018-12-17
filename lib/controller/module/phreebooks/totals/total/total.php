@@ -103,7 +103,7 @@ class total
 			'totals_total_txid'=> ['attr'=>['type'=>'hidden']],
 			'gl_acct_id'       => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
 			'totals_total_opt' => ['icon'=>'settings', 'size'=>'small','events'=>['onClick'=>"jq('#totals_total_div').toggle('slow');"]],
-			'total_amount'     => ['label'=>lang('total'),'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']]];
+			'total_amount'     => ['label'=>lang('total'),     'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']]];
 		if (isset($data['items'])) { foreach ($data['items'] as $row) { // fill in the data if available
 			if ($row['gl_type'] == $this->settings['gl_type']) {
 				$this->fields['totals_total_id']['attr']['value']  = isset($row['id']) ? $row['id'] : 0;

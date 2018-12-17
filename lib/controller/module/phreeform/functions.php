@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-19
+ * @version    3.x Last Update: 2018-11-07
  * @filesource /controller/module/phreeform/functions.php
  */
 
@@ -31,19 +31,19 @@ namespace bizuno;
  * @param string $Process - process to apply to the data
  * @return mixed - processed string if process found, original string if not
  */
+/*
 function ProcessData($strData, $Process)
 {
     if (getModuleCache('phreeform', 'processing', $Process, 'function')) {
 		$func = getModuleCache('phreeform', 'processing')[$Process]['function'];
-		if (!function_exists(__NAMESPACE__.'\\'.$func)) {
-			$module = getModuleCache('phreeform', 'processing')[$Process]['module'];
-			require_once(getModuleCache($module, 'properties', 'path')."functions.php");
-		}
         $fqfn = "\\bizuno\\$func";
+		$module = getModuleCache('phreeform', 'processing')[$Process]['module'];
+		bizAutoLoad(getModuleCache($module, 'properties', 'path')."functions.php", $fqfn, 'function');
 		return $fqfn($strData, $Process);
 	}
 	return $strData;
 }
+*/
 
 /**
  * Adds a separator to the end of a string, if specified, from a module file, used for extensions and customization
@@ -55,11 +55,9 @@ function AddSep($value, $Process)
 {
 	if (getModuleCache('phreeform', 'separators', $Process, 'function')) {
 		$func = getModuleCache('phreeform', 'separators')[$Process]['function'];
-		if (!function_exists(__NAMESPACE__.'\\'.$func)) {
-			$module = getModuleCache('phreeform', 'separators')[$Process]['module'];
-			require_once(BIZUNO_LIB."controller/module/$module/functions.php");
-		}
         $fqfn = "\\bizuno\\$func";
+		$module = getModuleCache('phreeform', 'separators')[$Process]['module'];
+		bizAutoLoad(BIZUNO_LIB."controller/module/$module/functions.php", $fqfn, 'function');
 		return $fqfn($value, $Process);
 	}
 	return $value;
@@ -425,129 +423,6 @@ function prefixTables($field)
 }
 
 /**
- * @todo !!! DEPRECATED !!! - NEEDS TO BE ROLLED INTO model/db.php function dbSqlDates
- * 
- * Builds sql date string and description string based on passed criteria
- * date_prefs format:
- *   entry 1 => date range specification for switch statement
- *   entry 2 => start date value db format
- *   entry 3 => end date value db format
- * @param string $date_prefs - imploded (:) string as defined above
- * @param string $df - database fieldname for the sql date search
- * @return return associative  array ('sql', 'description', 'start_date', 'end_date');
- */
-/*
-function phreeformSQLDate($date_prefs='c', $df=false)
-{
-  	global $report;
-    if (!$df) { $df = 'post_date'; }
-	$dates = localeGetDates();
-	$DateArray = explode(':', $date_prefs);
-	$t = time();
-	$ds = '1969-01-01';
-	$de = '2029-12-31';
-	switch ($DateArray[0]) {
-	  default:
-	  case "a": // All, skip the date addition to the where statement, all dates in db
-		$d = '';
-		$fildesc = '';
-		break;
-	  case "b": // Date Range
-		$d = '';
-		$fildesc = lang('date_range');
-		if ($DateArray[1] <> '') {
-		  $ds = clean($DateArray[1], 'date');
-		  $d .= "$df>='$ds'";
-		  $fildesc .= ' '.lang('from').' '.$DateArray[1];
-		}
-		if ($DateArray[2] <> '') { // a value entered, check
-          if (strlen($d) > 0) { $d .= ' AND '; }
-		  $de = localeCalculateDate(clean($DateArray[2], 'date'), 1);
-		  $d .= "$df<'$de'";
-		  $fildesc .= ' '.lang('to').' '.$DateArray[2];
-		}
-		$fildesc .= '; ';			
-		break;
-	  case "c": // Today (specify range for datetime type fields to match for time parts)
-		$ds = $dates['Today'];
-		$de = localeCalculateDate($dates['Today'], 1);
-		$d  = "$df>='$ds' AND $df<'$de'";
-		$fildesc = lang('date_range').' = '.viewDate($dates['Today']).'; ';
-		break;
-	  case "d": // This Week
-		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $t) - date('w', $t), $dates['ThisYear']));
-		$de = localeCalculateDate(date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $t) - date('w', $t)+6, $dates['ThisYear'])), 1);
-		$d  = "$df>='$ds' AND $df<'$de'";
-		$fildesc = lang('date_range').' '.lang('from').' '.viewDate($ds).' '.lang('to').' '.viewDate(localeCalculateDate($de, -1)).'; ';
-		break;
-	  case "e": // This Week to Date
-		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], date('j', $t)-date('w', $t), $dates['ThisYear']));
-		$de = localeCalculateDate($dates['Today'], 1);
-		$d  = "$df>='$ds' AND $df<'$de'";
-		$fildesc = lang('date_range').' '.lang('from').' '.viewDate($ds).' '.lang('to').' '.viewDate($dates['Today']).'; ';
-		break;
-	  case "f": // This Month
-		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], 1, $dates['ThisYear']));
-		$de = localeCalculateDate(date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], $dates['TotalDays'], $dates['ThisYear'])), 1);
-		$d  = "$df>='$ds' AND $df<'$de'";
-		$fildesc = lang('date_range').' '.lang('from').' '.viewDate($ds).' '.lang('to').' '.viewDate(localeCalculateDate($de, -1)).'; ';
-		break;
-	  case "g": // This Month to Date
-		$ds = date('Y-m-d', mktime(0, 0, 0, $dates['ThisMonth'], 1, $dates['ThisYear']));
-		$de = localeCalculateDate($dates['Today'], 1);
-		$d  = "$df>='$ds' AND $df<'$de'";
-		$fildesc = lang('date_range').' '.lang('from').' '.viewDate($ds).' '.lang('to').' '.viewDate($dates['Today']).'; ';
-		break;
-	  case "h": // This Quarter
-		$QtrStrt = getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 3);
-		$temp = dbGetFiscalDates($QtrStrt);
-		$ds = $temp['start_date'];
-		$temp = dbGetFiscalDates($QtrStrt + 2);
-		$de = localeCalculateDate($temp['end_date'], 1);
-		$d  = "$df>='$ds' AND $df<'$de'";
-		$fildesc = lang('date_range').' '.lang('from').' '.viewDate($ds).' '.lang('to').' '.viewDate($temp['end_date']).'; ';
-		break;
-	  case "i": // Quarter to Date
-		$QtrStrt = getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 3);
-		$temp = dbGetFiscalDates($QtrStrt);
-		$ds = $temp['start_date'];
-		$de = localeCalculateDate($dates['Today'], 1);
-		$d  = "$df>='$ds' AND $df<'$de'";
-		$fildesc = lang('date_range').' '.lang('from').' '.viewDate($ds).' '.lang('to').' '.viewDate($dates['Today']).'; ';
-		break;
-	  case "j": // This Year
-		$YrStrt = getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 12);
-		$temp = dbGetFiscalDates($YrStrt);
-		$ds = $temp['start_date'];
-		$temp = dbGetFiscalDates($YrStrt + 11);
-		$de = localeCalculateDate($temp['end_date'], 1);
-		$d  = "$df>='$ds' AND $df<'$de'";
-		$fildesc = lang('date_range').' '.lang('from').' '.viewDate($ds).' '.lang('to').' '.viewDate($temp['end_date']).'; ';
-		break;
-	  case "k": // Year to Date
-		$YrStrt = getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 12);
-		$temp = dbGetFiscalDates($YrStrt);
-		$ds = $temp['start_date'];
-		$de = localeCalculateDate($dates['Today'], 1);
-		$d  = "$df>='$ds' AND $df<'$de'";
-		$fildesc = lang('date_range').' '.lang('from').' '.viewDate($ds).' '.lang('to').' '.viewDate($dates['Today']).'; ';
-		break;
-	  case "l": // This Period
-	    $temp = dbGetFiscalDates(getModuleCache('phreebooks', 'fy', 'period'));
-	    $ds = $temp['start_date'];
-	    $de = localeCalculateDate($temp['end_date'], 1);
-		$d  = "$df>='$ds' AND $df<'$de'";
-		$fildesc = lang('period').' '.getModuleCache('phreebooks', 'fy', 'period').' ('.viewDate($ds).' '.lang('to').' '.viewDate($temp['end_date']).'); ';
-		break;
-	  case "z": // date by period
-		$d  = "$df>='$report->period' AND $df<'".($report->period + 1)."'";
-        $fildesc = lang('period')." $report->period (".viewFormat($DateArray[1], 'date')." - ".viewFormat($DateArray[2], 'date')."); ";
-		break;
-	}
-	return ['sql'=>$d,'description'=>$fildesc,'start_date'=>$ds,'end_date'=>$de];
-} */
-
-/**
  * Tests for the existence of tables in variables (for formulas)
  * @param string $field- data to test
  * @param object $report - working report object
@@ -657,7 +532,7 @@ function phreeformCriteria($report, $xOnly=false)
    */
 function BuildDataArray($sql, $report)
 {
-	global $report;
+	global $report, $currencies;
 //	$posted_currencies = ['currency' => getUserCache('profile', 'currency', false, 'USD'), 'currency_rate' => 1]; // use default currency
 	// See if we need to group, fetch the group fieldname
 	$GrpFieldName       = '';
@@ -700,6 +575,7 @@ function BuildDataArray($sql, $report)
 	msgDebug("\nreturned number of rows = ".sizeof($result));
 	// Generate the output data array
     if (!isset($report->totalonly)) { $report->totalonly = '0'; }
+    $currencies->isoDest = empty($report->iso) ? getUserCache('profile', 'currency', false, 'USD') : $report->iso;
 	$RowCnt     = 0;
 	$ColCnt     = 1;
 	$GrpWorking = false;
@@ -709,7 +585,7 @@ function BuildDataArray($sql, $report)
 		$report->currentValues = false; // reset the stored processing values to save sql's
 		if (isset($GrpField) && $GrpField) { // we're checking for group totals, see if this group is complete
 			if (($myrow[$GrpField] <> $GrpWorking) && $GrpWorking !== false) { // it's a new group so print totals
-                $gTmp = ProcessData($GrpWorking, $GrpFieldProcessing);
+                $gTmp = viewProcess($GrpWorking, $GrpFieldProcessing);
 				$OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);
 				foreach($seq as $offset => $TotalCtl) {
                     // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total. 
@@ -721,7 +597,7 @@ function BuildDataArray($sql, $report)
 			$GrpWorking = $myrow[$GrpField]; // set to new grouping value
 		}
 		foreach($seq as $key => $TableCtl) {
-			$processedData = ProcessData($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
+			$processedData = viewProcess($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
 			if ($report->totalonly <> 'on') { // insert data into output array and set to next column
 				$OutputArray[$RowCnt][0] = 'd'; // let the display class know its a data element
 				$OutputArray[$RowCnt][$ColCnt] = viewFormat($processedData, $TableCtl['formatting']);
@@ -736,7 +612,7 @@ function BuildDataArray($sql, $report)
 		$ColCnt = 1;
 	}
 	if ($GrpWorking !== false) { // if we collected group data show the final group total
-        $gTmp = ProcessData($GrpWorking, $GrpFieldProcessing);
+        $gTmp = viewProcess($GrpWorking, $GrpFieldProcessing);
         $OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);
 		foreach ($seq as $TotalCtl) {
 			// NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total. 

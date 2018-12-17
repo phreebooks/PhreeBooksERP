@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-15
+ * @version    3.x Last Update: 2018-11-07
  * @filesource /lib/controller/module/phreebooks/journals/j17.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."controller/module/phreebooks/journals/common.php");
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journals/common.php", 'jCommon');
 
 class j17 extends jCommon
 {
@@ -93,7 +93,7 @@ class j17 extends jCommon
             }
             $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
                 'billAD'  => ['order'=>20,'type'=>'address','classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields'], '_b'),
-                    'label'=>lang('bill_to'),'settings'=>['suffix'=>'_b','clear'=>false,'props'=>false,'required'=>true,'store'=>false]],
+                    'label'=>lang('bill_to'),'settings'=>['suffix'=>'_b','clear'=>false,'props'=>false,'required'=>true,'store'=>false,'cols'=>false]],
                 'props'   => ['order'=>40,'type'=>'fields', 'label'=>lang('details'),'classes'=>['blockView'],'attr'=>['id'=>'pbProps'],  'keys'=>$fldKeys],
                 'totals'  => ['order'=>50,'type'=>'totals', 'label'=>lang('totals'), 'classes'=>['blockView'],'attr'=>['id'=>'pbTotals'], 'content'=>$data['totals']],
                 'payments'=> ['order'=>60,'type'=>'payment','label'=>lang('bill_to'),'classes'=>['blockView'],'settings'=>['items'=>$this->items]]]];
@@ -111,7 +111,7 @@ class j17 extends jCommon
         } else {
             unset($data['divs']['tbJrnl']);
             $data['divs']['divDetail']  = ['order'=>50,'type'=>'html','html'=>"<p>".sprintf(lang('search_open_journal'),lang('contacts_type_v'))."</p>".html5('contactSel', ['attr'=>['value'=>'']])];
-            $data['jsReady']['selVendor']= "jq('#contactSel').combogrid({width:200,panelWidth:500,delay:500,iconCls:'icon-search',hasDownArrow:false,
+            $data['jsBody']['selVendor']= "jq('#contactSel').combogrid({width:200,panelWidth:500,delay:500,iconCls:'icon-search',hasDownArrow:false,
     idField:'contact_id_b',textField:'primary_name_b',mode:'remote',
     url:       '".BIZUNO_AJAX."&p=phreebooks/main/managerRowsBank&jID=".JOURNAL_ID."', 
     onBeforeLoad:function (param) { var newValue = jq('#contactSel').combogrid('getValue'); if (newValue.length < 2) return false; },

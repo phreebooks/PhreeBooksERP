@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-25
+ * @version    3.x Last Update: 2018-11-07
  * @filesource /lib/model/db.php
  */
 
@@ -106,7 +106,7 @@ class db extends \PDO
 		$this->total_count++;
 		msgDebug("\nFinished executing action $action for SQL (in $query_time ms): $sql returning result: $msgResult");
 		if ($error) {
-			msgDebug("\nSQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true));
+			msgDebug("\nSQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true), 'trap');
             if ($verbose) { msgAdd("SQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true)); }
 		}
 		return $output;
@@ -182,6 +182,7 @@ class db extends \PDO
 				'tag'    => $prefix.(isset($comment['tag'])?$comment['tag']:$row['Field']).$suffix,
 				'tab'    => isset($comment['tab'])   ? $comment['tab']   : 0,
 				'group'  => isset($comment['group']) ? $comment['group'] : '',
+				'col'    => isset($comment['col'])   ? $comment['col'] : 1,
 				'order'  => isset($comment['order']) ? $comment['order'] : $order,
 				'label'  => isset($comment['label']) ? $comment['label'] : pullTableLabel($table, $row['Field'], $suffix),
 //				'classes'=> array('easyui-validatebox'),
@@ -343,7 +344,7 @@ function dbWrite($table, $data, $action='insert', $parameters='', $quote=true)
  */
 function dbWriteCache($usrEmail=false, $lang=false)
 {
-    global $bizunoUser, $bizunoLang, $bizunoMod;
+    global $bizunoUser, $bizunoLang, $bizunoMod, $io;
     msgDebug("\nentering dbWriteCache");
     if (!biz_validate_user() || !getUserCache('profile', 'biz_id')) { 
         return msgDebug("\nTrying to write to cache but user is not logged in or Bizuno not installed!");
@@ -352,7 +353,7 @@ function dbWriteCache($usrEmail=false, $lang=false)
     // save the language registry
     if ($lang) {
         ksort($bizunoLang); // @todo only create this when reloading registry
-        $io = new io();
+        $io = new io(); // needs to be here as global may not be set up yet
         $ISO = getUserCache('profile', 'language', false, 'en_US');
         $io->fileWrite(json_encode($bizunoLang), "cache/lang_{$ISO}.json", false, false, true);        
     }
@@ -829,7 +830,7 @@ function dbGetFiscalDates($period)
 	$result = dbGetRow(BIZUNO_DB_PREFIX."journal_periods", "period=$period");
 	msgDebug("\nCalculating fiscal dates with period = $period. Resulted in: ".print_r($result, true));
 	if (!$result) { // post_date is out of range of defined accounting periods
-		return msgAdd(lang('err_gl_post_date_invalid'));
+		return msgAdd(sprintf(lang('err_gl_post_date_invalid'), "period $period"));
 	}
 	return $result;
 }
@@ -1039,7 +1040,9 @@ function dbSqlDates($dateType='a', $df=false) {
             $temp = dbGetFiscalDates($DateArray[0]);
             $dbeg = $temp['start_date'];
             $dend = localeCalculateDate($temp['end_date'], 1);
-            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            // Assumes the table has a field named period
+            $sql  = "period='{$DateArray[0]}'";
+//          $sql  = "$df>='$dbeg' AND $df<'$dend'"; // was this before but breaks for trial balance report
             $desc = lang('period')." {$DateArray[0]} (".viewFormat($temp['start_date'], 'date')." - ".viewFormat($temp['end_date'], 'date')."); ";
             break;
 	}

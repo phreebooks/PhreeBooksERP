@@ -91,30 +91,30 @@ class acct_recon {
 		$unrecon_diff  = $end_gl_bal - $dep_in_transit + $chk_in_transit;
 
 		$this->bal_sheet_data = [];
-		$this->bal_sheet_data[] = ['d', lang('beginning_balance'), '', '', '', ProcessData($gl_init_bal, 'currency')];
+		$this->bal_sheet_data[] = ['d', lang('beginning_balance'), '', '', '', viewFormat($gl_init_bal, 'currency')];
 		$this->bal_sheet_data[] = ['d', '', '', '', '', '']; 
-		$this->bal_sheet_data[] = ['d', lang('RW_RECON_CR'), '', '', '', ProcessData($cash_receipts, 'currency')]; 
+		$this->bal_sheet_data[] = ['d', lang('RW_RECON_CR'), '', '', '', viewFormat($cash_receipts, 'currency')]; 
 		$this->bal_sheet_data[] = ['d', '', '', '', '', '']; 
-		$this->bal_sheet_data[] = ['d', lang('RW_RECON_CD'), '', '', '', ProcessData(-$cash_payments, 'currency')]; 
+		$this->bal_sheet_data[] = ['d', lang('RW_RECON_CD'), '', '', '', viewFormat(-$cash_payments, 'currency')]; 
 		$this->bal_sheet_data[] = ['d', '', '', '', '', '']; 
-		$this->bal_sheet_data[] = ['d', lang('ending_balance'), '', '', '', ProcessData($end_gl_bal, 'currency')]; 
+		$this->bal_sheet_data[] = ['d', lang('ending_balance'), '', '', '', viewFormat($end_gl_bal, 'currency')]; 
 		$this->bal_sheet_data[] = ['d', '', '', '', '', '']; 
 		$this->bal_sheet_data[] = ['d', lang('RW_RECON_ADD_BACK'), '', '', '', '']; 
 		foreach ($bank_list as $value) {
-          if ($value['dep_amount']) { $this->bal_sheet_data[] = ['d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData($value['dep_amount'], 'currency'), '']; }
+          if ($value['dep_amount']) { $this->bal_sheet_data[] = ['d', '', viewFormat($value['post_date'], 'date'), $value['reference'], viewFormat($value['dep_amount'], 'currency'), '']; }
 		}
-		$this->bal_sheet_data[] = ['d', lang('RW_RECON_DIT'), '', '', '', ProcessData($dep_in_transit, 'currency')]; 
+		$this->bal_sheet_data[] = ['d', lang('RW_RECON_DIT'), '', '', '', viewFormat($dep_in_transit, 'currency')]; 
 		$this->bal_sheet_data[] = ['d', '', '', '', '', '']; 
 		$this->bal_sheet_data[] = ['d', lang('RW_RECON_LOP'), '', '', '', '']; 
 		foreach ($bank_list as $value) {
 		  if ($value['pmt_amount']) {
-			$this->bal_sheet_data[] = ['d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData(-$value['pmt_amount'], 'currency'), '']; 
+			$this->bal_sheet_data[] = ['d', '', viewFormat($value['post_date'], 'date'), $value['reference'], viewFormat(-$value['pmt_amount'], 'currency'), '']; 
 		  }
 		}
-		$this->bal_sheet_data[] = ['d', lang('RW_RECON_TOP'),  '', '', '', ProcessData(-$chk_in_transit, 'currency')]; 
+		$this->bal_sheet_data[] = ['d', lang('RW_RECON_TOP'),  '', '', '', viewFormat(-$chk_in_transit, 'currency')]; 
 		$this->bal_sheet_data[] = ['d', '', '', '', '', '']; 
-		$this->bal_sheet_data[] = ['d', lang('RW_RECON_DIFF'), '', '', '', ProcessData($unrecon_diff, 'currency')]; 
-		$this->bal_sheet_data[] = ['d', lang('ending_balance'),   '', '', '', ProcessData($end_gl_bal, 'currency')]; 
+		$this->bal_sheet_data[] = ['d', lang('RW_RECON_DIFF'), '', '', '', viewFormat($unrecon_diff, 'currency')]; 
+		$this->bal_sheet_data[] = ['d', lang('ending_balance'),   '', '', '', viewFormat($end_gl_bal, 'currency')]; 
 		
 		//Load closed Journal Items
 		$this->bal_sheet_data[] = ['d', '', '', '', '', ''];
@@ -153,20 +153,20 @@ class acct_recon {
 		$this->bal_sheet_data[] = ['d', lang('RW_RECON_DCLEARED'), '', '', '', ''];
 		if (is_array($bank_list)) foreach ($bank_list as $value) {
 		  if ($value['dep_amount']) {
-			$this->bal_sheet_data[] = ['d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData($value['dep_amount'], 'currency'), '']; 
+			$this->bal_sheet_data[] = ['d', '', viewFormat($value['post_date'], 'date'), $value['reference'], viewFormat($value['dep_amount'], 'currency'), '']; 
 		  }
 		}
-		$this->bal_sheet_data[] = ['d', lang('RW_RECON_TDC'), '', '', '', ProcessData( $dep_cleared, 'currency')];
+		$this->bal_sheet_data[] = ['d', lang('RW_RECON_TDC'), '', '', '', viewFormat( $dep_cleared, 'currency')];
 		$this->bal_sheet_data[] = ['d', '', '', '', '', ''];
 		$this->bal_sheet_data[] = ['d', lang('RW_RECON_PCLEARED'), '', '', '', ''];
 		if (is_array($bank_list)) foreach ($bank_list as $value) {
 		  if ($value['pmt_amount']) {
-			$this->bal_sheet_data[] = ['d', '', ProcessData($value['post_date'], 'date'), $value['reference'], ProcessData(-$value['pmt_amount'], 'currency'), '']; 
+			$this->bal_sheet_data[] = ['d', '', viewFormat($value['post_date'], 'date'), $value['reference'], viewFormat(-$value['pmt_amount'], 'currency'), '']; 
 		  }
 		}
-		$this->bal_sheet_data[] = ['d', lang('RW_RECON_TPC'), '', '', '', ProcessData( $chk_cleared, 'currency')];
+		$this->bal_sheet_data[] = ['d', lang('RW_RECON_TPC'), '', '', '', viewFormat( $chk_cleared, 'currency')];
 		$this->bal_sheet_data[] = ['d', '', '', '', '', ''];
-		$this->bal_sheet_data[] = ['d', lang('RW_RECON_NCLEARED'), '', '', '', ProcessData( $dep_cleared - $chk_cleared, 'currency')];
+		$this->bal_sheet_data[] = ['d', lang('RW_RECON_NCLEARED'), '', '', '', viewFormat( $dep_cleared - $chk_cleared, 'currency')];
 		
 		return $this->bal_sheet_data;
 	}

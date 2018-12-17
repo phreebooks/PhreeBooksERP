@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-26
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /portal/main.php
  */
 
@@ -160,12 +160,14 @@ class main //extends controller
         if (getUserCache('profile','biz_id') && empty($GLOBALS['noBizunoDB'])) { // logged in, fetch the cache from db
             $rows = dbGetMulti(BIZUNO_DB_PREFIX.'configuration');
             if (empty($rows)) { $this->setGuestRegistry(); }
-            else { foreach ($rows as $row) { $bizunoMod[$row['config_key']] = json_decode($row['config_value'], true); } }
+            else { 
+                foreach ($rows as $row) { $bizunoMod[$row['config_key']] = json_decode($row['config_value'], true); }
+                $this->validateVersion();
+            }
         } else { // set guest registry
             $this->setGuestRegistry();
         }
         date_default_timezone_set(getModuleCache('bizuno', 'settings', 'locale', 'timezone', 'EST'));
-        $this->validateVersion(); // check for upgrade
     }
 
     private function setGuestRegistry()
@@ -179,9 +181,9 @@ class main //extends controller
     
 	private function validateVersion()
     {
+        global $io;
         $bizVer = getModuleCache('bizuno', 'versions', 'bizuno', false, ['time_last'=>time(),'version'=>MODULE_BIZUNO_VERSION]);
         if ($bizVer['time_last'] < (time()-(60*60*24*1))) { // only phone home once a day (week?)
-            $io = new io();
             $libMods = $io->apiPhreeSoft('getMyExtensions'); // pull the master list/subscribed list of modules from phreesoft.com
             if (!empty($libMods['bizuno']['version']) && version_compare($libMods['bizuno']['version'], MODULE_BIZUNO_VERSION) > 0) {
                 msgMerge("bizuno_upgrade: An upgrade to PhreeBooks 5 Version {$libMods['bizuno']['version']} is available! Automatic upgrade can be started in Bizuno Settings.");
@@ -190,11 +192,12 @@ class main //extends controller
             setModuleCache('bizuno', 'versions', 'bizuno', $bizVer); // update cache
         }
         if (version_compare(MODULE_BIZUNO_VERSION, $bizVer['version']) > 0) {
+            msgDebug("\nRetrieving file: ".BIZUNO_ROOT.'portal/upgrade.php');
             require(BIZUNO_ROOT.'portal/upgrade.php');
-            if (bizunoUpgrade($bizVer['version'])) {
-                $bizVer['version'] = MODULE_BIZUNO_VERSION;
-                setModuleCache('bizuno', 'versions', 'bizuno', $bizVer); // update cache                
-            }
+            bizunoUpgrade($bizVer['version']);
+            msgDebug("\nUpdating cache with version ".MODULE_BIZUNO_VERSION);
+            $bizVer['version'] = MODULE_BIZUNO_VERSION;
+            setModuleCache('bizuno', 'versions', 'bizuno', $bizVer); // update cache                
         }
 	}
 

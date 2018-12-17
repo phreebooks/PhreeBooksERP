@@ -133,8 +133,8 @@ class bizunoTabs
 			$output[] = ['id'=>$value['module'], 'title'=>lang($value['module']), 'table'=>$tID];
         } }
 		foreach ($bizunoMod as $module => $props) { if ($props['properties']['status'] && $props['properties']['path']) {
-			require_once($props['properties']['path']."/admin.php");
             $fqcn = "\\bizuno\\{$props['properties']['id']}Admin";
+			bizAutoLoad($props['properties']['path']."/admin.php", $fqcn);
             $admin = new $fqcn();
 			if (isset($admin->tables)) { foreach ($admin->tables as $tID => $value) { if (isset($value['extra_tabs']) && $value['extra_tabs']) {
 				$output[] = ['id'=>$admin->moduleID, 'title'=>$admin->lang['title'], 'table'=>$tID];

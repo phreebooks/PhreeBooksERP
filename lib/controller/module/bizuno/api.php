@@ -102,7 +102,7 @@ class bizunoApi
 		}
         $this->main['method_code'] = $this->guessShipMethod($this->main['method_code']); // try to map shipping method
         // Post order
-		require_once(BIZUNO_LIB."controller/module/phreebooks/journal.php");
+		bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journal.php", 'journal');
         // ***************************** START TRANSACTION *******************************
         dbTransactionStart();
         $journal = new journal(0, $jID);
@@ -134,13 +134,13 @@ class bizunoApi
     private function setJournalMain($map, $order=[])
     {
 		foreach ($map['General'] as $idx => $value) {
-            if (!empty($order['General'][$idx])) { $this->main[$value['field']]      = clean($order['General'][$idx], $value['format']); }
+            if (isset($order['General'][$idx])) { $this->main[$value['field']]      = clean($order['General'][$idx], $value['format']); }
         }
         foreach ($map['Contact'] as $idx => $value) {
-            if (!empty($order['Billing'][$idx])) { $this->main[$value['field'].'_b'] = clean($order['Billing'][$idx], $value['format']); }
+            if (isset($order['Billing'][$idx])) { $this->main[$value['field'].'_b'] = clean($order['Billing'][$idx], $value['format']); }
         }
         foreach ($map['Contact']as $idx => $value) {
-            if (!empty($order['Shipping'][$idx])){ $this->main[$value['field'].'_s'] = clean($order['Shipping'][$idx], $value['format']); }
+            if (isset($order['Shipping'][$idx])){ $this->main[$value['field'].'_s'] = clean($order['Shipping'][$idx], $value['format']); }
         }        
         unset($this->main['short_name_b']);
         unset($this->main['short_name_s']);
@@ -151,8 +151,8 @@ class bizunoApi
         $itmCnt = 1;
 		foreach ($order['Item'] as $item) {
 			$temp = ['item_cnt'=>$itmCnt,'gl_type'=>'itm','post_date'=>$this->main['post_date']];
-			foreach ($map['Item'] as $idx => $value) { 
-                if (!empty($item[$idx])) { $temp[$value['field']] = clean($item[$idx], $value['format']); }
+			foreach ($map['Item'] as $idx => $value) {
+                if (isset($item[$idx])) { $temp[$value['field']] = clean($item[$idx], $value['format']); }
             }
             if (empty($temp['gl_account'])) { $temp['gl_account'] = $this->defaultGlSales; }
             // the tax guess at item levels has been commented out as it is about impossible to guaranty accuracy and results in out of balance errors.
@@ -248,20 +248,16 @@ class bizunoApi
 		$pmtInfo = [];
 		foreach ($map['Payment'] as $idx => $value) {
             if (isset($order['Payment'][$idx])) { $pmtInfo[$value['field']] = clean($order['Payment'][$idx], $value['format']); }
+            else                                { $pmtInfo[$value['field']] = ''; }
         }
         msgDebug("\nWorking with payment array = ".print_r($pmtInfo, true));
-        if (empty($pmtInfo['status'])) { return; }
+        if (!$rID) { return; }
+		$iID = dbGetValue(BIZUNO_DB_PREFIX."journal_item", ['id','description'], "ref_id=$rID AND gl_type='ttl'");
+        $iID['description'] .= ";method:{$pmtInfo['method_code']};title:{$pmtInfo['title']};status:{$pmtInfo['status']};hint:{$pmtInfo['hint']}";
         switch ($pmtInfo['status']) {
 			case 'auth':
-                if (!isset($pmtInfo['transaction_id'])) { $pmtInfo['transaction_id'] = $pmtInfo['auth_code']; }
-				if (strlen($pmtInfo['transaction_id']) > 0) {
-					$iID = dbGetValue(BIZUNO_DB_PREFIX."journal_item", ['id','description'], "ref_id=$rID AND gl_type='ttl'");
-					msgDebug("\nFound transaction ID to save auth_code = {$iID['id']}");
-                    if (isset($iID['id']) && $iID['id']) {
-                        $iID['description'] .= ";method:{$pmtInfo['method_code']};status:{$pmtInfo['status']};hint:{$pmtInfo['hint']}";
-                        dbWrite(BIZUNO_DB_PREFIX."journal_item", ['description'=>$iID['description'],'trans_code'=>$pmtInfo['transaction_id']], 'update', "id={$iID['id']}");
-                    }
-				} else {
+                if (empty($pmtInfo['transaction_id'])) { $pmtInfo['transaction_id'] .= $pmtInfo['auth_code']; }
+				if (empty($pmtInfo['transaction_id'])) {
 					msgAdd("The order has been authorized but the Authorization Code is not present, the payment for this order must be completed in Bizuno AND at the merchant website.", 'caution');
 				}
 				break;
@@ -272,10 +268,10 @@ class bizunoApi
 				// build the save $this->main array, try to map the merchant to get gl_account and reference_id no need to cURL merchant
 				// post it, close it as it is now paid
 				msgAdd("The order has been paid at the cart, the payment for this order must be completed manually in Bizuno.", 'caution');
-				break;
 			case 'unpaid':
 			default:
         }
+        dbWrite(BIZUNO_DB_PREFIX."journal_item", ['description'=>$iID['description'],'trans_code'=>$pmtInfo['transaction_id']], 'update', "id={$iID['id']}");
     }
 
     /**
@@ -350,7 +346,7 @@ class bizunoApi
             msgDebug("\nCarrier $id");
             if (!$carrier['status']) { continue; }
             if (!$defCarrier) { $defCarrier = $id; }
-            require_once($carrier['path']."$id.php");
+            bizAutoLoad($carrier['path']."$id.php");
             $fqdn = "\\bizuno\\$id";
             $cAdmin = new $fqdn();
             if (empty($cAdmin->rateCodes)) { continue; }
@@ -401,7 +397,7 @@ class bizunoApi
 		unset($product['TaxRateIDCustomer']);
 		unset($product['TaxRateIDVendor']);
 		// load prices
-		require_once(BIZUNO_LIB."controller/module/inventory/prices.php");
+		bizAutoLoad(BIZUNO_LIB."controller/module/inventory/prices.php", 'inventoryPrices');
 		$prices = new inventoryPrices();
         $_GET['rID'] = $rID;
         $pDetails = [];
@@ -683,15 +679,15 @@ class bizunoApi
      */
     protected function installStoreFields()
     {
-		$id = validateTab($module_id='inventory', 'inventory', lang('details'), 60);
-        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'description_long')){ dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD description_long TEXT COMMENT 'type:textarea;label:Long Description;tag:DescriptionLong;tab:$id;order:10'"); }
+		$id1 = validateTab($module_id='inventory', 'inventory', lang('details'), 60);
+        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'description_long')){ dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD description_long TEXT COMMENT 'type:textarea;label:Long Description;tag:DescriptionLong;tab:$id1;order:10'"); }
 		$id = validateTab($module_id='inventory', 'inventory', lang('estore'), 80);
         if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'manufacturer'))    { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD manufacturer VARCHAR(24) NOT NULL DEFAULT '' COMMENT 'label:Manufacturer;tag:Manufacturer;tab:$id;order:40'"); }
         if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'model'))           { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD model VARCHAR(24) NOT NULL DEFAULT '' COMMENT 'label:Model;tag:Model;tab:$id;order:41'"); }
         if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'msrp'))            { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD msrp DOUBLE NOT NULL DEFAULT '0' COMMENT 'label:Mfg Suggested Retail Price;tag:MSRPrice;tab:$id;order:42'"); }
 		if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'meta_keywords'))   { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD meta_keywords VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'label:Meta Keywords;tag:MetaKeywords;tab:$id;o rder:90;group:General'"); }
  		if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'meta_description')){ dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD meta_description VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'label:Meta Description;tag:MetaDescription;tab:$id;order:91;group:General'"); }
-		require_once(BIZUNO_LIB."controller/module/inventory/admin.php");
+		bizAutoLoad(BIZUNO_LIB."controller/module/inventory/admin.php", 'inventoryAdmin');
 		$inv = new inventoryAdmin();
 		$inv->installPhysicalFields();
 	}

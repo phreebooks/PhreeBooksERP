@@ -52,7 +52,7 @@ class chart_j12
 
 	public function render()
     {
-        require_once(BIZUNO_LIB."controller/module/phreebooks/functions.php");
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhreeBooks', 'function');
         $btn   = ['attr'=>['type'=>'button','value'=>lang('save')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]];
         $data  = $this->settingsStructure();
         $cData = chartSales($this->settings['jID'], $this->settings['range'], $this->settings['rows'], $this->settings['reps']);

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-03-26
+ * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/inventory/tools.php
  */
 
@@ -92,11 +92,11 @@ class inventoryTools
     
     public function chartSalesGo()
     {
+        global $io;
         $sku   = clean('sku', 'text', 'get');
         $struc = $this->chartSalesData($sku);
 		$output= [];
         foreach ($struc as $row) { $output[] = implode(",", $row); }
-		$io    = new io();
 		$io->download('data', implode("\n", $output), "SKU-Sales-$sku.csv");
     }
 

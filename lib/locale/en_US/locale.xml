@@ -221,7 +221,7 @@
 </Locale>
 <Locale>
 	<Country><Title>Cameroon</Title><ISO2>CM</ISO2><ISO3>CMR</ISO3></Country>
-	<Currency></Currency>
+	<Currency><ISO>XAF</ISO><Title>Central African CFA franc</Title><Prefix>CFA</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>0</Precision></Currency>
 	<Format></Format>
 </Locale>
 <Locale>
@@ -843,7 +843,7 @@
 </Locale>
 <Locale>
 	<Country><Title>Niger</Title><ISO2>NE</ISO2><ISO3>NER</ISO3></Country>
-	<Currency></Currency>
+	<Currency><ISO>XOF</ISO><Title>West African CFA franc</Title><Prefix>CFA</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>0</Precision></Currency>
 	<Format></Format>
 </Locale>
 <Locale>
@@ -998,7 +998,7 @@
 </Locale>
 <Locale>
 	<Country><Title>Senegal</Title><ISO2>SN</ISO2><ISO3>SEN</ISO3></Country>
-	<Currency></Currency>
+	<Currency><ISO>XOF</ISO><Title>West African CFA franc</Title><Prefix>CFA</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>0</Precision></Currency>
 	<Format></Format>
 </Locale>
 <Locale>

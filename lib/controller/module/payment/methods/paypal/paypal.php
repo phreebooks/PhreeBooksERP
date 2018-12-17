@@ -23,7 +23,7 @@
 
 namespace bizuno;
 
-require_once(BIZUNO_LIB."model/encrypter.php");
+bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
 
 // for API Signature
 if (!defined('PAYMENT_PAYPAL_URL'))		{ define('PAYMENT_PAYPAL_URL', "https://api-3t.paypal.com/nvp"); }
@@ -105,7 +105,7 @@ class paypal
 		$checked = 'n';
 		$cID = isset($data['fields']['contact_id_b']['attr']['value']) ? $data['fields']['contact_id_b']['attr']['value'] : 0;
 		if ($cID) { // find if stored values
-            require_once(BIZUNO_LIB."model/encrypter.php");
+            bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
 			$encrypt = new encryption();
 			$this->viewData['selCards']['values'] = $encrypt->viewCC('contacts', $cID);
 			if (sizeof($this->viewData['selCards']['values']) == 0) {

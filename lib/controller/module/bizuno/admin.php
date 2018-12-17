@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2018, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-06
+ * @version    3.x Last Update: 2018-12-10
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -96,6 +96,7 @@ class bizunoAdmin
                 'vend:lblv'=> ['type'=>'dir', 'title'=>'label'],
                 'vend:stmt'=> ['type'=>'dir', 'title'=>'statement']]]];
 		$this->phreeformProcessing = [
+//          'curExc'  => ['text'=>$this->lang['pf_proc_cur_exc'], 'group'=>lang('tools'),  'module'=>$this->moduleID,'function'=>'viewFormat'],
             'json'    => ['text'=>$this->lang['pf_proc_json'],    'group'=>lang('tools'),  'module'=>$this->moduleID,'function'=>'viewFormat'],
             'today'   => ['text'=>lang('today'),                  'group'=>lang('date'),   'module'=>$this->moduleID,'function'=>'viewFormat']];
 		$this->phreeformFormatting = [
@@ -143,8 +144,7 @@ class bizunoAdmin
             ['id'=>'Y.m.d','text'=>'yyyy.mm.dd'],
             ['id'=>'dmY',  'text'=>'ddmmyyyy'],
             ['id'=>'Ymd',  'text'=>'yyyymmdd'],
-            ['id'=>'Y-m-d','text'=>'yyyy-mm-dd'],
-        ];
+            ['id'=>'Y-m-d','text'=>'yyyy-mm-dd']];
 		$ISO_country = getModuleCache('bizuno', 'settings', 'company', 'country', 'USA');
 		$data  = [
             'general' => [
@@ -198,17 +198,16 @@ class bizunoAdmin
 				'number_suffix'   => ['attr'=>['value'=>'']],
 				'number_neg_pfx'  => ['attr'=>['value'=>'-']],
 				'number_neg_sfx'  => ['attr'=>['value'=>'']],
-				'date_short'      => ['values'=>$selDate,'attr'=>['type'=>'select','value'=>'m/d/Y']]],
-            ];
+				'date_short'      => ['values'=>$selDate,'attr'=>['type'=>'select','value'=>'m/d/Y']]]];
 		settingsFill($data, $this->moduleID);
 		return $data;
 	}
 
     public function testAccount(&$layout=[])
     {
+        global $io;
         $parts  = explode(';', clean('data', 'text', 'get'), 2);
         $creds  = ['UserID'=>!empty($parts[0]) ? $parts[0] : '', 'UserPW'=>!empty($parts[1]) ? $parts[1] : ''];
-        $io     = new io();
         $success= $io->apiPhreeSoft('testAccount', $creds);
         if (!empty($success['success'])) { msgAdd($this->lang['account_verified'], 'success'); }
     }
@@ -244,7 +243,8 @@ class bizunoAdmin
                         'body'   => ['order'=>50,'type'=>'fields','fields'=>$tools['status']],
                         'formEOF'=> ['order'=>85,'type'=>'html','html'=>"</form>"]]],
                     'encrpt' => ['order'=>30,'label'=>$this->lang['admin_encrypt_update'],'type'=>'fields','fields'=>$tools['encrypt']],
-                    'encDel' => ['order'=>40,'label'=>$this->lang['btn_security_clean'],  'type'=>'fields','fields'=>$tools['encDel']]]],
+                    'encDel' => ['order'=>40,'label'=>$this->lang['btn_security_clean'],  'type'=>'fields','fields'=>$tools['encDel']],
+                    'fixCmt' => ['order'=>90,'label'=>$this->lang['admin_fix_comments'],  'type'=>'fields','fields'=>$tools['fixCmt']]]],
 				'tabDBs'  => ['order'=>60,'label'=>lang('dashboards'),'settings'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
 				'stats'   => ['order'=>99,'label'=>lang('statistics'),'type'=>'html','html'=>$this->getViewStats()]]]],
             'divs'   => ['footerLogo'  =>['order'=>99,'type'=>'html','html'=>'<div id="imdtl_company_logo"></div>']],
@@ -272,16 +272,20 @@ class bizunoAdmin
         $output = [
             'status' => ['status_btn'=>['icon'=>'save','label'=>'save','events'=>['onClick'=>"jq('#frmStatus').submit();"]]],
             'encrypt'=> [
-                'desc'              => ['html'=>$this->lang['desc_encrypt_config'],'attr'=>['type'=>'raw']],
-                'encrypt_key_btn'   => ['label'=>'','events'=>['onClick'=>"encryptChange();"],'attr'=>['type'=>'button','value'=>lang('change')]],
-                'encrypt_key_orig'  => ['label'=>$this->lang['admin_encrypt_old'],    'position'=>'after','attr'=>['type'=>'password']],
-                'encrypt_key_new'   => ['label'=>$this->lang['admin_encrypt_new'],    'position'=>'after','attr'=>['type'=>'password']],
-                'encrypt_key_dup'   => ['label'=>$this->lang['admin_encrypt_confirm'],'position'=>'after','attr'=>['type'=>'password']]],
+                'desc'            => ['html'=>$this->lang['desc_encrypt_config'],'attr'=>['type'=>'raw']],
+                'encrypt_key_btn' => ['label'=>'','events'=>['onClick'=>"encryptChange();"],'attr'=>['type'=>'button','value'=>lang('change')]],
+                'encrypt_key_orig'=> ['label'=>$this->lang['admin_encrypt_old'],    'position'=>'after','attr'=>['type'=>'password']],
+                'encrypt_key_new' => ['label'=>$this->lang['admin_encrypt_new'],    'position'=>'after','attr'=>['type'=>'password']],
+                'encrypt_key_dup' => ['label'=>$this->lang['admin_encrypt_confirm'],'position'=>'after','attr'=>['type'=>'password']]],
             'encDel' => [
                 'desc'              => ['html'=>$this->lang['desc_security_clean'],'attr'=>['type'=>'raw']],
                 'encrypt_clean_date'=> ['label' =>$this->lang['desc_security_clean_date'],'attr'=>['type'=>'date','value'=>date('Y-m-d')]],
                 'encrypt_clean_btn' => ['events'=>['onClick'=>"jq('body').addClass('loading'); jsonAction('bizuno/tools/encryptionClean', 0, jq('#encrypt_clean_date').datebox('getValue'));"],
-                    'attr'=>['type'=>'button','value'=>lang('start')]]]];
+                    'attr'=>['type'=>'button','value'=>lang('start')]]],
+            'fixCmt' => [
+                'desc'       => ['html'=>$this->lang['desc_update_comments'],'attr'=>['type'=>'raw']],
+                'fix_cmt_btn'=> ['events'=>['onClick'=>"jq('body').addClass('loading'); jsonAction('bizuno/tools/repairComments');"],
+                    'attr'=>['type'=>'button','value'=>lang('go')]]]];
         foreach ($status as $key => $settings) { if ($key != 'id') { $output['status'][$key] = $settings; } }
         return $output;
     }
@@ -309,7 +313,7 @@ class bizunoAdmin
     {
         $newTitle = clean('company_primary_name', 'text', 'post');
         if (getUserCache('profile', 'biz_title') <> $newTitle) { portalUpdateBizID($newTitle); }
-		readModuleSettings($this->moduleID, $this->settings);
+		readModuleSettings($this->moduleID, $this->settingsStructure());
 	}
 
 	/**
@@ -375,7 +379,7 @@ class bizunoAdmin
     public function installPreFlight(&$layout=[])
     {
         $success = true;
-        require_once(BIZUNO_ROOT."portal/guest.php");
+        bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
         $guest = new guest();
         if (method_exists($guest, 'installPreFlight')) { $success = $guest->installPreFlight($layout); }
         $bID = clean('bID', 'integer', 'get');
@@ -443,10 +447,10 @@ class bizunoAdmin
 	public function installBizuno(&$layout=[])
     {
         global $bizunoUser;
-        require_once(BIZUNO_LIB ."controller/module/bizuno/settings.php");
-		require_once(BIZUNO_LIB ."controller/module/phreebooks/admin.php");
-        require_once(BIZUNO_ROOT."portal/guest.php");
-        require_once(BIZUNO_LIB ."model/registry.php");
+        bizAutoLoad(BIZUNO_LIB ."controller/module/bizuno/settings.php", 'bizunoSettings');
+		bizAutoLoad(BIZUNO_LIB ."controller/module/phreebooks/admin.php", 'phreebooksAdmin');
+        bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
+        bizAutoLoad(BIZUNO_LIB ."model/registry.php", 'bizRegistry');
         ini_set('memory_limit','1024M'); // temporary
         $guest = new guest();
         if (method_exists($guest, 'installBizunoPre')) { if (!$guest->installBizunoPre()) { return; } } // pre-install for portal 

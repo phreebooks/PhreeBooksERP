@@ -28,7 +28,7 @@ namespace bizuno;
  * host system. The guest.php script will need to handle most of the functionality of
  * this class.
  */
-require_once(BIZUNO_ROOT."portal/guest.php");
+bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
 
 class bizunoPortal extends guest
 {
