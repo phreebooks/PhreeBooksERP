@@ -5,7 +5,7 @@ RewriteEngine on
 #RewriteCond %{HTTPS} off
 #RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
 RewriteRule ^(.*)\.[\d]{10}\.(css|js)$ $1.$2 [L]
-# Do not allow access to myBiz folder
-RewriteRule ^mybiz/(.*)$ / [L,R=301]
+# Do not allow access to myFiles folder
+RewriteRule ^myFiles/(.*)$ / [L,R=301]
 # Do not allow random browsing (disable directory listing if no index.php file)
 Options -Indexes
