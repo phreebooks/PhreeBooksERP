@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-10
  * @filesource /controller/module/phreeform/dashboards/favorite_reports/favorite_reports.php
@@ -33,13 +33,13 @@ class favorite_reports
     public $methodDir= 'dashboards';
     public $code     = 'favorite_reports';
     public $category = 'bizuno';
-	
-	function __construct($settings)
+    
+    function __construct($settings)
     {
-		$this->security= getUserCache('security', 'profile', false, 0);
+        $this->security= getUserCache('security', 'profile', false, 0);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $this->settings= $settings;
-	}
+    }
 
     /**
      * Creates the HTML code to render this dashboard
@@ -71,7 +71,7 @@ class favorite_reports
                 $mime  = dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'mime_type', "id=$id");
                 $html .= html5('', ['attr'=>['type'=>'li']]).'<span style="float:left">';
                 $html .= html5('', ['icon'=>viewMimeIcon($mime),'events'=>['onClick'=>"winOpen('phreeform', 'phreeform/render/open&rID=$id');"]]);
-				$html .= viewText($title).'</span><span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $id);"]]).'</span></li>';
+                $html .= viewText($title).'</span><span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $id);"]]).'</span></li>';
             }
         } else {
             $html .= '<li><span>'.lang('no_results')."</span></li>";

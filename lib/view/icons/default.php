@@ -1,7 +1,7 @@
 <?php
 /*
  * Sets the list of available icons and how to access them. Typically called from the dynamic css pull
- * 
+ *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
  * that is bundled with this package in the file LICENSE.TXT.
@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-06-06
  * @filesource lib/view/theme/default/icons-default.php

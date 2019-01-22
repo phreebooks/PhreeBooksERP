@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-11-07
  * @filesource /lib/model/db.php
@@ -23,244 +23,244 @@
 
 namespace bizuno;
 
-class db extends \PDO 
+class db extends \PDO
 {
-	var     $total_count = 0;
-	var     $total_time  = 0;
-	public  $connected   = false;
-	private $PDO_statment;
+    var     $total_count = 0;
+    var     $total_time  = 0;
+    public  $connected   = false;
+    private $PDO_statment;
     private $max_input_size = 60; // maximum input form field display length for larger db fields
 
-	/**
-	 * Constructor to connect to db, sets $connected to true if successful, returns if no params sent
-	 */
-	function __construct($dbData)
+    /**
+     * Constructor to connect to db, sets $connected to true if successful, returns if no params sent
+     */
+    function __construct($dbData)
     {
         if (empty($dbData['host']) || empty($dbData['name']) || empty($dbData['user']) || empty($dbData['pass'])) { return; }
-		$driver = !empty($dbData['type']) ? $dbData['type'] : 'mysql';
-		$dns    = "{$dbData['type']}:host={$dbData['host']};dbname={$dbData['name']}";
-		$user   = $dbData['user'];
-		$pass   = $dbData['pass'];
-		$this->driver = $driver;
-		switch($driver) {
-			default:
-			case "mysql":
-				try { parent::__construct($dns, $user, $pass); }
-				catch (PDOException $e) { exit("\nDB Connection failed, error: ".$e->getMessage()); } // ." with db settings: ".print_r($dbData, true)
-				$this->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
-				$this->PDO_statment = $this->exec("SET character_set_results='utf8', character_set_client='utf8', character_set_connection='utf8', character_set_database='utf8', character_set_server='utf8'");
-				break;
-		}
-		$this->connected = true;
-	}
+        $driver = !empty($dbData['type']) ? $dbData['type'] : 'mysql';
+        $dns    = "{$dbData['type']}:host={$dbData['host']};dbname={$dbData['name']}";
+        $user   = $dbData['user'];
+        $pass   = $dbData['pass'];
+        $this->driver = $driver;
+        switch($driver) {
+            default:
+            case "mysql":
+                try { parent::__construct($dns, $user, $pass); }
+                catch (PDOException $e) { exit("\nDB Connection failed, error: ".$e->getMessage()); } // ." with db settings: ".print_r($dbData, true)
+                $this->setAttribute(\PDO::MYSQL_ATTR_USE_BUFFERED_QUERY, true);
+                $this->PDO_statment = $this->exec("SET character_set_results='utf8', character_set_client='utf8', character_set_connection='utf8', character_set_database='utf8', character_set_server='utf8'");
+                break;
+        }
+        $this->connected = true;
+    }
 
-	/**
-	 * Generic sql query wrapper for executing sql's, has error logging and debug messages
-	 * @param string $sql
-	 * @param string $action - action to perform, choices are: insert, update, delete, row, rows, stmt [default]
-	 * @return false on error, array or statement on success
-	 */
-	function Execute($sql, $action='stmt', $verbose=false)
+    /**
+     * Generic sql query wrapper for executing sql's, has error logging and debug messages
+     * @param string $sql
+     * @param string $action - action to perform, choices are: insert, update, delete, row, rows, stmt [default]
+     * @return false on error, array or statement on success
+     */
+    function Execute($sql, $action='stmt', $verbose=false)
     {
         if (!$this->connected) { die('ERROR: Not connected to the db!'); }
-		$error     = false;
-		$output    = false;
-		$msgResult = '';
-		$time_start= explode(' ', microtime());
-		switch ($action) {
-			case 'insert': // returns id of new row inserted
+        $error     = false;
+        $output    = false;
+        $msgResult = '';
+        $time_start= explode(' ', microtime());
+        switch ($action) {
+            case 'insert': // returns id of new row inserted
                 if (false !== $this->exec($sql)) { $output = $this->lastInsertId(); } else { $error = true; }
-				$msgResult = "row ID = $output";
-				break;
-			case 'update':
-			case 'delete': // returns affected rows
-				$output = $this->exec($sql);
+                $msgResult = "row ID = $output";
+                break;
+            case 'update':
+            case 'delete': // returns affected rows
+                $output = $this->exec($sql);
                 if ($output === false) { $error = true; }
-				$msgResult = "number of affected rows = $output";
-				break;
-			case 'row': // returns single table row
-				$stmt = $this->query($sql);
-                if ($stmt) { 
+                $msgResult = "number of affected rows = $output";
+                break;
+            case 'row': // returns single table row
+                $stmt = $this->query($sql);
+                if ($stmt) {
                     $output = $stmt->fetch(\PDO::FETCH_ASSOC);
                     if (!is_array($output)) { $output = []; }
-                } 
+                }
                 else { $output = []; $error = true; }
-				$msgResult = "number of fields = ".sizeof($output);
-				break;
-			case 'rows': // returns array of one or more table rows
-				$stmt = $this->query($sql);
-				if ($stmt) {
-					$output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-					$stmt->closeCursor();
+                $msgResult = "number of fields = ".sizeof($output);
+                break;
+            case 'rows': // returns array of one or more table rows
+                $stmt = $this->query($sql);
+                if ($stmt) {
+                    $output = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+                    $stmt->closeCursor();
                 } else { $output = []; $error = true; }
-				$msgResult = "number of rows = ".sizeof($output);
-				break;
-			default:
-			case 'stmt': // PDO Statement
+                $msgResult = "number of rows = ".sizeof($output);
+                break;
+            default:
+            case 'stmt': // PDO Statement
                 if (!$output = $this->query($sql)) { $error = true; }
-				break;
-		}
-		$time_end = explode (' ', microtime());
-		$query_time = $time_end[1] + $time_end[0] - $time_start[1] - $time_start[0];
-		$this->total_time += $query_time;
-		$this->total_count++;
-		msgDebug("\nFinished executing action $action for SQL (in $query_time ms): $sql returning result: $msgResult");
-		if ($error) {
-			msgDebug("\nSQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true), 'trap');
+                break;
+        }
+        $time_end = explode (' ', microtime());
+        $query_time = $time_end[1] + $time_end[0] - $time_start[1] - $time_start[0];
+        $this->total_time += $query_time;
+        $this->total_count++;
+        msgDebug("\nFinished executing action $action for SQL (in $query_time ms): $sql returning result: $msgResult");
+        if ($error) {
+            msgDebug("\nSQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true), 'trap');
             if ($verbose) { msgAdd("SQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true)); }
-		}
-		return $output;
-	}
+        }
+        return $output;
+    }
 
-	/**
-	 * Used to update a database table to the bizuno structure. Mostly for conversion from anther base (i.e. PhreeBooks)
-	 * @param string $table - The database table to update (performs an ALTER TABLE sql command)
-	 * @param string $field - The database field name to alter
-	 * @param array $props - information pulled from the table structure of settings to add to the altered field.
-	 * @return boolean - Nothing of interest, just writes the table
-	 */
-	function alterField($table, $field, $props=[])
+    /**
+     * Used to update a database table to the bizuno structure. Mostly for conversion from anther base (i.e. PhreeBooks)
+     * @param string $table - The database table to update (performs an ALTER TABLE sql command)
+     * @param string $field - The database field name to alter
+     * @param array $props - information pulled from the table structure of settings to add to the altered field.
+     * @return boolean - Nothing of interest, just writes the table
+     */
+    function alterField($table, $field, $props=[])
     {
         if (!$table || !$field) { return; }
-		$comment = array();
-		$sql = "ALTER TABLE $table CHANGE `$field` `$field` ";
+        $comment = array();
+        $sql = "ALTER TABLE $table CHANGE `$field` `$field` ";
         if (isset($props['dbType']) && sizeof($props['dbType']) > 0) { $sql .= ' '.$props['dbType']; }
-		if (isset($props['collate'])&& sizeof($props['collate'])> 0) { $sql .= " CHARACTER SET utf8 COLLATE ".$props['collate']; }
-		if (isset($props['null'])   && strtolower($props['null'])=='no') { $sql .= ' NOT NULL'; }
-		if (isset($props['default']))                                { $sql .= " DEFAULT '".$props['default']."'"; }
-		if (isset($props['extra'])  && sizeof($props['extra'])  > 0) { $sql .= ' '.$props['extra']; }
-		if (isset($props['tag'])    && sizeof($props['tag'])    > 0) { $comment['tag']  = $props['tag']; }
-		if (isset($props['tab'])    && sizeof($props['tab'])    > 0) { $comment['tab']  = $props['tab']; }
-		if (isset($props['order'])  && sizeof($props['order'])  > 0) { $comment['order']= $props['order']; }
-		if (isset($props['label'])  && sizeof($props['label'])  > 0) { $comment['label']= $props['label']; }
-		if (isset($props['group'])  && sizeof($props['group'])  > 0) { $comment['group']= $props['group']; }
-		if (isset($props['type'])   && sizeof($props['type'])   > 0) { $comment['type'] = $props['type']; }
-		if (isset($props['req'])    && sizeof($props['req'])    > 0) { $comment['req']  = $props['req']; }
-		$temp = array();
+        if (isset($props['collate'])&& sizeof($props['collate'])> 0) { $sql .= " CHARACTER SET utf8 COLLATE ".$props['collate']; }
+        if (isset($props['null'])   && strtolower($props['null'])=='no') { $sql .= ' NOT NULL'; }
+        if (isset($props['default']))                                { $sql .= " DEFAULT '".$props['default']."'"; }
+        if (isset($props['extra'])  && sizeof($props['extra'])  > 0) { $sql .= ' '.$props['extra']; }
+        if (isset($props['tag'])    && sizeof($props['tag'])    > 0) { $comment['tag']  = $props['tag']; }
+        if (isset($props['tab'])    && sizeof($props['tab'])    > 0) { $comment['tab']  = $props['tab']; }
+        if (isset($props['order'])  && sizeof($props['order'])  > 0) { $comment['order']= $props['order']; }
+        if (isset($props['label'])  && sizeof($props['label'])  > 0) { $comment['label']= $props['label']; }
+        if (isset($props['group'])  && sizeof($props['group'])  > 0) { $comment['group']= $props['group']; }
+        if (isset($props['type'])   && sizeof($props['type'])   > 0) { $comment['type'] = $props['type']; }
+        if (isset($props['req'])    && sizeof($props['req'])    > 0) { $comment['req']  = $props['req']; }
+        $temp = array();
         foreach ($comment as $key => $value) { $temp[] = $key.":".$value; }
         if (sizeof($temp) > 0) { $sql .= " COMMENT '".implode(';',$temp)."'"; }
-		dbGetResult($sql);
-	}
+        dbGetResult($sql);
+    }
 
-	/**
-	 * This function builds the table structure as a basis for building pages and reading/writing the db
-	 * @param string $table - The database table to examine.
-	 * @param string $suffix - [optional, default ''] Loads the language based on the added suffix, used for multiplexed tables.
-	 * @return array $output - [optional, default ''] Contains the table structural settings, indexed by the field name
-	 */
-	public function loadStructure($table, $suffix='', $prefix='')
+    /**
+     * This function builds the table structure as a basis for building pages and reading/writing the db
+     * @param string $table - The database table to examine.
+     * @param string $suffix - [optional, default ''] Loads the language based on the added suffix, used for multiplexed tables.
+     * @return array $output - [optional, default ''] Contains the table structural settings, indexed by the field name
+     */
+    public function loadStructure($table, $suffix='', $prefix='')
     {
-		$output = [];
+        $output = [];
         if (!empty($GLOBALS['bizTables'][$table])) { return $GLOBALS['bizTables'][$table]; } // already loaded
-		if (!$oResult = $this->query("SHOW FULL COLUMNS FROM $table")) {
-			msgAdd("Failed loading structure for table: $table");
-			return [];
-		}
-		$base_table= str_replace(BIZUNO_DB_PREFIX, '', $table);
-		$result    = $oResult->fetchAll();
-		$order     = 1;
-		foreach ($result as $row) {
-			$comment = [];
-			if (!empty($row['Comment'])) {
-				$temp = explode(';', $row['Comment']);
-				foreach ($temp as $entry) {
-					$param = explode(':', $entry, 2);
-					$comment[trim($param[0])] = trim($param[1]);
-				}
-			}
-			$output[$row['Field']] = [
+        if (!$oResult = $this->query("SHOW FULL COLUMNS FROM $table")) {
+            msgAdd("Failed loading structure for table: $table");
+            return [];
+        }
+        $base_table= str_replace(BIZUNO_DB_PREFIX, '', $table);
+        $result    = $oResult->fetchAll();
+        $order     = 1;
+        foreach ($result as $row) {
+            $comment = [];
+            if (!empty($row['Comment'])) {
+                $temp = explode(';', $row['Comment']);
+                foreach ($temp as $entry) {
+                    $param = explode(':', $entry, 2);
+                    $comment[trim($param[0])] = trim($param[1]);
+                }
+            }
+            $output[$row['Field']] = [
                 'table'  => $base_table,
-				'dbfield'=> $table.'.'.$row['Field'], //id,
-				'dbType' => $row['Type'],
-				'field'  => $row['Field'],
+                'dbfield'=> $table.'.'.$row['Field'], //id,
+                'dbType' => $row['Type'],
+                'field'  => $row['Field'],
                 'break'  => true,
-				'null'   => $row['Null'], //NO,
-				'collate'=> $row['Collation'],
-				'key'    => $row['Key'], //PRI,
-				'default'=> $row['Default'], //'',
-				'extra'  => $row['Extra'], //auto_increment,
-				'tag'    => $prefix.(isset($comment['tag'])?$comment['tag']:$row['Field']).$suffix,
-				'tab'    => isset($comment['tab'])   ? $comment['tab']   : 0,
-				'group'  => isset($comment['group']) ? $comment['group'] : '',
-				'col'    => isset($comment['col'])   ? $comment['col'] : 1,
-				'order'  => isset($comment['order']) ? $comment['order'] : $order,
-				'label'  => isset($comment['label']) ? $comment['label'] : pullTableLabel($table, $row['Field'], $suffix),
-//				'classes'=> array('easyui-validatebox'),
-				'attr'   => $this->buildAttr($row, $comment)];
+                'null'   => $row['Null'], //NO,
+                'collate'=> $row['Collation'],
+                'key'    => $row['Key'], //PRI,
+                'default'=> $row['Default'], //'',
+                'extra'  => $row['Extra'], //auto_increment,
+                'tag'    => $prefix.(isset($comment['tag'])?$comment['tag']:$row['Field']).$suffix,
+                'tab'    => isset($comment['tab'])   ? $comment['tab']   : 0,
+                'group'  => isset($comment['group']) ? $comment['group'] : '',
+                'col'    => isset($comment['col'])   ? $comment['col'] : 1,
+                'order'  => isset($comment['order']) ? $comment['order'] : $order,
+                'label'  => isset($comment['label']) ? $comment['label'] : pullTableLabel($table, $row['Field'], $suffix),
+//                'classes'=> array('easyui-validatebox'),
+                'attr'   => $this->buildAttr($row, $comment)];
             $output[$row['Field']]['format'] = isset($comment['format']) ? $comment['format'] : $output[$row['Field']]['attr']['type']; // db data type
-			if (in_array(substr($row['Type'], 0, 4), ["ENUM", "enum"])) {
-				$keys   = explode(',', str_replace(["ENUM", "enum", "(", ")", "'"], '', $row['Type']));
-				$values = isset($comment['opts']) ? explode(':', $comment['opts']) : $keys;
+            if (in_array(substr($row['Type'], 0, 4), ["ENUM", "enum"])) {
+                $keys   = explode(',', str_replace(["ENUM", "enum", "(", ")", "'"], '', $row['Type']));
+                $values = isset($comment['opts']) ? explode(':', $comment['opts']) : $keys;
                 foreach ($keys as $idx => $key) {
                     $output[$row['Field']]['opts'][] = ['id'=>trim($key), 'text'=>isset($values[$idx]) ? trim($values[$idx]) : trim($key)];
                 }
-			}
-			$order++;
-		}
+            }
+            $order++;
+        }
         $GLOBALS['bizTables'][$table] = $output; // save structure globally
-		return $output;
-	}
+        return $output;
+    }
 
-	/**
-	 * Builds the attributes to best guess the html structure, primarily used to build html input tags
-	 * @param array $fields - Contains the indexed field settings
-	 * @param array $comment - contains the working COMMENT array to build the attributes, stuff not contained in the badic mysql table information
-	 * @return array $output - becomes the 'attr' index of the database field
-	 */
-	private function buildAttr($fields, $comment)
+    /**
+     * Builds the attributes to best guess the html structure, primarily used to build html input tags
+     * @param array $fields - Contains the indexed field settings
+     * @param array $comment - contains the working COMMENT array to build the attributes, stuff not contained in the badic mysql table information
+     * @return array $output - becomes the 'attr' index of the database field
+     */
+    private function buildAttr($fields, $comment)
     {
-		$result= ['value'=>''];
-		$type  = $fields['Type'];
-		$data_type = (strpos($type,'(') === false) ? strtolower($type) : strtolower(substr($type,0,strpos($type,'(')));
-		switch ($data_type) {
-			case 'date':      $result['type']='date';    break;
-			case 'time':      $result['type']='time';    break;
-			case 'datetime':
-			case 'timestamp': $result['type']='datetime';break;
-			case 'bigint':
-			case 'int':
-			case 'mediumint':
-			case 'smallint':
+        $result= ['value'=>''];
+        $type  = $fields['Type'];
+        $data_type = (strpos($type,'(') === false) ? strtolower($type) : strtolower(substr($type,0,strpos($type,'(')));
+        switch ($data_type) {
+            case 'date':      $result['type']='date';    break;
+            case 'time':      $result['type']='time';    break;
+            case 'datetime':
+            case 'timestamp': $result['type']='datetime';break;
+            case 'bigint':
+            case 'int':
+            case 'mediumint':
+            case 'smallint':
             case 'tinyint':   $result['type']='integer'; break;
-			case 'decimal':
-			case 'double':
+            case 'decimal':
+            case 'double':
             case 'float':     $result['type']='float';   break;
-			case 'enum':
-			case 'set':       $result['type']='select';  break;
-			case 'char':
-			case 'varchar':
-			case 'tinyblob':
-			case 'tinytext':
-				$result['type']      = 'text';
-				$result['size']      = min($this->max_input_size, trim(substr($type, strpos($type,'(')+1, strpos($type,')')-strpos($type,'(')-1)));
-				$result['maxlength'] = trim(substr($type, strpos($type,'(')+1, strpos($type,')')-strpos($type,'(')-1));
+            case 'enum':
+            case 'set':       $result['type']='select';  break;
+            case 'char':
+            case 'varchar':
+            case 'tinyblob':
+            case 'tinytext':
+                $result['type']      = 'text';
+                $result['size']      = min($this->max_input_size, trim(substr($type, strpos($type,'(')+1, strpos($type,')')-strpos($type,'(')-1)));
+                $result['maxlength'] = trim(substr($type, strpos($type,'(')+1, strpos($type,')')-strpos($type,'(')-1));
                 if ($result['maxlength'] > 128) { $result['type'] = 'textarea'; }
-				break;
-			case 'blob':
-			case 'text':
-			case 'mediumblob':
-			case 'mediumtext':
-			case 'longblob':
-			case 'longtext':
-				$result['type']      = 'textarea';
-				$result['maxlength'] = '65535';
-				break;
-			default:
-		}
+                break;
+            case 'blob':
+            case 'text':
+            case 'mediumblob':
+            case 'mediumtext':
+            case 'longblob':
+            case 'longtext':
+                $result['type']      = 'textarea';
+                $result['maxlength'] = '65535';
+                break;
+            default:
+        }
         if (isset($comment['type'])) { $result['type'] = $comment['type']; } // reset type if specified, messes up dropdowns
         if (isset($comment['req']) && $comment['req'] == '1') { $result['required'] = 'true'; }
         if ($fields['Default']) { $result['value'] = $fields['Default']; }
-		switch ($result['type']) { // now some special cases
-			case 'checkbox':
+        switch ($result['type']) { // now some special cases
+            case 'checkbox':
                 if (isset($result['value']) && $result['value']) { $result['checked'] = 'checked'; }
-				$result['value'] = 1;
-				break;
-			case 'select':   unset($result['size']); break;
-			case 'textarea': $result['cols'] = 60; $result['rows'] = 4; break; // @todo this is a problem as it needs to vary depending on screen
-			default:
-		}
-		return $result;
-	}
+                $result['value'] = 1;
+                break;
+            case 'select':   unset($result['size']); break;
+            case 'textarea': $result['cols'] = 60; $result['rows'] = 4; break; // @todo this is a problem as it needs to vary depending on screen
+            default:
+        }
+        return $result;
+    }
 
 }
 
@@ -270,8 +270,8 @@ class db extends \PDO
  */
 function dbTransactionStart()
 {
-	global $db;
-	msgDebug("\nSTARTING TRANSACTION.");
+    global $db;
+    msgDebug("\nSTARTING TRANSACTION.");
     if (!$db->beginTransaction()) { msgAdd("Houston, we have a problem. Failed starting transaction!"); }
 }
 
@@ -281,9 +281,9 @@ function dbTransactionStart()
  */
 function dbTransactionCommit()
 {
-	global $db;
-	msgDebug("\n/************ COMMITTING TRANSACTION. *************/");
-//	if ($db->inTransaction()) msgAdd("In a transaction", 'caution'); // Good to add, but need php 5.3.3 or greater
+    global $db;
+    msgDebug("\n/************ COMMITTING TRANSACTION. *************/");
+//    if ($db->inTransaction()) msgAdd("In a transaction", 'caution'); // Good to add, but need php 5.3.3 or greater
     if (!$db->commit()) { msgAdd("Houston, we have a problem. Failed committing transaction!"); }
 }
 
@@ -293,8 +293,8 @@ function dbTransactionCommit()
  */
 function dbTransactionRollback()
 {
-	global $db;
-	msgDebug("\nRolling Back Transaction.");
+    global $db;
+    msgDebug("\nRolling Back Transaction.");
     if (!$db->rollBack()) { msgAdd("Trying to roll back transaction when no transactions are active!"); }
 }
 
@@ -309,34 +309,34 @@ function dbTransactionRollback()
  */
 function dbWrite($table, $data, $action='insert', $parameters='', $quote=true)
 {
-	global $db;
+    global $db;
     if (!is_object($db) || !$db->connected || !is_array($data) || sizeof($data) == 0) { return; }
-	$columns = [];
-	if ($action == 'insert') {
-		$query = "INSERT INTO $table (`".implode('`, `', array_keys($data))."`) VALUES (";
-		foreach ($data as $value) {
-            if (is_array($value)) { 
+    $columns = [];
+    if ($action == 'insert') {
+        $query = "INSERT INTO $table (`".implode('`, `', array_keys($data))."`) VALUES (";
+        foreach ($data as $value) {
+            if (is_array($value)) {
                 msgDebug("\nExpecting string and instead got: ".print_r($value, true));
                 msgAdd("Expecting string and instead got: ".print_r($value, true), 'caution');
             }
-			switch ((string)$value) {
-				case 'now()': $query .= "now(), "; break;
-				case 'null':  $query .= "null, ";  break;
-				default:      $query .= $quote ? "'".addslashes($value)."', " : "$value, "; break;
-			}
-		}
-		$query = substr($query, 0, -2) . ')';
-	} elseif ($action == 'update') {
-		foreach ($data as $column => $value) {
-			switch ((string)$value) {
-				case 'now()': $columns[] = "`$column`=NOW()"; break;
-				case 'null':  $columns[] = "`$column`=NULL";  break;
-				default:      $columns[] = $quote ? "`$column`='".addslashes($value)."'" : "`$column`=$value"; break;
-			}
-		}
-		$query = "UPDATE $table SET ".implode(', ', $columns) . ($parameters<>'' ? " WHERE $parameters" : '');
-	}
-	return $db->Execute($query, $action);
+            switch ((string)$value) {
+                case 'now()': $query .= "now(), "; break;
+                case 'null':  $query .= "null, ";  break;
+                default:      $query .= $quote ? "'".addslashes($value)."', " : "$value, "; break;
+            }
+        }
+        $query = substr($query, 0, -2) . ')';
+    } elseif ($action == 'update') {
+        foreach ($data as $column => $value) {
+            switch ((string)$value) {
+                case 'now()': $columns[] = "`$column`=NOW()"; break;
+                case 'null':  $columns[] = "`$column`=NULL";  break;
+                default:      $columns[] = $quote ? "`$column`='".addslashes($value)."'" : "`$column`=$value"; break;
+            }
+        }
+        $query = "UPDATE $table SET ".implode(', ', $columns) . ($parameters<>'' ? " WHERE $parameters" : '');
+    }
+    return $db->Execute($query, $action);
 }
 
 /**
@@ -346,7 +346,7 @@ function dbWriteCache($usrEmail=false, $lang=false)
 {
     global $bizunoUser, $bizunoLang, $bizunoMod, $io;
     msgDebug("\nentering dbWriteCache");
-    if (!biz_validate_user() || !getUserCache('profile', 'biz_id')) { 
+    if (!biz_validate_user() || !getUserCache('profile', 'biz_id')) {
         return msgDebug("\nTrying to write to cache but user is not logged in or Bizuno not installed!");
     }
     if (!$usrEmail) { $usrEmail = $bizunoUser['profile']['email']; }
@@ -355,7 +355,7 @@ function dbWriteCache($usrEmail=false, $lang=false)
         ksort($bizunoLang); // @todo only create this when reloading registry
         $io = new io(); // needs to be here as global may not be set up yet
         $ISO = getUserCache('profile', 'language', false, 'en_US');
-        $io->fileWrite(json_encode($bizunoLang), "cache/lang_{$ISO}.json", false, false, true);        
+        $io->fileWrite(json_encode($bizunoLang), "cache/lang_{$ISO}.json", false, false, true);
     }
     // save the users new cache
     if (isset($GLOBALS['updateUserCache']) && $GLOBALS['updateUserCache']) {
@@ -399,15 +399,15 @@ function dbDump($filename='bizuno_backup', $dirWrite='', $dbTable='')
     $dbHost = $GLOBALS['dbBizuno']['host'];
     $dbUser = $GLOBALS['dbBizuno']['user'];
     $dbPass = $GLOBALS['dbBizuno']['pass'];
-	$dbName = $GLOBALS['dbBizuno']['name'];
-	$dbPath = BIZUNO_DATA.$dirWrite;
-	$dbFile = $filename.".sql.gz";
+    $dbName = $GLOBALS['dbBizuno']['name'];
+    $dbPath = BIZUNO_DATA.$dirWrite;
+    $dbFile = $filename.".sql.gz";
     if (!$dbTable && BIZUNO_DB_PREFIX <> '') { // fetch table list (will be entire db if no prefix)
         if (!$stmt= dbGetResult("SHOW TABLES FROM $dbName LIKE '".BIZUNO_DB_PREFIX."%'")) { return; }
         if ( $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC)) { foreach ($rows as $row) { $dbTable .= array_shift($row).' '; } }
-    } 
+    }
     $cmd    = "mysqldump --opt -h $dbHost -u $dbUser -p$dbPass $dbName $dbTable | gzip > $dbPath$dbFile";
-	msgDebug("\n Executing command: $cmd");
+    msgDebug("\n Executing command: $cmd");
     if (!function_exists('exec')) { msgAdd("php exec is disabled, the backup cannot be achieved this way!"); }
     $result = exec($cmd, $retValue);
     chmod($dbPath.$dbFile, 0644);
@@ -421,20 +421,20 @@ function dbRestore($filename)
 {
     set_time_limit(20000);
     msgDebug("\npath = ".BIZUNO_ROOT."...myFolder.../$filename");
-	$dbFile = BIZUNO_DATA.$filename;
+    $dbFile = BIZUNO_DATA.$filename;
     $dbHost = $GLOBALS['dbBizuno']['host'];
     $dbUser = $GLOBALS['dbBizuno']['user'];
     $dbPass = $GLOBALS['dbBizuno']['pass'];
-	$dbName = $GLOBALS['dbBizuno']['name'];
+    $dbName = $GLOBALS['dbBizuno']['name'];
     $path_parts = pathinfo($dbFile);
     if (in_array(strtolower($path_parts['extension']), ['sql'])) { // raw sql in text format
-        $cmd = "mysql --verbose --host=$dbHost --user=$dbUser --password=$dbPass --default_character_set=utf8 --database=$dbName < $dbFile";        
+        $cmd = "mysql --verbose --host=$dbHost --user=$dbUser --password=$dbPass --default_character_set=utf8 --database=$dbName < $dbFile";
     } else { // assume zipped, gz or zip will work
         $cmd = "gunzip < $dbFile | mysql --verbose --host=$dbHost --user=$dbUser --password=$dbPass --default_character_set=utf8 --database=$dbName";
     }
-	msgDebug("\n Executing command: $cmd");
+    msgDebug("\n Executing command: $cmd");
     if (!function_exists('exec')) { msgAdd("php exec is disabled, the restore cannot be achieved this way!"); }
-	$result = exec($cmd, $output, $retValue);
+    $result = exec($cmd, $output, $retValue);
     msgDebug("\n returned result: ".print_r($result,  true));
 //  msgDebug("\n returned output: ".print_r($output,  true)); // echoes the uncompressed sql, VERY LONG makes large debug files!
     msgDebug("\n returned status value: " .print_r($retValue, true));
@@ -449,11 +449,11 @@ function dbRestore($filename)
  */
 function dbDelete($table, $filter=false)
 {
-	global $db;
+    global $db;
     if (!$filter) { return; }
-	$sql = "DELETE FROM $table".($filter ? " WHERE $filter" : '');
-	$row = $db->Execute($sql, 'delete');
-	return $row;
+    $sql = "DELETE FROM $table".($filter ? " WHERE $filter" : '');
+    $row = $db->Execute($sql, 'delete');
+    return $row;
 }
 
 /**
@@ -467,17 +467,17 @@ function dbDelete($table, $filter=false)
  */
 function dbGetValue($table, $field, $filter=false, $quote=true, $verbose=false)
 {
-	global $db;
+    global $db;
     if (!is_object($db)) { msgDebug("\ndb is NOT an object, need to initialize!!!"); return false; }
     if (!$db->connected) { msgDebug("\nnot connected to the db!!!"); return false; }
-	$is_array = is_array($field) ? true : false;
+    $is_array = is_array($field) ? true : false;
     if (!is_array($field)) { $field = [$field]; }
     if ($quote) { $table = "`$table`"; }
-	$sql = "SELECT ".($quote ? ("`".implode('`, `', $field)."`") : implode(', ', $field))." FROM $table".($filter ? " WHERE $filter" : '')." LIMIT 1";
-	$result = $db->Execute($sql, 'row', $verbose);
+    $sql = "SELECT ".($quote ? ("`".implode('`, `', $field)."`") : implode(', ', $field))." FROM $table".($filter ? " WHERE $filter" : '')." LIMIT 1";
+    $result = $db->Execute($sql, 'row', $verbose);
     if ($result === false) { return; }
     if ($is_array) { return $result; }
-	return is_array($result) ? array_shift($result) : false;
+    return is_array($result) ? array_shift($result) : false;
 }
 
 /**
@@ -489,7 +489,7 @@ function dbGetValue($table, $field, $filter=false, $quote=true, $verbose=false)
  */
 function dbGetRow($table, $filter='', $quote=true, $verbose=false)
 {
-	global $db;
+    global $db;
     if (!is_object($db)) { msgDebug("\ndb is NOT an object, need to initialize!!!"); return false; }
     if (!$db->connected) { msgDebug("\nnot connected to the db!!!"); return false; }
     if ($quote) {
@@ -497,9 +497,9 @@ function dbGetRow($table, $filter='', $quote=true, $verbose=false)
     } else {
         $sql = "SELECT * FROM $table".($filter ? " WHERE $filter" : '')." LIMIT 1";
     }
-	$row = $db->Execute($sql, 'row', $verbose);
-//	msgDebug("\n dbGetRow result = ".print_r($row, true));
-	return $row;
+    $row = $db->Execute($sql, 'row', $verbose);
+//    msgDebug("\n dbGetRow result = ".print_r($row, true));
+    return $row;
 }
 
 /**
@@ -515,17 +515,17 @@ function dbGetRow($table, $filter='', $quote=true, $verbose=false)
  */
 function dbGetMulti($table, $filter='', $order='', $field='*', $limit=0, $quote=true)
 {
-	global $db;
+    global $db;
     if (!is_object($db)) { msgDebug("\ndb is NOT an object, need to initialize!!!"); return []; }
     if (!$db->connected) { msgDebug("\nnot connected to the db!!!"); return []; }
-    if (is_array($field)) { 
+    if (is_array($field)) {
         $field = $quote ? "`".implode('`, `', $field)."`" : implode(', ', $field);
-    } elseif ($field!="*") { 
+    } elseif ($field!="*") {
         $field = $quote ? "`$field`" : $field;
     }
-	$sql = "SELECT $field FROM $table".($filter ? " WHERE $filter" : '').(trim($order) ? " ORDER BY $order" : '');
+    $sql = "SELECT $field FROM $table".($filter ? " WHERE $filter" : '').(trim($order) ? " ORDER BY $order" : '');
     if ($limit) { $sql .= " LIMIT $limit"; }
-	return $db->Execute($sql, 'rows');
+    return $db->Execute($sql, 'rows');
 }
 
 /**
@@ -537,10 +537,10 @@ function dbGetMulti($table, $filter='', $order='', $field='*', $limit=0, $quote=
  */
 function dbGetResult($sql, $action='stmt')
 {
-	global $db;
+    global $db;
     if (!is_object($db)) { return false; }
     if (!$db->connected) { return false; }
-	return $db->Execute($sql, $action);
+    return $db->Execute($sql, $action);
 }
 
 /**
@@ -551,22 +551,22 @@ function dbGetResult($sql, $action='stmt')
  */
 function dbAction(&$data, $hide_result=false)
 {
-	$error = false;
+    $error = false;
     if (!is_array($data['dbAction'])) { return; } // nothing to do
-	msgDebug("\nIn dbAction starting transaction with size of array = ".sizeof($data['dbAction']));
-	dbTransactionStart();
-	foreach ($data['dbAction'] as $table => $sql) {
-		msgDebug("database action for table $table and sql: $sql");
+    msgDebug("\nIn dbAction starting transaction with size of array = ".sizeof($data['dbAction']));
+    dbTransactionStart();
+    foreach ($data['dbAction'] as $table => $sql) {
+        msgDebug("database action for table $table and sql: $sql");
         if (!dbGetResult($sql)) { $error = true; }
-	}
-	if ($error) {
+    }
+    if ($error) {
         if (!$hide_result) { msgAdd(lang('err_database_write')); }
-		dbTransactionRollback();
-		return;
-	}
+        dbTransactionRollback();
+        return;
+    }
     if (!$hide_result) { msgAdd(lang('msg_database_write'), 'success'); }
-	dbTransactionCommit();
-	return true;
+    dbTransactionCommit();
+    return true;
 }
 
 /**
@@ -576,13 +576,13 @@ function dbAction(&$data, $hide_result=false)
  */
 function dbPullReference($field='')
 {
-	if (!$field) { return; }
+    if (!$field) { return; }
     $ref = dbGetValue(BIZUNO_DB_PREFIX.'current_status', $field);
     $output = $ref;
-	$ref++;
-	msgDebug("\nRetrieved for field: $field value: $output and incremented to get $ref");
-	dbWrite(BIZUNO_DB_PREFIX.'current_status', [$field => $ref], 'update');
-	return $output;
+    $ref++;
+    msgDebug("\nRetrieved for field: $field value: $output and incremented to get $ref");
+    dbWrite(BIZUNO_DB_PREFIX.'current_status', [$field => $ref], 'update');
+    return $output;
 }
 
 /**
@@ -594,8 +594,8 @@ function dbPullReference($field='')
  */
 function dbPullSetting($table, $index, $filter = false)
 {
-	$settings = json_decode(dbGetValue($table, 'settings', $filter), true);
-	return (isset($settings[$index])) ? $settings[$index] : $index;
+    $settings = json_decode(dbGetValue($table, 'settings', $filter), true);
+    return (isset($settings[$index])) ? $settings[$index] : $index;
 }
 
 /**
@@ -603,13 +603,13 @@ function dbPullSetting($table, $index, $filter = false)
  * @param string $table - db table to look for
  * @return boolean - true if table exist, false otherwise
  */
-function dbTableExists($table) 
+function dbTableExists($table)
 {
     if (!$stmt = dbGetResult("SHOW TABLES LIKE '$table'")) { return; }
     if (!$row  = $stmt->fetch(\PDO::FETCH_ASSOC)) { return; }
-	$value = array_shift($row);
+    $value = array_shift($row);
     if (false === $value) { return; }
-	return ($value==$table) ? true : false;
+    return ($value==$table) ? true : false;
 }
 
 /**
@@ -621,10 +621,10 @@ function dbTableExists($table)
  */
 function dbFieldExists($table, $field)
 {
-	global $db;
+    global $db;
     $result = $db->query("SHOW FIELDS FROM `$table`");
     if (!$result) { return; }
-    foreach ($result as $row) { 
+    foreach ($result as $row) {
         if ($row['Field'] == $field) { return true; }
     }
 }
@@ -639,8 +639,8 @@ function dbFieldExists($table, $field)
  */
 function dbLoadStructure($table, $suffix='', $prefix='')
 {
-	global $db;
-	return $db->loadStructure($table, $suffix, $prefix);
+    global $db;
+    return $db->loadStructure($table, $suffix, $prefix);
 }
 
 /**
@@ -651,38 +651,38 @@ function dbLoadStructure($table, $suffix='', $prefix='')
 function dbStructureFill(&$structure, $data=[], $suffix='')
 {
     if (!is_array($data)) { return; }
-	foreach ($structure as $field => $values) {
+    foreach ($structure as $field => $values) {
         if (!isset($values['attr']['type'])) { $values['attr']['type'] = 'text'; }
-		switch ($values['attr']['type']) {
-            case 'checkbox': 
+        switch ($values['attr']['type']) {
+            case 'checkbox':
                 if (isset($data[$field.$suffix])) { // only adjust if the field is present, prevents clearing flag if field is not part of merge
                     if ($data[$field.$suffix]) { $structure[$field]['attr']['checked'] = 'checked'; } else { unset($structure[$field]['attr']['checked']); }
                 }
                 break;
-			default:         
+            default:
                 $structure[$field]['attr']['value'] = isset($data[$field.$suffix]) ? $data[$field.$suffix] : '';
-		}
-	}
+        }
+    }
 }
 
 /**
  * This function builds the sql and loads into an array the result of the query.
  * @param array $data - the structure to build the sql and read data
- * @return array - integer [total] - total number of rows, array [rows] - row data 
+ * @return array - integer [total] - total number of rows, array [rows] - row data
  */
 function dbTableRead($data)
 {
-	global $currencies;
-	$sqlTables = '';
+    global $currencies;
+    $sqlTables = '';
     // Need to force strict mode if more than one table as fields with same name will overlap resulting in bad content, i.e. column id gets last tables value
     if (sizeof($data['source']['tables']) > 1) { $data['strict'] = true; }
-	foreach ($data['source']['tables'] as $table) {
-		$sqlTables .= isset($table['join']) && strlen($table['join'])>0 ?  ' '.$table['join'] : '';
-		$sqlTables .= ' '.$table['table'];
-		$sqlTables .= isset($table['links'])&& strlen($table['links'])>0? ' ON '.$table['links'] : '';
-	}
-	$criteria = [];
-	if (!empty($data['source']['filters'])) {
+    foreach ($data['source']['tables'] as $table) {
+        $sqlTables .= isset($table['join']) && strlen($table['join'])>0 ?  ' '.$table['join'] : '';
+        $sqlTables .= ' '.$table['table'];
+        $sqlTables .= isset($table['links'])&& strlen($table['links'])>0? ' ON '.$table['links'] : '';
+    }
+    $criteria = [];
+    if (!empty($data['source']['filters'])) {
         foreach ($data['source']['filters'] as $key => $value) {
             if ($key == 'search') {
                 if ($value['attr']['value']) {
@@ -694,56 +694,56 @@ function dbTableRead($data)
             }
         }
     }
-	$sqlCriteria = implode(' AND ', $criteria);
-	$order = [];
-	if (!empty($data['source']['sort'])) {
+    $sqlCriteria = implode(' AND ', $criteria);
+    $order = [];
+    if (!empty($data['source']['sort'])) {
         $sortOrder = sortOrder($data['source']['sort']);
         foreach ($sortOrder as $value) { if (strlen($value['field']) > 1) { $order[] = $value['field']; } }
-	}
+    }
     $sqlOrder= !empty($order) ? implode(', ', $order) : '';
-	$output  = ['total' => 0, 'rows'=> []];
-	if (isset($data['strict']) && $data['strict']) {
-		$aFields   = [];
-		foreach ($data['columns'] as $key => $value) {
+    $output  = ['total' => 0, 'rows'=> []];
+    if (isset($data['strict']) && $data['strict']) {
+        $aFields   = [];
+        foreach ($data['columns'] as $key => $value) {
             if ($key == 'action') { continue; } // skip action column
-			if (isset($value['field']) && strpos($value['field'], ":") !== false) { // look for embedded settings
-				$parts = explode(":", $value['field'], 2);
+            if (isset($value['field']) && strpos($value['field'], ":") !== false) { // look for embedded settings
+                $parts = explode(":", $value['field'], 2);
                 $aFields[] = $parts[0]." AS `$key`";
-			} elseif (isset($value['field'])) { 
+            } elseif (isset($value['field'])) {
                 $aFields[] = $value['field']." AS `$key`";
             }
-		}
+        }
         if (!$temp = dbGetMulti($sqlTables, $sqlCriteria, $sqlOrder, $aFields, 0, false)) { return $output; }
-		$output['total'] = sizeof($temp);
-		$result = array_slice($temp, ($data['page']-1)*$data['rows'], $data['rows']);
-		msgDebug("\n started with ".$output['total']." rows, page = {$data['page']}, rows = {$data['rows']}, resulted in effective row count = ".sizeof($result));
-	} else { // pull all columns irregardless of the field list
-		$limit   = isset($data['rows']) && isset($data['page']) ? (($data['page']-1)*$data['rows']).", ".$data['rows'] : 0;
-		$output['total'] = dbGetValue($sqlTables, 'count(*) AS cnt', $sqlCriteria, false);
-		msgDebug("\n total rows via count(*) = ".$output['total']);
+        $output['total'] = sizeof($temp);
+        $result = array_slice($temp, ($data['page']-1)*$data['rows'], $data['rows']);
+        msgDebug("\n started with ".$output['total']." rows, page = {$data['page']}, rows = {$data['rows']}, resulted in effective row count = ".sizeof($result));
+    } else { // pull all columns irregardless of the field list
+        $limit   = isset($data['rows']) && isset($data['page']) ? (($data['page']-1)*$data['rows']).", ".$data['rows'] : 0;
+        $output['total'] = dbGetValue($sqlTables, 'count(*) AS cnt', $sqlCriteria, false);
+        msgDebug("\n total rows via count(*) = ".$output['total']);
         if (!$result = dbGetMulti($sqlTables, $sqlCriteria, $sqlOrder, '*', $limit)) { return $output; }
-	}
-	foreach ($result as $row) {
+    }
+    foreach ($result as $row) {
         $GLOBALS['currentRow'] = $row; // save the raw data for aliases and formatting alterations of data
-		if (isset($row['currency'])) {
-			$currencies->iso  = $row['currency']; // @todo this needs to temporarily set a value in viewFormatter for processing
-			$currencies->rate = isset($row['currency_rate']) ? $row['currency_rate'] : 1;
-		}
-		foreach ($data['columns'] as $key => $value) {
-			if (isset($value['field']) && strpos($value['field'], ":") !== false) { // look for embedded settings
-				$parts = explode(":", $value['field'], 2);
-				$tmp = json_decode($row[$parts[0]], true);
-				$row[$key] = isset($parts[1]) && isset($tmp[$parts[1]]) ? $tmp[$parts[1]] : '';
-			}
+        if (isset($row['currency'])) {
+            $currencies->iso  = $row['currency']; // @todo this needs to temporarily set a value in viewFormatter for processing
+            $currencies->rate = isset($row['currency_rate']) ? $row['currency_rate'] : 1;
+        }
+        foreach ($data['columns'] as $key => $value) {
+            if (isset($value['field']) && strpos($value['field'], ":") !== false) { // look for embedded settings
+                $parts = explode(":", $value['field'], 2);
+                $tmp = json_decode($row[$parts[0]], true);
+                $row[$key] = isset($parts[1]) && isset($tmp[$parts[1]]) ? $tmp[$parts[1]] : '';
+            }
             if (isset($value['alias'])) { $row[$key] = $GLOBALS['currentRow'][$value['alias']]; }
-		}
-		foreach ($row as $key => $value) {
+        }
+        foreach ($row as $key => $value) {
             if (!empty($data['columns'][$key]['process'])){ $row[$key] = viewProcess($row[$key], $data['columns'][$key]['process']); }
             if (!empty($data['columns'][$key]['format'])) { $row[$key] = viewFormat ($row[$key], $data['columns'][$key]['format']); }
         }
-		$output['rows'][] = $row;
-	}
-	return $output;
+        $output['rows'][] = $row;
+    }
+    return $output;
 }
 
 /**
@@ -757,14 +757,14 @@ function dbTableRead($data)
  */
 function dbBuildDropdown($table, $id='id', $field='description', $filter='', $nullText='')
 {
-	$output = [];
+    $output = [];
     if ($nullText) { $output[] = ['id'=>'0', 'text'=>$nullText]; }
-	$sql = "SELECT $id AS id, $field AS text FROM $table"; // no ` as sql function may be used
+    $sql = "SELECT $id AS id, $field AS text FROM $table"; // no ` as sql function may be used
     if ($filter) { $sql .= " WHERE $filter"; }
     if (!$stmt = dbGetResult($sql)) { return $output; }
-	$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
     foreach ($result as $row) { $output[] = ['id'=>$row['id'], 'text'=>$row['text']]; }
-	return $output;
+    return $output;
 }
 
 /**
@@ -815,9 +815,9 @@ function dbGetStores($addAll=false)
 {
     if ($addAll) { $output[] = ['id'=>-1, 'text'=>lang('all')]; }
     $output[] = ['id'=>0, 'text'=> getModuleCache('bizuno', 'settings', 'company', 'id')];
-	$result = dbGetMulti(BIZUNO_DB_PREFIX."contacts", "type='b'", "short_name");
+    $result = dbGetMulti(BIZUNO_DB_PREFIX."contacts", "type='b'", "short_name");
     foreach ($result as $row) { $output[] = ['id'=>$row['id'], 'text'=>$row['short_name']]; }
-	return $output;
+    return $output;
 }
 
 /**
@@ -827,12 +827,12 @@ function dbGetStores($addAll=false)
  */
 function dbGetFiscalDates($period)
 {
-	$result = dbGetRow(BIZUNO_DB_PREFIX."journal_periods", "period=$period");
-	msgDebug("\nCalculating fiscal dates with period = $period. Resulted in: ".print_r($result, true));
-	if (!$result) { // post_date is out of range of defined accounting periods
-		return msgAdd(sprintf(lang('err_gl_post_date_invalid'), "period $period"));
-	}
-	return $result;
+    $result = dbGetRow(BIZUNO_DB_PREFIX."journal_periods", "period=$period");
+    msgDebug("\nCalculating fiscal dates with period = $period. Resulted in: ".print_r($result, true));
+    if (!$result) { // post_date is out of range of defined accounting periods
+        return msgAdd(sprintf(lang('err_gl_post_date_invalid'), "period $period"));
+    }
+    return $result;
 }
 
 /**
@@ -841,11 +841,11 @@ function dbGetFiscalDates($period)
  */
 function dbFiscalDropDown()
 {
-	$stmt   = dbGetResult("SELECT DISTINCT fiscal_year FROM ".BIZUNO_DB_PREFIX."journal_periods GROUP BY fiscal_year ORDER BY fiscal_year ASC");
-	$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-	$output = [];
+    $stmt   = dbGetResult("SELECT DISTINCT fiscal_year FROM ".BIZUNO_DB_PREFIX."journal_periods GROUP BY fiscal_year ORDER BY fiscal_year ASC");
+    $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    $output = [];
     foreach ($result as $row) { $output[] = ['id'=>$row['fiscal_year'], 'text'=>$row['fiscal_year']]; }
-	return $output;
+    return $output;
 }
 
 /**
@@ -855,17 +855,17 @@ function dbFiscalDropDown()
  */
 function dbPeriodDropDown($incAll=true, $incRecent=false)
 {
-	$result = dbGetMulti(BIZUNO_DB_PREFIX."journal_periods", '', 'period');
-	$output = $choices = [];
+    $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_periods", '', 'period');
+    $output = $choices = [];
     if ($incRecent) {
         $choices = ['l'=>lang('dates_this_period'),'t'=>lang('last_30_days'),'v'=>lang('last_60_days'),'w'=>lang('last_90_days'),'i'=>lang('dates_qtd'),'k'=>lang('dates_ytd')];
     }
     if ($incAll) { $output[] = ['id'=>'a', 'text'=>lang('all')]; }
-	foreach ($result as $row) {
-		$text_value = lang('period').' '.$row['period'].' : '.viewDate($row['start_date']).' - '.viewDate($row['end_date']);
-		$output[] = ['id' => $row['period'], 'text' => $text_value];
-	}
-	return array_merge(viewKeyDropdown($choices), $output);
+    foreach ($result as $row) {
+        $text_value = lang('period').' '.$row['period'].' : '.viewDate($row['start_date']).' - '.viewDate($row['end_date']);
+        $output[] = ['id' => $row['period'], 'text' => $text_value];
+    }
+    return array_merge(viewKeyDropdown($choices), $output);
 }
 
 /**
@@ -874,29 +874,29 @@ function dbPeriodDropDown($incAll=true, $incRecent=false)
  * @param array $limits - gl account types to restrict list to
  * @return array - formatted result array to be used for HTML5 input type select render function
  */
-function dbGLDropDown($inc_sel=true, $limits=array()) 
+function dbGLDropDown($inc_sel=true, $limits=array())
 {
-	$output = [];
+    $output = [];
     if ($inc_sel) { $output[] = ['id'=>'0', 'text'=>lang('select')]; }
     $chart = getModuleCache('phreebooks', 'chart', 'accounts');
-	foreach ($chart as $row) {
-		if (sizeof($limits)==0 || in_array($row['type'], $limits)) {
-			$output[] = ['id'=>$row['id'], 'text'=>$row['id'].' : '.$row['title']];
-		}
-	}
-	return $output;
+    foreach ($chart as $row) {
+        if (sizeof($limits)==0 || in_array($row['type'], $limits)) {
+            $output[] = ['id'=>$row['id'], 'text'=>$row['id'].' : '.$row['title']];
+        }
+    }
+    return $output;
 }
 
 function dbSqlDates($dateType='a', $df=false) {
     if (!$df) { $df = 'post_date'; }
-	$dates = localeGetDates();
-	$DateArray = explode(':', $dateType);
-	$tnow = time();
-	$dbeg = '1969-01-01';
-	$dend = '2029-12-31';
-	switch ($DateArray[0]) {
+    $dates = localeGetDates();
+    $DateArray = explode(':', $dateType);
+    $tnow = time();
+    $dbeg = '1969-01-01';
+    $dend = '2029-12-31';
+    switch ($DateArray[0]) {
         case "a": // All, skip the date addition to the where statement, all dates in db
-        case "all": // old way 
+        case "all": // old way
             $sql  = '';
             $desc = '';
             break;
@@ -914,7 +914,7 @@ function dbSqlDates($dateType='a', $df=false) {
                 $sql .= "$df<'$dend'";
                 $desc.= ' '.lang('to').' '.$DateArray[2];
             }
-            $desc .= '; ';			
+            $desc .= '; ';
             break;
         case "c": // Today (specify range for datetime type fields to match for time parts)
             $dbeg = $dates['Today'];
@@ -1045,8 +1045,8 @@ function dbSqlDates($dateType='a', $df=false) {
 //          $sql  = "$df>='$dbeg' AND $df<'$dend'"; // was this before but breaks for trial balance report
             $desc = lang('period')." {$DateArray[0]} (".viewFormat($temp['start_date'], 'date')." - ".viewFormat($temp['end_date'], 'date')."); ";
             break;
-	}
-	return ['sql'=>$sql,'description'=>$desc,'start_date'=>$dbeg,'end_date'=>$dend];
+    }
+    return ['sql'=>$sql,'description'=>$desc,'start_date'=>$dbeg,'end_date'=>$dend];
 }
 /**
  * Prepares a drop down values list of users
@@ -1058,12 +1058,12 @@ function dbSqlDates($dateType='a', $df=false) {
  */
 function listUsers($active_only=true, $showNone=true, $showAll=true)
 {
-	$output = [];
+    $output = [];
     if ($showAll)  { $output[] = ['id'=>'-1','text'=>lang('all')]; }
     if ($showNone) { $output[] = ['id'=>'0', 'text'=>lang('none')]; }
-	$result = dbGetMulti(BIZUNO_DB_PREFIX."users", $active_only ? "inactive='0'" : '', 'title');
+    $result = dbGetMulti(BIZUNO_DB_PREFIX."users", $active_only ? "inactive='0'" : '', 'title');
     foreach ($result as $row) { $output[] = ['id'=>$row['admin_id'], 'text'=>$row['title']]; }
-	return $output;
+    return $output;
 }
 
 /**
@@ -1073,12 +1073,12 @@ function listUsers($active_only=true, $showNone=true, $showAll=true)
  */
 function listRoles($active_only=true, $showNone=true, $showAll=true)
 {
-	$output = [];
+    $output = [];
     if ($showAll)  { $output[] = ['id'=>'-1','text'=>lang('all')]; }
     if ($showNone) { $output[] = ['id'=>'0', 'text'=>lang('none')]; }
-	$result = dbGetMulti(BIZUNO_DB_PREFIX."roles", $active_only ? "inactive='0'" : '', 'title');
+    $result = dbGetMulti(BIZUNO_DB_PREFIX."roles", $active_only ? "inactive='0'" : '', 'title');
     foreach ($result as $row) { $output[] = ['id'=>$row['id'], 'text'=>$row['title']]; }
-	return $output;
+    return $output;
 }
 
 /**
@@ -1088,17 +1088,17 @@ function listRoles($active_only=true, $showNone=true, $showAll=true)
  */
 function encodeType($value)
 {
-	switch (gettype($value)) {
-		case "boolean": return $value ? 'true' : 'false';
-		default:
-		case "resource":
-		case "integer":
-		case "double": return $value; // no quotes required
-		case "NULL":
-		case "string": return "'".str_replace("'", "\'", $value)."'"; // add quotes
-		case "array":
-		case "object": return json_encode($value);
-	}
+    switch (gettype($value)) {
+        case "boolean": return $value ? 'true' : 'false';
+        default:
+        case "resource":
+        case "integer":
+        case "double": return $value; // no quotes required
+        case "NULL":
+        case "string": return "'".str_replace("'", "\'", $value)."'"; // add quotes
+        case "array":
+        case "object": return json_encode($value);
+    }
 }
 
 /**
@@ -1111,15 +1111,15 @@ function encodeType($value)
  */
 function validateTab($mID, $tID, $title, $order=50)
 {
-	if (!dbFieldExists(BIZUNO_DB_PREFIX.'current_status', 'next_tab_id')) { // PhreeBooks conversion may not have this field
+    if (!dbFieldExists(BIZUNO_DB_PREFIX.'current_status', 'next_tab_id')) { // PhreeBooks conversion may not have this field
         dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."current_status ADD `next_tab_id` INT(11) NOT NULL DEFAULT '1' COMMENT 'type:hidden;tag:NextTabID;order:14'");
     }
     $tabs = getModuleCache($mID, 'tabs');
     foreach ($tabs as $id => $tab) { if ($tab['table_id']==$tID && $tab['title']==$title) { return $id; } }
-	$id = dbGetValue(BIZUNO_DB_PREFIX.'current_status', 'next_tab_id');
-	msgDebug("\nRetrieved id: ".print_r($id, true)." from validateTab");
-	dbWrite(BIZUNO_DB_PREFIX.'current_status', ['next_tab_id'=>($id+1)], 'update');
-	$tabs[$id] = ['table_id'=>$tID, 'title'=>$title, 'sort_order'=>$order];
+    $id = dbGetValue(BIZUNO_DB_PREFIX.'current_status', 'next_tab_id');
+    msgDebug("\nRetrieved id: ".print_r($id, true)." from validateTab");
+    dbWrite(BIZUNO_DB_PREFIX.'current_status', ['next_tab_id'=>($id+1)], 'update');
+    $tabs[$id] = ['table_id'=>$tID, 'title'=>$title, 'sort_order'=>$order];
     setModuleCache($mID, 'tabs', false, $tabs);
-	return $id;
+    return $id;
 }

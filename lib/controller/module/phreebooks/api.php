@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-11-09
  * @filesource /lib/controller/module/phreebooks/api.php
@@ -32,35 +32,35 @@ class phreebooksApi
 {
     public $moduleID = 'phreebooks';
 
-	function __construct()
+    function __construct()
     {
-		$this->lang = getLang($this->moduleID);
+        $this->lang = getLang($this->moduleID);
     }
     
     /**
-	 * This method builds the div for operating the API to import data, information includes import templates and forms, export forms
-	 * @param integer jID - journal to post to, passed as $_GET variable
-	 * @param array $layout - input data passed as array of tags, may also be passed as $_POST variables
-	 */
-	public function journalAPI(&$layout)
+     * This method builds the div for operating the API to import data, information includes import templates and forms, export forms
+     * @param integer jID - journal to post to, passed as $_GET variable
+     * @param array $layout - input data passed as array of tags, may also be passed as $_POST variables
+     */
+    public function journalAPI(&$layout)
     {
-		$layout = array_replace_recursive($layout, [
-			'tabs'=>['tabImpExp'=>['divs'=>['begBal'=>['order'=>90,'type'=>'divs','label'=>lang('beginning_balances'),'divs'=>[
+        $layout = array_replace_recursive($layout, [
+            'tabs'=>['tabImpExp'=>['divs'=>['begBal'=>['order'=>90,'type'=>'divs','label'=>lang('beginning_balances'),'divs'=>[
                 'formBOF' => ['order'=>15,'type'=>'form','key'=>'frmBegBal'],
                 'body'    => ['order'=>50,'type'=>'html','html'=>$this->getViewBB()],
                 'formEOF' => ['order'=>95,'type'=>'html','html'=>"</form>"]]]]]],
-			'forms'=>[
+            'forms'=>[
                 'frmBegBal'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/begBalSave"]],
-				'frmImpInv'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=inv"]],
-				'frmImpJ4' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j4"]],
-				'frmImpJ6' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j6"]],
-				'frmImpJ10'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j10"]],
-				'frmImpJ12'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j12"]]],
+                'frmImpInv'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=inv"]],
+                'frmImpJ4' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j4"]],
+                'frmImpJ6' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j6"]],
+                'frmImpJ10'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j10"]],
+                'frmImpJ12'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j12"]]],
             'jsBody' => ['init'=>$this->getViewBBJS()],
             'jsReady'=> ['init'=>"ajaxForm('frmBegBal');"]]);
         $layout['jsReady']['phreebooksImport'] = "ajaxForm('frmImpInv');\najaxForm('frmImpJ4');\najaxForm('frmImpJ6');\najaxForm('frmImpJ10');\najaxForm('frmImpJ12');";
         $layout['tabs']['tabAPI']['divs'][$this->moduleID] = ['order'=>80,'label'=>getModuleCache($this->moduleID, 'properties', 'title'),'type'=>'html','html'=>$this->render($layout)];
-	}
+    }
 
     private function getViewBB()
     {
@@ -73,7 +73,7 @@ class phreebooksApi
         $bb_balance_total= ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
         $btnSaveBegBal   = ['icon'=>'save','size'=>'large','events'=>['onClick'=>"jq('body').addClass('loading'); jq('#frmBegBal').submit();"]];
         $result          = dbGetMulti(BIZUNO_DB_PREFIX."journal_history", "period=1", "gl_account");
-		foreach ($result as $row) {
+        foreach ($result as $row) {
             $balance = round($row['beginning_balance'], $precision);
             $beg_bal[$row['gl_account']] = [
                 'desc'     => getModuleCache('phreebooks', 'chart', 'accounts')[$row['gl_account']]['title'],
@@ -119,21 +119,21 @@ class phreebooksApi
     private function getViewBBJS()
     {
         return "function begBalTotal() {
-	var debits = 0;
-	var credits= 0;
-	var balance= 0;
-	jq('input[name^=debits]').each(function() { debits += cleanCurrency(jq(this).val()); });
-	jq('input[name^=credits]').each(function(){ credits+= cleanCurrency(jq(this).val()); });
-	balance = debits - credits;
+    var debits = 0;
+    var credits= 0;
+    var balance= 0;
+    jq('input[name^=debits]').each(function() { debits += cleanCurrency(jq(this).val()); });
+    jq('input[name^=credits]').each(function(){ credits+= cleanCurrency(jq(this).val()); });
+    balance = debits - credits;
     bizTextSet('bb_debit_total',  debits,  'currency');
     bizTextSet('bb_credit_total', credits, 'currency');
     bizTextSet('bb_balance_total',balance, 'currency');
-	if (balance == 0) jq('#bb_balance_total').css({color:'#000000'});
-	else jq('#bb_balance_total').css({color:'red'});
+    if (balance == 0) jq('#bb_balance_total').css({color:'#000000'});
+    else jq('#bb_balance_total').css({color:'red'});
 }";
     }
 
-	/**
+    /**
      * Generates the HTML for the beginning balance import for PhreeBooks journal presets
      * @param array $data - structure to build HTML
      * @return string - DOM HTML for importing beginning balances
@@ -150,7 +150,7 @@ class phreebooksApi
         $btn_j6    = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpJ6').submit();"]];
         $btn_j10   = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpJ10').submit();"]];
         $btn_j12   = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpJ12').submit();"]];
-		return "<fieldset><legend>".lang('phreebooks_import_journal_title')."</legend>
+        return "<fieldset><legend>".lang('phreebooks_import_journal_title')."</legend>
  <p>".$this->lang['desc_import_journal'].'</p>
  <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
   <tbody>
@@ -168,7 +168,7 @@ class phreebooksApi
    <tr><td colspan="2"><hr /></td></tr>
    <tr><td>'.$this->lang['phreebooks_import_ar'] ."</td><td>".html5('frmImpJ12',$data['forms']['frmImpJ12']).
     html5('import_j12',$import_j12).html5('btn_j12',$btn_j12)."</form></td></tr>\n</tbody>\n</table>\n</fieldset>";
-	}
+    }
 
     /**
      * Executes the beginning balance import operations
@@ -178,19 +178,19 @@ class phreebooksApi
     {
         if (!$security = validateSecurity('bizuno', 'impexp', 3)) { return; }
         $request = $_POST;
-		$today   = date('Y-m-d');
-		$dbData  = [];
-		$credits = $debits = 0;
-		foreach ($request['debits'] as $glAcct => $value) {
-			$amount = clean($value, 'currency');
-			$debits += $amount;
-			$dbData[$glAcct] = ['beginning_balance'=>$amount, 'last_update'=>$today];
-		}
-		foreach ($request['credits'] as $glAcct => $value) {
-			$amount = clean($value, 'currency');
-			$credits += $amount;
-			$dbData[$glAcct] = ['beginning_balance'=>-$amount, 'last_update'=>$today];
-		}
+        $today   = date('Y-m-d');
+        $dbData  = [];
+        $credits = $debits = 0;
+        foreach ($request['debits'] as $glAcct => $value) {
+            $amount = clean($value, 'currency');
+            $debits += $amount;
+            $dbData[$glAcct] = ['beginning_balance'=>$amount, 'last_update'=>$today];
+        }
+        foreach ($request['credits'] as $glAcct => $value) {
+            $amount = clean($value, 'currency');
+            $credits += $amount;
+            $dbData[$glAcct] = ['beginning_balance'=>-$amount, 'last_update'=>$today];
+        }
         $balance = abs(round($debits-$credits, getModuleCache('bizuno', 'settings', 'locale', 'number_precision', 2)));
         msgDebug("\nCalculated balance (expecting zero after rounding) = $balance");
         if ($balance <> 0) { return msgAdd("Cannot update beginning balances as the debits are not equal to the credits."); }
@@ -198,10 +198,10 @@ class phreebooksApi
         $phreebooks = new journal();
         $phreebooks->affectedGlAccts = array_keys($dbData);
         if (!$phreebooks->updateJournalHistory(1)) { return; }
-		msgAdd("Beginning Balances Updated!", 'success');
-	}
+        msgAdd("Beginning Balances Updated!", 'success');
+    }
 
-	/**
+    /**
      * Executes an import of one or more journal entries
      * @param $layout - structure coming in
      * @return modified $layout, user messages are generated with results
@@ -209,7 +209,7 @@ class phreebooksApi
     public function importJournal(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'admin', 4)) { return; }
-		$action = clean('id', 'text', 'get');
+        $action = clean('id', 'text', 'get');
         switch ($action) { // put it in the correct journal format
             case  'j4':
                 $cType = 'v'; // Contact Type
@@ -245,18 +245,18 @@ class phreebooksApi
         }
         $upload = new \bizuno\io();
         $upload->validateUpload($filename);
-		// ***************************** START TRANSACTION *******************************
-		dbTransactionStart();
-		$itemCnt = 1;
-		$items   = [];
-		$orderCnt= 0;
-		$runaway = 0;
-		$rows    = array_map('str_getcsv', file($_FILES[$filename]['tmp_name']));
-		$head    = array_shift($rows); // heading
-		$row     = array_shift($rows); // first line to import
+        // ***************************** START TRANSACTION *******************************
+        dbTransactionStart();
+        $itemCnt = 1;
+        $items   = [];
+        $orderCnt= 0;
+        $runaway = 0;
+        $rows    = array_map('str_getcsv', file($_FILES[$filename]['tmp_name']));
+        $head    = array_shift($rows); // heading
+        $row     = array_shift($rows); // first line to import
         if (!$row) { return msgAdd("There were no rows to process!", 'caution'); }
-		$data    = array_combine($head, $row);
-		while (true) {
+        $data    = array_combine($head, $row);
+        while (true) {
             if (!$row) { break; }
             msgDebug("\nWorking with input data row = ".print_r($data, true));
             if ($action=='inv') { // for inventory just update the history table and inventory 
@@ -305,33 +305,33 @@ class phreebooksApi
                     'full_price'    => $inv['full_price'],
                     'post_date'     => $postDate];
             }
-			// check for continuation order
-			$row = array_shift($rows);
-			if ($runaway++ > 1000) { msgAdd("runaway reached, exiting!"); break; }
-			if ($row) { // check for continuation order
-				$nextData = array_combine($head, $row);
-				msgDebug("\nContinuing order check, Next order = {$nextData['InvoiceNumber']} and this order = {$data['InvoiceNumber']}");
-				if ($nextData['InvoiceNumber'] == $main['invoice_num']) {
-					$data = $nextData;
-					$itemCnt++;
-					continue; // more items for the same order
-				}
+            // check for continuation order
+            $row = array_shift($rows);
+            if ($runaway++ > 1000) { msgAdd("runaway reached, exiting!"); break; }
+            if ($row) { // check for continuation order
+                $nextData = array_combine($head, $row);
+                msgDebug("\nContinuing order check, Next order = {$nextData['InvoiceNumber']} and this order = {$data['InvoiceNumber']}");
+                if ($nextData['InvoiceNumber'] == $main['invoice_num']) {
+                    $data = $nextData;
+                    $itemCnt++;
+                    continue; // more items for the same order
+                }
             } else { $nextData = []; }
-			// finish main and item to post
+            // finish main and item to post
             $this->setContactInfo($main, $data['BillContactID'], $cType, '_b');
             if (!isset($data['ShipContactID'])) { $data['ShipContactID'] = $data['BillContactID']; }
             $this->setContactInfo($main, in_array($jID, [10,12]) ? $data['ShipContactID'] : false, 'c', '_s');
-			$main['total_amount'] = $data['Total'];
-			// @todo add tax to item array, use taxGuess from bizuno/api
-			if (isset($data['Shipping']) && $data['Shipping']) { $items[] = [
+            $main['total_amount'] = $data['Total'];
+            // @todo add tax to item array, use taxGuess from bizuno/api
+            if (isset($data['Shipping']) && $data['Shipping']) { $items[] = [
                 'qty'          => 1,
-				'gl_type'      => 'frt',
-				'description'  => "Shipping Invoice # ".$main['invoice_num'],
+                'gl_type'      => 'frt',
+                'description'  => "Shipping Invoice # ".$main['invoice_num'],
                 'debit_amount' => in_array($jID, [4]) ? $data['Shipping'] : 0,
-				'credit_amount'=> in_array($jID, [10])? $data['Shipping'] : 0,
-				'gl_account'   => getModuleCache('extShipping', 'settings', 'general', 'gl_shipping_c'),
-				'tax_rate_id'  => 0,
-				'post_date'    => $postDate,
+                'credit_amount'=> in_array($jID, [10])? $data['Shipping'] : 0,
+                'gl_account'   => getModuleCache('extShipping', 'settings', 'general', 'gl_shipping_c'),
+                'tax_rate_id'  => 0,
+                'post_date'    => $postDate,
                 ];
             }
             if (in_array($jID, [6,12])) { // for sales, purchases just need a gl account to offset total
@@ -346,21 +346,21 @@ class phreebooksApi
                     'post_date'    => $postDate,
                     ];                
             }
-			$items[] = [
+            $items[] = [
                 'qty'          => 1,
-				'gl_type'      => 'ttl',
-				'description'  => "Total $desc # ".$data['InvoiceNumber'],
-				'debit_amount' => in_array($jID, [10,12])? $data['Total'] : 0,
+                'gl_type'      => 'ttl',
+                'description'  => "Total $desc # ".$data['InvoiceNumber'],
+                'debit_amount' => in_array($jID, [10,12])? $data['Total'] : 0,
                 'credit_amount'=> in_array($jID, [4,6])  ? $data['Total'] : 0,
-				'gl_account'   => $glAcct, // either payables or receivables
-				'post_date'    => $postDate,
+                'gl_account'   => $glAcct, // either payables or receivables
+                'post_date'    => $postDate,
                 ];
-			// set some specific journal information, first post journal
-			$dup = dbGetValue(BIZUNO_DB_PREFIX."journal_main", "id", "invoice_num='{$main['invoice_num']}'");
-			if ($dup) {
-				msgDebug("duplicate order id = $dup and main = ".print_r($main, true));
-				msgAdd(sprintf($this->lang['err_dup_order'], $main['invoice_num']), 'caution');
-			} else {
+            // set some specific journal information, first post journal
+            $dup = dbGetValue(BIZUNO_DB_PREFIX."journal_main", "id", "invoice_num='{$main['invoice_num']}'");
+            if ($dup) {
+                msgDebug("duplicate order id = $dup and main = ".print_r($main, true));
+                msgAdd(sprintf($this->lang['err_dup_order'], $main['invoice_num']), 'caution');
+            } else {
                 $ledger = new journal(0, $jID, $main['post_date']);
                 $ledger->main = array_merge($ledger->main, $main);
                 $ledger->item = $items;
@@ -368,16 +368,16 @@ class phreebooksApi
                 $orderCnt++;
             }
             // prepare for next line.
-			$data   = $nextData;
-			$itemCnt= 1;
-			$items  = [];
-		}
+            $data   = $nextData;
+            $itemCnt= 1;
+            $items  = [];
+        }
         if ($orderCnt) { if (!$ledger->updateJournalHistory(1)) { return; } }
-		dbTransactionCommit();
-		// ***************************** END TRANSACTION *******************************
-		msgAdd(sprintf(lang('import')." ($action) - successfully imported %i entries.", $orderCnt), 'success');
-		msgLog(sprintf(lang('import')." ($action) - %i successfully imported", $orderCnt));
-	}
+        dbTransactionCommit();
+        // ***************************** END TRANSACTION *******************************
+        msgAdd(sprintf(lang('import')." ($action) - successfully imported %i entries.", $orderCnt), 'success');
+        msgLog(sprintf(lang('import')." ($action) - %i successfully imported", $orderCnt));
+    }
     
     /**
      * Creates a new contact record to support journal import
@@ -414,16 +414,16 @@ class phreebooksApi
         // populate contact info
         $main['contact_id'  .$suffix] = $cID;
         $main['address_id'  .$suffix] = $data['address']['address_id'];
-		$main['primary_name'.$suffix] = $data['address']['primary_name'];
-		$main['contact'     .$suffix] = $data['address']['contact'];
-		$main['address1'    .$suffix] = $data['address']['address1'];
-		$main['address2'    .$suffix] = $data['address']['address2'];
-		$main['city'        .$suffix] = $data['address']['city'];
-		$main['state'       .$suffix] = $data['address']['state'];
-		$main['postal_code' .$suffix] = $data['address']['postal_code'];
-		$main['country'     .$suffix] = $data['address']['country'];
-		$main['telephone1'  .$suffix] = $data['address']['telephone1'];
-		$main['email'       .$suffix] = $data['address']['email'];
+        $main['primary_name'.$suffix] = $data['address']['primary_name'];
+        $main['contact'     .$suffix] = $data['address']['contact'];
+        $main['address1'    .$suffix] = $data['address']['address1'];
+        $main['address2'    .$suffix] = $data['address']['address2'];
+        $main['city'        .$suffix] = $data['address']['city'];
+        $main['state'       .$suffix] = $data['address']['state'];
+        $main['postal_code' .$suffix] = $data['address']['postal_code'];
+        $main['country'     .$suffix] = $data['address']['country'];
+        $main['telephone1'  .$suffix] = $data['address']['telephone1'];
+        $main['email'       .$suffix] = $data['address']['email'];
     }
     
     /**

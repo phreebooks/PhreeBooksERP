@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-06
+ * @version    3.x Last Update: 2019-01-22
  * @filesource /view/easyUI/html5.php
  */
 
@@ -38,7 +38,7 @@ final class html5 {
     public  $jsResize= [];
 
     function __construct() {
-        
+
     }
 
     /**
@@ -62,7 +62,7 @@ final class html5 {
         $closeDiv = false;
         if (!empty($prop['hidden'])) { return '';}
         if ( empty($prop['type']))   { $prop['type'] = 'template'; } // default
-        if (!empty($prop['attr'])) { 
+        if (!empty($prop['attr'])) {
             $prop['attr']['type'] = 'div';
             $output['body'] .= $this->render(!empty($prop['attr']['id'])?$prop['attr']['id']:'', $prop);
             $closeDiv = true;
@@ -81,7 +81,7 @@ final class html5 {
                 break;
             case 'attach':   $this->layoutAttach($output, $prop); break;
             case 'datagrid': $this->layoutDatagrid($output, $prop, $prop['key']); break;
-            case 'divs':   
+            case 'divs':
                 if (!empty($prop['label'])) { $output['body'] .= $this->layoutFieldset($prop); }
                 $this->buildDivs($output, $prop);
                 if (!empty($prop['label'])) { $output['body'] .= '</fieldset>'; }
@@ -95,7 +95,7 @@ final class html5 {
             case 'panel':
                 if (isset($prop['key'])) { $prop = array_merge($viewData['panels'][$prop['key']], ['id'=>$prop['key']]); }
                 $this->layoutPanel($output, $prop);
-                break;                
+                break;
             case 'payment':$this->layoutPayment($output, $prop); break;
             case 'payments':
                 foreach ($viewData['payments'] as $methID) {
@@ -138,7 +138,7 @@ final class html5 {
                 if (!empty($prop['label'])) { $output['body'] .= '</fieldset>'; }
                 break;
             case 'tree':
-                if (isset($prop['key'])) { 
+                if (isset($prop['key'])) {
                     $prop['el'] = array_merge($viewData['tree'][$prop['key']], ['id' => $prop['key']]);
                 }
                 $this->layoutTree($output, $prop['el']);
@@ -195,7 +195,7 @@ final class html5 {
             case 'tr':
             case 'thead':
             case 'tbody':
-            case 'tfoot':    
+            case 'tfoot':
             case 'ul':          return $this->htmlElOpen($id, $prop);
             case 'button':      return $this->inputButton($id, $prop);
 //          case 'iframe':      return $this->layoutIframe($output, $id, $prop);
@@ -212,13 +212,13 @@ final class html5 {
             case 'float':
             case 'number':      return $this->inputNumber($id, $prop);
             case 'file':        return $this->inputFile($id, $prop);
-            case 'hidden':      
+            case 'hidden':
             case 'linkimg': // used in custom fields contacts/inventory
             case 'phone':
             case 'tel':
             case 'text':
             case 'time':        return $this->inputText($id, $prop);
-            case 'integer': 
+            case 'integer':
             case 'month':
             case 'week':
             case 'year':        return $this->inputNumber($id, $prop, 0);
@@ -248,7 +248,7 @@ final class html5 {
             case 'caption': //Defines a table caption
             case 'cite': //Defines the title of a work
             case 'code': //Defines a piece of computer code
-            case 'col': //Specifies column properties for each column within a case 'colgroup': element 
+            case 'col': //Specifies column properties for each column within a case 'colgroup': element
             case 'colgroup': //Specifies a group of one or more columns in a table for formatting
             case 'datalist': //Specifies a list of pre-defined options for input controls
             case 'dd': //Defines a description/value of a term in a description list
@@ -348,7 +348,7 @@ final class html5 {
     }
 
     /**
-     * Builds a HTML open element, i.e no closing tag </...> 
+     * Builds a HTML open element, i.e no closing tag </...>
      * @param string $id - element id
      * @param array $prop - element properties
      * @return string - html element ready to send to browser
@@ -422,12 +422,12 @@ final class html5 {
         $orient    = in_array($prop['region'], ['east', 'left', 'right', 'west']) ? 'v' : 'h';
         $hideLabel = !empty($prop['hideLabels']) ? $prop['hideLabels'] : false;
         $hideBorder= !empty($prop['hideBorder']) ? $prop['hideBorder'] : false;
-        if ($orient == 'v') { 
+        if ($orient == 'v') {
             if (empty($prop['size'])) { $prop['size'] = 'small'; }
             $prop['classes'][] = 'easyui-menu';
             $prop['options']['inline'] = 'true';
         } else {
-            if (empty($prop['size'])) { $prop['size'] = 'large'; }            
+            if (empty($prop['size'])) { $prop['size'] = 'large'; }
         }
         $output['body'] .= $this->htmlElOpen('', $prop)."\n";
         $output['body'] .= $this->menuChild($prop['data']['child'], $prop['size'], $orient, $hideLabel, $hideBorder);
@@ -489,7 +489,7 @@ final class html5 {
     }
 
     /**
-     * 
+     *
      * @param type $id
      * @param type $prop
      * @return type
@@ -535,7 +535,7 @@ final class html5 {
             $item['classes']['image'] = "list-image";
             $output .= html5('', $item);
             $output .= '<div class="list-header">'.$item['label'].'</div>';
-            if (!empty(getUserCache('menuBar')['child'][$menuID]['description'])) { $output .= '<div>'.getUserCache('menuBar')['child'][$menuID]['description'].'</div>'; }
+            if (!empty(getUserCache('menuBar')['child'][$menuID]['desc'])) { $output .= '<div>'.getUserCache('menuBar')['child'][$menuID]['desc'].'</div>'; }
             $output .= "</li>\n";
         }
         return $output."</ul>\n";
@@ -556,7 +556,7 @@ final class html5 {
         if (!empty($content['title'])){ $output .= '<div class="m-title">'.$content['title'].'</div>'; }
         if (!empty($content['left'])) {
             $output .= '<div class="m-left">';
-            foreach($content['left'] as $choice) { 
+            foreach($content['left'] as $choice) {
                 $output .= $this->mobileMenuAdd($choice, $menuID);
                 if ($choice == 'more') { $hasDropMenu = true; }
             }
@@ -564,11 +564,11 @@ final class html5 {
         }
         if (!empty($content['right'])) {
             $output .= '<div class="m-right">';
-            foreach($content['right'] as $choice) { 
+            foreach($content['right'] as $choice) {
                 $output .= $this->mobileMenuAdd($choice, $menuID);
                 if ($choice == 'more') { $hasDropMenu = true; }
             }
-            $output .= "</div>\n";            
+            $output .= "</div>\n";
         }
         $output .= '</div></'.$location.'>'."\n";
         if ($hasDropMenu) { $output .= $this->mobileMenuChild('more'.$menuID, $this->mobileMenuMore()); }
@@ -595,7 +595,7 @@ final class html5 {
                 'classes'=>['easyui-menubutton']]);
         }
     }
-    
+
     /**
      * This function takes a menu child structure and builds the easyUI HTML markup, it is recursive for multi-level menus
      * @param string $id - root ID for the parent element
@@ -660,7 +660,7 @@ final class html5 {
         if (empty($path) || in_array($path, ['bizuno/main/dashboard'])) { return 'dash'; }
         return 'target';
     }
-    
+
     /***************************** Layout ******************/
     public function layoutMobile(&$output, $data) {
         $output['head']['meta'][]= ['order'=>70,'html'=>'<meta name="mobile-web-app-capable" content="yes" />'];
@@ -819,7 +819,7 @@ final class html5 {
         if ($attr['format'] != 'long') { unset($structure['country']['label']); }
         $structure['email']['attr']['size'] = 32; // keep this from overlapping with other divs
         if (!empty($attr['required'])) { foreach (array_keys($structure) as $field) {
-            if (getModuleCache('contacts', 'settings', 'address_book', $field)) { $structure[$field]['attr']['required'] = 1; }
+            if (getModuleCache('contacts', 'settings', 'address_book', $field)) { $structure[$field]['options']['required'] = 'true'; }
         } }
         // Tool bar
         $toolbar  = [];
@@ -894,7 +894,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 
     /**
-     * 
+     *
      * @param type $output
      * @param type $prop
      */
@@ -1001,7 +1001,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
                     if (!isset($event['hidden'])) { $event['hidden'] = false; }
                     if (!$event['hidden']) {
                         if (isset($event['display'])) { $jsBody .= "  if ({$event['display']})"; }
-                        unset($event['size']); // make all icons large 
+                        unset($event['size']); // make all icons large
                         $temp = $this->render('', $event) . "&nbsp;";
                         $jsBody .= "  text += '" . str_replace(["\n", "\r", "'"], ["", "", "\'"], $temp) . "';\n";
                     }
@@ -1022,7 +1022,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     e.preventDefault();
     jq('#{$prop['id']}').datagrid('unselectAll');
     jq('#{$prop['id']}').datagrid('selectRow', index);
-    var row = jq('#{$prop['id']}').datagrid('getRows')[index]; 
+    var row = jq('#{$prop['id']}').datagrid('getRows')[index];
     if (typeof row == 'undefined') {  }
     jq('#tmenu').remove();
     var tmenu = jq('<div id=\"tmenu\"></div>').appendTo('body');
@@ -1113,12 +1113,25 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 
     public function layoutList($layout, $props) {
-        $props['attr']['type'] = 'ul';
-        $props['classes'][] = 'easyui-datalist';
-        $output  = "\n<!-- BOF list -->\n";
-        $output .= $this->htmlElOpen(!empty($props['id']) ? $props['id'] : '', $props)."\n";
-        foreach ($layout['lists'][$props['key']] as $li) { $output .= "<li>$li</li>\n"; }
-        $output .= "</ul><!-- EOF List -->\n";
+        $format = !empty($props['ui']) && $props['ui']=='none' ? 'none' : '';
+        if ($format == 'none') {
+            $output = "<p>";
+        } else {
+            $props['attr']['type'] = 'ul';
+            $props['classes'][] = 'easyui-datalist';
+            $output = "\n<!-- BOF list -->\n".$this->htmlElOpen(!empty($props['id']) ? $props['id'] : '', $props)."\n";
+        }
+        foreach ($layout['lists'][$props['key']] as $fld => $li) {
+            $fldID = !empty($li['attr']['id']) ? $li['attr']['id'] : $fld;
+            if ($format=='none') {
+                $output .= (is_array($li) ? $this->render($fldID, $li) : $li);
+                if (!isset($li['break']) || $li['break']) { $output .= "</p>\n<p>"; }
+            } else {
+                $output .= "<li>". (is_array($li) ? $this->render($fldID, $li) : $li) . "</li>\n";
+            }
+        }
+        if ($format=='none') { $output .= "</p>\n"; }
+        else                 { $output .= "</ul><!-- EOF List -->\n"; }
         return $output;
     }
 
@@ -1189,7 +1202,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
                     continue;
                 }
                 if (!$dispFirst) { $dispFirst = $method; }
-                $style = $dispFirst == $method ? '' : ' style="display:none;"'; 
+                $style = $dispFirst == $method ? '' : ' style="display:none;"';
                 $output['body'] .= '<div id="div_'.$method.'" class="layout-expand-over"'.$style.'>'."\n";
                 $fqcn  = "\\bizuno\\$method";
                 bizAutoLoad($settings['path']."$method.php", $fqcn);
@@ -1200,6 +1213,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
             }
         }
         $output['body'] .= "</fieldset></div>\n";
+        $this->jsReady[] = "payment_$dispFirst();"; // force loading of defaults for displayed payment method
     }
 
     /**
@@ -1362,20 +1376,18 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 
     public function inputContact($id, $prop) {
-        $defaults = ['type'=>'c','value'=>0,'suffix'=>'','store'=>0,'drop'=>false,'fill'=>false,'data'=>false,'callback'=>"contactsDetail(row.id, '', false);"];
-        $attr = array_merge($defaults, $prop['defaults']);
-        $url = "'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1";
+        $defs = ['type'=>'c','value'=>0,'suffix'=>'','store'=>0,'drop'=>false,'fill'=>false,'data'=>false,'callback'=>"contactsDetail(row.id, '', false);"];
+        $attr = array_merge($defs, $prop['defaults']);
+        $url  = "'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1";
         $url .= "&type=" .(!empty($attr['drop'])  ? 'c' : $attr['type']);
         $url .= "&store=".(!empty($attr['store']) ? '1' : '0');
         $url .= "'";
         $prop['classes'][] = 'easyui-combogrid';
-        $prop['options']['width']         = "250,panelWidth:750,delay:900,idField:'id',textField:'primary_name',mode:'remote',iconCls:'icon-search',hasDownArrow:false,selectOnNavigation:false";
-        $prop['options']['url']       = $url;
-        $prop['options']['onBeforeLoad']  = "function (param) { var newValue=jq('#$id').combogrid('getValue'); if (newValue.length < 3) return false; }";
-        if (!empty($attr['data'])) { $prop['options']['data'] = $attr['data']; }
-        if (!empty($attr['callback'])) {
-            $prop['options']['onClickRow']= "function (idx, row) { {$attr['callback']} }";
-        }
+        $prop['options']['width']       = "250,panelWidth:750,delay:900,idField:'id',textField:'primary_name',mode:'remote',iconCls:'icon-search',hasDownArrow:false,selectOnNavigation:false";
+        $prop['options']['url']         = $url;
+        $prop['options']['onBeforeLoad']= "function (param) { var newValue=jq('#$id').combogrid('getValue'); if (newValue.length < 3) return false; }";
+        if (!empty($attr['data']))     { $prop['options']['data']      = $attr['data']; }
+        if (!empty($attr['callback'])) { $prop['options']['onClickRow']= "function (idx, row) { {$attr['callback']} }"; }
         $prop['options']['columns']       = "[[{field:'id', hidden:true},
     {field:'short_name',  title:'".jsLang('contacts_short_name')."', width:100},
     {field:'type',        hidden:".(strlen($attr['type'])>1?'false':'true').",title:'".jsLang('contacts_type')."', width:100},
@@ -1388,7 +1400,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         unset($prop['attr']['type'], $prop['defaults']);
         return $this->input($id, $prop);
     }
-    
+
     public function inputCountry($id, $prop) {
         $value = !empty($prop['attr']['value']) ? $prop['attr']['value'] : getModuleCache('bizuno','settings','company','country','USA');
         $prop['classes'] = ['easyui-combogrid'];
@@ -1449,19 +1461,21 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
             $js = "var {$id}Data = [];
     var types= [".implode(',',$prop['types'])."];
     for (i=0; i<bizDefaults.glAccounts.length; i++) {
-        for (j=0; j<types.length; j++) { if (bizDefaults.glAccounts[i].type == type[j]) {$id}Data[] = bizDefaults.glAccounts[i]; }
+        for (j=0; j<types.length; j++) { if (bizDefaults.glAccounts[i].type == type[j] && bizDefaults.glAccounts[i].inactive != '1') {$id}Data[] = bizDefaults.glAccounts[i]; }
     }";
         } else {
-            $js = "var {$id}Data = typeof bizDefaults.glAccounts != 'undefined' ? bizDefaults.glAccounts : [];";
+            $js = "var {$id}Data=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { if (value['inactive'] != '1') { {$id}Data.push(value); } });";
         }
         $this->jsHead[] = $js;
         $prop['classes'][]         = 'easyui-combogrid';
         $prop['options']['width']  = "150,rows:100,panelWidth:490,idField:'id',textField:'title',selectOnNavigation:false";
         $prop['options']['data']   = "{$id}Data";
+//        $prop['options']['onShowPanel'] = "function(){ alert('show panel'); }";
         if (!empty($prop['attr']['value'])) { $prop['options']['value'] = "'".$prop['attr']['value']."'"; }
         $this->mapEvents($prop);
         $prop['options']['columns']= "[[{field:'id',title:'".jsLang('gl_account')."',width:60},{field:'title',title:'".jsLang('title')."',width:200},{field:'type',title:'".jsLang('type')."',width:180}]]";
         unset($prop['attr']['type'],$prop['attr']['value']);
+//        $this->jsReady[] = "jq('#$id').combogrid('reload');";
         return  $this->input($id, $prop);
     }
 
@@ -1530,14 +1544,14 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         if (!empty($prop['jsBody'])) { $this->jsBody[] = $prop['jsBody']; } // new way
         // style it
         $prop['classes']['ui'] = "easyui-combobox";
-        if (!empty($prop['attr']['value']) && !is_array($prop['attr']['value'])) { 
+        if (!empty($prop['attr']['value']) && !is_array($prop['attr']['value'])) {
             $prop['options']['value'] = "'".$prop['attr']['value']."'";
         }
         if (empty($prop['options']['editable'])) { $prop['options']['editable'] = 'false'; }
         if (empty($prop['options']['width'])) { $prop['options']['width'] = 200; }
         // fix the events
         $this->mapEvents($prop);
-        // value need to be an array to accomodate multiple select comboboxes 
+        // value need to be an array to accomodate multiple select comboboxes
         $values = isset($prop['attr']['value']) ? (array)$prop['attr']['value'] : []; // needs to be isset, cannot be empty
         if (sizeof($values)) {
             $optField = '<option value="'.$values[0].'">'.htmlspecialchars($values[0]).'</option>';
@@ -1562,7 +1576,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     public function inputTax($id, $prop) {
         $defaults = ['value'=>'', 'type'=>'c', 'callback'=>false];
         if (!empty($prop['defaults']))    { $defaults = array_merge($defaults, $prop['defaults']); }
-        if ( empty($defaults['callback'])){ $defaults['callback'] = "totalUpdate();"; }
+        if ( empty($defaults['callback'])){ $defaults['callback'] = "totalUpdate('inputTax');"; }
         $prop['classes'][]          = 'easyui-combogrid';
         $prop['options']['data']    = "bizDefaults.taxRates.{$defaults['type']}.rows";
         $prop['options']['value']   = "'{$defaults['value']}'";
@@ -1620,12 +1634,12 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     public function selCurrency($id, $prop) {
         msgDebug("currency = ".print_r(getModuleCache('phreebooks', 'currency'), true));
         if (empty($prop['attr']['value'])) { $prop['attr']['value'] = getUserCache('profile', 'currency', false, 'USD'); }
-		if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
-			$prop['attr']['type'] = 'select';
-			$prop['values']       = viewDropdown(getModuleCache('phreebooks', 'currency', 'iso'), "code", "title");
-			unset($prop['attr']['size']);
-            if (!empty($prop['callback'])) { 
-                $this->jsReady[] = "jq('#$id').combobox({editable:false, onChange:function(newVal, oldVal){ {$prop['callback']}(newVal, oldVal); } });";                
+        if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
+            $prop['attr']['type'] = 'select';
+            $prop['values']       = viewDropdown(getModuleCache('phreebooks', 'currency', 'iso'), "code", "title");
+            unset($prop['attr']['size']);
+            if (!empty($prop['callback'])) {
+                $this->jsReady[] = "jq('#$id').combobox({editable:false, onChange:function(newVal, oldVal){ {$prop['callback']}(newVal, oldVal); } });";
             } else {
                 $this->jsReady[] = "jq('#$id').combobox({editable:false});";
             }
@@ -1636,34 +1650,31 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 
     public function selNoYes($id, $prop) {
-//        $prop['classes'][] = 'easyui-switchbutton';
-        // need to set on if checked true or !empty value
-        // what does it return?
-        $prop['attr']['type'] = 'select';
-        $prop['values'] = [['id' => '0', 'text' => lang('no')], ['id' => '1', 'text' => lang('yes')]];
+        if (!empty($prop['attr']['value'])) { $prop['attr']['checked'] = true; }
+        $prop['attr']['type'] = 'checkbox';
         return $this->render($id, $prop);
     }
 
     /***************************** Media ******************/
 
     public function media() {
-        
+
     }
 
     public function mediaVideo() {
-        
+
     }
 
     public function mediaAudio() {
-        
+
     }
 
     public function mediaGoogleMaps() {
-        
+
     }
 
     public function mediaYouTube() {
-        
+
     }
 
     /*     * *************************** APIs ***************** */
@@ -1735,7 +1746,8 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         if ( empty($prop['position'])) {
             $el = ['styles'=>['vertical-align'=>'top'],'attr'=>['type'=>'label','for'=>$id]];
             if (!empty($prop['lblStyle'])) { $el['styles'] = array_merge($el['styles'], $prop['lblStyle']); }
-            return $this->htmlElOpen('', $el) . $prop['label'].'</label>&nbsp;';
+            $field .= $this->htmlElOpen('', $el) . $prop['label'].'</label>&nbsp;';
+            if (!empty($prop['tip'])) { $field .= $this->addToolTip($id, $prop['tip']); }
         }
         return $field;
     }
@@ -1746,8 +1758,9 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         if (!empty($prop['attr']['type']) && $prop['attr']['type'] == 'hidden') { return $field; }
         if (!empty($prop['position'])     && $prop['position'] == 'after') {
             $mins  = !empty($prop['attr']['type']) && in_array($prop['attr']['type'], ['checkbox','radio'])? 'min-width:60px;' : '';
-            $styles= "vertical-align:top;$mins"; 
-            $field = '<label for="'.$id.'" class="fldLabel" style="'.$styles.'">'.$prop['label'].'</label>';
+            $styles= "vertical-align:top;$mins";
+            if (!empty($prop['tip'])) { $field .= $this->addToolTip($id, $prop['tip']); }
+            $field .= '<label for="'.$id.'" class="fldLabel" style="'.$styles.'">'.$prop['label'].'</label>';
         }
         return $field;
     }
@@ -1777,9 +1790,11 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         return ' style="' . implode(';', $styles) . ';"';
     }
 
-    private function addToolTip($tooltip = '') {
-//      $prop['attr']['missingMessage'] = $prop['tooltip']; // when validating with easyui
-        return ' title="' . $tooltip . '"';
+    private function addToolTip($id, $tip='') {
+        $opts = ['showEvent'=>"'click'",'position'=>"'bottom'",'onShow'=>"function(){ jq(this).tooltip('tip').css({width:'450px'}); }"];
+        $prop = ['classes'=>["icon-help", "easyui-tooltip"],'styles'=>['border'=>0,'display'=>'inline-block;vertical-align:middle','height'=>'16px','min-width'=>'16px','cursor'=>'pointer'],
+            'options'=>$opts,'attr'=>['type'=>'span','id'=>"tip_$id",'title'=>$tip]];
+//        $this->jsReady[] = "jq('#tip_$id').tooltip({ $opts,content:'".addslashes($tip)."'});";
+        return $this->render('', $prop);
     }
-
 }

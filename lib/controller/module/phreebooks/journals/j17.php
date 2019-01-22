@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-11-07
  * @filesource /lib/controller/module/phreebooks/journals/j17.php
@@ -29,12 +29,12 @@ class j17 extends jCommon
 {
     public $journalID = 17;
 
-	function __construct($main=[], $item=[])
+    function __construct($main=[], $item=[])
     {
-		parent::__construct();
+        parent::__construct();
         $this->main = $main;
-		$this->item = $item;
-	}
+        $this->item = $item;
+    }
 
 /*******************************************************************************************************************/
 // START Edit Methods
@@ -99,13 +99,13 @@ class j17 extends jCommon
                 'payments'=> ['order'=>60,'type'=>'payment','label'=>lang('bill_to'),'classes'=>['blockView'],'settings'=>['items'=>$this->items]]]];
             $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
             $data['jsHead']['preSubmit'] = "function preSubmit() {
-	var items = new Array();	
-	var dgData = jq('#dgJournalItem').datagrid('getData');
-	for (var i=0; i<dgData.rows.length; i++) if (dgData.rows[i]['checked']) items.push(dgData.rows[i]);
-	var serializedItems = JSON.stringify(items);
-	jq('#item_array').val(serializedItems);
-	if (!formValidate()) return false;
-	return true;
+    var items = new Array();    
+    var dgData = jq('#dgJournalItem').datagrid('getData');
+    for (var i=0; i<dgData.rows.length; i++) if (dgData.rows[i]['checked']) items.push(dgData.rows[i]);
+    var serializedItems = JSON.stringify(items);
+    jq('#item_array').val(serializedItems);
+    if (!formValidate()) return false;
+    return true;
 }";
             unset($data['jsReady']['focus']);
         } else {
@@ -130,7 +130,7 @@ class j17 extends jCommon
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
-	public function Post()
+    public function Post()
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
@@ -141,20 +141,20 @@ class j17 extends jCommon
         if (!$this->postJournalHistory())    { return; }
         if (!$this->setStatusClosed('post')) { return; }
         msgDebug("\n*************** end Posting Journal ******************* id = {$this->main['id']}\n\n");
-		return true;
-	}
+        return true;
+    }
 
-	public function unPost()
+    public function unPost()
     {
         msgDebug("\n/********* unPosting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
-        if (!$this->unPostJournalHistory())    { return; }	// unPost the chart values before inventory where COG rows are removed
+        if (!$this->unPostJournalHistory())    { return; }    // unPost the chart values before inventory where COG rows are removed
         if (!$this->unPostInventory())         { return; }
-		if (!$this->unPostMain())              { return; }
+        if (!$this->unPostMain())              { return; }
         if (!$this->unPostItem())              { return; }
         if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
-		return true;
-	}
+        return true;
+    }
 
     /**
      * Get re-post records - applies to journals 2, 17, 18, 20, 22
@@ -162,67 +162,67 @@ class j17 extends jCommon
      */
     public function getRepostData()
     {
-		msgDebug("\n  j17 - Checking for re-post records ... end check for Re-post with no action.");
+        msgDebug("\n  j17 - Checking for re-post records ... end check for Re-post with no action.");
         return [];
-	}
+    }
 
-	/**
+    /**
      * Post journal item array to journal history table
      * applies to journal 2, 6, 7, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22
      * @return boolean - true
      */
     private function postJournalHistory()
     {
-		msgDebug("\n  Posting Chart Balances...");
+        msgDebug("\n  Posting Chart Balances...");
         if ($this->setJournalHistory()) { return true; }
-	}
+    }
 
-	/**
+    /**
      * unPosts journal item array from journal history table
      * applies to journal 2, 6, 7, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22
      * @return boolean - true
      */
-	private function unPostJournalHistory() {
-		msgDebug("\n  unPosting Chart Balances...");
+    private function unPostJournalHistory() {
+        msgDebug("\n  unPosting Chart Balances...");
         if ($this->unSetJournalHistory()) { return true; }
-	}
+    }
 
-	/**
+    /**
      * Post inventory
      * applies to journal 2, 3, 9, 17, 18, 20, 22
      * @return boolean true on success, null on error
      */
     private function postInventory()
     {
-		msgDebug("\n  Posting Inventory ... end Posting Inventory not requiring any action.");
-		return true;
-	}
+        msgDebug("\n  Posting Inventory ... end Posting Inventory not requiring any action.");
+        return true;
+    }
 
-	/**
+    /**
      * unPost inventory
      * applies to journal 2, 3, 9, 17, 18, 20, 22
      * @return boolean true on success, null on error
      */
-	private function unPostInventory()
+    private function unPostInventory()
     {
-		msgDebug("\n  unPosting Inventory ... end unPosting Inventory with no action.");
-		return true;
-	}
+        msgDebug("\n  unPosting Inventory ... end unPosting Inventory with no action.");
+        return true;
+    }
 
-	/**
+    /**
      * Checks and sets/clears the closed status of a journal entry
      * Affects journals - 17, 18, 20, 22
      * @param string $action - [default: 'post']
      * @return boolean true
      */
-	private function setStatusClosed($action='post')
+    private function setStatusClosed($action='post')
     {
-		// closed can occur many ways including:
-		//   forced closure through so/po form (from so/po journal - adjust qty on so/po)
-		//   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
-		//   editing quantities on po/so to match the number received (from po/so journal)
-		//   receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
-		msgDebug("\n  Checking for closed entry. action = $action");
+        // closed can occur many ways including:
+        //   forced closure through so/po form (from so/po journal - adjust qty on so/po)
+        //   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
+        //   editing quantities on po/so to match the number received (from po/so journal)
+        //   receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
+        msgDebug("\n  Checking for closed entry. action = $action");
         if ($action == 'post') {
             $temp = [];
             for ($i = 0; $i < count($this->item); $i++) { // fetch the list of paid invoices
@@ -251,6 +251,6 @@ class j17 extends jCommon
                 if ($this->item[$i]['item_ref_id']) { $this->setCloseStatus($this->item[$i]['item_ref_id'], false); }
             }
         }
-		return true;
-	}
+        return true;
+    }
 }

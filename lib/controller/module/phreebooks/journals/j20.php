@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-07
+ * @version    3.x Last Update: 2019-01-14
  * @filesource /lib/controller/module/phreebooks/journals/j20.php
  */
 
@@ -29,12 +29,12 @@ class j20 extends jCommon
 {
     public $journalID = 20;
 
-	function __construct($main=[], $item=[])
+    function __construct($main=[], $item=[])
     {
-		parent::__construct();
+        parent::__construct();
         $this->main = $main;
-		$this->item = $item;
-	}
+        $this->item = $item;
+    }
 
 /*******************************************************************************************************************/
 // START Edit Methods
@@ -47,7 +47,7 @@ class j20 extends jCommon
     {
         dbStructureFill($structure, $this->main);
     }
-    
+
     /**
      * Tailors the structure for the specific journal
      */
@@ -92,7 +92,7 @@ class j20 extends jCommon
                 'totals'  => ['order'=>50,'type'=>'totals', 'label'=>lang('totals'), 'classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
             $data['divs']['dgItems'] = ['order'=>60,'type'=>'datagrid','key'=>'item'];
             $data['jsHead']['preSubmit'] = "function preSubmit() {
-    var items = new Array();	
+    var items = new Array();
     var dgData = jq('#dgJournalItem').datagrid('getData');
     for (var i=0; i<dgData.rows.length; i++) if (dgData.rows[i]['checked']) items.push(dgData.rows[i]);
     var serializedItems = JSON.stringify(items);
@@ -100,7 +100,7 @@ class j20 extends jCommon
     if (!formValidate()) return false;
     return true;
 }";
-            $data['jsReady']['init'] = "ajaxForm('frmJournal'); 
+            $data['jsReady']['init'] = "ajaxForm('frmJournal');
 jq('#post_date').datebox({'onChange': function(date) { totalsGetBegBalance(); } });
 jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBegBalance(); } });";
             if ($this->action=='bulk') {
@@ -116,7 +116,7 @@ jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBeg
             $data['divs']['divDetail']  = ['order'=>50,'type'=>'html','html'=>"<p>".sprintf(lang('search_open_journal'),lang('contacts_type_v'))."</p>".html5('contactSel', ['attr'=>['value'=>'']])];
             $data['jsBody']['selVendor']= "jq('#contactSel').combogrid({width:200,panelWidth:500,delay:500,iconCls:'icon-search',hasDownArrow:false,
     idField:'contact_id_b',textField:'primary_name_b',mode:'remote',
-    url:       '".BIZUNO_AJAX."&p=phreebooks/main/managerRowsBank&jID=".JOURNAL_ID."', 
+    url:       '".BIZUNO_AJAX."&p=phreebooks/main/managerRowsBank&jID=".JOURNAL_ID."',
     onBeforeLoad:function (param) { var newValue = jq('#contactSel').combogrid('getValue'); if (newValue.length < 2) return false; },
     onClickRow:function (idx, row) { journalEdit(".JOURNAL_ID.", 0, row.contact_id_b); },
     columns:[[
@@ -133,7 +133,7 @@ jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBeg
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
-	public function Post()
+    public function Post()
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
@@ -144,20 +144,20 @@ jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBeg
         if (!$this->postJournalHistory())    { return; }
         if (!$this->setStatusClosed('post')) { return; }
         msgDebug("\n*************** end Posting Journal ******************* id = {$this->main['id']}\n\n");
-		return true;
-	}
+        return true;
+    }
 
-	public function unPost()
+    public function unPost()
     {
         msgDebug("\n/********* unPosting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
-        if (!$this->unPostJournalHistory())    { return; }	// unPost the chart values before inventory where COG rows are removed
+        if (!$this->unPostJournalHistory())    { return; }    // unPost the chart values before inventory where COG rows are removed
         if (!$this->unPostInventory())         { return; }
-		if (!$this->unPostMain())              { return; }
+        if (!$this->unPostMain())              { return; }
         if (!$this->unPostItem())              { return; }
-        if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
+        if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
-		return true;
-	}
+        return true;
+    }
 
     /**
      * Get re-post records - applies to journals 2, 17, 18, 20, 22
@@ -165,67 +165,67 @@ jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBeg
      */
     public function getRepostData()
     {
-		msgDebug("\n  j20 - Checking for re-post records ... end check for Re-post with no action.");
+        msgDebug("\n  j20 - Checking for re-post records ... end check for Re-post with no action.");
         return [];
-	}
+    }
 
-	/**
+    /**
      * Post journal item array to journal history table
      * applies to journal 2, 6, 7, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22
      * @return boolean - true
      */
     private function postJournalHistory()
     {
-		msgDebug("\n  Posting Chart Balances...");
+        msgDebug("\n  Posting Chart Balances...");
         if ($this->setJournalHistory()) { return true; }
-	}
+    }
 
-	/**
+    /**
      * unPosts journal item array from journal history table
      * applies to journal 2, 6, 7, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22
      * @return boolean - true
      */
-	private function unPostJournalHistory() {
-		msgDebug("\n  unPosting Chart Balances...");
+    private function unPostJournalHistory() {
+        msgDebug("\n  unPosting Chart Balances...");
         if ($this->unSetJournalHistory()) { return true; }
-	}
+    }
 
-	/**
+    /**
      * Post inventory
      * applies to journal 2, 3, 9, 17, 18, 20, 22
      * @return boolean true on success, null on error
      */
     private function postInventory()
     {
-		msgDebug("\n  Posting Inventory ... end Posting Inventory not requiring any action.");
-		return true;
-	}
+        msgDebug("\n  Posting Inventory ... end Posting Inventory not requiring any action.");
+        return true;
+    }
 
-	/**
+    /**
      * unPost inventory
      * applies to journal 2, 3, 9, 17, 18, 20, 22
      * @return boolean true on success, null on error
      */
-	private function unPostInventory()
+    private function unPostInventory()
     {
-		msgDebug("\n  unPosting Inventory ... end unPosting Inventory with no action.");
-		return true;
-	}
+        msgDebug("\n  unPosting Inventory ... end unPosting Inventory with no action.");
+        return true;
+    }
 
-	/**
+    /**
      * Checks and sets/clears the closed status of a journal entry
      * Affects journals - 17, 18, 20, 22
      * @param string $action - [default: 'post']
      * @return boolean true
      */
-	private function setStatusClosed($action='post')
+    private function setStatusClosed($action='post')
     {
-		// closed can occur many ways including:
-		//   forced closure through so/po form (from so/po journal - adjust qty on so/po)
-		//   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
-		//   editing quantities on po/so to match the number received (from po/so journal)
-		//   receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
-		msgDebug("\n  Checking for closed entry. action = $action");
+        // closed can occur many ways including:
+        //   forced closure through so/po form (from so/po journal - adjust qty on so/po)
+        //   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
+        //   editing quantities on po/so to match the number received (from po/so journal)
+        //   receiving all (or more) po/so items through one or more purchases/sales (from purchase/sales journal)
+        msgDebug("\n  Checking for closed entry. action = $action");
         if ($action == 'post') {
             $temp = [];
             for ($i = 0; $i < count($this->item); $i++) { // fetch the list of paid invoices
@@ -235,22 +235,22 @@ jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBeg
             }
             $invoices = array_keys($temp);
             for ($i = 0; $i < count($invoices); $i++) {
-//              $stmt = dbGetResult("SELECT m.id, m.journal_id, SUM(i.debit_amount - i.credit_amount) AS total_amount 
-//                  FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id 
+//              $stmt = dbGetResult("SELECT m.id, m.journal_id, SUM(i.debit_amount - i.credit_amount) AS total_amount
+//                  FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
 //                  WHERE m.id={$invoices[$i]} AND i.gl_type<>'ttl'");
 //              $result1 = $stmt->fetch(\PDO::FETCH_ASSOC);
-                $result1 = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', ['journal_id','total_amount'], "id={$invoices[$i]}");
+                $result1 = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', ['id','journal_id','total_amount'], "id={$invoices[$i]}");
                 if (in_array($result1['journal_id'], [7])) { $result1['total_amount'] = -$result1['total_amount']; }
                 if ($result1['journal_id']==2) { glFindAPacct($result1); } // special case for payables entered through general journal
                 $total_billed = roundAmount($result1['total_amount'], $this->rounding);
-                $stmt2 = dbGetResult("SELECT m.journal_id, SUM(i.debit_amount - i.credit_amount) AS total_amount 
-                    FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id 
+                $stmt2 = dbGetResult("SELECT m.journal_id, SUM(i.debit_amount - i.credit_amount) AS total_amount
+                    FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
                     WHERE i.item_ref_id={$invoices[$i]} AND i.gl_type='pmt'");
                 $result2 = $stmt2->fetchAll(\PDO::FETCH_ASSOC);
                 $paid_total = 0;
                 foreach ($result2 as $row) {
                     $total = $row['total_amount'];
-                    $paid_total += in_array($row['journal_id'], [17]) ? -$total : $total; 
+                    $paid_total += in_array($row['journal_id'], [17]) ? -$total : $total;
                 }
                 $total_paid = roundAmount($paid_total, $this->rounding);
                 msgDebug("\n    rounding = $this->rounding, raw billed = {$result1['total_amount']} which rounded to $total_billed and total_paid = $total_paid");
@@ -261,6 +261,6 @@ jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBeg
                 if ($this->item[$i]['item_ref_id']) { $this->setCloseStatus($this->item[$i]['item_ref_id'], false); }
             }
         }
-		return true;
-	}
+        return true;
+    }
 }

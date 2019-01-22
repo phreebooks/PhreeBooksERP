@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-15
  * @filesource /lib/controller/module/phreebooks/journals/j00.php
@@ -29,11 +29,11 @@ class j00 extends jCommon
 {
     public $journalID = 0;
 
-	function __construct($main=[], $item=[])
+    function __construct($main=[], $item=[])
     {
-		parent::__construct();
+        parent::__construct();
         $this->main = $main;
-		$this->item = $item;
-	}
+        $this->item = $item;
+    }
 
 }

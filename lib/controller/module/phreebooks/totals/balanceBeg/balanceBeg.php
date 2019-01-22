@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/phreebooks/totals/balanceBeg/balanceBeg.php
@@ -26,18 +26,18 @@ namespace bizuno;
 
 class balanceBeg
 {
-	public $code      = 'balanceBeg';
+    public $code      = 'balanceBeg';
     public $moduleID  = 'phreebooks';
     public $methodDir = 'totals';
     public $required  = true;
 
-	public function __construct()
+    public function __construct()
     {
         $this->settings= ['gl_type'=>'','journals'=>'[20,22]','order'=>0];
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
-	}
+    }
 
     public function settingsStructure()
     {
@@ -45,14 +45,14 @@ class balanceBeg
             'gl_type' => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
             'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','readonly'=>'readonly','value'=>$this->settings['order']]]];
-	}
+    }
 
-	public function render(&$output)
+    public function render(&$output)
     {
-		// ajax request with GL acct/post_date to get starting balance
-		// need to modify post_date and gl_account field to call javascript call
-		$this->fields = ['totals_balanceBeg'=>['label'=>$this->lang['title'],'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']]];
-		$output['body'] .= '<div style="text-align:right">'."\n"
+        // ajax request with GL acct/post_date to get starting balance
+        // need to modify post_date and gl_account field to call javascript call
+        $this->fields = ['totals_balanceBeg'=>['label'=>$this->lang['title'],'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']]];
+        $output['body'] .= '<div style="text-align:right">'."\n"
                 .html5('totals_balanceBeg',$this->fields['totals_balanceBeg']).html5('', ['icon'=>'blank', 'size'=>'small'])."</div>\n";
         $output['jsHead'][] = "function totals_balanceBeg(begBalance) { return cleanCurrency(jq('#totals_balanceBeg').val()); }
 function totalsGetBegBalance() {
@@ -71,5 +71,5 @@ function totalsGetBegBalance() {
     });
 }";
         $output['jsReady'][] = "totalsGetBegBalance();";
-	}
+    }
 }

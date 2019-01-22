@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-10
+ * @version    3.x Last Update: 2018-01-04
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -26,16 +26,16 @@ namespace bizuno;
 class bizunoSettings
 {
     public $notes = [];
-	public $moduleID = 'bizuno';
+    public $moduleID = 'bizuno';
     private $phreesoftURL = 'https://www.phreesoft.com';
 
-	function __construct()
+    function __construct()
     {
         $this->lang = getLang($this->moduleID);
         // @todo deprecate this after 2017 and fix in four places below temp fix for wordpress dist until PhreeSoft Update afte 12/6/2017
         $this->BIZUNO_HOME = strpos(BIZUNO_HOME, '?') === false ? BIZUNO_HOME.'?' : BIZUNO_HOME;
     }
-    
+
     /**
      * Main Settings page, builds a list of all available modules and puts into groups
      * @param array $layout - structure coming in
@@ -55,18 +55,18 @@ class bizunoSettings
         $data = [
             'divs' => [
                 'heading' => ['type'=>'html', 'order'=>30, 'html'=>"<h1>".lang('settings')."</h1>\n"],
-				'adminSet'=> ['type'=>'tabs', 'order'=>60, 'key'=>'tabSettings']],
-			'tabs'=>['tabSettings'=>['attr'=>['tabPosition'=>'left','focus'=>$focus]]]]; // removed 'fit'=>true, for WordPress
-		$order = 1;
-		foreach ($modules as $cat => $catList) {
+                'adminSet'=> ['type'=>'tabs', 'order'=>60, 'key'=>'tabSettings']],
+            'tabs'=>['tabSettings'=>['attr'=>['tabPosition'=>'left','focus'=>$focus]]]]; // removed 'fit'=>true, for WordPress
+        $order = 1;
+        foreach ($modules as $cat => $catList) {
             $modlist = sortOrder($catList, 'title');
             $tplMod  = $this->getDivStructure(); // get the base module div structure
             $idx = 0;
-			foreach ($modlist as $module_id => $settings) {
+            foreach ($modlist as $module_id => $settings) {
                 $modActive = 0;
                 msgDebug("\nBuilding settings row with cat = $cat and module: $module_id and settings: ".print_r($settings, true));
-				if ('bizuno'==$cat || (!empty($settings['paid']) && !empty($settings['active']))) { // show the uninstall and settings icons
-					$required = getModuleCache($module_id, 'properties', 'required', false, false) ? true : false;
+                if ('bizuno'==$cat || (!empty($settings['paid']) && !empty($settings['active']))) { // show the uninstall and settings icons
+                    $required = getModuleCache($module_id, 'properties', 'required', false, false) ? true : false;
                     $modActive = 1;
                     $modStatus = '';
                     $hasDashboards = getModuleCache($module_id, 'dashboards') ? 1 : 0;
@@ -75,19 +75,19 @@ class bizunoSettings
                     if ($settings['paid'] && BIZUNO_HOST<>'phreesoft' && version_compare($settings['version'], $props['version']) > 0) {
                         $modStatus .= html5("download_$module_id", ['icon'=>'download','events'=>['onClick'=>"jsonAction('bizuno/settings/loadExtension', 0, '$module_id');"]]);
                     }
-					if (!empty($settings['settings']) || $hasDashboards || !empty($props['dirMethods'])) { // check to see if the module has admin settings
+                    if (!empty($settings['settings']) || $hasDashboards || !empty($props['dirMethods'])) { // check to see if the module has admin settings
                         $modStatus .= html5("prop_$module_id", ['icon'=>'settings','events'=>['onClick'=>"location.href='".$this->BIZUNO_HOME."&p=$module_id/admin/adminHome'"]]);
-					}
+                    }
                     if ($security == 5 && !$required) {
                         $modStatus .= html5("remove_$module_id", ['attr'=>['type'=>'button','value'=>lang('remove')],
                            'events'=>['onClick'=>"if (confirm('".$this->lang['msg_module_delete_confirm']."')) jsonAction('bizuno/settings/moduleRemove', '$module_id');"]]);
                     }
-				} elseif (!empty($settings['paid']) && !empty($settings['loaded'])) { // if subscribed and loaded, show install button
+                } elseif (!empty($settings['paid']) && !empty($settings['loaded'])) { // if subscribed and loaded, show install button
                      $modStatus = html5("install_$module_id", ['attr'=>['type'=>'button','value'=>lang('install')],
                         'events'=>['onClick'=>"jsonAction('bizuno/settings/moduleInstall', '$module_id', '{$settings['path']}');"]]);
                 } elseif (!empty($settings['paid']) &&  empty($settings['loaded'])) { // if subscribed and not loaded, show download button
                     $modStatus = html5("download_$module_id", ['icon'=>'download','events'=>['onClick'=>"jsonAction('bizuno/settings/loadExtension', 0, '$module_id');"]]);
-				} else { // show purchase button
+                } else { // show purchase button
                     $price = isset($settings['price']) && $settings['price'] ? viewFormat($settings['price'], 'currency').' '.lang('buy') : lang('See Website');
                     if (empty($settings['url'])) { $settings['url'] = $this->phreesoftURL; }
                     $modStatus = html5("buy_$module_id", ['attr'=>['type'=>'button','value'=>$price],
@@ -100,13 +100,13 @@ class bizunoSettings
                 $idx++;
                 $tplMod['tbody']['tr'][$idx] = ['attr'=>['type'=>'tr'],'td'=>[['attr'=>['type'=>'td','value'=>'<hr />','colspan'=>4]]]]; //seperator
                 $idx++;
-			}
+            }
             $data['tables']['tbl_'.$cat] = $tplMod;
-			$data['tabs']['tabSettings']['divs']['div_'.$cat] = ['order'=>$order,'label'=>lang($cat),'type'=>'table','key'=>'tbl_'.$cat];
-			$order++;
-		}
-		$layout = array_replace_recursive($layout, viewMain(), $data);
-	}
+            $data['tabs']['tabSettings']['divs']['div_'.$cat] = ['order'=>$order,'label'=>lang($cat),'type'=>'table','key'=>'tbl_'.$cat];
+            $order++;
+        }
+        $layout = array_replace_recursive($layout, viewMain(), $data);
+    }
 
     /**
      * merge in the loaded/custom modules
@@ -117,27 +117,27 @@ class bizunoSettings
         bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
         $guest   = new guest();
         $modList = $guest->getModuleList();
-		foreach ($modList as $module => $path) {
+        foreach ($modList as $module => $path) {
             $fqcn = "\\bizuno\\{$module}Admin";
             bizAutoLoad("{$path}admin.php", $fqcn);
             $admin= new $fqcn();
-			$cat  = !empty($admin->structure['category']) ? $admin->structure['category'] : 'misc';
-			$output[$cat][$module] = [
-				'title'      => $admin->lang['title'],
-				'description'=> $admin->lang['description'],
+            $cat  = !empty($admin->structure['category']) ? $admin->structure['category'] : 'misc';
+            $output[$cat][$module] = [
+                'title'      => $admin->lang['title'],
+                'description'=> $admin->lang['description'],
                 'path'       => $path,
 //              'version'    => isset($admin->structure['version']) ? $admin->structure['version'] : '', // if uncommented, replaces newest version with installed version, breaks upgrade
                 'loaded'     => true,
-				'active'     => getModuleCache($module, 'properties', 'status'),
-				'settings'   => isset($admin->settings) && is_array($admin->settings) ? true : false];
-            if (strpos($path, BIZUNO_CUSTOM."$module/")===0) { 
+                'active'     => getModuleCache($module, 'properties', 'status'),
+                'settings'   => !empty($admin->settings) && is_array($admin->settings) ? true : false];
+            if (strpos($path, BIZUNO_CUSTOM."$module/")===0) {
                 $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>true,'version'=>-1]);
             }
             if ($cat=='bizuno') { $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>true,'version'=>MODULE_BIZUNO_VERSION]); }
-		}
+        }
         return $output;
     }
-    
+
     public function loadExtension(&$layout=[])
     {
         global $io;
@@ -186,7 +186,7 @@ class bizunoSettings
             'tbody'=>['attr'=>['type'=>'tbody']]];
     }
 
-	/**
+    /**
      * Handles the installation of a module
      * @global array $msgStack - working messages to be returned to user
      * @param array $layout - structure coming in
@@ -197,7 +197,7 @@ class bizunoSettings
     {
         global $msgStack, $bizunoMod;
         if (!$security = validateSecurity('bizuno', 'admin', 3)) { return; }
-        if (!$module) { 
+        if (!$module) {
             $module = clean('rID', 'text', 'get');
             $path   = clean('data','text', 'get');
         }
@@ -239,14 +239,14 @@ class bizunoSettings
         }
         dbClearCache(getUserCache('profile','email'));
         $cat    = getModuleCache($module, 'properties', 'category', false, 'bizuno');
-		$layout = array_replace_recursive($layout, ['content'=>['rID'=>$module,'action'=>'href','link'=>$this->BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]]);
-	}
+        $layout = array_replace_recursive($layout, ['content'=>['rID'=>$module,'action'=>'href','link'=>$this->BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]]);
+    }
 
     private function setSecurity($menu)
     {
         $roleID  = getUserCache('profile', 'role_id');
-		$dbData  = dbGetRow(BIZUNO_DB_PREFIX."roles", "id=$roleID");
-		$settings= json_decode($dbData['settings'], true);
+        $dbData  = dbGetRow(BIZUNO_DB_PREFIX."roles", "id=$roleID");
+        $settings= !empty($dbData['settings']) ? json_decode($dbData['settings'], true) : [];
         foreach ($menu as $catChild) {
             $subMenus = array_keys($catChild['child']);
             foreach ($subMenus as $item) { $settings['security'][$item] = 4; }
@@ -254,7 +254,7 @@ class bizunoSettings
         dbWrite(BIZUNO_DB_PREFIX."roles", ['settings'=>json_encode($settings)], 'update', "id=$roleID");
     }
 
-	/**
+    /**
      * Removes a module from Bizuno
      * @param array $layout - structure coming in
      * @return modified $layout
@@ -263,8 +263,8 @@ class bizunoSettings
     {
         global $bizunoMod;
         if (!$security = validateSecurity('bizuno', 'admin', 4)) { return; }
-		$module = clean('rID', 'text', 'get');
-		msgDebug("\n removing module: $module");
+        $module = clean('rID', 'text', 'get');
+        msgDebug("\n removing module: $module");
         if (!$module) { return; }
         $path = getModuleCache($module, 'properties', 'path');
         $cat  = getModuleCache($module, 'properties', 'category', false, 'bizuno');
@@ -288,11 +288,11 @@ class bizunoSettings
         msgDebug("\n removed module: $module");
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."configuration WHERE config_key='$module'");
         dbClearCache(); // force reload of all users cache with next page access, menus and permissions, etc.
-		$data = ['content'=>  ['rID'=>$module, 'action'=>'href', 'link'=>$this->BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]];
+        $data = ['content'=>  ['rID'=>$module, 'action'=>'href', 'link'=>$this->BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]];
         $layout = array_replace_recursive($layout, $data);
-	}
+    }
 
-	/**
+    /**
      * Installs a method associated with a module
      * @param array $layout - structure coming in
      * @param array $attrs - details of the module to add method
@@ -306,7 +306,7 @@ class bizunoSettings
         $subDir = isset($attrs['path'])   ? $attrs['path']   : clean('path',  'text', 'get');
         $method = isset($attrs['method']) ? $attrs['method'] : clean('method','text', 'get');
         if (!$module || !$subDir || !$method) { return msgAdd("Bad data installing method!"); }
-		msgDebug("\nInstalling method $method with methodDir = $subDir");
+        msgDebug("\nInstalling method $method with methodDir = $subDir");
         $path = getModuleCache($module, 'properties', 'path')."$subDir/$method/$method.php";
         if (file_exists(BIZUNO_CUSTOM."$module/$subDir/$method/$method.php")) { $path = BIZUNO_CUSTOM."$module/$subDir/$method/$method.php"; }
         $fqcn = "\\bizuno\\$method";
@@ -320,19 +320,19 @@ class bizunoSettings
         dbClearCache();
         $data = $verbose ? ['content'=>['action'=>'eval','actionData'=>"location.reload();"]] : [];
         $layout = array_replace_recursive($layout, $data);
-	}
+    }
 
     /**
      * Saves user settings for a specific method
      * @param $layout - structure coming in
      * @return modified structure
      */
-	public function methodSettingsSave(&$layout=[])
+    public function methodSettingsSave(&$layout=[])
     {
         if (!$security=validateSecurity('bizuno', 'admin', 3)) { return; }
-		$module = clean('module','text', 'get');
-		$subDir = clean('type',  'text', 'get');
-		$method = clean('method','text', 'get');
+        $module = clean('module','text', 'get');
+        $subDir = clean('type',  'text', 'get');
+        $method = clean('method','text', 'get');
         if (!$module || !$subDir || !$method) { return msgAdd("Not all the information was provided!"); }
         $properties = getModuleCache($module, $subDir, $method);
         $fqcn = "\\bizuno\\$method";
@@ -356,23 +356,23 @@ class bizunoSettings
         if (method_exists($objMethod, 'settingSave')) { $objMethod->settingSave(); }
         msgAdd(lang('msg_settings_saved'), 'success');
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 'actionData'=>"jq('#divMethod_$method').hide('slow');"]]);
-	}
+    }
 
-	/**
+    /**
      * Removes a method from the db and session cache
      * @param array $layout - structure coming in
      * @return modified structure
      */
     public function methodRemove(&$layout=[]) {
         if (!$security=validateSecurity('bizuno', 'admin', 4)) { return; }
-		$module = clean('module', 'text', 'get');
-		$subDir = clean('type',   'text', 'get');
-		$method = clean('method', 'text', 'get');
+        $module = clean('module', 'text', 'get');
+        $subDir = clean('type',   'text', 'get');
+        $method = clean('method', 'text', 'get');
         if (!$module || !$subDir) { return msgAdd("Bad method data provided!"); }
-		$properties = getModuleCache($module, $subDir, $method);
+        $properties = getModuleCache($module, $subDir, $method);
         if ($properties) {
             $fqcn = "\\bizuno\\$method";
-			bizAutoLoad("{$properties['path']}$method.php", $fqcn);
+            bizAutoLoad("{$properties['path']}$method.php", $fqcn);
             $methSet = getModuleCache($module,$subDir,$method,'settings');
             $clsMeth = new $fqcn($methSet);
             if (method_exists($clsMeth, 'remove')) { $clsMeth->remove(); }
@@ -380,10 +380,10 @@ class bizunoSettings
             $properties['settings'] = [];
             setModuleCache($module, $subDir, $method, $properties);
             dbClearCache();
-		}
+        }
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 'actionData'=>"location.reload();"]]);
-	}
-    
+    }
+
     /**
      * Installs the file structure for a module, if any
      * @param array $dirlist - list for folders to create
@@ -446,14 +446,14 @@ class bizunoSettings
      */
     function adminDelTables($tables=[])
     {
-        foreach ($tables as $table =>$values) { 
+        foreach ($tables as $table =>$values) {
             dbGetResult("DROP TABLE IF EXISTS `".BIZUNO_DB_PREFIX."$table`");
         }
     }
 
     /**
      * Adds new folders to the PhreeForm tree, used when installing a new module
-     * @param array $adm - 
+     * @param array $adm -
      * @return boolean true on success, false on error
      */
     private function adminAddRptDirs($adm)
@@ -561,9 +561,9 @@ class bizunoSettings
     public function statusSave()
     {
         if (!$security = validateSecurity('bizuno', 'admin', 3)) { return; }
-		$structure = dbLoadStructure(BIZUNO_DB_PREFIX."current_status");
-		$values = requestData($structure);
-		$result = dbWrite(BIZUNO_DB_PREFIX."current_status", $values, 'update');
+        $structure = dbLoadStructure(BIZUNO_DB_PREFIX."current_status");
+        $values = requestData($structure);
+        $result = dbWrite(BIZUNO_DB_PREFIX."current_status", $values, 'update');
         msgAdd(lang('msg_settings_saved'), 'success');
-	}
+    }
 }

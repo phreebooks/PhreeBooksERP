@@ -1,0 +1,11 @@
+## Default .htaccess file
+# Dynamically force cache reload for .css and .js files when source files are changed at the portal
+RewriteEngine on
+# The next two lines force SSL which needs to be uncommented once the site SSL has been configured and tested
+#RewriteCond %{HTTPS} off
+#RewriteRule .* https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+RewriteRule ^(.*)\.[\d]{10}\.(css|js)$ $1.$2 [L]
+# Do not allow access to myFiles folder
+RewriteRule ^myFiles/(.*)$ / [L,R=301]
+# Do not allow random browsing (disable directory listing if no index.php file)
+Options -Indexes

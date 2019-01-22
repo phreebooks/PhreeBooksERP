@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-09
  * @filesource /controller/module/phreeform/io.php
@@ -27,9 +27,9 @@ bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformSe
 
 class phreeformIo
 {
-	public $moduleID = 'phreeform';
+    public $moduleID = 'phreeform';
 
-	function __construct()
+    function __construct()
     {
         $this->lang = getLang($this->moduleID);
     }
@@ -46,7 +46,7 @@ class phreeformIo
         $fields= [
             'selModule'   => ['label'=>lang('module'),  'values'=>$selMods, 'attr'=>['type'=>'select']],
             'selLang'     => ['label'=>lang('language'),'values'=>$selLangs,'attr'=>['type'=>'select']],
-            'btnSearch'   => ['attr' =>['type'=>'button', 'value'=>lang('search')],'events'=>['onClick'=>'importSearch()']],
+ //         'btnSearch'   => ['attr' =>['type'=>'button', 'value'=>lang('search')],'events'=>['onClick'=>'importSearch();']],
             'fileUpload'  => ['label'=>lang('select_file'),'attr'=>['type'=>'file']],
             'new_name'    => ['label'=>'('.lang('optional').') '.lang('msg_entry_rename'),'attr'=>['width'=>'80']],
             'btnUpload'   => ['attr' =>['type'=>'button','value'=>lang('upload')],'events'=>['onClick'=>"jq('#imp_name').val(''); jq('#frmImport').submit();"]],
@@ -54,21 +54,21 @@ class phreeformIo
             'btnImport'   => ['attr' =>['type'=>'button','value'=>$this->lang['btn_import_selected']],'events'=>['onClick'=>"jq('#imp_name').val(jq('#selReports option:selected').val()); jq('#frmImport').submit();"]],
             'btnImportAll'=> ['attr' =>['type'=>'button','value'=>$this->lang['btn_import_all']],'events'=>['onClick'=>"jq('#imp_name').val('all'); jq('#frmImport').submit();"]],
         ];
-		$data  = [
+        $data  = [
             'title'=> lang('import'),
             'toolbars' => ['tbImport'=>['icons'=>[
                 'back' => ['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=phreeform/main/manager'"]]]]],
-		    'divs'     => [
+            'divs'     => [
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbImport'],
                 'heading'=> ['order'=>15,'type'=>'html',   'html'=>"<h1>".$this->lang['phreeform_import']."</h1>"],
                 'formBOF'=> ['order'=>20,'type'=>'form',   'key'=>'frmImport'],
                 'body'   => ['order'=>50,'type'=>'html',   'html'=>$this->getViewMgr($fields)],
                 'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"],],
-		    'forms'    => ['frmImport'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreeform/io/importReport"]]],
+            'forms'    => ['frmImport'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreeform/io/importReport"]]],
             'fields'   => $fields,
             'jsReady'  => ['init'=>"ajaxForm('frmImport');"]];
-		$layout = array_replace_recursive($layout, viewMain(), $data);
-	}
+        $layout = array_replace_recursive($layout, viewMain(), $data);
+    }
 
     private function getViewMgr($fields=[])
     {
@@ -103,45 +103,45 @@ class phreeformIo
     public function importReport(&$layout=[])
     {
         if (!$security = validateSecurity('phreeform', 'phreeform', 2)) { return; }
-		$path    = BIZUNO_LIB."".clean('selModule','text', 'post');
-		$lang    = clean('selLang',  ['format'=>'text', 'default'=>'en_US'], 'post');
-		$replace = clean('cbReplace','boolean', 'post');
-		$imp_name= clean('imp_name', 'text', 'post');
-		$new_name= clean('new_name', 'text', 'post');
-		if ($imp_name == 'all') {
-			$cnt = 0;
-			$files = @scandir("$path/$lang/reports/");
-			foreach ($files as $imp_name) { if (substr($imp_name, -4) == '.xml') {
+        $path    = BIZUNO_LIB."".clean('selModule','text', 'post');
+        $lang    = clean('selLang',  ['format'=>'text', 'default'=>'en_US'], 'post');
+        $replace = clean('cbReplace','boolean', 'post');
+        $imp_name= clean('imp_name', 'text', 'post');
+        $new_name= clean('new_name', 'text', 'post');
+        if ($imp_name == 'all') {
+            $cnt = 0;
+            $files = @scandir("$path/$lang/reports/");
+            foreach ($files as $imp_name) { if (substr($imp_name, -4) == '.xml') {
                 if (phreeformImport('', $imp_name, "$path/$lang/reports/", true, $replace)) { $cnt++; }
             } }
-			$title = lang('all')." $cnt ".lang('total');
-			$rID   = 0;
-		} else {
+            $title = lang('all')." $cnt ".lang('total');
+            $rID   = 0;
+        } else {
             if (!$result = phreeformImport($new_name, $imp_name, "$path/$lang/reports/", true, $replace)) { return; }
-			$title = $result['title'];
-			$rID   = $result['rID'];
-		}
-		msgLog(lang('phreeform_manager').': '.lang('import').": $title ($rID)");
-		msgAdd(lang('phreeform_manager').': '.lang('import').": $title", 'success');
-	}
-	
-	/**
+            $title = $result['title'];
+            $rID   = $result['rID'];
+        }
+        msgLog(lang('phreeform_manager').': '.lang('import').": $title ($rID)");
+        msgAdd(lang('phreeform_manager').': '.lang('import').": $title", 'success');
+    }
+    
+    /**
      * Retrieves and exports a specified report/form in XML format
      * @return type
      */
     public function export()
     {
         if (!$security = validateSecurity('phreeform', 'phreeform', 3)) { return; }
-		$rID = clean('rID', 'integer', 'get');
+        $rID = clean('rID', 'integer', 'get');
         if (!$rID) { return msgAdd('The report was not exported, the proper id was not passed!'); }
         if (!$row = dbGetRow(BIZUNO_DB_PREFIX."phreeform", "id='$rID'")) { return; }
-		$report = phreeFormXML2Obj($row['doc_data']);
-		unset($report->id);
+        $report = phreeFormXML2Obj($row['doc_data']);
+        unset($report->id);
         // reset the security
         $report->security = 'u:-1;g:-1';
-		$xmlOutput = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n<!DOCTYPE xml>\n";
-		$xmlOutput.= "<PhreeformReport>\n".object_to_xml($report)."</PhreeformReport>\n";
-		$output = new \bizuno\io();
-		$output->download('data', $xmlOutput, str_replace([' ','/','\\','"',"'"], '', $row['title']).'.xml');
-	}
+        $xmlOutput = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n<!DOCTYPE xml>\n";
+        $xmlOutput.= "<PhreeformReport>\n".object_to_xml($report)."</PhreeformReport>\n";
+        $output = new \bizuno\io();
+        $output->download('data', $xmlOutput, str_replace([' ','/','\\','"',"'"], '', $row['title']).'.xml');
+    }
 }

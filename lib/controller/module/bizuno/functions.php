@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-12-10
  * @filesource lib/controller/module/bizuno/functions.php
@@ -29,13 +29,13 @@ namespace bizuno;
  */
 function getIcons()
 {
-	$icons = [];
-	$choices= scandir(BIZUNO_LIB."view/icons/");
-	foreach ($choices as $choice) {
-		if (!in_array($choice, ['.','..']) && is_dir(BIZUNO_LIB."view/icons/$choice")) {
-			$icons[] = ['id'=>$choice, 'text'=>ucwords(str_replace('-', ' ', $choice))];
-		}
-	}
+    $icons = [];
+    $choices= scandir(BIZUNO_LIB."view/icons/");
+    foreach ($choices as $choice) {
+        if (!in_array($choice, ['.','..']) && is_dir(BIZUNO_LIB."view/icons/$choice")) {
+            $icons[] = ['id'=>$choice, 'text'=>ucwords(str_replace('-', ' ', $choice))];
+        }
+    }
     // look for extension themes
     if (!defined('BIZUNO_ICONS') || !is_dir(BIZUNO_ICONS)) { return $icons; }
     $extIcons = scandir(BIZUNO_ICONS);
@@ -44,7 +44,7 @@ function getIcons()
             $icons[] = ['id'=>$choice, 'text'=>ucwords(str_replace('-', ' ', $choice))];
         }
     }
-	return $icons;
+    return $icons;
 }
 
 /**
@@ -53,13 +53,13 @@ function getIcons()
  */
 function getThemes()
 {
-	$themes = [];
-	$choices = scandir(BIZUNO_LIB."view/easyUI/jquery-easyui/themes/");
-	foreach ($choices as $choice) {
+    $themes = [];
+    $choices = scandir(BIZUNO_LIB."view/easyUI/jquery-easyui/themes/");
+    foreach ($choices as $choice) {
         if (!in_array($choice, ['.','..','icons']) && is_dir(BIZUNO_LIB."view/easyUI/jquery-easyui/themes/$choice")) { 
             $themes[] = ['id'=>$choice, 'text'=>ucwords(str_replace('-', ' ', $choice))];
         }
-	}
+    }
     // look for extension themes
     if (!defined('BIZUNO_THEMES') || !is_dir(BIZUNO_THEMES)) { return $themes; }
     $extThemes = scandir(BIZUNO_THEMES);
@@ -68,5 +68,5 @@ function getThemes()
             $themes[] = ['id'=>$choice, 'text'=>ucwords(str_replace('-', ' ', $choice))];
         }
     }
-	return $themes;
+    return $themes;
 }

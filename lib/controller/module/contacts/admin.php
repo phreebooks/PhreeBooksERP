@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-12-10
  * @filesource /lib/controller/module/contacts/admin.php
@@ -25,70 +25,69 @@ namespace bizuno;
 
 class contactsAdmin
 {
-	public $moduleID = 'contacts';
+    public $moduleID = 'contacts';
 
-	function __construct()
+    function __construct()
     {
-		$this->lang     = getLang($this->moduleID);
-		$this->settings = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
-		$this->structure= [
+        $this->lang     = getLang($this->moduleID);
+        $this->settings = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
+        $this->structure= [
             'url'       => BIZUNO_URL."controller/module/$this->moduleID/",
             'version'   => MODULE_BIZUNO_VERSION,
-			'category'  => 'bizuno',
-			'required'  => '1',
-			'attachPath'=> 'data/contacts/uploads/',
+            'category'  => 'bizuno',
+            'required'  => '1',
+            'attachPath'=> 'data/contacts/uploads/',
             'api'       => ['path'=>'contacts/api/contactsAPI'],
-			'quickBar'  => ['child'=>['home'=>['child'=>[
+            'quickBar'  => ['child'=>['home'=>['child'=>[
                 'mgr_e' => ['order'=>45,'label'=>lang('employees'),'icon'=>'employee','events'=>['onClick'=>"hrefClick('contacts/main/manager&type=e');"]]]]]],
-			'menuBar'   => ['child'=>[
+            'menuBar'   => ['child'=>[
                 'customers'=> ['order'=>10,'label'=>lang('customers'),'group'=>'cust','icon'=>'sales', 'events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=customers');"],'child'=>[
                     'mgr_c'=> ['order'=>10,'label'=>lang('contacts_type_c_mgr'),'icon'=>'users',       'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=c');"]],
                     'mgr_i'=> ['order'=>20,'label'=>lang('contacts_type_i_mgr'),'icon'=>'chat',        'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=i');"]],
                     'rpt_c'=> ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc',     'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=cust');"]]]],
-				'vendors'  => ['order'=>20,'label'=>lang('vendors'),'group'=>'vend','icon'=>'purchase','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=vendors');"],'child'=>[
+                'vendors'  => ['order'=>20,'label'=>lang('vendors'),'group'=>'vend','icon'=>'purchase','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=vendors');"],'child'=>[
                     'mgr_v'=> ['order'=>20,'label'=>lang('contacts_type_v_mgr'),'icon'=>'users',       'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=v');"]],
                     'rpt_v'=> ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc',     'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=vend');"]]]]]],
-			'hooks'     => ['phreebooks'=>['tools'=>[
+            'hooks'     => ['phreebooks'=>['tools'=>[
                 'fyCloseHome'=> ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50],
                 'fyClose'    => ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50]]]]];
-		$this->phreeformProcessing = [
+        $this->phreeformProcessing = [
             'contactID'  => ['text'=>lang('contacts_short_name'),      'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-			'contactName'=> ['text'=>lang('address_book_primary_name'),'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat']];
+            'contactName'=> ['text'=>lang('address_book_primary_name'),'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat']];
         $this->crm_actions = [
             'new' =>$this->lang['contacts_crm_new_call'],
             'ret' =>$this->lang['contacts_crm_call_back'],
             'flw' =>$this->lang['contacts_crm_follow_up'],
             'lead'=>$this->lang['contacts_crm_new_lead'],
             'inac'=>lang('inactive')];
-	}
+    }
 
-	/**
+    /**
      * Sets the structure of the user settings for the contacts module
      * @return array - user settings 
      */
     public function settingsStructure()
     {
-		$data = [
-            'general' => ['auto_add'=>['attr'=>['type'=>'selNoYes', 'value'=>'0']]],
-            'address_book' => [
+        $data = [
+            'address_book'=> ['order'=>20,'label'=>lang('address_book'),'fields'=>[
                 'primary_name'=> ['attr'=>['type'=>'selNoYes', 'value'=>'1']],
                 'address1'    => ['attr'=>['type'=>'selNoYes', 'value'=>'0']],
                 'city'        => ['attr'=>['type'=>'selNoYes', 'value'=>'0']],
                 'state'       => ['attr'=>['type'=>'selNoYes', 'value'=>'0']],
                 'postal_code' => ['attr'=>['type'=>'selNoYes', 'value'=>'0']],
                 'telephone1'  => ['attr'=>['type'=>'selNoYes', 'value'=>'0']],
-                'email'       => ['attr'=>['type'=>'selNoYes', 'value'=>'0']]]];
-		settingsFill($data, $this->moduleID);
-		return $data;
-	}
+                'email'       => ['attr'=>['type'=>'selNoYes', 'value'=>'0']]]]];
+        settingsFill($data, $this->moduleID);
+        return $data;
+    }
 
     public function initialize()
-	{
+    {
         setModuleCache('contacts', 'crm_actions', false, $this->crm_actions);
-		return true;
-	}
-	
-	/**
+        return true;
+    }
+    
+    /**
      * Builds the home menu for settings of the contacts module
      * @param array $layout - current working structure
      * @return modified $layout
@@ -97,12 +96,11 @@ class contactsAdmin
     {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
         $data = ['tabs'=>['tabAdmin'=>['divs'=>[
-            'settings'=> ['order'=>20,'label'=>lang('settings'),'src'=>BIZUNO_LIB."view/tabAdminSettings.php"],
             'fields'  => ['order'=>50,'label'=>lang('extra_fields'),'type'=>'html','html'=>'','options'=>["href"=>"'".BIZUNO_AJAX."&p=bizuno/fields/manager&module=$this->moduleID&table=contacts'"]],
             'tabDBs'  => ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
             'tools'   => ['order'=>80,'label'=>lang('tools'),'type'=>'html','html'=>$this->setToolsTab()]]]]];
-		$layout = array_replace_recursive($layout, adminStructure($this->moduleID, $this->settingsStructure(), $this->lang), $data);
-	}
+        $layout = array_replace_recursive($layout, adminStructure($this->moduleID, $this->settingsStructure(), $this->lang), $data);
+    }
 
     private function setToolsTab()
     {
@@ -123,11 +121,11 @@ class contactsAdmin
 </fieldset>';
     }
 
-	/**
+    /**
      * Saves the users settings 
      */
     public function adminSave()
     {
-		readModuleSettings($this->moduleID, $this->settingsStructure());
-	}
+        readModuleSettings($this->moduleID, $this->settingsStructure());
+    }
 }

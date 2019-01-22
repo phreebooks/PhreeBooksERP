@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-21
  * @filesource /lib/controller/module/bizuno/dashboards/ps_news/ps_news.php
@@ -33,12 +33,12 @@ class ps_news
     public  $category  = 'bizuno';
     public  $noSettings= true;
     private $maxItems  = 4;
-	
-	function __construct()
+    
+    function __construct()
     {
-		$this->security= 1;
+        $this->security= 1;
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
-	}
+    }
 
     public function render()
     {

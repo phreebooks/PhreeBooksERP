@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-11
+ * @version    3.x Last Update: 2018-09-21
  * @filesource /portal/functions.php
  */
 
@@ -44,7 +44,7 @@ function biz_validate_user()
  * @param string $type - [default 'email'] set to 'id' for db record number
  * @return boolean
  */
-function biz_validate_user_creds($user='', $pass='', $type='email')
+function biz_validate_user_creds($user='', $pass='', $type='email', $verbose=true)
 {
     $email= $type=='id' ? dbGetValue(BIZUNO_DB_PREFIX.'users', 'email', "admin_id=$user") : $user;
     $row  = dbGetRow(BIZUNO_DB_PREFIX.'users', "email='$email'"); // make sure they have an account
@@ -54,7 +54,7 @@ function biz_validate_user_creds($user='', $pass='', $type='email')
         $wp_hasher = new \PasswordHash(8, true);
         if ($wp_hasher->CheckPassword($pass, $row['password'])) { return true; }
     }
-    return msgAdd(lang('err_login_failed'));
+    return $verbose ? msgAdd(lang('err_login_failed')) : false;
 }
 
 function biz_hash_password($pass)
@@ -64,7 +64,7 @@ function biz_hash_password($pass)
     return $wp_hasher->HashPassword(trim($pass));
 }
 
-function biz_user_logout() 
+function biz_user_logout()
 {
     $email = getUserCache('profile', 'email');
     portalWrite('users', ['cache_date'=>''], 'update', "biz_user='$email'");
@@ -73,16 +73,16 @@ function biz_user_logout()
 
 function viewSubMenu() { } // hook for creating menu bar within a page
 
-function portalRead($table, $criteria='') 
+function portalRead($table, $criteria='')
 { return dbGetRow  (BIZUNO_DB_PREFIX.$table, $criteria); }
 
-function portalMulti($table, $filter='', $order='', $field='', $limit=0) 
+function portalMulti($table, $filter='', $order='', $field='', $limit=0)
 { return dbGetMulti (BIZUNO_DB_PREFIX.$table, $filter,    $order,    $field,    $limit); }
 
-function portalExecute($sql) 
+function portalExecute($sql)
 { return dbGetResult  ($sql); }
 
-function portalWrite($table, $data=[], $action='insert', $parameters='') 
+function portalWrite($table, $data=[], $action='insert', $parameters='')
 {
     if ('business'==$table) { return; }
     $params = str_replace('biz_user', 'email', $parameters);
@@ -93,3 +93,47 @@ function portalWrite($table, $data=[], $action='insert', $parameters='')
 function portalDelete($email='') { portalExecute("DELETE FROM ".BIZUNO_DB_PREFIX."users WHERE email='$email'"); }
 
 function portalUpdateBizID() { }
+
+/**
+ * This method retrieves data from a remote server using cURL
+ * @param string $url - url to request data
+ * @param string $data - data string, will be attached for get and through setopt as post or an array
+ * @param string $type - [default 'get'] Choices are 'get' or 'post'
+ * @return result if successful, false (plus messageStack error) if fails
+ */
+function portalCurl($url, $data='', $type='get', $opts=[]) {
+    $size = is_array($data) ? 'array('.sizeof($data).')' : strlen($data);
+    msgDebug("\nAt class io, sending request of length $size to url: $url via $type with opts = ".print_r($opts, true));
+    if ($type == 'get') { $url = $url.'?'.$data; }
+    $ch = curl_init();
+    if (isset($opts) && sizeof($opts)>0 ) { foreach ($opts as $opt => $value) {
+        switch ($opt) {
+            case 'useragent': curl_setopt($ch, CURLOPT_USERAGENT, $this->useragent); break;
+            default:          curl_setopt($ch, constant($opt), $value); break;
+        }
+    } }
+    curl_setopt($ch, CURLOPT_URL,           $url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER,true);
+    curl_setopt($ch, CURLOPT_TIMEOUT,       30); // in seconds
+    curl_setopt($ch, CURLOPT_HEADER,        false);
+    curl_setopt($ch, CURLOPT_VERBOSE,       false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER,false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST,false);
+    if (strtolower($type) == 'post') {
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($data) ? http_build_query($data) : $data);
+    }
+    // for debugging cURL issues, uncomment below
+//      $fp = fopen($this->myFolder."cURL_trace.txt", 'w');
+//      curl_setopt($ch, CURLOPT_VERBOSE, true);
+//      curl_setopt($ch, CURLOPT_STDERR, $fp);
+    $request = curl_exec($ch);
+    if (curl_errno($ch)) {
+        msgDebug('cURL Error # '.curl_errno($ch).'. '.curl_error($ch));
+        msgAdd('cURL Error # '.curl_errno($ch).'. '.curl_error($ch));
+        curl_close ($ch);
+        return;
+    }
+    curl_close ($ch);
+    return $request;
+}

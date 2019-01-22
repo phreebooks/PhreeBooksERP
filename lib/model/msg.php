@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-04-09
+ * @version    3.x Last Update: 2019-01-05
  * @filesource /lib/model/msg.php
  */
 
@@ -25,48 +25,48 @@ namespace bizuno;
 
 final class messageStack 
 {
-	var $size  = 0;
-	var $error = [];
-	var $debug_file = 'trace.txt';
-	var $trap  = false; // when set to true, writes a debug trace file
+    var $size  = 0;
+    var $error = [];
+    var $debug_file = 'trace.txt';
+    var $trap  = false; // when set to true, writes a debug trace file
 
-	/**
+    /**
      * Initializes the trace string, sets up other variables.
      */
     function __construct() 
     {
         if (!defined('SCRIPT_START_TIME')) { define('SCRIPT_START_TIME', microtime(true)); }
-		$version = defined('MODULE_BIZUNO_VERSION') ? MODULE_BIZUNO_VERSION : 'unknown';
-		$this->trace  = "Trace information for debug purposes. Bizuno release $version, generated ".date('Y-m-d H:i:s')."\n";
-		$this->trace .= "Trace Start Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms\n\n";
-		$this->trace .= "GET Vars = " .print_r($_GET, true)."\n";
-		$this->trace .= "POST Vars = ".print_r($_POST,true)."\n";
+        $version = defined('MODULE_BIZUNO_VERSION') ? MODULE_BIZUNO_VERSION : 'unknown';
+        $this->trace  = "Trace information for debug purposes. Bizuno release $version, generated ".date('Y-m-d H:i:s')."\n";
+        $this->trace .= "Trace Start Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms\n\n";
+        $this->trace .= "GET Vars = " .print_r($_GET, true)."\n";
+        $this->trace .= "POST Vars = ".print_r($_POST,true)."\n";
         set_error_handler("\bizuno\myErrorHandler");
         set_exception_handler("\bizuno\myExceptionHandler");
-	}
+    }
 
-	/**
-	 * Adds a message to the log.
-	 * @param String $message The message that is displayed in the log
-	 * @param String $level What kind of error, types are 'info', 'error','caution','warning','success'. default is 'error'
-	 * @return boolean returns true always
-	 */
-	function add($message, $level='error', $title='') 
+    /**
+     * Adds a message to the log.
+     * @param String $message The message that is displayed in the log
+     * @param String $level What kind of error, types are 'info', 'error','caution','warning','success'. default is 'error'
+     * @return boolean returns true always
+     */
+    function add($message, $level='error', $title='') 
     {
-		switch ($level) {
+        switch ($level) {
             case 'trap':    $this->trap = true;
-			default:
+            default:
             case 'error':   $this->error['error'][]  = ['text'=>$message]; break;
-			case 'caution':
+            case 'caution':
             case 'warning': $this->error['warning'][]= ['text'=>$message]; break;
-            case 'info':    $this->error['info'][]   = ['text'=>$message, 'title'=>$title]; break;
+            case 'info':    $this->error['info'][]   = ['text'=>$message, 'title'=>!empty($title) ? $title : lang('information')]; break;
             case 'success': $this->error['success'][]= ['text'=>$message]; break;
-		}
+        }
         $this->debug("\nAdding to msgStack, level $level, msg: $message");
-		return true;
-	}
+        return true;
+    }
 
-	/**
+    /**
      * Adds a log entry to the table audit_log
      * @param string $log_entry - Message to add to the log
      * @return boolean false
@@ -74,34 +74,34 @@ final class messageStack
     function log($log_entry='')
     {
         if (!$log_entry) { return; }
-		$fields = [
+        $fields = [
             'user_id'   => getUserCache('profile', 'admin_id', false, 0),
-			'module_id' => isset($GLOBALS['bizunoModule']) ? $GLOBALS['bizunoModule'] : 'N/A',
-			'ip_address'=> $_SERVER['REMOTE_ADDR'],
-			'log_entry' => substr($log_entry, 0, 256)];
+            'module_id' => isset($GLOBALS['bizunoModule']) ? $GLOBALS['bizunoModule'] : 'N/A',
+            'ip_address'=> $_SERVER['REMOTE_ADDR'],
+            'log_entry' => substr($log_entry, 0, 256)];
         if (defined('BIZUNO_DB_PREFIX')) { dbWrite(BIZUNO_DB_PREFIX.'audit_log', $fields); }
-	}
+    }
 
-	/**
+    /**
      * Adds a line to the debug string to aid in debugging the code, need to set $trap to write file at end of script
      * @global object $db - the connected database, used to track # of sql's
      * @param string $text - string to add to the debug string, preceed with \n (newline) to time stamp and display current stats
      */
     function debug($text, $trap=false)
     {
-		global $db;
+        global $db;
         if (is_array($text)) { $text = "\n".print_r($text, true); }
         $dbSQLs = !empty($db->connected) ? $db->total_count : 0;
         $dbTime = !empty($db->connected) ? number_format($db->total_time * 1000, 2) : 0;
-		if (substr($text, 0, 1) == "\n") { // newline character at first position will trigger timestamp
-			$this->trace .= "\nTime: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms, $dbSQLs SQLs $dbTime ms => ".substr($text, 1);
-		} else {
-			$this->trace .= $text;
-		}
+        if (substr($text, 0, 1) == "\n") { // newline character at first position will trigger timestamp
+            $this->trace .= "\nTime: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms, $dbSQLs SQLs $dbTime ms => ".substr($text, 1);
+        } else {
+            $this->trace .= $text;
+        }
         if ($trap=='trap') { $this->trap = true; }
-	}
+    }
 
-	/**
+    /**
      * Write the debug file to the users home folder
      * @global object $db - connected database
      * @param sting $filename - [default ''] filename to write, if left blank, the default filename will be written
@@ -111,14 +111,14 @@ final class messageStack
      */
     function debugWrite($filename=false, $append=false, $force=false)
     {
-		global $db;
+        global $db;
         if (!$force && (!$this->trap || strlen($this->trace) < 1)) { return; }
-		$this->trace .= "\n\nMessageStack array contains: ".print_r($this->error, true);
-		$this->trace .= "\n\nPage trace stats: Execution Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms, ".$db->total_count." queries taking ".(int)($db->total_time * 1000)." ms";
-		$dest = $filename ? $filename : $this->debug_file;
-		$io = new \bizuno\io();
-		$io->fileWrite($this->trace, $dest, true, $append, true);
-	}
+        $this->trace .= "\n\nMessageStack array contains: ".print_r($this->error, true);
+        $this->trace .= "\n\nPage trace stats: Execution Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms, ".$db->total_count." queries taking ".(int)($db->total_time * 1000)." ms";
+        $dest = $filename ? $filename : $this->debug_file;
+        $io = new \bizuno\io();
+        $io->fileWrite($this->trace, $dest, true, $append, true);
+    }
 }
 
 /**
@@ -129,7 +129,7 @@ final class messageStack
  */
 function msgAdd($msg, $level='error', $title='')
 {
-	global $msgStack;
+    global $msgStack;
     if (is_object($msgStack)) { $msgStack->add($msg, $level, $title); }
 }
 
@@ -139,7 +139,7 @@ function msgAdd($msg, $level='error', $title='')
  */
 function msgMerge($msg=[])
 {
-	global $msgStack;
+    global $msgStack;
     if (is_object($msgStack)) { 
         $msgStack->error = array_merge_recursive($msgStack->error, $msg);
     }
@@ -162,8 +162,8 @@ function msgSession()
  */
 function msgLog($msg)
 {
-	global $msgStack;
-	$msgStack->log($msg);
+    global $msgStack;
+    $msgStack->log($msg);
 }
 
 /**
@@ -171,8 +171,8 @@ function msgLog($msg)
  */
 function msgDebug($msg, $trap=false)
 {
-	global $msgStack;
-	$msgStack->debug($msg, $trap=false);
+    global $msgStack;
+    $msgStack->debug($msg, $trap=false);
 }
 
 /**
@@ -182,8 +182,8 @@ function msgDebug($msg, $trap=false)
  */
 function msgDebugWrite($filename=false, $append=false, $force=false)
 {
-	global $msgStack;
-	$msgStack->debugWrite($filename, $append, $force);
+    global $msgStack;
+    $msgStack->debugWrite($filename, $append, $force);
 }
 
 /**
@@ -191,8 +191,8 @@ function msgDebugWrite($filename=false, $append=false, $force=false)
  */
 function msgTrap()
 {
-	global $msgStack;
-	$msgStack->trap = true; //$capture;
+    global $msgStack;
+    $msgStack->trap = true; //$capture;
 }
 
 /**
@@ -201,7 +201,7 @@ function msgTrap()
  */
 function msgErrors()
 {
-	global $msgStack;
+    global $msgStack;
     return isset($msgStack->error['error']) ? sizeof($msgStack->error['error']) : 0;
 }
 
@@ -213,9 +213,9 @@ function msgErrors()
  */
 function msgTempWrite($idx='idx', $value='')
 {
-	global $msgStack;
+    global $msgStack;
     if (!isset($msgStack->temp)) { $msgStack->temp = []; }
-	$msgStack->temp[$idx] = $value;
+    $msgStack->temp[$idx] = $value;
 }
 
 /**
@@ -226,7 +226,7 @@ function msgTempWrite($idx='idx', $value='')
  */
 function msgTempRead($idx='idx')
 {
-	global $msgStack;
+    global $msgStack;
     if (!isset($msgStack->temp[$idx])) { return $msgStack->temp[$idx]; }
 }
 

@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-30
+ * @version    3.x Last Update: 2019-01-21
  * @filesource /portal/main.php
  */
 
@@ -35,14 +35,14 @@ require_once(BIZUNO_LIB ."model/io.php");
 require_once(BIZUNO_LIB ."model/msg.php");
 require_once(BIZUNO_LIB ."view/main.php");
 require_once(BIZUNO_LIB ."view/easyUI/html5.php");
-        
+
 class main //extends controller
 {
     public $layout = [];
 
-	function __construct() 
+    function __construct()
     {
-		global $msgStack, $cleaner, $html5, $io;
+        global $msgStack, $cleaner, $html5, $io;
         $msgStack = new messageStack();
         $cleaner  = new cleaner();
         $html5    = new html5();
@@ -55,9 +55,9 @@ class main //extends controller
         $this->initBusiness();
         $this->initUserCache();
         $this->initModuleCache();
-		clean('p', ['format'=>'command','default'=>'bizuno/main/bizunoHome'], 'get');
+        clean('p', ['format'=>'command','default'=>'bizuno/main/bizunoHome'], 'get');
         if (getUserCache('profile', 'biz_id', false, 0)) { // keep going
-		} elseif (!in_array($GLOBALS['bizunoModule'], ['bizuno'])) { // not logged in or not installed, restrict to parts of module bizuno
+        } elseif (!in_array($GLOBALS['bizunoModule'], ['bizuno'])) { // not logged in or not installed, restrict to parts of module bizuno
             $_GET['p'] = '';
             clean('p', ['format'=>'command','default'=>'bizuno/main/bizunoHome'], 'get');
         }
@@ -108,7 +108,7 @@ class main //extends controller
         $GLOBALS['updateUserCache'] = false;
         $GLOBALS['updateModuleCache'] = [];
     }
-    
+
     private function validateBusiness()
     {
         global $bizunoUser;
@@ -130,7 +130,7 @@ class main //extends controller
         if (!getUserCache('profile', 'biz_id')) { return; }
         msgDebug("\nReturning from initBusiness");
     }
-    
+
     private function initUserCache()
     {
         global $bizunoUser, $bizunoLang, $currencies;
@@ -142,7 +142,7 @@ class main //extends controller
                 $this->reloadCache($email);
             } elseif ($usrData) { // logged in, normal just get settings
                 $bizunoUser = json_decode($usrData['settings'], true);
-            } elseif (!$usrData && dbTableExists(BIZUNO_DB_PREFIX.'users')) { 
+            } elseif (!$usrData && dbTableExists(BIZUNO_DB_PREFIX.'users')) {
                 msgAdd("You do not have an account, please see your Bizuno administrator!");
                 unset($_GET['p']);
             }
@@ -151,7 +151,7 @@ class main //extends controller
         } elseif (!dbTableExists(BIZUNO_DB_PREFIX.'users')) { $this->setInstallView(); }
         $currencies = new currency();
     }
-    
+
     private function initModuleCache()
     {
         global $bizunoMod;
@@ -160,7 +160,7 @@ class main //extends controller
         if (getUserCache('profile','biz_id') && empty($GLOBALS['noBizunoDB'])) { // logged in, fetch the cache from db
             $rows = dbGetMulti(BIZUNO_DB_PREFIX.'configuration');
             if (empty($rows)) { $this->setGuestRegistry(); }
-            else { 
+            else {
                 foreach ($rows as $row) { $bizunoMod[$row['config_key']] = json_decode($row['config_value'], true); }
                 $this->validateVersion();
             }
@@ -178,8 +178,8 @@ class main //extends controller
         $registry->initModule('bizuno', BIZUNO_LIB."controller/module/bizuno/"); // load the bizuno structure
         if (file_exists(BIZUNO_EXT."myPortal/admin.php")) { $registry->initModule('myPortal', BIZUNO_EXT."myPortal/"); }
     }
-    
-	private function validateVersion()
+
+    private function validateVersion()
     {
         global $io;
         $bizVer = getModuleCache('bizuno', 'versions', 'bizuno', false, ['time_last'=>time(),'version'=>MODULE_BIZUNO_VERSION]);
@@ -197,9 +197,9 @@ class main //extends controller
             bizunoUpgrade($bizVer['version']);
             msgDebug("\nUpdating cache with version ".MODULE_BIZUNO_VERSION);
             $bizVer['version'] = MODULE_BIZUNO_VERSION;
-            setModuleCache('bizuno', 'versions', 'bizuno', $bizVer); // update cache                
+            setModuleCache('bizuno', 'versions', 'bizuno', $bizVer); // update cache
         }
-	}
+    }
 
     private function sessionExpired($usrData)
     {
@@ -216,7 +216,7 @@ class main //extends controller
         $registry = new bizRegistry();
         $registry->initRegistry($usrEmail, 1);
     }
-    
+
     private function loadBaseLang($lang='en_US')
     {
         msgDebug("\nEntering loadBaseLang with lang = $lang");
@@ -228,7 +228,7 @@ class main //extends controller
         } else {
             require(BIZUNO_LIB."locale/en_US/language.php"); // pulls the current language in English
             require(BIZUNO_LIB."locale/en_US/langByRef.php"); // lang by reference (no translation required)
-            $langCache = array_merge($langCore, $langByRef);            
+            $langCache = array_merge($langCore, $langByRef);
         }
         if ($lang <> 'en_US') {
             if (defined('BIZUNO_DATA') && file_exists(BIZUNO_DATA."cache/lang_{$lang}.json")) {
@@ -251,7 +251,7 @@ class main //extends controller
                 'biz_id'   => 0,
                 'biz_title'=> 'My Business',
                 'language' => clean('lang', ['format'=>'cmd','default'=>'en_US'], 'get'),
-                'ssl'      => true],            
+                'ssl'      => true],
             'dashboards'=> [
                 'login' => ['column_id'=>0,'row_id'=>0,'module_id'=>'bizuno','dashboard_id'=>'login'],
                 'tip'   => ['column_id'=>1,'row_id'=>2,'module_id'=>'bizuno','dashboard_id'=>'daily_tip'],
@@ -260,7 +260,7 @@ class main //extends controller
         if (clean('newuser','cmd','get')=='true') { $settings['dashboards']['login']['dashboard_id'] = 'new_user'; }
         return $settings;
     }
-    
+
     private function setInstallView()
     {
         global $bizunoUser;

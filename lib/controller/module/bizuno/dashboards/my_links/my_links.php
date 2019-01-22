@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/bizuno/dashboards/my_links/my_links.php
@@ -32,25 +32,25 @@ class my_links
     public $methodDir= 'dashboards';
     public $code     = 'my_links';
     public $category = 'general';
-	
-	function __construct($settings)
+    
+    function __construct($settings)
     {
-		$this->security = getUserCache('security', 'profile', 0);
+        $this->security = getUserCache('security', 'profile', 0);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $defaults      = ['users'=>'-1','roles'=>'-1'];
         $this->settings= array_replace_recursive($defaults, $settings);
-	}
+    }
 
     public function settingsStructure()
     {
         return [
             'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']]];
-	}
+    }
 
     public function render()
     {
-		$index    = 1;
+        $index    = 1;
         if (empty($this->settings['data'])) { $rows[] = '<li><span>'.lang('no_results')."</span></li>"; }
         else { foreach ($this->settings['data'] as $title => $hyperlink) {
             $html  = '<span style="float:left">'.viewFavicon($hyperlink, $title, true)." $title</span>";
@@ -65,7 +65,7 @@ class my_links
                 $this->code.'_1'  => ['label'=>lang('url')." including http:// or https://",'attr'=>['required'=>'true']],
                 $this->code.'_btn'=> ['attr'=>['type'=>'button','value'=>lang('new')],'styles'=>['text-align'=>'right'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
             'lists' => [$this->code=> $rows]];
-  		return $data;
+          return $data;
     }
 
     public function save()

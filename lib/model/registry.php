@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft Inc.
+ * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-30
+ * @version    3.x Last Update: 2018-12-17
  * @filesource /lib/model/registry.php
  */
 
@@ -27,7 +27,7 @@ bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
 
 final class bizRegistry 
 {    
-	/**
+    /**
      * Initializes the registry class
      */
     function __construct() {
@@ -172,11 +172,11 @@ final class bizRegistry
         // Check to make sure the themes and icons folders are still there
         $theme = getUserCache('profile', 'theme');
         if ('default' != $theme) {
-            if (!is_dir(BIZUNO_THEMES.$theme)) { setUserCache('profile', 'theme', 'default'); }
+            if (!defined('BIZUNO_THEMES') || !is_dir(BIZUNO_THEMES.$theme)) { setUserCache('profile', 'theme', 'default'); }
         }
         $icons = getUserCache('profile', 'icons');
         if ('default' != $icons) {
-            if (!is_dir(BIZUNO_ICONS.$icons)) { setUserCache('profile', 'icons', 'default'); }
+            if (!defined('BIZUNO_ICONS')  || !is_dir(BIZUNO_ICONS.$icons))  { setUserCache('profile', 'icons', 'default'); }
         }
         $GLOBALS['updateUserCache'] = true;
         return true;

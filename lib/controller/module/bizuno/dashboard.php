@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/bizuno/dashboard.php
@@ -25,7 +25,7 @@ namespace bizuno;
 
 class bizunoDashboard
 {
-	public $moduleID = 'bizuno';
+    public $moduleID = 'bizuno';
         
     function __construct()
     {
@@ -39,79 +39,79 @@ class bizunoDashboard
     public function manager(&$layout=[])
     {
         $menu_id= clean('menuID', ['format'=>'text','default'=>'home'], 'get');
-		$title  = sprintf($this->lang['edit_dashboard'], $menu_id=='home' ? lang('home') : getUserCache('menuBar', 'child', $menu_id)['label']);
-		$data   = [
+        $title  = sprintf($this->lang['edit_dashboard'], $menu_id=='home' ? lang('home') : getUserCache('menuBar', 'child', $menu_id)['label']);
+        $data   = [
             'title'  => lang('dashboards'),
-			'menu_id'=> $menu_id,
-			'divs'   => [
+            'menu_id'=> $menu_id,
+            'divs'   => [
                 'toolbar' => ['order'=>10,'type'=>'toolbar','key' =>'tbDashBoard'],
-				'frmDash' => ['order'=>15,'type'=>'html',   'html'=>html5('frmDashboard', ['attr'=>  ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=bizuno/dashboard/save&menuID=$menu_id"]])],
-				'heading' => ['order'=>30,'type'=>'html',   'html'=>"<h1>$title</h1>"],
-				'adminSet'=> ['order'=>50,'type'=>'tabs',   'key' =>'tabSettings'],
-				'footer'  => ['order'=>99,'type'=>'html',   'html'=>"</form>"]],
+                'frmDash' => ['order'=>15,'type'=>'html',   'html'=>html5('frmDashboard', ['attr'=>  ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=bizuno/dashboard/save&menuID=$menu_id"]])],
+                'heading' => ['order'=>30,'type'=>'html',   'html'=>"<h1>$title</h1>"],
+                'adminSet'=> ['order'=>50,'type'=>'tabs',   'key' =>'tabSettings'],
+                'footer'  => ['order'=>99,'type'=>'html',   'html'=>"</form>"]],
             'jsReady' => ['jsForm'=>"ajaxForm('frmDashboard');"],
-			'tabs'    => ['tabSettings'=> ['attr'=>['tabPosition'=>'left']]],
-			'toolbars'=> ['tbDashBoard'=> ['icons' => [
+            'tabs'    => ['tabSettings'=> ['attr'=>['tabPosition'=>'left']]],
+            'toolbars'=> ['tbDashBoard'=> ['icons' => [
                 'cancel'=> ['order'=> 10, 'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/main/bizunoHome&menuID=$menu_id'"]],
                 'save'  => ['order'=> 20, 'events'=>['onClick'=>"jq('#frmDashboard').submit();"]]]]]];
-		$order  = 1;
-		$header = '<table style="border-collapse:collapse;width:100%">'."\n".' <thead class="panel-header">'."\n";
-		$header.= "  <tr><th>".lang('active')."</th><th>".lang('title')."</th><th>".lang('description')."</th></tr>\n</thead>\n <tbody>\n";
-		$footer = " </tbody>\n</table>\n";
-		$dashboards = $this->loadDashboards($menu_id);
+        $order  = 1;
+        $header = '<table style="border-collapse:collapse;width:100%">'."\n".' <thead class="panel-header">'."\n";
+        $header.= "  <tr><th>".lang('active')."</th><th>".lang('title')."</th><th>".lang('description')."</th></tr>\n</thead>\n <tbody>\n";
+        $footer = " </tbody>\n</table>\n";
+        $dashboards = $this->loadDashboards($menu_id);
         msgDebug("\nFound dashboards = ".print_r($dashboards, true));
-		foreach ($dashboards as $cat => $module) {
-			$temp = [];
+        foreach ($dashboards as $cat => $module) {
+            $temp = [];
             foreach ($module as $key => $value) { $temp[$key] = $value['title']; }
-			array_multisort($temp, SORT_ASC, $module);
-			$html = $header;
-			foreach ($module as $piece) {
-				$checkbox = ['attr'=>  ['type'=>'checkbox','value'=>$piece['module'].':'.$piece['id'], 'checked'=>$piece['active']?'checked':false]];
-				$html .= "  <tr>\n";
-				$html .= "    <td>".html5("dashID[]", $checkbox)."</td>\n";
-				$html .= "    <td>".$piece['title']      ."</td>\n";
-				$html .= "    <td>".$piece['description']."</td>\n";
-				$html .= "  </tr>\n";
-				$html .= '<tr><td colspan="4"><hr /></td></tr>'."\n";
-			}
-			$html .= $footer;
-			$data['tabs']['tabSettings']['divs'][$cat] = ['order'=>$order,'label'=>lang($cat),'type'=>'html','html'=>$html];
-			$order++;
-		}
-		$layout = array_replace_recursive($layout, viewMain(), $data);
-	}
+            array_multisort($temp, SORT_ASC, $module);
+            $html = $header;
+            foreach ($module as $piece) {
+                $checkbox = ['attr'=>  ['type'=>'checkbox','value'=>$piece['module'].':'.$piece['id'], 'checked'=>$piece['active']?'checked':false]];
+                $html .= "  <tr>\n";
+                $html .= "    <td>".html5("dashID[]", $checkbox)."</td>\n";
+                $html .= "    <td>".$piece['title']      ."</td>\n";
+                $html .= "    <td>".$piece['description']."</td>\n";
+                $html .= "  </tr>\n";
+                $html .= '<tr><td colspan="4"><hr /></td></tr>'."\n";
+            }
+            $html .= $footer;
+            $data['tabs']['tabSettings']['divs'][$cat] = ['order'=>$order,'label'=>lang($cat),'type'=>'html','html'=>$html];
+            $order++;
+        }
+        $layout = array_replace_recursive($layout, viewMain(), $data);
+    }
 
-	/*
+    /*
      * Retrieves the dashboards with settings for a given menu, from there each is loaded separately
      * @param array $layout - structure entering the method
      * @return array - $layout modified with the dashboard settings
      */
     public function render(&$layout=[])
     {
-		$menu_id = clean('menuID', 'text', 'get');
-		$layout = array_replace_recursive($layout, ['content'=>$this->listDashboards($menu_id)]);
-	}
+        $menu_id = clean('menuID', 'text', 'get');
+        $layout = array_replace_recursive($layout, ['content'=>$this->listDashboards($menu_id)]);
+    }
 
-	/**
+    /**
      * Saves state after user moves dashboards on home screen. Stores the dashboard placement on a given menu in the users profile
      */
     public function organize()
     {
-		$menu_id = clean('menuID', 'text', 'get');
-		$state   = clean('state',  'text', 'get');
-		$columns = explode(':', $state);
+        $menu_id = clean('menuID', 'text', 'get');
+        $state   = clean('state',  'text', 'get');
+        $columns = explode(':', $state);
         msgDebug("\nNum columns = ".getUserCache('profile', 'cols', false, 3));
-		for ($col = 0; $col < getUserCache('profile', 'cols', false, 3); $col++) {
+        for ($col = 0; $col < getUserCache('profile', 'cols', false, 3); $col++) {
             if (strlen($columns[$col]) == 0) { continue; }
-			$rows = explode(',', $columns[$col]);
-			for ($row = 0; $row < count($rows); $row++) { // write the row, column
-				$sql_data = ['column_id' => $col, 'row_id' => $row];
-				dbWrite(BIZUNO_DB_PREFIX."users_profiles", $sql_data, 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND menu_id='$menu_id' AND dashboard_id='{$rows[$row]}'");
-			}
-		}
-	}
+            $rows = explode(',', $columns[$col]);
+            for ($row = 0; $row < count($rows); $row++) { // write the row, column
+                $sql_data = ['column_id' => $col, 'row_id' => $row];
+                dbWrite(BIZUNO_DB_PREFIX."users_profiles", $sql_data, 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND menu_id='$menu_id' AND dashboard_id='{$rows[$row]}'");
+            }
+        }
+    }
 
-	/**
+    /**
      * Save selected dashboards into the users profile
      * @param array $layout - structure entering the method
      * @return array - $layout modified with the dashboard settings
@@ -119,18 +119,18 @@ class bizunoDashboard
     public function save(&$layout=[])
     {
         $menu_id = clean('menuID', 'text', 'get');
-		$enabled = clean('dashID','array', 'post');
-		$temp    = $this->listDashboards($menu_id); // fetch the current state
-		$current = [];
+        $enabled = clean('dashID','array', 'post');
+        $temp    = $this->listDashboards($menu_id); // fetch the current state
+        $current = [];
         if (is_array($temp['Dashboard'])) { foreach ($temp['Dashboard'] as $value) { $current[] = $value['module_id'].':'.$value['id']; } }
-		msgDebug("\ncurrent = ".print_r($current, true).' and enabled = '.print_r($enabled, true));
-		$adds = array_diff($enabled, $current);
-		$dels = array_diff($current, $enabled);
-		msgDebug("\nadds = ".print_r($adds, true).' and dels = '.print_r($dels, true));
-		if (sizeof($adds) > 0) { foreach ($adds as $dashboard) {
-			$path   = explode(':', $dashboard);
+        msgDebug("\ncurrent = ".print_r($current, true).' and enabled = '.print_r($enabled, true));
+        $adds = array_diff($enabled, $current);
+        $dels = array_diff($current, $enabled);
+        msgDebug("\nadds = ".print_r($adds, true).' and dels = '.print_r($dels, true));
+        if (sizeof($adds) > 0) { foreach ($adds as $dashboard) {
+            $path   = explode(':', $dashboard);
             if (in_array($dashboard, $current)) { continue; } // already active, skip
-			$newAdd = $this->loadDashboard($path[0], $path[1]);
+            $newAdd = $this->loadDashboard($path[0], $path[1]);
             if ($newAdd) { 
                 if (method_exists('newAdd', 'install')) { 
                     $newAdd->install($path[0], $menu_id);
@@ -142,9 +142,9 @@ class bizunoDashboard
                 }
             }
         } }
-		if (sizeof($dels) > 0) { foreach ($dels as $dashboard) {
-			$path = explode(':', $dashboard);
-			$newDel = $this->loadDashboard($path[0], $path[1]);
+        if (sizeof($dels) > 0) { foreach ($dels as $dashboard) {
+            $path = explode(':', $dashboard);
+            $newDel = $this->loadDashboard($path[0], $path[1]);
             if ($newDel) {
                 if (method_exists('newAdd', 'remove')) {
                     $newDel->remove($menu_id);
@@ -153,10 +153,10 @@ class bizunoDashboard
                 }
             }
         } }
-		$layout = array_replace_recursive($layout, ['content'=>  ['action'=>'href', 'link'=>BIZUNO_HOME."&p=bizuno/main/bizunoHome&menuID=$menu_id"]]);
-	}
+        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'href', 'link'=>BIZUNO_HOME."&p=bizuno/main/bizunoHome&menuID=$menu_id"]]);
+    }
 
-	/**
+    /**
      * Renders the dashboard contents, called when loading menu home pages
      * @param array $layout - structure entering the method
      * @return array - $layout modified with the dashboard settings
@@ -170,11 +170,11 @@ class bizunoDashboard
         if ($menu == 'portal') {
             $settings = [];
         } else {
-    		$fields = dbGetRow(BIZUNO_DB_PREFIX."users_profiles", "user_id='".getUserCache('profile', 'admin_id', false, 0)."' AND menu_id='$menu' AND dashboard_id='$dID'");
+            $fields = dbGetRow(BIZUNO_DB_PREFIX."users_profiles", "user_id='".getUserCache('profile', 'admin_id', false, 0)."' AND menu_id='$menu' AND dashboard_id='$dID'");
             $settings= json_decode($fields['settings'], true);
             if (!is_array($settings)) { $settings = []; }
         }
-		$dashboard = $this->loadDashboard($mID, $dID, $settings);
+        $dashboard = $this->loadDashboard($mID, $dID, $settings);
         if (!$dashboard) { return msgAdd("ERROR: Dashboard $dID NOT FOUND!"); }
         $content = $dashboard->render();
         if (is_string($content)) { // plain old HTML
@@ -195,39 +195,39 @@ class bizunoDashboard
         }
         $layout = array_replace_recursive($layout, $data);
         msgDebug("\nlayout after processing = ".print_r($layout, true));
-	}
+    }
 
-	/**
+    /**
      * Deletes a dashboard from the users profile
      * @return null, removes the table row from the users profile
      */
     public function delete() 
     {
-		$menu_id     = clean('menuID',     'text','get');
-		$module_id   = clean('moduleID',   'text','get');
-		$dashboard_id= clean('dashboardID','text','get');
-		$dashboard   = $this->loadDashboard($module_id, $dashboard_id);
+        $menu_id     = clean('menuID',     'text','get');
+        $module_id   = clean('moduleID',   'text','get');
+        $dashboard_id= clean('dashboardID','text','get');
+        $dashboard   = $this->loadDashboard($module_id, $dashboard_id);
         if (!$dashboard) { return msgAdd('ERROR: Dashboard delete failed!'); }
         if (method_exists('newAdd', 'remove')) {
             $dashboard->remove($menu_id);
         } else {
             dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."users_profiles WHERE user_id=".getUserCache('profile', 'admin_id', false, 0)." AND menu_id='$menu_id' AND dashboard_id='$dashboard_id'");
         }
-	}
+    }
 
-	/**
+    /**
      * Updates a dashboard settings from the menu settings submit
      * @return null, just saves the new settings so next time the dashboard is loaded, the new settings will be there
      */
     public function attr()
     {
         $menu_id     = clean('menuID',     'text','get');
-		$module_id   = clean('moduleID',   'text','get');
-		$dashboard_id= clean('dashboardID','text','get');
-		$dashboard   = $this->loadDashboard($module_id, $dashboard_id);
+        $module_id   = clean('moduleID',   'text','get');
+        $dashboard_id= clean('dashboardID','text','get');
+        $dashboard   = $this->loadDashboard($module_id, $dashboard_id);
         if (!is_object($dashboard)) { return msgAdd('ERROR: Dashboard update failed!'); }
         $dashboard->save($menu_id);
-	}
+    }
 
     /**
      * Builds the dashboard list for a given menu

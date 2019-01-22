@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-01
  * @filesource /lib/controller/module/phreebooks/totals/discountChk/discountChk.php
@@ -25,11 +25,11 @@ namespace bizuno;
 
 class discountChk
 {
-	public  $code      = 'discountChk';
+    public  $code      = 'discountChk';
     public  $moduleID  = 'phreebooks';
     public  $methodDir = 'totals';
 
-	public function __construct()
+    public function __construct()
     {
         $this->jID     = clean('jID', ['format'=>'cmd', 'default'=>'2'], 'get');
         $type          = in_array($this->jID, [17,20,21]) ? 'vendors' : 'customers';
@@ -37,8 +37,8 @@ class discountChk
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
-	}
-	
+    }
+    
     public function settingsStructure()
     {
         return [
@@ -46,62 +46,62 @@ class discountChk
             'journals'  => ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
             'gl_account'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_account']]],
             'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
-	}
+    }
 
-	public function glEntry($request, &$main, &$items, &$begBal=0)
+    public function glEntry($request, &$main, &$items, &$begBal=0)
     {
-		$totalDisc = 0;
-		$rows = clean($request['item_array'], 'json');
-		foreach ($rows as $row) {
-			$discount = clean($row['discount'], 'currency');
+        $totalDisc = 0;
+        $rows = clean($request['item_array'], 'json');
+        foreach ($rows as $row) {
+            $discount = clean($row['discount'], 'currency');
             if ($discount == 0) { continue; }
-			// need to bump up total paid to include discount
-			foreach ($items as $key => $item) {
+            // need to bump up total paid to include discount
+            foreach ($items as $key => $item) {
                 if (!isset($item['item_ref_id'])) { continue; }
-				if ($item['item_ref_id'] == $row['item_ref_id']) { // bump up the pmt to include the discount
+                if ($item['item_ref_id'] == $row['item_ref_id']) { // bump up the pmt to include the discount
                     if (in_array($this->jID, [17,18])) { $items[$key]['credit_amount'] += $discount; }
                     if (in_array($this->jID, [20,22])) { $items[$key]['debit_amount']  += $discount; }
-					break;
-				}
-			}
-			$items[] = [
+                    break;
+                }
+            }
+            $items[] = [
                 'ref_id'       => $request['id'],
-				'item_ref_id'  => $row['item_ref_id'],
-				'gl_type'      => $this->settings['gl_type'],
-				'qty'          => '1',
-				'description'  => $row['description'],
-				'debit_amount' => in_array($this->jID, [17,18]) ? $discount : 0,
-				'credit_amount'=> in_array($this->jID, [20,22]) ? $discount : 0,
-				'gl_account'   => isset($request['totals_discount_gl']) ? $request['totals_discount_gl'] : $this->settings['gl_account'],
-				'post_date'    => $main['post_date']];
-			$totalDisc += $discount;
-		}
-		$main['discount'] = $totalDisc;
-//		$begBal += $totalDisc; // don't add this as it has already been included
-		msgDebug("\nDiscountChk is returning total discount = ".$totalDisc);
-	}
+                'item_ref_id'  => $row['item_ref_id'],
+                'gl_type'      => $this->settings['gl_type'],
+                'qty'          => '1',
+                'description'  => $row['description'],
+                'debit_amount' => in_array($this->jID, [17,18]) ? $discount : 0,
+                'credit_amount'=> in_array($this->jID, [20,22]) ? $discount : 0,
+                'gl_account'   => isset($request['totals_discount_gl']) ? $request['totals_discount_gl'] : $this->settings['gl_account'],
+                'post_date'    => $main['post_date']];
+            $totalDisc += $discount;
+        }
+        $main['discount'] = $totalDisc;
+//        $begBal += $totalDisc; // don't add this as it has already been included
+        msgDebug("\nDiscountChk is returning total discount = ".$totalDisc);
+    }
 
-	public function render(&$output, $data=[])
+    public function render(&$output, $data=[])
     {
-		$this->fields = [
+        $this->fields = [
             'totals_discount_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
             'totals_discount_opt'=> ['icon' =>'settings','size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_discount').toggle('slow');"]],
             'totals_discount'    => ['label'=>lang('discount'),'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly'],'events'=>['onClick'=>"discountType='amt'; totalUpdate();"]]];
         msgDebug("\nSettings for discountChk = ".print_r($this->settings, true));
-		if (isset($data['items'])) { foreach ($data['items'] as $row) { // fill in the data if available
-			if ($row['gl_type'] == $this->settings['gl_type']) {
+        if (isset($data['items'])) { foreach ($data['items'] as $row) { // fill in the data if available
+            if ($row['gl_type'] == $this->settings['gl_type']) {
                 msgDebug("\nGL TYPE MATCH "); // never hits this loop as the dsc row has been removed
-				$this->fields['totals_discount_id']['attr']['value'] = $row['id'];
-				$this->fields['totals_discount_gl']['attr']['value'] = $row['gl_account'];
-			}
+                $this->fields['totals_discount_id']['attr']['value'] = $row['id'];
+                $this->fields['totals_discount_gl']['attr']['value'] = $row['gl_account'];
+            }
         } }
-		$output['body'] .= '<div style="text-align:right">';
-		$output['body'] .= html5('totals_discount',    $this->fields['totals_discount']);
-		$output['body'] .= html5('',                   $this->fields['totals_discount_opt']);
-		$output['body'] .= "</div>";
-		$output['body'] .= '<div id="phreebooks_totals_discount" style="display:none" class="layout-expand-over">';
-		$output['body'] .= html5('totals_discount_gl', $this->fields['totals_discount_gl']);
-		$output['body'] .= "</div>";
+        $output['body'] .= '<div style="text-align:right">';
+        $output['body'] .= html5('totals_discount',    $this->fields['totals_discount']);
+        $output['body'] .= html5('',                   $this->fields['totals_discount_opt']);
+        $output['body'] .= "</div>";
+        $output['body'] .= '<div id="phreebooks_totals_discount" style="display:none" class="layout-expand-over">';
+        $output['body'] .= html5('totals_discount_gl', $this->fields['totals_discount_gl']);
+        $output['body'] .= "</div>";
         $output['jsHead'][] = "function totals_discountChk(begBalance) {
     var totalDisc = 0;
     var rowData = jq('#dgJournalItem').datagrid('getData');
@@ -112,7 +112,7 @@ class discountChk
     bizTextSet('totals_discount', totalDisc, 'currency');
     var newBalance = begBalance - totalDisc;
     var decLen= parseInt(bizDefaults.currency.currencies[currency].dec_len);
-	return parseFloat(newBalance.toFixed(decLen));
+    return parseFloat(newBalance.toFixed(decLen));
 }";
-	}
+    }
 }

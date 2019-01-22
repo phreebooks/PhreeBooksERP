@@ -128,7 +128,7 @@ function bizunoUpgrade($dbVersion='1.0')
                 dbTransactionCommit();
             }
         }
-	}
+    }
     // At every upgrade, run the comments repair tool to fix changes to the view structure
     bizAutoLoad(BIZUNO_LIB."controller/module/bizuno/tools.php", 'bizunoTools');
     $ctl = new bizunoTools();

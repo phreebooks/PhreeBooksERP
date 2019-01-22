@@ -18,7 +18,6 @@
 	<break><![CDATA[1]]></break>
 	<width><![CDATA[25]]></width>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[contacts.inactive]]></fieldname>
@@ -36,41 +35,24 @@
 	<break><![CDATA[1]]></break>
 	<width><![CDATA[50]]></width>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[contacts.contact_first]]></fieldname>
 	<title><![CDATA[Contact - First]]></title>
-	<visible><![CDATA[0]]></visible>
-	<break><![CDATA[0]]></break>
 	<width><![CDATA[25]]></width>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
-</fieldlist>
-<fieldlist>
-	<fieldname><![CDATA[contacts.contact_middle]]></fieldname>
-	<title><![CDATA[Contact - Middle]]></title>
-	<visible><![CDATA[0]]></visible>
-	<break><![CDATA[0]]></break>
-	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[contacts.contact_last]]></fieldname>
 	<title><![CDATA[Contact - Last]]></title>
-	<visible><![CDATA[0]]></visible>
-	<break><![CDATA[0]]></break>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[address_book.address1]]></fieldname>
 	<title><![CDATA[Address 1]]></title>
 	<visible><![CDATA[1]]></visible>
-	<break><![CDATA[0]]></break>
 	<width><![CDATA[40]]></width>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[address_book.address2]]></fieldname>
@@ -79,15 +61,12 @@
 	<break><![CDATA[1]]></break>
 	<width><![CDATA[40]]></width>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[address_book.city]]></fieldname>
 	<title><![CDATA[City]]></title>
 	<visible><![CDATA[1]]></visible>
-	<break><![CDATA[0]]></break>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[address_book.state]]></fieldname>
@@ -96,16 +75,13 @@
 	<break><![CDATA[1]]></break>
 	<width><![CDATA[20]]></width>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[address_book.postal_code]]></fieldname>
 	<title><![CDATA[ZipCode]]></title>
 	<visible><![CDATA[1]]></visible>
-	<break><![CDATA[0]]></break>
 	<width><![CDATA[20]]></width>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[address_book.country]]></fieldname>
@@ -114,15 +90,11 @@
 	<break><![CDATA[1]]></break>
 	<width><![CDATA[20]]></width>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[contacts.gov_id_number]]></fieldname>
 	<title><![CDATA[Tax ID Number]]></title>
-	<visible><![CDATA[0]]></visible>
-	<break><![CDATA[0]]></break>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <fieldlist>
 	<fieldname><![CDATA[contacts.account_number]]></fieldname>
@@ -131,7 +103,6 @@
 	<break><![CDATA[1]]></break>
 	<width><![CDATA[30]]></width>
 	<align><![CDATA[L]]></align>
-	<total><![CDATA[0]]></total>
 </fieldlist>
 <grouplist>
 	<fieldname><![CDATA[address_book.state]]></fieldname>
@@ -223,44 +194,44 @@
 	</margin>
 </page>
 <heading>
-	<show><![CDATA[on]]></show>
+	<show><![CDATA[1]]></show>
 	<font><![CDATA[default]]></font>
 	<size><![CDATA[12]]></size>
-	<color><![CDATA[0:0:0]]></color>
+	<color><![CDATA[#000000]]></color>
 	<align><![CDATA[C]]></align>
 </heading>
 <title1>
 	<text><![CDATA[%reportname%]]></text>
-	<show><![CDATA[on]]></show>
+	<show><![CDATA[1]]></show>
 	<font><![CDATA[default]]></font>
 	<size><![CDATA[10]]></size>
-	<color><![CDATA[0:0:0]]></color>
+	<color><![CDATA[#000000]]></color>
 	<align><![CDATA[C]]></align>
 </title1>
 <title2>
 	<text><![CDATA[Report Generated %date%]]></text>
-	<show><![CDATA[on]]></show>
+	<show><![CDATA[1]]></show>
 	<font><![CDATA[default]]></font>
 	<size><![CDATA[10]]></size>
-	<color><![CDATA[0:0:0]]></color>
+	<color><![CDATA[#000000]]></color>
 	<align><![CDATA[C]]></align>
 </title2>
 <filter>
 	<font><![CDATA[default]]></font>
 	<size><![CDATA[8]]></size>
-	<color><![CDATA[0:0:0]]></color>
+	<color><![CDATA[#000000]]></color>
 	<align><![CDATA[L]]></align>
 </filter>
 <data>
 	<font><![CDATA[default]]></font>
 	<size><![CDATA[10]]></size>
-	<color><![CDATA[0:0:0]]></color>
+	<color><![CDATA[#000000]]></color>
 	<align><![CDATA[C]]></align>
 </data>
 <totals>
 	<font><![CDATA[default]]></font>
 	<size><![CDATA[10]]></size>
-	<color><![CDATA[0:0:0]]></color>
+	<color><![CDATA[#000000]]></color>
 	<align><![CDATA[L]]></align>
 </totals>
 	<datelist><![CDATA[a]]></datelist>

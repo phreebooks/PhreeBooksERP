@@ -15,9 +15,9 @@
  *
  * @name       Bizuno
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-10
+ * @version    3.x Last Update: 2019-01-04
  * @filesource lib/controller/functions.php
  */
 
@@ -27,7 +27,7 @@ namespace bizuno;
  * Should eventually replace all calls to msgDebugWrite but need way to set file name first.
  */
 //function bizShutdown() { msgTrap(); msgDebugWrite(); }
-//register_shutdown_function("\\bizuno\\bizShutdown"); 
+//register_shutdown_function("\\bizuno\\bizShutdown");
 
 /**
  * Autoloads files, if it's already loaded, returns true. if not, tests for files existence before requiring else dies.
@@ -72,7 +72,7 @@ function compose($module, $page, $method, &$layout=[])
         if (method_exists($process, $modProps['method'])) {
             $process->{$modProps['method']}($layout);
         } else {
-            msgAdd("Path = $controller - Method: {$modProps['method']} NOT FOUND! Module $modID and page {$modProps['page']} with controller: $fqdn but could not find the method. Ignoring!", 'caution');            
+            msgAdd("Path = $controller - Method: {$modProps['method']} NOT FOUND! Module $modID and page {$modProps['page']} with controller: $fqdn but could not find the method. Ignoring!", 'caution');
         }
     }
     // cURL action moved outside of loop as mods may need to augment layout before calling cURL, causes dups if inside loop with mods, before and after mod, see PrestaShop.
@@ -90,7 +90,7 @@ function compose($module, $page, $method, &$layout=[])
 /**
  * This function merges the primary method (at position 0) with any hooks, hooks with a negative order will preceed the primary method, positive order will follow
  * @param type $module - Module ID
- * @param type $page - Page ID, is also the filename where to find the method 
+ * @param type $page - Page ID, is also the filename where to find the method
  * @param type $method - method ID within the page
  * @return string $hooks - Sorted list of processes to execute
  */
@@ -116,29 +116,35 @@ function mergeHooks($module, $page, $method)
 function myErrorHandler($errno, $errstr, $errfile, $errline)
 {
     if (!(error_reporting() & $errno)) { return; } // This error code is not included in error_reporting
-	switch ($errno) {
-		case E_USER_ERROR:
-			msgAdd("<b>ERROR</b> [$errno] $errstr<br />\n  Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\nAborting...<br />\n");
+    $debug = defined('BIZUNO_DEBUG') && constant('BIZUNO_DEBUG')===true ? true : false;
+     switch ($errno) {
+        case E_USER_ERROR:
+            msgAdd("<b>ERROR</b> [$errno] $errstr<br />\n  Fatal error on line $errline in file $errfile, PHP " . PHP_VERSION . " (" . PHP_OS . ")<br />\nAborting...<br />\n");
             msgDebugWrite();
             exit(1);
-			break;
-		case E_USER_WARNING: msgAdd( "<b>WARNING</b> [$errno] $errstr<br />\n", 'caution'); break;
-		default:
-		case E_USER_NOTICE:  msgAdd( "<b>NOTICE</b> [$errno] $errstr - Line $errline in file $errfile", 'caution'); break;
-	}
-	return true; /* Don't execute PHP internal error handler */
+        case E_USER_WARNING:
+            if ($debug){ msgAdd("<b>WARNING</b> [$errno] $errstr<br />\n", 'caution'); }
+            else       { error_log("<b>WARNING</b> [$errno] $errstr<br />\n"); }
+            break;
+        default:
+        case E_USER_NOTICE:
+            if ($debug){ msgAdd("<b>NOTICE</b> [$errno] $errstr - Line $errline in file $errfile", 'caution'); }
+            else       { error_log("<b>NOTICE</b> [$errno] $errstr - Line $errline in file $errfile"); }
+            break;
+    }
+    return true; /* Don't execute PHP internal error handler */
 }
 
 function myExceptionHandler($e)
 {
-    if (defined('BIZUNO_DEBUG') && constant('BIZUNO_DEBUG')===true) {
-        msgDebug("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
-        msgTrap();
-        msgDebugWrite();
-        exit("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
-    }
-    if (BIZUNO_HOST=='phreesoft' && (!defined('BIZUNO_DEBUG') || constant('BIZUNO_DEBUG')===false)) {
-		error_log("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
+    global $msgStack;
+    msgTrap();
+    msgDebug("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
+    msgAdd("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
+    msgDebugWrite();
+    if (BIZUNO_HOST!='phreesoft' || (defined('BIZUNO_DEBUG') && constant('BIZUNO_DEBUG')===true)) {
+        exit(json_encode(['message' => $msgStack->error]));
+    } else {
         exit("Program Exception! Please fill out a support ticket with the details that got you here.");
     }
 }
@@ -190,7 +196,7 @@ function getColumns()
         case 'mobile':  return 1;
         case 'tablet':  return 2;
         default:
-        case 'desktop': 
+        case 'desktop':
     }
     return getUserCache('profile', 'cols', false, 3);
 }
@@ -235,7 +241,7 @@ function setUserCache($group='', $lvl1='', $value='')
 }
 
 /**
- * 
+ *
  * @param type $uIDs
  * @param type $rIDs
  * @return type
@@ -268,7 +274,7 @@ function setUserRole($uIDs=[], $rIDs=[]) {
 function clearUserCache($group='', $lvl1='')
 {
     global $bizunoUser;
-    if     ($group && $lvl1) { 
+    if     ($group && $lvl1) {
         msgDebug("\nClearing user cache group: $group and lvl1 = $lvl1");
         unset($bizunoUser[$group][$lvl1]); }
     elseif ($group)          { unset($bizunoUser[$group]); }
@@ -300,7 +306,7 @@ function getModuleCache($module, $group='settings', $lvl1=false, $lvl2=false, $d
 
 /**
  * Saves the settings for a given module or module group, updates the cache and sets the flag to save in db at the end of the script
- * @global type $bizunoMod - Module Cache 
+ * @global type $bizunoMod - Module Cache
  * @param type $module [required] - Module to set data to
  * @param type $group [default => settings] - Designates the cache group to set
  * @param type $lvl1 [default => false] - index of $group, if false assumes the group index to be set
@@ -337,8 +343,8 @@ function clearModuleCache($module, $group=false, $lvl1=false)
 function readModuleSettings($module, $structure=[])
 {
     $settings = [];
-    foreach ($structure as $group => $values) { 
-        foreach ($values as $setting => $props) {
+    foreach ($structure as $group => $values) {
+        foreach ($values['fields'] as $setting => $props) {
             $fldVal = clean($group."_".$setting, ['format'=>isset($props['attr']['format']) ? $props['attr']['format'] : 'text'], 'post');
             if (!empty($props['attr']['type']) && $props['attr']['type']=='password' && empty($fldVal)) {
                 msgDebug("\nSkipped group: $group and setting = $setting");
@@ -356,20 +362,20 @@ function readModuleSettings($module, $structure=[])
 /**
  * This function extracts the settings values from the view structure and puts into simple array for usage and registry storage
  * @param array structure - Bizuno settings structure to pull values from
- * @return array 
+ * @return array
  */
 function getStructureValues($structure='')
 {
-    if (!is_array($structure)) { return []; }
     $output = [];
+    if (empty($structure)) { return $output; }
     foreach ($structure as $group => $values) {
-        foreach ($values as $setting => $props) { $output[$group][$setting] = isset($props['attr']['value']) ? $props['attr']['value'] : ''; }
+        foreach ($values['fields'] as $setting => $props) { $output[$group][$setting] = isset($props['attr']['value']) ? $props['attr']['value'] : ''; }
     }
-	return $output;
+    return $output;
 }
 
 /**
- * This function strips out the hidden settings values forcing the defaults and replaces the defaults with the user settings values, if set
+ * USED FOR METHODS - This function strips out the hidden settings values forcing the defaults and replaces the defaults with the user settings values, if set
  * @param array $defaults - defaults settings for the module/method, will be overridden by user settings if not hidden
  * @param array $settings - user defined settings to override
  * @param array $structure - module/method structure to act upon
@@ -392,10 +398,12 @@ function settingsReplace(&$defaults, $settings=[], $structure=[]) {
 function settingsFill(&$structure, $module='')
 {
     $settings = getModuleCache($module, 'settings', false, false, []);
+    if (empty($settings)) { return; }
     foreach ($settings as $group => $entries) {
-        if (is_array($entries)) { foreach ($entries as $key => $value) {
-            if (isset($structure[$group][$key])) { $structure[$group][$key]['attr']['value'] = $value; }
-        } }
+        if (!is_array($entries)) { continue; } // mal-formed settings
+        foreach ($entries as $key => $value) {
+            if (isset($structure[$group]['fields'][$key])) { $structure[$group]['fields'][$key]['attr']['value'] = $value; }
+        }
     }
 }
 
@@ -406,24 +414,24 @@ function getTermsDate($terms_encoded='', $type='c')
     if (!$terms_encoded){ $terms = $terms_def; }
     else                { $terms = explode(':', $terms_encoded); }
     if ($terms[0]==0)   { $terms = $terms_def; }
-	switch ($terms[0]) {
-		default:
-		case '0': // Default terms
-		case '3': // Special terms
-            if (!isset($terms[3])) { $terms[3] = 30; } 
-			return localeCalculateDate(date('Y-m-d'), $terms[3]);
+    switch ($terms[0]) {
+        default:
+        case '0': // Default terms
+        case '3': // Special terms
+            if (!isset($terms[3])) { $terms[3] = 30; }
+            return localeCalculateDate(date('Y-m-d'), $terms[3]);
         case '1': // Cash on Delivery (COD)
-		case '2': // Prepaid
-		case '6': // Due upon receipt
-            return date('Y-m-d'); 
+        case '2': // Prepaid
+        case '6': // Due upon receipt
+            return date('Y-m-d');
         case '4': return $terms[3];     // Due on date
         case '5': return date('Y-m-t'); // Due at end of month
-	}
+    }
 }
 
 /**
  * Returns the first hit from $_REQUEST of the array of possible indices.
- * 
+ *
  * @param array $indices - [default: array('search','q')] - List of indices to comb through, q first as when instantiating the combo, q is empty but once
  * the use start typing, q has a value and should take precedence.
  * @return string - First hit
@@ -446,11 +454,11 @@ function sortOrder($arrToSort=[], $sortKey='order', $order='asc')
 {
     $temp = [];
     if (!is_array($arrToSort)) { return $arrToSort; }
-    foreach ($arrToSort as $key => $value) { 
+    foreach ($arrToSort as $key => $value) {
         $temp[$key] = isset($value[$sortKey]) ? $value[$sortKey] : 999;
     }
     $type = $order=='desc' ? SORT_DESC : SORT_ASC;
-	array_multisort($temp, $type, $arrToSort);
+    array_multisort($temp, $type, $arrToSort);
     return $arrToSort;
 }
 
@@ -464,10 +472,10 @@ function sortOrderLang($arrToSort=[], $sortKey='title')
 {
     $temp = [];
     if (!is_array($arrToSort)) { return $arrToSort; }
-    foreach ($arrToSort as $key => $value) { 
+    foreach ($arrToSort as $key => $value) {
         $temp[$key] = isset($value[$sortKey]) ? lang($value[$sortKey]) : 'ZZZ';
     }
-	array_multisort($temp, SORT_ASC, $arrToSort);
+    array_multisort($temp, SORT_ASC, $arrToSort);
     return $arrToSort;
 }
 
@@ -482,9 +490,9 @@ function updateSelection($data)
     foreach ($data['values'] as $settings) {
         $method = isset($settings['method']) ? $settings['method'] : 'post';
         $output[$settings['index']] = clean($settings['index'], ['format'=>$settings['clean'],'default'=>$settings['default']], $method);
-	}
+    }
     setUserCache($data['path'], false, $output);
-	return $output;
+    return $output;
 }
 
 /**
@@ -495,7 +503,7 @@ function updateSelection($data)
 function auto_version($file)
 {
     $mtime = filemtime($file);
-	return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
+    return preg_replace('{\\.([^./]+)$}', ".$mtime.\$1", $file);
 }
 
 /**
@@ -505,20 +513,20 @@ function auto_version($file)
  */
 function randomValue($length = 12)
 {
-	$chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
-	$chars_length = (strlen($chars) - 1);
-	$string = $chars{rand(0, $chars_length)};
-	for ($i = 1; $i < $length; $i = strlen($string)) {
-		$r = $chars{rand(0, $chars_length)};
+    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+    $chars_length = (strlen($chars) - 1);
+    $string = $chars{rand(0, $chars_length)};
+    for ($i = 1; $i < $length; $i = strlen($string)) {
+        $r = $chars{rand(0, $chars_length)};
         if ($r != $string{$i - 1}) { $string .=  $r; }
-	}
-	return $string;
+    }
+    return $string;
 }
 
 /**
  * Round to a certain precision, includes correction for floating point issues like calculated value of 162.694999999 rounding to 162.69 instead of 162.70
  * @param float $value - Value to round
- * @param integer $precision - [default 2] precision to round to 
+ * @param integer $precision - [default 2] precision to round to
  * @return rounded $value
  */
 function roundAmount($value, $precision=2)
@@ -537,11 +545,11 @@ function roundAmount($value, $precision=2)
  */
 function validateSecurity($module, $index, $min_level=1, $verbose=true)
 {
-	$access_level = getUserCache('security', $index, false, 0);
+    $access_level = getUserCache('security', $index, false, 0);
     if (!is_numeric($access_level)) { $access_level = 0; } // catches if index is null or undefined, returns array
-	$approved = ($access_level >= $min_level) ? $access_level : 0;
+    $approved = ($access_level >= $min_level) ? $access_level : 0;
     if (!$approved && $verbose) { msgAdd(lang('err_no_permission')." [$index]"); }
-	return $approved;
+    return $approved;
 }
 
 function validateUsersRoles($security=false) {
@@ -559,7 +567,7 @@ function validateUsersRoles($security=false) {
 
 /**
  * Pulls the address record from the database if $aID > 0, else returns business address information from Bizuno settings
- * @param integer $aID - record id of the address 
+ * @param integer $aID - record id of the address
  * @param string $suffix - suffix to append to index of returned array
  * @param boolean $ap - special case for aID=0 to pull correct settings from cache
  * @return array - keyed array of address information
@@ -569,18 +577,18 @@ function addressLoad($aID=0, $suffix='', $ap=false)
     if (!$aID && getUserCache('profile', 'restrict_store', false, -1) > 0) {
         $result = dbGetRow(BIZUNO_DB_PREFIX.'address_book', "ref_id=".getUserCache('profile', 'restrict_store', false, -1)." AND type='m'");
     } elseif ($aID) {
-		$result = dbGetRow(BIZUNO_DB_PREFIX."address_book", "address_id=$aID");
-	} else { // load home address from registry
-		$result = ['address_id'=>0];
+        $result = dbGetRow(BIZUNO_DB_PREFIX."address_book", "address_id=$aID");
+    } else { // load home address from registry
+        $result = ['address_id'=>0];
         $settings = getModuleCache('bizuno', 'settings', 'company');
-		foreach ($settings as $key => $value) {
-			$result[$key] = $value;
+        foreach ($settings as $key => $value) {
+            $result[$key] = $value;
             if ($ap) { $result['contact'] = getModuleCache('bizuno', 'settings', 'company', 'contact_ap'); }
-		}
-	}
-	$output = [];
+        }
+    }
+    $output = [];
     foreach ($result as $key => $value) { $output[$key.$suffix] = $value; }
-	return $output;
+    return $output;
 }
 
 /**
@@ -589,18 +597,18 @@ function addressLoad($aID=0, $suffix='', $ap=false)
  */
 function pullExpDates()
 {
-	$output = [];
-	$output['months'][]= ['id'=>0, 'text'=>lang('select')];
-	$output['years'][] = ['id'=>0, 'text'=>lang('select')];
-	for ($i = 1; $i < 13; $i++) {
-		$j = ($i < 10) ? '0' . $i : $i;
-		$output['months'][] = ['id'=>sprintf('%02d', $i), 'text'=>$j.'-'.strftime('%B',mktime(0,0,0,$i,1,2000))];
-	}
-	$today = getdate();
-	for ($i = $today['year']; $i < $today['year'] + 10; $i++) {
-		$output['years'][] = ['id'=>strftime('%Y',mktime(0,0,0,1,1,$i)), 'text'=>strftime('%Y',mktime(0,0,0,1,1,$i))];
-	}
-	return $output;
+    $output = [];
+    $output['months'][]= ['id'=>0, 'text'=>lang('select')];
+    $output['years'][] = ['id'=>0, 'text'=>lang('select')];
+    for ($i = 1; $i < 13; $i++) {
+        $j = ($i < 10) ? '0' . $i : $i;
+        $output['months'][] = ['id'=>sprintf('%02d', $i), 'text'=>$j.'-'.strftime('%B',mktime(0,0,0,$i,1,2000))];
+    }
+    $today = getdate();
+    for ($i = $today['year']; $i < $today['year'] + 10; $i++) {
+        $output['years'][] = ['id'=>strftime('%Y',mktime(0,0,0,1,1,$i)), 'text'=>strftime('%Y',mktime(0,0,0,1,1,$i))];
+    }
+    return $output;
 }
 
 /**
@@ -608,14 +616,14 @@ function pullExpDates()
  * @param array $arr - Source data array
  * @return object - Converted array
  */
-function array_to_object($arr=[]) 
+function array_to_object($arr=[])
 {
     if (!is_array($arr)) { return $arr; }
-	$output = new \stdClass();
-	foreach ($arr as $key => $value) {
+    $output = new \stdClass();
+    foreach ($arr as $key => $value) {
         $output->$key = is_array($value) ? array_to_object($value) : $output->$key = $value;
-	}
-	return $output;
+    }
+    return $output;
 }
 
 /**
@@ -629,26 +637,26 @@ function array_to_object($arr=[])
  */
 function object_to_xml($params, $multiple=false, $multiple_key='', $level=0, $brief=false)
 {
-	$output = NULL;
+    $output = NULL;
     if (!is_array($params) && !is_object($params)) { return; }
-	foreach ($params as $key => $value) {
-		$xml_key = $multiple ? $multiple_key : $key;
-		if       (is_array($value)) {
-			$output .= object_to_xml($value, true, $key, $level, $brief);
-		} elseif (is_object($value)) {
+    foreach ($params as $key => $value) {
+        $xml_key = $multiple ? $multiple_key : $key;
+        if       (is_array($value)) {
+            $output .= object_to_xml($value, true, $key, $level, $brief);
+        } elseif (is_object($value)) {
             for ($i=0; $i<$level; $i++) { $output .= "\t"; }
-			$output .= "<" . $xml_key . ">\n";
-			$output .= object_to_xml($value, '', '', $level+1, $brief);
+            $output .= "<" . $xml_key . ">\n";
+            $output .= object_to_xml($value, '', '', $level+1, $brief);
             for ($i=0; $i<$level; $i++) { $output .= "\t"; }
-			$output .= "</" . $xml_key . ">\n";
-		} else {
-			if ($value <> '') {
+            $output .= "</" . $xml_key . ">\n";
+        } else {
+            if ($value <> '') {
                 for ($i=0; $i<$level-1; $i++) { $output .= "\t"; }
-				$output .= xmlEntry($xml_key, $value, $brief);
-			}
-		}
-	}
-	return $output;
+                $output .= xmlEntry($xml_key, $value, $brief);
+            }
+        }
+    }
+    return $output;
 }
 
 /**
@@ -668,16 +676,16 @@ function parseXMLstring($strXML, $assoc=false)
 }
 
 /**
- * Creates an XML header used in PhreeForm reports 
+ * Creates an XML header used in PhreeForm reports
  * @return string
  */
 function createXmlHeader()
 {
-	header("Content-Type: text/xml");
+    header("Content-Type: text/xml");
     if (!defined("CHARSET")) { define("CHARSET", "UTF-8"); }
-	$str  = '<?xml version="1.0" encoding="'.CHARSET.'" standalone="yes" ?>'."\n";
-	$str .= "<data>\n";
-	return $str;
+    $str  = '<?xml version="1.0" encoding="'.CHARSET.'" standalone="yes" ?>'."\n";
+    $str .= "<data>\n";
+    return $str;
 }
 
 /**
@@ -689,13 +697,13 @@ function createXmlHeader()
  */
 function xmlEntry($key, $data, $ignore = false)
 {
-	$str = "\t<$key>";
-	if ($data != NULL) {
+    $str = "\t<$key>";
+    if ($data != NULL) {
         if ($ignore) { $str .= $data; }
         else { $str .= "<![CDATA[" . $data . "]]>"; }
-	}
-	$str .= "</$key>\n";
-	return $str;
+    }
+    $str .= "</$key>\n";
+    return $str;
 }
 
 /**
@@ -704,7 +712,7 @@ function xmlEntry($key, $data, $ignore = false)
  */
 function createXmlFooter()
 {
-	return "</data>\n";
+    return "</data>\n";
 }
 
 /**
@@ -714,27 +722,27 @@ function createXmlFooter()
  */
 function getDefaultFormID($jID = 0)
 {
-	switch ($jID) {
-		default:
-		case  2: return 'gl:j2';
-		case  3: return 'vend:j3';
-		case  4: return 'vend:j4';
-		case  6: return 'vend:j6';
-		case  7: return 'vend:j7';
-		case  9: return 'cust:j9';
-		case 10: return 'cust:j10';
-		case 12: return 'cust:j12';
-		case 13: return 'cust:j13';
-		case 14: return 'inv:j14';
-		case 15: return 'inv:j15';
-		case 16: return 'inv:j16';
-		case 17:
-		case 18: return 'bnk:j18';
-		case 19: return 'cust:j19';
-		case 20:
-		case 21:
-		case 22: return 'bnk:j20';
-	}
+    switch ($jID) {
+        default:
+        case  2: return 'gl:j2';
+        case  3: return 'vend:j3';
+        case  4: return 'vend:j4';
+        case  6: return 'vend:j6';
+        case  7: return 'vend:j7';
+        case  9: return 'cust:j9';
+        case 10: return 'cust:j10';
+        case 12: return 'cust:j12';
+        case 13: return 'cust:j13';
+        case 14: return 'inv:j14';
+        case 15: return 'inv:j15';
+        case 16: return 'inv:j16';
+        case 17:
+        case 18: return 'bnk:j18';
+        case 19: return 'cust:j19';
+        case 20:
+        case 21:
+        case 22: return 'bnk:j20';
+    }
 }
 
 /**
@@ -746,7 +754,7 @@ function viewFavicon($url, $title='', $event=false)
 {
     global $io;
     $target= $event ? "style=\"cursor:pointer\" onClick=\"window.open('$url', '_blank');\" " : '';
-	$parts = parse_url($url);
+    $parts = parse_url($url);
     if (empty($parts['host'])) { return ''; }
     if (file_exists(BIZUNO_DATA."cache/icons/{$parts['host']}.fav")) { // load the icon
         $img = file_get_contents(BIZUNO_DATA."cache/icons/{$parts['host']}.fav");
@@ -780,7 +788,7 @@ function viewFavicon($url, $title='', $event=false)
 function getFavIcon($host, $scheme=false)
 {
     if ($scheme) { $host = "$scheme://$host"; }
-    msgDebug("\nTrying url: $host"); 
+    msgDebug("\nTrying url: $host");
     $site = @file_get_contents($host);
     $doc = new \DOMDocument('1.0', 'UTF-8');
     $internalErrors = libxml_use_internal_errors(true); // set error level
@@ -801,6 +809,6 @@ function getFavIcon($host, $scheme=false)
  */
 function csvEncapsulate($value)
 {
-	$cleaned = str_replace(["\r\n", "\n", "\r", "\t", "\0", "\x0B"], ' ', $value);
+    $cleaned = str_replace(["\r\n", "\n", "\r", "\t", "\0", "\x0B"], ' ', $value);
     return strpos($value, ',') === false ? $cleaned : '"'.$cleaned.'"';
 }

@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-10
+ * @version    3.x Last Update: 2019-01-10
  * @filesource /lib/controller/module/phreebooks/dashboards/open_j07/open_j07.php
  */
 
@@ -31,17 +31,16 @@ class open_j07
     public $methodDir= 'dashboards';
     public $code     = 'open_j07';
     public $category = 'vendors';
-	
-	function __construct($settings)
+
+    function __construct($settings)
     {
-		$this->security= getUserCache('security', 'j6_mgr', false, 0);
+        $this->security= getUserCache('security', 'j6_mgr', false, 0);
         $defaults      = ['jID'=>7,'max_rows'=>20,'users'=>'-1','roles'=>'-1','reps'=>'0','num_rows'=>5,'limit'=>1,'order'=>'desc'];
         $this->settings= array_replace_recursive($defaults, $settings);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $this->trim    = 20; // length to trim primary_name to fit in frame
-        $this->noYes   = ['0'  =>lang('no'),        '1'   =>lang('yes')];
-		$this->order   = ['asc'=>lang('increasing'),'desc'=>lang('decreasing')];
-	}
+        $this->order   = ['asc'=>lang('increasing'),'desc'=>lang('decreasing')];
+    }
 
     public function settingsStructure()
     {
@@ -51,64 +50,66 @@ class open_j07
             'max_rows'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['max_rows']]],
             'users'   => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
             'roles'   => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']],
-            'reps'    => ['label'=>lang('just_reps'),    'values'=>viewKeyDropdown($this->noYes),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['reps']]],
+            'reps'    => ['label'=>lang('just_reps'),    'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['reps']]],
             'num_rows'=> ['label'=>lang('limit_results'),'values'=>$list_length,'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['num_rows']]],
-            'limit'   => ['label'=>lang('hide_future'),  'values'=>viewKeyDropdown($this->noYes),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['limit']]],
+            'limit'   => ['label'=>lang('hide_future'),  'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['limit']]],
             'order'   => ['label'=>lang('sort_order'),   'values'=>viewKeyDropdown($this->order),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['order']]]];
-	}
+    }
 
-	function render()
+    function render()
     {
-		global $currencies;
-		$btn   = ['attr'=>['type'=>'button','value'=>lang('save')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]];
+        global $currencies;
+        bizAutoLoad(BIZUNO_LIB.'controller/module/phreebooks/functions.php', 'getPaymentInfo', 'function');
+        $btn   = ['attr'=>['type'=>'button','value'=>lang('save')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]];
         $data  = $this->settingsStructure();
-		$html  = '<div>';
-		$html .= '  <div id="'.$this->code.'_attr" style="display:none"><form id="'.$this->code.'Form" action="">';
-		$html .= '    <div style="white-space:nowrap">'.html5($this->code.'num_rows',$data['num_rows']).'</div>';
-		$html .= '    <div style="white-space:nowrap">'.html5($this->code.'order',   $data['order'])   .'</div>';
-		$html .= '    <div style="white-space:nowrap">'.html5($this->code.'limit',   $data['limit'])   .'</div>';
-		$html .= '    <div style="text-align:right;">' .html5($this->code.'_btn', $btn).'</div>';
-		$html .= '  </form></div>';
-		// Build content box
+        $html  = '<div>';
+        $html .= '  <div id="'.$this->code.'_attr" style="display:none"><form id="'.$this->code.'Form" action="">';
+        $html .= '    <div style="white-space:nowrap">'.html5($this->code.'num_rows',$data['num_rows']).'</div>';
+        $html .= '    <div style="white-space:nowrap">'.html5($this->code.'order',   $data['order'])   .'</div>';
+        $html .= '    <div style="white-space:nowrap">'.html5($this->code.'limit',   $data['limit'])   .'</div>';
+        $html .= '    <div style="text-align:right;">' .html5($this->code.'_btn', $btn).'</div>';
+        $html .= '  </form></div>';
+        // Build content box
         $filter = "journal_id={$this->settings['jID']} AND closed='0'";
         if ($this->settings['reps'] && getUserCache('profile', 'contact_id', false, '0')) {
             if (getUserCache('security', 'admin', false, 0)<3) { $filter.= " AND rep_id='".getUserCache('profile', 'contact_id', false, '0')."'"; }
         }
         if (isset($this->settings['limit']) && $this->settings['limit']=='1') { $filter.= " AND post_date<='".date('Y-m-d')."'"; }
         if (getUserCache('profile', 'restrict_store', false, -1) > 0) { $filter.= " AND store_id=".getUserCache('profile', 'restrict_store', false, -1).""; }
-		$order  = $this->settings['order']=='desc' ? 'post_date DESC, invoice_num DESC' : 'post_date, invoice_num';
-		$result = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $filter, $order, ['id','total_amount','currency','currency_rate','post_date','invoice_num', 'primary_name_b'], $this->settings['num_rows']);
-		$total = 0;
+        $order  = $this->settings['order']=='desc' ? 'post_date DESC, invoice_num DESC' : 'post_date, invoice_num';
+        $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $filter, $order, ['id','journal_id','total_amount','currency','currency_rate','post_date','invoice_num', 'primary_name_b'], $this->settings['num_rows']);
+        $total = 0;
         $html .= html5('', ['classes'=>['easyui-datalist'],'attr'=>['type'=>'ul']])."\n";
-		if (sizeof($result) > 0) {
-			foreach ($result as $entry) {
-				$currencies->iso  = $entry['currency'];
-				$currencies->rate = $entry['currency_rate'];
+        if (sizeof($result) > 0) {
+            foreach ($result as $entry) {
+                $entry['total_amount'] += getPaymentInfo($entry['id'], $entry['journal_id']);
+                $currencies->iso  = $entry['currency'];
+                $currencies->rate = $entry['currency_rate'];
                 $html .= html5('', ['attr'=>['type'=>'li']]).'<span style="float:left">';
                 if (empty($entry['invoice_num'])) {
                     $html .= html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>lang('journal_main_waiting')]]);
                 } else {
                     $html .= html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
                 }
-				$html .= viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim).'</span><span style="float:right">'.viewFormat($entry['total_amount'], 'currency').'</span></li>';
-				$total += $entry['total_amount'];
-			}
-			$currencies->iso  = getUserCache('profile', 'currency', false, 'USD');
-			$currencies->rate = 1;
-			$html .= '<li><div style="float:right"><b>'.viewFormat($total, 'currency').'</b></div><div style="float:left"><b>'.lang('total')."</b></div></li>\n";
-		} else {
-			$html .= '<li><span>'.lang('no_results')."</span></li>";
-		}
-		$html .= '</ul></div>';
-		return $html;
-	  }
+                $html .= viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim).'</span><span style="float:right">'.viewFormat($entry['total_amount'], 'currency').'</span></li>';
+                $total += $entry['total_amount'];
+            }
+            $currencies->iso  = getUserCache('profile', 'currency', false, 'USD');
+            $currencies->rate = 1;
+            $html .= '<li><div style="float:right"><b>'.viewFormat($total, 'currency').'</b></div><div style="float:left"><b>'.lang('total')."</b></div></li>\n";
+        } else {
+            $html .= '<li><span>'.lang('no_results')."</span></li>";
+        }
+        $html .= '</ul></div>';
+        return $html;
+      }
 
-	function save()
+    function save()
     {
-		$menu_id  = clean('menuID', 'text', 'get');
+        $menu_id  = clean('menuID', 'text', 'get');
         $settings['num_rows']= clean($this->code.'num_rows','integer','post');
-		$settings['order']   = clean($this->code.'order',   'cmd', 'post');
-		$settings['limit']   = clean($this->code.'limit',   'integer','post');
+        $settings['order']   = clean($this->code.'order',   'cmd', 'post');
+        $settings['limit']   = clean($this->code.'limit',   'integer','post');
         dbWrite(BIZUNO_DB_PREFIX."users_profiles", ['settings'=>json_encode($settings)], 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code' AND menu_id='$menu_id'");
-	}
+    }
 }

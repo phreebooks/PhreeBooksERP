@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-09-04
  * @filesource /lib/controller/module/phreebooks/dashboards/inv_stock/inv_stock.php
@@ -29,14 +29,14 @@ class inv_stock
     public $methodDir= 'dashboards';
     public $code     = 'inv_stock';
     public $category = 'inventory';
-	
-	function __construct($settings)
+    
+    function __construct($settings)
     {
-		$this->security= getUserCache('security', 'inv_mgr', false, 0);
+        $this->security= getUserCache('security', 'inv_mgr', false, 0);
         $defaults      = ['users'=>'-1','roles'=>'-1','reps'=>'0'];
         $this->settings= array_replace_recursive($defaults, $settings);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
-	}
+    }
 
     public function settingsStructure()
     {
@@ -44,9 +44,9 @@ class inv_stock
             'users' => ['label'=>lang('users'),    'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
             'roles' => ['label'=>lang('groups'),   'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']],
             'reps'  => ['label'=>lang('just_reps'),'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['reps']]]];
-	}
+    }
 
-	public function render()
+    public function render()
     {
 /*        $cData[]= [lang('vendor'), lang('total')]; // headings
         $rows = dbGetMulti(BIZUNO_DB_PREFIX.'inventory', "qty_stock<(qty_min+qty_so+qty_alloc-qty_po)", '', ['sku','vendor_id','(qty_min+qty_so+qty_alloc-qty_po-qty_stock) AS balance']);
@@ -68,5 +68,5 @@ class inv_stock
         $js.= "google.charts.setOnLoadCallback(chart{$this->code});\n";
 */
         return 'dashboard not written';
-	}
+    }
 }

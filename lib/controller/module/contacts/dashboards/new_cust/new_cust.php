@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/phreebooks/dashboards/new_cust/new_cust.php
@@ -32,14 +32,14 @@ class new_cust
     public $code      = 'new_cust';
     public $category  = 'customers';
     public $noSettings= true;
-	
-	function __construct($settings)
+    
+    function __construct($settings)
     {
-		$this->security= getUserCache('security', 'mgr_c', false, 0);
+        $this->security= getUserCache('security', 'mgr_c', false, 0);
         $defaults      = ['users'=>'-1','roles'=>'-1','reps'=>'0'];
         $this->settings= array_replace_recursive($defaults, $settings);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
-	}
+    }
 
     public function settingsStructure()
     {
@@ -47,9 +47,9 @@ class new_cust
             'users' => ['label'=>lang('users'),    'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
             'roles' => ['label'=>lang('groups'),   'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']],
             'reps'  => ['label'=>lang('just_reps'),'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['reps']]]];
-	}
+    }
 
-	public function render()
+    public function render()
     {
         $js = "function chart{$this->code}() {
     var data = new google.visualization.DataTable();
@@ -67,7 +67,7 @@ class new_cust
 google.charts.load('current', {'packages':['table']});
 google.charts.setOnLoadCallback(chart{$this->code});\n";
         return '<div style="width:100%;text-align:center" id="'.$this->code.'_chart"></div>'.htmlJS($js);
-	}
+    }
     
     private function getTotals($range='c')
     {

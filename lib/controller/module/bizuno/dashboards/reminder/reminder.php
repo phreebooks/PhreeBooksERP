@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/bizuno/dashboards/reminder/reminder.php
@@ -31,15 +31,15 @@ class reminder
     public $methodDir= 'dashboards';
     public $code     = 'reminder';
     public $category = 'general';
-	
-	function __construct($settings=[])
+    
+    function __construct($settings=[])
     {
-		$this->security= 4;
+        $this->security= 4;
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $this->settings= $settings;
-	}
+    }
 
-	/**
+    /**
      * Installs the dashboard on the specified menu
      * @param string $moduleID - Module ID where the method is stored
      * @param string $menu_id - Menu ID where the dashboard will be placed
@@ -59,10 +59,10 @@ class reminder
             'module_id'   => $moduleID,
             'dashboard_id'=> $this->code,
             'settings'    => json_encode($settings)];
-		dbWrite(BIZUNO_DB_PREFIX."users_profiles", $sql_data);
-	}
+        dbWrite(BIZUNO_DB_PREFIX."users_profiles", $sql_data);
+    }
 
-	/**
+    /**
      * Removes the dashboard from the users menu, will not allow removal if only 1 dashboard and reminder list is not empty
      * @param string $menu_id - Menu to remove dashboard
      */
@@ -81,7 +81,7 @@ class reminder
         } else {
             msgAdd($this->lang['err_dash_reminder_delete']);
         }
-	}
+    }
 
     /**
      * Renders the dashboard contents in HTML
@@ -114,7 +114,7 @@ class reminder
           if (!empty($this->settings['current'])) {
             foreach ($this->settings['current'] as $entry) {
                 $html .= html5('', ['attr'=>['type'=>'li']]).'<span style="float:left">';
-				$html .= viewFormat($entry['date'], 'date').' - '.$entry['title'].'</span><span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span></li>';
+                $html .= viewFormat($entry['date'], 'date').' - '.$entry['title'].'</span><span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span></li>';
                 $index++;
             }
         } else {

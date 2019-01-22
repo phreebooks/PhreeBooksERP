@@ -15,20 +15,20 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-16
+ * @version    3.x Last Update: 2019-01-21
  * @filesource /index.php
  */
 
 namespace bizuno;
 
-define('MODULE_BIZUNO_VERSION','3.1.0');
-define('PHREEBOOKS_VERSION','5.2.0'); // keep the sub-rev x.x.# at same level as Bizuno
+define('MODULE_BIZUNO_VERSION','3.1.3');
+define('PHREEBOOKS_VERSION','5.2.1'); // keep the sub-rev x.x.# at same level as Bizuno
 
 ini_set('display_errors', true);
 //error_reporting(E_ALL);
-error_reporting(E_ALL ^E_NOTICE);
+error_reporting(E_ALL & ~E_NOTICE);
 /*******************************/
 if (!defined('SCRIPT_START_TIME')) { define('SCRIPT_START_TIME', microtime(true)); }
 
@@ -53,7 +53,7 @@ define('BIZUNO_LIB',       BIZUNO_ROOT.'lib/'); // file system path to Bizuno Li
 define('BIZUNO_EXT',       BIZUNO_ROOT.'ext/'); // file system path to Bizuno Extensions
 define('BIZUNO_CUSTOM',    BIZUNO_ROOT.'myExt/'); // file system path to Bizuno custom extensions
 define('BIZUNO_DATA',      BIZUNO_ROOT.'myFiles/'); // myFolder
-define('BIZUNO_ICONS',     BIZUNO_DATA.'extIcons/'); // file system path to extra icon sets 
+define('BIZUNO_ICONS',     BIZUNO_DATA.'extIcons/'); // file system path to extra icon sets
 define('BIZUNO_THEMES',    BIZUNO_DATA.'extThemes/'); // file system path to extra themes
 // Database
 if (!defined('BIZUNO_DB_HOST'))  { define('BIZUNO_DB_HOST',  'localhost'); }

@@ -37,6 +37,7 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Upgrade Notice ==
 
+2019-01-21 - 5.2.1 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
 2018-12-17 - 5.2.0 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
 2018-10-28 - 5.1.6 - No database changes, overwrite current files with new version
 2018-09-26 - 5.1.4 - No database changes, overwrite current files with new version
@@ -60,6 +61,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.2.3 =
+2019-01-21 - Incorporate Bizuno Library 3.1.3. Bug fixes and improved security
 = 5.2.0 =
 2018-12-17 - Incorporate Bizuno Library 3.1.0. Work on mobile versions, bug fixes and improved security
 = 5.1.6 =

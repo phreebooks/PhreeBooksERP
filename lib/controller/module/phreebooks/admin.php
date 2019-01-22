@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-10
+ * @version    3.x Last Update: 2018-12-26
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -42,7 +42,7 @@ class phreebooksAdmin {
             'sales'      => isset($values[30])? $values[30]: '',
             'expense'    => isset($values[34])? $values[34]: ''];
         $this->assets    = [0, 2, 4, 6, 8, 12, 32, 34]; // gl_account types that are assets
-		$this->settings  = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
+        $this->settings  = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
         $this->structure = [
             'url' => BIZUNO_URL."controller/module/$this->moduleID/",
             'version' => MODULE_BIZUNO_VERSION,
@@ -50,7 +50,6 @@ class phreebooksAdmin {
             'required' => '1',
             'dirMethods' => 'totals',
             'attachPath' => 'data/phreebooks/uploads/',
-//			'totals'       => getModuleCache('phreebooks', 'totals', false, false, $this->totalsStructure()),
             'menuBar' => ['child'=>[
                 'banking' => ['order'=>40,'label'=>lang('banking'),'group'=>'bnk','icon'=>'bank','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=banking');"],'child'=>[
                     'j17_mgr' => ['order'=>70,'label'=>lang('journal_main_journal_id_17'),'icon'=>'payment',   'events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=17');"]],
@@ -72,7 +71,7 @@ class phreebooksAdmin {
                     'j16_mgr' => ['order'=>50,'label'=>lang('journal_main_journal_id_16'),'icon'=>'inv-adj','events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=16');"]]]],
                 'ledger' => ['order'=>50,'label'=>lang('general_ledger'),'group'=>'gl','icon'=>'journal','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=ledger');"],'child'=>[
                     'j2_mgr'  => ['order'=>10, 'label'=>lang('journal_main_journal_id_2'),'icon'=>'journal','events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=2');"]],
-//    				'cashflow'=> ['order'=>80,'label'=>lang('cash_flow')),       'icon'=>'linechart','events'=>['onClick'=>"hrefClick('phreebooks/budget/cashFlow');"]],
+//                    'cashflow'=> ['order'=>80,'label'=>lang('cash_flow')),       'icon'=>'linechart','events'=>['onClick'=>"hrefClick('phreebooks/budget/cashFlow');"]],
                     'budget'  => ['order'=>90,'label'=>lang('phreebooks_budget'),'icon'=>'budget',   'events'=>['onClick'=>"hrefClick('phreebooks/budget/manager');"]],
                     'rpt_jrnl'=> ['order'=>99,'label'=>lang('reports'),          'icon'=>'mimeDoc',  'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=gl');"]]]],
                 'tools' => ['child'=>[
@@ -141,46 +140,39 @@ class phreebooksAdmin {
      * @return array - structure used in the main settings tab
      */
     public function settingsStructure() {
-        $noYes = [['id' => '0', 'text' => lang('no')], ['id' => '1', 'text' => lang('yes')]];
-        $data = [
-            'general' => [
-                'round_tax_auth' => ['values' => $noYes, 'attr' => ['type' => 'select', 'value' => '0']],
-                'shipping_taxed' => ['values' => $noYes, 'attr' => ['type' => 'select', 'value' => '0']],
-                'isolate_stores' => ['values' => $noYes, 'attr' => ['type' => 'select', 'value' => '0']]],
-            'customers' => [
-                'gl_receivables' => ['attr'=>['type'=>'ledger','id'=>'customers_gl_receivables', 'value' => $this->glDefaults['receivables']]],
-                'gl_sales'       => ['attr'=>['type'=>'ledger','id'=>'customers_gl_sales',       'value' => $this->glDefaults['sales']]],
-                'gl_cash'        => ['attr'=>['type'=>'ledger','id'=>'customers_gl_cash',        'value' => $this->glDefaults['cash']]],
-                'gl_discount'    => ['attr'=>['type'=>'ledger','id'=>'customers_gl_discount',    'value' => $this->glDefaults['sales']]],
-                'gl_deposit_cash'=> ['attr'=>['type'=>'ledger','id'=>'customers_gl_deposit_cash','value' => $this->glDefaults['cash']]],
-                'gl_liability'   => ['attr'=>['type'=>'ledger','id'=>'customers_gl_liability',   'value' => $this->glDefaults['liability']]],
-                'gl_expense'     => ['attr'=>['type'=>'ledger','id'=>'customers_gl_expense',     'value' => $this->glDefaults['expense']]],
-                'terms'          => ['attr' => ['type' => 'hidden', 'value' => '2']],
-                'terms_edit'     => ['icon' => 'settings', 'size' => 'small', 'label' => lang('terms'), 'attr' => ['type' => 'hidden'], 'events' => ['onClick' => "jsonAction('contacts/main/editTerms&type=c&callBack=customers_terms', 0, jq('#customers_terms').val());"]],
-                'terms_text'     => ['attr' => ['value' => '']],
-                'auto_add'       => ['values' => $noYes, 'attr' => ['type' => 'select', 'value' => '1']],
-                'show_status'    => ['values' => $noYes, 'attr' => ['type' => 'select', 'value' => '1']],
-                'include_all'    => ['values' => $noYes, 'attr' => ['type' => 'select', 'value' => '0']]],
-            'vendors' => [
-                'gl_payables'    => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_payables',    'value' => $this->glDefaults['payables']]],
-                'gl_purchases'   => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_purchases',   'value' => $this->glDefaults['inventory']]],
-                'gl_cash'        => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_cash',        'value' => $this->glDefaults['cash']]],
-                'gl_discount'    => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_discount',    'value' => $this->glDefaults['payables']]],
-                'gl_deposit_cash'=> ['attr'=>['type'=>'ledger','id'=>'vendors_gl_deposit_cash','value' => $this->glDefaults['cash']]],
-                'gl_liability'   => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_liability',   'value' => $this->glDefaults['liability']]],
-                'gl_expense'     => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_expense',     'value' => $this->glDefaults['expense']]],
-                'terms'          => ['attr' => ['type' => 'hidden', 'value' => '3:0:0:30:1000.00']],
-                'terms_edit'     => ['icon' => 'settings', 'size' => 'small', 'label' => lang('terms'), 'attr' => ['type' => 'hidden'], 'events' => ['onClick' => "jsonAction('contacts/main/editTerms&type=v&callBack=vendors_terms', 0, jq('#vendors_terms').val());"]],
-                'terms_text'     => ['attr' => ['value' => '']],
-                'auto_add'       => ['values' => $noYes, 'attr' => ['type' => 'select', 'value' => '1']],
-                'show_status'    => ['values' => $noYes, 'attr' => ['type' => 'select', 'value' => '1']]],
+       $data = [
+            'general'  => ['order'=>10,'label'=>lang('general'),'fields'=>[
+                'round_tax_auth' => ['attr'=>['type'=>'selNoYes', 'value'=>0]],
+                'shipping_taxed' => ['attr'=>['type'=>'selNoYes', 'value'=>0]],
+                'isolate_stores' => ['attr'=>['type'=>'selNoYes', 'value'=>0]]]],
+            'customers'=> ['order'=>20,'label'=>lang('customers'),'fields'=>[
+                'gl_receivables' => ['attr'=>['type'=>'ledger','id'=>'customers_gl_receivables', 'value'=>$this->glDefaults['receivables']]],
+                'gl_sales'       => ['attr'=>['type'=>'ledger','id'=>'customers_gl_sales',       'value'=>$this->glDefaults['sales']]],
+                'gl_cash'        => ['attr'=>['type'=>'ledger','id'=>'customers_gl_cash',        'value'=>$this->glDefaults['cash']]],
+                'gl_discount'    => ['attr'=>['type'=>'ledger','id'=>'customers_gl_discount',    'value'=>$this->glDefaults['sales']]],
+                'gl_deposit_cash'=> ['attr'=>['type'=>'ledger','id'=>'customers_gl_deposit_cash','value'=>$this->glDefaults['cash']]],
+                'gl_liability'   => ['attr'=>['type'=>'ledger','id'=>'customers_gl_liability',   'value'=>$this->glDefaults['liability']]],
+                'gl_expense'     => ['attr'=>['type'=>'ledger','id'=>'customers_gl_expense',     'value'=>$this->glDefaults['expense']]],
+                'terms_text'     => ['break'=>false,'attr'=>['value'=>'']],
+                'terms'          => ['break'=>false,'attr'=>['type'=>'hidden','value'=>'2']],
+                'terms_edit'     => ['icon'=>'settings','label'=>lang('terms'),'attr'=>['type'=>'hidden'],'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=c&callBack=customers_terms', 0, jq('#customers_terms').val());"]],
+                'show_status'    => ['attr'=>['type'=>'selNoYes', 'value'=>1]],
+                'include_all'    => ['attr'=>['type'=>'selNoYes', 'value'=>0]],
+                'ck_dup_po'      => ['attr'=>['type'=>'selNoYes', 'value'=>0]]]],
+            'vendors'  => ['order'=>30,'label'=>lang('vendors'),'fields'=>[
+                'gl_payables'    => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_payables',    'value'=>$this->glDefaults['payables']]],
+                'gl_purchases'   => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_purchases',   'value'=>$this->glDefaults['inventory']]],
+                'gl_cash'        => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_cash',        'value'=>$this->glDefaults['cash']]],
+                'gl_discount'    => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_discount',    'value'=>$this->glDefaults['payables']]],
+                'gl_deposit_cash'=> ['attr'=>['type'=>'ledger','id'=>'vendors_gl_deposit_cash','value'=>$this->glDefaults['cash']]],
+                'gl_liability'   => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_liability',   'value'=>$this->glDefaults['liability']]],
+                'gl_expense'     => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_expense',     'value'=>$this->glDefaults['expense']]],
+                'terms_text'     => ['break'=>false,'attr'=>['value'=>'']],
+                'terms'          => ['break'=>false,'attr'=>['type'=>'hidden','value'=>'3:0:0:30:1000.00']],
+                'terms_edit'     => ['icon'=>'settings','label'=>lang('terms'),'attr'=>['type'=>'hidden'],'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=v&callBack=vendors_terms', 0, jq('#vendors_terms').val());"]],
+                'show_status'    => ['attr'=>['type'=>'selNoYes', 'value'=>1]]]],
         ];
-        if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
-            $data['general']['auto_currency'] = ['values' => $noYes, 'attr' => ['type' => 'select', 'value' => '1']];
-        }
         settingsFill($data, $this->moduleID);
-//        if (isset($settings['customers']['terms'])){ $data['customers']['terms_text']['attr']['value']= viewTerms($data['customers']['terms']['attr']['value']); }
-//        if (isset($settings['vendors']['terms']))  { $data['vendors']['terms_text']['attr']['value']  = viewTerms($data['vendors']['terms']['attr']['value']); }
         return $data;
     }
 
@@ -201,11 +193,10 @@ class phreebooksAdmin {
     public function adminHome(&$layout = []) {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
         bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/currency.php", 'phreebooksCurrency');
-        $currency = new phreebooksCurrency();
-        $tools = $this->getViewTools($security);
-        $data = [
+        $currency= new phreebooksCurrency();
+        $tools   = $this->getViewTools($security);
+        $data    = [
             'tabs'    => ['tabAdmin'=>['divs'=>[
-                'settings' => ['order'=>10,'label'=>lang('settings'), 'src' => BIZUNO_LIB . "view/tabAdminSettings.php"],
                 'tabGL'    => ['order'=>20,'label'=>lang('phreebooks_chart_of_accts'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/chart/manager'"]],
                 'tabCur'   => ['order'=>30,'label'=>lang('currencies'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/currency/manager'"]],
                 'tabTaxc'  => ['order'=>40,'label'=>lang('inventory_tax_rate_id_c'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/tax/manager&type=c'"]],
@@ -318,14 +309,14 @@ class phreebooksAdmin {
 </fieldset>";
         if ($security == 4) { // GL Purge
             $output['body'] .= "<fieldset><legend>".$this->lang['msg_gl_db_purge'].'</legend>
-	<table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">'."
-		<tbody>
-			<tr>
-				<td>".$this->lang['msg_gl_db_purge_confirm']."</td>
-				<td>".html5('purge_db', $purge_db).' '.html5('btn_purge', $btn_purge)."</td>
-			</tr>
-		</tbody>
-	</table>
+    <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">'."
+        <tbody>
+            <tr>
+                <td>".$this->lang['msg_gl_db_purge_confirm']."</td>
+                <td>".html5('purge_db', $purge_db).' '.html5('btn_purge', $btn_purge)."</td>
+            </tr>
+        </tbody>
+    </table>
 </fieldset>";
         }
         return $output;
@@ -341,7 +332,7 @@ class phreebooksAdmin {
     public function managerFY(&$layout=[])
     {
         $html = $this->getViewFY();
-		$layout = array_replace_recursive($layout, ['type'=>'divHTML',
+        $layout = array_replace_recursive($layout, ['type'=>'divHTML',
             'divs'  => ['divFY'=>['order'=>80,'type'=>'html','html'=>$html['body']]],
             'jsBody'=> ['init' =>$html['jsBody']]]);
     }
@@ -390,7 +381,7 @@ class phreebooksAdmin {
                 $output .= '<td style="text-align:center">'.viewDate($value['end'])."</td>\n";
             }
             $output .= "</tr>\n";
-        }		  
+        }          
         $output .= "</tbody>\n</table>\n</div>\n</fieldset>";
         return ['body'=>$output,'jsBody'=>$outputJS];
     }
@@ -453,7 +444,7 @@ class phreebooksAdmin {
         foreach (getModuleCache('phreebooks', 'chart', 'accounts') as $row) {
             $row['asset'] = in_array($row['type'], $this->assets) ? 1 : 0;
             $row['type'] = viewFormat($row['type'], 'glType');
-//			if (!isset($row['inactive']) || $row['inactive']=='0') $accts[] = $row; // doesn't allow for edit of GL Accounts
+//            if (!isset($row['inactive']) || $row['inactive']=='0') $accts[] = $row; // doesn't allow for edit of GL Accounts
             $accts[] = $row; // need to remove keys
         }
         $layout['content']['dictionary']    = array_merge($layout['content']['dictionary'], $this->getBrowserLang());
@@ -525,23 +516,20 @@ class phreebooksAdmin {
      * @return modified $layout
      */
     public function usersEdit(&$layout) {
-        $layout['tabs']['tabUsers']['divs']['phreebooks'] = ['order'=>50,'label'=>$this->lang['title'],'type'=>'fields','fields'=>$this->getViewusers($layout['settings'])];
-    }
-
-    private function getViewUsers($settings)
-    {
-        if (empty($settings['cash_acct'])) { $settings['cash_acct'] = getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash'); }
-        if (empty($settings['ar_acct'])) { $settings['ar_acct'] = getModuleCache('phreebooks', 'settings', 'customers', 'gl_receivables'); }
-        if (empty($settings['ap_acct'])) { $settings['ap_acct'] = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables'); }
-        $restrict = ['label' => $this->lang['restrict_period'], 'position'=>'after','attr'=>['type'=>'checkbox']];
-        $cash_acct= ['label'=>$this->lang['set_gl_cash'],       'position'=>'after','attr'=>['type'=>'ledger','value'=>$settings['cash_acct']]];
-        $ar_acct  = ['label'=>$this->lang['set_gl_receivables'],'position'=>'after','attr'=>['type'=>'ledger','value'=>$settings['ar_acct']]];
-        $ap_acct  = ['label'=>$this->lang['set_gl_purchases'],  'position'=>'after','attr'=>['type'=>'ledger','idvalue'=>$settings['ap_acct']]];
-        return [
-            'restrict_period'=> array_merge($restrict, ['break'=>true]),
-            'cash_acct'      => array_merge($cash_acct, ['break'=>true]),
-            'ar_acct'        => array_merge($ar_acct, ['break'=>true]),
-            'ap_acct'        => array_merge($ap_acct)];
+        $keys = ['restrict_period', 'cash_acct', 'ar_acct', 'ap_acct'];
+        $settings = $layout['settings'];
+        if (empty($settings['cash_acct'])){ $settings['cash_acct']= getModuleCache('phreebooks', 'settings', 'customers','gl_cash'); }
+        if (empty($settings['ar_acct']))  { $settings['ar_acct']  = getModuleCache('phreebooks', 'settings', 'customers','gl_receivables'); }
+        if (empty($settings['ap_acct']))  { $settings['ap_acct']  = getModuleCache('phreebooks', 'settings', 'vendors',  'gl_payables'); }
+        $fields = [
+            'restrict_period'=> ['order'=>10,'break'=>true,'label'=>$this->lang['restrict_period_lbl'],'tip'=>$this->lang['restrict_period_tip'],'attr'=>['type'=>'checkbox']],
+            'cash_acct'      => ['order'=>20,'break'=>true,'label'=>$this->lang['gl_cash_lbl'],        'tip'=>$this->lang['gl_cash_tip'],        'attr'=>['type'=>'ledger','value'=>$settings['cash_acct']]],
+            'ar_acct'        => ['order'=>30,'break'=>true,'label'=>$this->lang['gl_receivables_lbl'], 'tip'=>$this->lang['gl_receivables_tip'], 'attr'=>['type'=>'ledger','value'=>$settings['ar_acct']]],
+            'ap_acct'        => ['order'=>40,'break'=>true,'label'=>$this->lang['gl_purchases_lbl'],   'tip'=>$this->lang['gl_purchases_tip'],   'attr'=>['type'=>'ledger','idvalue'=>$settings['ap_acct']]],
+        ];
+        if (empty($layout['fields'])) { $layout['fields'] = []; }
+        $layout['fields'] = array_merge($layout['fields'], $fields);
+        $layout['tabs']['tabUsers']['divs']['phreebooks'] = ['order'=>50,'label'=>$this->lang['title'],'type'=>'fields','keys'=>$keys];
     }
 
     /**
@@ -550,18 +538,14 @@ class phreebooksAdmin {
      */
     public function usersSave() {
         $rID = clean('admin_id', 'integer', 'post');
-        if (!$security = validateSecurity('bizuno', 'users', $rID ? 3 : 2)) {
-            return;
-        }
-        if (!$rID) {
-            return;
-        }
+        if (!$security = validateSecurity('bizuno', 'users', $rID ? 3 : 2)) { return; }
+        if (!$rID) { return; }
         $settings = json_decode(dbGetValue(BIZUNO_DB_PREFIX . "users", 'settings', "admin_id=$rID"), true);
-        $settings['restrict_period'] = clean('restrict_period', 'boolean', 'post');
-        $settings['cash_acct'] = clean('cash_acct', 'text', 'post');
-        $settings['ar_acct'] = clean('ar_acct', 'text', 'post');
-        $settings['ap_acct'] = clean('ap_acct', 'text', 'post');
-        dbWrite(BIZUNO_DB_PREFIX . "users", ['settings' => json_encode($settings)], 'update', "admin_id=$rID");
+        $settings['restrict_period']= clean('restrict_period', 'boolean', 'post');
+        $settings['cash_acct']      = clean('cash_acct', 'text', 'post');
+        $settings['ar_acct']        = clean('ar_acct', 'text', 'post');
+        $settings['ap_acct']        = clean('ap_acct', 'text', 'post');
+        dbWrite(BIZUNO_DB_PREFIX . "users", ['settings'=>json_encode($settings)], 'update', "admin_id=$rID");
     }
 
     /**
@@ -570,9 +554,7 @@ class phreebooksAdmin {
      */
     public function orderTotals() {
         $data = clean('data', 'text', 'get');
-        if (!$data) {
-            return msgAdd("Bad values sent!");
-        }
+        if (!$data) { return msgAdd("Bad values sent!"); }
         $vals = explode(';', $data);
         $output = [];
         foreach ($vals as $method) {

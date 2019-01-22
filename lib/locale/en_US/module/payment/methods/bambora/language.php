@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-09-05
  * @filesource /locale/en_US/module/payment/methods/bambora/language.php
@@ -27,8 +27,8 @@ $lang     = [
     'at_bambora'  => '@Bambora',
     'company_id'  => 'Company Login (set during the sign-up process)',
     'user_id'     => 'User Name (set during the sign-up process)',
-	'merch_id'    => 'Merchant ID (provided by Bambora after sign-up process)',
-	'passcode'    => 'Passcode (provided by Bambora through the administration control panel)',
+    'merch_id'    => 'Merchant ID (provided by Bambora after sign-up process)',
+    'passcode'    => 'Passcode (provided by Bambora through the administration control panel)',
     'auth_type'   => 'Authorization Type',
     'prefix_amex' => 'Prefix to use for American Express credit cards. (These cards are processed and reconciled through American Express)',
     'allow_refund'=> 'Allow Void/Refunds? This must be enabled by Bambora for your merchant account or refunds will not be allowed.',

@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-09-27
  * @filesource lib/controller/module/bizuno/portal.php
@@ -32,13 +32,13 @@ bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
 
 class bizunoPortal extends guest
 {
-	public $moduleID = 'bizuno';
+    public $moduleID = 'bizuno';
 
-	function __construct()
+    function __construct()
     {
-		$this->lang = getLang($this->moduleID);
+        $this->lang = getLang($this->moduleID);
         parent::__construct();
-	}
+    }
     
     public function login(&$layout=[])
     {
@@ -56,20 +56,20 @@ class bizunoPortal extends guest
         }
     }
 
-	/**
+    /**
      * Logs a user off of Bizuno and destroys session, returns to index.php to log in
      */
     public function logout(&$layout=[]) {
-		msgLog(lang('logout').": ".getUserCache('profile', 'title', false, ''));
+        msgLog(lang('logout').": ".getUserCache('profile', 'title', false, ''));
         clearUserCache('profile', 'admin_encrypt');
         $qlinks = getUserCache('quickBar');
-		$qlinks['child']['encrypt']['title'] = lang('bizuno_encrypt_enable');
-		$qlinks['child']['encrypt']['icon']  = 'encrypt-off';
+        $qlinks['child']['encrypt']['title'] = lang('bizuno_encrypt_enable');
+        $qlinks['child']['encrypt']['icon']  = 'encrypt-off';
         setUserCache('quickBar', false, $qlinks);
         $usrEmail = getUserCache('profile', 'email', false, '');
         dbWriteCache($usrEmail); // save changes before invalidating cache
         dbWrite(BIZUNO_DB_PREFIX.'users', ['cache_date'=>''], 'update', "email='$usrEmail'");
         biz_user_logout();
-		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"window.location=bizunoHome;"]]);
-	}
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"window.location=bizunoHome;"]]);
+    }
 }

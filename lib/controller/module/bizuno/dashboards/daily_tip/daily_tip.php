@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/bizuno/dashboards/daily_tip/daily_tip.php
@@ -34,22 +34,22 @@ class daily_tip
     public $noSettings= true;
     public $noCollapse= true;
 
-	function __construct() 
+    function __construct() 
     {
-		$this->security= 1;
+        $this->security= 1;
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
-	}
+    }
 
-	public function render()
+    public function render()
     {
         global $io;
         $resp = $io->cURLGet("https://www.bizuno.com","p=bizuno/portal/getTip",'get');
         msgDebug("\nReceived back from cURL: ".print_r($resp, true));
-		$tip  = json_decode($resp, true);
+        $tip  = json_decode($resp, true);
         $html = '<div>';
-		$html.= '  <div id="'.$this->code.'_attr" style="display:none"><form id="'.$this->code.'Form" action=""></form></div>';
-		$html.= '  <div style="float:left">'.html5('', ['icon'=>'tip']).'</div><div>'.($tip['tip'] ? $tip['tip'] : lang('no_results')).'</div>';
-		$html.= '</div><div style="min-height:4px;"> </div>'."\n";
-		return $html;
-	}
+        $html.= '  <div id="'.$this->code.'_attr" style="display:none"><form id="'.$this->code.'Form" action=""></form></div>';
+        $html.= '  <div style="float:left">'.html5('', ['icon'=>'tip']).'</div><div>'.($tip['tip'] ? $tip['tip'] : lang('no_results')).'</div>';
+        $html.= '</div><div style="min-height:4px;"> </div>'."\n";
+        return $html;
+    }
 }

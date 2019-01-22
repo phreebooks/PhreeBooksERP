@@ -15,24 +15,24 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-28
+ * @version    3.x Last Update: 2019-01-21
  * @filesource /locale/cleaner.php
  */
 
 namespace bizuno;
 
-class cleaner 
+class cleaner
 {
 
-	/**
-	 * This is designed to clean any data input, generally used for _GET and _POST variables but can be used for any data types
-	 * @param mixed $value this excepts any data and applies filters and tests
-	 * @param array $processing - Filter/test to validate the data, including type
-	 * @return mixed - Validated data after processing has been applied
-	 */
-	function clean($idx, $processing='', $src='')
+    /**
+     * This is designed to clean any data input, generally used for _GET and _POST variables but can be used for any data types
+     * @param mixed $value this excepts any data and applies filters and tests
+     * @param array $processing - Filter/test to validate the data, including type
+     * @return mixed - Validated data after processing has been applied
+     */
+    function clean($idx, $processing='', $src='')
     {
         switch ($src) {
             case 'cookie': $value = isset($_COOKIE[$idx]) ? $_COOKIE[$idx] : ''; break;
@@ -54,7 +54,7 @@ class cleaner
             case 'array':    return is_array($value) ? $value : [];
             case 'bool':     return substr(trim($value), 0 , 1) == '1' ? true : false;
             case 'char':     return strlen(trim($value))==0 ? $default : substr(trim($value), 0 , 1); // tbd what about length? char(3), etc
-            case 'cmd':      return strlen(trim($value)) ? preg_replace("/[^a-zA-Z0-9\_]/", '', $value) : $default;
+            case 'cmd':      return strlen(trim($value)) ? preg_replace("/[^a-zA-Z0-9\_\-]/", '', $value) : $default;
             case 'command':  return $this->cleanCommand($value, $default);
             case 'country':  return $this->cleanCountry($value, $option);
             case 'currency': return $this->cleanCurrency($value);
@@ -82,11 +82,11 @@ class cleaner
             case 'textarea': return $this->cleanTextarea($value, $default);
             case 'time':     return $this->localeTimeToDb($value, $separator = ':');
             case 'url':      return urlencode(str_replace([' ','/','\\'], '-', $value));
-            default:         
+            default:
 //                msgDebug("\nCleaning with format = {$processing['format']} the value: ".print_r($value, true));
                 return trim(stripslashes($value));
         }
-	}
+    }
 
     /**
      * Method to clean a command string received through the GET variable
@@ -99,13 +99,13 @@ class cleaner
             $value = getUserCache('profile', 'biz_id') ? 'bizuno/main/bizunoHome' : $default;
         }
         $temp = explode('/', $value);
-		$GLOBALS['bizunoModule'] = $temp[0];
-		$GLOBALS['bizunoPage']   = $temp[1];
-		$GLOBALS['bizunoMethod'] = $temp[2];
+        $GLOBALS['bizunoModule'] = $temp[0];
+        $GLOBALS['bizunoPage']   = $temp[1];
+        $GLOBALS['bizunoMethod'] = $this->clean($temp[2], 'cmd'); // remove illegal characters, fix for WordPress as it was adding ? at the end of the $_GET string
     }
-    
+
     /**
-     * 
+     *
      * @param string $value - starting value
      * @param string $option - [Default ISO3] format to return, choices are ISO2 and ISO3
      * @return string - requested ISO format in upper case
@@ -121,7 +121,7 @@ class cleaner
         $country_object = localeLoadDB();
         foreach ($country_object->Locale as $country_info) {
             $target = strtoupper($country_info->Country->$match);
-            if ($target == $source) { 
+            if ($target == $source) {
                 msgDebug("\nReturning with country = ".$country_info->Country->$return);
                 return $country_info->Country->$return; }
         }
@@ -140,7 +140,7 @@ class cleaner
     }
 
     /**
-     * Method to clean text area from submitted forms. 
+     * Method to clean text area from submitted forms.
      * @param mixed $value - typically the string from a text area field
      * @param mixed $default
      * @return mixed - returns default if text area is empty
@@ -150,7 +150,7 @@ class cleaner
         if (!is_string($value)) { return print_r($value, true); } // an array was submitted
         return strlen(trim($value))==0 ? $default : trim($value);
     }
-    
+
     /**
      * Converts a provided number to system format (no thousands character, dot for decimal, dash fo negative)
      * @param string $value
@@ -184,7 +184,7 @@ class cleaner
      * @return string
      */
     private function localeDateToDb($raw_date='', $separator='/', $default='')
-    { 
+    {
        if (!$raw_date) { return $default; }
        $error = false;
        $date_format = getModuleCache('bizuno', 'settings', 'locale', 'date_short');
@@ -219,7 +219,7 @@ class cleaner
     /**
      * Converts locale date/time strings to db format (assume time is already in db format [00:00:00]
      * @param string $raw - date as received from input
-     * @param char $separator - [default: /] set the character to look for 
+     * @param char $separator - [default: /] set the character to look for
      * @return string - $date $time after conversion from DB
      */
     private function localeDateTimeToDb($raw, $separator='/')
@@ -263,11 +263,11 @@ function clean($idx, $processing='text', $src='')
  */
 function lang($idx, $suffix='')
 {
-	global $bizunoLang;
+    global $bizunoLang;
     if (!is_null($suffix)) {
         if (isset($bizunoLang[$idx.'_'.$suffix])) { return $bizunoLang[$idx.'_'.$suffix]; }
     }
-	return isset($bizunoLang[$idx]) ? $bizunoLang[$idx] : $idx;
+    return isset($bizunoLang[$idx]) ? $bizunoLang[$idx] : $idx;
 }
 
 /**
@@ -278,7 +278,7 @@ function lang($idx, $suffix='')
  */
 function jsLang($idx, $suffix='')
 {
-	return addslashes(lang($idx, $suffix));
+    return addslashes(lang($idx, $suffix));
 }
 
 /**
@@ -287,7 +287,7 @@ function jsLang($idx, $suffix='')
  */
 function getLang($module)
 {
-	$lang = [];
+    $lang = [];
     if (!file_exists(BIZUNO_LIB."locale/en_US/module/$module/language.php")) { // bad access
         msgDebug("\nILLEGAL ATTEMPT TO LOAD LANGUAGE FROM A NON-MODULE: $module");
         msgAdd("ILLEGAL ATTEMPT TO LOAD LANGUAGE FROM A NON-MODULE: $module");
@@ -295,12 +295,12 @@ function getLang($module)
         require(BIZUNO_LIB."locale/en_US/module/$module/language.php"); // populates $lang
     }
     $output = $lang;
-	if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') { 
+    if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') {
         if (file_exists(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/module/$module/language.php")) {
             require(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/module/$module/language.php"); // populates $lang
             $output = array_replace($output, $lang);
         }
-	}
+    }
     return $output;
 }
 
@@ -310,18 +310,18 @@ function getLang($module)
  */
 function getMethLang($module, $mDir, $method)
 {
-	$lang = [];
+    $lang = [];
     $output = getLang($module);
     if (file_exists(BIZUNO_LIB."locale/en_US/module/$module/$mDir/$method/language.php")) {
         require(BIZUNO_LIB."locale/en_US/module/$module/$mDir/$method/language.php"); // populates $lang
         $output = array_replace($output, $lang);
     }
-	if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') { 
+    if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') {
         if (file_exists(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/module/$module/$mDir/$method/language.php")) {
             require(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/module/$module/$mDir/$method/language.php"); // populates $lang
             $output = array_replace($output, $lang);
         }
-	}
+    }
     return $output;
 }
 
@@ -331,17 +331,17 @@ function getMethLang($module, $mDir, $method)
  */
 function getExtLang($path)
 {
-	$output = $lang = [];
+    $output = $lang = [];
     if (file_exists("{$path}/locale/en_US/language.php")) {
         require("{$path}/locale/en_US/language.php"); // populates $lang
         $output = $lang;
     }
-	if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') { 
+    if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') {
         if (file_exists("{$path}/locale/".getUserCache('profile', 'language', false, 'en_US')."/language.php")) {
             require("{$path}/locale/".getUserCache('profile', 'language', false, 'en_US')."/language.php"); // populates $lang
             $output = array_replace($output, $lang);
         }
-	}
+    }
     return $output;
 }
 
@@ -351,18 +351,18 @@ function getExtLang($path)
  */
 function getExtMethLang($module, $folder, $method)
 {
-	$lang = [];
+    $lang = [];
     $output = getExtLang(BIZUNO_EXT."$module/");
     if (file_exists(BIZUNO_EXT."$module/locale/en_US/$folder/$method/language.php")) {
         require    (BIZUNO_EXT."$module/locale/en_US/$folder/$method/language.php"); // populates $lang
         $output = array_replace($output, $lang);
     }
-	if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') { 
+    if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') {
         if (file_exists(BIZUNO_EXT."$module/locale/".getUserCache('profile', 'language', false, 'en_US')."/$folder/$method/language.php")) {
             require    (BIZUNO_EXT."$module/locale/".getUserCache('profile', 'language', false, 'en_US')."/$folder/$method/language.php"); // populates $lang
             $output = array_replace($output, $lang);
         }
-	}
+    }
     return $output;
 }
 
@@ -374,10 +374,10 @@ function localeModuleLang(&$arrLang=[], $pathLocale=false)
 {
     if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') {
         if (!$pathLocale || !file_exists($pathLocale)) { return; }
-		$lang = [];
-		require($pathLocale); // pulls locale overlay
-		$arrLang = array_replace($arrLang, $lang);
-	}
+        $lang = [];
+        require($pathLocale); // pulls locale overlay
+        $arrLang = array_replace($arrLang, $lang);
+    }
 }
 
 /**
@@ -387,27 +387,27 @@ function localeModuleLang(&$arrLang=[], $pathLocale=false)
  * @param string $suffix to further refine the translation, suffix is typically data from another field in the table to categorize the row
  * @return string $field the string of the label or the constant value
  */
-function pullTableLabel($table, $field, $suffix='') 
+function pullTableLabel($table, $field, $suffix='')
 {
-	global $bizunoLang;
+    global $bizunoLang;
     if (defined('BIZUNO_DB_PREFIX') && constant('BIZUNO_DB_PREFIX') != '') {
-		$pos = strpos($table, BIZUNO_DB_PREFIX);
+        $pos = strpos($table, BIZUNO_DB_PREFIX);
         if ($pos !== false) { $table = substr_replace($table, '', $pos,strlen(BIZUNO_DB_PREFIX)); }
-	}
+    }
     if     (isset($bizunoLang[$table.'_'.$field.'_'.$suffix])) { return $bizunoLang[$table.'_'.$field.'_'.$suffix]; }
     elseif (isset($bizunoLang[$table.'_'.$field]))             { return $bizunoLang[$table.'_'.$field]; }
     elseif (isset($bizunoLang[$field]))                        { return $bizunoLang[$field]; }
-	// If we are here, the translation could not be found, send email to devs to fix this and return $field.
+    // If we are here, the translation could not be found, send email to devs to fix this and return $field.
 //  bizAutoLoad(BIZUNO_LIB."model/mail.php", 'bizunoMailer');
-//	$body = 'Missing translation from function pullTableLabel, path='.$_GET['p']." missing field=$field with suffix=$suffix";
-//	$mail = new bizunoMailer('dave.premo@phreesoft.com', 'Bizuno Devs', 'Missing Translation', $body, 'kevin.premo@gmail.com', 'Bizuno App');
-//	$mail->sendMail();
-	return $field;
+//    $body = 'Missing translation from function pullTableLabel, path='.$_GET['p']." missing field=$field with suffix=$suffix";
+//    $mail = new bizunoMailer('dave.premo@phreesoft.com', 'Bizuno Devs', 'Missing Translation', $body, 'kevin.premo@gmail.com', 'Bizuno App');
+//    $mail->sendMail();
+    return $field;
 }
 
 /**
  * Returns the parsed array from the locale file to be used with settings drop downs and defaults
- * @return object - Locale information 
+ * @return object - Locale information
  */
 function localeLoadDB()
 {
@@ -421,7 +421,7 @@ function localeLoadDB()
 
 /**
  * Returns the parsed array from the locale file to be used with settings drop downs and defaults
- * @return array - Locale information 
+ * @return array - Locale information
  */
 function localeLoadCharts()
 {
@@ -443,15 +443,15 @@ function localeLoadCharts()
  */
 function localeGetDates($this_date = '')
 {
-	// this_date format YYYY-MM-DD
+    // this_date format YYYY-MM-DD
     if (!$this_date) { $this_date = date('Y-m-d'); }
-	$result = array();
-	$result['Today']     = ($this_date) ? substr(trim($this_date), 0, 10) : date('Y-m-d');
-	$result['ThisDay']   = (int)substr($result['Today'], 8, 2);
-	$result['ThisMonth'] = (int)substr($result['Today'], 5, 2);
-	$result['ThisYear']  = (int)substr($result['Today'], 0, 4);
-	$result['TotalDays'] = date('t', mktime( 0, 0, 0, $result['ThisMonth'], $result['ThisDay'], $result['ThisYear']));
-	return $result;
+    $result = array();
+    $result['Today']     = ($this_date) ? substr(trim($this_date), 0, 10) : date('Y-m-d');
+    $result['ThisDay']   = (int)substr($result['Today'], 8, 2);
+    $result['ThisMonth'] = (int)substr($result['Today'], 5, 2);
+    $result['ThisYear']  = (int)substr($result['Today'], 0, 4);
+    $result['TotalDays'] = date('t', mktime( 0, 0, 0, $result['ThisMonth'], $result['ThisDay'], $result['ThisYear']));
+    return $result;
 }
 
 /**
@@ -464,18 +464,18 @@ function localeGetDates($this_date = '')
  */
 function localeCalculateDate($start_date, $day_offset=0, $month_offset=0, $year_offset=0)
 {
-	$date_details= localeGetDates($start_date);
-//    msgDebug("\nstart date = $start_date and day offset = $day_offset and month offsest = $month_offset and year offset = $year_offset");
-	if ($date_details['ThisYear'] > '1900' && $date_details['ThisYear'] < '2099') {
-		// check for current day greater than the month will allow (for recurs)
-		$days_in_month = date('t', mktime(0, 0, 0, $date_details['ThisMonth'] + $month_offset, 1, $date_details['ThisYear'] + $year_offset));
-		$mod_this_day  = min($days_in_month, $date_details['ThisDay']);
-		return date('Y-m-d', mktime(0, 0, 0, $date_details['ThisMonth'] + $month_offset, $mod_this_day + $day_offset, $date_details['ThisYear'] + $year_offset));
-	} else {
-		msgDebug("\n error in localeCalculateDate, trying to calculate date with input value = $start_date");
-	    msgAdd(sprintf(lang('err_calendar_format'), $start_date, getModuleCache('bizuno', 'settings', 'locale', 'date_short')), 'caution');
-		return date('Y-m-d');
-	}
+    $date_details= localeGetDates($start_date);
+    msgDebug("\nstart date = $start_date and day offset = $day_offset and month offsest = $month_offset and year offset = $year_offset");
+    if ($date_details['ThisYear'] > '1900' && $date_details['ThisYear'] < '2099') {
+        // check for current day greater than the month will allow (for recurs)
+        $days_in_month = date('t', mktime(0, 0, 0, $date_details['ThisMonth'] + $month_offset, 1, $date_details['ThisYear'] + $year_offset));
+        $mod_this_day  = min($days_in_month, $date_details['ThisDay']);
+        return date('Y-m-d', mktime(0, 0, 0, $date_details['ThisMonth'] + $month_offset, $mod_this_day + $day_offset, $date_details['ThisYear'] + $year_offset));
+    } else {
+        msgDebug("\n error in localeCalculateDate, trying to calculate date with input value = $start_date");
+        msgAdd(sprintf(lang('err_calendar_format'), $start_date, getModuleCache('bizuno', 'settings', 'locale', 'date_short')), 'caution');
+        return date('Y-m-d');
+    }
 }
 
 /**
@@ -487,52 +487,56 @@ function localeCalculateDate($start_date, $day_offset=0, $month_offset=0, $year_
 */
 function localeDueDate($post_date, $terms_encoded=0, $type='c')
 {
-	$cType = $type=='v' ? 'vendors' : 'customers';
-	$terms = explode(':', $terms_encoded);
-	$date_details = localeGetDates($post_date);
-	$result = array();
-	switch ($terms[0]) {
-		default:
-		case '0': // Default terms
-			$result['discount']   = 0;
-			$result['net_date']   = localeCalculateDate($post_date, 30);
-			$result['early_date'] = localeCalculateDate($post_date, ($result['discount'] <> 0) ? 0 : 30);
-			$result['due_days']   = 30;
-			break;
-		case '1': // Cash on Delivery (COD)
-		case '2': // Prepaid
-			$result['discount']   = 0;
-			$result['early_date'] = $post_date;
-			$result['net_date']   = $post_date;
-			$result['due_days']   = 0;
-			break;
-		case '3': // Special terms
-			$result['discount']   = $terms[1] / 100;
-			$result['early_date'] = localeCalculateDate($post_date, $terms[2]);
-			$result['net_date']   = localeCalculateDate($post_date, $terms[3]);
-			$result['due_days']   = isset($terms[3]) ? $terms[3] : 30;
-			break;
-		case '4': // Due on day of next month
-			$result['discount']   = 0;
-			$result['early_date'] = clean($terms[3], 'date');
-			$result['net_date']   = clean($terms[3], 'date');
-			$result['due_days']   = 0;
-			break;
-		case '5': // Due at end of month
-			$result['discount']   = $terms[1] / 100;
-			$result['early_date'] = localeCalculateDate($post_date, $terms[2]);
-			$result['net_date']   = date('Y-m-d', mktime(0, 0, 0, $date_details['ThisMonth'], $date_details['TotalDays'], $date_details['ThisYear']));
-			$result['due_days']   = date('d', mktime(0, 0, 0, $date_details['ThisMonth']+1, 0, $date_details['ThisYear'])) - date('d');
-			break;
-	}
-	$result['credit_limit'] = isset($terms[4]) ? $terms[4] : 1000;
-	return $result;
+    $cType = $type=='v' ? 'vendors' : 'customers';
+    $terms = explode(':', $terms_encoded);
+    if (empty($terms[1])) { $terms[1] = 0; }
+    if (empty($terms[2])) { $terms[2] = 0; }
+    if (empty($terms[3])) { $terms[3] = 30; }
+    if (empty($terms[4])) { $terms[3] = 1000; }
+    $date_details = localeGetDates($post_date);
+    $result = array();
+    switch ($terms[0]) {
+        default:
+        case '0': // Default terms
+            $result['discount']   = 0;
+            $result['net_date']   = localeCalculateDate($post_date, 30);
+            $result['early_date'] = localeCalculateDate($post_date, ($result['discount'] <> 0) ? 0 : 30);
+            $result['due_days']   = 30;
+            break;
+        case '1': // Cash on Delivery (COD)
+        case '2': // Prepaid
+            $result['discount']   = 0;
+            $result['early_date'] = $post_date;
+            $result['net_date']   = $post_date;
+            $result['due_days']   = 0;
+            break;
+        case '3': // Special terms
+            $result['discount']   = floatval($terms[1]) / 100;
+            $result['early_date'] = localeCalculateDate($post_date, intval($terms[2]));
+            $result['net_date']   = localeCalculateDate($post_date, intval($terms[3]));
+            $result['due_days']   = intval($terms[3]);
+            break;
+        case '4': // Due on day of next month
+            $result['discount']   = 0;
+            $result['early_date'] = clean($terms[3], 'date');
+            $result['net_date']   = clean($terms[3], 'date');
+            $result['due_days']   = 0;
+            break;
+        case '5': // Due at end of month
+            $result['discount']   = floatval($terms[1]) / 100;
+            $result['early_date'] = localeCalculateDate($post_date, intval($terms[2]));
+            $result['net_date']   = date('Y-m-d', mktime(0, 0, 0, $date_details['ThisMonth'], $date_details['TotalDays'], $date_details['ThisYear']));
+            $result['due_days']   = date('d', mktime(0, 0, 0, $date_details['ThisMonth']+1, 0, $date_details['ThisYear'])) - date('d');
+            break;
+    }
+    $result['credit_limit'] = isset($terms[4]) ? $terms[4] : 1000;
+    return $result;
 }
 
 /**
  * Calculates a date in db format into the future, day, week, month, quarter or year
  * @param type $dateStart - base date in db format
- * @param type $freq - [default: m (month)] future time period, d, w, m , q, or y 
+ * @param type $freq - [default: m (month)] future time period, d, w, m , q, or y
  * @return type
  */
 function localePeriodicDate($dateStart, $freq='m')
@@ -555,24 +559,24 @@ function localePeriodicDate($dateStart, $freq='m')
  * @param boolean $voidLabels - [default false] sets the field to null if the value equals the label (used when labels are within fields)
  * @return array $output - Cleaned form data applicable to the structure
  */
-function requestData($structure, $suffix='', $voidLabels=false) 
+function requestData($structure, $suffix='', $voidLabels=false)
 {
-	$output = [];
+    $output = [];
     $request= $_POST;
-	foreach ($structure as $field => $content) {
-		if ($voidLabels && isset($request[$field.$suffix])) {
+    foreach ($structure as $field => $content) {
+        if ($voidLabels && isset($request[$field.$suffix])) {
             if ($request[$field.$suffix] == pullTableLabel($content['table'], $field, '', $suffix)) { $request[$field.$suffix] = ''; }
-		}
-		if (isset($request[$field.$suffix])) {
-			$output[$field] = clean($field.$suffix, $content, 'post');
-		} elseif (isset($request[$content['tag'].$suffix])) {
-			$output[$field] = clean($content['tag'].$suffix, $content, 'post');
-		} elseif ($content['attr']['type'] == 'checkbox') {
-			$output[$field] = '0';
-		}
-	}
-	//msgDebug("\nReturning suffix = $suffix and output: ".print_r($output, true));
-	return $output;
+        }
+        if (isset($request[$field.$suffix])) {
+            $output[$field] = clean($field.$suffix, $content, 'post');
+        } elseif (isset($request[$content['tag'].$suffix])) {
+            $output[$field] = clean($content['tag'].$suffix, $content, 'post');
+        } elseif ($content['attr']['type'] == 'checkbox') {
+            $output[$field] = '0';
+        }
+    }
+    //msgDebug("\nReturning suffix = $suffix and output: ".print_r($output, true));
+    return $output;
 }
 
 /**
@@ -584,16 +588,16 @@ function requestData($structure, $suffix='', $voidLabels=false)
  */
 function requestDataGrid($request, $structure, $override=[])
 {
-	$output = [];
-	if (!isset($request['total'])) { // easyUI getChecked just returns the array not a total and row indexed array
-		$temp = $request;
-		$request = ['total'=>sizeof($request), 'rows'=>$temp];
-	}
-	msgDebug("\n requestDataGrid returning row count = ".$request['total']);
-	for ($i = 0; $i < $request['total']; $i++) {
-		$row = $request['rows'][$i];
-		$temp = [];
-		foreach ($structure as $field => $content) {
+    $output = [];
+    if (!isset($request['total'])) { // easyUI getChecked just returns the array not a total and row indexed array
+        $temp = $request;
+        $request = ['total'=>sizeof($request), 'rows'=>$temp];
+    }
+    msgDebug("\n requestDataGrid returning row count = ".$request['total']);
+    for ($i = 0; $i < $request['total']; $i++) {
+        $row = $request['rows'][$i];
+        $temp = [];
+        foreach ($structure as $field => $content) {
             if (!isset($content['attr']['type'])) { $content['attr']['type'] = 'text'; }
             if (isset($override[$field])) {
                 switch ($override[$field]['type']) {
@@ -616,9 +620,9 @@ function requestDataGrid($request, $structure, $override=[])
 //                msgDebug("\nCleaning tag {$row[$content['tag']]} with format {$content['attr']['type']}");
                 $temp[$field] = clean($row[$content['tag']], $content['attr']['type']);
             }
-		}
-		$output[] = $temp;
-	}
-	msgDebug("\n requestDataGrid returning output: ".print_r($output, true));
-	return $output;
+        }
+        $output[] = $temp;
+    }
+    msgDebug("\n requestDataGrid returning output: ".print_r($output, true));
+    return $output;
 }

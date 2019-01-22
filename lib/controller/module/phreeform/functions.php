@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-11-07
  * @filesource /controller/module/phreeform/functions.php
@@ -35,13 +35,13 @@ namespace bizuno;
 function ProcessData($strData, $Process)
 {
     if (getModuleCache('phreeform', 'processing', $Process, 'function')) {
-		$func = getModuleCache('phreeform', 'processing')[$Process]['function'];
+        $func = getModuleCache('phreeform', 'processing')[$Process]['function'];
         $fqfn = "\\bizuno\\$func";
-		$module = getModuleCache('phreeform', 'processing')[$Process]['module'];
-		bizAutoLoad(getModuleCache($module, 'properties', 'path')."functions.php", $fqfn, 'function');
-		return $fqfn($strData, $Process);
-	}
-	return $strData;
+        $module = getModuleCache('phreeform', 'processing')[$Process]['module'];
+        bizAutoLoad(getModuleCache($module, 'properties', 'path')."functions.php", $fqfn, 'function');
+        return $fqfn($strData, $Process);
+    }
+    return $strData;
 }
 */
 
@@ -53,14 +53,14 @@ function ProcessData($strData, $Process)
  */
 function AddSep($value, $Process)
 {
-	if (getModuleCache('phreeform', 'separators', $Process, 'function')) {
-		$func = getModuleCache('phreeform', 'separators')[$Process]['function'];
+    if (getModuleCache('phreeform', 'separators', $Process, 'function')) {
+        $func = getModuleCache('phreeform', 'separators')[$Process]['function'];
         $fqfn = "\\bizuno\\$func";
-		$module = getModuleCache('phreeform', 'separators')[$Process]['module'];
-		bizAutoLoad(BIZUNO_LIB."controller/module/$module/functions.php", $fqfn, 'function');
-		return $fqfn($value, $Process);
-	}
-	return $value;
+        $module = getModuleCache('phreeform', 'separators')[$Process]['module'];
+        bizAutoLoad(BIZUNO_LIB."controller/module/$module/functions.php", $fqfn, 'function');
+        return $fqfn($value, $Process);
+    }
+    return $value;
 }
 
 /**
@@ -93,16 +93,16 @@ function viewDateChoices()
  */
 function viewSeparator($value, $Process)
 {
-	switch ($Process) {
-		case "sp":     return "$value ";
-		case "2sp":    return "$value  ";
-		case "comma":  return "$value,";
-		case "com-sp": return "$value, ";
-		case "nl":     return "$value\n";
-		case "semi-sp":return "$value; ";
-		case "del-nl": return $value=='' ? '' : "$value\n";
-	}
-	return $value;
+    switch ($Process) {
+        case "sp":     return "$value ";
+        case "2sp":    return "$value  ";
+        case "comma":  return "$value,";
+        case "com-sp": return "$value, ";
+        case "nl":     return "$value\n";
+        case "semi-sp":return "$value; ";
+        case "del-nl": return $value=='' ? '' : "$value\n";
+    }
+    return $value;
 }
 
 /**
@@ -113,10 +113,10 @@ function viewSeparator($value, $Process)
  */
 function TextReplace($text_string='', $xKeys=[], $xVals=[])
 {
-	global $report;
+    global $report;
     $keys   = array_merge(['%date%', '%reportname%', '%company%'], $xKeys);
     $values = array_merge([viewDate(date('Y-m-d')), $report->title, getModuleCache('bizuno', 'settings', 'company', 'primary_name')], $xVals);
-	return str_replace($keys, $values, $text_string); // if getting error here, probably $report->title is an array, problem converting
+    return str_replace($keys, $values, $text_string); // if getting error here, probably $report->title is an array, problem converting
 }
 
 /**
@@ -127,14 +127,14 @@ function TextReplace($text_string='', $xKeys=[], $xVals=[])
  */
 function phreeformSecurity($security='u:-1;g:-1', $include_all=true)
 {
-	$types    = explode(';', $security);
-	msgDebug("\nSECURITY TYPES = $security");
-	$settings = [];
-	foreach ($types as $value) {
-		$temp   = explode(':', $value);
-		$type   = array_shift($temp);
-		$settings[$type] = $temp;
-	}
+    $types    = explode(';', $security);
+    msgDebug("\nSECURITY TYPES = $security");
+    $settings = [];
+    foreach ($types as $value) {
+        $temp   = explode(':', $value);
+        $type   = array_shift($temp);
+        $settings[$type] = $temp;
+    }
     if (!isset($settings['u']) || !isset($settings['g']) || !is_array($settings['u']) || !is_array($settings['g'])) {
         msgDebug("\nERROR IN SECURITY SETTINGS!");
         return;
@@ -150,17 +150,17 @@ function phreeformSecurity($security='u:-1;g:-1', $include_all=true)
  */
 function getRecent($limit=25)
 {
-	$values= [];
-	$cnt   = 0;
-	$result= dbGetMulti(BIZUNO_DB_PREFIX."phreeform", "mime_type IN ('rpt','frm')", "create_date DESC");
-	foreach ($result as $report) {
-		if (phreeformSecurity($report['security'], true)) {
+    $values= [];
+    $cnt   = 0;
+    $result= dbGetMulti(BIZUNO_DB_PREFIX."phreeform", "mime_type IN ('rpt','frm')", "create_date DESC");
+    foreach ($result as $report) {
+        if (phreeformSecurity($report['security'], true)) {
             $values[] = $report;
-			$cnt++;
-		}
+            $cnt++;
+        }
         if ($cnt >= $limit) { break; }
-	}
-	return $values;
+    }
+    return $values;
 }
 
 /**
@@ -170,17 +170,17 @@ function getRecent($limit=25)
  */
 function getMine($limit=25)
 {
-	$values= [];
-	$cnt   = 0;
-	$result= dbGetMulti(BIZUNO_DB_PREFIX."phreeform", "mime_type IN ('rpt','frm')", "title");
-	foreach ($result as $report) {
-		if (phreeformSecurity($report['security'], false)) {
-			$values[] = $report;
-			$cnt++;
-		}
+    $values= [];
+    $cnt   = 0;
+    $result= dbGetMulti(BIZUNO_DB_PREFIX."phreeform", "mime_type IN ('rpt','frm')", "title");
+    foreach ($result as $report) {
+        if (phreeformSecurity($report['security'], false)) {
+            $values[] = $report;
+            $cnt++;
+        }
         if ($cnt >= $limit) { break; }
-	}
-	return $values;
+    }
+    return $values;
 }
 
 /**
@@ -194,34 +194,34 @@ function ReadDefReports($id, $path='', $lang="en_US")
 {
     if (!$path) { $path = BIZUNO_LIB."locale/en_US/reports"; }
     // build the report titles
-	$titles = [];
+    $titles = [];
     foreach (getModuleCache('phreeform', 'rptGroups') as $value) { $titles[$value['id']] = $value['text']; }
     foreach (getModuleCache('phreeform', 'frmGroups') as $value) { $titles[$value['id']] = $value['text']; }
-	$ReportList = [];
-	$files = @scandir($path);
-	foreach ($files as $DefRpt) {
-		$pinfo  = pathinfo("$path/$DefRpt");
-		$strXML = file_get_contents("$path/$DefRpt");
+    $ReportList = [];
+    $files = @scandir($path);
+    foreach ($files as $DefRpt) {
+        $pinfo  = pathinfo("$path/$DefRpt");
+        $strXML = file_get_contents("$path/$DefRpt");
         $report = parseXMLstring($strXML);
         if (!is_object($report)) { continue; }
         if (!empty($report->PhreeformReport)) { $report = $report->PhreeformReport; } // old way, remove container tag
-		$ReportList[$report->groupname][] = [
+        $ReportList[$report->groupname][] = [
             'title'      => $report->title,
-			'description'=> $report->description,
-			'path'       => $pinfo['basename']];
-	}
+            'description'=> $report->description,
+            'path'       => $pinfo['basename']];
+    }
     if (sizeof($ReportList) == 0) { return lang('msg_no_documents'); }
 
-	$output   = '<select id="'.$id.'" size="15">';
-	ksort($ReportList);
-	foreach ($ReportList as $GrpName => $members) {
-		$output .= '<optgroup label="'.$titles[$GrpName].'">';
-		foreach ($members as $Temp) {
-			$output .= '<option value="'.$Temp['path'].'">'.htmlspecialchars($Temp['title'].' - '.$Temp['description']).'</option>';
-		}
-		$output .= '</optgroup>';
-	}
-	return $output.'</select>';
+    $output   = '<select id="'.$id.'" size="15">';
+    ksort($ReportList);
+    foreach ($ReportList as $GrpName => $members) {
+        $output .= '<optgroup label="'.$titles[$GrpName].'">';
+        foreach ($members as $Temp) {
+            $output .= '<option value="'.$Temp['path'].'">'.htmlspecialchars($Temp['title'].' - '.$Temp['description']).'</option>';
+        }
+        $output .= '</optgroup>';
+    }
+    return $output.'</select>';
 }
 
 /**
@@ -249,7 +249,7 @@ function phreeFormXML2Obj($xmlReport)
         }
     } }
 //    msgDebug("\nAfter cleaning parsed report = ".print_r($report, true));
-	return $report;
+    return $report;
 }
 
 /**
@@ -263,46 +263,46 @@ function phreeFormXML2Obj($xmlReport)
  */
 function phreeformImport($RptName='', $RptFileName='', $import_path='', $verbose=true, $replace=false)
 {
-	$rID = 0;
-	$imp = new \bizuno\io();
-	if ($RptFileName <> '') { // then a locally stored report was chosen
+    $rID = 0;
+    $imp = new \bizuno\io();
+    if ($RptFileName <> '') { // then a locally stored report was chosen
         if (strtolower(substr($RptFileName, -4)) <> '.xml') { return; }
-		$path = $import_path . $RptFileName;
-	} else if ($imp->validateUpload('fileUpload', 'xml', 'xml', false)) {
-		$path = $_FILES['fileUpload']['tmp_name'];
-	} else {
+        $path = $import_path . $RptFileName;
+    } else if ($imp->validateUpload('fileUpload', 'xml', 'xml', false)) {
+        $path = $_FILES['fileUpload']['tmp_name'];
+    } else {
         if ($verbose) { msgAdd(lang('err_phreeform_import')); }
-		return;
-	}
+        return;
+    }
     if (!$contents = file_get_contents($path))  { return; }
     if (!$report = phreeFormXML2Obj($contents)) { return; }
     if ($RptName <> '') { $report->title = $RptName; } // replace the title if provided
-	// error check
-	$rID = dbGetValue(BIZUNO_DB_PREFIX."phreeform", "id", "title='$report->title' AND mime_type IN ('rpt','frm')");
-	if ($rID && !$replace) { // the report name already exists
+    // error check
+    $rID = dbGetValue(BIZUNO_DB_PREFIX."phreeform", "id", "title='$report->title' AND mime_type IN ('rpt','frm')");
+    if ($rID && !$replace) { // the report name already exists
         if ($verbose) { msgAdd(sprintf(lang('err_phreeform_title_dup'), $report->title)); }
-		return;
-	}
-	if ($report->reporttype=='rpt') { // clean up phreebooks report format to new format
-		$gID = explode(":", $report->groupname);
-		$report->groupname = $gID[0].":rpt";
-	}
-	$parent = dbGetValue(BIZUNO_DB_PREFIX."phreeform", "id", "group_id='$report->groupname' and mime_type='dir'");
-	if (!$parent) {
-		$report->groupname = $report->reporttype=='rpt' ? 'misc:rpt': 'misc:misc';
-		$parent = dbGetValue(BIZUNO_DB_PREFIX."phreeform", "id", "group_id='$report->groupname' and mime_type='dir'");
-	}
-	$sql_array = [
+        return;
+    }
+    if ($report->reporttype=='rpt') { // clean up phreebooks report format to new format
+        $gID = explode(":", $report->groupname);
+        $report->groupname = $gID[0].":rpt";
+    }
+    $parent = dbGetValue(BIZUNO_DB_PREFIX."phreeform", "id", "group_id='$report->groupname' and mime_type='dir'");
+    if (!$parent) {
+        $report->groupname = $report->reporttype=='rpt' ? 'misc:rpt': 'misc:misc';
+        $parent = dbGetValue(BIZUNO_DB_PREFIX."phreeform", "id", "group_id='$report->groupname' and mime_type='dir'");
+    }
+    $sql_array = [
         'parent_id'  => $parent,
-		'group_id'   => $report->groupname,
-		'mime_type'  => $report->reporttype,
-		'title'      => $report->title,
-		'security'   => $report->security,
-		'create_date'=> date('Y-m-d'),
-		'last_update'=> date('Y-m-d'),
-		'doc_data'   => '<PhreeformReport>'.object_to_xml($report).'</PhreeformReport>'];
-	$rID = dbWrite(BIZUNO_DB_PREFIX."phreeform", $sql_array, $rID?'update':'insert', "id=$rID");
-	return ['rID'=>$rID, 'title'=>$report->title];
+        'group_id'   => $report->groupname,
+        'mime_type'  => $report->reporttype,
+        'title'      => $report->title,
+        'security'   => $report->security,
+        'create_date'=> date('Y-m-d'),
+        'last_update'=> date('Y-m-d'),
+        'doc_data'   => '<PhreeformReport>'.object_to_xml($report).'</PhreeformReport>'];
+    $rID = dbWrite(BIZUNO_DB_PREFIX."phreeform", $sql_array, $rID?'update':'insert', "id=$rID");
+    return ['rID'=>$rID, 'title'=>$report->title];
 }
 
 /**
@@ -316,32 +316,32 @@ function phreeformImport($RptName='', $RptFileName='', $import_path='', $verbose
  */
 function formatReceipt($value, $width = 15, $align = 'z', $base_string = '', $keep_nl = false)
 {
-	$temp   = explode("\n", $value);
-	$output = NULL;
-	foreach ($temp as $key => $value) {
+    $temp   = explode("\n", $value);
+    $output = NULL;
+    foreach ($temp as $key => $value) {
         if ($key > 0) { $output .= "\n"; } // keep the new line chars
-		switch ($align) {
-			case 'L':
+        switch ($align) {
+            case 'L':
                 if (strlen($base_string)) { $output .= $value . substr($base_string, $width - strlen($value)); }
                 else { $output .= str_pad($value, $width, ' ', STR_PAD_RIGHT); }
-				break;
-			case 'R':
+                break;
+            case 'R':
                 if (strlen($base_string)) { $output .= substr($base_string, 0, $width - strlen($value)) . $value; }
                 else { $output .= str_pad($value, $width, ' ', STR_PAD_LEFT); }
-				break;
-			case 'C':
-				if (strlen($base_string)) {
-					$pad = (($width - strlen($value)) / 2);
-					$output .= substr($base_string, 0, floor($pad)) . $value . substr($base_string, -ceil($pad));
-				} else {
-					$num_blanks = (($width - strlen($value)) / 2) + strlen($value);
-					$value   = str_pad($value, intval($num_blanks), ' ', STR_PAD_LEFT);
-					$output .= str_pad($value, $width,              ' ', STR_PAD_RIGHT);
-				}
-				break;
-		}
-	}
-	return $output;
+                break;
+            case 'C':
+                if (strlen($base_string)) {
+                    $pad = (($width - strlen($value)) / 2);
+                    $output .= substr($base_string, 0, floor($pad)) . $value . substr($base_string, -ceil($pad));
+                } else {
+                    $num_blanks = (($width - strlen($value)) / 2) + strlen($value);
+                    $value   = str_pad($value, intval($num_blanks), ' ', STR_PAD_LEFT);
+                    $output .= str_pad($value, $width,              ' ', STR_PAD_RIGHT);
+                }
+                break;
+        }
+    }
+    return $output;
 }
 
 /**
@@ -351,16 +351,16 @@ function formatReceipt($value, $width = 15, $align = 'z', $base_string = '', $ke
  */
 function sqlTable(&$report)
 {
-	$sqlTable = '';
-	foreach ($report->tables as $table) {
-		if (isset($table->relationship)) {
+    $sqlTable = '';
+    foreach ($report->tables as $table) {
+        if (isset($table->relationship)) {
             if (!isset($table->joinopt)) { $table->joinopt = ' JOIN '; }
-			$sqlTable .= " $table->joinopt ".BIZUNO_DB_PREFIX."$table->tablename ON ".prefixTables($table->relationship);
-		} else {
-			$sqlTable .= BIZUNO_DB_PREFIX.$table->tablename;
-		}
-	}
-	$report->sqlTable = $sqlTable;
+            $sqlTable .= " $table->joinopt ".BIZUNO_DB_PREFIX."$table->tablename ON ".prefixTables($table->relationship);
+        } else {
+            $sqlTable .= BIZUNO_DB_PREFIX.$table->tablename;
+        }
+    }
+    $report->sqlTable = $sqlTable;
 }
 
 /**
@@ -370,11 +370,11 @@ function sqlTable(&$report)
  */
 function sqlSort(&$report)
 {
-	$strSort = [];
-	if (isset($report->sortlist) && is_array($report->sortlist)) { foreach ($report->sortlist as $sortline) {
+    $strSort = [];
+    if (isset($report->sortlist) && is_array($report->sortlist)) { foreach ($report->sortlist as $sortline) {
         if ($sortline->default == '1') { $strSort[] = prefixTables($sortline->fieldname); }
     } }
-	$report->sqlSort = implode(', ', $strSort);
+    $report->sqlSort = implode(', ', $strSort);
 }
 
 /**
@@ -384,20 +384,20 @@ function sqlSort(&$report)
  */
 function sqlFilter(&$report)
 {
-	$strCrit = [];
-	$report->sqlCritDesc = '';
+    $strCrit = [];
+    $report->sqlCritDesc = '';
     if (!isset($report->datefield)) { $report->datefield = ''; }
-	if (isset($report->datedefault)) {
+    if (isset($report->datedefault)) {
         msgDebug("\nWorking with datedefault = $report->datedefault");
-		$dates = dbSqlDates($report->datedefault, prefixTables($report->datefield));
+        $dates = dbSqlDates($report->datedefault, prefixTables($report->datefield));
         if ($dates['sql']) { $strCrit[] = $dates['sql']; }
-		$report->sqlCritDesc.= $dates['description'];
-		$report->datedefault = substr($report->datedefault, 0, 1).":{$dates['start_date']}:{$dates['end_date']}";
-	}
-	$criteria = phreeformCriteria($report);
+        $report->sqlCritDesc.= $dates['description'];
+        $report->datedefault = substr($report->datedefault, 0, 1).":{$dates['start_date']}:{$dates['end_date']}";
+    }
+    $criteria = phreeformCriteria($report);
     if ($criteria['sql'])         { $strCrit[] = $criteria['sql']; }
     if ($criteria['description']) { $report->sqlCritDesc .= lang('settings').": {$criteria['description']}; "; }
-	$report->sqlCrit = implode(' AND ', $strCrit);
+    $report->sqlCrit = implode(' AND ', $strCrit);
 }
 
 /**
@@ -407,7 +407,7 @@ function sqlFilter(&$report)
  */
 function stripTablename($value)
 {
-	return (strpos($value, '.') !== false) ? substr($value, strpos($value, '.') + 1) : $value;
+    return (strpos($value, '.') !== false) ? substr($value, strpos($value, '.') + 1) : $value;
 }
 
 /*
@@ -417,9 +417,9 @@ function stripTablename($value)
  */
 function prefixTables($field)
 {
-	global $report;
+    global $report;
     foreach ($report->tables as $table) { $field = str_replace($table->tablename.'.', BIZUNO_DB_PREFIX.$table->tablename.'.', $field); }
-	return stripslashes($field);
+    return stripslashes($field);
 }
 
 /**
@@ -430,11 +430,11 @@ function prefixTables($field)
  */
 function testTables($field, $report)
 {
-  	$result = false;
-  	foreach ($report->tables as $table) {
+      $result = false;
+      foreach ($report->tables as $table) {
         if (strpos($field, $table->tablename.'.') !== false) { $result = true; }
-  	}
-  	return $result;
+      }
+      return $result;
 }
 
 /**
@@ -446,81 +446,81 @@ function testTables($field, $report)
  */
 function phreeformCriteria($report, $xOnly=false)
 {
-  	global $critChoices;
-  	$strCrit    = '';
-  	$filCrit    = '';
-  	$crit_prefs = !$xOnly && isset($report->filterlist) ? $report->filterlist : [];
-    if (isset($report->xfilterlist) && is_array($report->xfilterlist)) { $crit_prefs[] = $report->xfilterlist[0]; }
-  	foreach ($crit_prefs as $settings) {
-  		msgDebug("\nWorking with field values = ".print_r($settings, true));
-        if (!isset($settings->fieldname)) { continue; } // blank row
-  		if (!isset($settings->default)) { // if no selection was passed, assume it's the first on the list for that selection menu
-  			$temp = explode(':', $critChoices[$settings->type]);
-  			$settings->default = sizeof($temp) > 1 ? $temp[1] : '';
-  		}
-  		$sc = '';
-  		$fc = '';
-  		switch ($settings->default) {
-	  	  case 'range':
-	  	  	if (!empty($settings->min)) { // a from value entered, check
-	  	  		$sc .= prefixTables($settings->fieldname).">='$settings->min'";
-	  	  		$fc .= $settings->title." >= ".$settings->min;
-	  	  	}
-	  	  	if (!empty($settings->max)) { // a to value entered, check
-	  	  		if (strlen($sc)>0) { $sc .= ' AND '; $fc .= ' '.lang('and').' '; }
-	  	  		$sc .= prefixTables($settings->fieldname)."<='$settings->max'";
-	  	  		$fc .= $settings->title." <= ".$settings->max;
-	  	  	}
-	  	  	break;
-	  	  case 'yes':
-	  	  case 'true':
-	  	  case 'inactive':
-	  	  case 'printed':
-	  	  	$sc .= prefixTables($settings->fieldname)."='1'";
-	  	  	$fc .= $settings->title."=$settings->default";
-	  	  	break;
-	  	  case 'no':
-	  	  case 'false':
-	  	  case 'active':
-	  	  case 'unprinted':
-	  	  	$sc .= prefixTables($settings->fieldname)."='0'";
-	  	  	$fc .= $settings->title."=$settings->default";
-	  	  	break;
-	  	  case 'equal':
-	  	  case 'not_equal':
-	  	  case 'greater_than':
-	  	  case 'less_than':
+      global $critChoices;
+      $strCrit     = '';
+      $filCrit     = '';
+      $crit_prefs  = !$xOnly && isset($report->filterlist) ? $report->filterlist : [];
+    if (isset($report->xfilterlist)) { $crit_prefs[]= $report->xfilterlist; }
+      foreach ($crit_prefs as $settings) {
+          msgDebug("\nWorking with field values = ".print_r($settings, true));
+        if (empty($settings->fieldname)) { continue; } // blank row
+          if (!isset($settings->default)) { // if no selection was passed, assume it's the first on the list for that selection menu
+              $temp = explode(':', $critChoices[$settings->type]);
+              $settings->default = sizeof($temp) > 1 ? $temp[1] : '';
+          }
+          $sc = '';
+          $fc = '';
+          switch ($settings->default) {
+            case 'range':
+                if (!empty($settings->min)) { // a from value entered, check
+                    $sc .= prefixTables($settings->fieldname).">='$settings->min'";
+                    $fc .= $settings->title." >= ".$settings->min;
+                }
+                if (!empty($settings->max)) { // a to value entered, check
+                    if (strlen($sc)>0) { $sc .= ' AND '; $fc .= ' '.lang('and').' '; }
+                    $sc .= prefixTables($settings->fieldname)."<='$settings->max'";
+                    $fc .= $settings->title." <= ".$settings->max;
+                }
+                break;
+            case 'yes':
+            case 'true':
+            case 'inactive':
+            case 'printed':
+                $sc .= prefixTables($settings->fieldname)."='1'";
+                $fc .= $settings->title."=$settings->default";
+                break;
+            case 'no':
+            case 'false':
+            case 'active':
+            case 'unprinted':
+                $sc .= prefixTables($settings->fieldname)."='0'";
+                $fc .= $settings->title."=$settings->default";
+                break;
+            case 'equal':
+            case 'not_equal':
+            case 'greater_than':
+            case 'less_than':
             if ($settings->default == 'equal')        { $sign = " = "; }
             if ($settings->default == 'not_equal')    { $sign = " <> "; }
             if ($settings->default == 'greater_than') { $sign = " > "; }
             if ($settings->default == 'less_than')    { $sign = " < "; }
-	  	  	if (isset($settings->min)) { // a from value entered, check
-	  	  		$q_field = testTables($settings->min, $report) ? prefixTables($settings->min) : "'".prefixTables($settings->min)."'";
-	  	  		$sc .= prefixTables($settings->fieldname).$sign.$q_field;
-	  	  		$fc .= (isset($settings->title) ? $settings->title : $settings->fieldname).$sign.$settings->min;
-	  	  	}
-	  	  	break;
-	  	  case 'in_list':
-	  	  	if (isset($settings->min)) { // a from value entered, check
-	  	  		$csv_values = explode(',', $settings->min);
+                if (isset($settings->min)) { // a from value entered, check
+                    $q_field = testTables($settings->min, $report) ? prefixTables($settings->min) : "'".prefixTables($settings->min)."'";
+                    $sc .= prefixTables($settings->fieldname).$sign.$q_field;
+                    $fc .= (isset($settings->title) ? $settings->title : $settings->fieldname).$sign.$settings->min;
+                }
+                break;
+            case 'in_list':
+                if (isset($settings->min)) { // a from value entered, check
+                    $csv_values = explode(',', $settings->min);
                 for ($i = 0; $i < sizeof($csv_values); $i++) { $csv_values[$i] = trim($csv_values[$i]); }
-	  	  		$sc .= prefixTables($settings->fieldname)." IN ('".implode("','", $csv_values)."')";
-	  	  		$fc .= isset($settings->title) ? "$settings->title IN ($settings->min)" : '';
-	  	  	}
-	  	  	break;
-	  	  case 'all': // sql default anyway
-	  	  default:
-  		}
-  		if ($sc) {
-	  	  if (strlen($strCrit) > 0) {
-	  	  	$strCrit .= ' AND ';
+                    $sc .= prefixTables($settings->fieldname)." IN ('".implode("','", $csv_values)."')";
+                    $fc .= isset($settings->title) ? "$settings->title IN ($settings->min)" : '';
+                }
+                break;
+            case 'all': // sql default anyway
+            default:
+          }
+          if ($sc) {
+            if (strlen($strCrit) > 0) {
+                $strCrit .= ' AND ';
             if (isset($settings->visible)) { $filCrit .= ' '.lang('and').' '; }
-	  	  }
-	  	  $strCrit .= $sc;
+            }
+            $strCrit .= $sc;
           if (isset($settings->visible)) { $filCrit .= $fc; }
-  		}
-  	}
-  	return ['sql' => $strCrit, 'description' => $filCrit];
+          }
+      }
+      return ['sql' => $strCrit, 'description' => $filCrit];
   }
 
   /**
@@ -532,109 +532,109 @@ function phreeformCriteria($report, $xOnly=false)
    */
 function BuildDataArray($sql, $report)
 {
-	global $report, $currencies;
-//	$posted_currencies = ['currency' => getUserCache('profile', 'currency', false, 'USD'), 'currency_rate' => 1]; // use default currency
-	// See if we need to group, fetch the group fieldname
-	$GrpFieldName       = '';
-	$GrpFieldProcessing = '';
-	if (isset($report->grouplist) && is_array($report->grouplist)) { foreach ($report->grouplist as $key => $value) {
-		if ($report->grouplist[$key]->default) {
-			$GrpFieldName       = $value->fieldname;
-			$GrpFieldProcessing = !empty($value->processing) ? $value->processing : '';
-			$GrpFieldFormatting = !empty($value->formatting) ? $value->formatting : '';
-		}
+    global $report, $currencies;
+//    $posted_currencies = ['currency' => getUserCache('profile', 'currency', false, 'USD'), 'currency_rate' => 1]; // use default currency
+    // See if we need to group, fetch the group fieldname
+    $GrpFieldName       = '';
+    $GrpFieldProcessing = '';
+    if (isset($report->grouplist) && is_array($report->grouplist)) { foreach ($report->grouplist as $key => $value) {
+        if ($report->grouplist[$key]->default) {
+            $GrpFieldName       = $value->fieldname;
+            $GrpFieldProcessing = !empty($value->processing) ? $value->processing : '';
+            $GrpFieldFormatting = !empty($value->formatting) ? $value->formatting : '';
+        }
     } }
-	// Build the sequence map of retrieved fields, order is as user wants it
-	$heading = $seq = [];
-	$i       = 0;
-	$GrpField= '';
-	foreach ($report->fieldlist as $fields) {
+    // Build the sequence map of retrieved fields, order is as user wants it
+    $heading = $seq = [];
+    $i       = 0;
+    $GrpField= '';
+    foreach ($report->fieldlist as $fields) {
         if (empty($fields->visible)) { continue; }
         if ($fields->fieldname == $GrpFieldName) { $GrpField = 'c'.$i; }
-		$heading[$i]= $fields->title;
-		$seq[$i]    = [
+        $heading[$i]= $fields->title;
+        $seq[$i]    = [
             'dbField'   => $fields->fieldname,
             'break'     => isset($fields->columnbreak)? $fields->columnbreak : '1',
-			'fieldname' => 'c'.$i,
-			'total'     => !empty($fields->total)     ? $fields->total     : 0,
-			'processing'=> !empty($fields->processing)? $fields->processing: '',
-			'formatting'=> !empty($fields->formatting)? $fields->formatting: '',
-		    'align'     => !empty($fields->align)     ? $fields->align     : 'L',
-			'grptotal'  => 0,
-			'rpttotal'  => 0];
-		$i++;
+            'fieldname' => 'c'.$i,
+            'total'     => !empty($fields->total)     ? $fields->total     : 0,
+            'processing'=> !empty($fields->processing)? $fields->processing: '',
+            'formatting'=> !empty($fields->formatting)? $fields->formatting: '',
+            'align'     => !empty($fields->align)     ? $fields->align     : 'L',
+            'grptotal'  => 0,
+            'rpttotal'  => 0];
+        $i++;
     }
-	if (!empty($report->special_class)) {
+    if (!empty($report->special_class)) {
         $fqcn = "\\bizuno\\$report->special_class";
         $sp_report = new $fqcn($report);
-		return $sp_report->load_report_data($report, $seq, $sql, $GrpField); // the special report formats all of the data, we're done
-	}
+        return $sp_report->load_report_data($report, $seq, $sql, $GrpField); // the special report formats all of the data, we're done
+    }
     if (!$stmt = dbGetResult($sql)) { return msgAdd("Problem reading from the database!"); }
-	$result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+    $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
     if (sizeof($result) == 0) { return msgAdd("The report does not contain any data!", 'caution'); }
-	msgDebug("\nreturned number of rows = ".sizeof($result));
-	// Generate the output data array
+    msgDebug("\nreturned number of rows = ".sizeof($result));
+    // Generate the output data array
     if (!isset($report->totalonly)) { $report->totalonly = '0'; }
     $currencies->isoDest = empty($report->iso) ? getUserCache('profile', 'currency', false, 'USD') : $report->iso;
-	$RowCnt     = 0;
-	$ColCnt     = 1;
-	$GrpWorking = false;
-	$OutputArray= [];
-	foreach ($result as $myrow) { // Check to see if a total row needs to be displayed
+    $RowCnt     = 0;
+    $ColCnt     = 1;
+    $GrpWorking = false;
+    $OutputArray= [];
+    foreach ($result as $myrow) { // Check to see if a total row needs to be displayed
         $GLOBALS['currentRow'] = $myrow; // save the current row for processing
-		$report->currentValues = false; // reset the stored processing values to save sql's
-		if (isset($GrpField) && $GrpField) { // we're checking for group totals, see if this group is complete
-			if (($myrow[$GrpField] <> $GrpWorking) && $GrpWorking !== false) { // it's a new group so print totals
+        $report->currentValues = false; // reset the stored processing values to save sql's
+        if (isset($GrpField) && $GrpField) { // we're checking for group totals, see if this group is complete
+            if (($myrow[$GrpField] <> $GrpWorking) && $GrpWorking !== false) { // it's a new group so print totals
                 $gTmp = viewProcess($GrpWorking, $GrpFieldProcessing);
-				$OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);
-				foreach($seq as $offset => $TotalCtl) {
+                $OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);
+                foreach($seq as $offset => $TotalCtl) {
                     // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total. 
-					$OutputArray[$RowCnt][$offset+1] = $TotalCtl['total'] ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : ' ';
-					$seq[$offset]['grptotal'] = 0; // reset the total
-				}
-				$RowCnt++; // go to next row
-			}
-			$GrpWorking = $myrow[$GrpField]; // set to new grouping value
-		}
-		foreach($seq as $key => $TableCtl) {
-			$processedData = viewProcess($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
-			if ($report->totalonly <> 'on') { // insert data into output array and set to next column
-				$OutputArray[$RowCnt][0] = 'd'; // let the display class know its a data element
-				$OutputArray[$RowCnt][$ColCnt] = viewFormat($processedData, $TableCtl['formatting']);
-			}
-			$ColCnt++;
-			if ($TableCtl['total']) { // add to the running total if need be
-				$seq[$key]['grptotal'] += $processedData;
-				$seq[$key]['rpttotal'] += $processedData;
-			}
-		}
-		$RowCnt++;
-		$ColCnt = 1;
-	}
-	if ($GrpWorking !== false) { // if we collected group data show the final group total
+                    $OutputArray[$RowCnt][$offset+1] = $TotalCtl['total'] ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : ' ';
+                    $seq[$offset]['grptotal'] = 0; // reset the total
+                }
+                $RowCnt++; // go to next row
+            }
+            $GrpWorking = $myrow[$GrpField]; // set to new grouping value
+        }
+        foreach($seq as $key => $TableCtl) {
+            $processedData = viewProcess($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
+            if ($report->totalonly <> 'on') { // insert data into output array and set to next column
+                $OutputArray[$RowCnt][0] = 'd'; // let the display class know its a data element
+                $OutputArray[$RowCnt][$ColCnt] = viewFormat($processedData, $TableCtl['formatting']);
+            }
+            $ColCnt++;
+            if ($TableCtl['total']) { // add to the running total if need be
+                $seq[$key]['grptotal'] += $processedData;
+                $seq[$key]['rpttotal'] += $processedData;
+            }
+        }
+        $RowCnt++;
+        $ColCnt = 1;
+    }
+    if ($GrpWorking !== false) { // if we collected group data show the final group total
         $gTmp = viewProcess($GrpWorking, $GrpFieldProcessing);
         $OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);
-		foreach ($seq as $TotalCtl) {
-			// NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total. 
-			$OutputArray[$RowCnt][$ColCnt] = $TotalCtl['total'] ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : ' ';
-			$ColCnt++;
-		}
-		$RowCnt++;
-		$ColCnt = 1;
-	}
-	// see if we have a total to send
-	$ShowTotals = false;
+        foreach ($seq as $TotalCtl) {
+            // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total. 
+            $OutputArray[$RowCnt][$ColCnt] = $TotalCtl['total'] ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : ' ';
+            $ColCnt++;
+        }
+        $RowCnt++;
+        $ColCnt = 1;
+    }
+    // see if we have a total to send
+    $ShowTotals = false;
     foreach ($seq as $TotalCtl) { if ($TotalCtl['total']=='1') { $ShowTotals = true; } }
-	if ($ShowTotals) {
-		$OutputArray[$RowCnt][0] = 'r:' . $report->title;
-		foreach ($seq as $TotalCtl) {
-		    // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total.
-		    $OutputArray[$RowCnt][$ColCnt] = $TotalCtl['total'] ? viewFormat($TotalCtl['rpttotal'], $TotalCtl['formatting']) : ' ';
-			$ColCnt++;
-		}
-	}
-	msgDebug("\nOutput array = ".print_r($OutputArray, true));
-	return $OutputArray;
+    if ($ShowTotals) {
+        $OutputArray[$RowCnt][0] = 'r:' . $report->title;
+        foreach ($seq as $TotalCtl) {
+            // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total.
+            $OutputArray[$RowCnt][$ColCnt] = $TotalCtl['total'] ? viewFormat($TotalCtl['rpttotal'], $TotalCtl['formatting']) : ' ';
+            $ColCnt++;
+        }
+    }
+    msgDebug("\nOutput array = ".print_r($OutputArray, true));
+    return $OutputArray;
 }
 
 /**
@@ -644,7 +644,7 @@ function BuildDataArray($sql, $report)
  */
 function ReplaceNonAllowedCharacters($string)
 {
-	return str_replace(['"', ' ', '&', "'"], "_", $string);
+    return str_replace(['"', ' ', '&', "'"], "_", $string);
 }
 
 /**
@@ -654,7 +654,7 @@ function ReplaceNonAllowedCharacters($string)
  */
 function phreeformPages($lang)
 { // TBD make the key just the TCPDF supported paper sizes, pull dimensions from array 
-	return [
+    return [
         ['id'=>'LETTER:216:279', 'text'=>$lang['paper_letter']],
         ['id'=>'LEGAL:216:357',  'text'=>$lang['paper_legal']],
         ['id'=>'A3:297:420',     'text'=>'A3'],
@@ -677,10 +677,10 @@ function phreeformPages($lang)
  */
 function phreeformOrientation($lang)
 {
-	$output = [
+    $output = [
         ['id'=>'P', 'text'=>$lang['orient_portrait']],
         ['id'=>'L', 'text'=>$lang['orient_landscape']]];
-	return $output;
+    return $output;
 }
 
 /**
@@ -690,14 +690,14 @@ function phreeformOrientation($lang)
  */
 function phreeformFonts($show_default=true)
 {
-	$choices = glob(BIZUNO_3P_TCPDF."fonts/*.php");
-	$output = $show_default ? [['id'=>'default', 'text'=>lang('default')]] : [];
-	foreach ($choices as $choice) {
-		$name = false;
-		include($choice); // will set $name if it's a valid file
+    $choices = glob(BIZUNO_3P_TCPDF."fonts/*.php");
+    $output = $show_default ? [['id'=>'default', 'text'=>lang('default')]] : [];
+    foreach ($choices as $choice) {
+        $name = false;
+        include($choice); // will set $name if it's a valid file
         if ($name) { $output[] = ['id'=>basename($choice, ".php"), 'text'=>$name]; }
-	}
-	return $output;
+    }
+    return $output;
 }
 
 /**
@@ -720,17 +720,17 @@ function convertHex($value)
  */
 function phreeformSizes()
 {
-	return [
+    return [
         ['id'=> '8', 'text'=> '8'],
-		['id'=> '9', 'text'=> '9'],
-		['id'=>'10', 'text'=>'10'],
-		['id'=>'11', 'text'=>'11'], 
-		['id'=>'12', 'text'=>'12'], 
-		['id'=>'14', 'text'=>'14'], 
-		['id'=>'16', 'text'=>'16'], 
-		['id'=>'18', 'text'=>'18'], 
-		['id'=>'20', 'text'=>'20'], 
-		['id'=>'24', 'text'=>'24']];
+        ['id'=> '9', 'text'=> '9'],
+        ['id'=>'10', 'text'=>'10'],
+        ['id'=>'11', 'text'=>'11'], 
+        ['id'=>'12', 'text'=>'12'], 
+        ['id'=>'14', 'text'=>'14'], 
+        ['id'=>'16', 'text'=>'16'], 
+        ['id'=>'18', 'text'=>'18'], 
+        ['id'=>'20', 'text'=>'20'], 
+        ['id'=>'24', 'text'=>'24']];
 }
 
 /**
@@ -738,11 +738,11 @@ function phreeformSizes()
  * @return array - list ready to render
  */
 function phreeformAligns()
-{	
-	return [
+{    
+    return [
         ['id'=>'L', 'text'=>lang('left')],
-		['id'=>'R', 'text'=>lang('right')],
-		['id'=>'C', 'text'=>lang('center')]];
+        ['id'=>'R', 'text'=>lang('right')],
+        ['id'=>'C', 'text'=>lang('center')]];
 }
 
 /**
@@ -751,10 +751,10 @@ function phreeformAligns()
  */
 function phreeformCompany()
 {
-	$output = [];
+    $output = [];
     $company = array_keys(getModuleCache('bizuno', 'settings', 'company'));
     foreach ($company as $key) { $output[] = ['id'=>$key, 'text'=>pullTableLabel('address_book', $key)]; }
-	return $output;
+    return $output;
 }
 
 /**
@@ -763,37 +763,37 @@ function phreeformCompany()
  */
 function phreeformBarCodes()
 {
-	return [
+    return [
         ['id'=>'C39',     'text'=> 'CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.'],
-		['id'=>'C39+',    'text'=> 'CODE 39 with checksum'],
-		['id'=>'C39E',    'text'=> 'CODE 39 EXTENDED'],
-		['id'=>'C39E+',   'text'=> 'CODE 39 EXTENDED + CHECKSUM'],
-		['id'=>'C93',     'text'=> 'CODE 93 - USS-93'],
-		['id'=>'S25',     'text'=> 'Standard 2 of 5'],
-		['id'=>'S25+',    'text'=> 'Standard 2 of 5 + CHECKSUM'],
-		['id'=>'I25',     'text'=> 'Interleaved 2 of 5'],
-		['id'=>'I25+',    'text'=> 'Interleaved 2 of 5 + CHECKSUM'],
-		['id'=>'C128',    'text'=> 'CODE 128'],
-		['id'=>'C128A',   'text'=> 'CODE 128 A'],
-		['id'=>'C128B',   'text'=> 'CODE 128 B'],
-		['id'=>'C128C',   'text'=> 'CODE 128 C'],
-		['id'=>'EAN2',    'text'=> '2-Digits UPC-Based Extention'],
-		['id'=>'EAN5',    'text'=> '5-Digits UPC-Based Extention'],
-		['id'=>'EAN8',    'text'=> 'EAN 8'],
-		['id'=>'EAN13',   'text'=> 'EAN 13'],
-		['id'=>'UPCA',    'text'=> 'UPC-A'],
-		['id'=>'UPCE',    'text'=> 'UPC-E'],
-		['id'=>'MSI',     'text'=> 'MSI (Variation of Plessey code)'],
-		['id'=>'MSI+',    'text'=> 'MSI + CHECKSUM (modulo 11)'],
-		['id'=>'POSTNET', 'text'=> 'POSTNET'],
-		['id'=>'PLANET',  'text'=> 'PLANET'],
-		['id'=>'RMS4CC',  'text'=> 'RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)'],
-		['id'=>'KIX',     'text'=> 'KIX (Klant index - Customer index)'],
-		['id'=>'IMB',     'text'=> 'Intelligent Mail Barcode - Onecode - USPS-B-3200'],
-		['id'=>'CODABAR', 'text'=> 'CODABAR'],
-		['id'=>'CODE11',  'text'=> 'CODE 11'],
-		['id'=>'PHARMA',  'text'=> 'PHARMACODE'],
-		['id'=>'PHARMA2T','text'=> 'PHARMACODE TWO-TRACKS']];
+        ['id'=>'C39+',    'text'=> 'CODE 39 with checksum'],
+        ['id'=>'C39E',    'text'=> 'CODE 39 EXTENDED'],
+        ['id'=>'C39E+',   'text'=> 'CODE 39 EXTENDED + CHECKSUM'],
+        ['id'=>'C93',     'text'=> 'CODE 93 - USS-93'],
+        ['id'=>'S25',     'text'=> 'Standard 2 of 5'],
+        ['id'=>'S25+',    'text'=> 'Standard 2 of 5 + CHECKSUM'],
+        ['id'=>'I25',     'text'=> 'Interleaved 2 of 5'],
+        ['id'=>'I25+',    'text'=> 'Interleaved 2 of 5 + CHECKSUM'],
+        ['id'=>'C128',    'text'=> 'CODE 128'],
+        ['id'=>'C128A',   'text'=> 'CODE 128 A'],
+        ['id'=>'C128B',   'text'=> 'CODE 128 B'],
+        ['id'=>'C128C',   'text'=> 'CODE 128 C'],
+        ['id'=>'EAN2',    'text'=> '2-Digits UPC-Based Extention'],
+        ['id'=>'EAN5',    'text'=> '5-Digits UPC-Based Extention'],
+        ['id'=>'EAN8',    'text'=> 'EAN 8'],
+        ['id'=>'EAN13',   'text'=> 'EAN 13'],
+        ['id'=>'UPCA',    'text'=> 'UPC-A'],
+        ['id'=>'UPCE',    'text'=> 'UPC-E'],
+        ['id'=>'MSI',     'text'=> 'MSI (Variation of Plessey code)'],
+        ['id'=>'MSI+',    'text'=> 'MSI + CHECKSUM (modulo 11)'],
+        ['id'=>'POSTNET', 'text'=> 'POSTNET'],
+        ['id'=>'PLANET',  'text'=> 'PLANET'],
+        ['id'=>'RMS4CC',  'text'=> 'RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)'],
+        ['id'=>'KIX',     'text'=> 'KIX (Klant index - Customer index)'],
+        ['id'=>'IMB',     'text'=> 'Intelligent Mail Barcode - Onecode - USPS-B-3200'],
+        ['id'=>'CODABAR', 'text'=> 'CODABAR'],
+        ['id'=>'CODE11',  'text'=> 'CODE 11'],
+        ['id'=>'PHARMA',  'text'=> 'PHARMACODE'],
+        ['id'=>'PHARMA2T','text'=> 'PHARMACODE TWO-TRACKS']];
 }
 
 /**
@@ -802,9 +802,9 @@ function phreeformBarCodes()
  */
 function phreeformSeparators()
 {
-	$output = [['id'=> '', 'text'=> lang('none')]];
+    $output = [['id'=> '', 'text'=> lang('none')]];
     foreach (getModuleCache('phreeform', 'separators') as $key => $value) { $output[] = ['id'=> $key, 'text'=>$value['text']]; }
-	return $output;
+    return $output;
 }
 
 /**
@@ -813,11 +813,11 @@ function phreeformSeparators()
  */
 function phreeformProcessing()
 {
-	$output = [['id'=> '', 'text'=> lang('none')]];
+    $output = [['id'=> '', 'text'=> lang('none')]];
     foreach (getModuleCache('phreeform', 'processing') as $key => $value) { 
         $output[] = ['id'=> $key, 'text'=>$value['text'], 'group'=>$value['group']];
     }
-	return $output;
+    return $output;
 }
 
 /**
@@ -826,9 +826,9 @@ function phreeformProcessing()
  */
 function phreeformFormatting()
 {
-	$output = [['id'=>'', 'text'=>lang('none')]];
+    $output = [['id'=>'', 'text'=>lang('none')]];
     foreach (getModuleCache('phreeform', 'formatting') as $key => $value) { 
         $output[] = ['id'=> $key, 'text'=>$value['text'], 'group'=>isset($value['group']) ? $value['group'] : ''];
     }
-	return $output;
+    return $output;
 }

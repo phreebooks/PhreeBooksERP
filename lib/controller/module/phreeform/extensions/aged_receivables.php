@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-09-05
  * @filesource /controller/module/phreeform/extensions/aged_receivables.php
@@ -159,10 +159,10 @@ class aged_receivables
       $output[] = ['id' => 'journal_main.postal_code_b',    'text' => RW_AR_BILL_ZIP];
       $output[] = ['id' => 'journal_main.country_b_code',   'text' => RW_AR_BILL_COUNTRY];
       $output[] = ['id' => 'journal_main.telephone1_b',     'text' => RW_AR_BILL_TELE1];
-  //	$output[] = ['id' => 'contacts.bill_telephone2',         'text' => RW_AR_BILL_TELE2];
-  //	$output[] = ['id' => 'contacts.bill_fax',                'text' => RW_AR_BILL_FAX];
+  //    $output[] = ['id' => 'contacts.bill_telephone2',         'text' => RW_AR_BILL_TELE2];
+  //    $output[] = ['id' => 'contacts.bill_fax',                'text' => RW_AR_BILL_FAX];
       $output[] = ['id' => 'journal_main.email_b',          'text' => RW_AR_BILL_EMAIL];
-  //	$output[] = ['id' => 'contacts.bill_website',            'text' => RW_AR_BILL_WEBSITE];
+  //    $output[] = ['id' => 'contacts.bill_website',            'text' => RW_AR_BILL_WEBSITE];
       $output[] = ['id' => 'journal_main.contact_id_s',         'text' => RW_AR_SHIP_ACCT_ID];
       $output[] = ['id' => 'journal_main.address_id_s',     'text' => RW_AR_SHIP_ADD_ID];
       $output[] = ['id' => 'journal_main.primary_name_s',   'text' => RW_AR_SHIP_PRIMARY_NAME];
@@ -174,10 +174,10 @@ class aged_receivables
       $output[] = ['id' => 'journal_main.postal_code_s',    'text' => RW_AR_SHIP_ZIP];
       $output[] = ['id' => 'journal_main.country_s_code',   'text' => RW_AR_SHIP_COUNTRY];
       $output[] = ['id' => 'journal_main.telephone1_s',     'text' => RW_AR_SHIP_TELE1];
-  //	$output[] = ['id' => 'contacts.ship_telephone2',         'text' => RW_AR_SHIP_TELE2];
-  //	$output[] = ['id' => 'contacts.ship_fax',                'text' => RW_AR_SHIP_FAX];
+  //    $output[] = ['id' => 'contacts.ship_telephone2',         'text' => RW_AR_SHIP_TELE2];
+  //    $output[] = ['id' => 'contacts.ship_fax',                'text' => RW_AR_SHIP_FAX];
       $output[] = ['id' => 'journal_main.email_s',          'text' => RW_AR_SHIP_EMAIL];
-  //	$output[] = ['id' => 'contacts.ship_website',            'text' => RW_AR_SHIP_WEBSITE];
+  //    $output[] = ['id' => 'contacts.ship_website',            'text' => RW_AR_SHIP_WEBSITE];
       $output[] = ['id' => 'contacts.short_name',              'text' => RW_AR_CUSTOMER_ID];
       $output[] = ['id' => 'contacts.account_number',          'text' => RW_AR_ACCOUNT_NUMBER];
       $output[] = ['id' => 'journal_main.terminal_date',       'text' => RW_AR_SHIP_DATE];
@@ -231,7 +231,7 @@ class aged_receivables
         $result = dbGetValue(BIZUNO_DB_PREFIX."journal_item", ['SUM(debit_amount) AS debits', 'SUM(credit_amount) AS credits'], "item_ref_id=$id AND gl_type='pmt'", false);
         $total_paid = $result['credits'] - $result['debits'];
         $balance = $total_billed - $total_paid;
-        if($negate) { $balance = -$balance;	 }
+        if($negate) { $balance = -$balance;     }
         $new_data['balance_0']  = 0;
         $new_data['balance_30'] = 0;
         $new_data['balance_60'] = 0;

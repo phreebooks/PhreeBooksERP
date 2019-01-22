@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-18
+ * @version    3.x Last Update: 2019-01-22
  * @filesource /lib/controller/module/phreebooks/dashboards/summary_6_12/summary_6_12.php
  */
 
@@ -27,18 +27,18 @@ class summary_6_12
 {
     public  $moduleID = 'phreebooks';
     public  $methodDir= 'dashboards';
-	public  $code     = 'summary_6_12';
-	public  $category = 'vendors';
-	
-	function __construct($settings=[])
+    public  $code     = 'summary_6_12';
+    public  $category = 'vendors';
+
+    function __construct($settings=[])
     {
-		$this->security= getUserCache('security', 'j2_mgr', false, 0);
+        $this->security= getUserCache('security', 'j2_mgr', false, 0);
         $defaults      = ['users'=>'-1','roles'=>'-1','range'=>'l'];
         $this->settings= array_replace_recursive($defaults, $settings);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $this->choices = ['l'=>lang('dates_this_period'),'x'=>'Last Period','i'=>lang('dates_qtd'),'k'=>lang('dates_ytd')];
 //        $this->dates   = array_merge(viewKeyDropdown($this->choices), dbPeriodDropDown(false));
-	}
+    }
 
     public function settingsStructure()
     {
@@ -46,19 +46,19 @@ class summary_6_12
             'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']],
             'range' => ['label'=>lang('range'), 'position'=>'after','values'=>viewKeyDropdown($this->choices),'attr'=>['type'=>'select','value'=>$this->settings['range']]]];
-	}
+    }
 
-	public function save()
+    public function save()
     {
-		$menu_id = clean('menuID', 'text', 'get');
-		$this->settings['range']= clean($this->code.'range','cmd','post');
+        $menu_id = clean('menuID', 'text', 'get');
+        $this->settings['range']= clean($this->code.'range','cmd','post');
         if (getUserCache('security', 'admin', false, 0) > 2) {
-    		$this->settings['rep']  = clean($this->code.'rep', 'cmd', 'post');
+            $this->settings['rep']  = clean($this->code.'rep', 'cmd', 'post');
         }
         dbWrite(BIZUNO_DB_PREFIX."users_profiles", ['settings'=>json_encode($this->settings)], 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code' AND menu_id='$menu_id'");
-	}
-    
-	public function render()
+    }
+
+    public function render()
     {
         $total_v = $total_c = 0;
 //        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhreeBooks', 'function');
@@ -67,7 +67,7 @@ class summary_6_12
         $settings= $this->settingsStructure();
         $data    = $this->dataSales($this->settings['range']);
         $action  = BIZUNO_AJAX."&p=phreebooks/tools/jrnlData&code=6_12&range={$this->settings['range']}";
-        $js      = "jq.cachedScript('".BIZUNO_SRVR."apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');
+        $js      = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');
 ajaxDownload('sum_6_12');
 function chart{$this->code}() {
     var data = new google.visualization.DataTable();
@@ -87,16 +87,16 @@ function chart{$this->code}() {
 }
 google.charts.load('current', {'packages':['table']});
 google.charts.setOnLoadCallback(chart{$this->code});\n";
-		$html  = '<div>';
+        $html  = '<div>';
         $html .= '  <div id="'.$this->code.'_attr" style="display:none"><form id="'.$this->code.'Form" action="">';
-		$html .= '    <div style="white-space:nowrap">'.html5($this->code.'range',$settings['range']).'</div>';
+        $html .= '    <div style="white-space:nowrap">'.html5($this->code.'range',$settings['range']).'</div>';
         $html .= '    <div style="text-align:right;">' .html5($this->code.'_btn', $btnSave).'</div></form></div>';
         $html .= '  <div style="width:100%" id="'.$this->code.'_chart"></div>';
-		$html .= '  <div style="text-align:right"><form id="sum_6_12" action="'.$action.'">'.html5('', $iconExp).'</form></div>';
+        $html .= '  <div style="text-align:right"><form id="sum_6_12" action="'.$action.'">'.html5('', $iconExp).'</form></div>';
         $html .= "</div>";
         $html .= htmlJS($js);
         return $html;
-	}
+    }
 
     public function dataSales($range='l')
     {
@@ -121,7 +121,7 @@ google.charts.setOnLoadCallback(chart{$this->code});\n";
         msgDebug("\nreturning with results = ".print_r($arrIncs, true));
         return $arrIncs;
     }
-    
+
     private function createDateRange($startDate, $endDate, $inc='w')
     {
         msgDebug("\nEntering createDateRange, start = $startDate, end = $endDate");

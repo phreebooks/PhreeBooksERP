@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-30
  * @filesource /lib/controller/module/bizuno/main.php
@@ -27,21 +27,21 @@ namespace bizuno;
 
 class bizunoMain
 {
-	public $moduleID = 'bizuno';
+    public $moduleID = 'bizuno';
 
-	function __construct()
+    function __construct()
     {
         $this->lang = getLang($this->moduleID);
     }
     
-	/**
+    /**
      * generates the structure for the home page and any main menu dashboard page
      * @param array $layout - structure coming in
      */
     public function bizunoHome(&$layout)
     {
         $mIDdef= getUserCache('profile', 'admin_id', false, 0) ? 'home' : 'portal';
-		$title = getModuleCache('bizuno', 'settings', 'company', 'primary_name', getUserCache('profile', 'biz_title'));
+        $title = getModuleCache('bizuno', 'settings', 'company', 'primary_name', getUserCache('profile', 'biz_title'));
         $menuID= clean('menuID', ['format'=>'text','default'=>$mIDdef], 'get');
         $data  = ['title'=>"$title - ".getModuleCache('bizuno', 'properties', 'title'),
             'jsHead'=>['menu_id'=>"var menuID='$menuID';"]];
@@ -58,7 +58,7 @@ class bizunoMain
             $data['divs']['bodyDash'] = ['order'=>50,'styles'=>['clear'=>'both'],'attr'=>['id'=>'dashboard'],'type'=>'html','html'=>$html];
         }
         $layout = array_replace_recursive(viewMain(), $data);
-	}
+    }
     
     public function dashboard(&$layout=[])
     {
@@ -80,45 +80,45 @@ class bizunoMain
     
     private function setDashJS(&$data)
     {
-		$cols = getUserCache('profile', 'cols', false, 3);
+        $cols = getUserCache('profile', 'cols', false, 3);
         $opts = '';
         if (clean('lost',   'cmd','get') == 'true') { $opts .= '&lost=true'; }
         if (clean('newuser','cmd','get') == 'true') { $opts .= '&newuser=true'; }
         $data['jsBody']['jsHome'] = "var panels = new Array();
 function getPanelOptions(id) {
-	for (var i=0; i<panels.length; i++) if (panels[i].id == id) return panels[i];
-	return undefined;
+    for (var i=0; i<panels.length; i++) if (panels[i].id == id) return panels[i];
+    return undefined;
 }
 function getPortalState(){
-	var aa = [];
-	for (var columnIndex=0; columnIndex<$cols; columnIndex++){
-		var cc = [];
-		var panels = jq('#dashboard').portal('getPanels', columnIndex);
-		for (var i=0; i<panels.length; i++) cc.push(panels[i].attr('id'));
-		aa.push(cc.join(','));
-	}
-	return aa.join(':');
+    var aa = [];
+    for (var columnIndex=0; columnIndex<$cols; columnIndex++){
+        var cc = [];
+        var panels = jq('#dashboard').portal('getPanels', columnIndex);
+        for (var i=0; i<panels.length; i++) cc.push(panels[i].attr('id'));
+        aa.push(cc.join(','));
+    }
+    return aa.join(':');
 }
 function addPanels(json) {
-	if (json.message) displayMessage(json.message);
-	for (var i=0; i<json.Dashboard.length; i++) { panels.push(json.Dashboard[i]); }
-	var portalState = json.State;
-	var columns     = portalState.split(':');
-	for (var columnIndex=0; columnIndex<columns.length; columnIndex++){
-		var cc = columns[columnIndex].split(',');
-		for (var j=0; j<cc.length; j++) {
-			var options = getPanelOptions(cc[j]);
-			if (options) {
-				var p = jq('<div></div>').attr('id',options.id).appendTo('body');
+    if (json.message) displayMessage(json.message);
+    for (var i=0; i<json.Dashboard.length; i++) { panels.push(json.Dashboard[i]); }
+    var portalState = json.State;
+    var columns     = portalState.split(':');
+    for (var columnIndex=0; columnIndex<columns.length; columnIndex++){
+        var cc = columns[columnIndex].split(',');
+        for (var j=0; j<cc.length; j++) {
+            var options = getPanelOptions(cc[j]);
+            if (options) {
+                var p = jq('<div></div>').attr('id',options.id).appendTo('body');
                 var panelHref = options.href;
                 options.href = '';
-				p.panel(options);
+                p.panel(options);
                 if (isMobile()) { p.panel('panel').draggable('disable'); }
-				p.panel({ href:panelHref,onBeforeClose:function() { if (confirm('".jsLang('msg_confirm_delete')."')) { dashboardDelete(this); } else { return false } } });
-				jq('#dashboard').portal('add',{ panel:p, columnIndex:columnIndex });
-			}
-		}
-	}
+                p.panel({ href:panelHref,onBeforeClose:function() { if (confirm('".jsLang('msg_confirm_delete')."')) { dashboardDelete(this); } else { return false } } });
+                jq('#dashboard').portal('add',{ panel:p, columnIndex:columnIndex });
+            }
+        }
+    }
 }";
         $data['jsReady']['initDash'] = "jq('#dashboard').portal({border:false,onStateChange:function(){
         var state = getPortalState();
@@ -140,43 +140,43 @@ $(function() {
 */        
     }
     
-	/**
+    /**
      * Used to refresh session timer to keep log in alive. Forces log out after 8 hours if no user actions are detected.
      */
     public function sessionRefresh(&$layout) {
     } // nothing to do, just reset session clock
 
-	/**
+    /**
      * Loads the countries from the locales.xml file into an array to use on processing
      * @param array $layout - structure coming in
      */
     public function countriesLoad(&$layout) {
         $temp = localeLoadDB();
-		$output = [];
+        $output = [];
         foreach ($temp->country as $value) { $output[] = ['id' => $value->iso3, 'text'=> $value->name]; }
-		$layout = array_replace_recursive($layout, ['type'=>'raw', 'content'=>json_encode($output)]);
-	}
+        $layout = array_replace_recursive($layout, ['type'=>'raw', 'content'=>json_encode($output)]);
+    }
 
-	/**
+    /**
      * generates the pop up encryption form
      * @param array $layout - structure coming in
      * @return modified $layout
      */
     public function encryptionForm(&$layout) {
         if (!validateSecurity('bizuno', 'profile', 1)) { return; }
-		$icnSave= ['icon'=>'save','events'=>['onClick'=>"jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());"]];
-		$inpEncr= ['options'=>['value'=>"''"],'attr'=>['type'=>'password']];
-		$html   = lang('msg_enter_encrypt_key').'<br />'.html5('pwEncrypt', $inpEncr).html5('', $icnSave);
-		$js     = "bizFocus('pwEncrypt');
+        $icnSave= ['icon'=>'save','events'=>['onClick'=>"jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());"]];
+        $inpEncr= ['options'=>['value'=>"''"],'attr'=>['type'=>'password']];
+        $html   = lang('msg_enter_encrypt_key').'<br />'.html5('pwEncrypt', $inpEncr).html5('', $icnSave);
+        $js     = "bizFocus('pwEncrypt');
 jq('#winEncrypt').keypress(function(event) {
     var keycode = (event.keyCode ? event.keyCode : event.which);
     if (keycode=='13') jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());
 });";
         $html .= htmlJS($js);
-		$layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['divEncrypt'=>['order'=>50,'type'=>'html','html'=>$html]]]);
-	}
-	
-	/**
+        $layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['divEncrypt'=>['order'=>50,'type'=>'html','html'=>$html]]]);
+    }
+    
+    /**
      * Validates and sets the encryption key, if successful
      * @param array $layout - structure coming in
      * @return modified structure
@@ -184,25 +184,25 @@ jq('#winEncrypt').keypress(function(event) {
     public function encryptionSet(&$layout)
     {
         if (!validateSecurity('bizuno', 'profile', 1)) { return; }
-		$error  = false;
-		$key    = clean('data', 'password', 'get');
-		$encKey = getModuleCache('bizuno', 'encKey', false, '');
+        $error  = false;
+        $key    = clean('data', 'password', 'get');
+        $encKey = getModuleCache('bizuno', 'encKey', false, '');
         if (!$encKey) { msgAdd($this->lang['err_encryption_not_set']); }
-		if ($key && $encKey) {
-			$stack = explode(':', $encKey);
+        if ($key && $encKey) {
+            $stack = explode(':', $encKey);
             if (sizeof($stack) != 2) { $error = true; }
             if (md5($stack[1] . $key) <> $stack[0]) { $error = true; }
         } else { $error = true; }
         if ($error) { return msgAdd(lang('err_login_failed')); }
-		setUserCache('profile', 'admin_encrypt', $key);
+        setUserCache('profile', 'admin_encrypt', $key);
         $qlinks = getUserCache('quickBar');
         unset($qlinks['child']['encrypt']);
         setUserCache('quickBar', false, $qlinks);
-		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 
             'actionData'=>"bizWindowClose('winEncrypt'); jq('#ql_encrypt').hide();"]]);
-	}
-	
-	/*
+    }
+    
+    /*
      * Downloads a file to the user
      */
     public function fileDownload()
@@ -210,21 +210,21 @@ jq('#winEncrypt').keypress(function(event) {
         global $io;
         if (!validateSecurity('bizuno', 'phreeform', 1)) { return; } // changed to 'phreeform' security to enable download across Bizuno modules
         $path = clean('pathID', 'path', 'get');
-		$file = clean('fileID', 'file', 'get');
-		$parts = explode(":", $file, 2);
-		if (sizeof($parts) > 1) { // if file contains a prefix the format will be: prefix:prefixFilename
-			$dir  = $path.$parts[0];
-			$file = str_replace($parts[0], '', $parts[1]);
-		} else {
-			$dir  = $path;
-			$file = $file;
-		}
-		msgLog(lang('download').' - '.$file);
-		msgDebug("\n".lang('download').' - '.$file);
-		$io->download('file', $dir, $file);
-	}
+        $file = clean('fileID', 'file', 'get');
+        $parts = explode(":", $file, 2);
+        if (sizeof($parts) > 1) { // if file contains a prefix the format will be: prefix:prefixFilename
+            $dir  = $path.$parts[0];
+            $file = str_replace($parts[0], '', $parts[1]);
+        } else {
+            $dir  = $path;
+            $file = $file;
+        }
+        msgLog(lang('download').' - '.$file);
+        msgDebug("\n".lang('download').' - '.$file);
+        $io->download('file', $dir, $file);
+    }
 
-	/**
+    /**
      * Deletes a file from the myBiz folder
      * @param array $layout - structure coming in
      */
@@ -233,14 +233,14 @@ jq('#winEncrypt').keypress(function(event) {
         global $io;
         if (!validateSecurity('bizuno', 'admin', 4)) { return; }
         $dgID = clean('rID', 'text', 'get');
-		$file = clean('data','text', 'get');
+        $file = clean('data','text', 'get');
         msgDebug("\nDeleting dgID = $dgID and file = $file");
-		$io->fileDelete($file);
-		msgLog(lang('delete').' - '.$file);
-		msgDebug("\n".lang('delete').' - '.$file);
-		$layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 
-			'actionData'=>"var row=jq('#$dgID').datagrid('getSelected'); 
+        $io->fileDelete($file);
+        msgLog(lang('delete').' - '.$file);
+        msgDebug("\n".lang('delete').' - '.$file);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 
+            'actionData'=>"var row=jq('#$dgID').datagrid('getSelected'); 
 var idx=jq('#$dgID').datagrid('getRowIndex', row);
 jq('#$dgID').datagrid('deleteRow', idx);"]]);
-	}
+    }
 }

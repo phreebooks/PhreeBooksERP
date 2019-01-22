@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-11-12
  * @filesource /lib/controller/module/phreebooks/journals/j16.php
@@ -29,12 +29,12 @@ class j16 extends jCommon
 {
     protected $journalID = 16;
 
-	function __construct($main=[], $item=[])
+    function __construct($main=[], $item=[])
     {
-		parent::__construct();
+        parent::__construct();
         $this->main = $main;
-		$this->item = $item;
-	}
+        $this->item = $item;
+    }
 
 /*******************************************************************************************************************/
 // START Edit Methods
@@ -94,7 +94,7 @@ class j16 extends jCommon
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
-	public function Post()
+    public function Post()
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
@@ -105,20 +105,20 @@ class j16 extends jCommon
         if (!$this->postJournalHistory())    { return; }
         if (!$this->setStatusClosed('post')) { return; }
         msgDebug("\n*************** end Posting Journal ******************* id = {$this->main['id']}\n\n");
-		return true;
-	}
+        return true;
+    }
 
-	public function unPost()
+    public function unPost()
     {
         msgDebug("\n/********* unPosting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
-        if (!$this->unPostJournalHistory())    { return; }	// unPost the chart values before inventory where COG rows are removed
+        if (!$this->unPostJournalHistory())    { return; }    // unPost the chart values before inventory where COG rows are removed
         if (!$this->unPostInventory())         { return; }
-		if (!$this->unPostMain())              { return; }
+        if (!$this->unPostMain())              { return; }
         if (!$this->unPostItem())              { return; }
         if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
-		return true;
-	}
+        return true;
+    }
 
     /**
      * Get re-post records - applies to journals 6, 7, 12, 13, 14, 15, 16, 19, 21
@@ -126,7 +126,7 @@ class j16 extends jCommon
      */
     public function getRepostData()
     {
-		msgDebug("\n  j16 - Checking for re-post records ... ");
+        msgDebug("\n  j16 - Checking for re-post records ... ");
         $out1 = [];
         $out2 = array_merge($out1, $this->getRepostInv());
         $out3 = array_merge($out2, $this->getRepostInvCOG());
@@ -134,137 +134,137 @@ class j16 extends jCommon
         $out5 = array_merge($out3, $this->getRepostPayment());
         msgDebug("\n  j16 - End Checking for Re-post.");
         return $out5;
-	}
+    }
 
-	/**
+    /**
      * Post journal item array to journal history table
      * applies to journal 2, 6, 7, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22
      * @return boolean - true
      */
     private function postJournalHistory()
     {
-		msgDebug("\n  Posting Chart Balances...");
+        msgDebug("\n  Posting Chart Balances...");
         if ($this->setJournalHistory()) { return true; }
-	}
+    }
 
-	/**
+    /**
      * unPosts journal item array from journal history table
      * applies to journal 2, 6, 7, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22
      * @return boolean - true
      */
-	private function unPostJournalHistory() {
-		msgDebug("\n  unPosting Chart Balances...");
+    private function unPostJournalHistory() {
+        msgDebug("\n  unPosting Chart Balances...");
         if ($this->unSetJournalHistory()) { return true; }
-	}
+    }
 
-	/**
+    /**
      * Post inventory
      * @return boolean true on success, null on error
      */
-	private function postInventory()
+    private function postInventory()
     {
-		msgDebug("\n  Posting Inventory ...");
-		$ref_field = false;
+        msgDebug("\n  Posting Inventory ...");
+        $ref_field = false;
         $ref_closed= false;
-		$str_field = 'qty_stock';
-		// adjust inventory stock status levels (also fills inv_list array)
-		$item_rows_to_process = count($this->item); // NOTE: variable needs to be here because $this->item may grow within for loop (COGS)
+        $str_field = 'qty_stock';
+        // adjust inventory stock status levels (also fills inv_list array)
+        $item_rows_to_process = count($this->item); // NOTE: variable needs to be here because $this->item may grow within for loop (COGS)
 // the cogs rows are added after this loop ..... the code below needs to be rewritten
-		for ($i = 0; $i < $item_rows_to_process; $i++) {
+        for ($i = 0; $i < $item_rows_to_process; $i++) {
             if (!in_array($this->item[$i]['gl_type'], ['itm','adj','asy','xfr'])) { continue; }
-			if (isset($this->item[$i]['sku']) && $this->item[$i]['sku'] <> '') {
-				$inv_list = $this->item[$i];
+            if (isset($this->item[$i]['sku']) && $this->item[$i]['sku'] <> '') {
+                $inv_list = $this->item[$i];
                 $inv_list['price'] = $this->item[$i]['qty'] ? (($this->item[$i]['debit_amount'] + $this->item[$i]['credit_amount']) / $this->item[$i]['qty']) : 0;
-				if (!$this->calculateCOGS($inv_list)) { return; }
-			}
-		}
-		// update inventory status
-		foreach ($this->item as $row) {
+                if (!$this->calculateCOGS($inv_list)) { return; }
+            }
+        }
+        // update inventory status
+        foreach ($this->item as $row) {
             if (!isset($row['sku']) || !$row['sku']) { continue; } // skip all rows without a SKU
-			$item_cost = $full_price = 0;
+            $item_cost = $full_price = 0;
             if (!$this->setInvStatus($row['sku'], $str_field, $row['qty'], $item_cost, $row['description'], $full_price)) { return false; }
-		}
-		// build the cogs item rows
+        }
+        // build the cogs item rows
         $this->setInvCogItems();
-		msgDebug("\n  end Posting Inventory.");
-		return true;
-	}
+        msgDebug("\n  end Posting Inventory.");
+        return true;
+    }
 
-	/**
+    /**
      * unPost inventory
      * @return boolean true on success, null on error
      */
-	private function unPostInventory()
+    private function unPostInventory()
     {
-		msgDebug("\n  unPosting Inventory ...");
+        msgDebug("\n  unPosting Inventory ...");
         if (!$this->rollbackCOGS()) { return false; }
-		for ($i = 0; $i < count($this->item); $i++) {
+        for ($i = 0; $i < count($this->item); $i++) {
             if (!isset($this->item[$i]['sku']) || !$this->item[$i]['sku']) { continue; }
             if (!$this->setInvStatus($this->item[$i]['sku'], 'qty_stock', -$this->item[$i]['qty'])) { return; }
         }
         if ($this->main['so_po_ref_id'] > 0) { $this->setInvRefBalances($this->main['so_po_ref_id'], false); }
-		dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."inventory_history WHERE ref_id = {$this->main['id']}");
-		dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."journal_cogs_usage WHERE journal_main_id={$this->main['id']}");
+        dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."inventory_history WHERE ref_id = {$this->main['id']}");
+        dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."journal_cogs_usage WHERE journal_main_id={$this->main['id']}");
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."journal_cogs_owed  WHERE journal_main_id={$this->main['id']}");
-		msgDebug("\n  end unPosting Inventory.");
-		return true;
-	}
+        msgDebug("\n  end unPosting Inventory.");
+        return true;
+    }
 
-	/**
+    /**
      * Checks and sets/clears the closed status of a journal entry
      * Affects journals - 3, 7, 9, 13, 14, 15, 16
      * @param string $action - [default: 'post']
      * @return boolean true
      */
-	private function setStatusClosed($action='post')
+    private function setStatusClosed($action='post')
     {
-		msgDebug("\n  Checking for closed entry. action = $action, returning with no action.");
-		return true;
-	}
+        msgDebug("\n  Checking for closed entry. action = $action, returning with no action.");
+        return true;
+    }
 
     /**
      * Creates the datagrid structure for inventory adjustments line items
      * @param string $name - DOM field name
      * @return array - datagrid structure
      */
-	private function dgAdjust($name)
+    private function dgAdjust($name)
     {
-		$on_hand  = jsLang('inventory', 'qty_stock');
-		$on_order = jsLang('inventory', 'qty_po');
+        $on_hand  = jsLang('inventory', 'qty_stock');
+        $on_order = jsLang('inventory', 'qty_po');
         $store_id = getUserCache('profile', 'store_id', false, 0);
-		return ['id'=>$name, 'type'=>'edatagrid',
-			'attr'   => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true, 'singleSelect'=>true, 'idField'=>'id'],
-			'events' => ['data'=> "datagridData",
-				'onLoadSuccess'=> "function(row) { totalUpdate(); }",
-				'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
+        return ['id'=>$name, 'type'=>'edatagrid',
+            'attr'   => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true, 'singleSelect'=>true, 'idField'=>'id'],
+            'events' => ['data'=> "datagridData",
+                'onLoadSuccess'=> "function(row) { totalUpdate(); }",
+                'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
                 'onBeforeEdit' => "function(rowIndex) {
     var edtURL = jq(this).edatagrid('getColumnOption','sku');
     edtURL.editor.options.url = '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID='+jq('#store_id').val();
 }",
-				'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
-				'onDestroy'    => "function(rowIndex) { totalUpdate(); curIndex = undefined; }",
-				'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
-			'source' => ['actions'=>['newItem'=>['order'=>10,'icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
-			'columns'=> [
+                'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
+                'onDestroy'    => "function(rowIndex) { totalUpdate(); curIndex = undefined; }",
+                'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
+            'source' => ['actions'=>['newItem'=>['order'=>10,'icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
+            'columns'=> [
                 'id'         => ['order'=>0, 'attr'=>['hidden'=>true]],
-				'gl_account' => ['order'=>0, 'attr'=>['hidden'=>true]],
-				'unit_cost'  => ['order'=>0, 'attr'=>['editor'=>'text', 'hidden'=>true]],
-				'action'     => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
-					'actions'=> ['trash' => ['order'=>20,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
-				'sku'        => ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true,'align'=>'center'],
-					'events' => ['editor'=>"{type:'combogrid',options:{ width:150, panelWidth:540, delay:500, idField:'sku', textField:'sku', mode:'remote',
+                'gl_account' => ['order'=>0, 'attr'=>['hidden'=>true]],
+                'unit_cost'  => ['order'=>0, 'attr'=>['editor'=>'text', 'hidden'=>true]],
+                'action'     => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                    'actions'=> ['trash' => ['order'=>20,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
+                'sku'        => ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true,'align'=>'center'],
+                    'events' => ['editor'=>"{type:'combogrid',options:{ width:150, panelWidth:540, delay:500, idField:'sku', textField:'sku', mode:'remote',
     url:        '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID=$store_id',
     onClickRow: function (idx, data) { adjFill(data); },
     columns:    [[{field:'sku',title:'".jsLang('sku')."',width:100},{field:'description_short',title:'".jsLang('description')."',width:200},{field:'qty_stock',title:'$on_hand', align:'right',width:90},{field:'qty_po',title:'$on_order',align:'right',width:90}]]
 }}"]],
-				'qty_stock'  => ['order'=>30,'label'=>$on_hand,'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
-					'events' => ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
-				'qty'        => ['order'=>40,'label'=>lang('journal_item_qty', $this->journalID),'attr' =>['width'=>100,'resizable'=>true,'align'=>'center'],
-					'events' => ['editor'=>"{type:'numberbox',options:{onChange:function(){ adjCalc('qty'); } } }"]],
-				'balance'    => ['order'=>50,'label'=>lang('balance'),'styles'=>['text-align'=>'right'], 'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
-					'events' => ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
-				'total'      => ['order'=>60, 'label'=>lang('total'),'format'=>'currency','attr'=>['width'=>120,'resizable'=>true,'align'=>'center'],
-					'events' => ['editor'=>"{type:'numberbox',options:{onChange:function (newValue,oldValue) { var idx=bizDGgetIndex('dgJournalItem'); pbSetTotal(idx, cleanCurrency(newValue)); }}}"]],
-				'description'=> ['order'=>70,'label'=>lang('description'),'attr'=>['width'=>250,'editor'=>'text','resizable'=>true]]]];
-	}
+                'qty_stock'  => ['order'=>30,'label'=>$on_hand,'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
+                    'events' => ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
+                'qty'        => ['order'=>40,'label'=>lang('journal_item_qty', $this->journalID),'attr' =>['width'=>100,'resizable'=>true,'align'=>'center'],
+                    'events' => ['editor'=>"{type:'numberbox',options:{onChange:function(){ adjCalc('qty'); } } }"]],
+                'balance'    => ['order'=>50,'label'=>lang('balance'),'styles'=>['text-align'=>'right'], 'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
+                    'events' => ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
+                'total'      => ['order'=>60, 'label'=>lang('total'),'format'=>'currency','attr'=>['width'=>120,'resizable'=>true,'align'=>'center'],
+                    'events' => ['editor'=>"{type:'numberbox',options:{onChange:function (newValue,oldValue) { var idx=bizDGgetIndex('dgJournalItem'); pbSetTotal(idx, cleanCurrency(newValue)); }}}"]],
+                'description'=> ['order'=>70,'label'=>lang('description'),'attr'=>['width'=>250,'editor'=>'text','resizable'=>true]]]];
+    }
 }

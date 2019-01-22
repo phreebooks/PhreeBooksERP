@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-10-10
  * @filesource /lib/controller/module/bizuno/dashboards/company_notes/company_notes.php
@@ -31,21 +31,21 @@ class company_notes
     public $methodDir= 'dashboards';
     public $code     = 'company_notes';
     public $category = 'general';
-	
-	function __construct($settings)
+    
+    function __construct($settings)
     {
-		$this->security= 1;
+        $this->security= 1;
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $defaults      = ['users'=>'-1','roles'=>'-1'];
         $this->settings= array_replace_recursive($defaults, $settings);
-	}
+    }
 
     public function settingsStructure()
     {
         return [
             'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']]];
-	}
+    }
 
     public function install($moduleID = '', $menu_id = '')
     {

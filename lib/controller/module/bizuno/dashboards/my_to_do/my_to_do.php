@@ -15,15 +15,15 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-10
+ * @version    3.x Last Update: 2019-01-21
  * @filesource /lib/controller/module/bizuno/dashboards/my_to_do/my_to_do.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_MY_TO_DO_VERSION','3.1');
+define('DASHBOARD_MY_TO_DO_VERSION','3.1.1');
 
 class my_to_do
 {
@@ -31,21 +31,21 @@ class my_to_do
     public $methodDir= 'dashboards';
     public $code     = 'my_to_do';
     public $category = 'general';
-	
-	function __construct($settings)
+
+    function __construct($settings)
     {
-		$this->security= 4;
+        $this->security= 4;
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $defaults      = ['users'=>'-1','roles'=>'-1'];
         $this->settings= array_replace_recursive($defaults, $settings);
-	}
+    }
 
     public function settingsStructure()
     {
         return [
             'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']]];
-	}
+    }
 
     public function render()
     {
@@ -62,11 +62,11 @@ class my_to_do
         // Build content box
         $index = 1;
         if (!isset($this->settings['data'])) { unset($this->settings['users']); unset($this->settings['roles']); $this->settings=['data'=>$this->settings]; } // OLD WAY
-        $html .= html5('', ['classes'=>['easyui-datalist'],'attr'=>['type'=>'ul']])."\n";
+        $html .= html5('', ['classes'=>['easyui-datalist'],'options'=>['nowrap'=>'false'],'attr'=>['type'=>'ul']])."\n";
         if (!empty($this->settings['data'])) {
             foreach ($this->settings['data'] as $entry) {
-                $html .= html5('', ['attr'=>['type'=>'li']]).'<div style="float:left"><span>&#9679; '."$entry</span></div>";
-				$html .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span></li>';
+                $html .= html5('', ['attr'=>['type'=>'li']]).'<div><span>&#9679; '."$entry</span></div>";
+                $html .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span></li>';
                 $index++;
             }
         } else {

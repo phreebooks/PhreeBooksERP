@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-12-17
  * @filesource portal/view.php
@@ -110,7 +110,7 @@ class portalView
     }
 
     public function renderDOM($output) {
-		echo "<!DOCTYPE HTML>\n<html>";
+        echo "<!DOCTYPE HTML>\n<html>";
         $this->renderHead($output['head']);
         switch ($GLOBALS['myDevice']) {
             case 'mobile': $this->renderMobile ($output['body']); break;

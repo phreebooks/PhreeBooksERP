@@ -15,7 +15,7 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
  * @version    3.x Last Update: 2018-09-05
  * @filesource /lib/controller/module/bizuno/dashboards/subscribe/subscribe.php
@@ -34,17 +34,17 @@ class subscribe
     public $noCollapse= true;
     public $noClose   = true;
 
-	function __construct()
+    function __construct()
     {
-		$this->security= getUserCache('profile', 'biz_id', false, 0) ? 0 : 1; // only for the portal to log in
+        $this->security= getUserCache('profile', 'biz_id', false, 0) ? 0 : 1; // only for the portal to log in
         $this->hidden  = true;
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
-	}
+    }
 
-	public function render($settings=[])
+    public function render($settings=[])
     {
-		$data = ['btnSubscribe'=>['attr'=>['type'=>'button','value'=>$this->lang['bizuno_subscribe']],'styles'=>['cursor'=>'pointer'],
-				'events'=>['onClick'=>"window.location='https://www.phreesoft.com/product-category/store-bizuno/'"]]];
-		return '<div><!-- subscribe section --><p>'.$this->lang['instructions'].'</p><div style="text-align:center">'.html5('btnSubscribe', $data['btnSubscribe']).'</div><div>&nbsp;</div></div>';
-	}
+        $data = ['btnSubscribe'=>['attr'=>['type'=>'button','value'=>$this->lang['bizuno_subscribe']],'styles'=>['cursor'=>'pointer'],
+                'events'=>['onClick'=>"window.location='https://www.phreesoft.com/product-category/store-bizuno/'"]]];
+        return '<div><!-- subscribe section --><p>'.$this->lang['instructions'].'</p><div style="text-align:center">'.html5('btnSubscribe', $data['btnSubscribe']).'</div><div>&nbsp;</div></div>';
+    }
 }

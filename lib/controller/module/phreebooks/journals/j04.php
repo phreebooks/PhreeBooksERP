@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2018, PhreeSoft, Inc.
+ * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-07
+ * @version    3.x Last Update: 2019-01-22
  * @filesource /lib/controller/module/phreebooks/journals/j04.php
  */
 
@@ -29,13 +29,13 @@ class j04 extends jCommon
 {
     public $journalID = 4;
 
-	function __construct($main=[], $item=[])
+    function __construct($main=[], $item=[])
     {
-		parent::__construct();
+        parent::__construct();
         $this->main = $main;
-		$this->item = $item;
+        $this->item = $item;
         $this->currency = getUserCache('profile', 'currency', false, 'USD');
-	}
+    }
 
 /*******************************************************************************************************************/
 // START Edit Methods
@@ -48,7 +48,7 @@ class j04 extends jCommon
     {
         dbStructureFill($structure, $this->main);
     }
-    
+
     /**
      * Tailors the structure for the specific journal
      */
@@ -96,9 +96,10 @@ class j04 extends jCommon
             'purch_order_id','invoice_num','waiting','closed','terms_text','terms_edit','post_date','terminal_date','rep_id','currency','currency_rate'];
         $data['jsHead']['datagridData'] = $this->dgDataItem;
         $data['datagrid']['item'] = $this->dgOrders('dgJournalItem', 'v');
-		$data['fields']['gl_acct_id']['attr']['value'] = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');
-		$isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? '1' : '0';
-		$data['fields']['waiting'] = ['attr'=>  ['type'=>'hidden', 'value'=>$isWaiting]]; // field not used
+        if ($rID) { unset($data['datagrid']['item']['source']['actions']['insertRow']); } // only allow insert for new orders
+        $data['fields']['gl_acct_id']['attr']['value'] = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');
+        $isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? '1' : '0';
+        $data['fields']['waiting'] = ['attr'=>  ['type'=>'hidden', 'value'=>$isWaiting]]; // field not used
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
             'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields'], '_b'),
                 'settings'=>['type'=>'v','suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false,'cols'=>false]],
@@ -113,7 +114,7 @@ class j04 extends jCommon
 /*******************************************************************************************************************/
 // START Post Journal Function
 /*******************************************************************************************************************/
-	public function Post()
+    public function Post()
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
@@ -124,19 +125,19 @@ class j04 extends jCommon
         if (!$this->postJournalHistory()){ return; }
         if (!$this->setStatusClosed())   { return; }
         msgDebug("\n*************** end Posting Journal ******************* id = {$this->main['id']}\n\n");
-		return true;
-	}
+        return true;
+    }
 
-	public function unPost()
+    public function unPost()
     {
         msgDebug("\n/********* unPosting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
-        if (!$this->unPostJournalHistory()){ return; }	// unPost the chart values before inventory where COG rows are removed
+        if (!$this->unPostJournalHistory()){ return; }    // unPost the chart values before inventory where COG rows are removed
         if (!$this->unPostInventory())     { return; }
-		if (!$this->unPostMain())          { return; }
+        if (!$this->unPostMain())          { return; }
         if (!$this->unPostItem())          { return; }
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
-		return true;
-	}
+        return true;
+    }
 
     /**
      * Get re-post records - applies to journals 3, 4, 9, 10
@@ -144,64 +145,64 @@ class j04 extends jCommon
      */
     public function getRepostData()
     {
-		msgDebug("\n  j04 - Checking for re-post records ... ");
+        msgDebug("\n  j04 - Checking for re-post records ... ");
         return $this->getRepostSale();
-	}
+    }
 
-	/**
+    /**
      * Post journal item array to journal history table
      * applies to journal 3, 4, 9, 10
      * @return boolean - true
      */
     private function postJournalHistory()
     {
-		msgDebug("\n  Posting Chart Balances... end Posting Chart Balances with no action.");
-		return true;
-	}
+        msgDebug("\n  Posting Chart Balances... end Posting Chart Balances with no action.");
+        return true;
+    }
 
-	/**
+    /**
      * unPosts journal item array from journal history table
      * applies to journal 3, 4, 9, 10
      * @return boolean - true
      */
-	private function unPostJournalHistory() {
-		msgDebug("\n  unPosting Chart Balances... end unPosting Chart Balances with no action.");
-		return true;
-	}
+    private function unPostJournalHistory() {
+        msgDebug("\n  unPosting Chart Balances... end unPosting Chart Balances with no action.");
+        return true;
+    }
 
-	/**
+    /**
      * Post inventory
      * @return boolean true on success, null on error
      */
-	private function postInventory()
+    private function postInventory()
     {
-		msgDebug("\n  Posting Inventory ...");
-		foreach ($this->item as $row) {
+        msgDebug("\n  Posting Inventory ...");
+        foreach ($this->item as $row) {
             if (!isset($row['sku']) || !$row['sku']) { continue; } // skip all rows without a SKU
-			$item_cost = 0;
-            if (getModuleCache('inventory', 'settings', 'general', 'auto_cost') == 'PO' && $row['qty']) { 
+            $item_cost = 0;
+            if (getModuleCache('inventory', 'settings', 'general', 'auto_cost') == 'PO' && $row['qty']) {
                 $item_cost = $row['debit_amount'] / $row['qty'];
             }
             if (!$this->setInvStatus($row['sku'], 'qty_po', $row['qty'], $item_cost, $row['description'])) { return false; }
-		}
-		msgDebug("\n  end Posting Inventory.");
+        }
+        msgDebug("\n  end Posting Inventory.");
         return true;
-	}
+    }
 
-	/**
+    /**
      * unPost inventory
      * @return boolean true on success, null on error
      */
-	private function unPostInventory()
+    private function unPostInventory()
     {
-		msgDebug("\n  unPosting Inventory ...");
+        msgDebug("\n  unPosting Inventory ...");
         foreach ($this->item as $row) {
             if (!isset($row['sku']) || !$row['sku']) { continue; }
             if (!$this->setInvStatus($row['sku'], 'qty_po', -$row['qty'])) { return; }
         }
-		msgDebug("\n  end unPosting Inventory.");
-		return true;
-	}
+        msgDebug("\n  end unPosting Inventory.");
+        return true;
+    }
 
     /**
      * Tests for CLOSED checkbox to adjust qty on PO and avoid re-posting. If so all other post values are ignored.
@@ -223,25 +224,25 @@ class j04 extends jCommon
             return true;
         }
     }
-    
-	/**
+
+    /**
      * Checks and sets/clears the closed status of a journal entry
      * Affects journals - 4, 10
      * @return boolean true
      */
-	private function setStatusClosed()
+    private function setStatusClosed()
     {
-		// closed can occur many ways including:
-		//   forced closure through so/po form (from so/po journal - adjust qty on so/po)
+        // closed can occur many ways including:
+        //   forced closure through so/po form (from so/po journal - adjust qty on so/po)
         //     NOTE: this cannot happen here as dependent sales/purchases will re-open the entry
-		//   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
-		msgDebug("\n  Checking for closed entry.");
+        //   all quantities are reduced to zero (from so/po journal - should be deleted instead but it's possible)
+        msgDebug("\n  Checking for closed entry.");
         // determine if all items quantities have been entered as zero
         $item_rows_all_zero = true;
         for ($i = 0; $i < count($this->item); $i++) {
             if ($this->item[$i]['qty'] && $this->item[$i]['gl_type'] == 'itm') { $item_rows_all_zero = false; } // at least one qty is non-zero
         }
         if ($item_rows_all_zero) { $this->setCloseStatus($this->main['id'], true); }
-		return true;
-	}
+        return true;
+    }
 }
