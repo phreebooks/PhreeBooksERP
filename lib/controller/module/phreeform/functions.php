@@ -1,4 +1,4 @@
-<?php 
+<?php
 /*
  * Support functions for PhreeForm
  *
@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-07
+ * @version    3.x Last Update: 2019-02-27
  * @filesource /controller/module/phreeform/functions.php
  */
 
@@ -25,7 +25,7 @@ namespace bizuno;
 
 /**
  * !!! DEPRECATED !!! use /view/main.php function viewProcess
- * 
+ *
  * Processes a string of data with a user specified process, returns unprocessed if function not found
  * @param mixed $strData - data to process
  * @param string $Process - process to apply to the data
@@ -185,7 +185,7 @@ function getMine($limit=25)
 
 /**
  * Reads the default reports from a folder and builds an HTML DOM select element
- * @param integer $id - database record id 
+ * @param integer $id - database record id
  * @param string $path - path where the reports/forms are stored
  * @param string $lang - [default en_US] language to search as default
  * @return string - HTML containing the list of default reports from the installation folder
@@ -345,7 +345,7 @@ function formatReceipt($value, $width = 15, $align = 'z', $base_string = '', $ke
 }
 
 /**
- * This function formats the tables to a valid sql string 
+ * This function formats the tables to a valid sql string
  * @param object $report - working report object
  * @return modified $report
  */
@@ -412,7 +412,7 @@ function stripTablename($value)
 
 /*
  * This function add the BIZUNO_DB_PREFIX in front of the database tables
- * @param $field - 
+ * @param $field -
  * @return $field - with table prefixes added
  */
 function prefixTables($field)
@@ -439,10 +439,10 @@ function testTables($field, $report)
 
 /**
  * Builds the back part of a SQL statement
- * @global array $critChoices - working criteria choices 
- * @param object $report - current report/form 
+ * @global array $critChoices - working criteria choices
+ * @param object $report - current report/form
  * @param boolean $xOnly
- * @return array - sql string and description string 
+ * @return array - sql string and description string
  */
 function phreeformCriteria($report, $xOnly=false)
 {
@@ -571,7 +571,7 @@ function BuildDataArray($sql, $report)
     }
     if (!$stmt = dbGetResult($sql)) { return msgAdd("Problem reading from the database!"); }
     $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-    if (sizeof($result) == 0) { return msgAdd("The report does not contain any data!", 'caution'); }
+    if (sizeof($result) == 0) { return msgAdd(lang('phreeform_output_none'), 'caution'); }
     msgDebug("\nreturned number of rows = ".sizeof($result));
     // Generate the output data array
     if (!isset($report->totalonly)) { $report->totalonly = '0'; }
@@ -588,7 +588,7 @@ function BuildDataArray($sql, $report)
                 $gTmp = viewProcess($GrpWorking, $GrpFieldProcessing);
                 $OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);
                 foreach($seq as $offset => $TotalCtl) {
-                    // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total. 
+                    // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total.
                     $OutputArray[$RowCnt][$offset+1] = $TotalCtl['total'] ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : ' ';
                     $seq[$offset]['grptotal'] = 0; // reset the total
                 }
@@ -615,7 +615,7 @@ function BuildDataArray($sql, $report)
         $gTmp = viewProcess($GrpWorking, $GrpFieldProcessing);
         $OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);
         foreach ($seq as $TotalCtl) {
-            // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total. 
+            // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total.
             $OutputArray[$RowCnt][$ColCnt] = $TotalCtl['total'] ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : ' ';
             $ColCnt++;
         }
@@ -653,7 +653,7 @@ function ReplaceNonAllowedCharacters($string)
  * @return array - list of page sizes
  */
 function phreeformPages($lang)
-{ // TBD make the key just the TCPDF supported paper sizes, pull dimensions from array 
+{ // TBD make the key just the TCPDF supported paper sizes, pull dimensions from array
     return [
         ['id'=>'LETTER:216:279', 'text'=>$lang['paper_letter']],
         ['id'=>'LEGAL:216:357',  'text'=>$lang['paper_legal']],
@@ -671,8 +671,8 @@ function phreeformPages($lang)
 }
 
 /**
- * Generates the list of page orientations, ready for select DOM element    
- * @param array $lang - Locale language file 
+ * Generates the list of page orientations, ready for select DOM element
+ * @param array $lang - Locale language file
  * @return array - ready to render
  */
 function phreeformOrientation($lang)
@@ -724,12 +724,12 @@ function phreeformSizes()
         ['id'=> '8', 'text'=> '8'],
         ['id'=> '9', 'text'=> '9'],
         ['id'=>'10', 'text'=>'10'],
-        ['id'=>'11', 'text'=>'11'], 
-        ['id'=>'12', 'text'=>'12'], 
-        ['id'=>'14', 'text'=>'14'], 
-        ['id'=>'16', 'text'=>'16'], 
-        ['id'=>'18', 'text'=>'18'], 
-        ['id'=>'20', 'text'=>'20'], 
+        ['id'=>'11', 'text'=>'11'],
+        ['id'=>'12', 'text'=>'12'],
+        ['id'=>'14', 'text'=>'14'],
+        ['id'=>'16', 'text'=>'16'],
+        ['id'=>'18', 'text'=>'18'],
+        ['id'=>'20', 'text'=>'20'],
         ['id'=>'24', 'text'=>'24']];
 }
 
@@ -738,7 +738,7 @@ function phreeformSizes()
  * @return array - list ready to render
  */
 function phreeformAligns()
-{    
+{
     return [
         ['id'=>'L', 'text'=>lang('left')],
         ['id'=>'R', 'text'=>lang('right')],
@@ -814,7 +814,7 @@ function phreeformSeparators()
 function phreeformProcessing()
 {
     $output = [['id'=> '', 'text'=> lang('none')]];
-    foreach (getModuleCache('phreeform', 'processing') as $key => $value) { 
+    foreach (getModuleCache('phreeform', 'processing') as $key => $value) {
         $output[] = ['id'=> $key, 'text'=>$value['text'], 'group'=>$value['group']];
     }
     return $output;
@@ -827,7 +827,7 @@ function phreeformProcessing()
 function phreeformFormatting()
 {
     $output = [['id'=>'', 'text'=>lang('none')]];
-    foreach (getModuleCache('phreeform', 'formatting') as $key => $value) { 
+    foreach (getModuleCache('phreeform', 'formatting') as $key => $value) {
         $output[] = ['id'=> $key, 'text'=>$value['text'], 'group'=>isset($value['group']) ? $value['group'] : ''];
     }
     return $output;

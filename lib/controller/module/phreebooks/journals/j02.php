@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-15
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /lib/controller/module/phreebooks/journals/j02.php
  */
 
@@ -33,22 +33,13 @@ class j02 extends jCommon
     function __construct($main=[], $item=[])
     {
         parent::__construct();
-        $this->main = $main;
-        $this->item = $item;
+        $this->main  = $main;
+        $this->items = $item;
     }
 
 /*******************************************************************************************************************/
 // START Edit Methods
 /*******************************************************************************************************************/
-    /**
-     * Pulls the data for the specified journal and populates the structure
-     * @param array $structure - table structures
-     */
-    public function getDataMain(&$structure)
-    {
-        dbStructureFill($structure, $this->main);
-    }
-
     /**
      * Tailors the structure for the specific journal
      */
@@ -57,8 +48,8 @@ class j02 extends jCommon
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
         $structure['debit_amount']['attr']['type'] = 'float'; // otherwise datagrid data will be formatted as currency and breaks editor
         $structure['credit_amount']['attr']['type']= 'float';
-        $this->addGLNotes($this->item);
-        $this->dgDataItem = formatDatagrid($this->item, 'datagridData', $structure);
+        $this->addGLNotes($this->items);
+        $this->dgDataItem = formatDatagrid($this->items, 'datagridData', $structure);
     }
 
     /**
@@ -69,7 +60,8 @@ class j02 extends jCommon
      */
     public function customizeView(&$data, $rID=0)
     {
-        $fldKeys = ['id','journal_id','recur_id','recur_frequency','item_array','store_id','invoice_num','post_date'];
+        $fldKeys = ['id','journal_id','recur_id','recur_frequency','item_array','store_id','invoice_num','post_date','currency','currency_rate'];
+        $data['fields']['currency']['callback'] = 'totalsCurrency';
         $data['jsHead']['datagridData']= $this->dgDataItem;
         $data['jsHead']['pbChart']     = "var pbChart = bizDefaults.glAccounts.rows;"; // show all accounts from the gl chart, including inactive
         $data['datagrid']['item']      = $this->dgLedger('dgJournalItem');
@@ -115,6 +107,7 @@ class j02 extends jCommon
     public function Post()
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
+        $this->main['description'] .= ": {$this->items[0]['description']} ...";
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
         if (!$this->postMain())              { return; }
@@ -133,7 +126,7 @@ class j02 extends jCommon
         if (!$this->unPostInventory())         { return; }
         if (!$this->unPostMain())              { return; }
         if (!$this->unPostItem())              { return; }
-        if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
+        if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
         return true;
     }
@@ -201,14 +194,14 @@ class j02 extends jCommon
     {
         msgDebug("\n  Checking for closed entry. action = $action");
         $closed = true; // all journal entries are closed unless the following conditions are seen
-        foreach ($this->item as $row) {
+        foreach ($this->items as $row) {
             $type = isset($row['gl_account']) && $row['gl_account'] ? getModuleCache('phreebooks', 'chart', 'accounts')[$row['gl_account']]['type'] : 0;
             if ($type == 20) { $closed = false; }
         }
         $this->setCloseStatus($this->main['id'], $closed);
         return true;
     }
-    
+
     /**
      * Creates the datagrid structure for general ledger items
      * @param string $name - DOM field name
@@ -226,18 +219,15 @@ class j02 extends jCommon
             'source' => ['actions'=>['newItem'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
             'columns'=> ['id'  => ['order'=>0, 'attr'=>['hidden'=>true]],
                 'qty'          => ['order'=>0, 'attr'=>['hidden'=>true,'value'=>1]],
-                'action'       => ['order'=>1, 'label'=>lang('action'),
-                    'events'   => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'action'       => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'  => ['delete'   =>['order'=>20,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'gl_account'   => ['order'=>20,'label'=>pullTableLabel('journal_item','gl_account',$this->journalID),'attr'=>['width'=>200,'resizable'=>true,'align'=>'center'],
-                    'events'   => ['editor'=>dgHtmlGLAcctData()]],
-                'description'  => ['order'=>30,'label'=>lang('description'), 'attr'=>['width'=>400,'editor'=>'text','resizable'=>true]],
+                    'events'   => ['editor'=>dgEditGL()]],
+                'description'  => ['order'=>30,'label'=>lang('description'), 'attr'=>['width'=>400,'editor'=>dgEditText(),'resizable'=>true]],
                 'debit_amount' => ['order'=>40,'label'=>pullTableLabel('journal_item', 'debit_amount'),'attr'=>['width'=>150,'resizable'=>true, 'align'=>'right'],
-                    'events'   => ['editor'=>"{type:'numberbox',value:0,options:{onChange:function(){ glCalc('debit'); } } }",
-                    'formatter'=> "function(value,row){ return formatCurrency(value); }"]],
+                    'events'   => ['editor'=>dgEditCurrency("glCalc('debit');"),'formatter'=> "function(value,row){ return formatCurrency(value); }"]],
                 'credit_amount'=> ['order'=>50, 'label'=>pullTableLabel('journal_item', 'credit_amount'),'attr'=>['width'=>150,'resizable'=>true, 'align'=>'right'],
-                    'events'   => ['editor'=>"{type:'numberbox',value:0,options:{onChange:function(){ glCalc('credit'); } } }",
-                    'formatter'=> "function(value,row){ return formatCurrency(value); }"]],
+                    'events'   => ['editor'=>dgEditCurrency("glCalc('credit');"),'formatter'=> "function(value,row){ return formatCurrency(value); }"]],
                 'notes'        => ['order'=>90, 'label'=>lang('notes'), 'attr'=>  ['width'=>200,'editor'=>'text','resizable'=>true]]]];
     }
 }

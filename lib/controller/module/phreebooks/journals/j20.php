@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-14
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /lib/controller/module/phreebooks/journals/j20.php
  */
 
@@ -33,21 +33,12 @@ class j20 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->item = $item;
+        $this->items = $item;
     }
 
 /*******************************************************************************************************************/
 // START Edit Methods
 /*******************************************************************************************************************/
-    /**
-     * Pulls the data for the specified journal and populates the structure
-     * @param array $structure - table structures
-     */
-    public function getDataMain(&$structure)
-    {
-        dbStructureFill($structure, $this->main);
-    }
-
     /**
      * Tailors the structure for the specific journal
      */
@@ -63,6 +54,7 @@ class j20 extends jCommon
     {
         $fldKeys = ['id','journal_id','so_po_ref_id','terms','override_user','override_pass','recur_id','recur_frequency','item_array','xChild','xAction','store_id',
             'purch_order_id','invoice_num','waiting','closed','terms_text','post_date','rep_id','currency','currency_rate'];
+        $data['fields']['currency']['callback'] = 'totalsCurrency';
         unset($data['divs']['divAttach']);
         if ($cID || $this->action=='bulk') {
             $data['fields']['purch_order_id']['attr']['type'] = 'hidden';
@@ -112,7 +104,7 @@ jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBeg
             }
             unset($data['jsReady']['focus']);
         } else {
-            unset($data['divs']['tbJrnl']);
+            unset($data['divs']['tbJrnl'], $data['fields']['notes']);
             $data['divs']['divDetail']  = ['order'=>50,'type'=>'html','html'=>"<p>".sprintf(lang('search_open_journal'),lang('contacts_type_v'))."</p>".html5('contactSel', ['attr'=>['value'=>'']])];
             $data['jsBody']['selVendor']= "jq('#contactSel').combogrid({width:200,panelWidth:500,delay:500,iconCls:'icon-search',hasDownArrow:false,
     idField:'contact_id_b',textField:'primary_name_b',mode:'remote',
@@ -228,9 +220,9 @@ jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBeg
         msgDebug("\n  Checking for closed entry. action = $action");
         if ($action == 'post') {
             $temp = [];
-            for ($i = 0; $i < count($this->item); $i++) { // fetch the list of paid invoices
-                if (isset($this->item[$i]['item_ref_id']) && $this->item[$i]['item_ref_id']) {
-                    $temp[$this->item[$i]['item_ref_id']] = true;
+            for ($i = 0; $i < count($this->items); $i++) { // fetch the list of paid invoices
+                if (isset($this->items[$i]['item_ref_id']) && $this->items[$i]['item_ref_id']) {
+                    $temp[$this->items[$i]['item_ref_id']] = true;
                 }
             }
             $invoices = array_keys($temp);
@@ -257,8 +249,8 @@ jq('#gl_acct_id').combogrid({'onChange': function(newVal, oldVal) { totalsGetBeg
                 $this->setCloseStatus($invoices[$i], $total_billed == $total_paid ? true : false); // either close or re-open
             }
         } else { // unpost - re-open the purchase/invoices affected
-            for ($i = 0; $i < count($this->item); $i++) {
-                if ($this->item[$i]['item_ref_id']) { $this->setCloseStatus($this->item[$i]['item_ref_id'], false); }
+            for ($i = 0; $i < count($this->items); $i++) {
+                if ($this->items[$i]['item_ref_id']) { $this->setCloseStatus($this->items[$i]['item_ref_id'], false); }
             }
         }
         return true;

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /lib/controller/module/phreebooks/totals/tax_other/tax_other.php
  */
 
@@ -48,8 +48,9 @@ class tax_other
             'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
     }
 
-    public function glEntry($request, &$main, &$item, &$begBal=0)
+    public function glEntry(&$main, &$item, &$begBal=0)
     {
+        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
         $tax_other = !empty($request['totals_tax_other']) ? clean($request['totals_tax_other'], 'currency') : 0;
         if ($tax_other == 0) { msgDebug("\nNo tax other, returning without making a gl entry!"); return; }
         $item[] = [
@@ -93,11 +94,11 @@ class tax_other
         $output['body'] .= "</div>";
         $output['jsHead'][] = "function totals_tax_other(begBalance) {
     var newBalance = begBalance;
-    var salesTax = cleanCurrency(jq('#totals_tax_other').val());
-    bizTextSet('totals_tax_other', salesTax, 'currency');
+    var salesTax = parseFloat(bizNumGet('totals_tax_other'));
+    bizNumSet('totals_tax_other', salesTax);
     newBalance += salesTax;
     var decLen= parseInt(bizDefaults.currency.currencies[currency].dec_len);
-    return parseFloat(newBalance.toFixed(decLen));
+    return newBalance.toFixed(decLen);
 }";
     }
 }

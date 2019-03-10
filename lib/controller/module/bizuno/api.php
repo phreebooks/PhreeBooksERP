@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-26
+ * @version    3.x Last Update: 2019-03-05
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
 namespace bizuno;
 
-class bizunoApi 
+class bizunoApi
 {
     public $moduleID = 'bizuno';
 
@@ -31,11 +31,11 @@ class bizunoApi
     {
         $this->lang = getLang('bizuno'); // needs to be hardcoded as this is extended by extensions
     }
-    
+
     /**
      * Handles incoming requests through the API, parses and calls appropriate method
      * User is validated before we reach this point
-     * 
+     *
      * @param type $layout
      * @return type
      */
@@ -56,7 +56,7 @@ class bizunoApi
     }
 
     /**
-     * API method to process incoming orders 
+     * API method to process incoming orders
      * @param array $layout - structure coming in
      * @param array $order - order data passed through the API
      * @param integer $jID [default 0] - used to preset the journal being written to
@@ -65,8 +65,9 @@ class bizunoApi
     protected function apiJournalEntry(&$layout, $order=[], $jID=0)
     {
         msgDebug("\nWorking with submitted order = ".print_r($order, true));
+        if (!dbConnected()) { return msgAdd('There was an issue connecting to your account! Please check your credentials.'); }
         $this->itemTotal = 0;
-        $this->main = $this->item = $map = [];
+        $this->main = $this->items = $map = [];
         $this->defaultAR      = getModuleCache('bizuno','settings','bizuno_api','gl_receivables', getModuleCache('phreebooks','settings','customers','gl_receivables'));
         $this->defaultGlSales = getModuleCache('bizuno','settings','bizuno_api','gl_sales',       getModuleCache('phreebooks','settings','customers','gl_sales'));
         $this->inStock        = true;
@@ -81,7 +82,7 @@ class bizunoApi
         switch ($jID) {
             case 10: $jID = 10; break; // Sales Order
             case 12: $jID = 12; break; // Sale
-            default: $jID = $this->getStockLevels($this->item); // Auto detect
+            default: $jID = $this->getStockLevels($this->items); // Auto detect
         }
         // test for duplicate invoice #'s
         if ($jID == 10) {
@@ -105,13 +106,14 @@ class bizunoApi
         bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journal.php", 'journal');
         // ***************************** START TRANSACTION *******************************
         dbTransactionStart();
-        $journal = new journal(0, $jID);
+        $journal = new journal(0, $jID, $this->main['post_date']);
         $journal->main = array_replace($journal->main, $this->main);
-        $journal->item = $this->item;
+        $journal->items = $this->items;
         // guess Sales Tax
         $journal->main['tax_rate_id'] = $this->taxGuess($order['General'], $order['General']['OrderTotal']); // try to determine tax rate at the order level
         // Check to see if customer already exists in db
         $cID = dbGetContact($this->main, '_b');
+        unset($this->main['short_name_b'], $journal->main['short_name_b']); // causes post errors as field is not in journal_main
         if ($cID) { // found match
             $journal->main['contact_id_b'] = $cID['contact_id'];
             $journal->main['address_id_b'] = $cID['address_id'];
@@ -119,16 +121,18 @@ class bizunoApi
             foreach ($journal->main as $key => $value) { $_POST[$key] = $value; } // temp until contacts module can be re-written to accept ->main and process
             $_POST['tax_rate_id_b'] = $journal->main['tax_rate_id'];
             $journal->updateContact_b = true;
-        } 
+        }
         msgDebug("\nReady to post order, main = ".print_r($journal->main, true));
-        msgDebug("\nitem = ".print_r($journal->item, true));
+        msgDebug("\nitems = ".print_r($journal->items, true));
         if (!$journal->Post()) { return; }
         $this->setJournalPayment($map, $order, $journal->main['id']);
         // ***************************** END TRANSACTION *******************************
         dbTransactionCommit();
-        $invoiceRef = pullTableLabel('journal_main', 'invoice_num', $journal->main['journal_id']);
+        $invoiceRef= pullTableLabel('journal_main', 'invoice_num', $journal->main['journal_id']);
+        $billName  = isset($journal->main['primary_name_b']) ? $journal->main['primary_name_b'] : $journal->main['description'];
         msgAdd(sprintf(lang('msg_gl_post_success'), $invoiceRef, $journal->main['invoice_num']), 'success');
-        $layout = ['content'=>['resultCode'=>0]];
+        msgLog('Bizuno API -'.lang('save')." $invoiceRef ".$journal->main['invoice_num']." - $billName (rID={$journal->main['id']}) ".lang('total').": ".viewFormat($journal->main['total_amount'], 'currency'));
+        $layout    = ['content'=>['resultCode'=>0]];
     }
 
     private function setJournalMain($map, $order=[])
@@ -141,11 +145,11 @@ class bizunoApi
         }
         foreach ($map['Contact']as $idx => $value) {
             if (isset($order['Shipping'][$idx])){ $this->main[$value['field'].'_s'] = clean($order['Shipping'][$idx], $value['format']); }
-        }        
-        unset($this->main['short_name_b']);
+        }
+//      unset($this->main['short_name_b']); // commenting this out causes only an address check for cID, ignores test of the cID based on Contact ID
         unset($this->main['short_name_s']);
     }
-    
+
     private function setJournalItem($map, $order=[])
     {
         $itmCnt = 1;
@@ -158,13 +162,13 @@ class bizunoApi
             // the tax guess at item levels has been commented out as it is about impossible to guaranty accuracy and results in out of balance errors.
             $temp['tax_rate_id'] = $this->taxGuess($item, $temp['credit_amount']);
             $this->itemTotal+= $temp['credit_amount'];
-            $this->item[]    = $temp;
+            $this->items[]   = $temp;
             $itmCnt++;
         }
         msgDebug("\nFinished checking stock, inStock = ".($this->inStock?'TRUE':'FALSE'));
         // process any notes, this is after map so need to use table field names to inject no-sku item
         if (!empty($order['General']['OrderNotes'])) {
-            $this->item[] = ['item_cnt'=>$itmCnt,'gl_type'=>'itm','qty'=>'1','sku'=>'','description'=>$order['General']['OrderNotes'], 'gl_account'=>$this->defaultGlSales,'post_date'=>$this->main['post_date']];
+            $this->items[] = ['item_cnt'=>$itmCnt,'gl_type'=>'itm','qty'=>'1','sku'=>'','description'=>$order['General']['OrderNotes'], 'gl_account'=>$this->defaultGlSales,'post_date'=>$this->main['post_date']];
         }
     }
 
@@ -175,7 +179,7 @@ class bizunoApi
     private function setJournalFreight($order=[])
     {
         if (empty($order['General']['ShippingTotal'])) { return; }
-        $this->item[] = [
+        $this->items[] = [
             'qty'          => 1,
             'sku'          => '',
             'description'  => "title:".lang('shipping'),
@@ -185,7 +189,7 @@ class bizunoApi
             'post_date'    => $this->main['post_date']];
         $this->itemTotal += $order['General']['ShippingTotal'];
     }
-    
+
     /**
      * Creates a tax item record making the assumption that the tax has been properly calculated at the cart
      * @param type $order
@@ -195,7 +199,7 @@ class bizunoApi
         if (empty($order['General']['SalesTaxAmount'])) { return; }
         $this->main['sales_tax']  = $order['General']['SalesTaxAmount'];
         $this->main['tax_rate_id']= getModuleCache('bizuno','settings','bizuno_api','tax_rate_id',0);
-        $this->item[] = [
+        $this->items[] = [
             'qty'          => 1,
             'sku'          => '',
             'description'  => "title:".lang('inventory_tax_rate_id_c'),
@@ -205,7 +209,7 @@ class bizunoApi
             'post_date'    => $this->main['post_date']];
         $this->itemTotal  += $order['General']['SalesTaxAmount'];
     }
-    
+
     /**
      * check item total to order total, any difference should be made into a discount record
      * @param type $order
@@ -214,7 +218,7 @@ class bizunoApi
     {
         $balanceCheck = $this->main['total_amount'] - $this->itemTotal;
         if ($balanceCheck == 0) { return; }
-        $this->item[] = [
+        $this->items[] = [
             'qty'          => 1,
             'sku'          => '',
             'description'  => "title:".lang('discount'),
@@ -230,7 +234,7 @@ class bizunoApi
      */
     private function setJournalTotal($order)
     {
-        $this->item[] = [
+        $this->items[] = [
             'qty'          => 1,
             'sku'          => '',
             'description'  => "title:".lang('total'),
@@ -239,7 +243,7 @@ class bizunoApi
             'gl_account'   => $this->defaultAR,
             'post_date'    => $this->main['post_date']];
     }
-    
+
     /**
      * Set the payment status of an order
      */
@@ -289,13 +293,13 @@ class bizunoApi
             msgDebug("\nCOG_ITEM_TYPES = ".COG_ITEM_TYPES." and inventory_type = {$inv['inventory_type']}");
             if (strpos(COG_ITEM_TYPES, $inv['inventory_type']) !== false && $inv['qty_stock'] < $item['qty']) { $jID = 10; }
         }
-        return $jID;        
+        return $jID;
     }
 
     /**
      * Tries to determine the tax rate based on the order data supplied
      * @param array $data - order data after being mapped to Bizuno API format
-     * @param float $itemTotal = order total 
+     * @param float $itemTotal = order total
      * @return int
      */
     private function taxGuess($data=[], $itemTotal=0, $cID=0)
@@ -322,12 +326,13 @@ class bizunoApi
                 }
             }
         } elseif (isset($data['SalesTaxAmount'])  && $data['SalesTaxAmount'] > 0) {
+            $itemTotal -= !empty($data['SalesTaxAmount']) ? $data['SalesTaxAmount'] : 0; // subtract out the sales tax amount from the submitted total
             $percentTotal = round((($data['SalesTaxAmount'] / $itemTotal) * 100), getModuleCache('bizuno', 'settings', 'locale', 'number_precision', 2));
-            msgDebug(" ... now working with calculated pecent $percentTotal");
+            msgDebug(" ... now working with calculated percent $percentTotal");
             foreach ($this->taxRates as $row) {
                 $percentRate = round($row['tax_rate'], getModuleCache('bizuno', 'settings', 'locale', 'number_precision', 2));
                 msgDebug(" ... id = {$row['id']} and percentRate = $percentRate");
-                if (abs($percentTotal-$percentRate) < 0.01) {
+                if (abs($percentTotal-$percentRate) < 0.02) {
                     msgDebug(" ... and returning with amount found and id = {$row['id']}");
                     return $row['id'];
                 }
@@ -352,7 +357,7 @@ class bizunoApi
             if (empty($cAdmin->rateCodes)) { continue; }
             $codes = array_keys($cAdmin->rateCodes);
             foreach ($codes as $code) {
-                msgDebug("\nMethod $id with method code $code comparing with $method");
+//                msgDebug("\nMethod $id with method code $code comparing with $method");
                 if (!$defMethod) { $defMethod = $cAdmin->rateCodes[$code]; }
                 if (strpos(strtoupper($method), strtoupper($code)) !== false) {
                     $output = "$id:{$cAdmin->rateCodes[$code]}";
@@ -370,7 +375,7 @@ class bizunoApi
      * @return multitype:multitype:multitype:unknown
      */
     public function apiInvCount(&$layout=[], $result=[])
-    { 
+    {
         $output = [];
         foreach ($result as $row) { $output[] = $row['id']; }
         $layout = array_replace_recursive($layout, ['content' => ['items' => $output]]);
@@ -402,8 +407,10 @@ class bizunoApi
         $_GET['rID'] = $rID;
         $pDetails = [];
         $prices->quote($pDetails);
-        msgDebug("\nRetrieved price data in api = ".print_r($pDetails, true));
+//      msgDebug("\nRetrieved price data in api = ".print_r($pDetails, true));
         $product['Price'] = $pDetails['content']['price'];
+        if (!empty($pDetails['content']['regular_price'])){ $product['RegularPrice']= $pDetails['content']['regular_price']; }
+        if (!empty($pDetails['content']['sale_price']))   { $product['SalePrice']   = $pDetails['content']['sale_price']; }
         if (isset($pDetails['content']['sheets']) && sizeof($pDetails['content']['sheets']) > 0) { $product['PriceLevels'] = $pDetails['content']['sheets']; }
         $product['WeightUOM']   = getModuleCache('inventory', 'settings', 'general', 'weight_uom', 'LB');
         $product['DimensionUOM']= getModuleCache('inventory', 'settings', 'general', 'dim_uom', 'IN');
@@ -459,7 +466,7 @@ class bizunoApi
             $vals = json_decode($product['invAccessory'], true);
             if (!is_array($vals)) { return; }
             unset($product['invAccessory']);
-            foreach ($vals as $rID) { 
+            foreach ($vals as $rID) {
                 $product['invAccessory'][] = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku', "id=$rID");
             }
         }
@@ -481,7 +488,7 @@ class bizunoApi
             if ($cat != $title) { continue; }
             while (true) {
                 $tag = 'invAttr'.substr('0'.$i, -2);
-                if (isset($values[$i]) && isset($product[$tag])) { 
+                if (isset($values[$i]) && isset($product[$tag])) {
                     $product['Attributes'][] = ['title'=>$values[$i], 'value'=>$product[$tag]];
                     unset($product[$tag]);
                     $i++;
@@ -512,7 +519,7 @@ class bizunoApi
      * @param string $field - field in Bizuno inventory table to look for cart enabled products
      * @param boolean $match - [default false] flag to delete at the cart, if present at cart and no flagged in Bizuno to sell
      */
-    protected function apiSync(&$layout, $url, $user, $pass, $field='cartname_sync', $match=false) 
+    protected function apiSync(&$layout, $url, $user, $pass, $field='cartname_sync', $match=false)
     {
         $output = ['syncDelete' => $match?'1':'0'];
         $result = dbGetMulti(BIZUNO_DB_PREFIX."inventory", "`$field`='1' AND inactive='0'");
@@ -542,7 +549,7 @@ class bizunoApi
      * @param string $pass - password at the cart to log in
      * @param boolean $confirmDate - date used to set confirmation of shipments
      */
-    protected function apiConfirm(&$layout, $url, $user='', $pass='', $confirmDate=false) 
+    protected function apiConfirm(&$layout, $url, $user='', $pass='', $confirmDate=false)
     {
         if (!$confirmDate) { $confirmDate = date('Y-m-d'); }
         $output = [];
@@ -694,7 +701,7 @@ class bizunoApi
 
     /**
      * Removes common fields from the inventory db table
-     * 
+     *
      * NOTE: No fields are removed as they may be used by other modules
      */
     protected function removeStoreFields()

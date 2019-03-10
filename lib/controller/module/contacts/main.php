@@ -17,19 +17,19 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-28
+ * @version    3.x Last Update: 2019-02-05
  * @filesource /lib/controller/module/contacts/main.php
  */
 
 namespace bizuno;
 
-class contactsMain 
+class contactsMain
 {
     public  $moduleID = 'contacts';
     private $reqFields= ['primary_name', 'address1', 'telephone1', 'email'];
     private $restrict_store = true;
     private $defaults = [];
-    
+
     function __construct()
     {
         $this->lang = getLang($this->moduleID);
@@ -153,11 +153,11 @@ class contactsMain
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
         $rID = clean('rID', 'integer', 'get');
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX."contacts", $this->type);
-        
+
         // remove after 2019-01-01
         $structure['inactive']['attr']['type'] = 'select';
         $structure['inactive']['attr']['value']= '0';
-        
+
         // merge data with structure
         $cData = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id=$rID");
         dbStructureFill($structure, $cData);
@@ -185,7 +185,7 @@ class contactsMain
         $structure['terms_text']= ['col'=>3,'label'=>pullTableLabel("contacts", 'terms', $this->type),
             'attr'=>['value'=>viewTerms($structure['terms']['attr']['value'], true, $this->type), 'readonly'=>'readonly']];
         $structure['terms_edit']= ['icon'=>'settings','col'=>3,'break'=>true,'label'=>lang('terms'),'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=$this->type',$rID,jq('#terms').val());"]];
-        $structure['recordID']  = ['order'=>99,'break'=>true,'html'=>'<p>Record ID: '.$structure['id']['attr']['value']."</p>",'attr'=>['type'=>'raw']];
+        $structure['recordID']  = ['order'=>99,'html'=>'<p>Record ID: '.$structure['id']['attr']['value']."</p>",'attr'=>['type'=>'raw']];
         if (sizeof(getModuleCache('inventory', 'prices'))) {
             unset($structure['price_sheet']['attr']['size']);
             bizAutoLoad(BIZUNO_LIB."controller/module/inventory/prices.php", 'inventoryPrices');
@@ -205,7 +205,7 @@ class contactsMain
                 'tabs'    => ['order'=>50,'type'=>'tabs',   'key' =>'tabContacts'],
                 'formEOF' => ['order'=>99,'type'=>'html',   'html'=>'</form>']],
             'toolbars' => [
-                'tbContacts' => ['icons' => [ 
+                'tbContacts' => ['icons' => [
                     'save' => ['order'=>20,'hidden'=>$security >1?false:true,        'events'=>['onClick'=>"if (jq('#frmContact').form('validate')) { jq('body').addClass('loading'); jq('#frmContact').submit(); }"]],
                     'new'  => ['order'=>40,'hidden'=>$security >1?false:true,        'events'=>['onClick'=>"accordionEdit('accContacts', 'dgContacts', 'divContactDetail', '".lang('details')."', 'contacts/main/edit&type=$this->type', 0);"]],
                     'email'=> ['order'=>60,'hidden'=>$rID && $formID?false:true,     'events'=>['onClick'=>"winOpen('phreeformOpen', 'phreeform/render/open&group=$formID&xfld=contacts.id&xcr=equal&xmin=$rID');"]],
@@ -219,11 +219,11 @@ class contactsMain
                     'news'  => ['order'=>20,'icon'=>'new', 'label'=>lang('new'), 'hidden'=>$security >1?false:true,        'events'=>['onClick'=>"addressClear('s');"]],
                     'copys' => ['order'=>30,'icon'=>'copy','label'=>lang('copy'),'hidden'=>$security >1?false:true,        'events'=>['onClick'=>"addressCopy('m', 's');"]]]]],
             'tabs'     => ['tabContacts'=>['divs'=>[
-                'general'=> ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
+                'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
                     'genMain'  => ['order'=>20,'type'=>'fields', 'label'   =>lang('general'),'keys'=>$fldGeneral],
                     'genAddr'  => ['order'=>50,'type'=>'address','content' =>$structure['address_book'],'settings'=>['suffix'=>'m','required'=>true,'cols'=>true]],
                     'getAttach'=> ['order'=>80,'type'=>'attach', 'defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>"rID_{$rID}_"]]]],
-                'crm_add' => ['order'=>20,'label'=>lang('contacts'), 'type'=>'html', 'html'=>'', 'attr'=>['id'=>'crmDiv'],
+                'crm_add' => ['order'=>20,'label'=>lang('contacts'), 'type'=>'html', 'html'=>'',
                     'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/crmDetails&rID=$rID'"]],
                 'history' => ['order'=>30,'label'=>lang('history'), 'hidden'=>$rID?false:true,'type'=>'html', 'html'=>'',
                     'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/history&rID=$rID'"]],
@@ -239,9 +239,8 @@ class contactsMain
         customTabs($data, 'contacts', 'tabContacts');
         $this->editCustomType($data, $rID); // customize based on type
         $layout = array_replace_recursive($layout, $data);
-        msgDebug("\nrep_id has properties: ".print_r($data['fields']['rep_id'], true));
     }
-    
+
     /**
      * Gets a specific address record for a given ID passed through the GET variable
      * @param array $layout - current working structure
@@ -381,7 +380,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         $data = ['content' => ['action'=>'eval','actionData'=>"jq('#$dgID').datagrid('reload'); clearAddress('$aType');"]];
         $layout = array_replace_recursive($layout, $data);
     }
-    
+
     /**
      * Saves a log entry to a specified contact record
      * @param integer $rID - db record id of the contact to update/save log data
@@ -552,7 +551,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
 
     /**
      * Shows the details of a contact record, typically used for popups where no editing will take place
-     * @param array $layout - structure 
+     * @param array $layout - structure
      * @return modified $layout
      */
     public function details(&$layout=[])
@@ -634,8 +633,8 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
      * This method saves a contact to table: contacts
      * @param string $request - typically the post variables, leave false to use $_POST variables
      * @param char $cType - [default c] contact type, c (customer), v (vendor), e (employee), b (branch), i (CRM), j (projects)
-     * @param string $suffix - [default null] field suffix to extract data from the request data 
-     * @param boolean $required - [default true] field suffix to extract data from the request data 
+     * @param string $suffix - [default null] field suffix to extract data from the request data
+     * @param boolean $required - [default true] field suffix to extract data from the request data
      * @return $rID - record ID of the create/affected contact record
      */
     public function dbContactSave($cType='c', $suffix='', $required=true)
@@ -646,18 +645,18 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, $rID?3:2)) { return; }
         $values = requestData(dbLoadStructure(BIZUNO_DB_PREFIX."contacts"), $suffix);
         $values['type'] = $cType; // force the type or set if a suffix is used
-        if (!$rID) { $values = array_merge($this->contact, $values); } 
+        if (!$rID) { $values = array_merge($this->contact, $values); }
         else       { $values['last_update'] = date('Y-m-d'); }
         msgDebug("\nWorking with suffix $suffix and values = ".print_r($values, true));
         // if contact is not required and these fields are set, do not create/update the contacts table
-        if (!$required) { if (isset($values['contact_first']) && empty($values['contact_first']) && 
-                              isset($values['contact_last'])  && empty($values['contact_last'])  && 
+        if (!$required) { if (isset($values['contact_first']) && empty($values['contact_first']) &&
+                              isset($values['contact_last'])  && empty($values['contact_last'])  &&
                               empty($title)) { return; } }
         if (isset($values['short_name']) && $values['short_name']) { // check for duplicate short_names
             $short_name = addslashes($values['short_name']);
             $dup = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'id', "short_name='$short_name' AND type='$cType' AND id<>$rID");
             if ($dup) { return msgAdd(lang('error_duplicate_id')); }
-        } elseif (!$rID) { // new contact, auto-increment is set to always on 
+        } elseif (!$rID) { // new contact, auto-increment is set to always on
             $str_field = $this->type=='v' ? 'next_vend_id_num' : 'next_cust_id_num';
             $result = dbGetValue(BIZUNO_DB_PREFIX."current_status", $str_field);
             $values['short_name'] = $result;
@@ -677,7 +676,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
      * This method saves an address to table: address_book
      * @param number $cID - contact ID, must be non-zero
      * @param string $aType - address type: m (main), b (billing), s (shipping)
-     * @param string $suffix - field suffix to extract data from the request data 
+     * @param string $suffix - field suffix to extract data from the request data
      * @return $aID - record ID of the create/affected record
      */
     public function dbAddressSave($cID=0, $aType='m', $suffix='', $required=false)
@@ -744,18 +743,18 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                             'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('contacts/main/deleteAddress', $rID, idTBD);"]]]],
                 'primary_name'=> ['order'=>20, 'field'=>'primary_name', 'label'=>pullTableLabel("address_book", 'primary_name', $type),
                     'attr' => ['width'=>240, 'sortable'=>true, 'resizable'=>true]],
-                'address1'    => ['order'=>30, 'field'=>'address1', 'label'=>pullTableLabel("address_book", 'address1', $type), 
+                'address1'    => ['order'=>30, 'field'=>'address1', 'label'=>pullTableLabel("address_book", 'address1', $type),
                     'attr' => ['width'=>200, 'sortable'=>true, 'resizable'=>true]],
                 'city'        => ['order'=>40, 'field'=>'city', 'label'=>pullTableLabel("address_book", 'city', $type),
                     'attr' => ['width'=> 80, 'sortable'=>true, 'resizable'=>true]],
-                'state'       =>  ['order'=>50, 'field'=>'state', 'label'=>pullTableLabel("address_book",'state', $type), 
+                'state'       =>  ['order'=>50, 'field'=>'state', 'label'=>pullTableLabel("address_book",'state', $type),
                     'attr' => ['width'=> 60, 'sortable'=>true, 'resizable'=>true]],
                 'postal_code' => ['order'=>60, 'field'=>'postal_code', 'label'=>pullTableLabel("address_book", 'postal_code', $type),
                     'attr' => ['width'=> 60, 'sortable'=>true, 'resizable'=>true]],
                 'telephone1'  => ['order'=>70,    'field'=>'telephone1', 'label'=>pullTableLabel("address_book", 'telephone1', $type),
                     'attr' => ['width'=>100, 'sortable'=>true, 'resizable'=>true]]]];
     }
-    
+
     /**
      * This function builds the datagraid structure for retrieving contacts
      * @param string $name - datagrid div id
@@ -837,21 +836,21 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                     'label' => pullTableLabel("contacts", 'contact_last', $type),
                     'attr'  => ['width'=>100, 'sortable'=>true, 'resizable'=>true, 'hidden'=> in_array($type,['e','i'])?false:true]],
                 'flex_field_1'=> ['order'=>30, 'field'=>BIZUNO_DB_PREFIX.'contacts.flex_field_1',
-                    'label' => pullTableLabel("contacts", 'flex_field_1', $type), 
+                    'label' => pullTableLabel("contacts", 'flex_field_1', $type),
                     'attr'  => ['width'=>200, 'sortable'=>true, 'resizable'=>true, 'hidden'=> in_array($type,['i'])?false:true]],
                 'address1'     => ['order'=>30, 'field'=>BIZUNO_DB_PREFIX.'address_book.address1',
-                    'label' => pullTableLabel("address_book", 'address1', $type), 
+                    'label' => pullTableLabel("address_book", 'address1', $type),
                     'attr'  => ['width'=>200, 'sortable'=>true, 'resizable'=>true, 'hidden'=> in_array($type,['i'])?true:false]],
-                'city'    => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX.'address_book.city', 
+                'city'    => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX.'address_book.city',
                     'label' => pullTableLabel("address_book", 'city', $type),
                     'attr'  => ['width'=>80, 'sortable'=>true, 'resizable'=>true]],
-                'state'=>  ['order'=>50, 'field'=>BIZUNO_DB_PREFIX.'address_book.state', 
-                    'label' => pullTableLabel("address_book", 'state', $type), 
+                'state'=>  ['order'=>50, 'field'=>BIZUNO_DB_PREFIX.'address_book.state',
+                    'label' => pullTableLabel("address_book", 'state', $type),
                     'attr'  => ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
-                'postal_code' => ['order'=>60, 'field'=>BIZUNO_DB_PREFIX.'address_book.postal_code', 
+                'postal_code' => ['order'=>60, 'field'=>BIZUNO_DB_PREFIX.'address_book.postal_code',
                     'label' => pullTableLabel("address_book", 'postal_code', $type),
                     'attr'  => ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
-                'telephone1'  => ['order'=>70, 'field' => BIZUNO_DB_PREFIX.'address_book.telephone1', 
+                'telephone1'  => ['order'=>70, 'field' => BIZUNO_DB_PREFIX.'address_book.telephone1',
                     'label' => pullTableLabel("address_book", 'telephone1', $type),
                     'attr'  => ['width'=>100, 'sortable'=>true, 'resizable'=>true]]],
             ];
@@ -876,13 +875,13 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     }
 
     /**
-     * 
+     *
      * @param string $name - HTML name of the contacts history datagrid
      * @param integer $jID - PhreeBooks journal ID to set search criteria
      * @param integer $rID - Contact database record id
      * @return array - datagrid structure
      */
-    private function dgHistory($name, $jID, $rID = 0) 
+    private function dgHistory($name, $jID, $rID = 0)
     {
         $rows   = clean('rows', ['format'=>'integer','default'=>getModuleCache('bizuno', 'settings', 'general', 'max_rows')], 'post');
         $page   = clean('page', ['format'=>'integer','default'=>1], 'post');
@@ -964,10 +963,10 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                 'general'=> ['order'=>10,'label'=>lang('general'),'type'=>'divs', 'divs'=>[
                     'crmDG'  => ['order'=>20, 'type'=>'datagrid','key'=>'dgCRM'],
                     'crmTB'  => ['order'=>40, 'type'=>'toolbar', 'key'=>'tbAddressi'],
-                    'crmBoF' => ['order'=>41, 'type'=>'html',    'html'=>'<div id="crmDiv">'],
+                    'crmBOF' => ['order'=>41, 'type'=>'html',    'html'=>'<div id="crmDiv">'],
                     'crmMain'=> ['order'=>60, 'type'=>'html',    'html'=>$this->crmXFields($structure['contacts'])],
                     'crmAddr'=> ['order'=>70, 'type'=>'address', 'content'=>$structure['address_book'],'settings'=>['suffix'=>'i','clear'=>false]],
-                    'crmEoF' => ['order'=>81, 'type'=>'html',    'html'=>'</div>']]]],
+                    'crmEOF' => ['order'=>81, 'type'=>'html',    'html'=>'</div>']]]],
             'datagrid'=>['dgCRM'=>$this->dgContacts('crm_main', 'i', $security, $rID)]];
         // now some adjustments
         $data['datagrid']['dgCRM']['events']['onDblClickRow']  = "function(rowIndex, rowData){ crmDetail(rowData.id, 'i'); }";
@@ -1052,7 +1051,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     </tr>
 </table>\n";
     }
-    
+
     /**
      * builds the history list of orders used on contact history tab
      * @param array $layout - current working structure
@@ -1093,9 +1092,9 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     }
 
     /**
-     * Builds the datagrid structure for the contacts log 
+     * Builds the datagrid structure for the contacts log
      * @param string $name - HTML datagrid field name
-     * @param integer $rID - database contact record id 
+     * @param integer $rID - database contact record id
      * @param integer $security - users approved security level
      * @return array - datagrid structure
      */
@@ -1131,8 +1130,8 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
      */
     function isBlankForm($row, $testList=[])
     {
-        foreach ($testList as $field) { 
-            if (isset($row[$field]) && $row[$field]) { 
+        foreach ($testList as $field) {
+            if (isset($row[$field]) && $row[$field]) {
                 return false;
             }
         }
@@ -1154,7 +1153,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     /**
      * Builds the editor for contact payment terms
      * @param array $layout - current working structure
-     * @param char $defType - contact type 
+     * @param char $defType - contact type
      */
     public function editTerms(&$layout=[], $defType='c')
     {
@@ -1177,7 +1176,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
 }"]];
         $layout = array_replace_recursive($layout, $data);
     }
-    
+
     private function getTermsDiv($defType='c')
     {
         $type   = clean('type',['format'=>'char',   'default'=>$defType],'get');

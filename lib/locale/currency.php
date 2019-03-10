@@ -50,20 +50,4 @@ class currency {
         }
         return $format_number;
     }
-
-    /**
-     * Converts the number to standard float format (period as decimal, no thousands separator)
-     * @param string $number
-     * @param string $iso
-     * @return float converted number
-     */
-    public function cleanCurrency($number, $iso='')
-    {
-        if (strlen($iso) <> 3) { $iso = getUserCache('profile', 'currency', false, 'USD'); }
-        $values = getModuleCache('phreebooks', 'currency', 'iso', $iso);
-        $temp0  = str_replace([$values['prefix'], $values['suffix'], $values['sep']], '', trim($number));
-        $temp1  = str_replace($values['dec_pt'], '.', $temp0);
-        $output = preg_replace("/[^-0-9.]+/", "", $temp1);
-        return floatval($output);
-    }
 }

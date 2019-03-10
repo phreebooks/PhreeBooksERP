@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-19
+ * @version    3.x Last Update: 2019-02-20
  * @filesource /locale/en_US/module/phreeform/language.php
  */
 
@@ -48,6 +48,7 @@ $lang = [
     'lbl_phreeform_email' => 'Default email address',
     'lbl_skip_null' => 'Skip if No Data Field',
     'date_default_selected' => 'Default Date Selected',
+    'import_upload_report' => 'Select report to upload and import',
     'group_total' => 'Group Total:',
     'report_total' => 'Report Total:',
     'new_form' => 'New Form',
@@ -58,7 +59,7 @@ $lang = [
     'msg_replace_existing' => 'Replace existing file, if present',
     // Error Messages
     'err_pf_field_empty' => 'The Field has no information, this is a report build problem! Please edit the report and verify all fields are valid. The field that failed is : ',
-    'err_rename_fail' => 'The report was not renamed, the proper id and/or title was not passed!',    
+    'err_rename_fail' => 'The report was not renamed, the proper id and/or title was not passed!',
     'err_copy_fail' => 'The report was not copied, the proper id and/or title was not passed!',
     'err_group_empty' => 'No reports could be found in group: %s',
     // Buttons

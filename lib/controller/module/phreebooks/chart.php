@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-07
+ * @version    3.x Last Update: 2019-02-28
  * @filesource /lib/controller/module/phreebooks/chart.php
  */
 
@@ -33,7 +33,7 @@ class phreebooksChart
     {
         $this->lang = getLang($this->moduleID);
     }
-    
+
     /**
      * Entry point for maintaining general ledger chart of accounts
      * @param array $layout - Structure coming in
@@ -63,10 +63,10 @@ function chartRefresh() {
             'datagrid' => ['dgChart'=>$this->dgChart('dgChart', $security)],
             'jsHead'   => ['chart' => $jsHead], // clone object
             'jsReady'  => ['init'=>"jq('#dgChart').datagrid('clientPaging');", 'selCOA'=> !$coa_blocked ? "ajaxForm('frmGlUpload');" : '']];
-        if ($coa_blocked) { 
+        if ($coa_blocked) {
             $data['accordion']['accGL']['divs']['divGLManager']['divs']['selCOA'] = ['order'=>10,'label'=>$this->lang['coa_import_title'],'type'=>'html',
                 'html'=>"<fieldset><legend>".$this->lang['coa_import_title']."</legend><p>".$this->lang['coa_import_blocked']."</p></fieldset>\n"];
-        } else { 
+        } else {
             $data['jsHead']['selCOA'] = $this->getViewMgrJS();
         }
         $layout = array_replace_recursive($layout, $data);
@@ -90,7 +90,7 @@ function chartRefresh() {
         if (!$coa_blocked) { $output['sel_coa']['values'] = localeLoadCharts(); }
         return $output;
     }
-    
+
     private function getViewMgrJS()
     {
             return "function previewGL() {
@@ -130,7 +130,7 @@ function loadPreview() {
 //          'gl_cur'     => ['order'=>50,'col'=>1,'break'=>true,'label'=>lang('currency'),  'attr'=>['type'=>'selCurrency','value'=>isset($val['cur']) ?$val['cur'] :'']],
             'gl_account' => ['order'=>10,'col'=>$rID?2:1,'break'=>true,'label'=>$this->lang['new_gl_account']],
             'gl_header'  => ['order'=>20,'col'=>2,'break'=>true,'label'=>lang('heading'),'attr'=>['type'=>'checkbox','checked'=>!empty($val['heading'])?true:false]],
-            'gl_parent'  => ['order'=>30,'col'=>2,'break'=>true,'label'=>$this->lang['primary_gl_acct'],'attr'=>['type'=>'ledger','value'=>isset($val['parent'])?$val['parent']:'']]];
+            'gl_parent'  => ['order'=>30,'col'=>2,'break'=>true,'label'=>$this->lang['primary_gl_acct'],'heading'=>true,'attr'=>['type'=>'ledger','value'=>isset($val['parent'])?$val['parent']:'']]];
         $data = ['type'=>'divHTML',
             'divs'    => [
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbGL'],
@@ -145,9 +145,9 @@ function loadPreview() {
             'jsBody'  => ["ajaxForm('frmGLEdit');"]];
         $layout = array_replace_recursive($layout, $data);
     }
- 
+
     /**
-     * Structure for saving user changes of the chart of accounts 
+     * Structure for saving user changes of the chart of accounts
      * @param array $layout - Structure coming in
      * @return modified $layout
      */
@@ -159,7 +159,7 @@ function loadPreview() {
         $previous= clean('gl_previous', 'text', 'post'); // TBD
         $desc    = clean('gl_desc', 'text', 'post'); // asdf
         $type    = clean('gl_type', 'integer', 'post'); // 8
-//        $cur     = clean('gl_cur', 'text', 'post'); // USD
+//      $cur     = clean('gl_cur', 'text', 'post'); // USD
         $heading = clean('gl_header', 'boolean', 'post'); // on
         $parent  = clean('gl_parent', 'text', 'post'); // 1150
         $isEdit  = $previous ? true : false;
@@ -353,7 +353,9 @@ function loadPreview() {
                 'title'   => ['order'=>30,'label'=>lang('title'),     'attr'=>['width'=>200,'resizable'=>true]],
                 'type'    => ['order'=>40,'label'=>lang('type'),      'attr'=>['width'=>150,'resizable'=>true]],
                 'cur'     => ['order'=>50,'label'=>lang('currency'),  'attr'=>['width'=> 80,'resizable'=>true,'align'=>'center']],
-                'heading' => ['order'=>60,'label'=>lang('heading'),   'attr'=>['width'=> 80,'resizable'=>true,'align'=>'center']],
-                'parent'  => ['order'=>70,'label'=>$this->lang['primary_gl_acct'],'attr'=>  ['width'=> 80,'resizable'=>true]]]];
+                'heading' => ['order'=>60,'label'=>lang('heading'),   'attr'=>['width'=> 80,'resizable'=>true,'align'=>'center'],
+                    'events'=>['formatter'=>"function(value,row){ return value=='1' ? '".jsLang('yes')."' : ''; }"]],
+                'parent'  => ['order'=>70,'label'=>$this->lang['primary_gl_acct'],'attr'=>['width'=> 80,'align'=>'center'],
+                    'events'=>['formatter'=>"function(value,row){ return value ? value : ''; }"]]]];
     }
 }

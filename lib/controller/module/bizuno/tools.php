@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-14
+ * @version    3.x Last Update: 2019-02-18
  * @filesource /lib/controller/module/bizuno/tools.php
  */
 
@@ -75,7 +75,7 @@ class bizunoTools {
             'forms' => ['frmTicket'=>['attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=bizuno/tools/ticketSave",'enctype'=>"multipart/form-data"]]],
             'fields'=> $fields];
         $layout = array_replace_recursive($layout, viewMain(), $data);
-        
+
     }
 
     /**
@@ -104,8 +104,8 @@ class bizunoTools {
         if (isset($_FILES['ticketFile']['name']) && $_FILES['ticketFile']['name']) {
             $io  = new \bizuno\io();
             $type= $io->guessMimetype($_FILES['ticketFile']['name']);
-            $ext = strtolower(substr($_FILES['ticketFile']['name'], strrpos($_FILES['ticketFile']['name'], '.'))+1);
-            if ($io->validateUpload('ticketFile', $type, $ext, false)) { 
+//            $ext = strtolower(substr($_FILES['ticketFile']['name'], strrpos($_FILES['ticketFile']['name'], '.'))+1);
+            if ($io->validateUpload('ticketFile', $type, ['png', 'jpg', 'jpeg', 'tiff', 'gif', 'pdf', 'txt', 'csv', 'zip'], false)) {
                 $mail->attach($_FILES['ticketFile']['tmp_name'], $_FILES['ticketFile']['name']);
             }
         }
@@ -121,12 +121,13 @@ class bizunoTools {
     {
         if (!validateSecurity('bizuno', 'admin', 4)) { return; }
         bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
-        $old_key = clean('orig','password', 'get');
-        $new_key = clean('new', 'password', 'get');
-        $confirm = clean('dup', 'password', 'get');
-        $current = getModuleCache('bizuno', 'properties', 'encKey');
-        $stack = explode(':', $current);
-        if ($current && md5($stack[1] . $old_key) <> $stack[0]) { return msgAdd(lang('err_login_failed')); }
+        $old_key= clean('orig','password', 'get');
+        $new_key= clean('new', 'password', 'get');
+        $confirm= clean('dup', 'password', 'get');
+        $current= getModuleCache('bizuno', 'encKey');
+        if (empty($current)) { $current = ':'; } // key is not set
+        $stack  = explode(':', $current);
+        if ($current<>':' && md5($stack[1] . $old_key) <> $stack[0]) { return msgAdd(lang('err_login_failed')); }
         if (strlen($new_key) < getModuleCache('bizuno', 'settings', 'general', 'password_min', 8) || $new_key != $confirm) {
             return msgAdd(lang('err_encrypt_failed'));
         }
@@ -138,7 +139,7 @@ class bizunoTools {
                 $result[$key]['enc_value'] = $enc->encrypt($new_key, $enc->decrypt($old_key, $row['enc_value']));
             }
             $keys = array_keys($result[0]);
-            $sql = "INSERT INTO ".BIZUNO_DB_PREFIX."data_security (`".implode('`, `', array_keys($keys))."`) VALUES ";
+            $sql  = "INSERT INTO ".BIZUNO_DB_PREFIX."data_security (`".implode('`, `', array_keys($keys))."`) VALUES ";
             foreach ($result as $row) { $sql .= "(`".implode("`, `", $row)."`),"; }
             $sql .= substr($sql, 0, -1);
             dbTransactionStart();
@@ -146,7 +147,8 @@ class bizunoTools {
             dbGetResult($sql); // write the table
             dbTransactionCommit();
         }
-        setModuleCache('bizuno', 'properties', 'encKey', $new_key);
+        $newEnc = encryptValue($new_key);
+        setModuleCache('bizuno', 'encKey', false, $newEnc);
         setUserCache('profile', 'admin_encrypt', $new_key);
         msgLog($this->lang['msg_encryption_changed']);
         msgAdd($this->lang['msg_encryption_changed'], 'success');
@@ -213,7 +215,7 @@ class bizunoTools {
         $html .= html5('bizuno_keep', ['label' => 'Do not delete audit log entries during or before this closing fiscal year', 'position'=>'after','attr'=>['type'=>'checkbox','value'=>'1']]);
         $layout['tabs']['tabFyClose']['divs'][$this->lang['title']] = ['order'=>50,'label'=>$this->lang['title'],'type'=>'html','html'=>$html];
     }
-    
+
     /**
      * Hook to PhreeBooks Close FY method, adds tasks to the queue to execute AFTER PhreeBooks processes the journal
      */
@@ -226,7 +228,7 @@ class bizunoTools {
         $cron['taskClose'][] = ['mID'=>$this->moduleID]; // ,'method'=>'fyCloseNext']; // assumed method == fyCloseNext, no settings
         setUserCache('cron', 'fyClose', $cron);
     }
-    
+
     /**
      * continuation of fiscal year close, db purge and old folder purge, as necessary
      * @return string
@@ -243,7 +245,7 @@ class bizunoTools {
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."audit_log WHERE `date`<='$dateFull'");
         return "Finished processing table audit_log";
     }
-    
+
     public function repairComments($verbose=true)
     {
         $tables = [];

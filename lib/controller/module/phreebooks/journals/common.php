@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2019-03-08
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -39,15 +39,15 @@ class jCommon
     protected function setItemDefaults()
     {
         msgDebug("\nSetting item defaults as part of a post.");
-        foreach ($this->item as $key => $row) {
-            if (!isset($row['id']))            { $this->item[$key]['id']           = 0; }
-            if (!isset($row['ref_id']))        { $this->item[$key]['ref_id']       = 0; }
-            if (!isset($row['item_cnt']))      { $this->item[$key]['item_cnt']     = 0; }
-            if (!isset($row['item_ref_id']))   { $this->item[$key]['item_ref_id']  = 0; }
-            if (!isset($row['debit_amount']))  { $this->item[$key]['debit_amount'] = 0; }
-            if (!isset($row['credit_amount'])) { $this->item[$key]['credit_amount']= 0; }
-            if (!isset($row['trans_code']))    { $this->item[$key]['trans_code']   = '';}
-            if (!isset($row['serialize']))     { $this->item[$key]['serialize']    = 0; }
+        foreach ($this->items as $key => $row) {
+            if (!isset($row['id']))            { $this->items[$key]['id']           = 0; }
+            if (!isset($row['ref_id']))        { $this->items[$key]['ref_id']       = 0; }
+            if (!isset($row['item_cnt']))      { $this->items[$key]['item_cnt']     = 0; }
+            if (!isset($row['item_ref_id']))   { $this->items[$key]['item_ref_id']  = 0; }
+            if (!isset($row['debit_amount']))  { $this->items[$key]['debit_amount'] = 0; }
+            if (!isset($row['credit_amount'])) { $this->items[$key]['credit_amount']= 0; }
+            if (!isset($row['trans_code']))    { $this->items[$key]['trans_code']   = '';}
+            if (!isset($row['serialize']))     { $this->items[$key]['serialize']    = 0; }
         }
     }
 
@@ -68,11 +68,11 @@ class jCommon
      */
     protected function postItem()
     {
-        for ($i = 0; $i < count($this->item); $i++) {
-            $this->item[$i]['ref_id'] = $this->main['id'];    // link the rows to the journal main id
-            msgDebug("\n  journal item = " . print_r($this->item[$i], true));
-            if  (!$iID = dbWrite(BIZUNO_DB_PREFIX."journal_item", $this->item[$i])) { return msgAdd('Database error posting item record, see trace!', 'trap'); }
-            if (!isset($this->item[$i]['id']) || !$this->item[$i]['id']) { $this->item[$i]['id'] = $this->item[$i]['id'] = $iID; }
+        for ($i = 0; $i < count($this->items); $i++) {
+            $this->items[$i]['ref_id'] = $this->main['id'];    // link the rows to the journal main id
+            msgDebug("\n  journal item = " . print_r($this->items[$i], true));
+            if  (!$iID = dbWrite(BIZUNO_DB_PREFIX."journal_item", $this->items[$i])) { return msgAdd('Database error posting item record, see trace!', 'trap'); }
+            if (!isset($this->items[$i]['id']) || !$this->items[$i]['id']) { $this->items[$i]['id'] = $this->items[$i]['id'] = $iID; }
         }
         return true;
     }
@@ -102,7 +102,7 @@ class jCommon
     {
         $accounts = [];
         $precision = $this->rounding + 2;
-        foreach ($this->item as $value) {
+        foreach ($this->items as $value) {
             $credit_amount = (isset($value['credit_amount']) && $value['credit_amount']) ? $value['credit_amount'] : '0';
             $debit_amount  = (isset($value['debit_amount'])  && $value['debit_amount'])  ? $value['debit_amount']  : '0';
             if (round($credit_amount, $precision) <> 0 || round($debit_amount, $precision) <> 0) {
@@ -131,13 +131,13 @@ class jCommon
      */
     protected function unSetJournalHistory()
     {
-        for ($i=0; $i<count($this->item); $i++) {
-            if (empty($this->item[$i]['credit_amount'])){ $this->item[$i]['credit_amount']= 0; }
-            if (empty($this->item[$i]['debit_amount'])) { $this->item[$i]['debit_amount'] = 0; }
+        for ($i=0; $i<count($this->items); $i++) {
+            if (empty($this->items[$i]['credit_amount'])){ $this->items[$i]['credit_amount']= 0; }
+            if (empty($this->items[$i]['debit_amount'])) { $this->items[$i]['debit_amount'] = 0; }
             $sql = "UPDATE ".BIZUNO_DB_PREFIX."journal_history SET
-                credit_amount=credit_amount-{$this->item[$i]['credit_amount']}, debit_amount=debit_amount-{$this->item[$i]['debit_amount']}
-                WHERE gl_account='{$this->item[$i]['gl_account']}' AND period={$this->main['period']}";
-            msgDebug("\n    unPost chart balances: credit_amount = {$this->item[$i]['credit_amount']}, debit_amount = {$this->item[$i]['debit_amount']}, acct = {$this->item[$i]['gl_account']}, period = {$this->main['period']}");
+                credit_amount=credit_amount-{$this->items[$i]['credit_amount']}, debit_amount=debit_amount-{$this->items[$i]['debit_amount']}
+                WHERE gl_account='{$this->items[$i]['gl_account']}' AND period={$this->main['period']}";
+            msgDebug("\n    unPost chart balances: credit_amount = {$this->items[$i]['credit_amount']}, debit_amount = {$this->items[$i]['debit_amount']}, acct = {$this->items[$i]['gl_account']}, period = {$this->main['period']}");
             dbGetResult($sql);
         }
         msgDebug("\n  end unPosting Chart Balances.");
@@ -160,7 +160,7 @@ class jCommon
                 'debit_amount'  => isset($values['debit'])  ? $values['debit']  : 0,
                 'post_date'     => $this->main['post_date']];
             $temp_array['id'] = dbWrite(BIZUNO_DB_PREFIX."journal_item", $temp_array);
-            $this->item[] = $temp_array;
+            $this->items[] = $temp_array;
         }
     }
 
@@ -176,7 +176,7 @@ class jCommon
         $refJournal = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'journal_id', "id=$refID");
         if (!in_array($refJournal, [4, 10])) { return; } // only adjust if a sales order or purchase order. fixes bug for quotes
         $db_field = $refJournal==4 ? 'qty_po' : 'qty_so';
-        foreach ($this->item as $row) {
+        foreach ($this->items as $row) {
             if (isset($row['item_ref_id']) && $row['item_ref_id']) {
                 $qty = dbGetValue(BIZUNO_DB_PREFIX.'journal_item', 'qty', "id={$row['item_ref_id']}");
                 $adj = min($row['qty'], $qty);
@@ -225,10 +225,10 @@ class jCommon
     {
         $output = [];
         if (!$this->main['id']) { return $output; }
-        for ($i = 0; $i < count($this->item); $i++) {
-            if (!isset($this->item[$i]['sku']) || !$this->item[$i]['sku']) { continue; }
+        for ($i = 0; $i < count($this->items); $i++) {
+            if (!isset($this->items[$i]['sku']) || !$this->items[$i]['sku']) { continue; }
             // check to see if any future postings relied on this record, queue to re-post if so.
-            $id = dbGetValue(BIZUNO_DB_PREFIX."inventory_history", 'id', "ref_id={$this->main['id']} AND sku='{$this->item[$i]['sku']}'");
+            $id = dbGetValue(BIZUNO_DB_PREFIX."inventory_history", 'id', "ref_id={$this->main['id']} AND sku='{$this->items[$i]['sku']}'");
             if (!$id) { continue; }
             $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_cogs_usage", "inventory_history_id=$id");
             foreach ($result as $row) {
@@ -250,7 +250,7 @@ class jCommon
     protected function getRepostInvCOG()
     {
         $output = [];
-        foreach ($this->item as $row) {
+        foreach ($this->items as $row) {
             if (!isset($row['sku']) || !$row['sku']) { continue; }
             if (($row['qty']>0 && in_array($this->main['journal_id'], [6,13,14,15,16])) || ($row['qty'] < 0 && in_array($this->main['journal_id'], [7, 12]))) {
                 $crit      = "sku='{$row['sku']}'". ($this->isolate_cogs ? " AND store_id={$this->main['store_id']}" : '');
@@ -274,50 +274,6 @@ class jCommon
         }
         return $output;
     }
-
-    /**
-     * Gathers repost id's from assemblies that use this part from the cogs owed table
-     *
-     * Don't know if this does anything as assemblies cannot be assembled if there are not enough parts. If the parts show up (why we are here)
-     * the assembly still needs to be built which will relieve the cogs_owed table for the owed part during the assembly post.
-     *
-     * If this method is required, it needs to be tested...
-     * @return type
-     */
-/*    protected function getRepostInvAsy()
-    {
-        $output = [];
-        foreach ($this->item as $row) {
-            if (!isset($row['sku']) || !$row['sku']) { continue; }
-            // collect ref_id's
-            $skuUsage = dbGetMulti(BIZUNO_DB_PREFIX."inventory_assy_list", "sku='{$row['sku']}'");
-            if (sizeof($skuUsage) == 0) { continue; } // not used in an assembly
-            $crit = "sku='{$row['sku']}' AND remaining>0". ($this->isolate_cogs ? " AND store_id={$this->main['store_id']}" : '');
-            $remaining = dbGetValue(BIZUNO_DB_PREFIX."inventory_history", "SUM(remaining) as remaining", $crit, false);
-            $working_qty = $row['qty'] + $remaining;
-            if (($working_qty > 0 && in_array($this->main['journal_id'], [6,13,14,15,16])) || ($working_qty < 0 && in_array($this->main['journal_id'], [7, 12]))) {
-                foreach ($skuUsage as $skuID) {
-                    $sku   = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku', "id={$skuID['ref_id']}"); // sku that uses this part.
-                    $crit  = "sku='$sku'". ($this->isolate_cogs ? " AND store_id={$this->main['store_id']}" : '');
-                    $result= dbGetMulti(BIZUNO_DB_PREFIX."journal_cogs_owed", $crit, "post_date, id");
-                    foreach ($result as $owed) {
-                        if ($working_qty >= $owed['qty'] * $skuID['qty']) { // repost this journal entry and remove the owed record since we will repost all the negative quantities necessary
-                            if ($owed['journal_main_id'] <> $this->main['id']) { // prevent infinite loop
-                                msgDebug("\n    check for re post is queing for assy cogs owed, id = {$owed['journal_main_id']} to re-post.");
-                                $mainRow = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['post_date', 'journal_id'], "id=".$owed['journal_main_id']);
-                                $idx = padRef($owed['post_date'], $owed['journal_main_id'], $mainRow['journal_id']); // owed will always be from sales
-                                $output[$idx] = $owed['journal_main_id'];
-                            }
-                            dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."journal_cogs_owed WHERE id={$owed['id']}");
-                        }
-                        $working_qty -= $owed['qty'] * $skuID['qty'];
-                        if ($working_qty <= 0) { break; }
-                    }
-                }
-            }
-        }
-        return $output;
-    }*/
 
     /**
      *
@@ -362,7 +318,7 @@ class jCommon
     {
         $tolerance = 1 / pow(10, $this->rounding); // i.e. 1 cent in USD
         $diff = $ttlRow = $ttlDbt = $ttlCrt = 0;
-        foreach ($this->item as $key => $row) {
+        foreach ($this->items as $key => $row) {
             $diff += $row['debit_amount'] - $row['credit_amount'];
             if ($row['gl_type'] == 'ttl') {
                 $ttlRow = $key;
@@ -371,7 +327,7 @@ class jCommon
             }
         }
         if (abs($diff) > $tolerance) {
-            msgDebug("\nFailed comparing calc total = ".($ttlDbt + $ttlCrt)." with submitted total = {$this->main['total_amount']}");
+            msgDebug("\nIn testItemOrders failed comparing calc total = ".($ttlDbt + $ttlCrt)." with submitted total = {$this->main['total_amount']}");
             return msgAdd(sprintf($this->lang['err_total_not_match'], ($ttlDbt + $ttlCrt), $this->main['total_amount']), 'trap');
         }
         $adjDbt = $ttlDbt ? ($ttlDbt - $diff) : 0;
@@ -379,8 +335,8 @@ class jCommon
         if (abs(abs($adjDbt + $adjCrt) - abs($this->main['total_amount'])) > 0.0001) {
             msgDebug("\nCorrected ttl item: debit: $ttlDbt and credit: $ttlCrt diff: $diff, with adjustment debit: $adjDbt, credit: $adjCrt");
             $this->main['total_amount'] = $adjDbt + $adjCrt;
-            $this->item[$ttlRow]['debit_amount']  = $adjDbt;
-            $this->item[$ttlRow]['credit_amount'] = $adjCrt;
+            $this->items[$ttlRow]['debit_amount']  = $adjDbt;
+            $this->items[$ttlRow]['credit_amount'] = $adjCrt;
         }
         return true;
     }
@@ -391,20 +347,20 @@ class jCommon
      */
     private function testItemBanking()
     {
-        foreach ($this->item as $row) { // now check payments to make sure the post date is later than the invoice date
+        foreach ($this->items as $row) { // now check payments to make sure the post date is later than the invoice date
             if ($row['gl_type']=='pmt' && $row['date_1']>$row['post_date']) { return msgAdd(lang('err_gl_bad_post_date')); }
         }
         // need to round amount owed (pmt) and total_amount to currency precision or bank balances will drift
         $diff = 0;
-        foreach ($this->item as $key => $row) {
-            $this->item[$key]['debit_amount'] = round($row['debit_amount'], $this->rounding);
-            $this->item[$key]['credit_amount']= round($row['credit_amount'], $this->rounding);
-            msgDebug("\nDebit = {$this->item[$key]['debit_amount']}, Credit = {$this->item[$key]['credit_amount']}");
-            $diff += $this->item[$key]['debit_amount'] - $this->item[$key]['credit_amount'];
+        foreach ($this->items as $key => $row) {
+            $this->items[$key]['debit_amount'] = round($row['debit_amount'], $this->rounding);
+            $this->items[$key]['credit_amount']= round($row['credit_amount'], $this->rounding);
+            msgDebug("\nDebit = {$this->items[$key]['debit_amount']}, Credit = {$this->items[$key]['credit_amount']}");
+            $diff += $this->items[$key]['debit_amount'] - $this->items[$key]['credit_amount'];
             if ($row['gl_type'] == 'ttl') {
                 $ttlRow = $key;
-                $ttlDbt = $this->item[$key]['debit_amount'];
-                $ttlCrt = $this->item[$key]['credit_amount'];
+                $ttlDbt = $this->items[$key]['debit_amount'];
+                $ttlCrt = $this->items[$key]['credit_amount'];
             }
         }
         // adjust the total_amount and ttl item row
@@ -412,8 +368,8 @@ class jCommon
         $adjCrt = $ttlCrt ? ($ttlCrt + $diff) : 0;
         msgDebug("\nprecision = $this->rounding and adjDebit = $adjDbt, adjCreit = $adjCrt");
         $this->main['total_amount'] = $adjDbt + $adjCrt;
-        $this->item[$ttlRow]['debit_amount']  = $adjDbt;
-        $this->item[$ttlRow]['credit_amount'] = $adjCrt;
+        $this->items[$ttlRow]['debit_amount']  = $adjDbt;
+        $this->items[$ttlRow]['credit_amount'] = $adjCrt;
         return true;
     }
 
@@ -793,7 +749,7 @@ class jCommon
      */
     private function setGLAcctItemTtl(&$glAcct)
     {
-        foreach ($this->item as $row) {
+        foreach ($this->items as $row) {
             if ($row['gl_type'] == 'ttl') { $glAcct = $row['gl_account']; }
         }
     }
@@ -840,7 +796,7 @@ class jCommon
                 return $this->msgPostError(lang('err_gl_inv_low_stock') . $row['sku']);
             }
             $row['qty'] = -($qty * $row['qty']);
-            $row['id']  = $this->item[0]['id'];  // placeholder ref_id
+            $row['id']  = $this->items[0]['id'];  // placeholder ref_id
             if (strpos(COG_ITEM_TYPES, $row['inventory_type']) === false) { // not tracked in cogs
                 msgDebug("\n    NOT tracked in inventory");
                 $item_cost = -$row['qty'] * $row['price'];
@@ -865,20 +821,20 @@ class jCommon
                 'credit_amount'=> $qty>0 ?  $item_cost : 0,
                 'post_date'    => $this->main['post_date']];
             $temp_array['id'] = dbWrite(BIZUNO_DB_PREFIX."journal_item", $temp_array);
-            msgDebug("\nAdding to assembly item to this->item = ".print_r($temp_array, true));
-            $this->item[] = $temp_array;
+            msgDebug("\nAdding to assembly item to this->items = ".print_r($temp_array, true));
+            $this->items[] = $temp_array;
             if ($qty < 0) { // unbuild assy, update ref_id pointer in inventory history record of newly added item (just like a receive)
                 dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."inventory_history SET ref_id={$temp_array['id']}
                     WHERE sku='{$temp_array['sku']}' AND ref_id={$row['id']}");
             }
         }
         // update assembled item with total cost
-        $id = $this->item[0]['id'];
+        $id = $this->items[0]['id'];
         if ($qty < 0) { // the item to assemble should be the first item record
-            $this->item[0]['credit_amount'] = -$assy_cost;
+            $this->items[0]['credit_amount'] = -$assy_cost;
             $fields = ['credit_amount' => -$assy_cost];
         } else {
-            $this->item[0]['debit_amount'] = $assy_cost;
+            $this->items[0]['debit_amount'] = $assy_cost;
             $fields = ['debit_amount' => $assy_cost];
         }
         dbWrite(BIZUNO_DB_PREFIX."journal_item", $fields, 'update', "id=$id");
@@ -905,13 +861,13 @@ class jCommon
      */
     protected function unSetCOGSRows()
     {
-        msgDebug("\n  Removing system generated gl rows. Started with ".count($this->item)." rows ");
+        msgDebug("\n  Removing system generated gl rows. Started with ".count($this->items)." rows ");
         // remove these types of rows since they are regenerated as part of the Post
         $removal_gl_types = ['cog', 'asi'];
         $temp_rows = [];
-        foreach ($this->item as $value) { if (!in_array($value['gl_type'], $removal_gl_types)) { $temp_rows[] = $value; } }
-        $this->item = $temp_rows;
-        msgDebug(" and ended with ".count($this->item)." rows.");
+        foreach ($this->items as $value) { if (!in_array($value['gl_type'], $removal_gl_types)) { $temp_rows[] = $value; } }
+        $this->items = $temp_rows;
+        msgDebug(" and ended with ".count($this->items)." rows.");
     }
 
     /**
@@ -968,7 +924,7 @@ class jCommon
             'events' => ['data'=> 'datagridData',
                 'onLoadSuccess'=> "function(data) { for (var i=0; i<data.rows.length; i++) if (data.rows[i].checked) jq('#$name').datagrid('checkRow', i); totalUpdate(); }",
                 'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
-                'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
+                'onBeginEdit'  => "function(rowIndex) { bankingEdit(rowIndex); }",
                 'onCheck'      => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked: true} }); totalUpdate(); }",
                 'onCheckAll'   => "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('checkRow',i); }",
                 'onUncheck'    => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked:false} }); totalUpdate(); }",
@@ -986,14 +942,14 @@ class jCommon
                 'date_1'     => ['order'=>30,'label'=>pullTableLabel('journal_item', 'date_1', $journalID),
                     'attr'  => ['type'=>'date','sortable'=>true,'resizable'=>true,'width'=>100,'align'=>'center']],
                 'description'=> ['order'=>40,'label'=>lang('notes'), 'attr'=>['width'=>350,'resizable'=>true,'editor'=>'text']],
-                'amount'     => ['order'=>50,'label'=>lang('amount_due'),
-                    'attr'  => ['type'=>'currency','width'=> 100,'resizable'=>true,'align'=>'right']],
+                'amount'     => ['order'=>50,'label'=>lang('amount_due'),'attr'=>['type'=>'currency','width'=> 100,'resizable'=>true,'align'=>'right'],
+                    'events'=> ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
                 'discount'   => ['order'=>60,'label'=>lang('discount'), 'styles'=>['text-align'=>'right'],
-                    'attr'  => ['type'=>'currency','resizable'=>true,'width'=>100,  'align'=>'right'],'formatter'=>"function(value,row){ return formatCurrency(value); }",
-                    'events'=> ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('disc'); } } }"]],
+                    'attr'  => ['type'=>'currency','resizable'=>true,'width'=>100,  'align'=>'right'],
+                    'events'=> ['editor'=>dgEditCurrency("bankingCalc('disc');"),'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
                 'total'      => ['order'=>70,'label'=>lang('total'), 'styles'=>['text-align'=>'right'],
-                    'attr'  => ['type'=>'currency','resizable'=>true,'width'=>100,'align'=>'right'],'formatter'=>"function(value,row){ return formatCurrency(value); }",
-                    'events'=> ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('direct'); } } }"]],
+                    'attr'  => ['type'=>'currency','resizable'=>true,'width'=>100,'align'=>'right'],
+                    'events'=> ['editor'=>dgEditCurrency("bankingCalc('direct');"),'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
                 'pay'        => ['order'=>90,'attr'=>['checkbox'=>true]]]];
     }
 
@@ -1012,7 +968,7 @@ class jCommon
     totalUpdate();
 }",
                 'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
-                'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
+                'onBeginEdit'  => "function(rowIndex) { bankingEdit(rowIndex); }",
                 'onCheck'      => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked: true} }); totalUpdate(); }",
                 'onCheckAll'   => "function(rows)     { for (var i=0; i<rows.length; i++) jq('#$name').datagrid('checkRow',i); }",
                 'onUncheck'    => "function(rowIndex) { jq('#$name').datagrid('updateRow',{index:rowIndex,row:{checked:false} }); totalUpdate(); }",
@@ -1025,15 +981,16 @@ class jCommon
                 'inv_date'    => ['order'=>10,'label'=>pullTableLabel('journal_main', 'post_date', '12'),'attr'=>['type'=>'date','width'=>100,'sortable'=>true,'resizable'=>true,'align'=>'center']],
                 'primary_name'=> ['order'=>20,'label'=>pullTableLabel('journal_main', 'primary_name_b', '12'),'attr'=>['width'=>220,'sortable'=>true,'resizable'=>true]],
                 'inv_num'     => ['order'=>30,'label'=>pullTableLabel('journal_main', 'invoice_num', '12'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true, 'align'=>'center']],
-                'amount'      => ['order'=>40,'label'=>lang('amount_due'),'attr'  =>  ['type'=>'currency', 'width'=>100,'resizable'=>true, 'align'=>'right']],
-                'description' => ['order'=>50,'label'=>lang('notes'), 'attr'=>  ['width'=>220,'resizable'=>true,'editor'=>'text']],
+                'amount'      => ['order'=>40,'label'=>lang('amount_due'),'attr'=>['type'=>'currency', 'width'=>100,'resizable'=>true, 'align'=>'right'],
+                    'events'=> ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+                'description' => ['order'=>50,'label'=>lang('notes'),     'attr'=>['width'=>220,'resizable'=>true,'editor'=>'text']],
                 'date_1'      => ['order'=>60,'label'=>pullTableLabel('journal_item', 'date_1', $journalID),'attr'=>['type'=>'date','width'=>90,'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
                 'discount'    => ['order'=>70,'label'=>lang('discount'),'styles'=>['text-align'=>'right'],
-                    'attr'  => ['type'=>'currency','width'=>80, 'resizable'=>true, 'align'=>'right'],'formatter'=>"function(value,row){ return formatCurrency(value); }",
-                    'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('disc'); } } }"]],
+                    'attr'  => ['type'=>'currency','width'=>80, 'resizable'=>true, 'align'=>'right'],
+                    'events'=>  ['editor'=>dgEditCurrency("bankingCalc('disc');"),'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
                 'total'       => ['order'=>80,'label'=>lang('total'),'styles'=>['text-align'=>'right'],
-                    'attr'  => ['type'=>'currency','width'=>80, 'resizable'=>true, 'align'=>'right'],'formatter'=>"function(value,row){ return formatCurrency(value); }",
-                    'events'=> ['editor'=>"{type:'numberbox',options:{onChange:function(){ bankingCalc('direct'); } } }"]],
+                    'attr'  => ['type'=>'currency','width'=>90, 'resizable'=>true, 'align'=>'right'],
+                    'events'=> ['editor'=>dgEditCurrency("bankingCalc('direct');"),'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
                 'pay'         => ['order'=>90,'attr'=>['checkbox'=>true]]]];
     }
 
@@ -1075,6 +1032,7 @@ if (idx!=null) {
                 'inventory_type'=> ['order'=>0, 'attr'=>['hidden'=>'true']],
                 'item_weight'   => ['order'=>0, 'attr'=>['hidden'=>'true']],
                 'qty_stock'     => ['order'=>0, 'attr'=>['hidden'=>'true']],
+                'full_price'    => ['order'=>0, 'attr'=>['hidden'=>'true']],
                 'trans_code'    => ['order'=>0, 'attr'=>['hidden'=>'true']],
                 'attach'        => ['order'=>0, 'attr'=>['hidden'=>'true', 'value'=>'0']],
                 'date_1'        => ['order'=>0, 'attr'=>['hidden'=>'true']],
@@ -1105,18 +1063,16 @@ if (idx!=null) {
                             {field:'qty_stock', title:'$on_hand', width:90,align:'right'},
                             {field:'$inv_field', title:'$inv_title', width:90,align:'right'},
                             {field:'$gl_account', hidden:true}, {field:'item_weight', hidden:true}]]}}"]],
-                'description'  => ['order'=>40, 'label'=>lang('description'),'attr'=>['width'=>400,'editor'=>'text','resizable'=>true]],
+                'description'  => ['order'=>40, 'label'=>lang('description'),'attr'=>['width'=>400,'editor'=>dgEditText(),'resizable'=>true]],
                 'gl_account'   => ['order'=>50, 'label'=>pullTableLabel('journal_item', 'gl_account', $this->journalID),'attr'=>['width'=>100,'resizable'=>true,'align'=>'center'],
-                    'events'   => ['editor'=>dgHtmlGLAcctData()]],
+                    'events'   => ['editor'=>dgEditGL()]],
                 'tax_rate_id'  => ['order'=>60, 'label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->type),'attr'=>['hidden'=>$hideItemTax,'width'=>150,'resizable'=>true,'align'=>'center'],
-                    'events'   => ['editor'=>dgHtmlTaxData($name, 'tax_rate_id', $type, "totalUpdate('dgOrders onChangeTax');"),
+                    'events'   => ['editor'=>dgEditTax($name, 'tax_rate_id', $type, "totalUpdate('dgOrders onChangeTax');"),
                     'formatter'=>"function(value,row){ return getTextValue(bizDefaults.taxRates.$type.rows, value); }"]],
-                'price'        => ['order'=>70, 'label'=>lang('price'), 'format'=>'currency','attr'=>['width'=>80,'resizable'=>true,'align'=>'right'],
-                    'events'   => ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('price'); } } }",
-                    'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
-                'total'        => ['order'=>80, 'label'=>lang('total'), 'format'=>'currency','attr'=>['width'=>80,'resizable'=>true,'align'=>'right','value'=>'0'],
-                    'events'   => ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('total'); } } }",
-                    'formatter'=>"function(value,row){ return formatCurrency(value); }"]]]];
+                'price'        => ['order'=>70, 'label'=>lang('price'), 'attr'=>['width'=>80,'value'=>0,'resizable'=>true,'align'=>'right'],
+                    'events'   => ['editor'=>dgEditCurrency("ordersCalc('price');", true),'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+                'total'        => ['order'=>80, 'label'=>lang('total'), 'attr'=>['width'=>80,'value'=>0,'resizable'=>true,'align'=>'right'],
+                    'events'   => ['editor'=>dgEditCurrency("ordersCalc('total');"),'formatter'=>"function(value,row){ return formatCurrency(value); }"]]]];
         switch ($this->journalID) {
             case  3: $qty1 = lang('qty');      $qty2 = lang('received'); $ord1 = 20; $ord2 = 25; break;
             case  4: $qty1 = lang('qty');      $qty2 = lang('received'); $ord1 = 20; $ord2 = 25; break;
@@ -1131,7 +1087,7 @@ if (idx!=null) {
             case 21: $qty1 = lang('qty');      $qty2 = lang('balance');  $ord1 = 25; $ord2 = 20; break;
         }
         $data['columns']['qty'] = ['order'=>$ord1, 'label'=>$qty1, 'attr'=>['value'=>1,'width'=>80,'resizable'=>true,'align'=>'center'],
-            'events'=>  ['editor'=>"{type:'numberbox',options:{onChange:function(){ ordersCalc('qty'); } } }"]];
+            'events'=>  ['editor'=>dgEditNumber("ordersCalc('qty');")]];
         $data['columns']['bal'] = ['order'=>$ord2, 'label'=>$qty2,
             'attr' => ['width'=>80,'resizable'=>true,'align'=>'center','hidden'=>($this->rID || $this->action=='inv')?false:true]];
         // restrict prices if not allowed

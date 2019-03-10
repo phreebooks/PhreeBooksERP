@@ -63,6 +63,9 @@
   margin: 0 -12px;
   border: 0;
 }
+.sidemenu-tooltip.tooltip-left {
+  margin: 0 12px;
+}
 .sidemenu-tooltip .tooltip-arrow-outer,
 .sidemenu-tooltip .tooltip-arrow {
   display: none;

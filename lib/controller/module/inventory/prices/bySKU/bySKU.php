@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-19
+ * @version    3.x Last Update: 2019-03-05
  * @filesource /lib/controller/module/inventory/prices/bySKU.php
  */
 
@@ -134,7 +134,7 @@ function preSubmitPrices() {
     }
 
     /**
-     * This method saves the form contents for quantity pricing into the database, it is called from method: inventoryPrices:save 
+     * This method saves the form contents for quantity pricing into the database, it is called from method: inventoryPrices:save
      * @return true if successful, NULL and messageStack with error message if failed
      */
     public function priceSave()
@@ -181,12 +181,13 @@ function preSubmitPrices() {
         $sheets = dbGetMulti(BIZUNO_DB_PREFIX."inventory_prices", "contact_type='$type' AND method='$this->code' AND inventory_id='{$values['iID']}'");
         if (!$sheets) { return; }
         foreach ($sheets as $row) {
-            $settings = json_decode($row['settings'], true);
-            $levels = $this->decodeQuantity($values['iCost'], $values['iList'], $values['qty'], $settings['attr']);
+            $settings= json_decode($row['settings'], true);
+            $levels  = $this->decodeQuantity($values['iCost'], $values['iList'], $values['qty'], $settings['attr']);
             msgDebug("\nMethod = $this->code with attr = ".$settings['attr']." returned levels: ".print_r($levels, true));
             msgDebug("\nProcessing row = ".print_r($row, true));
             if ($values['cSheet']==$row['ref_id'] || ($values['iSheet'.$type]==$row['ref_id'] && $values['cSheet']==$values['iSheet'.$type])) {
-                $prices['price'] = isset($prices['price']) ? min($prices['price'], $levels['price']) : $levels['price'];
+                $prices['price']     = isset($prices['price'])     ? min($prices['price'],     $levels['price']) : $levels['price'];
+                $prices['sale_price']= isset($prices['sale_price'])? min($prices['sale_price'],$levels['price']) : $levels['price'];
             }
             $temp = json_decode(dbGetValue(BIZUNO_DB_PREFIX."inventory_prices", 'settings', "id={$row['ref_id']}"), true);
             if (!isset($prices['sheets'][$row['ref_id']]) && $levels['price']) { // only add price sheet if a price was returned

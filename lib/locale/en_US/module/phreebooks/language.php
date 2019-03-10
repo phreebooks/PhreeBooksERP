@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-21
+ * @version    3.x Last Update: 2019-03-08
  * @filesource /locale/en_US/module/phreebooks/language.php
  */
 
@@ -76,7 +76,7 @@ $lang = [
     'msg_attach_clean_empty' => 'No attachments were found prior to your date criteria!',
     'msg_pb_admin_roles' => 'Select the PhreeBooks roles that apply to this Bizuno role. If selected, users will appear in the Rep ID drop downs in Sales, Purchases, etc.',
     'msg_gl_replace_confirm' => 'Are you sure you want to replace your GL Accounts?',
-    'msg_gl_replace_success' => 'Your GL accounts have been replaced, you may need to log out and back in to reload the cache. Now is also a good time to reset your default accounts for all affected modules.',
+    'msg_gl_replace_success' => 'Your GL accounts have been replaced, you may need to sign off and back in to reload the cache. Now is also a good time to reset your default accounts for all affected modules.',
     'phreebooks_purge_success' => 'Journal Entries were purged successfully!',
     'coa_import_blocked' => 'Importing/Uploading chart of accounts has been disabled since there are journal entries present. This operation can only be performed on a clean general journal at start-up. To delete your journal and start clean, perform the purge operation on the Journal Tools tab.',
     'recur_desc' => 'This transaction can be duplicated in the future by selecting the number of entries to be created and the frequency for which they are posted. The current entry is considered the first recurrence, other post dates will be calculated automatically.',
@@ -90,6 +90,7 @@ $lang = [
     'msg_invoice_rqd'=>'For recurring entries, a starting invoice number is required.',
     'msg_inv_waiting'=>'For purchases, either an invoice number must be entered of the waiting checkbox must be selected.',
     'msg_negative_stock'=>'There are not enough of SKU %s in stock to fill this order, current quantity in stock is %i',
+    'msg_no_items' => 'There are no items to post for this order!',
     'msg_recur_edit'=>'This is a recurring entry. Do you want to update future entries as well? (Press Cancel to update only this entry)',
     'msg_save_as_closed' =>'Since this record is closed, it cannot be Saved As or Moved To a new record!',
     'msg_save_as_linked' =>'It looks like this record has a reference record or is a recurring record, it cannot be Saved As or Moved To a new record!',

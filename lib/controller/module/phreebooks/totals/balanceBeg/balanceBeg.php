@@ -17,9 +17,9 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /lib/controller/module/phreebooks/totals/balanceBeg/balanceBeg.php
- * 
+ *
  */
 
 namespace bizuno;
@@ -64,7 +64,7 @@ function totalsGetBegBalance() {
         success: function (json) {
             processJson(json);
             if (json.balance) {
-                bizTextSet('totals_balanceBeg', ''+json.balance, 'currency');
+                bizNumSet('totals_balanceBeg', json.balance);
             } else alert('Balance could not be found!');
             totalUpdate();
        }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2019-02-28
  * @filesource /lib/controller/module/phreebooks/journals/j09.php
  */
 
@@ -33,22 +33,12 @@ class j09 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->item = $item;
-        $this->currency = getUserCache('profile', 'currency', false, 'USD');
+        $this->items = $item;
     }
 
 /*******************************************************************************************************************/
 // START Edit Methods
 /*******************************************************************************************************************/
-    /**
-     * Pulls the data for the specified journal and populates the structure
-     * @param array $structure - table structures
-     */
-    public function getDataMain(&$structure)
-    {
-        dbStructureFill($structure, $this->main);
-    }
-
     /**
      * Tailors the structure for the specific journal
      */
@@ -92,42 +82,39 @@ class j09 extends jCommon
             foreach ($this->items as $key => $value) { $temp[$key] = $value['item_cnt']; }
             array_multisort($temp, SORT_ASC, $this->items);
         }
-        $debitCredit = in_array($this->journalID, [3,4,6,13,21]) ? 'debit' : 'credit';
-        $this->item = [];
-        if (sizeof($this->items) > 0) {
-            foreach ($this->items as $row) {
-                if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
-                if (empty($row['bal'])) { $row['bal'] = 0; }
-                if (empty($row['qty'])) { $row['qty'] = 0; }
-                if (is_null($row['sku'])) { $row['sku'] = ''; } // bug fix for easyui combogrid, doesn't like null value
-                $row['description'] = str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
-                if (!isset($row['price'])) { $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
-                if ($row['item_ref_id']) {
-                    $filled    = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['item_ref_id']} AND gl_type='itm'", false);
-                    $row['bal']= $row['bal'] - $filled + $row['qty']; // so/po - filled prior + this order
-                }
-                if ($row['sku']) { // now fetch some inventory details for the datagrid
-                    $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['inventory_type', 'qty_stock', 'item_weight'], "sku='{$row['sku']}'");
-                    $inv_adj = in_array($this->journalID, [3,4,6,13,21]) ? -$row['qty'] : $row['qty'];
-                    $row['qty_stock']     = $inv['qty_stock'] + $inv_adj;
-                    $row['inventory_type']= $inv['inventory_type'];
-                    $row['item_weight']   = $inv['item_weight'];
-                }
-                $this->item[] = $row;
+        $dbData = [];
+        foreach ($this->items as $row) {
+            if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
+            if (empty($row['bal'])) { $row['bal'] = 0; }
+            if (empty($row['qty'])) { $row['qty'] = 0; }
+            if (is_null($row['sku'])) { $row['sku'] = ''; } // bug fix for easyui combogrid, doesn't like null value
+            $row['description'] = str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
+            if (!isset($row['price'])) { $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
+            if ($row['item_ref_id']) {
+                $filled    = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['item_ref_id']} AND gl_type='itm'", false);
+                $row['bal']= $row['bal'] - $filled + $row['qty']; // so/po - filled prior + this order
             }
+            if ($row['sku']) { // now fetch some inventory details for the datagrid
+                $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['inventory_type', 'qty_stock', 'item_weight'], "sku='{$row['sku']}'");
+                $inv_adj = in_array($this->journalID, [3,4,6,13,21])  ? -$row['qty'] : $row['qty'];
+                $row['qty_stock']     = !empty($inv['qty_stock'])     ? $inv['qty_stock'] + $inv_adj : 0;
+                $row['inventory_type']= !empty($inv['inventory_type'])? $inv['inventory_type'] : 'ns';
+                $row['item_weight']   = !empty($inv['item_weight'])   ? $inv['item_weight'] : 0;
+            }
+            $dbData[] = $row;
         }
-        if ($debitCredit=='credit') { $map['credit_amount']= ['type'=>'field','index'=>'total']; }
-        if ($debitCredit=='debit')  { $map['debit_amount'] = ['type'=>'field','index'=>'total']; }
+        $map['credit_amount']= ['type'=>'field','index'=>'total'];
+        $map['debit_amount'] = ['type'=>'trash'];
         // add some extra fields needed for validation
         $structure['inventory_type'] = ['attr'=>['type'=>'hidden']];
-        $this->dgDataItem = formatDatagrid($this->item, 'datagridData', $structure, $map);
+        $this->dgDataItem = formatDatagrid($dbData, 'datagridData', $structure, $map);
     }
 
     /**
      * Customizes the layout for this particular journal
      * @param array $data - Current working structure
      */
-    public function customizeView(&$data)
+    public function customizeView(&$data, $rID=0)
     {
         $fldKeys = ['id','journal_id','so_po_ref_id','terms','override_user','override_pass','recur_id','recur_frequency','item_array','xChild','xAction','store_id',
             'purch_order_id','invoice_num','waiting','closed','terms_text','terms_edit','post_date','terminal_date','rep_id','currency','currency_rate'];

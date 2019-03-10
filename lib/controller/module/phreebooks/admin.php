@@ -307,7 +307,7 @@ class phreebooksAdmin {
         </tbody>
     </table>
 </fieldset>";
-        if ($security == 4) { // GL Purge
+        if ($security > 4) { // GL Purge
             $output['body'] .= "<fieldset><legend>".$this->lang['msg_gl_db_purge'].'</legend>
     <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">'."
         <tbody>
@@ -381,7 +381,7 @@ class phreebooksAdmin {
                 $output .= '<td style="text-align:center">'.viewDate($value['end'])."</td>\n";
             }
             $output .= "</tr>\n";
-        }          
+        }
         $output .= "</tbody>\n</table>\n</div>\n</fieldset>";
         return ['body'=>$output,'jsBody'=>$outputJS];
     }
@@ -455,7 +455,7 @@ class phreebooksAdmin {
         $layout['content']['taxRates']['v'] = ['total'=>sizeof($vRates), 'rows'=>$vRates];
         msgDebug("\nSending back data = " . print_r($layout['content'], true));
     }
-    
+
     private function getBrowserLang()
     {
         return [
@@ -487,7 +487,7 @@ class phreebooksAdmin {
         $output .= html5('phreebooks_sales', $fields['phreebooks_sales']) . "<br />\n";
         $output .= html5('phreebooks_purch', $fields['phreebooks_purch']) . "<br />\n</fieldset>\n";
         if (!empty($layout['tabs']['tabRoles']['divs'])) {
-            $layout['tabs']['tabRoles']['divs'][$this->moduleID]['html'] = $output . $layout['tabs']['tabRoles']['divs'][$this->moduleID]['html'];            
+            $layout['tabs']['tabRoles']['divs'][$this->moduleID]['html'] = $output . $layout['tabs']['tabRoles']['divs'][$this->moduleID]['html'];
         }
     }
 

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2019-03-08
  * @filesource /lib/controller/module/phreebooks/totals/discountChk/discountChk.php
  */
 
@@ -38,7 +38,7 @@ class discountChk
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
     }
-    
+
     public function settingsStructure()
     {
         return [
@@ -48,12 +48,13 @@ class discountChk
             'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
     }
 
-    public function glEntry($request, &$main, &$items, &$begBal=0)
+    public function glEntry(&$main, &$items, &$begBal=0)
     {
+        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
         $totalDisc = 0;
         $rows = clean($request['item_array'], 'json');
         foreach ($rows as $row) {
-            $discount = clean($row['discount'], 'currency');
+            $discount = clean($row['discount'], 'float');
             if ($discount == 0) { continue; }
             // need to bump up total paid to include discount
             foreach ($items as $key => $item) {
@@ -106,10 +107,10 @@ class discountChk
     var totalDisc = 0;
     var rowData = jq('#dgJournalItem').datagrid('getData');
     for (var i=0; i<rowData.rows.length; i++) if (rowData.rows[i]['checked']) {
-        var discount = cleanCurrency(rowData.rows[i].discount);
+        var discount = parseFloat(rowData.rows[i].discount);
         if (!isNaN(discount)) totalDisc += discount;
     }
-    bizTextSet('totals_discount', totalDisc, 'currency');
+    bizNumSet('totals_discount', totalDisc);
     var newBalance = begBalance - totalDisc;
     var decLen= parseInt(bizDefaults.currency.currencies[currency].dec_len);
     return parseFloat(newBalance.toFixed(decLen));

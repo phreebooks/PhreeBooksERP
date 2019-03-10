@@ -1,6 +1,6 @@
 <?php
 /*
- * Module PhreeBooks - Tools 
+ * Module PhreeBooks - Tools
  *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-12
+ * @version    3.x Last Update: 2019-03-08
  * @filesource /lib/controller/module/phreebooks/tools.php
  */
 
@@ -28,7 +28,7 @@ bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhr
 class phreebooksTools
 {
     public $moduleID = 'phreebooks';
-    
+
     function __construct()
     {
         $this->lang = getLang($this->moduleID);
@@ -93,9 +93,9 @@ class phreebooksTools
         $acct_string = $this->getGLtoClose(); // select list of accounts that need to be closed, adjusted
         $records = $carryOver = [];
         $lastPriorPeriod = $firstPeriod - 1;
-        foreach (getModuleCache('phreebooks', 'chart', 'accounts') as $glAccount) { 
+        foreach (getModuleCache('phreebooks', 'chart', 'accounts') as $glAccount) {
             if (isset($glAccount['heading']) && $glAccount['heading']) { continue; }
-            if (!in_array($glAccount['id'], $acct_string)) { $carryOver[] = $glAccount['id']; } 
+            if (!in_array($glAccount['id'], $acct_string)) { $carryOver[] = $glAccount['id']; }
             for ($i = $firstPeriod; $i <= $maxPeriod; $i++) {
                 $records[] = "('{$glAccount['id']}', '{$glAccount['type']}', '$i', NOW())";
             }
@@ -148,7 +148,7 @@ class phreebooksTools
             'divs' => ['body'=>['order'=>50,'type'=>'html','html'=>$html]]];
         $layout= array_replace_recursive($layout, $data);
     }
-    
+
     /**
      * Sets the main structure for closing/deleting Fiscal Years, The tab for PhreeBooks settings is also included
      * @param array $layout - Structure coming in
@@ -178,11 +178,11 @@ class phreebooksTools
         $html = '<h2><u>What will happen when a Fiscal Year is Closed</u></h2>
 <p>The following is a summary of the tasks performed while closing a fiscal year. The fiscal year being closed is indicated above.</p>
 <h3>Pre-flight Check</h3>
-<p>All journal entries will be tested to make sure they are in a completed state. You have an option to skip this test and remove them unconditionally by checking the box below. 
-If any journal entries are not in a closed state, this process will terminate. There may be other modules that will terminate the close process, the conditions for other modules 
+<p>All journal entries will be tested to make sure they are in a completed state. You have an option to skip this test and remove them unconditionally by checking the box below.
+If any journal entries are not in a closed state, this process will terminate. There may be other modules that will terminate the close process, the conditions for other modules
 is described in the tab of the module.</p>
 <b>Close Process</b><br />
-<p>The close process will remove all general journal records for the closing fiscal year. Fiscal calendar periods that are vacated during this process will be removed and 
+<p>The close process will remove all general journal records for the closing fiscal year. Fiscal calendar periods that are vacated during this process will be removed and
 the fiscal calendar will be re-sequenced starting with period 1 being the first period of the first remaining fiscal year.</p>
 The following is a summary of the PhreeBooks module closing task list:
 <ul>
@@ -197,10 +197,10 @@ The following is a summary of the PhreeBooks module closing task list:
 <li>Delete bank reconciliation records within the range of closed fiscal year, re-sequence periods periods</li>
 </ul>
 <h3>Post-close Clean-up</h3><br />
-<p>Following the journal deletion and other PhreeBooks module close tasks discussed above, each module will clean orphaned table records. See the instructions 
+<p>Following the journal deletion and other PhreeBooks module close tasks discussed above, each module will clean orphaned table records. See the instructions
 within each module tab for details on what is performed.</p>
-<p>The PhreeBooks post close process will be to re-run the journal tools to validate the journal balance and history table are in sync. 
-Other tools are also run to removed orphaned transactions, attachments and other general maintenance activities. 
+<p>The PhreeBooks post close process will be to re-run the journal tools to validate the journal balance and history table are in sync.
+Other tools are also run to removed orphaned transactions, attachments and other general maintenance activities.
 Most of these are available in the Journal Tools tab in the PhreeBooks module settings.</p>';
         $html .= "<p>"."To prevent the pre-flight test from halting the close process, check the box below."."</p>";
         $html .= html5('phreebooks_skip', ['label'=>'Do not perform the pre-flight check, I understand that this may affect my financial statements and inventory balances', 'position'=>'after','attr'=>['type'=>'checkbox','value'=>'1']]);
@@ -208,7 +208,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
 
     /**
      * Adds to the cron cache for all PhreeBooks module tasks associated with closing a Fiscal Year
-     * 
+     *
      * Journal entries are kept but the period is reduced by the number of accounting periods.
      * @param array $layout - Structure coming in
      * @return modified $layout
@@ -251,7 +251,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         $numTasks  = sizeof($cron['taskPre']);
         $numTasks += sizeof($cron['taskClose']);
         $numTasks += sizeof($cron['taskPost']);
-        if     (sizeof($cron['taskPre']))  { $taskID = 'taskPre'; } 
+        if     (sizeof($cron['taskPre']))  { $taskID = 'taskPre'; }
         elseif (sizeof($cron['taskClose'])){ $taskID = 'taskClose'; }
         elseif (sizeof($cron['taskPost'])) { $taskID = 'taskPost'; }
         // load the module/method and execute method
@@ -266,8 +266,8 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         unset($cron['msg']); // clear the message queue
         $thisTask = new $fqcn();
         $msg = $thisTask->$method($task['settings'], $cron);
-        
-        if (!isset($cron['cnt'])) { 
+
+        if (!isset($cron['cnt'])) {
             $cron['total'] = $numTasks;
             $cron['cnt']   = 1;
             $cron['curMod']= $task['mID'];
@@ -280,7 +280,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         if ($finished) {
             msgDebug("\n************** Finsihed all tasks, sending final message and changing heading.");
             msgLog("PhreeBooks Tools - Close Fiscal Year {$cron['fy']}");
-            $msg  = "The fiscal year close is complete!<br />The log file can be found in the Tools -> Business Backup file list.<br />Please log out and back in to refresh your cache.<br />";
+            $msg  = "The fiscal year close is complete!<br />The log file can be found in the Tools -> Business Backup file list.<br />Please sign off and back in to refresh your cache.<br />";
             $cron['msg'][] = $msg;
             $msg .= '<p style="text-align:center">'.html5('', ['attr'=>['type'=>'button', 'value'=>lang('logout')], 'events'=>['onClick'=>"jsonAction('bizuno/portal/logout');"]])."</p>";
             $data = ['content'=>['percent'=>100,'msg'=>$msg,'baseID'=>'fyClose','urlID'=>'phreebooks/tools/fyCloseNext']];
@@ -328,7 +328,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         array_unshift($cron['taskClose'], ['mID'=>$this->moduleID, 'method'=>'fyCloseHistory', 'settings'=>['cnt'=>1]]);
         return "Finished closing journal.";
     }
-    
+
     /**
      * Generically executes a delete SQL based on specified criteria
      * @param string $table - database table name
@@ -456,7 +456,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
      * @param array $layout - Structure coming in
      * @return modified $layout
      */
-    public function glRepair(&$layout=[]) 
+    public function glRepair(&$layout=[])
     {
         if (!validateSecurity('bizuno', 'admin', 3)) { return; }
         $tmp = dbGetMulti(BIZUNO_DB_PREFIX.'journal_periods', '', 'period');
@@ -505,7 +505,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
             dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."journal_history SET beginning_balance = beginning_balance - $trialBalance WHERE period=$period AND gl_account='$re_acct'");
         }
         // get all from journal_item for given period
-        $stmt = dbGetResult("SELECT m.id, m.journal_id, i.gl_account, i.debit_amount, i.credit_amount 
+        $stmt = dbGetResult("SELECT m.id, m.journal_id, i.gl_account, i.debit_amount, i.credit_amount
             FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id WHERE period=$period");
         $glPosts = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         msgDebug("\nFound ".sizeof($glPosts)." posts in period $period");
@@ -602,7 +602,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
      * @param integer $mID - database journal_main record id
      * @return boolean true
      */
-    private function glRepairEntry($mID) 
+    private function glRepairEntry($mID)
     {
         $precision = getModuleCache('phreebooks', 'currency', 'iso')[getUserCache('profile', 'currency', false, 'USD')]['dec_len'];
         $tolerance = 50 / pow(10, $precision); // i.e. 50 cent in USD
@@ -689,7 +689,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         $cron = getUserCache('cron', 'pruneCogs');
         $sku = array_shift($cron['rows']);
         // find the last inventory increase that included this SKU
-        $stmt = dbGetResult("SELECT m.id FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id 
+        $stmt = dbGetResult("SELECT m.id FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
             WHERE m.journal_id IN (6,14,15,16) AND i.qty>0 AND i.sku='$sku' ORDER BY m.post_date DESC LIMIT 1");
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
         if ($result['id']) { $this->glRepost($result['id']); }

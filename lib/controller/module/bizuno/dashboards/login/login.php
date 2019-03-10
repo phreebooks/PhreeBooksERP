@@ -1,6 +1,6 @@
 <?php
 /*
- * Bizuno dashboard - Login 
+ * Bizuno dashboard - Login
  *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-24
+ * @version    3.x Last Update: 2019-02-04
  * @filesource /lib/controller/module/bizuno/dashboards/login/login.php
  */
 
@@ -46,18 +46,16 @@ class login
         $portal= explode('.', $_SERVER['SERVER_ADDR']);
         $email = clean('bizunoUser', ['format'=>'email','default'=>''], 'cookie');
         $data  = ['type'=>'html', 'title'=>lang('login'),
-            'username' => ['options'=>['width'=>300,'height'=>30,'value'=>"'$email'",'validType'=>'email'],'attr'=>['type'=>'email']],
+            'username' => ['options'=>['width'=>300,'height'=>30,'value'=>"'$email'",'validType'=>'email'],'attr'=>['type'=>'email','value'=>clean('bizunoUser', 'text', 'cookie')]],
             'password' => ['options'=>['width'=>300,'height'=>30,'value'=>"''"],'attr'=>['type'=>'password']],
-            'language' => ['label'=>lang('language'), 'values'=>viewLanguages(), 'attr'=>['type'=>'select']],
+            'language' => ['label'=>lang('language'), 'values'=>viewLanguages(true), 'attr'=>['type'=>'select', 'value'=>clean('bizunoLang', 'text', 'cookie')]],
             'email'    => ['label'=>lang('email'),'options'=>['width'=>300,'height'=>30,'validType'=>'email'],'attr'=>['type'=>'email']],
-            'image_title' => ['label'=>getModuleCache('bizuno', 'properties', 'title'),'attr'=>['type'=>'img','src'=>BIZUNO_LOGO, 'height'=>'50']],
+            'image_title'=> ['label'=>getModuleCache('bizuno', 'properties', 'title'),'attr'=>['type'=>'img','src'=>BIZUNO_LOGO, 'height'=>'50']],
             'btnLogin' => ['attr'=>['type'=>'button','value'=>lang('login')],'styles'=>['cursor'=>'pointer'],
                 'events' => ['onClick'=> "if (jq('#userLoginForm').form('validate')) jq('#userLoginForm').submit();"]],
-            'btnLost' => ['attr'=>['type'=>'button','value'=>lang('password_lost')],'styles'=>['cursor'=>'pointer'],
+            'btnLost'  => ['attr'=>['type'=>'button','value'=>lang('password_lost')],'styles'=>['cursor'=>'pointer'],
                 'events' => ['onClick'=>"jq('#lostPWForm').submit();"]],
             'divs' => ['login'=>  ['order'=>50, 'src'=>BIZUNO_LIB."view/login.php"]],];
-        $data['username']['attr']['value'] = clean('bizuno_user', 'text', 'cookie');
-        $data['language']['attr']['value'] = clean('bizuno_lang', 'text', 'cookie');
         $html = '<div><!-- login section -->
     <div id="divLogin" style="text-align:center">
         <form id="userLoginForm" action="'.BIZUNO_AJAX.'&p=bizuno/portal/login"><br />

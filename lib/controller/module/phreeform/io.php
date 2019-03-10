@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-09
+ * @version    3.x Last Update: 2019-02-20
  * @filesource /controller/module/phreeform/io.php
  */
 
@@ -33,7 +33,7 @@ class phreeformIo
     {
         $this->lang = getLang($this->moduleID);
     }
-    
+
     /**
      * Manager to handle report/form management, importing, exporting and installing
      * @param array $layout - Structure coming in
@@ -46,10 +46,10 @@ class phreeformIo
         $fields= [
             'selModule'   => ['label'=>lang('module'),  'values'=>$selMods, 'attr'=>['type'=>'select']],
             'selLang'     => ['label'=>lang('language'),'values'=>$selLangs,'attr'=>['type'=>'select']],
- //         'btnSearch'   => ['attr' =>['type'=>'button', 'value'=>lang('search')],'events'=>['onClick'=>'importSearch();']],
-            'fileUpload'  => ['label'=>lang('select_file'),'attr'=>['type'=>'file']],
+//          'btnSearch'   => ['attr' =>['type'=>'button', 'value'=>lang('search')],'events'=>['onClick'=>'importSearch();']],
+            'fileUpload'  => ['label'=>$this->lang['import_upload_report'],'attr'=>['type'=>'file']],
             'new_name'    => ['label'=>'('.lang('optional').') '.lang('msg_entry_rename'),'attr'=>['width'=>'80']],
-            'btnUpload'   => ['attr' =>['type'=>'button','value'=>lang('upload')],'events'=>['onClick'=>"jq('#imp_name').val(''); jq('#frmImport').submit();"]],
+            'btnUpload'   => ['attr' =>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#imp_name').val(''); jq('#frmImport').submit();"]],
             'cbReplace'   => ['label'=>$this->lang['msg_replace_existing'],'position'=>'after','attr'=>['type'=>'checkbox']],
             'btnImport'   => ['attr' =>['type'=>'button','value'=>$this->lang['btn_import_selected']],'events'=>['onClick'=>"jq('#imp_name').val(jq('#selReports option:selected').val()); jq('#frmImport').submit();"]],
             'btnImportAll'=> ['attr' =>['type'=>'button','value'=>$this->lang['btn_import_all']],'events'=>['onClick'=>"jq('#imp_name').val('all'); jq('#frmImport').submit();"]],
@@ -72,7 +72,6 @@ class phreeformIo
 
     private function getViewMgr($fields=[])
     {
-
         return html5('imp_name',['attr'=>['type'=>'hidden']]).'
  <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
   <tbody>
@@ -87,7 +86,7 @@ class phreeformIo
    </tr>
    <tr class="panel-header"><th colspan="2">'.$this->lang['phreeform_reports_available'].'</th></tr>
    <tr>
-     <td>'.html5('selModule',$fields['selModule']).html5('selLang',$fields['selLang']).html5('btnSearch',$fields['btnSearch']).'</td>
+     <td>'.html5('selModule',$fields['selModule']).html5('selLang',$fields['selLang']).'</td>
      <td style="text-align:right;">'.html5('btnImportAll',$fields['btnImportAll']).'</td>
    </tr>
    <tr><td colspan="2">'.ReadDefReports('selReports').'</td></tr>
@@ -124,7 +123,7 @@ class phreeformIo
         msgLog(lang('phreeform_manager').': '.lang('import').": $title ($rID)");
         msgAdd(lang('phreeform_manager').': '.lang('import').": $title", 'success');
     }
-    
+
     /**
      * Retrieves and exports a specified report/form in XML format
      * @return type

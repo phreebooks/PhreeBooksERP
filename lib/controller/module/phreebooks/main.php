@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-21
+ * @version    3.x Last Update: 2019-03-07
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -85,7 +85,8 @@ class phreebooksMain
             $jsBody = "jq('#postDateMin').datebox({onChange:function (newDate) { jq('#postDateMin').val(newDate); } });
 jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val(newDate); } });";
         } elseif (!$mgr || $rID || $cID) { // get the detail screen
-            $jsReady = "setTimeout(function () { journalEdit($this->journalID, $rID, $cID, '$this->action') }, 500);\n";
+            if ($this->action=='inv') { $jsReady = "setTimeout(function () { journalEdit($this->journalID, 0,    $cID, '$this->action', '', $rID) }, 500);\n"; }
+            else                      { $jsReady = "setTimeout(function () { journalEdit($this->journalID, $rID, $cID, '$this->action') }, 500);\n"; }
         }
         $jsReady .= "bizFocus('search', 'dgPhreeBooks');";
         if     (in_array($this->journalID, [3, 4, 6, 7]))       { $submenu = viewSubMenu('vendors'); }
@@ -230,27 +231,27 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         $structure['invoice_num']['tip'] = lang('msg_leave_null_to_assign_ref');
         $structure['rep_id']['values']   = viewRoleDropdown();
         if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
-            $structure['currency']['callback']    = 'ordersCurrency';
+            $structure['currency']['callback']    = 'totalsCurrency';
             $structure['currency']['attr']['type']= 'selCurrency';
-            unset($structure['currency_rate']['attr']['type']); // show the exchange rate
+            $structure['currency_rate']['attr']['readonly']= 'readonly';
+            $structure['currency_rate']['attr']['type'] = 'float';
         }
         $ledger = new journal($rID, $this->journalID, false, $cID, $structure, $this->action);
         $ledger->journal->type  = $this->type;
         $ledger->journal->lang  = $this->lang;
         $ledger->journal->rID   = $this->rID;
         $ledger->journal->totals= $this->loadTotals($this->journalID);
-        $ledger->currencyConvert('toPost');
 
         dbStructureFill($structure, $ledger->main);
         if ($rID > 0 || $cID > 0 || $this->action=='bulk') {
             msgDebug("\nReading unique journal $this->journalID data");
-            if ($rID) { $jsReady .= "jq('#spanContactProps_b').show();"; }
+            if ($rID) { $jsReady .= "jq('#spanContactProps_b').show();\n"; }
             $cID    = $structure['contact_id_b']['attr']['value'];
             $defs   = $cID ? dbGetValue(BIZUNO_DB_PREFIX.'contacts', ['gl_account','tax_rate_id'], "id=$cID") : ['gl_account'=>$default_gl,'tax_rate_id'=>$default_tax];
             $jsBody.= "var def_contact_gl_acct = '{$defs['gl_account']}';\nvar def_contact_tax_id  = ".($defs['tax_rate_id'] < 0 ? 0 : $defs['tax_rate_id']).";\n";
         } else { // new entry
             $jsHead .= "var datagridData = ".json_encode(['total'=>0, 'rows'=>[]]).";\n";
-            if ($this->action<>'inv') { $jsReady .= "bizCheckBox('AddUpdate_b');"; }
+            if ($this->action<>'inv') { $jsReady .= "bizCheckBox('AddUpdate_b');\n"; }
             $jsBody .= "var def_contact_gl_acct = '$default_gl';\nvar def_contact_tax_id = ".($default_tax ? $default_tax : 0).";\n";
         }
 
@@ -277,6 +278,9 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         // Get the item data
         msgDebug("\nGoing to getDataItem, rID = $rID and cID = $cID");
         $ledger->getDataItem($rID, $cID, $security);
+        msgDebug("\nsetting currency to {$structure['currency']['attr']['value']}");
+        // uncommenting the following causes ALL numberboxes to format as currency. See total-discount percent field
+//      if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) { $jsHead .= "setCurrency('{$structure['currency']['attr']['value']}');\n"; }
 
         $data  = ['type'=>'divHTML',
             'divs'    => [
@@ -323,97 +327,35 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         $request = $_POST;
         $rID = clean('id', 'integer', 'post');
         if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", $rID?3:2)) { return; }
-        if (empty($request['closed']))  { $request['closed']  = '0'; } // test/define all check boxes
-        if (empty($request['waiting'])) { $request['waiting'] = '0'; }
-        $xChild  = clean('xChild', 'text', 'post');
-        $xAction = clean('xAction','text', 'post');
-        $structure = [
-            'journal_main' => dbLoadStructure(BIZUNO_DB_PREFIX.'journal_main', $this->journalID),
-            'journal_item' => dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID)];
+        $xChild   = clean('xChild', 'text', 'post');
+        $xAction  = clean('xAction','text', 'post');
+        $recurID  = clean('recur_id', 'integer', 'post');
+        $recurFreq= clean('recur_frequency', 'integer', 'post');
+        $GLOBALS['bizunoCurrency'] = clean('currency',['format'=>'alpha_num','default'=>getUserCache('profile','currency',false,'USD')],'post');
+        $structure = ['journal_main' => dbLoadStructure(BIZUNO_DB_PREFIX.'journal_main', $this->journalID)];
+        $values = requestData($structure['journal_main'], '', true);
+        $values['period']   = calculatePeriod($values['post_date'] ? $values['post_date'] : date('Y-m-d')); // recalc period as post date may have changed
+        $values['drop_ship']= clean('drop_ship_s', 'bool', 'post');
         // ***************************** START TRANSACTION *******************************
         // Assume all transactions are bulk transactions, or if no contact id set, treat as bulk.
         // iterate through the ref_id's and check for multiple contacts, perhaps pre-processing
-        msgDebug("\n  Started order post invoice_num = {$request['invoice_num']} and id = {$rID}");
+        msgDebug("\n  Started order post invoice_num = {$values['invoice_num']} and id = {$rID}");
         dbTransactionStart();
-        if (!$rID) { clearUserCache('phreebooks'.$this->journalID); } // clear the manager history for new saves, will then show new post on top.
+// STILL NEEDED?       if (!$rID) { clearUserCache('phreebooks'.$this->journalID); } // clear the manager history for new saves, will then show new post on top.
         $ledger = new journal($rID, $this->journalID);
-        $values = requestData($structure['journal_main'], '', true);
-        $values['period']   = calculatePeriod($values['post_date'] ? $values['post_date'] : date('Y-m-d')); // recalc period as post date may have changed
-        $values['drop_ship']= isset($request['drop_ship_s']) ? '1' : '0';
+        $ledger->main['description'] = pullTableLabel('journal_main', 'journal_id', $this->journalID);
         $ledger->main = array_replace($ledger->main, $values);
         // add/update address book, address updates need to be here so recur doesn't keep making new contacts
         // @todo this is duplicated at the start of journal class, if checked add/update here and clear the flag so it's not done again in the journal class
-        if (!empty($request['AddUpdate_b'])) { if (!$ledger->updateContact('b')) { return; } }
-        if (!empty($request['AddUpdate_s'])) {
+        if (clean('AddUpdate_b', 'bool', 'post')) { if (!$ledger->updateContact('b')) { return; } }
+        if (clean('AddUpdate_s', 'bool', 'post')) {
             if (!$ledger->main['contact_id_s']) { $ledger->main['contact_id_s'] = $ledger->main['contact_id_b']; }
             if (!$ledger->updateContact('s')) { return; }
         }
         if (in_array($ledger->journalID, [3,4,6,7,9,10,12,13]) && empty($ledger->main['contact_id_b'])) { return msgAdd($this->lang['msg_missing_contact_id']); }
-        // pull items
-        $map = [
-            'ref_id'   => ['type'=>'constant', 'value'=>$ledger->main['id']],
-            'gl_type'  => ['type'=>'constant', 'value'=>$this->gl_type],
-            'post_date'=> ['type'=>'constant', 'value'=>$ledger->main['post_date']]];
-        if (!in_array($this->journalID, [2])) {
-            $debitCredit = in_array($this->journalID, [3,4,6,13,16,20,21,22]) ? 'debit' : 'credit';
-            $map['credit_amount']= $debitCredit=='credit'? ['type'=>'field','index'=>'total'] : ['type'=>'constant','value'=>'0'];
-            $map['debit_amount'] = $debitCredit=='debit' ? ['type'=>'field','index'=>'total'] : ['type'=>'constant','value'=>'0'];
-        }
-        if (in_array($this->journalID, [17,18,20,22])) {
-            $map['date_1']     = ['type'=>'field','index'=>'post_date'];
-            $map['trans_code'] = ['type'=>'field','index'=>'invoice_num'];
-        }
-        $ledger->items= requestDataGrid(clean('item_array', 'json', 'post'), $structure['journal_item'], $map);
-        $skipList     = ['sku', 'description', 'credit_amount', 'debit_amount']; // if qty=0 or all these are not set or null, row is blank
-        $ledger->item = [];
-        $item_cnt     = 1;
-        foreach ($ledger->items as $row) {
-            if (!isBlankRow($row, $skipList)) {
-                $row['item_cnt']     = $item_cnt;
-                $row['debit_amount'] = roundAmount($row['debit_amount']);
-                $row['credit_amount']= roundAmount($row['credit_amount']);
-                $ledger->item[] = $row;
-            }
-            $item_cnt++;
-        }
-        // check to make sure there is at least one row
-        if (sizeof($ledger->item) == 0) { return msgAdd("There are no items to post for this order!"); }
-        unset($ledger->items); // don't need anymore
-        // a little more pre-processing
-        $description = pullTableLabel('journal_main', 'journal_id', $ledger->main['journal_id']);
-        switch ($this->journalID) {
-            case  2: $description .= ": {$ledger->item[0]['description']} ..."; break;
-            case 14: $description .= " ({$request['qty']}) {$request['sku']} - {$request['description']}";
-                $ledger->main['closed'] = '1';
-                $ledger->main['closed_date'] = $ledger->main['post_date'];
-                break;
-            case 15: if (!$this->journalTransfer($ledger->item)) { return; } // dup item rows negated for dest store, then continue to treat like adjustment
-                     $description .= " ({$ledger->item[0]['qty']}) {$ledger->item[0]['description']}".(sizeof($ledger->item)>2 ? ' +++' : ''); break;
-            case 16: $description .= " ({$ledger->item[0]['qty']}) {$ledger->item[0]['description']}".(sizeof($ledger->item)>1 ? ' +++' : ''); break;
-            default: $description .= isset($ledger->main['primary_name_b']) ? ": {$ledger->main['primary_name_b']}" : ''; break;
-        }
-        $ledger->main['description'] = $description;
-        // pull totals
-        $current_total = 0;
-        foreach ($ledger->item as $row) { $current_total += $row['debit_amount'] + $row['credit_amount']; } // subtotal of all rows
-        msgDebug("\nStarting to build total GL rows, starting subtotal = $current_total");
-        $ledger->main['sales_tax'] = $ledger->main['discount'] = 0; // clear the sales tax and discount before building new values
-        $ledger->totals = $this->loadTotals($this->journalID);
-        foreach ($ledger->totals as $methID) {
-            $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
-            $fqcn = "\\bizuno\\$methID";
-            bizAutoLoad("{$path}$methID.php", $fqcn);
-            $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
-            $totalEntry = new $fqcn($totSet);
-            if (method_exists($totalEntry, 'glEntry')) { $totalEntry->glEntry($request, $ledger->main, $ledger->item, $current_total); }
-        }
-        msgDebug("\nMapped journal rows = ".print_r($ledger->item, true));
-        // check calculated total against submitted total, course error check
-        // @todo Probably don't need this check anymore as it is handled in the Post class
-        if (!in_array($this->journalID, array(2,14,15,16)) && number_format($current_total, 2) <> number_format($ledger->main['total_amount'], 2)) {
-            msgDebug("\nFailed comparing calc total =  ".number_format($current_total, 2)." with submitted total = ".number_format($ledger->main['total_amount'], 2));
-            return msgAdd(sprintf($this->lang['err_total_not_match'], number_format($current_total, 2), number_format($ledger->main['total_amount'], 2)), 'trap');
-        }
+        if (!$this->getItems($ledger))  { return; }
+        if (!$this->getTotals($ledger)) { return; }
+        msgDebug("\nMapped journal rows = ".print_r($ledger->items, true));
         // ************* POST journal entry *************
         if ($ledger->main['recur_id'] > 0) { // if new record, will contain count, if edit will contain recur_id
             $first_invoice_num   = $ledger->main['invoice_num'];
@@ -423,25 +365,25 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                 for ($i = 0; $i < count($affected_ids); $i++) {
                     $ledger->main = array_replace($ledger->main, $affected_ids[$i]);
                     if ($i > 0) { // Remove row id's for future posts, keep if re-posting single entry
-                        for ($j = 0; $j < count($ledger->item); $j++) { $ledger->item[$j]['id'] = ''; }
+                        for ($j = 0; $j < count($ledger->items); $j++) { $ledger->items[$j]['id'] = ''; }
                     }
                     msgDebug("\n************ Re-posting recur id = {$ledger->main['id']} ******************");
                     if (!$ledger->Post()) { return; }
                     $ledger->postList = []; // reset the postList to prevent reposting prior recurs
                     // test for single post versus rolling into future posts, terminate loop if single post
-                    if (empty($request['recur_frequency'])) { break; }
+                    if (empty($recurFreq)) { break; }
                 }
             } else { // it's an insert, fetch the next recur id
                 $forceInv = $ledger->main['invoice_num'] != '' ? $ledger->main['invoice_num'] : false;
                 $ledger->main['recur_id'] = time(); // time stamp the transaction to link together
                 $origPost = clone $ledger;
-                for ($i=1; $i<=$request['recur_id']; $i++) { // number of recurs
+                for ($i=1; $i<=$recurID; $i++) { // number of recurs
                     if (!$ledger->Post()) { return; }
                     if ($i == 1) { $first_invoice_num = $ledger->main['invoice_num']; }
-                    if ($i == $request['recur_id']) { continue; } // we're done, skip the prep
+                    if ($i == $recurID) { continue; } // we're done, skip the prep
                     // prepare the next post or prepare to exit if finished
                     $ledger = clone $origPost;
-                    switch ($request['recur_frequency']) {
+                    switch ($recurFreq) {
                         default:
                         case '1': $day_offset = $i*7;  $month_offset = 0; break; // Weekly
                         case '2': $day_offset = $i*14; $month_offset = 0; break; // Bi-weekly
@@ -452,9 +394,9 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                     $ledger->main['terminal_date']= localeCalculateDate($ledger->main['terminal_date'], $day_offset, $month_offset);
                     $ledger->main['period']       = calculatePeriod($ledger->main['post_date'], false);
                     if ($forceInv) { $forceInv++; $ledger->main['invoice_num'] = $forceInv; }
-                    foreach ($ledger->item as $key => $row) {
-                        $ledger->item[$key]['post_date'] = $ledger->main['post_date'];
-                        $ledger->item[$key]['date_1']    = $ledger->main['terminal_date'];
+                    foreach ($ledger->items as $key => $row) {
+                        $ledger->items[$key]['post_date'] = $ledger->main['post_date'];
+                        $ledger->items[$key]['date_1']    = $ledger->main['terminal_date'];
                     }
                 }
             }
@@ -538,14 +480,14 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         foreach ($rows as $row) {
             if (!isset($cIDs[$row['contact_id']]['dsc'])) { $cIDs[$row['contact_id']]['dsc'] = 0; }
             if (!isset($cIDs[$row['contact_id']]['ttl'])) { $cIDs[$row['contact_id']]['ttl'] = 0; }
-            $cIDs[$row['contact_id']]['dsc']   += clean($row['discount'], 'currency');
-            $cIDs[$row['contact_id']]['ttl']   += clean($row['total'], 'currency');
+            $cIDs[$row['contact_id']]['dsc']   += clean($row['discount'],'float');
+            $cIDs[$row['contact_id']]['ttl']   += clean($row['total'],   'float');
             $cIDs[$row['contact_id']]['rows'][] = $row;
         }
         $post_date = clean($request['post_date'], 'date');
         $first_chk = $current_chk = $next_chk = clean($request['invoice_num'], 'text'); // save the first check number for printing
         $first_id  = 0;
-        $pmt_total = clean($request['total_amount'], 'currency');
+        $pmt_total = clean($request['total_amount'], 'float');
         if (!$first_chk) { return msgAdd("Ref # cannot be blank!"); }
         // ***************************** START TRANSACTION *******************************
         dbTransactionStart();
@@ -553,9 +495,9 @@ if (!formValidate()) return false;\n\treturn true;\n}";
             $address= dbGetRow(BIZUNO_DB_PREFIX.'address_book', "ref_id=$cID AND type='m'");
             $ledger = new journal(0, $this->journalID, $post_date);
             // Fill mains and items
-            $request['totals_discount']= viewFormat($items['dsc'], 'currency'); // need to fake out form total for each vendor
-            $request['total_amount']   = viewFormat($items['ttl'], 'currency');
-            $request['item_array']     = json_encode($items['rows']); // just the rows for this contact
+            $_POST['totals_discount']= $items['dsc']; // need to fake out form total for each vendor
+            $_POST['total_amount']   = $items['ttl'];
+            $_POST['item_array']     = json_encode($items['rows']); // just the rows for this contact
             $current_chk = $next_chk;
             $main = [
                 'gl_acct_id'    => $request['gl_acct_id'],
@@ -585,18 +527,12 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                 'date_1'        => ['type'=>'field',   'index'=>'inv_date'],
                 'trans_code'    => ['type'=>'field',   'index'=>'inv_num']];
             $ledger->items= requestDataGrid($items['rows'], $structure['journal_item'], $map);
-            $ledger->item = [];
-            $item_cnt     = 1;
-            foreach ($ledger->items as $row) {
-                $row['item_cnt'] = $item_cnt;
-                $ledger->item[] = $row;
-                $item_cnt++;
-            }
+            foreach ($ledger->items as $idx => $row) { $ledger->items[$idx]['item_cnt'] = $idx+1; }
             $ledger->main['description'] = pullTableLabel('journal_main', 'journal_id', $ledger->main['journal_id']);
             $ledger->main['description'].= isset($ledger->main['primary_name_b']) ? ": {$ledger->main['primary_name_b']}" : '';
             // pull totals
             $current_total = 0;
-            foreach ($ledger->item as $row) { $current_total += $row['debit_amount'] + $row['credit_amount']; } // subtotal of all rows
+            foreach ($ledger->items as $row) { $current_total += $row['debit_amount'] + $row['credit_amount']; } // subtotal of all rows
             msgDebug("\n\nStarting to build total GL rows, starting subtotal = $current_total");
             $ledger->totals = $this->loadTotals($this->journalID);
             foreach ($ledger->totals as $methID) {
@@ -605,14 +541,14 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                 bizAutoLoad("{$path}$methID.php", $fqcn);
                 $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
                 $totalEntry = new $fqcn($totSet);
-                if (method_exists($totalEntry, 'glEntry')) { $totalEntry->glEntry($request, $ledger->main, $ledger->item, $current_total); }
+                if (method_exists($totalEntry, 'glEntry')) { $totalEntry->glEntry($ledger->main, $ledger->items, $current_total); }
             }
-            msgDebug("\n\nMapped journal main = ".print_r($ledger->main, true));
-            msgDebug("\n\nMapped journal item = ".print_r($ledger->item, true));
+            msgDebug("\n\nMapped journal main = ".print_r($ledger->main,  true));
+            msgDebug("\n\nMapped journal item = ".print_r($ledger->items, true));
             // check calculated total against submitted total, course error check
-            if (number_format($current_total, 2) <> number_format($ledger->main['total_amount'], 2)) {
-                msgDebug("\nFailed comparing calc total =  ".number_format($current_total, 2)." with submitted total = ".number_format($ledger->main['total_amount'], 2));
-                return msgAdd(sprintf($this->lang['err_total_not_match'], number_format($current_total, 2), number_format($ledger->main['total_amount'], 2)), 'trap');
+            if (round($current_total, 2) <> round($ledger->main['total_amount'], 2)) {
+                msgDebug("\nin SaveBulk, failed comparing calc total =  ".round($current_total, 2)." with submitted total = ".round($ledger->main['total_amount'], 2));
+                return msgAdd(sprintf($this->lang['err_total_not_match'], round($current_total, 2), round($ledger->main['total_amount'], 2)), 'trap');
             }
             if (!$ledger->Post()) { return; }
             msgDebug("\n  Committing order invoice_num = $current_chk and id = {$ledger->main['id']}");
@@ -701,6 +637,71 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         $files = glob(getModuleCache('phreebooks', 'properties', 'attachPath')."rID_".$rID."_*.*");
         if (is_array($files)) { foreach ($files as $filename) { @unlink($filename); } } // remove attachments
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accJournal').accordion('select',0); jq('#dgPhreeBooks').datagrid('reload'); jq('#divJournalDetail').html('&nbsp;');"]]);
+    }
+
+    /**
+     * Gets the datagrid items and removes empty rows
+     * @param type $ledger
+     * @return type
+     */
+    private function getItems(&$ledger)
+    {
+        $ledger->items = []; // reset the item list as we start with just the datagrid
+        $structure = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
+        $map = [
+            'ref_id'   => ['type'=>'constant', 'value'=>$ledger->main['id']],
+            'gl_type'  => ['type'=>'constant', 'value'=>$this->gl_type],
+            'post_date'=> ['type'=>'constant', 'value'=>$ledger->main['post_date']]];
+        if (!in_array($this->journalID, [2])) {
+            $debitCredit = in_array($this->journalID, [3,4,6,13,16,20,21,22]) ? 'debit' : 'credit';
+            $map['credit_amount']= $debitCredit=='credit'? ['type'=>'field','index'=>'total'] : ['type'=>'constant','value'=>'0'];
+            $map['debit_amount'] = $debitCredit=='debit' ? ['type'=>'field','index'=>'total'] : ['type'=>'constant','value'=>'0'];
+        }
+        if (in_array($this->journalID, [17,18,20,22])) {
+            $map['date_1']     = ['type'=>'field','index'=>'post_date'];
+            $map['trans_code'] = ['type'=>'field','index'=>'invoice_num'];
+        }
+        $items    = requestDataGrid(clean('item_array', 'json', 'post'), $structure, $map);
+        $skipList = ['sku', 'description', 'credit_amount', 'debit_amount']; // if qty=0 or all these are not set or null, row is blank
+        $item_cnt = 1;
+        foreach ($items as $row) {
+            if (!isBlankRow($row, $skipList)) {
+                $row['item_cnt']     = $item_cnt;
+                $row['debit_amount'] = roundAmount($row['debit_amount']);
+                $row['credit_amount']= roundAmount($row['credit_amount']);
+                $ledger->items[] = $row;
+            }
+            $item_cnt++;
+        }
+        if (empty($ledger->items)) { return msgAdd($this->lang['msg_no_items']); }
+        return true;
+    }
+
+    /**
+     * Pulls posted total values and creates the GL entries
+     * @param type $ledger
+     */
+    private function getTotals(&$ledger)
+    {
+        $current_total = 0;
+        foreach ($ledger->items as $row) { $current_total += $row['debit_amount'] + $row['credit_amount']; } // subtotal of all rows
+        msgDebug("\nStarting to build total GL rows, starting subtotal = $current_total");
+        $ledger->main['sales_tax'] = $ledger->main['discount'] = 0; // clear the sales tax and discount before building new values
+        $ledger->totals = $this->loadTotals($this->journalID);
+        foreach ($ledger->totals as $methID) {
+            $path = getModuleCache('phreebooks', 'totals', $methID, 'path');
+            $fqcn = "\\bizuno\\$methID";
+            bizAutoLoad("{$path}$methID.php", $fqcn);
+            $totSet = getModuleCache('phreebooks','totals',$methID,'settings');
+            $totalEntry = new $fqcn($totSet);
+            if (method_exists($totalEntry, 'glEntry')) { $totalEntry->glEntry($ledger->main, $ledger->items, $current_total); }
+        }
+        // check calculated total against submitted total, course error check
+        if (!in_array($this->journalID, array(2,14,15,16)) && number_format($current_total, 2) <> number_format($ledger->main['total_amount'], 2)) {
+            msgDebug("\nIn getTotals, failed comparing calc total =  ".number_format($current_total, 2)." with submitted total = ".number_format($ledger->main['total_amount'], 2));
+            return msgAdd(sprintf($this->lang['err_total_not_match'], number_format($current_total, 2), number_format($ledger->main['total_amount'], 2)), 'trap');
+        }
+        return true;
     }
 
     /**
@@ -935,7 +936,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                             'display'=> "row.waiting=='1' && row.journal_id=='6'"],
                         'reference'  => ['order'=>70,'icon'=>'invoice',   'label'=>$this->lang['set_ref_num'],
                             'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_ref_num']."'); jsonAction('phreebooks/main/setReferenceNum&jID=18', idTBD, invNum);"],
-                            'display'=> "row.journal_id=='18'"],
+                            'display'=> "row.journal_id=='18' || row.journal_id=='20'"],
                         'purchase'   => ['order'=>70,'icon'=>'purchase','label'=>$this->lang['fill_purchase'],
                             'events' => ['onClick' => "journalEdit(6, 0, cIDTBD, 'inv', '', idTBD);"],
                             'display'=> "row.closed=='0' && (row.journal_id=='3' || row.journal_id=='4')"],
@@ -1078,8 +1079,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                         <span style="background-color:pink">'      .lang('journal_main_journal_id_7').'</span>',
                     'jType'=>'<br />'.lang('status').':
                         <span style="background-color:yellowgreen">'.lang('confirmed').'</span>
-                        <span class="journal-waiting">'.lang('journal_main_waiting').'</span>',
-                    ];
+                        <span class="journal-waiting">'.lang('journal_main_waiting').'</span>'];
                 break;
             case  9:
             case 10:
@@ -1109,8 +1109,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                         <span style="background-color:pink">'      .lang('journal_main_journal_id_13').'</span>',
                     'jType'=>'<br />'.lang('status').':
                         <span style="background-color:yellowgreen">'.lang('confirmed').'</span>
-                        <span class="journal-waiting">'.lang('unshipped').'</span>',
-                    ];
+                        <span class="journal-waiting">'.lang('unshipped').'</span>'];
                 break;
             case 14:
                 unset($data['columns']['closed']);
@@ -1278,31 +1277,6 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         }
         msgAdd(lang('msg_database_write'), 'success');
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 'actionData'=>"bizWindowClose('winDelDates');"]]);
-    }
-
-    /**
-     * This method takes the line items from a transfer operation and builds the new 'effective' line items
-     * @param array $item - the list of items to transfer, after initial processing
-     */
-    private function journalTransfer(&$item)
-    {
-        msgDebug("\nAdding rows for Inventory Store Transfer");
-        $srcStoreID = clean('so_po_ref_id','integer', 'post');
-        $destStoreID= clean('store_id',    'integer', 'post');
-        if ($srcStoreID == $destStoreID) { return msgAdd($this->lang['err_gl_xfr_same_store']); }
-        // take the line items and create a negative list for the receiving store
-        $output = [];
-        foreach ($item as $row) {
-            unset($row['id']); // when reposting, this causes duplicate ID errors if not cleared
-            $row['qty'] = -$row['qty'];
-            $row['gl_type'] = 'xfr';
-            $tmp = $row['credit_amount']; // swap debits and credits
-            $row['credit_amount'] = $row['debit_amount'];
-            $row['debit_amount'] = $tmp;
-            $output[] = $row;
-        }
-        $item = array_merge($item, $output);
-        return true;
     }
 
     /**

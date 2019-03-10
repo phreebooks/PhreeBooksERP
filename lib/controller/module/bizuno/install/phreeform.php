@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-05
+ * @version    3.x Last Update: 2019-01-23
  * @filesource /lib/controller/module/bizuno/install/phreeform.php
  */
 
@@ -49,6 +49,7 @@ $phreeform = [
         'vend:rpt' => ['type'=>'dir', 'title'=>'reports'],
         'vend:j3'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_3'],
         'vend:j4'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_4'],
+        'vend:j6'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_6'],
         'vend:j7'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_7'],
         'vend:lblv'=> ['type'=>'dir', 'title'=>'label'],
         'vend:stmt'=> ['type'=>'dir', 'title'=>'statement']]]];

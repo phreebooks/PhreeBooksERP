@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-05
+ * @version    3.x Last Update: 2019-02-06
  * @filesource /lib/model/msg.php
  */
 
 namespace bizuno;
 
-final class messageStack 
+final class messageStack
 {
     var $size  = 0;
     var $error = [];
@@ -33,11 +33,12 @@ final class messageStack
     /**
      * Initializes the trace string, sets up other variables.
      */
-    function __construct() 
+    function __construct()
     {
         if (!defined('SCRIPT_START_TIME')) { define('SCRIPT_START_TIME', microtime(true)); }
         $version = defined('MODULE_BIZUNO_VERSION') ? MODULE_BIZUNO_VERSION : 'unknown';
-        $this->trace  = "Trace information for debug purposes. Bizuno release $version, generated ".date('Y-m-d H:i:s')."\n";
+        $portal  = explode('.', $_SERVER['SERVER_ADDR']);
+        $this->trace  = "Trace information for debug purposes. Bizuno release $version, portal {$portal[3]} - generated ".date('Y-m-d H:i:s')."\n";
         $this->trace .= "Trace Start Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms\n\n";
         $this->trace .= "GET Vars = " .print_r($_GET, true)."\n";
         $this->trace .= "POST Vars = ".print_r($_POST,true)."\n";
@@ -51,7 +52,7 @@ final class messageStack
      * @param String $level What kind of error, types are 'info', 'error','caution','warning','success'. default is 'error'
      * @return boolean returns true always
      */
-    function add($message, $level='error', $title='') 
+    function add($message, $level='error', $title='')
     {
         switch ($level) {
             case 'trap':    $this->trap = true;
@@ -113,8 +114,10 @@ final class messageStack
     {
         global $db;
         if (!$force && (!$this->trap || strlen($this->trace) < 1)) { return; }
-        $this->trace .= "\n\nMessageStack array contains: ".print_r($this->error, true);
-        $this->trace .= "\n\nPage trace stats: Execution Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms, ".$db->total_count." queries taking ".(int)($db->total_time * 1000)." ms";
+        $dbCnt = !empty($db->total_count)? $db->total_count : 0;
+        $dbTime= !empty($db->total_time) ? (int)($db->total_time * 1000) : 0;
+        msgDebug("\nMessageStack array contains: ".print_r($this->error, true));
+        msgDebug("\nPage trace stats: Execution Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms, $dbCnt queries taking $dbTime ms");
         $dest = $filename ? $filename : $this->debug_file;
         $io = new \bizuno\io();
         $io->fileWrite($this->trace, $dest, true, $append, true);
@@ -140,7 +143,7 @@ function msgAdd($msg, $level='error', $title='')
 function msgMerge($msg=[])
 {
     global $msgStack;
-    if (is_object($msgStack)) { 
+    if (is_object($msgStack)) {
         $msgStack->error = array_merge_recursive($msgStack->error, $msg);
     }
 }
@@ -192,6 +195,7 @@ function msgDebugWrite($filename=false, $append=false, $force=false)
 function msgTrap()
 {
     global $msgStack;
+    msgDebug("\nTRACE msgTrap SET");
     $msgStack->trap = true; //$capture;
 }
 

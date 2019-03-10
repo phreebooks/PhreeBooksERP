@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-27
+ * @version    3.x Last Update: 2019-03-05
  * @filesource /lib/controller/module/inventory/prices/quantity.php
  */
 
@@ -79,18 +79,18 @@ function preSubmitPrices() {
 
     private function getView($structure, $settings)
     {
-        $defAttr= ['break'=>true,'label'=>lang('default'),'attr'=>['type'=>'checkbox','value'=>1]];
-        if (!empty($structure['settings']['default'])) { $defAttr['attr']['checked'] = true; }
+        $defAttr= ['break'=>true,'label'=>lang('default'),'attr'=>['type'=>'selNoYes']];
+        if (!empty($settings['default'])) { $defAttr['attr']['checked'] = true; }
         return [
             'id'      .$this->code => $structure['id'], // hidden
             'item'    .$this->code => ['attr'=>['type'=>'hidden']],
-            'title'   .$this->code => ['break'=>true,'attr'=>['value'=>$settings['title']]],
+            'title'   .$this->code => ['order'=>10,'label'=>lang('title'),'break'=>true,'attr'=>['value'=>$settings['title']]],
             'default' .$this->code => $defAttr,
-            'currency'.$this->code => array_merge($structure['currency'],['break'=>true])];
+            'currency'.$this->code => array_merge($structure['currency'],['order'=>70,'break'=>true])];
     }
 
     /**
-     * This method saves the form contents for quantity pricing into the database, it is called from method: inventoryPrices:save 
+     * This method saves the form contents for quantity pricing into the database, it is called from method: inventoryPrices:save
      * @param string $layout
      * @return true if successful, NULL and messageStack with error message if failed
      */
@@ -150,16 +150,19 @@ function preSubmitPrices() {
     public function priceQuote(&$prices, $values)
     {
         $sheets = dbGetMulti(BIZUNO_DB_PREFIX."inventory_prices", "method='$this->code' AND contact_type='{$values['cType']}'");
-        if (!$sheets) { return;  }
+        if (!$sheets) { return; }
         $default_price = 0;
         foreach ($sheets as $row) {
             $settings = json_decode($row['settings'], true);
             $levels = $this->decodeQuantity($values['iCost'], $values['iList'], $values['qty'], $settings['attr']);
-//            msgDebug("\nMethod = $this->code with attr = {$settings['attr']} returned levels: ".print_r($levels, true));
+//          msgDebug("\nMethod = $this->code with attr = {$settings['attr']} returned levels: ".print_r($levels, true));
             if ($values['cSheet']==$row['id']) {
                 if (!isset($prices['price'])) { $prices['price'] = $levels['price']; }
-            } elseif (isset($settings['default']) && $settings['default']) {
+            } elseif (!empty($settings['default'])) {
                 $default_price = $levels['price'];
+            }
+            if (!empty($settings['default']) && empty($prices['regular_price'])) {
+                $prices['regular_price'] = $levels['price'];
             }
             if (!isset($prices['sheets'][$row['id']]) && $levels['price']) { // only add price sheet if a price was returned
                 $prices['sheets'][$row['id']] = [
@@ -169,6 +172,6 @@ function preSubmitPrices() {
             }
         }
         if (!isset($prices['price']) && $default_price) { $prices['price'] = $default_price; }
-//        msgDebug("\nLeaving $this->code with price = ".(isset($prices['price']) ? $prices['price'] : 'undefined'));
+//      msgDebug("\nLeaving $this->code with price = ".(isset($prices['price']) ? $prices['price'] : 'undefined'));
     }
 }

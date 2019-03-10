@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-07
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /lib/model/db.php
  */
 
@@ -355,6 +355,7 @@ function dbWriteCache($usrEmail=false, $lang=false)
         ksort($bizunoLang); // @todo only create this when reloading registry
         $io = new io(); // needs to be here as global may not be set up yet
         $ISO = getUserCache('profile', 'language', false, 'en_US');
+        msgDebug("\nWriting lang file!");
         $io->fileWrite(json_encode($bizunoLang), "cache/lang_{$ISO}.json", false, false, true);
     }
     // save the users new cache
@@ -384,6 +385,18 @@ function dbClearCache($email='')
 {
     $crit = $email ? "email='$email'" : '';
     dbWrite(BIZUNO_DB_PREFIX.'users', ['cache_date'=>'null'], 'update', $crit);
+}
+
+/**
+ * Tests if the users db connection is valid
+ * @global \bizuno\type $db
+ * @return type
+ */
+function dbConnected()
+{
+    global $db;
+    if (!is_object($db)) { return false; }
+    return $db->connected ? true : false;
 }
 
 /**
@@ -685,7 +698,7 @@ function dbTableRead($data)
     if (!empty($data['source']['filters'])) {
         foreach ($data['source']['filters'] as $key => $value) {
             if ($key == 'search') {
-                if ($value['attr']['value']) {
+                if (isset($value['attr']) && isset($value['attr']['value'])) {
                     $search_text = addslashes($value['attr']['value']);
                     $criteria[] = "(".implode(" LIKE '%$search_text%' OR ", $data['source']['search'])." LIKE '%$search_text%')";
                 }
@@ -775,7 +788,7 @@ function dbBuildDropdown($table, $id='id', $field='description', $filter='', $nu
  */
 function dbGetContact($request, $suffix='')
 {
-    if (isset($request['short_name'.$suffix]) && $request['short_name'.$suffix]) {
+    if (!empty($request['short_name'.$suffix])) {
         $cID = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'id', "short_name='{$request['short_name'.$suffix]}'");
         if ($cID) {
             $aID = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'address_id', "ref_id=$cID");

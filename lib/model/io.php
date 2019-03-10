@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2019-02-14
  * @filesource /lib/model/io.php
  */
 
@@ -39,7 +39,7 @@ final class io
         $this->dest_dir    = 'backups/';
         $this->dest_file   = 'filename.bak';
         $this->mimeType    = '';
-        $this->useragent   = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0';
+//        $this->useragent   = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0'; // moved to portal
         $this->options     = ['upload_dir' => $this->myFolder.$this->dest_dir];
 
     }
@@ -175,8 +175,9 @@ final class io
      */
     public function fileReadGlob($path)
     {
-        $files = glob($this->myFolder.$path."*");
         $output= [];
+        if (!$this->folderExists($path)) { return $output; }
+        $files = glob($this->myFolder.$path."*");
         if (is_array($files)) {
             foreach ($files as $file) {
                 $fmTime = filemtime($file);
@@ -228,6 +229,26 @@ final class io
         }
         fclose($handle);
         msgDebug("\nSaved uploaded file to filename: BIZUNO_DATA/$fn");
+    }
+
+    /**
+     * @TODO this needs to be deprecated for a simple is_dir once the slow NAS gets solved.
+     * Iterates through the folder path, seems to help with slow network storage
+     * @param type $path
+     */
+    public function folderExists($path='')
+    {
+        msgDebug("\nentering folderExists with path = $path");
+        if (strpos($path, '/') === false) { return true; } // root folder
+        $parts = explode('/', pathinfo($path.'tmp', PATHINFO_DIRNAME));
+        msgDebug("\nparts = ".print_r($parts, true));
+        $partial = $this->myFolder;
+        foreach ($parts as $part) {
+            $partial .= "$part/";
+            msgDebug("\nChecking folder $partial");
+            if (!is_dir($partial)) { return false; }
+        }
+        return true;
     }
 
     /**
@@ -312,7 +333,7 @@ final class io
     public function folderRead($path)
     {
         $output = [];
-        if (!@is_dir($this->myFolder.$path)) { return $output; }
+        if (!$this->folderExists($path)) { return $output; }
         $temp = scandir($this->myFolder.$path);
         foreach ($temp as $fn) {
             if ($fn == '.' || $fn == '..') { continue; }
@@ -430,10 +451,10 @@ final class io
             msgAdd("The uploaded file was empty!");
             return;
         }
-        $type_match = $type && (strpos($_FILES[$index]['type'], $type) === false) ? false : true;
-         $fExt = strtolower(substr($_FILES[$index]['name'], strrpos($_FILES[$index]['name'], '.')+1));
+        $type_match= !empty($type) && (strpos($_FILES[$index]['type'], $type) === false) ? false : true;
+        $fExt      = strtolower(substr($_FILES[$index]['name'], strrpos($_FILES[$index]['name'], '.')+1));
         if (!is_array($ext)) { $ext = array($ext); }
-        $ext_match  = $ext && (in_array($fExt, $ext) !== false) ? false : true;
+        $ext_match = !empty($ext) && (in_array(strtolower($fExt), $ext)) ? true : false;
         if ($type_match || $ext_match) { return true; }
         msgAdd("Unknown upload validation error.");
     }

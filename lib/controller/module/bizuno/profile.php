@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-24
+ * @version    3.x Last Update: 2019-02-18
  * @filesource lib/controller/module/bizuno/profile.php
  */
 
@@ -179,14 +179,15 @@ class bizunoProfile
         $fields   = [
             'title'    => ['order'=>10,'break'=>true,'label'=>lang('title'),'attr'=>['value'=>'']],
             'dateStart'=> ['order'=>20,'break'=>true,'label'=>$this->lang['start_date'],'classes'=>['easyui-datebox'],'attr'=>['value'=>date('Y-m-d')]],
-            'recur'    => ['order'=>30,'break'=>true,'label'=>$this->lang['frequency'], 'values'=>viewKeyDropdown($this->freqs),'attr'=>['type'=>'select','value'=>'m']],
-        ];
+            'recur'    => ['order'=>30,'break'=>true,'label'=>$this->lang['frequency'], 'values'=>viewKeyDropdown($this->freqs),'attr'=>['type'=>'select','value'=>'m']]];
         $data = ['type'=>'divHTML',
             'divs'    => [
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbReminder'],
-                'body'   => ['order'=>50,'type'=>'fields', 'keys'=>$flds]],
-            'toolbars'=> ['tbReminder'=>['icons'=>[
-                'save'=> ['order'=>10,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"divSubmit('bizuno/profile/reminderSave', 'divReminder');"]]]]],
+                'formBOF'=> ['order'=>15,'type'=>'form',   'key' =>'frmReminder'],
+                'body'   => ['order'=>50,'type'=>'fields', 'keys'=>$flds],
+                'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"]],
+            'toolbars'=> ['tbReminder'=>['icons'=>['save'=>['order'=>10,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"jq('#frmReminder').submit();"]]]]],
+            'forms'   => ['frmReminder'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/profile/reminderSave"]]],
             'fields'  => $fields,
             'jsReady' => ['init'=>"ajaxForm('frmReminder');"]];
         $layout = array_replace_recursive($layout, $data);

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2019-03-02
  * @filesource /lib/controller/module/phreebooks/journals/j10.php
  */
 
@@ -33,22 +33,12 @@ class j10 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->item = $item;
-        $this->currency = getUserCache('profile', 'currency', false, 'USD');
+        $this->items = $item;
     }
 
 /*******************************************************************************************************************/
 // START Edit Methods
 /*******************************************************************************************************************/
-    /**
-     * Pulls the data for the specified journal and populates the structure
-     * @param array $structure - table structures
-     */
-    public function getDataMain(&$structure)
-    {
-        dbStructureFill($structure, $this->main);
-    }
-
     /**
      * Tailors the structure for the specific journal
      */
@@ -86,43 +76,39 @@ class j10 extends jCommon
         foreach ($this->items as $idx => $row) {
             $this->items[$idx]['bal'] = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['id']} AND gl_type='itm'", false);
         }
-
-        $debitCredit = in_array($this->journalID, [3,4,6,13,21]) ? 'debit' : 'credit';
-        $this->item = [];
-        if (sizeof($this->items) > 0) {
-            foreach ($this->items as $row) {
-                if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
-                if (empty($row['bal'])) { $row['bal'] = 0; }
-                if (empty($row['qty'])) { $row['qty'] = 0; }
-                if (is_null($row['sku'])) { $row['sku'] = ''; } // bug fix for easyui combogrid, doesn't like null value
-                $row['description'] = str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
-                if (!isset($row['price'])) { $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
-                if ($row['item_ref_id']) {
-                    $filled    = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['item_ref_id']} AND gl_type='itm'", false);
-                    $row['bal']= $row['bal'] - $filled + $row['qty']; // so/po - filled prior + this order
-                }
-                if ($row['sku']) { // now fetch some inventory details for the datagrid
-                    $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['inventory_type', 'qty_stock', 'item_weight'], "sku='{$row['sku']}'");
-                    $inv_adj = in_array($this->journalID, [3,4,6,13,21]) ? -$row['qty'] : $row['qty'];
-                    $row['qty_stock']     = $inv['qty_stock'] + $inv_adj;
-                    $row['inventory_type']= $inv['inventory_type'];
-                    $row['item_weight']   = $inv['item_weight'];
-                }
-                $this->item[] = $row;
+        $dbData = [];
+        foreach ($this->items as $row) {
+            if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
+            if (empty($row['bal'])) { $row['bal'] = 0; }
+            if (empty($row['qty'])) { $row['qty'] = 0; }
+            if (is_null($row['sku'])) { $row['sku'] = ''; } // bug fix for easyui combogrid, doesn't like null value
+            $row['description'] = str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
+            if (!isset($row['price'])) { $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
+            if ($row['item_ref_id']) {
+                $filled    = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['item_ref_id']} AND gl_type='itm'", false);
+                $row['bal']= $row['bal'] - $filled + $row['qty']; // so/po - filled prior + this order
             }
+            if ($row['sku']) { // now fetch some inventory details for the datagrid
+                $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['inventory_type', 'qty_stock', 'item_weight'], "sku='{$row['sku']}'");
+                $inv_adj = in_array($this->journalID, [3,4,6,13,21]) ? -$row['qty'] : $row['qty'];
+                $row['qty_stock']     = $inv['qty_stock'] + $inv_adj;
+                $row['inventory_type']= $inv['inventory_type'];
+                $row['item_weight']   = $inv['item_weight'];
+            }
+            $dbData[] = $row;
         }
-        if ($debitCredit=='credit') { $map['credit_amount']= ['type'=>'field','index'=>'total']; }
-        if ($debitCredit=='debit')  { $map['debit_amount'] = ['type'=>'field','index'=>'total']; }
+        $map['credit_amount']= ['type'=>'field','index'=>'total'];
+        $map['debit_amount'] = ['type'=>'trash'];
         // add some extra fields needed for validation
         $structure['inventory_type'] = ['attr'=>['type'=>'hidden']];
-        $this->dgDataItem = formatDatagrid($this->item, 'datagridData', $structure, $map);
+        $this->dgDataItem = formatDatagrid($dbData, 'datagridData', $structure, $map);
     }
 
     /**
      * Customizes the layout for this particular journal
      * @param array $data - Current working structure
      */
-    public function customizeView(&$data)
+    public function customizeView(&$data, $rID=0)
     {
         $fldKeys = ['id','journal_id','so_po_ref_id','terms','override_user','override_pass','recur_id','recur_frequency','item_array','xChild','xAction','store_id',
             'purch_order_id','invoice_num','waiting','closed','terms_text','terms_edit','post_date','terminal_date','rep_id','currency','currency_rate'];
@@ -209,8 +195,8 @@ class j10 extends jCommon
     private function postInventory()
     {
         msgDebug("\n  Posting Inventory ...");
-        foreach ($this->item as $row) {
-            if (!isset($row['sku']) || !$row['sku']) { continue; } // skip all rows without a SKU
+        foreach ($this->items as $row) {
+            if (empty($row['sku']) || $row['gl_type'] <> 'itm') { continue; } // skip all rows without a SKU
             if (!$this->setInvStatus($row['sku'], 'qty_so', $row['qty'], 0, $row['description'])) { return false; }
         }
         msgDebug("\n  end Posting Inventory.");
@@ -224,8 +210,8 @@ class j10 extends jCommon
     private function unPostInventory()
     {
         msgDebug("\n  unPosting Inventory ...");
-        foreach ($this->item as $row) {
-            if (!isset($row['sku']) || !$row['sku']) { continue; }
+        foreach ($this->items as $row) {
+            if (empty($row['sku']) || $row['gl_type'] <> 'itm') { continue; } // skip all rows without a SKU
             if (!$this->setInvStatus($row['sku'], 'qty_so', -$row['qty'])) { return; }
         }
         msgDebug("\n  end unPosting Inventory.");
@@ -233,24 +219,28 @@ class j10 extends jCommon
     }
 
     /**
-     * Tests for CLOSED checkbox to adjust qty on SO and avoid re-posting. If so all other post values are ignored.
+     * Tests for CLOSED checkbox manually checked/unchecked to adjust qty on SO and avoid re-posting. If so all other post values are ignored.
      * @param type $data - Journal POST data (and uPost data to test against
      */
     public function quickPost($data)
     {
-        // check uMain vs main for closed box checked.
-        if (!empty($data['main']['closed']) && empty($data['uMain']['closed'])) {
-            $item_array = $this->getStkBalance($data['main']['id']); // user wants to force close the journal entry
-            foreach ($item_array as $row) {
-                $bal = $row['ordered'] - $row['processed'];
-                if ($bal <= 0) { continue; }
-                $type = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'inventory_type', "sku='{$row['sku']}'");
-                if (strpos(COG_ITEM_TYPES, $type) === false) { continue; }
-                dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."inventory SET qty_so=qty_so-$bal WHERE sku='{$row['sku']}'");
-            }
-            dbWrite(BIZUNO_DB_PREFIX.'journal_main', ['closed'=>'1','closed_date'=>date('Y-m-d')], 'update', "id='{$data['main']['id']}'");
-            return true;
+        $force = false;
+        if (!empty($data['main']['closed']) &&  empty($data['uMain']['closed'])) { $force = 'close'; }
+        if ( empty($data['main']['closed']) && !empty($data['uMain']['closed'])) { $force = 'open'; }
+        if (!$force) { return; }
+        $item_array = $this->getStkBalance($data['main']['id']); // user wants to force close/open the journal entry
+        foreach ($item_array as $row) {
+            $bal = $row['ordered'] - $row['processed'];
+            if ($bal <= 0) { continue; }
+            $type = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'inventory_type', "sku='{$row['sku']}'");
+            if (strpos(COG_ITEM_TYPES, $type) === false) { continue; }
+            $amt = $force=='open' ? $bal : -$bal;
+            dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."inventory SET qty_so = qty_so + $amt WHERE sku='{$row['sku']}'");
         }
+        $pClose= $force=='open' ? '0' : '1';
+        $pDate = $force=='open' ? 'NULL' : date('Y-m-d');
+        dbWrite(BIZUNO_DB_PREFIX.'journal_main', ['closed'=>$pClose,'closed_date'=>$pDate], 'update', "id='{$data['main']['id']}'");
+        return true;
     }
 
     /**
@@ -267,8 +257,8 @@ class j10 extends jCommon
         msgDebug("\n  Checking for closed entry.");
         // determine if all items quantities have been entered as zero
         $item_rows_all_zero = true;
-        for ($i = 0; $i < count($this->item); $i++) {
-            if ($this->item[$i]['qty'] && $this->item[$i]['gl_type'] == 'itm') { $item_rows_all_zero = false; } // at least one qty is non-zero
+        foreach ($this->items as $row) {
+            if (!empty($row['qty']) && $row['gl_type'] == 'itm') { $item_rows_all_zero = false; } // at least one qty is non-zero
         }
         if ($item_rows_all_zero) { $this->setCloseStatus($this->main['id'], true); }
         return true;

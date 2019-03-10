@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-21
+ * @version    3.x Last Update: 2019-03-05
  * @filesource /view/main.php
  */
 
@@ -127,12 +127,14 @@ final class view extends portalView
     {
         global $html5;
         if (!isset($data['divs'])) { return; }
+        msgDebug("\nEntering renderDivs");
         $html5->buildDivs($this->output, $data);
     }
 
     private function renderJS($data, $addMsg=true)
     {
         global $html5;
+        msgDebug("\nEntering renderJS");
         if (!isset($data['jsHead']))   { $data['jsHead']  = []; }
         if (!isset($data['jsBody']))   { $data['jsBody']  = []; }
         if (!isset($data['jsReady']))  { $data['jsReady'] = []; }
@@ -197,8 +199,14 @@ function viewFormat($value, $format = '')
             return $result ? $result : $value;
         case 'inv_image': $result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'image_with_path', "id='$value'"); // when user is logged in, internal access only
             return $result ? BIZUNO_DATA."images/$result" : '';
-        case 'inv_mvmnt':
-            return viewInvSales($value); // value passed should be the SKU
+        case 'inv_mv0':   $range = 'm0';
+        case 'inv_mv1':   if (empty($range)) { $range = 'm1'; }
+        case 'inv_mv3':   if (empty($range)) { $range = 'm3'; }
+        case 'inv_mv6':   if (empty($range)) { $range = 'm6'; }
+        case 'inv_mv12':  if (empty($range)) { $range = 'm12';}
+        case 'inv_mvmnt': if (empty($range)) { $range = 'm12';} // @todo REMOVED AFTER 3/31/2019, deprecated case, replaced with inv_mv12
+                          return viewInvSales($value, $range); // value passed should be the SKU
+        case 'inv_stk':   return viewInvMinStk($value); // value passed should be the SKU
         case 'lc':        return mb_strtolower($value);
         case 'j_desc':    return isset($bizunoLang["journal_main_journal_id_$value"]) ? $bizunoLang["journal_main_journal_id_$value"] : $value;
         case 'json':      return json_decode($value, true);
@@ -207,8 +215,8 @@ function viewFormat($value, $format = '')
         case 'null0':     return (round((real)$value, 4) == 0) ? '' : $value;
         case 'number':    return number_format((float)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'), getModuleCache('bizuno', 'settings', 'locale', 'number_decimal'), getModuleCache('bizuno', 'settings', 'locale', 'number_thousand'));
         case 'printed':   return $value ? '' : lang('duplicate');
-        case 'precise':   $output = number_format((real)$value, getModuleCache('bizuno', 'settings', 'locale', 'precision'));
-            $zero = number_format(0, getModuleCache('bizuno', 'settings', 'locale', 'precision')); // to handle -0.00
+        case 'precise':   $output = number_format((real)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'));
+            $zero = number_format(0, getModuleCache('bizuno', 'settings', 'locale', 'number_precision')); // to handle -0.00
             return ($output == '-'.$zero) ? $zero : $output;
         case 'rep_id':      $result = dbGetValue(BIZUNO_DB_PREFIX."users", 'title', "admin_id='$value'");
             return $result ? $result : $value;
@@ -251,13 +259,6 @@ function viewFormat($value, $format = '')
         $result = glob(BIZUNO_DATA.$path);
         if ($result===false) { return '0'; }
         return sizeof($result) > 0 ? '1' : '0';
-    } elseif (substr($format, 0, 5) == 'setng') {
-        $tmp = explode(':', $format, 3); // $format = setng:key:viewFormat
-        $settings = json_decode($value, true);
-        if (isset($settings[$tmp[1]]) && !is_array($settings[$tmp[1]])) {
-            return !empty($tmp[2]) ? viewFormat($settings[$tmp[1]], $tmp[2]) : $settings[$tmp[1]];
-        }
-        return '-';
     } elseif (substr($format, 0, 5) == 'cache') {
         $tmp = explode(':', $format); // $format = cache:module:index
         if (sizeof($tmp) <> 3 || empty($value)) { return ''; } // wrong element count, return empty string
@@ -320,27 +321,47 @@ function viewDiv(&$output, $prop)
  * Pulls the average sales over the past 12 months of the specified SKU, with cache for multiple hits
  * @param type integer - number of sales, zero if not found or none
  */
-function viewInvSales($sku='')
+function viewInvSales($sku='',$range='m12')
 {
     if (empty($GLOBALS['invSkuSales'])) {
-        $dates     = localeGetDates();
-        $cur_month =  $dates['ThisYear']   .'-'.substr('0'.$dates['ThisMonth'], -2).'-01';
-        $last_year = ($dates['ThisYear']-1).'-'.substr('0'.$dates['ThisMonth'], -2).'-01';
-        $sql = "SELECT m.journal_id, i.sku, i.qty FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
-            WHERE m.post_date >= '$last_year' AND m.post_date < '$cur_month' AND m.journal_id IN (12,13) AND i.sku<>'' ORDER BY i.sku";
-        $stmt  = dbGetResult($sql);
-        $result= $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        $dates  = localeGetDates();
+        $month0 = $dates['ThisYear'].'-'.substr('0'.$dates['ThisMonth'], -2).'-01';
+        $monthE = localeCalculateDate($month0, 0,  1,  0);
+        $month1 = localeCalculateDate($month0, 0, -1,  0);
+        $month3 = localeCalculateDate($month0, 0, -3,  0);
+        $month6 = localeCalculateDate($month0, 0, -6,  0);
+        $month12= localeCalculateDate($month0, 0,  0, -1);
+        $sql    = "SELECT m.post_date, m.journal_id, i.sku, i.qty FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
+            WHERE m.post_date >= '$month12' AND m.post_date < '$monthE' AND m.journal_id IN (12,13,14,16) AND i.sku<>'' ORDER BY i.sku";
+        $stmt   = dbGetResult($sql);
+        $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         msgDebug("\nReturned annual sales by SKU rows = ".sizeof($result));
         foreach ($result as $row) {
-            if ($row['journal_id'] == 13) { $row['qty'] = -$row['qty']; }
-            if (!isset($GLOBALS['invSkuSales'][$row['sku']])) {
-                $GLOBALS['invSkuSales'][$row['sku']] = $row['qty'];
-            } else {
-                $GLOBALS['invSkuSales'][$row['sku']] += $row['qty'];
+            if (empty($GLOBALS['invSkuSales'][$row['sku']])) { $GLOBALS['invSkuSales'][$row['sku']] = ['m0'=>0,'m1'=>0,'m3'=>0,'m6'=>0,'m12'=>0]; }
+            if (in_array($row['journal_id'], [13,14])) { $row['qty'] = -$row['qty']; }
+            if ($row['post_date'] >= $month0) { $GLOBALS['invSkuSales'][$row['sku']]['m0'] += $row['qty']; }
+            else { // prior month(s)
+                if ($row['post_date'] >= $month1) { $GLOBALS['invSkuSales'][$row['sku']]['m1'] += $row['qty'];    }
+                if ($row['post_date'] >= $month3) { $GLOBALS['invSkuSales'][$row['sku']]['m3'] += $row['qty']/3;  }
+                if ($row['post_date'] >= $month6) { $GLOBALS['invSkuSales'][$row['sku']]['m6'] += $row['qty']/6;  }
+                $GLOBALS['invSkuSales'][$row['sku']]['m12']+= $row['qty']/12;
             }
         }
     }
-    return !empty($GLOBALS['invSkuSales'][$sku]) ? $GLOBALS['invSkuSales'][$sku] : 0;
+    return !empty($GLOBALS['invSkuSales'][$sku][$range]) ? number_format($GLOBALS['invSkuSales'][$sku][$range], 1) : 0;
+}
+
+/**
+ * Calculates the min stock level and compares to current level, returns new min stock if in band else null
+ * @param string $sku - db sku field
+ */
+function viewInvMinStk($sku)
+{
+    $tolerance= 0.10; // 10% tolerance band
+    $yrSales  = viewInvSales($sku);
+    $curMinStk= dbGetValue(BIZUNO_DB_PREFIX."inventory", ['qty_min','lead_time'], "sku='$sku'");
+    $newMinStk= ($yrSales/12) * (($curMinStk['lead_time']/30) + 1); // 30 days of stock
+    return abs($newMinStk - $curMinStk['qty_min']) > abs($curMinStk['qty_min'] * $tolerance) ? number_format($newMinStk,0) : '';
 }
 
 /**
@@ -388,7 +409,7 @@ function viewScreenSize()
     return $size;
 }
 /**
- * Takes a text string and truncates it to a given length, if the string is longer will append ... to the turncated string
+ * Takes a text string and truncates it to a given length, if the string is longer will append ... to the truncated string
  * @param string $text - Text to test/truncate
  * @param type $length - (Default: 25) Maximum length of string
  * @return string - truncated string (with ...) of over length $length
@@ -405,13 +426,13 @@ function viewLanguages($skipDefault=false)
 {
     $output = [];
     if (!$skipDefault) { $output[] = ['id'=>'','text'=>lang('default')]; }
-    $output[]= ['id'=>'en_US','text'=>'English (U.S.)']; // put English first
+    $output[]= ['id'=>'en_US','text'=>'English (U.S.) [en_US]']; // put English first
     $langCore= [];
-    $langs   = scandir(BIZUNO_LIB."locale/");
+    $langs   = scandir(BIZUNO_ROOT."locale/");
     foreach ($langs as $lang) {
-        if (!in_array($lang, ['.', '..', 'en_US']) && is_dir(BIZUNO_LIB."locale/$lang")) {
-            require(BIZUNO_LIB."locale/$lang/language.php");
-            $output[] = ['id'=>$lang, 'text'=>isset($langCore['language_title']) ? $langCore['language_title'] : $lang];
+        if (!in_array($lang, ['.', '..', 'en_US']) && is_dir(BIZUNO_ROOT."locale/$lang")) {
+            require(BIZUNO_ROOT."locale/$lang/language.php");
+            $output[] = ['id'=>$lang, 'text'=>isset($langCore['language_title']) ? $langCore['language_title']." [$lang]" : $lang];
         }
     }
     return $output;
@@ -1013,18 +1034,22 @@ function formatDatagrid($dbData, $name, $structure=[], $override=[])
     $rows = [];
     if (is_array($dbData)) {
         foreach ($dbData as $row) {
-            $temp = array();
+            $temp = [];
             foreach ($row as $field => $value) {
                 if (isset($override[$field])) {
+                    msgDebug("\nExecuting override = {$override[$field]['type']}");
                     switch ($override[$field]['type']) {
+                        case 'trash': $field = false; break;
                         case 'field': $field = $override[$field]['index']; break;
                         default:
                     }
                 }
-//              if (is_array($value) || is_object($value))     { continue; } // skip if the element is an array or object
-                if (is_array($value) || is_object($value))     { $value = json_encode($value); } // skip if the element is an array or object
-                if (isset($structure[$field]['attr']['type'])) { $value = viewFormat($value, $structure[$field]['attr']['type']); }
-                $temp[$field] = $value;
+                if (is_array($value) || is_object($value))     { $value = json_encode($value); }
+                if (isset($structure[$field]['attr']['type'])) {
+                    if ($structure[$field]['attr']['type'] == 'currency') { $structure[$field]['attr']['type'] = 'float'; }
+                    $value = viewFormat($value, $structure[$field]['attr']['type']);
+                }
+                if (!empty($field)) { $temp[$field] = $value; }
             }
             $rows[] = $temp;
         }

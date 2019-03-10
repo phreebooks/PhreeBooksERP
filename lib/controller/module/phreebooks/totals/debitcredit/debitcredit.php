@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /lib/controller/module/phreebooks/totals/debitcredit/debitcredit.php
  */
 
@@ -58,17 +58,15 @@ class debitCredit
     var creditAmount= 0;
     var rows = jq('#dgJournalItem').datagrid('getRows');
     for (var rowIndex=0; rowIndex<rows.length; rowIndex++) {
-        var debit  = jq('#dgJournalItem').edatagrid('getEditor',{index:rowIndex,field:'debit_amount'});
-        var amount = cleanCurrency(debit  ? debit.target.val()  : rows[rowIndex].debit_amount);
-        if (isNaN(amount)) amount = 0;
-        debitAmount  += amount;
-        var credit = jq('#dgJournalItem').edatagrid('getEditor',{index:rowIndex,field:'credit_amount'});
-        var amount = cleanCurrency(credit ? credit.target.val() : rows[rowIndex].credit_amount);
-        if (isNaN(amount)) amount = 0;
-        creditAmount += amount;
+        debit = roundCurrency(parseFloat(rows[rowIndex].debit_amount));
+        if (isNaN(debit)) debit = 0;
+        debitAmount  += debit;
+        credit= roundCurrency(parseFloat(rows[rowIndex].credit_amount));
+        if (isNaN(credit)) credit = 0;
+        creditAmount += credit;
     }
-    bizTextSet('totals_debit', debitAmount, 'currency');
-    bizTextSet('totals_credit', creditAmount, 'currency');
+    bizNumSet('totals_debit', debitAmount);
+    bizNumSet('totals_credit',creditAmount);
     return debitAmount - creditAmount;
 }";
     }

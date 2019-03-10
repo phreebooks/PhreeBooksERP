@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-15
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /controller/module/phreebooks/totals/tax_item/tax_item.php
  */
 
@@ -54,8 +54,9 @@ class tax_item
             'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
     }
 
-    public function glEntry($request, &$main, &$item, &$begBal=0)
+    public function glEntry(&$main, &$item, &$begBal=0)
     {
+        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
         // @todo the below should use the function $tax_rates = loadTaxes($this->cType);
         // this should also be broken into common sub functions as they are shared with tax_order and shipping
         $tax_rates= dbGetMulti(BIZUNO_DB_PREFIX."tax_rates", "type='$this->cType'");
@@ -95,7 +96,7 @@ class tax_item
         $begBal += roundAmount($totalTax);
         msgDebug("\nTaxItem is returning balance = $begBal");
     }
-    
+
     public function render(&$output, $data=[])
     {
         $hide = $this->hidden ? ';display:none' : '';
@@ -108,13 +109,13 @@ class tax_item
         $output['body'] .= "</div>";
         $output['jsHead'][] = $this->jsTotal($data);
     }
-    
+
     public function jsTotal($data=[])
     {
         $jID = $data['fields']['journal_id']['attr']['value'];
         $type= in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
         $row = "<tr><td>".html5('totals_tax_item_text[]',$this->fields['totals_tax_item_text'])."</td>";
-//        $row.= "<td>"    .html5('totals_tax_item_gl[]',  $this->fields['totals_tax_item_gl'])  ."</td>";
+//      $row.= "<td>"    .html5('totals_tax_item_gl[]',  $this->fields['totals_tax_item_gl'])  ."</td>";
         $row.= "<td>"    .html5('totals_tax_item_amt[]', $this->fields['totals_tax_item_amt']) ."</td></tr>";
         $temp= str_replace("\n", "", $row);
         return "var taxItemTD = '".str_replace("'", "\'", $temp)."';
@@ -157,7 +158,7 @@ function totals_tax_item(begBalance) {
     var newBalance = begBalance + newTaxItem;
     if (typeof taxRunning !== 'undefined') { taxRunning += newTaxItem; }
     else { taxRunning = newTaxItem; }
-    bizTextSet('totals_tax_item', newTaxItem, 'currency');
+    bizNumSet('totals_tax_item', newTaxItem);
     return newBalance;
 }";
     }

@@ -660,19 +660,31 @@ function object_to_xml($params, $multiple=false, $multiple_key='', $level=0, $br
 }
 
 /**
- * Parses an XML string to a standard class object or array using the simplexml library
+ * Parses an XML string to a standard class object or array
  * @param string $strXML
  * @param boolean $type - [default false] false returns object, true returns array
  * @return parsed XML string, either object or array
  */
 function parseXMLstring($strXML, $assoc=false)
 {
-    $result = simplexml_load_string(trim($strXML), 'SimpleXMLElement', LIBXML_NOCDATA);
+    $result = bizuno_simpleXML($strXML);
     if ($assoc) { // associative array
         return json_decode(str_replace(':{}',':null',json_encode($result)), true);
     } else { // object
         return json_decode(str_replace(':{}',':null',json_encode($result)));
     }
+}
+
+/**
+ * Wrapper for simpleXML library as some PHP installs do not include it.
+ * @param string $strXML - XML string to parse
+ * @return type
+ */
+function bizuno_simpleXML($strXML) {
+    if (!function_exists('simplexml_load_string')) {
+        return msgAdd('The PHP simpleXML library is missing! Bizuno requires this library to function properly.');
+    }
+    return simplexml_load_string(trim($strXML), 'SimpleXMLElement', LIBXML_NOCDATA);
 }
 
 /**

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-07
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /lib/controller/module/phreebooks/journals/j18.php
  */
 
@@ -34,21 +34,12 @@ class j18 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->item = $item;
+        $this->items = $item;
     }
 
 /*******************************************************************************************************************/
 // START Edit Methods
 /*******************************************************************************************************************/
-    /**
-     * Pulls the data for the specified journal and populates the structure
-     * @param array $data - current working structure
-     */
-    public function getDataMain(&$structure)
-    {
-        dbStructureFill($structure, $this->main);
-    }
-    
     /**
      * Tailors the structure for the specific journal
      */
@@ -64,6 +55,7 @@ class j18 extends jCommon
     {
         $fldKeys = ['id','journal_id','so_po_ref_id','terms','override_user','override_pass','recur_id','recur_frequency','item_array','xChild','xAction','store_id',
             'purch_order_id','invoice_num','waiting','closed','terms_text','post_date','rep_id','currency','currency_rate'];
+        $data['fields']['currency']['callback'] = 'totalsCurrency';
         unset($data['divs']['divAttach']);
         $data['payments'] = getModuleCache('payment', 'methods');
         if (!empty($data['bulk']) || !empty($data['fields']['contact_id_b']['attr']['value'])) {
@@ -72,7 +64,7 @@ class j18 extends jCommon
             $dgStructure= $this->action=='bulk' ? $this->dgBankingBulk('dgJournalItem') : $this->dgBanking('dgJournalItem');
             // pull out just the pmt rows to build datagrid
             $dgData = [];
-            foreach ($this->items as $row) { if ($row['gl_type'] == 'pmt') { 
+            foreach ($this->items as $row) { if ($row['gl_type'] == 'pmt') {
                 $dgData[] = $row;
                 if (empty($this->payment) && !empty($row['payment'])) { $this->payment = $row['payment']; }
             } }
@@ -106,7 +98,7 @@ class j18 extends jCommon
                 'payments'=> ['order'=>60,'type'=>'payment','label'=>lang('bill_to'),'classes'=>['blockView'],'settings'=>['items'=>$this->items]]]];
             $data['divs']['dgItems']    = ['order'=>60,'type'=>'datagrid','key'=>'item'];
             $data['jsHead']['preSubmit']= "function preSubmit() {
-    var items = new Array();    
+    var items = new Array();
     var dgData = jq('#dgJournalItem').datagrid('getData');
     for (var i=0; i<dgData.rows.length; i++) if (dgData.rows[i]['checked']) items.push(dgData.rows[i]);
     var serializedItems = JSON.stringify(items);
@@ -116,11 +108,11 @@ class j18 extends jCommon
 }";
             unset($data['jsReady']['focus']);
         } else {
-            unset($data['divs']['tbJrnl']);
+            unset($data['divs']['tbJrnl'], $data['fields']['notes']);
             $data['divs']['divDetail']  = ['order'=>50,'type'=>'html','html'=>"<p>".sprintf(lang('search_open_journal'),lang('contacts_type_c'))."</p>".html5('contactSel', ['attr'=>['value'=>'']])];
             $data['jsBody']['selVendor']= "jq('#contactSel').combogrid({width:200,panelWidth:500,delay:500,iconCls:'icon-search',hasDownArrow:false,
     idField:'contact_id_b',textField:'primary_name_b',mode:'remote',
-    url:       '".BIZUNO_AJAX."&p=phreebooks/main/managerRowsBank&jID=".JOURNAL_ID."', 
+    url:       '".BIZUNO_AJAX."&p=phreebooks/main/managerRowsBank&jID=".JOURNAL_ID."',
     onBeforeLoad:function (param) { var newValue = jq('#contactSel').combogrid('getValue'); if (newValue.length < 2) return false; },
     onClickRow:function (idx, row) { journalEdit(".JOURNAL_ID.", 0, row.contact_id_b); },
     columns:[[
@@ -158,7 +150,7 @@ class j18 extends jCommon
         if (!$this->unPostInventory())         { return; }
         if (!$this->unPostMain())              { return; }
         if (!$this->unPostItem())              { return; }
-        if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
+        if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
         return true;
     }
@@ -232,17 +224,17 @@ class j18 extends jCommon
         msgDebug("\n  Checking for closed entry. action = $action");
         if ($action == 'post') {
             $temp = [];
-            for ($i = 0; $i < count($this->item); $i++) { // fetch the list of paid invoices
-                if (!empty($this->item[$i]['item_ref_id'])) {
-                    $temp[$this->item[$i]['item_ref_id']] = true;
+            for ($i = 0; $i < count($this->items); $i++) { // fetch the list of paid invoices
+                if (!empty($this->items[$i]['item_ref_id'])) {
+                    $temp[$this->items[$i]['item_ref_id']] = true;
                 } else {
-                    $this->item[$i]['item_ref_id'] = 0;
+                    $this->items[$i]['item_ref_id'] = 0;
                 }
             }
             $invoices = array_keys($temp);
             for ($i = 0; $i < count($invoices); $i++) {
-//              $stmt1 = dbGetResult("SELECT m.id, m.journal_id, SUM(i.debit_amount - i.credit_amount) AS total_amount 
-//                  FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id 
+//              $stmt1 = dbGetResult("SELECT m.id, m.journal_id, SUM(i.debit_amount - i.credit_amount) AS total_amount
+//                  FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
 //                  WHERE m.id={$invoices[$i]} AND i.gl_type<>'ttl'");
 //              $result1 = $stmt1->fetch(\PDO::FETCH_ASSOC);
                 $result1 = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', ['journal_id','total_amount'], "id={$invoices[$i]}");
@@ -250,21 +242,21 @@ class j18 extends jCommon
                 if ($result1['journal_id']==2) { glFindAPacct($result1); } // special case for payables entered through general journal
                 $total_billed = roundAmount($result1['total_amount'], $this->rounding);
                 $stmt2 = dbGetResult("SELECT m.journal_id, i.credit_amount, i.debit_amount
-                    FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id 
+                    FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
                     WHERE i.item_ref_id={$invoices[$i]} AND i.gl_type='pmt'");
                 $result2 = $stmt2->fetchAll(\PDO::FETCH_ASSOC);
                 $paid_total = 0;
                 foreach ((array)$result2 as $row) {
                     $total = $row['debit_amount'] + $row['credit_amount'];
-                    $paid_total += in_array($row['journal_id'], [22]) ? -$total : $total; 
+                    $paid_total += in_array($row['journal_id'], [22]) ? -$total : $total;
                 }
                 $total_paid = roundAmount($paid_total, $this->rounding);
                 msgDebug("\n    rounding = $this->rounding, raw billed = {$result1['total_amount']} which rounded to $total_billed and total_paid = $total_paid");
                 $this->setCloseStatus($invoices[$i], $total_billed == $total_paid ? true : false); // either close or re-open
             }
         } else { // unpost - re-open the purchase/invoices affected
-            for ($i = 0; $i < count($this->item); $i++) {
-                if ($this->item[$i]['item_ref_id']) { $this->setCloseStatus($this->item[$i]['item_ref_id'], false); }
+            for ($i = 0; $i < count($this->items); $i++) {
+                if ($this->items[$i]['item_ref_id']) { $this->setCloseStatus($this->items[$i]['item_ref_id'], false); }
             }
         }
         return true;

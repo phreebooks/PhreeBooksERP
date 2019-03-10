@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2019-02-01
  * @filesource /portal/upgrade.php
  */
 
@@ -21,7 +21,7 @@ ini_set("max_execution_time", 1000000000);
 
 /**
  * Handles the db upgrade for all versions of Bizuno to the current release level
- * @param string $dbVersion - current Bizuno db version 
+ * @param string $dbVersion - current Bizuno db version
  */
 function bizunoUpgrade($dbVersion='1.0')
 {
@@ -120,7 +120,7 @@ function bizunoUpgrade($dbVersion='1.0')
             dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."journal_main ADD `notes` VARCHAR(255) DEFAULT NULL COMMENT 'tag:Notes;order:90' AFTER terms");
             dbTransactionCommit();
         } // EOF - if (!dbFieldExists(BIZUNO_DB_PREFIX.'journal_main', 'notes'))
-        // add new field 
+        // add new field
         if (dbTableExists(BIZUNO_DB_PREFIX.'extShipping')) {
             if (!dbFieldExists(BIZUNO_DB_PREFIX.'extShipping', 'billed')) {
                 dbTransactionStart();
@@ -129,6 +129,17 @@ function bizunoUpgrade($dbVersion='1.0')
             }
         }
     }
+
+    if (version_compare($dbVersion, '3.1.3') < 0) {
+        // add new vendor form folder to phreeform
+        $id = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='vend:j6' AND mime_type='dir'");
+        if (!$id) {
+            $parent = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='vend' AND mime_type='dir'");
+            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_6','group_id'=>'vend:j6','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
+        }
+        clearModuleCache('bizuno', 'properties', 'encKey'); // Fixes possible bug in storage of encryption key
+    }
+
     // At every upgrade, run the comments repair tool to fix changes to the view structure
     bizAutoLoad(BIZUNO_LIB."controller/module/bizuno/tools.php", 'bizunoTools');
     $ctl = new bizunoTools();

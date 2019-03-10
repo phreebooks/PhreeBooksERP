@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2019-03-09
  * @filesource /view/easyUI/html5.php
  */
 
@@ -67,6 +67,7 @@ final class html5 {
             $output['body'] .= $this->render(!empty($prop['attr']['id'])?$prop['attr']['id']:'', $prop);
             $closeDiv = true;
         }
+        msgDebug("\nEntering buildDiv of type {$prop['type']}");
         switch ($prop['type']) {
             case 'accordion':
                 if (isset($prop['key'])) {
@@ -384,15 +385,9 @@ final class html5 {
      */
     function table(&$output, $id = '', $prop = []) {
         $output['body'] .= $this->render($id, $prop) . "\n";
-        if (!empty($prop['thead'])) {
-            $this->tableRows($output, $prop['thead']) . "</thead>\n";
-        }
-        if (!empty($prop['tbody'])) {
-            $this->tableRows($output, $prop['tbody']) . "</tbody>\n";
-        }
-        if (!empty($prop['tfoot'])) {
-            $this->tableRows($output, $prop['tfoot']) . "</tfoot>\n";
-        }
+        if (!empty($prop['thead'])) { $this->tableRows($output, $prop['thead']) . "</thead>\n"; }
+        if (!empty($prop['tbody'])) { $this->tableRows($output, $prop['tbody']) . "</tbody>\n"; }
+        if (!empty($prop['tfoot'])) { $this->tableRows($output, $prop['tfoot']) . "</tfoot>\n"; }
         $output['body'] .= "</table><!-- End table $id -->\n";
     }
 
@@ -812,8 +807,6 @@ final class html5 {
         $defaults = ['type'=>'c','format'=>'short','suffix' =>'','search'=>false,'props'=>true,'clear'=>true,'copy'=>false,'cols'=>true,
             'update'=>false,'validate'=>false,'required'=>false,'store'=>true,'drop' =>false,'fill'=>'none','notes'=>false];
         $attr     = array_replace($defaults, $props['settings']);
-        msgDebug("\nsettings coming in   = ".print_r($props['settings'], true));
-        msgDebug("\nsettings after merge = ".print_r($attr, true));
         $structure= $props['content'];
         $structure['country']['attr']['type'] = 'country'; // triggers the combogrid
         if ($attr['format'] != 'long') { unset($structure['country']['label']); }
@@ -842,19 +835,19 @@ final class html5 {
         if ($attr['drop']) {
             $drop_attr = ['type'=>'checkbox'];
             if (isset($structure['drop_ship']['attr']['checked'])) { $drop_attr['checked'] = 'checked'; }
-            $options[] = "<br />".html5('drop_ship'.$attr['suffix'], ['label'=>lang('drop_ship'), 'attr'=>$drop_attr,
+            $options[] = html5('drop_ship'.$attr['suffix'], ['label'=>lang('drop_ship'), 'attr'=>$drop_attr,
                 'events' => ['onChange'=>"jq('#contactDiv{$attr['suffix']}').toggle();"]]);
         }
-        if (sizeof($toolbar)) { $output['body'] .= implode("<br />", $options)."<br />"; }
+        if (sizeof($options)) { $output['body'] .= implode("<br />", $options)."<br />"; }
 
         $output['body'] .= '<div>';
         if ($attr['search']) {
-            $structure['contactSel'] = ['defaults'=>['type'=>$attr['type'],'callback'=>"contactsDetail(row.id, '{$attr['suffix']}', '{$attr['fill']}');"],'attr'=>['type'=>'contact']];
+            $structure['contactSel'] = ['defaults'=>['type'=>$attr['type'],'drop'=>$attr['drop'],'callback'=>"contactsDetail(row.id, '{$attr['suffix']}', '{$attr['fill']}');"],'attr'=>['type'=>'contact']];
             $output['body'] .= '<div id="contactDiv'.$attr['suffix'].'"'.($attr['drop']?' style="display:none"':'').'>';
             $output['body'] .= html5('contactSel'.$attr['suffix'], $structure['contactSel']).'</div>';
             // Address select (hidden by default)
             $output['body'] .= '<div id="addressDiv'.$attr['suffix'].'" style="display:none">'.html5('addressSel'.$attr['suffix'], ['attr'=>['type'=>'text']])."</div>";
-            $output['jsBody']['addrCombo'.$attr['suffix']] = "var addressVals{$attr['suffix']} = ".(isset($data['address'][$attr['suffix']]) ? $data['address'][$attr['suffix']] : "[]").";
+            $output['jsBody']['addrCombo'.$attr['suffix']] = "var addressVals{$attr['suffix']} = [];
 jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField:'id', textField:'primary_name', data:addressVals{$attr['suffix']},
     onSelect: function (id, data){ addressFill(data, '{$attr['suffix']}'); },
     columns:  [[
@@ -866,7 +859,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
         {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]] });";
             // show the address drop down if values are present
-            if (isset($data['address'][$attr['suffix']])) { $output['jsReady'][] = "jq('#addressDiv{$attr['suffix']}').show();"; }
+//          if (isset($data['address'][$attr['suffix']])) { $output['jsReady'][] = "jq('#addressDiv{$attr['suffix']}').show();"; }
         } else {
             $output['body'] .= html5('contactSel'.$attr['suffix'], ['attr'=>['type'=>'hidden']]);
         }
@@ -876,7 +869,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         } }
         $output['body'] .= "</div>\n";
 
-        if (isset($structure['email'])) { $structure['email'] = array_merge_recursive($structure['email'], ['options'=>['multiline'=>true,'width'=>275,'height'=>60]]); }
+        if (isset($structure['email'])) { $structure['email'] = array_merge_recursive($structure['email'], ['options'=>['multiline'=>true,'width'=>250,'height'=>60]]); }
         $data = [];
         // Address block
         $col1 = ['contact_id','address_id','primary_name','contact','address1','address2','city','state','postal_code','country'];
@@ -903,7 +896,9 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         $upload_mb= min((int)(ini_get('upload_max_filesize')), (int)(ini_get('post_max_size')), (int)(ini_get('memory_limit')));
         $path     = $prop['defaults']['path'].$prop['defaults']['prefix'];
         $io       = new \bizuno\io();
+        msgDebug("\nbefore read rows");
         $rows     = $io->fileReadGlob($path);
+        msgDebug("\nafter read rows: ".print_r($rows, true));
         $attr     = ['delPath'=>'bizuno/main/fileDelete','getPath'=>'bizuno/main/fileDownload','dgName'=>'dgAttachment'];
         $datagrid = ['id'=>$attr['dgName'],'title'=>lang('attachments').' '.sprintf(lang('max_upload'), $upload_mb),
             'attr'   => ['toolbar'=>"#{$attr['dgName']}Toolbar", 'pagination'=>false, 'idField'=>'title'],
@@ -1415,9 +1410,16 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 
     public function inputCurrency($id, $prop) {
-        $prop['classes'][] = 'easyui-textbox'; // needs to be textbox to allow currency characters
+        $cur = !empty($GLOBALS['bizunoCurrency']) ? $GLOBALS['bizunoCurrency'] : getUserCache('profile','currency',false,'USD');
+        $iso = getModuleCache('phreebooks', 'currency', 'iso', $cur);
+        if (empty($iso)) { $iso = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD')); }
+        $prop['classes'][] = 'easyui-numberbox';
+        $prop['options']['decimalSeparator']= "'{$iso['dec_pt']}'";
+        $prop['options']['groupSeparator']  = "'{$iso['sep']}'";
+        $prop['options']['precision']       = "'{$iso['dec_len']}'";
+        if (!empty($iso['prefix'])) { $prop['options']['prefix'] = "'{$iso['prefix']} '"; }
+        if (!empty($iso['suffix'])) { $prop['options']['suffix'] = "' {$iso['suffix']}'"; }
         $prop['styles']['text-align'] = 'right';
-        if (isset($prop['attr']['value'])) { $prop['attr']['value'] = viewFormat($prop['attr']['value'], 'currency'); }
         if (empty($prop['options']['width'])) { $prop['options']['width'] = 125; }
         unset($prop['attr']['type'], $prop['attr']['size']);
         $this->mapEvents($prop);
@@ -1463,12 +1465,23 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     for (i=0; i<bizDefaults.glAccounts.length; i++) {
         for (j=0; j<types.length; j++) { if (bizDefaults.glAccounts[i].type == type[j] && bizDefaults.glAccounts[i].inactive != '1') {$id}Data[] = bizDefaults.glAccounts[i]; }
     }";
+        } elseif (!empty($prop['heading'])) { // just heading accounts
+            $assets= [0, 2, 4, 6, 8, 12, 32, 34]; // gl_account types that are assets
+            $accts = []; // load gl Accounts
+            foreach (getModuleCache('phreebooks', 'chart', 'accounts') as $row) {
+                if (empty($row['heading'])) { continue; }
+                $row['asset'] = in_array($row['type'], $assets) ? 1 : 0;
+                $row['type'] = viewFormat($row['type'], 'glType');
+                $accts[] = $row; // need to remove keys
+            }
+            if (empty($accts)) { $accts = [['id'=>'','type'=>'','title'=>'No Primaries Defined']]; }
+            $js = "var {$id}Data = ".json_encode($accts).";";
         } else {
             $js = "var {$id}Data=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { if (value['inactive'] != '1') { {$id}Data.push(value); } });";
         }
         $this->jsHead[] = $js;
         $prop['classes'][]         = 'easyui-combogrid';
-        $prop['options']['width']  = "150,rows:100,panelWidth:490,idField:'id',textField:'title',selectOnNavigation:false";
+        $prop['options']['width']  = "250,rows:100,panelWidth:490,idField:'id',textField:'title',selectOnNavigation:false";
         $prop['options']['data']   = "{$id}Data";
 //        $prop['options']['onShowPanel'] = "function(){ alert('show panel'); }";
         if (!empty($prop['attr']['value'])) { $prop['options']['value'] = "'".$prop['attr']['value']."'"; }
@@ -1501,7 +1514,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
 
     public function inputNumber($id, $prop, $precision=false) {
         $prop['classes'][] = 'easyui-numberbox';
-        $prop['styles']['text-align'] ='right';
+        $prop['styles']['text-align'] = 'right';
         if ($precision !== false) { $prop['options']['precision'] = 0; }
         if (empty($prop['options']['width'])) { $prop['options']['width'] = 100; }
         $this->mapEvents($prop);
@@ -1545,7 +1558,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         // style it
         $prop['classes']['ui'] = "easyui-combobox";
         if (!empty($prop['attr']['value']) && !is_array($prop['attr']['value'])) {
-            $prop['options']['value'] = "'".$prop['attr']['value']."'";
+            $prop['options']['value'] = "'".str_replace("'", "\\'", $prop['attr']['value'])."'"; // handle single quote in value variable
         }
         if (empty($prop['options']['editable'])) { $prop['options']['editable'] = 'false'; }
         if (empty($prop['options']['width'])) { $prop['options']['width'] = 200; }
@@ -1632,17 +1645,14 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 
     public function selCurrency($id, $prop) {
-        msgDebug("currency = ".print_r(getModuleCache('phreebooks', 'currency'), true));
         if (empty($prop['attr']['value'])) { $prop['attr']['value'] = getUserCache('profile', 'currency', false, 'USD'); }
         if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
             $prop['attr']['type'] = 'select';
             $prop['values']       = viewDropdown(getModuleCache('phreebooks', 'currency', 'iso'), "code", "title");
             unset($prop['attr']['size']);
-            if (!empty($prop['callback'])) {
-                $this->jsReady[] = "jq('#$id').combobox({editable:false, onChange:function(newVal, oldVal){ {$prop['callback']}(newVal, oldVal); } });";
-            } else {
-                $this->jsReady[] = "jq('#$id').combobox({editable:false});";
-            }
+            $onChange = !empty($prop['callback']) ? " {$prop['callback']}(newVal, oldVal);" : '';
+//          $onChange = "setCurrency(newVal);" . (!empty($prop['callback']) ? " {$prop['callback']}(newVal, oldVal);" : '');
+            $this->jsReady[] = "jq('#$id').combobox({editable:false, onChange:function(newVal, oldVal){ $onChange } });";
         } else {
             $prop['attr']['type'] = 'hidden';
         }
@@ -1797,4 +1807,61 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
 //        $this->jsReady[] = "jq('#tip_$id').tooltip({ $opts,content:'".addslashes($tip)."'});";
         return $this->render('', $prop);
     }
+}
+
+/*     * *************************** Datagrid Editors ***************** */
+function dgEditCurrency($onChange='', $precision=false) {
+    $iso  = getUserCache('profile', 'currency', false, 'USD');
+    $props= getModuleCache('phreebooks', 'currency', 'iso', $iso, 'USD');
+    $prec = $precision ? getModuleCache('bizuno','settings','locale','number_precision','2') : $props['dec_len'];;
+    $dec  = $props['dec_pt'];
+    $tsnd = $props['sep'];
+    $pfx  = $props['prefix'];
+    $sfx  = $props['suffix'];
+    return "{type:'numberbox',options:{precision:$prec,decimalSeparator:'$dec',groupSeparator:'$tsnd',prefix:'$pfx',suffix:'$sfx',onChange:function(){ $onChange } } }";
+}
+
+/**
+ * This function builds the combo box editor HTML for a datagrid to view GL Accounts
+ * @return string set the editor structure
+ */
+function dgEditGL() {
+    return "{type:'combogrid',options:{ data:pbChart, mode:'local', width:300, panelWidth:450, idField:'id', textField:'title',
+inputEvents:jq.extend({},jq.fn.combogrid.defaults.inputEvents,{ keyup:function(e){ glComboSearch(jq(this).val()); } }),
+rowStyler:  function(index,row){ if (row.inactive=='1') { return { class:'row-inactive' }; } },
+columns:    [[{field:'id',title:'".jsLang('gl_account')."',width:80},{field:'title',title:'".jsLang('title')."',width:200},{field:'type',title:'".jsLang('type')."',width:160}]]}}";
+}
+
+/**
+ *
+ * @param type $onChange
+ * @return type
+ */
+function dgEditNumber($onChange='') {
+    $prec = getModuleCache('bizuno','settings','locale','number_precision','2');
+    $tsnd = getModuleCache('bizuno','settings','locale','number_thousand', ',');
+    $dec  = getModuleCache('bizuno','settings','locale','number_decimal',  '.');
+    $pfx  = getModuleCache('bizuno','settings','locale','number_prefix',   '');
+    $sfx  = getModuleCache('bizuno','settings','locale','number_suffix',   '');
+    return "{type:'numberbox',options:{precision:$prec,decimalSeparator:'$dec',groupSeparator:'$tsnd',prefix:'$pfx',suffix:'$sfx',onChange:function(){ $onChange } } }";
+}
+
+/**
+ *
+ * @param type $id
+ * @param type $field
+ * @param type $type
+ * @param type $xClicks
+ * @return string
+ */
+function dgEditTax($id, $field, $type='c', $xClicks='') {
+    return "{type:'combogrid',options:{data: bizDefaults.taxRates.$type.rows,width:120,panelWidth:210,idField:'id',textField:'text',
+        onClickRow:function (idx, data) { jq('#$id').edatagrid('getRows')[curIndex]['$field'] = data.id; $xClicks },
+        rowStyler:function(idx, row) { if (row.status==1) { return {class:'journal-waiting'}; } else if (row.status==2) { return {class:'row-inactive'}; }  },
+        columns: [[{field:'id',hidden:true},{field:'text',width:120,title:'".jsLang('journal_main_tax_rate_id')."'},{field:'tax_rate',width:70,title:'".jsLang('amount')."',align:'center'}]]
+    }}";
+}
+
+function dgEditText() {
+    return 'text';
 }

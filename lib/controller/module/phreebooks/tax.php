@@ -93,7 +93,7 @@ class phreebooksTax
             dbStructureFill($struc, $dbData);
             $rates = $this->getRateDetail($dbData['settings']); // already encoded
         } else {
-            $rates = $this->getRateDetail(false); 
+            $rates = $this->getRateDetail(false);
             $struc['start_date']['attr']['value']= date('Y-m-d');
             $struc['end_date']['attr']['value']  = localeCalculateDate(date('Y-m-d'), 0, 0, 10);
         }
@@ -149,7 +149,7 @@ function taxPreSubmit{$type}(type) {
             'start_date'.$type => array_merge($struc['start_date'],['col'=>2,'break'=>true]),
             'end_date'  .$type => array_merge($struc['end_date'],  ['col'=>2,'break'=>true])];
     }
-    
+
     /**
      * Structure for saving user defined sales tax information
      * @param array $layout - Structure coming in
@@ -342,7 +342,7 @@ function taxPreSubmit{$type}(type) {
                 'onClickRow'  => "function(rowIndex) { jq('#$name').edatagrid('editRow', rowIndex); }",
                 'onAdd'       => "function(rowIndex, row) {  }",
                 'onBeforeEdit'=> "function(rowIndex) { curIndex = rowIndex; }",
-                'onEndEdit'   => "function (idx,row) { 
+                'onEndEdit'   => "function (idx,row) {
     var ed = jq('#$name').datagrid('getEditor', {index:idx,field:'cID'});
     jq('#$name').datagrid('getRows')[idx]['cTitle'] = jq(ed.target).combobox('getText');
 }"],
@@ -362,7 +362,7 @@ function taxPreSubmit{$type}(type) {
       {field:'state',       width: 50,title:'".jsLang('address_book_state')."'},
     ]] }}"]],
                 'text'  => ['order'=>20,'label'=>lang('description'),'attr'=>['width'=>240,'resizable'=>true,'editor'=>'text']],
-                'glAcct'=> ['order'=>30,'label'=>lang('gl_account'), 'attr'=>['width'=>100,'resizable'=>true,'align' =>'center'],'events'=>['editor'=>dgHtmlGLAcctData()]],
+                'glAcct'=> ['order'=>30,'label'=>lang('gl_account'), 'attr'=>['width'=>100,'resizable'=>true,'align' =>'center'],'events'=>['editor'=>dgEditGL()]],
                 'rate'  => ['order'=>40,'label'=>lang('tax_rates_tax_rate'),'attr'=>['width'=>100,'resizable'=>true],
                     'events'=>['editor'=>"{type:'numberbox',options:{onChange:function(newVal){taxTotal$type(newVal);}} }"]]]];
         return $data;

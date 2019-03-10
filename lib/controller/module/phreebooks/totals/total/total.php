@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-27
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /controller/module/phreebooks/totals/total/total.php
  */
 
@@ -39,20 +39,20 @@ class total
             case  3: // Purchase Quote
             case  4: // Purchase Order
             case  6: // Purchase/Receive
-            case  7: $gl_account = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');     break; // 7 - Purchase Credit Memo
+            case  7: $gl_account = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');      break; // 7 - Purchase Credit Memo
             case  9: // Sales Quote
             case 10: // Sales Order
             case 12: // Sales/Invoice
-            case 13: $gl_account = getModuleCache('phreebooks', 'settings', 'customers', 'gl_receivables');break; // 13 - Sales Credit Memo
-            case 14: $gl_account = getModuleCache('inventory', 'settings', 'phreebooks', 'inv_si');        break; // 14 - Inventory Assembly
+            case 13: $gl_account = getModuleCache('phreebooks', 'settings', 'customers',  'gl_receivables');break; // 13 - Sales Credit Memo
+            case 14: $gl_account = getModuleCache('inventory', 'settings',  'phreebooks', 'inv_si');        break; // 14 - Inventory Assembly
             case 15: // Inventory Store Transfer
-            case 16: $gl_account = getModuleCache('inventory', 'settings', 'phreebooks', 'cogs_si');       break; // 16 - Inventory Adjustment
+            case 16: $gl_account = getModuleCache('inventory', 'settings',  'phreebooks', 'cogs_si');       break; // 16 - Inventory Adjustment
             case 18: // Customer Receipts
             case 19: // POS
-            case 22: $gl_account = getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash');       break; // 22 - Customer Payments
+            case 22: $gl_account = getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash');        break; // 22 - Customer Payments
             case 17: // Vendor Receipts
             case 20: // Cash Distribution
-            case 21: $gl_account = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_cash');         break; // 21 - POP
+            case 21: $gl_account = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_cash');          break; // 21 - POP
         }
         $this->settings= ['gl_type'=>'ttl','journals'=>'[3,4,6,7,9,10,12,13,16,17,18,19,20,21,22]','gl_account'=>$gl_account,'order'=>90];
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
@@ -61,7 +61,7 @@ class total
      }
 
     /**
-     * 
+     *
      * @return type
      */
     public function settingsStructure()
@@ -79,9 +79,10 @@ class total
      * @param array $main
      * @param type $item
      */
-    public function glEntry($request, &$main, &$item)
-    { 
-        $total = isset($request['total_amount']) ? clean($request['total_amount'], 'currency') : 0;
+    public function glEntry(&$main, &$item, &$begBal=0)
+    {
+        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
+        $total = isset($request['total_amount']) ? clean($request['total_amount'], 'float') : 0;
         $desc  = 'title:'.(isset($main['primary_name_b'])?$main['primary_name_b']:'');
         $desc  = isset($request['totals_total_desc']) && $request['totals_total_desc'] ? clean($request['totals_total_desc'], 'text') : $desc;
         $txID  = isset($request['totals_total_txid']) ? clean($request['totals_total_txid'], 'text') : '';
@@ -135,7 +136,7 @@ class total
         $output['body'] .= "</div>\n";
         $output['jsHead'][] = "function totals_total(begBalance) {
     var newBalance = begBalance;
-    bizTextSet('total_amount', newBalance, 'currency');
+    bizNumSet('total_amount', newBalance);
     return newBalance;
 }";
     }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2019-03-08
  * @filesource /local/en_US/language.php
  */
 
@@ -88,7 +88,11 @@ $langCore = [
     'all_roles' => 'All Roles',
     'amount' => 'Amount',
     'amount_due' => 'Amount Due',
-    'annual_sales' => 'Annual Sales',
+    'annual_sales' => 'Avg 12 Months',
+    'current_sales' => 'Current Sales',
+    'last_1month_sales' => 'Last Month',
+    'last_3month_sales' => 'Avg 3 Months',
+    'last_6month_sales' => 'Avg 6 Months',
     'any' => 'Any',
     'attachment' => 'Attachment',
     'attachments' => 'Attachments',
@@ -241,7 +245,7 @@ $langCore = [
     'locale' =>'Locale',
     'locked' => 'Locked',
     'login' => 'Login',
-    'logout' => 'Log Out',
+    'logout' => 'Sign Off',
     'ltl_class' => 'LTL Class',
     'manager' => 'Manager',
     'margin' => 'Margin',
@@ -460,7 +464,7 @@ $langCore = [
     'err_password_mismatch' => 'The two passwords you entered do not match. Please correct them and resubmit your request.',
     'err_password_short' => 'Your password is too short, it must be 8 characters or more!',
     'err_encrypt_key_missing' => 'The Encryption key has not been entered. Your encrypted information cannot be processed!',
-    'err_encrypt_failed' => 'The Encryption key passwords do not match or the length is too short!',
+    'err_encrypt_failed' => 'Validation failed! The new Encryption key passwords do not match or the length is too short!',
     'err_copy_name_prompt' => 'The action was not completed, the proper id and/or title was not passed!',
     'err_gl_post_balance' => 'Error posting chart of account balances. Amount: %s to GL Account: %s',
     'err_gl_out_of_balance' => 'Trial balance is out of balance, this can usually be fixed by re-posting the transaction. If your balance is not zero, you should validate and repair your gl balances in My Business -> Settings -> Bizuno tab -> PhreeBooks Settings icon -> Journal Tools tab. Balance = %s (Should be zero) and Debits = %s and credits = %s in period %s',

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-04
+ * @version    3.x Last Update: 2019-02-28
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -96,7 +96,7 @@ class inventoryMain
     }
 
     /**
-     * Saves the users filter settings in cache 
+     * Saves the users filter settings in cache
      */
     private function managerSettings()
     {
@@ -299,7 +299,7 @@ class inventoryMain
             $structure['where_used']= ['order'=>11,'icon'=>'tools','break'=>true,'label'=>lang('inventory_where_used'),'hidden'=>$rID?false:true,'events'=>['onClick'=>"jsonAction('inventory/main/usage', $rID);"]];
             unset($structure['sku']['break']);
             $fldGeneral[] = 'where_used';
-            if (in_array($inventory_type, ['ma','sa']) ) { 
+            if (in_array($inventory_type, ['ma','sa']) ) {
                 $structure['assy_cost'] = ['order'=>41,'icon'=>'payment','label'=>lang('inventory_assy_cost'),'events'=>['onClick'=>"jsonAction('inventory/main/getCostAssy', $rID);"]];
                 $fldVendor[] = 'assy_cost';
             }
@@ -333,9 +333,9 @@ class inventoryMain
         $structure['tax_rate_id_v']['values'] = viewSalesTaxDropdown('v', 'contacts');
         $structure['tax_rate_id_c']['values'] = viewSalesTaxDropdown('c', 'contacts');
         $structure['vendor_id']['values']     = dbBuildDropdown(BIZUNO_DB_PREFIX."contacts", "id", "short_name", "type='v' AND inactive<>'1' ORDER BY short_name", lang('none'));
-        if (empty($structure['inventory_type']['values'][$inventory_type]['gl_inv'])) { $structure['gl_inv']['attr']['type'] = 'hidden'; }
-        if (empty($structure['inventory_type']['values'][$inventory_type]['gl_cogs'])){ $structure['gl_cogs']['attr']['type']= 'hidden'; }
-        if (sizeof(getModuleCache('phreebooks', 'currency', 'iso'))>1) { 
+        if ($rID && empty($structure['inventory_type']['values'][$inventory_type]['gl_inv'])) { $structure['gl_inv']['attr']['type'] = 'hidden'; }
+        if ($rID && empty($structure['inventory_type']['values'][$inventory_type]['gl_cogs'])){ $structure['gl_cogs']['attr']['type']= 'hidden'; }
+        if (sizeof(getModuleCache('phreebooks', 'currency', 'iso'))>1) {
             $structure['full_price']['label'].= ' ('.getUserCache('profile', 'currency', false, 'USD').')';
             $structure['item_cost']['label'] .= ' ('.getUserCache('profile', 'currency', false, 'USD').')';
         }
@@ -409,7 +409,7 @@ function preSubmit() {
         unset($layout['jsHead']);
         unset($layout['jsReady']);
     }
-    
+
     /**
      * Generates the inventory item save structure for recording user updates
      * @param array $layout - structure coming in
@@ -450,7 +450,7 @@ function preSubmit() {
      * @param integer $rID - inventory database record id
      * @param string $type - inventory type
      * @param type $sku - item SKU
-     * @param type $dgData - JSON encoded list of inventory items that make up the BOM 
+     * @param type $dgData - JSON encoded list of inventory items that make up the BOM
      * @return boolean null, BOM is not generated in inventory type is not equal to ma or as
      */
     private function saveBOM($rID, $type, $sku, $dgData)
@@ -526,7 +526,7 @@ function preSubmit() {
                 case 'image_with_path':
                 case 'qty_stock':
                 case 'qty_po':
-                case 'qty_so': 
+                case 'qty_so':
                 case 'qty_alloc': unset($sku[$key]); break;
                 default:
             }
@@ -618,7 +618,7 @@ function preSubmit() {
                 'sku'=> ['order'=>30,'label'=>lang('sku'),'attr'=>['sortable'=>true,'resizable'=>true,'align'=>'center'],
                     'events' => ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
                         width:150, panelWidth:320, delay:500, idField:'sku', textField:'sku', mode:'remote',
-                        onClickRow: function (idx, data) { 
+                        onClickRow: function (idx, data) {
                             var descEditor= jq('#$name').datagrid('getEditor', {index:curIndex,field:'description'});
                             descEditor.target.val(data.description_short);
                             var qtyEditor = jq('#$name').datagrid('getEditor', {index:curIndex,field:'qty'});
@@ -751,7 +751,7 @@ function preSubmit() {
         $history['12purch'] = round($history['12purch'] / 12);
         $history['06purch'] = round($history['06purch'] /  6);
         $history['03purch'] = round($history['03purch'] /  3);
-        
+
         $history['01sales'] = 0;
         $history['03sales'] = 0;
         $history['06sales'] = 0;
@@ -808,7 +808,7 @@ var dataJ12 = ".json_encode($history['sales']).";";
         msgDebug("\nReturning from inventory history with array = ".print_r($history, true));
         $layout = array_replace_recursive($layout, $data);
     }
-    
+
     private function viewHistory($history)
     {
         $output  = '<div class="blockView"><p>'.html5('', $history['create']) ."<br />".html5('', $history['update']) ."<br />".html5('', $history['journal'])."</p>\n";

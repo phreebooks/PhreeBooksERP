@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-21
+ * @version    3.x Last Update: 2019-02-27
  * @filesource /lib/controller/module/bizuno/dashboards/launchpad/launchpad.php
  */
 
@@ -89,7 +89,8 @@ class launchpad
             if (!isset($menu['child'])) { continue; }
             foreach ($menu['child'] as $idx => $submenu) {
                 msgDebug("\nsubmenu list = ".print_r($submenu, true));
-                if ((!isset($submenu['hidden']) || !$submenu['hidden']) && $submenu['security'] > 0) {
+                if (empty($submenu['security'])) { continue; }
+                if (!isset($submenu['hidden']) || !$submenu['hidden']) {
                     $label = $cat ? $cat : lang($menu['label']);
                     $this->choices[] = ['id'=>"$idx", 'text'=>"$label - ".lang($submenu['label'])];
                     if (isset($submenu['child'])) { $this->listMenus($menu['child']); }

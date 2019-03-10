@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /lib/controller/module/phreebooks/totals/balanceEnd/balanceEnd.php
  */
 
@@ -51,8 +51,8 @@ class balanceEnd {
         $output['body'] .= '<div style="text-align:right">'.html5('totals_balanceEnd',$fields['totals_balanceEnd']).html5('',['icon'=>'blank','size'=>'small'])."</div>\n";
         $output['jsHead'][] = "function totals_balanceEnd(begBalance) {
     var newBalance = begBalance;
-    var begBal = cleanCurrency(jq('#totals_balanceBeg').val());
-    bizTextSet('totals_balanceEnd', ''+(begBal - newBalance), 'currency');
+    var begBal = bizNumGet('totals_balanceBeg');
+    bizNumSet('totals_balanceEnd', begBal - newBalance);
     return newBalance;
 }";
     }

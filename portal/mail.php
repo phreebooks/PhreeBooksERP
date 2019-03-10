@@ -17,16 +17,16 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-31
+ * @version    3.x Last Update: 2019-02-18
  * @filesource /portal/mail.php
- * 
+ *
  */
 namespace bizuno;
 
 class portalMail
 {
     function __construct() { }
-    
+
     public function sendMail()
     {
         error_reporting(E_ALL & ~E_NOTICE); // This is to eliminate errors from undefined constants in phpmailer
@@ -45,11 +45,11 @@ class portalMail
             $textOnly = str_replace(['<br />','<br/>','<BR />','<BR/>','<br>','<BR>'], "\n", $this->Body);
             $mail->AltBody =  strip_tags($textOnly);
             foreach ($this->toEmail as $addr) {
-                if (!$mail->ValidateAddress($addr['email'])) { return msgAdd(sprintf(lang('error_invalid_email'), $addr['email'])); }
+                if (!$mail->ValidateAddress($addr['email'])) { return msgAdd(sprintf(lang('error_invalid_email'), "{$addr['name']} <{$addr['email']}>")); }
                 $mail->AddAddress($addr['email'], $addr['name']);
             }
-            foreach ($this->toCC as $addr) { 
-                if (!$mail->ValidateAddress($addr['email'])) { return msgAdd(sprintf(lang('error_invalid_email'), $addr['email'])); }
+            foreach ($this->toCC as $addr) {
+                if (!$mail->ValidateAddress($addr['email'])) { return msgAdd(sprintf(lang('error_invalid_email'), "{$addr['name']} <{$addr['email']}>")); }
                 $mail->addCC($addr['email'], $addr['name']);
             }
             foreach ($this->attach as $file) { $mail->AddAttachment($file['path'], $file['name']); }

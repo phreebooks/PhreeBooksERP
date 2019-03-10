@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-12
+ * @version    3.x Last Update: 2019-02-28
  * @filesource /lib/controller/module/phreebooks/journals/j16.php
  */
 
@@ -33,21 +33,12 @@ class j16 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->item = $item;
+        $this->items = $item;
     }
 
 /*******************************************************************************************************************/
 // START Edit Methods
 /*******************************************************************************************************************/
-    /**
-     * Pulls the data for the specified journal and populates the structure
-     * @param array $structure - table structures
-     */
-    public function getDataMain(&$structure)
-    {
-        dbStructureFill($structure, $this->main);
-    }
-    
     /**
      * Tailors the structure for the specific journal
      */
@@ -55,15 +46,14 @@ class j16 extends jCommon
     {
         $structure= dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
         $dbData   = [];
-        if (sizeof($this->items) > 0) { // calculate some form fields that are not in the db
-            foreach ($this->items as $key => $row) {
-                if ($row['gl_type'] <> 'adj') { continue; } // not an adjustment record
-                $values = dbGetRow(BIZUNO_DB_PREFIX."inventory", "sku='{$row['sku']}'");
-                $row['qty_stock'] = $values['qty_stock']-$row['qty'];
-                $row['balance']   = $values['qty_stock'];
-                $row['price']     = viewFormat($values['item_cost'], 'currency');
-                $dbData[$key]     = $row;
-            }
+        // calculate some form fields that are not in the db
+        foreach ($this->items as $key => $row) {
+            if ($row['gl_type'] <> 'adj') { continue; } // not an adjustment record
+            $values = dbGetRow(BIZUNO_DB_PREFIX."inventory", "sku='{$row['sku']}'");
+            $row['qty_stock'] = $values['qty_stock']-$row['qty'];
+            $row['balance']   = $values['qty_stock'];
+            $row['price']     = viewFormat($values['item_cost'], 'currency');
+            $dbData[$key]     = $row;
         }
         $map['debit_amount'] = ['type'=>'field','index'=>'total'];
         $this->dgDataItem = formatDatagrid($dbData, 'datagridData', $structure, $map);
@@ -78,7 +68,6 @@ class j16 extends jCommon
         $fldKeys = ['id','journal_id','recur_id','recur_frequency','item_array','store_id','invoice_num','post_date'];
         $data['jsHead']['datagridData'] = $this->dgDataItem;
         $data['datagrid']['item'] = $this->dgAdjust('dgJournalItem');
-//        $data['itemDGSrc'] = BIZUNO_LIB."view/module/phreebooks/accInvAdjDetail.php"; // should be ok, may need to ref old template getViewAdj below
         unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
@@ -97,6 +86,7 @@ class j16 extends jCommon
     public function Post()
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
+        $this->main['description'] .= " ({$this->items[0]['qty']}) {$this->items[0]['description']}".(sizeof($this->items)>2 ? ' +++' : '');
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
         if (!$this->postMain())              { return; }
@@ -115,7 +105,7 @@ class j16 extends jCommon
         if (!$this->unPostInventory())         { return; }
         if (!$this->unPostMain())              { return; }
         if (!$this->unPostItem())              { return; }
-        if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
+        if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
         return true;
     }
@@ -168,18 +158,18 @@ class j16 extends jCommon
         $ref_closed= false;
         $str_field = 'qty_stock';
         // adjust inventory stock status levels (also fills inv_list array)
-        $item_rows_to_process = count($this->item); // NOTE: variable needs to be here because $this->item may grow within for loop (COGS)
+        $item_rows_to_process = count($this->items); // NOTE: variable needs to be here because $this->items may grow within for loop (COGS)
 // the cogs rows are added after this loop ..... the code below needs to be rewritten
         for ($i = 0; $i < $item_rows_to_process; $i++) {
-            if (!in_array($this->item[$i]['gl_type'], ['itm','adj','asy','xfr'])) { continue; }
-            if (isset($this->item[$i]['sku']) && $this->item[$i]['sku'] <> '') {
-                $inv_list = $this->item[$i];
-                $inv_list['price'] = $this->item[$i]['qty'] ? (($this->item[$i]['debit_amount'] + $this->item[$i]['credit_amount']) / $this->item[$i]['qty']) : 0;
+            if (!in_array($this->items[$i]['gl_type'], ['itm','adj','asy','xfr'])) { continue; }
+            if (isset($this->items[$i]['sku']) && $this->items[$i]['sku'] <> '') {
+                $inv_list = $this->items[$i];
+                $inv_list['price'] = $this->items[$i]['qty'] ? (($this->items[$i]['debit_amount'] + $this->items[$i]['credit_amount']) / $this->items[$i]['qty']) : 0;
                 if (!$this->calculateCOGS($inv_list)) { return; }
             }
         }
         // update inventory status
-        foreach ($this->item as $row) {
+        foreach ($this->items as $row) {
             if (!isset($row['sku']) || !$row['sku']) { continue; } // skip all rows without a SKU
             $item_cost = $full_price = 0;
             if (!$this->setInvStatus($row['sku'], $str_field, $row['qty'], $item_cost, $row['description'], $full_price)) { return false; }
@@ -198,9 +188,9 @@ class j16 extends jCommon
     {
         msgDebug("\n  unPosting Inventory ...");
         if (!$this->rollbackCOGS()) { return false; }
-        for ($i = 0; $i < count($this->item); $i++) {
-            if (!isset($this->item[$i]['sku']) || !$this->item[$i]['sku']) { continue; }
-            if (!$this->setInvStatus($this->item[$i]['sku'], 'qty_stock', -$this->item[$i]['qty'])) { return; }
+        for ($i = 0; $i < count($this->items); $i++) {
+            if (!isset($this->items[$i]['sku']) || !$this->items[$i]['sku']) { continue; }
+            if (!$this->setInvStatus($this->items[$i]['sku'], 'qty_stock', -$this->items[$i]['qty'])) { return; }
         }
         if ($this->main['so_po_ref_id'] > 0) { $this->setInvRefBalances($this->main['so_po_ref_id'], false); }
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."inventory_history WHERE ref_id = {$this->main['id']}");
@@ -235,7 +225,11 @@ class j16 extends jCommon
         return ['id'=>$name, 'type'=>'edatagrid',
             'attr'   => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true, 'singleSelect'=>true, 'idField'=>'id'],
             'events' => ['data'=> "datagridData",
-                'onLoadSuccess'=> "function(row) { totalUpdate(); }",
+                'onLoadSuccess'=> "function(row) {
+    var opts = jq('#dgJournalItem').datagrid('getColumnOption', 'qty_stock');opts.editor.options.disabled = true;
+    var opts = jq('#dgJournalItem').datagrid('getColumnOption', 'balance');  opts.editor.options.disabled = true;
+    totalUpdate();
+}",
                 'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
                 'onBeforeEdit' => "function(rowIndex) {
     var edtURL = jq(this).edatagrid('getColumnOption','sku');
@@ -248,7 +242,7 @@ class j16 extends jCommon
             'columns'=> [
                 'id'         => ['order'=>0, 'attr'=>['hidden'=>true]],
                 'gl_account' => ['order'=>0, 'attr'=>['hidden'=>true]],
-                'unit_cost'  => ['order'=>0, 'attr'=>['editor'=>'text', 'hidden'=>true]],
+                'unit_cost'  => ['order'=>0, 'attr'=>['hidden'=>true]],
                 'action'     => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> ['trash' => ['order'=>20,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'sku'        => ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true,'align'=>'center'],
@@ -258,13 +252,13 @@ class j16 extends jCommon
     columns:    [[{field:'sku',title:'".jsLang('sku')."',width:100},{field:'description_short',title:'".jsLang('description')."',width:200},{field:'qty_stock',title:'$on_hand', align:'right',width:90},{field:'qty_po',title:'$on_order',align:'right',width:90}]]
 }}"]],
                 'qty_stock'  => ['order'=>30,'label'=>$on_hand,'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
+                    'events' => ['editor'=>dgEditNumber("")]], // "{type:'numberbox',options:{disabled:true}}"
                 'qty'        => ['order'=>40,'label'=>lang('journal_item_qty', $this->journalID),'attr' =>['width'=>100,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>"{type:'numberbox',options:{onChange:function(){ adjCalc('qty'); } } }"]],
+                    'events' => ['editor'=>dgEditNumber("adjCalc('qty');")]],
                 'balance'    => ['order'=>50,'label'=>lang('balance'),'styles'=>['text-align'=>'right'], 'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>"{type:'numberbox',options:{disabled:true}}"]],
+                    'events' => ['editor'=>dgEditNumber("")]],
                 'total'      => ['order'=>60, 'label'=>lang('total'),'format'=>'currency','attr'=>['width'=>120,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>"{type:'numberbox',options:{onChange:function (newValue,oldValue) { var idx=bizDGgetIndex('dgJournalItem'); pbSetTotal(idx, cleanCurrency(newValue)); }}}"]],
+                    'events' => ['editor'=>"{type:'numberbox',options:{onChange:function (newValue,oldValue) { var idx=bizDGgetIndex('dgJournalItem'); setDgEdVal(curIndex, 'total', newValue); }}}"]],
                 'description'=> ['order'=>70,'label'=>lang('description'),'attr'=>['width'=>250,'editor'=>'text','resizable'=>true]]]];
     }
 }

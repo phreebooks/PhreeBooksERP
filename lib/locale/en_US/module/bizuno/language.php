@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-21
+ * @version    3.x Last Update: 2019-03-08
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -38,12 +38,12 @@ $lang = [
     'max_rows_lbl' => 'Display Rows',
     'max_rows_tip' => 'Sets the default number of rows to show for datagrid (table) listings. Minimun value 10, maximum value 100.',
     'session_max_lbl' => 'Maximum Idle Time',
-    'session_max_tip' => 'Sets the maximum session time to automatically log out user when inactive in minutes. A value of zero keeps session alive automatically. Minimum value is 5 minutes and maximum value is 300 minutes.',
+    'session_max_tip' => 'Sets the maximum session time to automatically sign off user when inactive in minutes. A value of zero keeps session alive automatically. Minimum value is 5 minutes and maximum value is 300 minutes.',
     'number_precision_lbl' => 'Decimal Precision',
     'number_precision_tip' => 'Precision for decimal values [Default: 2]',
     'number_prefix_lbl' => 'Positive Prefix',
     'number_prefix_tip' => 'Sets the prefix for positive numeric values',
-    'number_suffix_lbl' => 'Psoitive Suffix',
+    'number_suffix_lbl' => 'Positive Suffix',
     'number_suffix_tip' => 'Sets the suffix for positive numeric values',
     'number_decimal_lbl' => 'Decimal Separator',
     'number_decimal_tip' => 'Decimal separator for numeric values',
@@ -88,10 +88,10 @@ $lang = [
     'roles_restrict' => 'Do not allow access through the www.bizuno.com portal. i.e. For internal use only, members of this role cannot access your business.',
     'msg_module_delete_confirm' => 'Are you sure you want to un-install this module. All database data and files associated with this module will be lost!',
     'msg_module_upgraded' => 'Successfully upgraded module %s to release %s',
-    'msg_upgrade_success' => 'The upgrade was successful! Press OK to close this message and log out of Bizuno to clear your cache.',
+    'msg_upgrade_success' => 'The upgrade was successful! Press OK to close this message and sign off of Bizuno to clear your cache.',
     'msg_encryption_changed' => 'The encryption key has been changed.',
     'msg_restore_confirm' => 'Warning! This operation will delete and re-write the database. Are you sure you want to continue?',
-    'msg_restore_success' => 'Restore complete! Press OK to complete the restore, log out and return to the welcome screen.',
+    'msg_restore_success' => 'Restore complete! Press OK to complete the restore, sign off and return to the welcome screen.',
     'msg_backup_success' => 'Your backup is ready to download from the list below.',
     'msg_add_dashboards' => 'Add more dashboards to this menu..',
     'msg_no_shipments_found' => 'No shipments have been found that have shipped on this date!',

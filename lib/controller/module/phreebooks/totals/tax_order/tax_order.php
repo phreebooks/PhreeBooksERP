@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-15
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /controller/module/phreebooks/totals/tax_order/tax_order.php
  */
 
@@ -38,7 +38,7 @@ class tax_order
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
     }
-    
+
     public function settingsStructure()
     {
         return [
@@ -49,8 +49,9 @@ class tax_order
             'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
     }
 
-    public function glEntry($request, &$main, &$item, &$begBal=0)
+    public function glEntry(&$main, &$item, &$begBal=0)
     {
+        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
         if (empty($main['tax_rate_id'])) { return; } // no tax so don't create gl entry
         $gl       = $rate = [];
         $totalTax = 0;
@@ -111,6 +112,7 @@ class tax_order
         $temp.= "<td>"    .html5('totals_tax_order_gl[]',  $this->fields['totals_tax_order_gl'])  ."</td>";
         $temp.= "<td>"    .html5('totals_tax_order_amt[]', $this->fields['totals_tax_order_amt']) ."</td></tr>";
         $row  = str_replace("\n", "", $temp);
+        if (!empty($data['fields']['id']['attr']['value'])) { $output['jsReady'][] = "totalUpdate('total_tax_order Init');"; }
         $output['jsHead'][] = "var taxOrderTD = '".str_replace("'", "\'", $row)."';
 function totals_tax_order(begBalance) {
     jq('#tableTaxOrder').find('tr').remove();
@@ -148,7 +150,7 @@ function totals_tax_order(begBalance) {
     var newBalance = begBalance + newTaxItem;
     if (typeof taxRunning !== 'undefined') { taxRunning += newTaxItem; }
     else { taxRunning = newTaxItem; }
-    bizTextSet('totals_tax_order', taxRunning, 'currency');
+    bizNumSet('totals_tax_order', taxRunning);
     return newBalance;
 }";
     }

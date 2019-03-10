@@ -1,7 +1,7 @@
 <?php
 /*
  * PhreeBooks Totals - Balance
- * 
+ *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
  * that is bundled with this package in the file LICENSE.TXT.
@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /lib/controller/module/phreebooks/totals/balance/balance.php
  */
 
@@ -55,9 +55,9 @@ class balance
         $output['jsHead'][] = "function totals_balance(begBalance) {
     var newBalance = begBalance;
     if (newBalance == 0) jq('#total_balance').css({color:'#000000'}); else jq('#total_balance').css({color:'#FF0000'});
-    bizTextSet('total_balance', newBalance, 'currency');
-    var totalDebit = cleanCurrency(bizTextGet('totals_debit'));
-    bizTextSet('total_amount', totalDebit, 'currency');
+    bizNumSet('total_balance', newBalance);
+    var totalDebit = cleanCurrency(bizNumGet('totals_debit'));
+    jq('#total_amount').val(totalDebit);
     return newBalance;
 }";
     }

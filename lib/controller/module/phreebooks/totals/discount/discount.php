@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2019-03-06
  * @filesource /lib/controller/module/phreebooks/totals/discount/discount.php
  */
 
@@ -38,7 +38,7 @@ class discount
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
     }
-    
+
     public function settingsStructure()
     {
         return [
@@ -48,9 +48,10 @@ class discount
             'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
     }
 
-    public function glEntry($request, &$main, &$item, &$begBal=0)
+    public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $discount = isset($request["totals_{$this->code}"]) ? clean($request["totals_{$this->code}"], 'currency') : 0;
+        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
+        $discount = isset($request["totals_{$this->code}"]) ? clean($request["totals_{$this->code}"], 'float') : 0;
         if ($discount == 0) { return; }
         $item[] = [
             'id'           => clean($request["totals_{$this->code}_id"], 'float'), // for edits
@@ -74,15 +75,17 @@ class discount
           "totals_{$this->code}_id" => ['attr'=>['type'=>'hidden']],
           "totals_{$this->code}_gl" => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
           "totals_{$this->code}_opt"=> ['icon'=>'settings', 'size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_".$this->code."').toggle('slow');"]],
-          "totals_{$this->code}_pct"=> ['label'=>lang('percent'),'options'=>['width'=>60,'value'=>'0.00'],'events'=>['onBlur'=>"discountType='pct'; totalUpdate('onBlur Discount percent');"],'attr'=>['type'=>'float','size'=>5]],
-          "totals_{$this->code}"    => ['label'=>$this->lang['label'],'attr'=>['type'=>'currency','value'=>0],
+          "totals_{$this->code}_pct"=> ['label'=>lang('percent'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>60,'value'=>0],'attr'=>['type'=>'float','size'=>5],
+              'events'=>['onBlur'=>"discountType='pct'; totalUpdate('onBlur Discount percent');"]],
+          "totals_{$this->code}"    => ['label'=>$this->lang['label'],'lblStyle'=>['min-width'=>'60px'],'attr'=>['type'=>'currency','value'=>0],
             'events' => ['onBlur'=>"discountType='amt'; totalUpdate('discount onBlur total');"]]];
         if (isset($data['items'])) {
             foreach ($data['items'] as $row) { // fill in the data if available
                 if ($row['gl_type'] == $this->settings['gl_type']) {
+                    msgDebug("\nPhreeBooks Totals Discount, found dsc row = ".print_r($row, true));
                     $this->fields["totals_{$this->code}_id"]['attr']['value']= isset($row['id']) ? $row['id'] : 0;
                     $this->fields["totals_{$this->code}_gl"]['attr']['value']= $row['gl_account'];
-                    $this->fields["totals_{$this->code}"]['attr']['value']   = viewFormat($row['credit_amount'] + $row['debit_amount'], 'currency');
+                    $this->fields["totals_{$this->code}"]['attr']['value']   = $row['credit_amount'] + $row['debit_amount'];
                 }
             }
         }
@@ -103,15 +106,15 @@ class discount
         var percent = parseFloat(jq('#totals_{$this->code}_pct').val());
         if (isNaN(percent)) { percent = 0; }
         var discount= roundCurrency(newBalance * (percent / 100));
-        bizTextSet('totals_{$this->code}', discount, 'currency');
+        bizNumSet('totals_{$this->code}', discount);
         discountType= '';
     } else { // amt
-        var discount= cleanCurrency(jq('#totals_{$this->code}').val());
+        var discount= bizNumGet('totals_{$this->code}');
         if (isNaN(discount)) { discount = 0; }
         var percent = begBalance ? 100 * (1 - ((begBalance - discount) / begBalance)) : 0;
         percent     = percent.toFixed(decLen+1);
-        bizTextSet('totals_{$this->code}_pct', percent);
-        bizTextSet('totals_{$this->code}', discount, 'currency');
+        bizNumSet('totals_{$this->code}_pct', percent);
+        bizNumSet('totals_{$this->code}', discount);
     }
     newBalance -= discount;
     return parseFloat(newBalance.toFixed(decLen));

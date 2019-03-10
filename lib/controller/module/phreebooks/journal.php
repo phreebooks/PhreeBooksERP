@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-21
+ * @version    3.x Last Update: 2019-02-28
  * @filesource /lib/controller/module/phreebooks/journal.php
  */
 
@@ -28,7 +28,6 @@ bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'processPhr
 /**
  * Main journal class wrapper, calls appropriate journal class as needed
  * WARNING: transaction must be started prior and committed after all posting/un-posting activities
- *
  */
 class journal
 {
@@ -38,6 +37,8 @@ class journal
     private $lowestPeriod   = 999;
     public  $affectedGlAccts= []; // list the gl accounts that are touched for calculating journal balances
     public  $postList       = [];
+    public  $main           = [];
+    public  $items          = [];
 
     function __construct($mID=0, $jID=0, $post_date=false, $cID=0, $structure=[], $action=false)
     {
@@ -47,7 +48,7 @@ class journal
         $this->setDefaults($jID, $post_date);
         $this->getDbData($mID, $cID);
         if (!empty($jID)) {
-            $this->journal  = $this->getJournal($jID, $this->main, $this->item);
+            $this->journal         = $this->getJournal($jID, $this->main, $this->items);
             $this->journal->action = $action;
             $this->journal->items  = $this->items;
         }
@@ -147,7 +148,7 @@ class journal
         msgDebug("\ngetPostList working with mIDs = ".print_r($mIDs, true));
         foreach ($mIDs as $mID) {
             if (sizeof($this->postList) == 0) { // first time through, post data is local, may need to fetch unPost data if edit
-                $data = ['main'=>$this->main, 'item'=>$this->item]; // set the new post data
+                $data = ['main'=>$this->main, 'item'=>$this->items]; // set the new post data
                 $uData= $this->getDbRecord($mID); // make sure to unpost the original post
             } else {
                 $data = $this->getDbRecord($mID);
@@ -186,10 +187,11 @@ class journal
         if (in_array($this->journalID, [17,18,20,22])) { // banking journals
             $dbData = $this->action=='bulk' ? $this->jrnlGetBulkData() : $this->jrnlGetPaymentData($rID, $cID);
             $this->main = array_replace_recursive($this->main, $dbData['main']);
-            $this->item = $this->items = $dbData['items'];
+            $this->items= $dbData['items'];
         } elseif ($rID > 0 || $this->action=='inv') {
             $mainID     = $this->action=='inv' ? clean('iID', 'integer', 'get') : $rID;
             $this->main = dbGetRow(BIZUNO_DB_PREFIX.'journal_main', "id=$mainID");
+            $GLOBALS['bizunoCurrency'] = $this->main['currency'];
             if ($this->action == 'inv') { // clear some fields to convert purchase/sales order or quote to receive/invoice
                 if (in_array($this->journalID, [3,4,6,7])) {
                     $this->main['purch_order_id']= $this->main['invoice_num'];
@@ -206,8 +208,9 @@ class journal
 // @todo this should be a setting as some want the rep to flow from the Sales Order for commissions while others just care about who fills the order.
 //              $this->main['rep_id']       = getUserCache('profile', 'contact_id', false, '0');
             }
-            $this->item = $this->items = $mainID ? dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id=$mainID") : [];
+            $this->items = $mainID ? dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id=$mainID") : [];
         }
+        $this->currencyConvert('toPost');
 //      msgDebug("\nLeaving getDbData with main record = " .print_r($this->main,  true));
 //      msgDebug("\nRead from db item records = ".print_r($this->items, true));
     }
@@ -223,7 +226,6 @@ class journal
         if ($mID > 0) {
             $main = dbGetRow(BIZUNO_DB_PREFIX."journal_main", "id=$mID");
             $item = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "ref_id=$mID", 'id');
-//          $this->currencyConvert('toPost'); // don't need as preflight is only for current post
         }
         return ['main'=>$main, 'item'=>$item];
     }
@@ -260,7 +262,7 @@ class journal
             'contact_id_b' => 0,
             'contact_id_s' => 0];
         if (in_array($this->journalID, [3,4,6,13,15,21])) { $this->setShip2Biz(); } // pre-set the ship to address
-        $this->items = $this->item = [];
+        $this->items = [];
     }
 
     /**
@@ -443,23 +445,28 @@ class journal
      */
     public function currencyConvert($action=false)
     {
-        msgDebug("\nEntering currency Convert with action = $action");
+        msgDebug("\nEntering currencyConvert with action = $action");
         if ( $this->main['currency'] == getUserCache('profile', 'currency', false, 'USD')) { return msgDebug(", returning as the currency is already the default!"); } // is already default currency
-        if (!$this->main['currency_rate']) { return msgAdd('Invalid exchange rate!'); }
-        $mainFields = ['discount','sales_tax','total_amount']; // table journal_main
-        $itemFields = ['debit_amount','credit_amount','full_price']; // table journal_item
+        if (empty($this->main['currency_rate']) || strlen($this->main['currency'])<>3) { // helps fix invalid currencies, set to default
+            $this->main['currency'] = getUserCache('profile', 'currency', false, 'USD');
+            $this->main['currency_rate'] = 1;
+        }
+        $mainFields = ['discount','freight','sales_tax','total_amount']; // table journal_main
+        $itemFields = ['debit_amount','credit_amount','full_price','amount','discount','total']; // table journal_item
         switch ($action) {
             case 'toPost':
                 msgDebug(", converting to currency: {$this->main['currency']} and rate {$this->main['currency_rate']}");
                 foreach ($mainFields as $field) { $this->main[$field] = $this->main[$field] * $this->main['currency_rate']; }
-                foreach ($this->item as $idx => $row) { foreach ($itemFields as $field) {
-                    $this->item[$idx][$field] = $this->item[$idx][$field] * $this->main['currency_rate']; } }
+                foreach ($this->items as $idx => $row) { foreach ($itemFields as $field) {
+                    if (!isset($this->items[$idx][$field])) { continue; }
+                    $this->items[$idx][$field] = $this->items[$idx][$field] * $this->main['currency_rate'];
+                } }
                 break;
             case 'toDefault':
                 msgDebug(", converting from currency: {$this->main['currency']} and rate {$this->main['currency_rate']}");
                 foreach ($mainFields as $field) { if (isset($this->main[$field])) { $this->main[$field] = $this->main[$field] / $this->main['currency_rate']; } }
-                foreach ($this->item as $idx => $row) { foreach ($itemFields as $field) {
-                    if (isset($row[$field])) { $this->item[$idx][$field] = $this->item[$idx][$field] / $this->main['currency_rate']; } } }
+                foreach ($this->items as $idx => $row) { foreach ($itemFields as $field) {
+                    if (isset($row[$field])) { $this->items[$idx][$field] = $this->items[$idx][$field] / $this->main['currency_rate']; } } }
                 break;
         }
     }
@@ -519,12 +526,8 @@ class journal
                     break;
                 default:
             }
-            $filter[] = "journal_id='{$this->main['journal_id']}'";
-            $filter[] = "invoice_num='".addslashes($this->main['invoice_num'])."'";
-            if ($this->main['id']) { $filter[] = "id<>{$this->main['id']}"; }
-            $dup = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id', implode(' AND ', $filter));
-            if ($dup) { return msgAdd(sprintf(lang('err_gl_invoice_num_dup'), pullTableLabel(BIZUNO_DB_PREFIX."journal_main", 'invoice_num', '', $this->main['journal_id']), $this->main['invoice_num'])); }
-            msgDebug("\nspecified ID but no dups, returning OK.");
+            $next_ref = $this->main['invoice_num'];
+            msgDebug("\nspecified ID, check for dups and increment if necessary");
         } else { // generate a new order/invoice value
             switch ($this->main['journal_id']) { // select the field to fetch the next number
                 case  6: if (!$this->main['waiting']) { return msgAdd(lang('err_gl_invoice_num_empty')); }
@@ -532,6 +535,7 @@ class journal
                 case 15:
                 case 16: return true;
                 case 17: $str_field = 'next_ref_j18'; break;
+                case 18: return 'DP'.date('Ymd'); // reference field was left blank, generate a default value of today
                 case 19: $str_field = 'next_ref_j12'; break;
                 case 21:
                 case 22: $str_field = 'next_ref_j20'; break;
@@ -540,8 +544,14 @@ class journal
             $next_ref = dbGetValue(BIZUNO_DB_PREFIX."current_status", $str_field);
             if (!$next_ref) { return msgAdd(sprintf(lang('GL_ERROR_CANNOT_FIND'), lang('db_next_id'), BIZUNO_DB_PREFIX."current_status")); }
             $this->main['invoice_num'] = $next_ref;
-            msgDebug(" generated ID, returning ID# ".$this->main['invoice_num']);
+            msgDebug(" generated ID, returning ID# $next_ref");
         }
+        // check for dups
+        $filter[] = "journal_id='{$this->main['journal_id']}'";
+        $filter[] = "invoice_num='".addslashes($next_ref)."'";
+        if ($this->main['id']) { $filter[] = "id<>{$this->main['id']}"; }
+        $dup = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id', implode(' AND ', $filter));
+        if ($dup) { return msgAdd(sprintf(lang('err_gl_invoice_num_dup'), pullTableLabel("journal_main", 'invoice_num', $this->main['journal_id']), $next_ref)); }
         if (strlen($str_field) > 0) {
             $next_ref++; // use the built in php string increment
             $next_ref = dbWrite(BIZUNO_DB_PREFIX."current_status", [$str_field => $next_ref], 'update');
@@ -567,8 +577,8 @@ class journal
             if (!in_array($row['gl_account'], $affectedGlAccts)) { $affectedGlAccts[] = $row['gl_account']; }
             if (isset($row['sku']) && $row['sku']) { // get the cogs data
                 $result = dbGetValue(BIZUNO_DB_PREFIX.'inventory', ['gl_inv','gl_cogs'], "sku='{$row['sku']}'");
-                if (!in_array($result['gl_inv'],  $affectedGlAccts)) { $affectedGlAccts[] = $result['gl_inv']; }
-                if (!in_array($result['gl_cogs'], $affectedGlAccts)) { $affectedGlAccts[] = $result['gl_cogs']; }
+                if (!empty($result['gl_inv'])  && !in_array($result['gl_inv'],  $affectedGlAccts)) { $affectedGlAccts[] = $result['gl_inv']; }
+                if (!empty($result['gl_cogs']) && !in_array($result['gl_cogs'], $affectedGlAccts)) { $affectedGlAccts[] = $result['gl_cogs']; }
             }
         }
     }

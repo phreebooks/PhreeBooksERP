@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2019-02-02
  * @filesource /controller/module/phreeform/design.php
  */
 
@@ -492,7 +492,8 @@ function pfTableUpdate() {
                     'new'   =>['order'=>10,'icon'=>'add',   'events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]],
                     'verify'=>['order'=>20,'icon'=>'verify','events'=>['onClick'=>"verifyTables();"]]]],
             'columns' => [
-                'action'      => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'action'      => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>45],
+                    'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions' => [
                         'fldEdit' =>['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                         'fldTrash'=>['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
@@ -574,7 +575,8 @@ function pfTableUpdate() {
             case 'frm':
             case 'ltr':
                 $data['columns'] = [
-                    'action' => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                    'action' => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>45],
+                        'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                         'actions'=> [
                             'flsProp' => ['order'=>20,'icon'=>'settings','events'=>['onClick'=>"jq('#dgFields').datagrid('acceptChanges');
     var rowIndex= jq('#$name').datagrid('getRowIndex', jq('#$name').datagrid('getSelected'));
@@ -596,7 +598,7 @@ function pfTableUpdate() {
             case 'rpt':
             default:
                 $data['columns'] = [
-                    'action' => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
+                    'action' => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>45],'events'=>['formatter'=>$name.'Formatter'],
                         'actions'=> [
                             'fldEdit' => ['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                             'fldTrash'=> ['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
@@ -661,7 +663,7 @@ function pfTableUpdate() {
         $linePoints= [];
         for ($i=1; $i<7; $i++) { $linePoints[] = ['id'=>$i,'text'=>$i]; }
         $selFont   = phreeformFonts();
-        $data = ['type'=>'popup','title'=>lang('settings').(isset($settings->title)?' - '.$settings->title:''),'attr'=>['id'=>'win_settings','width'=>1000],
+        $data = ['type'=>'popup','title'=>lang('settings').(isset($settings->title)?' - '.$settings->title:''),'attr'=>['id'=>'win_settings','height'=>700,'width'=>1110],
             'toolbars'=> ['tbFields'=>['icons'=>[
                 'fldClose'=> ['order'=> 10,'icon'=>'close','label'=>lang('close'),'events'=>['onClick'=>"bizWindowClose('win_settings');"]],
                 'fldSave' => ['order'=> 20,'icon'=>'save', 'label'=>lang('save'), 'events'=>['onClick'=>"fieldIndex=$index; jq('#frmFieldSettings').submit();"]]]]],
@@ -911,7 +913,7 @@ jq('#frmFieldSettings').submit(function (e) {
             'source' => [
                 'actions' => ['new'=>['order'=>10,'icon'=>'add','size'=>'small','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
             'columns' => [
-                'action' => ['order'=>1, 'label'=>lang('action'), 'attr'=>['width'=>70],
+                'action' => ['order'=>1, 'label'=>lang('action'),'attr'=>['width'=>45],
                     'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
                     'actions'=> ['trash' => ['order'=>50,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'title'         => ['order'=>10, 'label'=>lang('title'), 'attr'=>['width'=>150, 'resizable'=>true, 'editor'=>'text']],
@@ -982,7 +984,8 @@ jq('#frmFieldSettings').submit(function (e) {
             'events' => ['data'   =>'dataGroups'],
             'source' => ['actions'=>['new'=>['order'=>10,'icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
             'columns'=> [
-                'action' => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'action' => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>45],
+                    'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> [
                         'fldEdit' => ['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                         'fldTrash'=> ['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
@@ -1012,7 +1015,8 @@ jq('#frmFieldSettings').submit(function (e) {
             'events' => ['data'   =>'dataOrder'],
             'source' => ['actions'=>['new'=>['order'=>10,'icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
             'columns' => [
-                'action' => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'action' => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>45],
+                    'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> [
                         'fldEdit' => ['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                         'fldTrash'=> ['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
@@ -1035,7 +1039,8 @@ jq('#frmFieldSettings').submit(function (e) {
             'events' => ['data'   =>'dataFilters'],
             'source' => ['actions'=>['new'=>['order'=>10,'icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
             'columns'=> [
-                'action'    => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'action'    => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>45],
+                    'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> [
                         'fldEdit' => ['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                         'fldTrash'=> ['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],

@@ -32,20 +32,12 @@ class j19 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->item = $item;
+        $this->items = $item;
     }
 
 /*******************************************************************************************************************/
 // START Edit Methods
 /*******************************************************************************************************************/
-    /**
-     * Pulls the data for the specified journal and populates the structure
-     * @param array $data - current working structure
-     * @param array $structure - table structures
-     * @param integer $rID - record id of the transaction to load from the database
-     */
-    public function getDataMain() { }
-
     /**
      * Tailors the structure for the specific journal
      */
@@ -152,20 +144,20 @@ class j19 extends jCommon
         $ref_closed= false;
         $str_field = 'qty_stock';
         // adjust inventory stock status levels (also fills inv_list array)
-        $item_rows_to_process = count($this->item); // NOTE: variable needs to be here because $this->item may grow within for loop (COGS)
+        $item_rows_to_process = count($this->items); // NOTE: variable needs to be here because $this->items may grow within for loop (COGS)
 // the cogs rows are added after this loop ..... the code below needs to be rewritten
         for ($i = 0; $i < $item_rows_to_process; $i++) {
-            if (!in_array($this->item[$i]['gl_type'], ['itm','adj','asy','xfr'])) { continue; }
-            if (isset($this->item[$i]['sku']) && $this->item[$i]['sku'] <> '') {
-                $inv_list = $this->item[$i];
-                $inv_list['price'] = $this->item[$i]['qty'] ? (($this->item[$i]['debit_amount'] + $this->item[$i]['credit_amount']) / $this->item[$i]['qty']) : 0;
+            if (!in_array($this->items[$i]['gl_type'], ['itm','adj','asy','xfr'])) { continue; }
+            if (isset($this->items[$i]['sku']) && $this->items[$i]['sku'] <> '') {
+                $inv_list = $this->items[$i];
+                $inv_list['price'] = $this->items[$i]['qty'] ? (($this->items[$i]['debit_amount'] + $this->items[$i]['credit_amount']) / $this->items[$i]['qty']) : 0;
                 $inv_list['qty'] = -$inv_list['qty'];
                 if (!$this->calculateCOGS($inv_list)) { return false; }
             }
         }
         if ($this->main['so_po_ref_id'] > 0) { $this->setInvRefBalances($this->main['so_po_ref_id']); }
         // update inventory status
-        foreach ($this->item as $row) {
+        foreach ($this->items as $row) {
             if (!isset($row['sku']) || !$row['sku']) { continue; } // skip all rows without a SKU
             $item_cost = $full_price = 0;
             $row['qty'] = -$row['qty'];
@@ -185,9 +177,9 @@ class j19 extends jCommon
     {
         msgDebug("\n  unPosting Inventory ...");
         if (!$this->rollbackCOGS()) { return false; }
-        for ($i = 0; $i < count($this->item); $i++) {
-            if (!isset($this->item[$i]['sku']) || !$this->item[$i]['sku']) { continue; }
-            if (!$this->setInvStatus($this->item[$i]['sku'], 'qty_stock', $this->item[$i]['qty'])) { return; }
+        for ($i = 0; $i < count($this->items); $i++) {
+            if (!isset($this->items[$i]['sku']) || !$this->items[$i]['sku']) { continue; }
+            if (!$this->setInvStatus($this->items[$i]['sku'], 'qty_stock', $this->items[$i]['qty'])) { return; }
         }
         if ($this->main['so_po_ref_id'] > 0) { $this->setInvRefBalances($this->main['so_po_ref_id'], false); }
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."inventory_history WHERE ref_id = {$this->main['id']}");

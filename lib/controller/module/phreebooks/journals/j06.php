@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2019-02-28
  * @filesource /lib/controller/module/phreebooks/journals/j06.php
  */
 
@@ -33,34 +33,12 @@ class j06 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->item = $item;
-        $this->currency = getUserCache('profile', 'currency', false, 'USD');
+        $this->items = $item;
     }
 
 /*******************************************************************************************************************/
 // START Edit Methods
 /*******************************************************************************************************************/
-    /**
-     * Pulls the data for the specified journal and populates the structure
-     * @param array $structure - table structures
-     */
-    public function getDataMain(&$structure)
-    {
-        if ($this->action == 'inv') { // clear some fields to convert purchase/sales order or quote to receive/invoice
-            $this->main['journal_id']    = $this->journalID;
-            $this->main['so_po_ref_id']  = $this->main['id'];
-            $this->main['id']            = '';
-            $this->main['post_date']     = date('Y-m-d');
-            $this->main['terminal_date'] = date('Y-m-d'); // get default based on type
-            $this->main['purch_order_id']= $this->main['invoice_num'];
-            $this->main['terminal_date'] = localeCalculateDate(date('Y-m-d'), 30);
-            $this->main['invoice_num']   = '';
-// @todo this should be a setting as some want the rep to flow from the Sales Order for commissions while others just care about who fills the order.
-//                        $this->main['rep_id']     = getUserCache('profile', 'contact_id', false, '0');
-        }
-        dbStructureFill($structure, $this->main);
-    }
-
     /**
      * Tailors the structure for the specific journal
      */
@@ -106,32 +84,29 @@ class j06 extends jCommon
             }
             $this->items = sortOrder($this->items, 'item_cnt');
         }
-        $debitCredit = in_array($this->journalID, [3,4,6,13,21]) ? 'debit' : 'credit';
-        $this->item = [];
-        if (sizeof($this->items) > 0) {
-            foreach ($this->items as $row) {
-                if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
-                if (empty($row['bal'])) { $row['bal'] = 0; }
-                if (empty($row['qty'])) { $row['qty'] = 0; }
-                if (is_null($row['sku'])) { $row['sku'] = ''; } // bug fix for easyui combogrid, doesn't like null value
-                $row['description'] = str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
-                if (!isset($row['price'])) { $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
-                if ($row['item_ref_id']) {
-                    $filled    = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['item_ref_id']} AND gl_type='itm'", false);
-                    $row['bal']= $row['bal'] - $filled + $row['qty']; // so/po - filled prior + this order
-                }
-                if ($row['sku']) { // now fetch some inventory details for the datagrid
-                    $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['qty_stock', 'item_weight'], "sku='{$row['sku']}'");
-                    $inv_adj = in_array($this->journalID, [3,4,6,13,21]) ? -$row['qty'] : $row['qty'];
-                    $row['qty_stock']  = $inv['qty_stock'] + $inv_adj;
-                    $row['item_weight']= $inv['item_weight'];
-                }
-                $this->item[] = $row;
+        $dbData = [];
+        foreach ($this->items as $row) {
+            if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
+            if (empty($row['bal'])) { $row['bal'] = 0; }
+            if (empty($row['qty'])) { $row['qty'] = 0; }
+            if (is_null($row['sku'])) { $row['sku'] = ''; } // bug fix for easyui combogrid, doesn't like null value
+            $row['description'] = str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
+            if (!isset($row['price'])) { $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
+            if ($row['item_ref_id']) {
+                $filled    = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['item_ref_id']} AND gl_type='itm'", false);
+                $row['bal']= $row['bal'] - $filled + $row['qty']; // so/po - filled prior + this order
             }
+            if ($row['sku']) { // now fetch some inventory details for the datagrid
+                $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['qty_stock', 'item_weight'], "sku='{$row['sku']}'");
+                $inv_adj = in_array($this->journalID, [3,4,6,13,21]) ? -$row['qty'] : $row['qty'];
+                $row['qty_stock']  = $inv['qty_stock'] + $inv_adj;
+                $row['item_weight']= $inv['item_weight'];
+            }
+            $dbData[] = $row;
         }
-        if ($debitCredit=='credit') { $map['credit_amount']= ['type'=>'field','index'=>'total']; }
-        if ($debitCredit=='debit')  { $map['debit_amount'] = ['type'=>'field','index'=>'total']; }
-        $this->dgDataItem = formatDatagrid($this->item, 'datagridData', $structure, $map);
+        $map['credit_amount']= ['type'=>'trash'];
+        $map['debit_amount'] = ['type'=>'field','index'=>'total'];
+        $this->dgDataItem = formatDatagrid($dbData, 'datagridData', $structure, $map);
     }
 
     /**
@@ -228,7 +203,7 @@ class j06 extends jCommon
         $output= [];
         $skus  = [];
         $cogsTypes = explode(',',COG_ITEM_TYPES);
-        foreach ($this->item as $row) { if (isset($row['sku']) && $row['sku'] <> '') { $skus[] = $row['sku']; } }
+        foreach ($this->items as $row) { if (!empty($row['sku']) && $row['gl_type'] == 'itm') { $skus[] = $row['sku']; } }
         if (sizeof($skus) > 0) {
             $result = dbGetMulti(BIZUNO_DB_PREFIX."inventory", "sku IN ('".implode("','", $skus)."') AND inventory_type IN ('".implode("','", $cogsTypes)."') AND cost_method='a'");
             $askus = [];
@@ -287,19 +262,16 @@ class j06 extends jCommon
             }
         }
         // adjust inventory stock status levels (also fills inv_list array)
-        $item_rows_to_process = count($this->item); // NOTE: variable needs to be here because $this->item may grow within for loop (COGS)
-// the cogs rows are added after this loop ..... the code below needs to be rewritten
+        $item_rows_to_process = count($this->items); // NOTE: variable needs to be here because $this->items may grow within for loop (COGS)
         for ($i = 0; $i < $item_rows_to_process; $i++) {
-            if (!in_array($this->item[$i]['gl_type'], ['itm','adj','asy','xfr'])) { continue; }
-            if (isset($this->item[$i]['sku']) && $this->item[$i]['sku'] <> '') {
-                $inv_list = $this->item[$i];
-                $inv_list['price'] = $this->item[$i]['qty'] ? (($this->item[$i]['debit_amount'] + $this->item[$i]['credit_amount']) / $this->item[$i]['qty']) : 0;
-                if (!$this->calculateCOGS($inv_list)) { return false; }
-            }
+            if (empty($this->items[$i]['sku']) || !in_array($this->items[$i]['gl_type'], ['itm','adj','asy','xfr'])) { continue; }
+            $inv_list = $this->items[$i];
+            $inv_list['price'] = $this->items[$i]['qty'] ? (($this->items[$i]['debit_amount'] + $this->items[$i]['credit_amount']) / $this->items[$i]['qty']) : 0;
+            if (!$this->calculateCOGS($inv_list)) { return false; }
         }
         if ($this->main['so_po_ref_id'] > 0) { $this->setInvRefBalances($this->main['so_po_ref_id']); }
         // update inventory status
-        foreach ($this->item as $row) {
+        foreach ($this->items as $row) {
             if (!isset($row['sku']) || !$row['sku']) { continue; } // skip all rows without a SKU
             $item_cost = $full_price = 0;
             if (getModuleCache('inventory', 'settings', 'general', 'auto_cost') == 'PR' && $row['qty']) {
@@ -321,9 +293,9 @@ class j06 extends jCommon
     {
         msgDebug("\n  unPosting Inventory ...");
         if (!$this->rollbackCOGS()) { return false; }
-        for ($i = 0; $i < count($this->item); $i++) {
-            if (!isset($this->item[$i]['sku']) || !$this->item[$i]['sku']) { continue; }
-            if (!$this->setInvStatus($this->item[$i]['sku'], 'qty_stock', -$this->item[$i]['qty'])) { return; }
+        for ($i = 0; $i < count($this->items); $i++) {
+            if (empty($this->items[$i]['sku']) || $this->items[$i]['gl_type'] <> 'itm') { continue; }
+            if (!$this->setInvStatus($this->items[$i]['sku'], 'qty_stock', -$this->items[$i]['qty'])) { return; }
         }
         if ($this->main['so_po_ref_id'] > 0) { $this->setInvRefBalances($this->main['so_po_ref_id'], false); }
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."inventory_history WHERE ref_id = {$this->main['id']}");

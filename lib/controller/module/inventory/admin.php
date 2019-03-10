@@ -17,17 +17,17 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-18
+ * @version    3.x Last Update: 2019-03-05
  * @filesource /lib/controller/module/inventory/admin.php
  */
 
 namespace bizuno;
 
-class inventoryAdmin 
+class inventoryAdmin
 {
     public $moduleID = 'inventory';
 
-    function __construct() 
+    function __construct()
     {
         $this->lang      = getLang($this->moduleID);
         $this->invMethods= ['byContact', 'bySKU', 'quantity']; // for install, pre-select some pricing methods to install
@@ -58,9 +58,14 @@ class inventoryAdmin
                 'fyCloseHome'=>['page'=>'tools', 'class'=>'inventoryTools', 'order'=>50],
                 'fyClose'    =>['page'=>'tools', 'class'=>'inventoryTools', 'order'=>50]]]]];
         $this->phreeformProcessing = [
-            'inv_sku'   => ['text'=>lang('sku'),  'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'inv_image' => ['text'=>lang('image'),'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'inv_mvmnt' => ['text'=>lang('annual_sales').' (sku)','group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat']];
+            'inv_sku'  => ['text'=>lang('sku'),  'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
+            'inv_image'=> ['text'=>lang('image'),'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
+            'inv_mv0'  => ['text'=>lang('current_sales')    .' (sku)','group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
+            'inv_mv1'  => ['text'=>lang('last_1month_sales').' (sku)','group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
+            'inv_mv3'  => ['text'=>lang('last_3month_sales').' (sku)','group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
+            'inv_mv6'  => ['text'=>lang('last_6month_sales').' (sku)','group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
+            'inv_mv12' => ['text'=>lang('annual_sales')     .' (sku)','group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
+            'inv_stk'  => ['text'=>lang('inventory_qty_min').' (sku)','group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat']];
         $this->notes = [$this->lang['note_inventory_install_1']];
     }
 
@@ -152,7 +157,7 @@ class inventoryAdmin
             'lang' => $this->lang];
         $layout = array_replace_recursive($layout, adminStructure($this->moduleID, $this->settingsStructure(), $this->lang), $data);
     }
-    
+
     private function getViewTools()
     {
         $btnHistTest  = ['label'=>$this->lang['inv_tools_repair_test'], 'attr'=>['type'=>'button','value'=>$this->lang['inv_tools_btn_test']],

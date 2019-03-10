@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2019-03-07
  * @filesource /lib/controller/module/phreebooks/totals/shipping/shipping.php
  */
 
@@ -51,9 +51,10 @@ class shipping
             'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
     }
 
-    public function glEntry($request, &$main, &$item, &$begBal=0)
+    public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $shipping = isset($request['freight']) ? clean($request['freight'], 'currency') : 0;
+        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
+        $shipping = isset($request['freight']) ? clean($request['freight'], 'float') : 0;
 //        if ($shipping == 0) return; // this will discard bill recipient, 3rd party and resi information if paid by customer
         if (!isset($request['totals_shipping_bill_type'])) { $request['totals_shipping_bill_type'] = 'sender'; }
         $desc = "title:".$this->lang['title'];
@@ -100,7 +101,8 @@ class shipping
             'totals_shipping_opt' => ['icon'=>'settings','size'=>'small','events'=> ['onClick'=>"jq('#totals_shipping_div').toggle('slow');"]],
             'method_code' => ['options'=>['width'=>300], 'values'=>$choices, 'attr'=>['type'=>'select']],
             'totals_shipping_est' =>['attr'=>['type'=>'button','value'=>lang('rate_quote')],'events'=>['onClick'=>"shippingEstimate(".JOURNAL_ID.");"]],
-            'freight' => ['label'=>$this->lang['label'],'events'=>['onChange'=>"bizTextSet('freight', newVal, 'currency'); if (formatCurrency(newVal)!=oldVal) { totalUpdate('total shipping'); }"],'attr'=>['type'=>'currency','value'=>'0']]];
+            'freight' => ['label'=>$this->lang['label'],'lblStyle'=>['min-width'=>'60px'],'attr'=>['type'=>'currency','value'=>0],
+                'events'=>['onChange'=>"bizTextSet('freight', newVal, 'currency'); if (formatCurrency(newVal)!=oldVal) { totalUpdate('total shipping'); }"]]];
         $resi = getModuleCache('extShipping', 'settings', 'general', 'resi_checked', 1);
         if ($resi) { $this->fields['totals_shipping_resi']['attr']['checked'] = 'checked'; }
         if (isset($data['items'])) {
@@ -152,10 +154,10 @@ class shipping
         $type       = in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
         return "function totals_shipping(begBalance) {
     var newBalance = begBalance;
-    var shipping   = cleanCurrency(bizTextGet('freight'));
+    var shipping   = parseFloat(bizNumGet('freight'));
     var taxShipping= $taxShipping;
     if (isNaN(shipping)) { shipping = 0; }
-    bizTextSet('freight', shipping, 'currency');
+    bizNumSet('freight', shipping);
     newBalance += shipping;
 
     if (!taxShipping) return newBalance;
@@ -183,7 +185,7 @@ class shipping
     return newBalance + newTaxTotal;
 }";
     }
-    
+
     /**
      * Calculates and creates a journal item entry for sales tax on shipping at the contacts rate
      * @param type $shipping
@@ -192,14 +194,14 @@ class shipping
      * @return int
      */
     private function getShippingTaxGL($shipping, $main, &$item)
-    {       
+    {
         msgDebug("\nEntering getShippingTaxGL with shipping = $shipping");
         if (!empty($main['tax_rate_id'])) {
             $taxID = $main['tax_rate_id']; // pull from main record as it has been set
         } else {
           $taxID = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'tax_rate_id', "id={$main['contact_id_b']}"); // causes bad behavior is contact record is not set properly
         }
-        if (!$taxID || $taxID==-1) { return 0; } // return if no tax or per inventory item, 
+        if (!$taxID || $taxID==-1) { return 0; } // return if no tax or per inventory item,
         $gl      = [];
         $totalTax= 0;
         $rates   = loadTaxes($this->cType);

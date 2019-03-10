@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-10
+ * @version    3.x Last Update: 2019-02-08
  * @filesource /lib/controller/module/bizuno/dashboard.php
  */
 
@@ -26,7 +26,7 @@ namespace bizuno;
 class bizunoDashboard
 {
     public $moduleID = 'bizuno';
-        
+
     function __construct()
     {
         $this->lang = getLang($this->moduleID);
@@ -131,8 +131,8 @@ class bizunoDashboard
             $path   = explode(':', $dashboard);
             if (in_array($dashboard, $current)) { continue; } // already active, skip
             $newAdd = $this->loadDashboard($path[0], $path[1]);
-            if ($newAdd) { 
-                if (method_exists('newAdd', 'install')) { 
+            if ($newAdd) {
+                if (method_exists('newAdd', 'install')) {
                     $newAdd->install($path[0], $menu_id);
                 } else {
                     if (empty($newAdd->settings)) { $newAdd->settings = []; }
@@ -201,7 +201,7 @@ class bizunoDashboard
      * Deletes a dashboard from the users profile
      * @return null, removes the table row from the users profile
      */
-    public function delete() 
+    public function delete()
     {
         $menu_id     = clean('menuID',     'text','get');
         $module_id   = clean('moduleID',   'text','get');
@@ -362,7 +362,6 @@ class bizunoDashboard
             if (in_array(getUserCache('profile', 'role_id', false, 0), $roles)) { return true; } // this role
             if (in_array('0', $roles)) { $rolesNone = true; } // no users
         }
-        msgDebug("\nChecking else");
         if (!$usersNone && !$rolesNone && $myDash->security > 0) { return true; }
         return false;
     }

@@ -94,34 +94,26 @@ class phreebooksCurrency
         $layout = array_replace_recursive($layout, $data);
     }
 
- //   htmlToolbar($output, $viewData, 'tbCurrency');
-//$output['body'] .= html5('frmCurrency', $viewData['forms']['frmCurrency'])."
-    
+    /**
+     * Generates the view for currencies editing
+     * @param array $values - current settings
+     * @param string $iso - ISO Currency code
+     * @return array - view structure
+     */
     private function getViewCurrency($values, $iso)
     {
-        $title  = ['label'=>lang('title'),            'attr'=>['value'=>$values['title']]];
-        $code   = ['label'=>lang('code'),             'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']];
-        $is_def = ['label'=>lang('default'),          'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getUserCache('profile', 'currency', false, 'USD')==$iso?true:false]];
-        $xrate  = ['label'=>lang('exc_rate'),         'attr'=>['value'=>$values['value']]];
-        $dec_len= ['label'=>$this->lang['dec_length'],'attr'=>['value'=>$values['dec_len']]];
-        $dec_pt = ['label'=>$this->lang['dec_point'], 'attr'=>['value'=>$values['dec_pt']]];
-        $sep    = ['label'=>lang('separator'),        'attr'=>['value'=>$values['sep']]];
-        $prefix = ['label'=>lang('prefix'),           'attr'=>['value'=>$values['prefix']]];
-        $suffix = ['label'=>lang('suffix'),           'attr'=>['value'=>$values['suffix']]];
-        $pfxneg = ['label'=>$this->lang['neg_prefix'],'attr'=>['value'=>isset($values['pfxneg']) ? $values['pfxneg'] : '-']];
-        $sfxneg = ['label'=>$this->lang['neg_suffix'],'attr'=>['value'=>isset($values['sfxneg']) ? $values['sfxneg'] : '']];
         return [
-            'title'  => array_merge($title,  ['col'=>1,'break'=>true]),
-            'code'   => array_merge($code,   ['col'=>1,'break'=>true]),
-            'is_def' => array_merge($is_def, ['col'=>1,'break'=>true]),
-            'xrate'  => array_merge($xrate,  ['col'=>1,'break'=>true]),
-            'dec_len'=> array_merge($dec_len,['col'=>2,'break'=>true]),
-            'dec_pt' => array_merge($dec_pt, ['col'=>2,'break'=>true]),
-            'sep'    => array_merge($sep,    ['col'=>2,'break'=>true]),
-            'prefix' => array_merge($prefix, ['col'=>3,'break'=>true]),
-            'suffix' => array_merge($suffix, ['col'=>3,'break'=>true]),
-            'pfxneg' => array_merge($pfxneg, ['col'=>3,'break'=>true]),
-            'sfxneg' => array_merge($sfxneg, ['col'=>3,'break'=>true])];
+        'title'  => ['col'=>1,'break'=>true,'label'=>lang('title'),            'attr'=>['value'=>$values['title']]],
+        'code'   => ['col'=>1,'break'=>true,'label'=>lang('code'),             'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']],
+        'is_def' => ['col'=>1,'break'=>true,'label'=>lang('default'),          'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getUserCache('profile', 'currency', false, 'USD')==$iso?true:false]],
+        'xrate'  => ['col'=>1,'break'=>true,'label'=>lang('exc_rate'),         'attr'=>['value'=>$values['value']]],
+        'dec_len'=> ['col'=>2,'break'=>true,'label'=>$this->lang['dec_length'],'attr'=>['value'=>$values['dec_len']]],
+        'dec_pt' => ['col'=>2,'break'=>true,'label'=>$this->lang['dec_point'], 'attr'=>['value'=>$values['dec_pt']]],
+        'sep'    => ['col'=>2,'break'=>true,'label'=>lang('separator'),        'attr'=>['value'=>$values['sep']]],
+        'prefix' => ['col'=>3,'break'=>true,'label'=>lang('prefix'),           'attr'=>['value'=>$values['prefix']]],
+        'suffix' => ['col'=>3,'break'=>true,'label'=>lang('suffix'),           'attr'=>['value'=>$values['suffix']]],
+        'pfxneg' => ['col'=>3,'break'=>true,'label'=>$this->lang['neg_prefix'],'attr'=>['value'=>isset($values['pfxneg']) ? $values['pfxneg'] : '-']],
+        'sfxneg' => ['col'=>3,'break'=>true,'label'=>$this->lang['neg_suffix'],'attr'=>['value'=>isset($values['sfxneg']) ? $values['sfxneg'] : '']]];
     }
     
     /**

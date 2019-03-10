@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-17
+ * @version    3.x Last Update: 2019-02-08
  * @filesource /lib/model/registry.php
  */
 
@@ -25,8 +25,8 @@ namespace bizuno;
 
 bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
 
-final class bizRegistry 
-{    
+final class bizRegistry
+{
     /**
      * Initializes the registry class
      */
@@ -56,11 +56,11 @@ final class bizRegistry
         $this->initPhreeForm($bizunoMod); // report structure
         dbWriteCache($usrEmail, true);
         msgDebug("\nReturning from initRegistry"); // with bizunoUser: ".print_r($bizunoUser,true));
-//        msgDebug("\nReturning from initRegistry with bizunoMod: " .print_r($bizunoMod, true));
+//      msgDebug("\nReturning from initRegistry with bizunoMod: " .print_r($bizunoMod, true));
     }
-    
+
     /**
-     * Load original configuration, properties get reloaded but other 
+     * Load original configuration, properties get reloaded but other
      * @return type
      */
     private function initSettings()
@@ -69,7 +69,7 @@ final class bizRegistry
         $rows = dbGetMulti(BIZUNO_DB_PREFIX.'configuration');
         foreach ($rows as $row) {
             $bizData = json_decode($row['config_value'], true);
-            if (!empty($bizData['properties']['status'])) { 
+            if (!empty($bizData['properties']['status'])) {
                 $modSettings[$row['config_key']] = $bizData;
                 unset($modSettings[$row['config_key']]['hooks']); // will clear hooks to be rebuilt later
             }
@@ -149,6 +149,7 @@ final class bizRegistry
     {
         global $bizunoUser;
         msgDebug("\ninitUser with email = $usrEmail biz_id = $bizID");
+        $lang = $bizunoUser['profile']['language']; // preserve the language selection
         if (!$row = dbGetRow(BIZUNO_DB_PREFIX.'users', "email='$usrEmail'", true, false)) { return; }
         msgDebug("\nRead original row from users table: ".print_r($row, true));
         $settings = json_decode($row['settings'], true);
@@ -157,18 +158,19 @@ final class bizRegistry
         unset($row['settings']);
         $bizunoUser = ['profile' => array_replace_recursive($output, $row)];
         // set some known facts
-        $bizunoUser['profile']['email'] = $usrEmail;
-        $bizunoUser['profile']['biz_id']= $bizID;
-        
+        $bizunoUser['profile']['email']   = $usrEmail;
+        $bizunoUser['profile']['biz_id']  = $bizID;
+        $bizunoUser['profile']['language']= $lang;
+
         // OLD WAY - DEPRECATED SETTING CAN BE DELETED AFTER 30 DAYS FROM 9/15/2018 also in view.php
         $colors = getUserCache('profile', 'colors');
-        if (!empty($colors)) { 
+        if (!empty($colors)) {
             $icons = getUserCache('profile', 'theme', false, 'default');
             setUserCache('profile', 'icons', $icons);
             setUserCache('profile', 'theme', $colors);
             clearUserCache('profile', 'colors');
         } // END OLD WAY
-        
+
         // Check to make sure the themes and icons folders are still there
         $theme = getUserCache('profile', 'theme');
         if ('default' != $theme) {
@@ -224,7 +226,7 @@ final class bizRegistry
     private function setModuleStatus($mID, $status=0)
     {
         global $bizunoMod;
-        if ($status) { 
+        if ($status) {
             $props= dbGetValue(BIZUNO_DB_PREFIX.'configuration', 'config_value', "config_key='$mID'");
             $vals = json_decode($props, true);
             $vals['properties']['status'] = $status;
@@ -232,7 +234,7 @@ final class bizRegistry
             $GLOBALS['updateModuleCache'][$mID] = true;
         } else { setModuleCache($mID, 'properties', 'status', 0); }
     }
-    
+
     /**
      * Load any system wide language to the registry language cache
      * @global type $structure
@@ -244,11 +246,11 @@ final class bizRegistry
         foreach ($structure['lang'] as $key => $value) { $bizunoLang[$key] = $value; }
     }
 
-    
+
     /**
      * Sets the hooks array from a given module, if present
      * @param array $structure - array of hooks for the requested module
-     * @param string $hookID - 
+     * @param string $hookID -
      * @return type
      */
     public function setHooks($structure, $module, $path)
@@ -256,7 +258,7 @@ final class bizRegistry
         global $bizunoMod;
         if (!isset($structure['hooks'])) { return; }
         foreach ($structure['hooks'] as $mod => $page) {
-            foreach ($page as $pageID => $pageProps) { 
+            foreach ($page as $pageID => $pageProps) {
                 foreach ($pageProps as $method => $methodProps) {
                     $methodProps['path'] = $path;
                     $bizunoMod[$mod]['hooks'][$pageID][$method][$module] = $methodProps;
@@ -266,7 +268,7 @@ final class bizRegistry
     }
 
     /**
-     * 
+     *
      * @global array $bizunoMod
      * @param type $structure
      * @return type
@@ -279,7 +281,7 @@ final class bizRegistry
     }
 
     /**
-     * 
+     *
      * @global array $bizunoUser
      * @param array $bizunoMod
      */
@@ -288,9 +290,9 @@ final class bizRegistry
         global $bizunoUser;
         $bizunoMod['bizuno']['stores'] = dbGetStores();
     }
-    
+
     /**
-     * 
+     *
      * @param array $bizunoMod
      */
     private function initPhreeBooks(&$bizunoMod)
@@ -299,7 +301,7 @@ final class bizRegistry
         $output  = [];
         $taxRates= dbGetMulti(BIZUNO_DB_PREFIX."tax_rates");
         foreach ($taxRates as $row) { // Needs to be auto indexed so the javascript doesn't break
-            if     (!empty($row['inactive'])) { $row['status'] = 2;} 
+            if     (!empty($row['inactive'])) { $row['status'] = 2;}
             elseif ($row['start_date']>=$date || $row['end_date']<=$date) { $row['status'] = 1; }
             else   { $row['status'] = 0; }
             $row['rate'] = $row['tax_rate'];
@@ -315,7 +317,7 @@ final class bizRegistry
     }
 
     /**
-     * 
+     *
      * @param array $bizunoMod
      */
     private function initPhreeForm(&$bizunoMod)
@@ -347,7 +349,7 @@ final class bizRegistry
     }
 
     /**
-     * 
+     *
      * @param type $usrEmail
      */
     private function setUserSecurity($usrEmail)
@@ -427,7 +429,7 @@ final class bizRegistry
     }
 
     /**
-     * 
+     *
      */
     public function initMethods($structure)
     {
@@ -436,8 +438,9 @@ final class bizRegistry
         $structure['dirMethods'][] = 'dashboards'; // auto-add dashboards
         $methods = [];
         foreach ($structure['dirMethods'] as $folderID) {
-            msgDebug("\ninitMethods is looking at module: {$structure['id']} and folder $folderID");
-            if (!file_exists($structure['path']."$folderID/")) { continue; } 
+            msgDebug("\ninitMethods is looking at module: {$structure['id']} and path {$structure['path']} and folder $folderID");
+            if (!file_exists($structure['path']."$folderID/")) { continue; }
+            msgDebug("\nreading methods");
             $this->methodRead($methods, $structure['path']."$folderID/");
             if (defined('BIZUNO_CUSTOM') && $folderID <> 'dashboards') {
                 msgDebug("\ninitMethods is looking at customizations for module: {$structure['id']} and folder $folderID");
@@ -447,9 +450,9 @@ final class bizRegistry
             $this->initMethodList($structure, $folderID, $methods);
         }
     }
-    
+
     /**
-     * 
+     *
      * @global array $bizunoMod
      * @param type $structure
      * @param type $folderID
@@ -458,7 +461,7 @@ final class bizRegistry
     private function initMethodList($structure, $folderID, $methods)
     {
         global $bizunoMod;
-        $module = $structure['id']; 
+        $module = $structure['id'];
         msgDebug("\ninitMethodList is looking at number of methods = ".(sizeof($methods)-2));
         foreach ($methods as $method => $path) {
             if (in_array($method, ['.', '..'])) { continue; }
@@ -528,7 +531,7 @@ final class bizRegistry
             }
         }
     }
-    
+
     private function reSortExtensions($myAcct)
     {
         $output = [];

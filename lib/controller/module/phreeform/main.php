@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-18
+ * @version    3.x Last Update: 2019-02-15
  * @filesource /controller/module/phreeform/main.php
  */
 
@@ -68,12 +68,12 @@ class phreeformMain
                 'mimeFrm' => ['order'=>40,'icon'=>'mimeDoc','hidden'=>($this->security>1)?false:true,'events'=>['onClick'=>"hrefClick('$this->moduleID/design/edit&type=frm', 0);"],
                     'label'=>$this->lang['new_form']],
                 'import'  => ['order'=>90,'hidden'=>($this->security>1)?false:true, 'events'=>['onClick'=>"hrefClick('phreeform/io/manager');"]]]]],
-            'accordion'=> ['accDocs'=>['styles'=>['height'=>'100%'],'attr'=>['halign'=>'left'],'divs'=>[
-                'divTree'  => ['order'=>10,'label'=>$this->lang['my_reports'],'type'=>'divs','styles'=>['overflow'=>'auto','padding'=>'10px'],
-                    'attr'=>['titleDirection'=>'up'],'divs'=>[
+            'accordion'=> ['accDocs'=>['styles'=>['height'=>'100%'],'divs'=>[ // 'attr'=>['halign'=>'left'], crashes older versions of Chrome and Safari
+                'divTree'  => ['order'=>10,'label'=>$this->lang['my_reports'],'type'=>'divs','styles'=>['overflow'=>'auto','padding'=>'10px'], // 'attr'=>['titleDirection'=>'up'],
+                    'divs'=>[
                         'toolbar'=> ['order'=>10,'type'=>'fields','keys'=>['expand','collapse']],
                         'tree'   => ['order'=>50,'type'=>'tree',  'key' =>'treePhreeform']]],
-                'divDetail'=> ['order'=>30,'label'=>lang('details'),'attr'=>['titleDirection'=>'up'],'type'=>'html','html'=>'&nbsp;']]]],
+                'divDetail'=> ['order'=>30,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;']]]], // 'attr'=>['titleDirection'=>'up'],
             'panels'   => [
                 'docSearch' => ['styles'=>['text-align'=>'center'],'options'=>['title'=>"'".jsLang('search')."'"],'html'=>$divSrch],
                 'docBookMk' => ['options'=>['title'=>"'".$this->lang['my_favorites']."'",  'collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/favorites'"],'html'=>'&nbsp;'],
@@ -129,7 +129,7 @@ jq('#treePhreeform').tree('expand',  node.target); }";
         $report = dbGetRow(BIZUNO_DB_PREFIX."phreeform", "id='$rID'");
         if ($report['mime_type'] == 'dir') { return; } // folder, just return to do nothing
         $details= phreeFormXML2Obj($report['doc_data']);
-        $report['description'] = $details->description;
+        $report['description'] = !empty($details->description) ? $details->description : '';
         $data   = ['type'=>'divHTML',
             'divs' => ['divDetail'=>['order'=>50,'type'=>'divs','divs'=>[
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbReport'],

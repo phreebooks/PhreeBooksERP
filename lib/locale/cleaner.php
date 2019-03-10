@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-21
+ * @version    3.x Last Update: 2019-01-31
  * @filesource /locale/cleaner.php
  */
 
@@ -135,8 +135,13 @@ class cleaner
      */
     private function cleanCurrency($value)
     {
-        global $currencies;
-        return $currencies->cleanCurrency($value);
+        $iso   = !empty($GLOBALS['bizunoCurrency']) ? $GLOBALS['bizunoCurrency'] : getUserCache('profile', 'currency', false, 'USD');
+        $values= getModuleCache('phreebooks', 'currency', 'iso', $iso);
+        $temp0 = str_replace([$values['prefix'], $values['suffix'], $values['sep']], '', trim($value));
+        $temp1 = str_replace($values['dec_pt'], '.', $temp0);
+        $output= preg_replace("/[^-0-9.]+/", "", $temp1);
+        msgDebug("\nEntering cleanCurrency with iso = $iso and value = $value, returning ".floatval($output));
+        return floatval($output);
     }
 
     /**
@@ -482,19 +487,18 @@ function localeCalculateDate($start_date, $day_offset=0, $month_offset=0, $year_
 * This function takes a post date and contact terms and type, calculates the due date and discount date (terms)
 * @param date $post_date
 * @param encoded $terms_encoded
-* @param encoded $type
 * @return array $output
 */
-function localeDueDate($post_date, $terms_encoded=0, $type='c')
+function localeDueDate($post_date, $terms_encoded=0)
 {
-    $cType = $type=='v' ? 'vendors' : 'customers';
     $terms = explode(':', $terms_encoded);
     if (empty($terms[1])) { $terms[1] = 0; }
     if (empty($terms[2])) { $terms[2] = 0; }
     if (empty($terms[3])) { $terms[3] = 30; }
-    if (empty($terms[4])) { $terms[3] = 1000; }
+    if (empty($terms[4])) { $terms[4] = 1000; }
     $date_details = localeGetDates($post_date);
     $result = array();
+    msgDebug("\nin localeDueDate with post_date = $post_date and terms_encoded = $terms_encoded and terms = ".print_r($terms, true));
     switch ($terms[0]) {
         default:
         case '0': // Default terms
@@ -599,6 +603,7 @@ function requestDataGrid($request, $structure, $override=[])
         $temp = [];
         foreach ($structure as $field => $content) {
             if (!isset($content['attr']['type'])) { $content['attr']['type'] = 'text'; }
+            if ($content['attr']['type'] == 'currency') { $content['attr']['type'] = 'float'; } // datagrids are already in float format, try to convert again
             if (isset($override[$field])) {
                 switch ($override[$field]['type']) {
                     default:
@@ -606,18 +611,19 @@ function requestDataGrid($request, $structure, $override=[])
                     case 'field':
                         if (!isset($row[$override[$field]['index']])) { $row[$override[$field]['index']] = ''; }
                         if (isset($request['rows'][$i][$override[$field]['index']])) {
-//                          msgDebug("\nOverriding field: ".$request['rows'][$i][$override[$field]['index']].' with filter = '.$content['attr']['type']);
-                          $temp[$field] = clean($request['rows'][$i][$override[$field]['index']], $content['format']);
+                            if ($content['format'] == 'currency') { $content['format'] = 'float'; }
+//                          msgDebug("\nOverriding field: ".$request['rows'][$i][$override[$field]['index']].' with filter = '.$content['format']);
+                            $temp[$field] = clean($request['rows'][$i][$override[$field]['index']], $content['format']);
                         } else {
                             $temp[$field] = '';
                         }
                         break;
                 }
             } elseif (isset($row[$field])) {
-//                msgDebug("\nCleaning field {$row[$field]} with format {$content['attr']['type']}");
+//              msgDebug("\nCleaning field {$row[$field]} with format {$content['attr']['type']}");
                 $temp[$field] = clean($row[$field], $content['attr']['type']);
             } elseif (isset($row[$content['tag']])) {
-//                msgDebug("\nCleaning tag {$row[$content['tag']]} with format {$content['attr']['type']}");
+//              msgDebug("\nCleaning tag {$row[$content['tag']]} with format {$content['attr']['type']}");
                 $temp[$field] = clean($row[$content['tag']], $content['attr']['type']);
             }
         }

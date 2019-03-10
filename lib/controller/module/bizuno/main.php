@@ -17,9 +17,9 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-30
+ * @version    3.x Last Update: 2019-01-31
  * @filesource /lib/controller/module/bizuno/main.php
- * 
+ *
  * @todo BUG - context sensitive help, look at current module, page, method to send to Phreehelp
  */
 
@@ -33,7 +33,7 @@ class bizunoMain
     {
         $this->lang = getLang($this->moduleID);
     }
-    
+
     /**
      * generates the structure for the home page and any main menu dashboard page
      * @param array $layout - structure coming in
@@ -59,7 +59,7 @@ class bizunoMain
         }
         $layout = array_replace_recursive(viewMain(), $data);
     }
-    
+
     public function dashboard(&$layout=[])
     {
         $data = [];
@@ -77,7 +77,7 @@ class bizunoMain
         $data['divs']['bodyDash'] = ['order'=>50,'styles'=>['clear'=>'both'],'attr'=>['id'=>'dashboard'],'type'=>'html','html'=>$html];
         $layout = array_replace_recursive(viewMain(), $data);
     }
-    
+
     private function setDashJS(&$data)
     {
         $cols = getUserCache('profile', 'cols', false, 3);
@@ -137,11 +137,11 @@ $(function() {
         }
     },'json');
 });
-*/        
+*/
     }
-    
+
     /**
-     * Used to refresh session timer to keep log in alive. Forces log out after 8 hours if no user actions are detected.
+     * Used to refresh session timer to keep log in alive. Forces sign off after 8 hours if no user actions are detected.
      */
     public function sessionRefresh(&$layout) {
     } // nothing to do, just reset session clock
@@ -165,17 +165,17 @@ $(function() {
     public function encryptionForm(&$layout) {
         if (!validateSecurity('bizuno', 'profile', 1)) { return; }
         $icnSave= ['icon'=>'save','events'=>['onClick'=>"jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());"]];
-        $inpEncr= ['options'=>['value'=>"''"],'attr'=>['type'=>'password']];
+        $inpEncr= ['options'=>['value'=>"''"],'attr'=>['type'=>'password','value'=>'']];
         $html   = lang('msg_enter_encrypt_key').'<br />'.html5('pwEncrypt', $inpEncr).html5('', $icnSave);
-        $js     = "bizFocus('pwEncrypt');
-jq('#winEncrypt').keypress(function(event) {
+        $js     = "jq('#winEncrypt').keypress(function(event) {
     var keycode = (event.keyCode ? event.keyCode : event.which);
     if (keycode=='13') jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());
-});";
+});
+document.ready(bizFocus('pwEncrypt');";
         $html .= htmlJS($js);
         $layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['divEncrypt'=>['order'=>50,'type'=>'html','html'=>$html]]]);
     }
-    
+
     /**
      * Validates and sets the encryption key, if successful
      * @param array $layout - structure coming in
@@ -186,8 +186,8 @@ jq('#winEncrypt').keypress(function(event) {
         if (!validateSecurity('bizuno', 'profile', 1)) { return; }
         $error  = false;
         $key    = clean('data', 'password', 'get');
-        $encKey = getModuleCache('bizuno', 'encKey', false, '');
-        if (!$encKey) { msgAdd($this->lang['err_encryption_not_set']); }
+        $encKey = getModuleCache('bizuno', 'encKey', false, false, '');
+        if (!$encKey) { return msgAdd($this->lang['err_encryption_not_set']); }
         if ($key && $encKey) {
             $stack = explode(':', $encKey);
             if (sizeof($stack) != 2) { $error = true; }
@@ -198,10 +198,9 @@ jq('#winEncrypt').keypress(function(event) {
         $qlinks = getUserCache('quickBar');
         unset($qlinks['child']['encrypt']);
         setUserCache('quickBar', false, $qlinks);
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 
-            'actionData'=>"bizWindowClose('winEncrypt'); jq('#ql_encrypt').hide();"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"bizWindowClose('winEncrypt'); jq('#ql_encrypt').hide();"]]);
     }
-    
+
     /*
      * Downloads a file to the user
      */
@@ -238,8 +237,8 @@ jq('#winEncrypt').keypress(function(event) {
         $io->fileDelete($file);
         msgLog(lang('delete').' - '.$file);
         msgDebug("\n".lang('delete').' - '.$file);
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 
-            'actionData'=>"var row=jq('#$dgID').datagrid('getSelected'); 
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval',
+            'actionData'=>"var row=jq('#$dgID').datagrid('getSelected');
 var idx=jq('#$dgID').datagrid('getRowIndex', row);
 jq('#$dgID').datagrid('deleteRow', idx);"]]);
     }

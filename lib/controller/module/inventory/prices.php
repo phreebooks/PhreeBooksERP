@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-28
+ * @version    3.x Last Update: 2019-02-18
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -52,7 +52,7 @@ class inventoryPrices
         $title= sprintf(lang('tbd_prices'), lang('contacts_type_'.$this->type));
         if     (!$mod && $this->type == 'c') { $submenu = viewSubMenu('customers'); }
         elseif (!$mod && $this->type == 'v') { $submenu = viewSubMenu('vendors'); }
-        else   { $submenu = ''; } 
+        else   { $submenu = ''; }
         $data = ['type'=>'page','title'=>$title,
             'divs'     => [
                 'submenu'=> ['order'=>10,'type'=>'html','html'=>$submenu],
@@ -109,7 +109,7 @@ class inventoryPrices
     {
         $mod  = clean('mod', 'text', 'get');
         $meths= [];
-        if (!sizeof(getModuleCache('inventory', 'prices'))) { 
+        if (!sizeof(getModuleCache('inventory', 'prices'))) {
             msgAdd("Please add some price methods first, My Business -> Settings -> Inventory Module -> Prices tab");
             $html = '&nbsp';
         } else {
@@ -120,7 +120,7 @@ class inventoryPrices
                 $priceSet = getModuleCache('inventory','prices',$mID,'settings');
                 $tmp = new $fqcn($priceSet);
                 if (strlen($mod) == 0 || (isset($tmp->structure['hooks']) && array_key_exists($mod, $tmp->structure['hooks']))) {
-                    if (getModuleCache('inventory', 'prices')[$mID]['status']) { $meths[] = ['id'=>$mID, 'text'=>$settings['title']]; }
+                    if ($settings['status']) { $meths[] = ['id'=>$mID, 'text'=>$settings['title']]; }
                 }
             }
             $html  = '<p>'.lang('desc_new_price_sheets')."</p>";
@@ -149,7 +149,7 @@ class inventoryPrices
             $row     = ['id'=>0, 'method'=>$mID, 'contact_type'=>$this->type, 'currency'=>getUserCache('profile', 'currency', false, 'USD')];
             $settings= ['attr'=>'', 'title'=>''];
         }
-        
+
         // These need to be handled in the table comments
         $structure['contact_id']['attr']['type']  = 'hidden';
         $structure['inventory_id']['attr']['type']= 'hidden';
@@ -173,6 +173,7 @@ class inventoryPrices
         bizAutoLoad(getModuleCache('inventory', 'prices')[$mID]['path']."$mID.php", $fqcn);
         $priceSet = getModuleCache('inventory','prices',$mID,'settings');
         $meth = new $fqcn($priceSet);
+        msgDebug("\nSettings = ".print_r($settings, true));
         $meth->priceRender($data, $settings);
         $layout = array_replace_recursive($layout, $data);
     }
@@ -287,7 +288,7 @@ class inventoryPrices
         foreach ($prices['sheets'] as $level) {
             $output .= '<tr class="panel-header"><td colspan="2" style="text-align:center;">'.$level['title']."</td></tr>\n";
             $output .= '<tr class="panel-header"><td style="width:125px;">'.lang('qty').'</td><td style="width:125px;">'.lang('price')."</td></tr>\n";
-            foreach ($level['levels'] as $entry) { 
+            foreach ($level['levels'] as $entry) {
                 $output .= '<tr><td style="width:125px;">'.$entry['qty'].'</td><td style="width:125px;">'.viewFormat($entry['price'], 'currency')."</td></tr>\n";
             }
         }
@@ -333,7 +334,7 @@ class inventoryPrices
         if (!$contact['price_sheet']) { $contact['price_sheet'] = $inv['price_sheet_c']; } // if not set, set to inventory default
         $values = [
             'iID'=>$inv['id'],'iSheetc'=>$inv['price_sheet_c'],  'iSheetv'=>$inv['price_sheet_v'], 'iCost'=>$inv['item_cost'], 'iList'=>$inv['full_price'],
-            'cID'=>$cID,      'cSheet' =>$contact['price_sheet'],'cType'=>$contact['type'],  
+            'cID'=>$cID,      'cSheet' =>$contact['price_sheet'],'cType'=>$contact['type'],
             'qty'=>abs($qty)]; // to properly handle negative sales/purchases and still get pricing based on method
         msgDebug("\nFinding pricing with qty = $qty and values = ".print_r($values, true));
         $prices = [];
@@ -461,7 +462,7 @@ class inventoryPrices
     }
 
     /**
-     * 
+     *
      * @param string $name - REQUIRED - datagrid ID
      * @param string $type - contact type, acceptable values are c or v
      * @param number $security - access control
@@ -494,7 +495,7 @@ class inventoryPrices
             'columns'  => [
                 'id'      => ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.id',      'attr'=>['hidden'=>true]],
                 'inactive'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inactive','attr'=>['hidden'=>true]],
-                'default' => ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.settings','attr'=>['hidden'=>true], 'format'=>'setng:default'],
+                'default' => ['order'=>0,'field'=>'settings:default','attr'=>['hidden'=>true]],
                 'action'  => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> [
                         'edit' => ['order'=>30,'icon'=>'edit', 'hidden'=>$security>2?false:true,'events'=>['onClick'=>"accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$type',idTBD);"]],
@@ -516,16 +517,13 @@ class inventoryPrices
                     'attr'=>  ['width'=>70, 'sortable'=>true, 'resizable'=>true]]]];
         $cList  = $iList = [];
         $search = addslashes($this->defaults['search']);
-        if ($mID) { 
-            $data['source']['filters']['mID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"method='$mID'"];
-        }
-        if ($cID) { 
-            $data['source']['filters']['cID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"contact_id=$cID"];
-        } elseif ($this->defaults['search']) { // see if searching within contact
+        if ($mID) { $data['source']['filters']['mID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"method='$mID'"]; }
+        if ($cID) { $data['source']['filters']['cID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"contact_id=$cID"]; }
+        elseif ($this->defaults['search']) { // see if searching within contact
             $contacts = dbGetMulti(BIZUNO_DB_PREFIX."address_book", "primary_name LIKE '%$search%'", "primary_name {$this->defaults['order']}", ['ref_id']);
             foreach ($contacts as $cID) { $cList[] = $cID['ref_id']; }
         }
-        if ($iID) { 
+        if ($iID) {
             $data['source']['filters']['iID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"inventory_id=$iID"];
         } elseif ($this->defaults['search']) {
             $inventory = dbGetMulti(BIZUNO_DB_PREFIX."inventory", "description_short LIKE '%$search%'", "description_short {$this->defaults['order']}", ['id']);
@@ -550,7 +548,6 @@ class inventoryPrices
             $data['columns']['currency']['attr']['hidden'] = true;
             $data['columns']['last_update']['attr']['hidden'] = true;
         }
-
         return $data;
     }
 
@@ -588,7 +585,7 @@ class inventoryPrices
                     'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }",'editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
                 'margin'  => ['order'=>80,'label'=>lang('margin'),'attr'=>['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10']]]];
     }
-    
+
     /**
      * Decodes the price sheet settings for quantity based pricing and returns array of values for datagrid display
      * @param string $prices - encoded price value

@@ -33,37 +33,26 @@ class j15 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->item = $item;
+        $this->items = $item;
     }
 
 /*******************************************************************************************************************/
 // START Edit Methods
 /*******************************************************************************************************************/
     /**
-     * Pulls the data for the specified journal and populates the structure
-     * @param array $structure - table structures
-     */
-    public function getDataMain(&$structure)
-    {
-        dbStructureFill($structure, $this->main);
-    }
-    
-    /**
      * Tailors the structure for the specific journal
      */
     public function getDataItem()
     {
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
-        $dbData = [];
-        if (sizeof($this->items) > 0) { // calculate some form fields that are not in the db
-            foreach ($this->items as $key => $row) {
-                if ($row['gl_type'] <> 'adj') { continue; } // not an adjustment record
-                $values = dbGetRow(BIZUNO_DB_PREFIX."inventory", "sku='{$row['sku']}'");
-                $row['qty_stock'] = $values['qty_stock']-$row['qty'];
-                $row['balance']   = $values['qty_stock'];
-                $row['price']     = viewFormat($values['item_cost'], 'currency');
-                $dbData[$key]     = $row;
-            }
+        $dbData = [];// calculate some form fields that are not in the db
+        foreach ($this->items as $key => $row) {
+            if ($row['gl_type'] <> 'adj') { continue; } // not an adjustment record
+            $values = dbGetRow(BIZUNO_DB_PREFIX."inventory", "sku='{$row['sku']}'");
+            $row['qty_stock'] = $values['qty_stock']-$row['qty'];
+            $row['balance']   = $values['qty_stock'];
+            $row['price']     = viewFormat($values['item_cost'], 'currency');
+            $dbData[$key]     = $row;
         }
         $map['credit_amount'] = ['type'=>'field','index'=>'total'];
         $this->dgDataItem = formatDatagrid($dbData, 'datagridData', $structure, $map);
@@ -118,6 +107,8 @@ class j15 extends jCommon
     public function Post()
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
+        if (!$this->journalTransfer($this->items)) { return; }
+        $this->main['description'] .= " ({$this->items[0]['qty']}) {$this->item[0]['description']}".(sizeof($this->item)>2 ? ' +++' : '');
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
         if (!$this->postMain())              { return; }
@@ -136,7 +127,7 @@ class j15 extends jCommon
         if (!$this->unPostInventory())         { return; }
         if (!$this->unPostMain())              { return; }
         if (!$this->unPostItem())              { return; }
-        if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries 
+        if (!$this->setStatusClosed('unPost')) { return; } // check to re-open predecessor entries
         msgDebug("\n*************** end unPosting Journal ******************* id = {$this->main['id']}\n\n");
         return true;
     }
@@ -189,18 +180,18 @@ class j15 extends jCommon
         $ref_closed= false;
         $str_field = 'qty_stock';
         // adjust inventory stock status levels (also fills inv_list array)
-        $item_rows_to_process = count($this->item); // NOTE: variable needs to be here because $this->item may grow within for loop (COGS)
+        $item_rows_to_process = count($this->items); // NOTE: variable needs to be here because $this->items may grow within for loop (COGS)
 // the cogs rows are added after this loop ..... the code below needs to be rewritten
         for ($i = 0; $i < $item_rows_to_process; $i++) {
-            if (!in_array($this->item[$i]['gl_type'], ['itm','adj','asy','xfr'])) { continue; }
-            if (isset($this->item[$i]['sku']) && $this->item[$i]['sku'] <> '') {
-                $inv_list = $this->item[$i];
-                $inv_list['price'] = $this->item[$i]['qty'] ? (($this->item[$i]['debit_amount'] + $this->item[$i]['credit_amount']) / $this->item[$i]['qty']) : 0;
+            if (!in_array($this->items[$i]['gl_type'], ['itm','adj','asy','xfr'])) { continue; }
+            if (isset($this->items[$i]['sku']) && $this->items[$i]['sku'] <> '') {
+                $inv_list = $this->items[$i];
+                $inv_list['price'] = $this->items[$i]['qty'] ? (($this->items[$i]['debit_amount'] + $this->items[$i]['credit_amount']) / $this->items[$i]['qty']) : 0;
                 if (!$this->calculateCOGS($inv_list)) { return; }
             }
         }
         // update inventory status
-        foreach ($this->item as $row) {
+        foreach ($this->items as $row) {
             if (!isset($row['sku']) || !$row['sku']) { continue; } // skip all rows without a SKU
             $item_cost = $full_price = 0;
             if (!$this->setInvStatus($row['sku'], $str_field, $row['qty'], $item_cost, $row['description'], $full_price)) { return false; }
@@ -219,9 +210,9 @@ class j15 extends jCommon
     {
         msgDebug("\n  unPosting Inventory ...");
         if (!$this->rollbackCOGS()) { return false; }
-        for ($i = 0; $i < count($this->item); $i++) {
-            if (!isset($this->item[$i]['sku']) || !$this->item[$i]['sku']) { continue; }
-            if (!$this->setInvStatus($this->item[$i]['sku'], 'qty_stock', -$this->item[$i]['qty'])) { return; }
+        for ($i = 0; $i < count($this->items); $i++) {
+            if (!isset($this->items[$i]['sku']) || !$this->items[$i]['sku']) { continue; }
+            if (!$this->setInvStatus($this->items[$i]['sku'], 'qty_stock', -$this->items[$i]['qty'])) { return; }
         }
         if ($this->main['so_po_ref_id'] > 0) { $this->setInvRefBalances($this->main['so_po_ref_id'], false); }
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."inventory_history WHERE ref_id = {$this->main['id']}");
@@ -240,6 +231,31 @@ class j15 extends jCommon
     private function setStatusClosed($action='post')
     {
         msgDebug("\n  Checking for closed entry. action = $action, returning with no action.");
+        return true;
+    }
+
+        /**
+     * This method takes the line items from a transfer operation and builds the new 'effective' line items
+     * @param array $item - the list of items to transfer, after initial processing
+     */
+    private function journalTransfer(&$item)
+    {
+        msgDebug("\nAdding rows for Inventory Store Transfer");
+        $srcStoreID = clean('so_po_ref_id','integer', 'post');
+        $destStoreID= clean('store_id',    'integer', 'post');
+        if ($srcStoreID == $destStoreID) { return msgAdd($this->lang['err_gl_xfr_same_store']); }
+        // take the line items and create a negative list for the receiving store
+        $output = [];
+        foreach ($item as $row) {
+            unset($row['id']); // when reposting, this causes duplicate ID errors if not cleared
+            $row['qty'] = -$row['qty'];
+            $row['gl_type'] = 'xfr';
+            $tmp = $row['credit_amount']; // swap debits and credits
+            $row['credit_amount'] = $row['debit_amount'];
+            $row['debit_amount'] = $tmp;
+            $output[] = $row;
+        }
+        $item = array_merge($item, $output);
         return true;
     }
 

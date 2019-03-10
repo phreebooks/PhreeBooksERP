@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-01
+ * @version    3.x Last Update: 2019-03-07
  * @filesource /lib/controller/module/phreebooks/totals/fee_order/fee_order.php
  */
 
@@ -49,8 +49,9 @@ class fee_order
             'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
     }
 
-    public function glEntry($request, &$main, &$item, &$begBal=0)
+    public function glEntry(&$main, &$item, &$begBal=0)
     {
+        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
         $fee_order = isset($request['totals_fee_order']) ? clean($request['totals_fee_order'], 'float') : 0;
         if ($fee_order == 0) { return; }
         $item[] = [
@@ -74,8 +75,10 @@ class fee_order
             'totals_fee_order_id' => ['label'=>'', 'attr'=>['type'=>'hidden']],
             'totals_fee_order_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
             'totals_fee_order_opt'=> ['icon' =>'settings','size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_fee_order').toggle('slow');"]],
-            'totals_fee_order_pct'=> ['label'=>lang('percent'),'attr'=>['type'=>'text','size'=>'5'],'events'=>['onClick'=>"fee_orderType='pct'; totalUpdate();"]],
-            'totals_fee_order'    => ['label'=>$this->lang['label'],'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly'],'events'=>['onClick'=>"fee_orderType='amt'; totalUpdate();"]]];
+            'totals_fee_order_pct'=> ['label'=>lang('percent'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>60,'value'=>0],'attr'=>['type'=>'float','size'=>5],
+                'events'=>['onBlur'=>"feeType='pct'; totalUpdate();"]],
+            'totals_fee_order'    => ['label'=>$this->lang['label'],'lblStyle'=>['min-width'=>'60px'],'attr'=>['type'=>'currency','value'=>0],
+                'events'=>['onBlur'=>"feeType='amt'; totalUpdate();"]]];
         if (isset($data['items'])) {
             foreach ($data['items'] as $row) { // fill in the data if available
                 if ($row['gl_type'] == $this->settings['gl_type']) {
@@ -87,26 +90,33 @@ class fee_order
         }
         $hide = $this->hidden ? ';display:none' : '';
         $output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
-        $output['body'] .= html5('totals_fee_order_id', $this->fields['totals_fee_order_id'])."\n";
-        $output['body'] .= html5('totals_fee_order_pct',$this->fields['totals_fee_order_pct'])."\n";
-        $output['body'] .= html5('totals_fee_order',    $this->fields['totals_fee_order']) ."\n";
-        $output['body'] .= html5('',                    $this->fields['totals_fee_order_opt'])."\n";
+        $output['body'] .= html5('totals_fee_order_id', $this->fields['totals_fee_order_id']);
+        $output['body'] .= html5('totals_fee_order_pct',$this->fields['totals_fee_order_pct']);
+        $output['body'] .= html5('totals_fee_order',    $this->fields['totals_fee_order']);
+        $output['body'] .= html5('',                    $this->fields['totals_fee_order_opt']);
         $output['body'] .= "</div>\n";
-        $output['body'] .= '<div id="phreebooks_totals_fee_order" style="display:none" class="layout-expand-over">'."\n";
-        $output['body'] .= html5('totals_fee_order_gl', $this->fields['totals_fee_order_gl'])."\n";
+        $output['body'] .= '<div id="phreebooks_totals_fee_order" style="display:none" class="layout-expand-over">';
+        $output['body'] .= html5('totals_fee_order_gl', $this->fields['totals_fee_order_gl']);
         $output['body'] .= "</div>\n";
         $output['jsHead'][] = "function totals_fee_order(begBalance) {
-    var newBalance = begBalance;
-    // if amount, calculate percent, if percent driven, calculate amount
-    // amount
-    // TBD
-    // percent
-    var percent = parseFloat(jq('#totals_fee_order_pct').val());
-    if (isNaN(percent)) percent = 0;
-    percent = percent / 100;
-    bizTextSet('totals_fee_order', newBalance * percent, 'currency');
-    newBalance = begBalance * (1 + percent);
-    return newBalance;
+    var newBalance  = parseFloat(begBalance);
+    var decLen      = parseInt(bizDefaults.currency.currencies[currency].dec_len);
+    if (feeType=='pct') {
+        var percent = parseFloat(jq('#totals_{$this->code}_pct').val());
+        if (isNaN(percent)) { percent = 0; }
+        var fee = roundCurrency(newBalance * (percent / 100));
+        bizNumSet('totals_{$this->code}', fee);
+        feeType= '';
+    } else { // amt
+        var fee= bizNumGet('totals_{$this->code}');
+        if (isNaN(fee)) { fee = 0; }
+        var percent = begBalance ? 100 * (1 - ((begBalance - fee) / begBalance)) : 0;
+        percent     = percent.toFixed(decLen+1);
+        bizNumSet('totals_{$this->code}_pct', percent);
+        bizNumSet('totals_{$this->code}', fee);
+    }
+    newBalance += fee;
+    return parseFloat(newBalance.toFixed(decLen));
 }";
     }
 }

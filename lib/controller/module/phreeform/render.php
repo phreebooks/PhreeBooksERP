@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-31
+ * @version    3.x Last Update: 2019-02-08
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -25,7 +25,7 @@ namespace bizuno;
 
 bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformImport', 'function');
 
-class phreeformRender 
+class phreeformRender
 {
     public $moduleID = 'phreeform';
 
@@ -69,7 +69,7 @@ class phreeformRender
             $report = new \stdClass();
             $report->title = dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'title', "mime_type='dir' AND group_id='$group'");
             $report->title = lang($report->title); // translate if possible
-            $report->mime_type = 'dir'; 
+            $report->mime_type = 'dir';
         } else { return msgAdd('PhreeFormOpen called without a group or report ID.'); }
         $hidden = ((isset($report->reporttype) && $report->reporttype=='frm') || $group) ? true : false;
         $report->xfilterlist = new \stdClass();
@@ -97,8 +97,8 @@ class phreeformRender
             'fields'  => [
                 'id'        => ['attr'=>['type'=>'hidden','value'=>$rID]],
                 'msgFrom'   => ['break'=>true,'label'=>lang('from'),    'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsFrom'],'attr'=>['type'=>'select','value'=>$emailData['defFrom']]],
-                'msgTo'     => ['break'=>true,'label'=>lang('to'),      'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select', 'value'=>$emailData['defTo']]],
-                'msgCC1'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select', 'value'=>$emailData['defCC']]],
+                'msgTo'     => ['break'=>true,'label'=>lang('to'),      'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>$emailData['defTo']]],
+                'msgCC1'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>$emailData['defCC']]],
                 'msgCC2'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select']],
                 'msgSubject'=> ['break'=>true,'label'=>lang('email_subject'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>600],'attr'=>['size'=>40,'value'=>$emailData['msgSubject']]],
                 'msgBody'   => ['break'=>true,'label'=>lang('email_body'),'lblStyle'=>['min-width'=>'60px'],'attr' =>['type'=>'textarea','value'=>$emailData['msgBody'],'cols'=>'80','rows'=>'10']],
@@ -155,7 +155,7 @@ class phreeformRender
             $output .= "  </thead>\n";
             $output .= "  <tbody>\n";
             $output .= '    <tr class="panel-header"><th colspan="2">&nbsp;</th><th>'.lang('from')."</th><th>".lang('to')."</th></tr>\n";
-            if ($viewData['report']->datelist != '') { 
+            if ($viewData['report']->datelist != '') {
                 if ($viewData['report']->datelist == 'z') { // special case for period pull-down
                     $output .= '<tr><td colspan="4">'.html5('period', ['label'=>lang('period'),'values'=>dbPeriodDropDown(),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'fy', 'period')]])."</td></tr>\n";
                 } elseif ($viewData['report']->datelist != 'a') {
@@ -166,7 +166,7 @@ class phreeformRender
                     $output .= " <td>".html5('critDateMin', ['attr'=>['type'=>'date','value'=>isset($dateArray[1])?$dateArray[1]:'']])."</td>\n";
                     $output .= " <td>".html5('critDateMax', ['attr'=>['type'=>'date','value'=>isset($dateArray[2])?$dateArray[2]:'']])."</td>\n";
                     $output .= "</tr>\n";
-                } 
+                }
             }
             if ($viewData['report']->reporttype == 'rpt' && !empty($viewData['report']->grouplist)) {
                 $i = 1;
@@ -287,12 +287,12 @@ class phreeformRender
             success: function (data) { processJson(data); }
         });
         return false;
-    } else { jq('body').addClass('loading'); }
+    } else { jq.messager.alert({title:'',msg:'".jsLang('please_wait')."',icon:'info',width:300}); }
 });"];
 
     }
     /**
-     * Retrieves a group of reports from the database from the encoded request 
+     * Retrieves a group of reports from the database from the encoded request
      * @param string $group - encoded group to retrieve available reports
      * @return array - ready to render in select DOM element or radio buttons
      */
@@ -315,9 +315,9 @@ class phreeformRender
         }
         return $output;
     }
-    
+
     /**
-     * Generates and renders a report using the specified user request filters and a report id, 
+     * Generates and renders a report using the specified user request filters and a report id,
      * output is choice of PDF, HTML, XML, or CSV for reports, PDF for forms.
      * @global object $report - report structure
      * @param array $layout - Structure coming in
@@ -372,12 +372,13 @@ class phreeformRender
         $report->xfilterlist->min      = clean('xmin','text','get');
         $report->xfilterlist->max      = clean('xmax','text','get');
         msgDebug("\nWorking with report (after overrides) = ".print_r($report, true));
+        $dataError = ['type'=>'page',
+            'toolbars'=>['tbBack'=>['icons'=>['back'=>['events'=>['onClick'=>"window.history.back();"]]]]],
+            'divs'    =>['null'=>['type'=>'toolbar','key'=>'tbBack']]];
         switch ($report->reporttype) {
             case 'frm':
-                $data = $this->BuildForm($report, $delivery);
-                if (!isset($data['pdf'])) { // there has been a problem change format to html since we have a regular form submit (not json)
-                    $data = ['type'=>'html','divs'=>['noPDF'=>['type'=>'html','html'=>'']]];
-                }
+                $data = $this->BuildForm($report, $delivery); // if we come back from this function it's for emailing the form
+                if (!isset($data['pdf'])) { $layout = $dataError; return; } // no data, fail gracefully
                 break;
             case 'rpt':
                 $ReportData = '';
@@ -387,7 +388,7 @@ class phreeformRender
                     $sql = $result['data'];
                     if (!isset($report->filter)) { $report->filter = new \stdClass(); }
                     $report->filter->text = $result['description']; // fetch the filter message
-                    if (!$ReportData = BuildDataArray($sql, $report)) { return; }
+                    if (!$ReportData = BuildDataArray($sql, $report)) { $layout = $dataError; return; } // no data, fail gracefully
                     if ($format == 'pdf')  { $data = $this->GeneratePDFFile ($ReportData, $report, $delivery); }
                     if ($format == 'html') { $data = $this->GenerateHTMLFile($ReportData, $report); }
                     if ($format == 'csv')  { $data = $this->GenerateCSVFile ($ReportData, $report, $delivery); }
@@ -413,7 +414,7 @@ class phreeformRender
             if (!empty($msgCC1)) { $mail->addToCC($msgCC1['email'], $msgCC1['name']); }
             if (!empty($msgCC2)) { $mail->addToCC($msgCC2['email'], $msgCC2['name']); }
             $mail->attach($temp_file);
-            if ($mail->sendMail()) { 
+            if ($mail->sendMail()) {
                 msgAdd(sprintf(lang('msg_email_sent'), $msgTo['name']), 'success');
                 $data = ['content'=>['action'=>'eval','actionData'=>"window.close();"]];
                 unlink($temp_file);
@@ -457,7 +458,7 @@ class phreeformRender
      * @param char $delivery_method - what to do with the result, D - download, S - serial
      * @return type
      */
-    private function BuildForm($report, $delivery_method = 'D') 
+    private function BuildForm($report, $delivery_method = 'D')
     {
         global $report;
         bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/renderForm.php", 'PDF');
@@ -496,7 +497,7 @@ class phreeformRender
         if (!$stmt = dbGetResult($sql)) { return msgAdd(lang('phreeform_output_none'), 'caution'); }
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         if (sizeof($result) == 0) { return msgAdd(lang('phreeform_output_none'), 'caution'); }
-        
+
         // set the filename for download or email
         if (isset($report->filenameprefix) || isset($report->filenamefield)) {
             $report->filename  = isset($report->filenameprefix)? $report->filenameprefix : '';
@@ -541,8 +542,8 @@ class phreeformRender
      * @param char $delivery_method - [default D, download] other options S to return with PDF formatted output
      * @return doesn't return if successful, user message if failure
      */
-    private function BuildPDF($report, $delivery_method = 'D') 
-    { 
+    private function BuildPDF($report, $delivery_method = 'D')
+    {
         global $report, $posted_currencies;
         // Generate a form for each group element
         $output = [];
@@ -691,7 +692,7 @@ class phreeformRender
         msgDebugWrite();
         exit(); // needs to be here to properly render the pdf file if delivery_method = I or D
     }
-    
+
     /**
      * @todo NOTE: This method needs to be completed and tested before put into operation
      * For forms only - Sequential mode, e.g. receipts
@@ -870,7 +871,7 @@ class phreeformRender
         print $output;
         exit();
     }
-    
+
     /**
      * Reports only - Extracts the information from a report structure and builds the database SQL to retrieve data
      * @param object $report - Report structure
@@ -917,7 +918,7 @@ class phreeformRender
     }
 
     /**
-     * Generates a PDF file with data from the report structure 
+     * Generates a PDF file with data from the report structure
      * @global object $report - globalized to allow usage in subclasses
      * @param array $data - results of the SQL statement containing the data
      * @param object $report
@@ -932,7 +933,7 @@ class phreeformRender
         $pdf->ReportTable($data);
         $ReportName = ReplaceNonAllowedCharacters($report->title).'.pdf';
         msgDebug("\nReady to download file...");
-        msgDebugWrite(); 
+        msgDebugWrite();
         // Add additional headers needed for MSIE and send page
         header('Set-Cookie: fileDownload=true; path=/');
         header('Cache-Control: max-age=60, must-revalidate');
@@ -1072,7 +1073,7 @@ class phreeformRender
     }
 
     /**
-     * Substitutes static report data with user data in the header when generating an email 
+     * Substitutes static report data with user data in the header when generating an email
      * @param object $report - Report structure
      * @return array $output - Properties from search
      */
@@ -1117,7 +1118,7 @@ class phreeformRender
         $title .= !empty($data[$sParts[1]])      ? $data[$sParts[1]]      : $report->title;
         $output['msgSubject']= sprintf($this->lang['phreeform_email_subject'], $title, getModuleCache('bizuno', 'settings', 'company', 'primary_name'));
         $output['msgBody']   = TextReplace($output['msgBody'], $xKeys, $xVals);
-        $output['defTo']     = $this->toNames = [];
+        $this->toNames = [];
         $output['valsTo'][]  = ['id'=>'', 'text'=>lang('select')];
         $name = !empty(trim($data['contact_b'])) ? trim($data['contact_b']) : trim($data['primary_name_b']);
         $this->extractAddresses($output, $name, $data['email_b']);
@@ -1128,7 +1129,7 @@ class phreeformRender
         foreach ($cMulti as $cRow) {
             $aVals = dbGetValue(BIZUNO_DB_PREFIX.'address_book', ['primary_name', 'email'], "ref_id={$cRow['id']} AND type='m'");
             $cName = trim($cRow['contact_first'].' '.$cRow['contact_last']);
-            $name = !empty($cName) ? $cName : (!empty(trim($aVals['contact'])) ? trim($aVals['contact']) : trim($aVals['primary_name']));
+            $name = !empty($cName) ? $cName : (!empty($aVals['contact']) ? trim($aVals['contact']) : trim($aVals['primary_name']));
             if (empty($aVals['email'])) { continue; }
             $this->extractAddresses($output, $name, $aVals['email'], false);
         }
@@ -1162,19 +1163,23 @@ class phreeformRender
         }
         return true;
     }
-    
+
     private function setFieldList($fields=[])
     {
         $output = []; // Build the fieldlist
         foreach ($fields as $idx => $entry) { $output[] = prefixTables($entry->fieldname)." AS r$idx"; }
         return implode(', ', $output);
     }
-    
+
     private function setEncodedList($boxfield, $rows)
     {
+        msgDebug("\nboxfield = ".print_r($boxfield, true));
+        msgDebug("\nrows = ".print_r($rows, true));
         foreach ($rows as $row) {
             $output = [];
-            foreach ($boxfield as $entry) { $output[] = $row[$entry->fieldname]; }
+            for ($i=0; $i<sizeof($boxfield); $i++) {
+                $output[] = $row["r$i"];
+            }
             $data[] = $output;
         }
         return $data;
