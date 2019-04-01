@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-06
+ * @version    3.x Last Update: 2019-03-20
  * @filesource /lib/controller/module/phreebooks/totals/tax_other/tax_other.php
  */
 
@@ -50,18 +50,18 @@ class tax_other
 
     public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
-        $tax_other = !empty($request['totals_tax_other']) ? clean($request['totals_tax_other'], 'currency') : 0;
-        if ($tax_other == 0) { msgDebug("\nNo tax other, returning without making a gl entry!"); return; }
-        $item[] = [
-            'id'           => clean($request['totals_tax_other_id'], 'float'), // for edits
-            'ref_id'       => $request['id'],
+        $tax_other= clean("totals_{$this->code}", ['format'=>'float','default'=>0], 'post');
+        if ($tax_other == 0) { return; }
+        $desc     = $this->lang['title'].': '.clean('primary_name_b', ['format'=>'text','default'=>''], 'post');
+        $item[]   = [
+            'id'           => clean("totals_{$this->code}_id", ['format'=>'float','default'=>0], 'post'),
+            'ref_id'       => clean('id', 'integer', 'post'),
             'gl_type'      => $this->settings['gl_type'],
-            'qty'          => '1',
-            'description'  => $this->lang['title'].': '.($request['primary_name_b']?$request['primary_name_b']:''),
+            'qty'          => 1,
+            'description'  => $desc,
             'debit_amount' => 0,
             'credit_amount'=> $tax_other,
-            'gl_account'   => isset($request['totals_tax_other_gl']) ? $request['totals_tax_other_gl'] : $this->settings['gl_account'],
+            'gl_account'   => clean("totals_{$this->code}_gl", ['format'=>'text','default'=>$this->settings['gl_account']], 'post'),
             'post_date'    => $main['post_date']];
         $main['sales_tax'] += roundAmount($tax_other);
         $begBal += roundAmount($tax_other);
@@ -97,7 +97,8 @@ class tax_other
     var salesTax = parseFloat(bizNumGet('totals_tax_other'));
     bizNumSet('totals_tax_other', salesTax);
     newBalance += salesTax;
-    var decLen= parseInt(bizDefaults.currency.currencies[currency].dec_len);
+    var curISO    = jq('#currency').val() ? jq('#currency').val() : bizDefaults.currency.defaultCur;
+    var decLen= parseInt(bizDefaults.currency.currencies[curISO].dec_len);
     return newBalance.toFixed(decLen);
 }";
     }

@@ -127,13 +127,15 @@ function portalCurl($url, $data='', $type='get', $opts=[]) {
 //      $fp = fopen($this->myFolder."cURL_trace.txt", 'w');
 //      curl_setopt($ch, CURLOPT_VERBOSE, true);
 //      curl_setopt($ch, CURLOPT_STDERR, $fp);
-    $request = curl_exec($ch);
+    $response = curl_exec($ch);
     if (curl_errno($ch)) {
         msgDebug('cURL Error # '.curl_errno($ch).'. '.curl_error($ch));
         msgAdd('cURL Error # '.curl_errno($ch).'. '.curl_error($ch));
         curl_close ($ch);
         return;
+    } elseif (empty($response)) { // had an issue connecting with TLSv1.2, returned no error but no response (ALPN, server did not agree to a protocol)
+        msgAdd("Oops! I Received an empty response back from the cURL request. There was most likely a problem with the connection that was not reported.", 'caution');
     }
     curl_close ($ch);
-    return $request;
+    return $response;
 }

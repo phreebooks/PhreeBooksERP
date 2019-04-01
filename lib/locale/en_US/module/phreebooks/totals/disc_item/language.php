@@ -1,6 +1,6 @@
 <?php
 /*
- * Language translation for phreebooks extension - totals discountChk
+ * Language translation for phreebooks extension - totals tax_item
  *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -17,11 +17,12 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-22
- * @filesource /locale/en_US/module/phreebooks/totals/discountChk/language.php
+ * @version    3.x Last Update: 2019-03-21
+ * @filesource /locale/en_US/module/phreebooks/totals/disc_item/language.php
  */
 
 $lang = [
-    'title'      => 'Discount (Line Checked)',
-    'label'      => 'Discount',
-    'description'=> 'This method will apply a discount based on each line that is checked. Typically used for banking transactions, Customer Receipts and Vendor Payments.'];
+    'title'      => 'Discount (By Item)',
+    'label'      => 'Item Discount',
+    'description'=> 'This method allows discounts at the item level. It is used for order operations, i.e. Customer Sales and Vendor Purchases. NOTE: THIS METHOD REQUIRES THE CUSTOMER ITEM DISCOUNT EXTENSION!',
+    'extra_title'=> '(By Item)'];

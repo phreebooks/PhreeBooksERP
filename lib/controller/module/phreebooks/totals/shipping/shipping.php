@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-07
+ * @version    3.x Last Update: 2019-03-19
  * @filesource /lib/controller/module/phreebooks/totals/shipping/shipping.php
  */
 
@@ -53,26 +53,25 @@ class shipping
 
     public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
-        $shipping = isset($request['freight']) ? clean($request['freight'], 'float') : 0;
-//        if ($shipping == 0) return; // this will discard bill recipient, 3rd party and resi information if paid by customer
-        if (!isset($request['totals_shipping_bill_type'])) { $request['totals_shipping_bill_type'] = 'sender'; }
+        $shipping = clean('freight', ['format'=>'float','default'=>0], 'post');
+//      if ($shipping == 0) return; // this will discard bill recipient, 3rd party and resi information if paid by customer
+        $billType = clean('totals_shipping_bill_type', ['format'=>'alpha_num','default'=>'sender'], 'post');
         $desc = "title:".$this->lang['title'];
-        $desc.= isset($request['totals_shipping_resi']) ? ";resi:1" : ";resi:0";
-        $desc.= ";type:".$request['totals_shipping_bill_type'];
-        if ($request['totals_shipping_bill_type'] <> 'sender') { $desc .= ":".$request['totals_shipping_bill_acct']; }
+        $desc.= ";resi:".clean('totals_shipping_resi', 'bool', 'post');
+        $desc.= ";type:".$billType;
+        if ($billType <> 'sender') { $desc .= ":".clean('totals_shipping_bill_acct', 'alpha_num', 'post'); }
         $item[] = [
-            'id'           => isset($request['totals_shipping_id']) ? clean($request['totals_shipping_id'], 'float') : 0, // for edits
-            'ref_id'       => $main['id'],
+            'id'           => clean("totals_{$this->code}_id", ['format'=>'float','default'=>0], 'post'),
+            'ref_id'       => clean('id', 'integer', 'post'),
             'gl_type'      => $this->settings['gl_type'],
-            'qty'          => '1',
+            'qty'          => 1,
             'description'  => $desc,
             'debit_amount' => in_array($main['journal_id'], [3, 4, 6,13,21]) ? $shipping : 0,
             'credit_amount'=> in_array($main['journal_id'], [7, 9,10,12,19]) ? $shipping : 0,
-            'gl_account'   => isset($request['totals_shipping_gl']) ? $request['totals_shipping_gl'] : $this->settings['gl_account'],
+            'gl_account'   => clean("totals_{$this->code}_gl", ['format'=>'text','default'=>$this->settings['gl_account']], 'post'),
             'post_date'    => $main['post_date']];
         $main['freight']    = $shipping;
-        $main['method_code']= isset($request['method_code']) ? $request['method_code'] : '';
+        $main['method_code']= clean('method_code', ['format'=>'cmd','default'=>''], 'post');
         $begBal += $shipping;
         $taxShipping   = getModuleCache('phreebooks', 'settings', 'general', 'shipping_taxed') ? 1 : 0;
         if ($taxShipping && isset($main['contact_id_b']) && $main['contact_id_b']) {
@@ -84,7 +83,7 @@ class shipping
     }
 
     public function render(&$output, $data=[]) {
-        $billingTypes = ['sender'=>lang('sender'),'3rdparty'=>$this->lang['third_party'],'recip'=>lang('recipient'),'collect'=>lang('collect')];
+        $billingTypes = ['sender'=>lang('sender'),'3rdparty'=>$this->lang['third_party'],'recip'=>lang('recipient'),'collect'=>lang('collect'),'other'=>lang('other')];
         $choices = [['id'=>'', 'text'=>lang('select')]];
         $carriers= sortOrder(getModuleCache('extShipping', 'carriers'));
         foreach ($carriers as $carrier) {

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-01-04
+ * @version    3.x Last Update: 2019-03-21
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -32,8 +32,6 @@ class bizunoSettings
     function __construct()
     {
         $this->lang = getLang($this->moduleID);
-        // @todo deprecate this after 2017 and fix in four places below temp fix for wordpress dist until PhreeSoft Update afte 12/6/2017
-        $this->BIZUNO_HOME = strpos(BIZUNO_HOME, '?') === false ? BIZUNO_HOME.'?' : BIZUNO_HOME;
     }
 
     /**
@@ -76,17 +74,20 @@ class bizunoSettings
                         $modStatus .= html5("download_$module_id", ['icon'=>'download','events'=>['onClick'=>"jsonAction('bizuno/settings/loadExtension', 0, '$module_id');"]]);
                     }
                     if (!empty($settings['settings']) || $hasDashboards || !empty($props['dirMethods'])) { // check to see if the module has admin settings
-                        $modStatus .= html5("prop_$module_id", ['icon'=>'settings','events'=>['onClick'=>"location.href='".$this->BIZUNO_HOME."&p=$module_id/admin/adminHome'"]]);
+                        $modStatus .= html5("prop_$module_id", ['icon'=>'settings','events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=$module_id/admin/adminHome'"]]);
                     }
                     if ($security == 5 && !$required) {
                         $modStatus .= html5("remove_$module_id", ['attr'=>['type'=>'button','value'=>lang('remove')],
                            'events'=>['onClick'=>"if (confirm('".$this->lang['msg_module_delete_confirm']."')) jsonAction('bizuno/settings/moduleRemove', '$module_id');"]]);
                     }
                 } elseif (!empty($settings['paid']) && !empty($settings['loaded'])) { // if subscribed and loaded, show install button
-                     $modStatus = html5("install_$module_id", ['attr'=>['type'=>'button','value'=>lang('install')],
+                    $modStatus = html5("install_$module_id", ['attr'=>['type'=>'button','value'=>lang('install')],
                         'events'=>['onClick'=>"jsonAction('bizuno/settings/moduleInstall', '$module_id', '{$settings['path']}');"]]);
                 } elseif (!empty($settings['paid']) &&  empty($settings['loaded'])) { // if subscribed and not loaded, show download button
                     $modStatus = html5("download_$module_id", ['icon'=>'download','events'=>['onClick'=>"jsonAction('bizuno/settings/loadExtension', 0, '$module_id');"]]);
+                } elseif (!empty($settings['devStatus']) && in_array(getUserCache('profile','level', false, ''), ['developer'])) { // developer, show install button
+                    $modStatus = html5("install_$module_id", ['attr'=>['type'=>'button','value'=>lang('install')],
+                        'events'=>['onClick'=>"jsonAction('bizuno/settings/moduleInstall', '$module_id', '{$settings['path']}');"]]);
                 } else { // show purchase button
                     $price = isset($settings['price']) && $settings['price'] ? viewFormat($settings['price'], 'currency').' '.lang('buy') : lang('See Website');
                     if (empty($settings['url'])) { $settings['url'] = $this->phreesoftURL; }
@@ -128,12 +129,14 @@ class bizunoSettings
                 'path'       => $path,
 //              'version'    => isset($admin->structure['version']) ? $admin->structure['version'] : '', // if uncommented, replaces newest version with installed version, breaks upgrade
                 'loaded'     => true,
+                'devStatus'  => !empty($admin->devStatus) ? $admin->devStatus : false,
                 'active'     => getModuleCache($module, 'properties', 'status'),
                 'settings'   => !empty($admin->settings) && is_array($admin->settings) ? true : false];
             if (strpos($path, BIZUNO_CUSTOM."$module/")===0) {
                 $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>true,'version'=>-1]);
             }
-            if ($cat=='bizuno') { $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>true,'version'=>MODULE_BIZUNO_VERSION]); }
+            if (!empty($admin->devStatus)){ $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>true]); }
+            if ($cat=='bizuno')           { $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>true,'version'=>MODULE_BIZUNO_VERSION]); }
         }
         return $output;
     }
@@ -162,7 +165,7 @@ class bizunoSettings
                     unlink(BIZUNO_EXT."$moduleID/bizunoUPG.php");
                 }
                 dbClearCache();
-                $layout = array_replace_recursive($layout, ['content'=>['action'=>'href','link'=>$this->BIZUNO_HOME."&p=bizuno/settings/manager"]]);
+                $layout = array_replace_recursive($layout, ['content'=>['action'=>'href','link'=>BIZUNO_HOME."&p=bizuno/settings/manager"]]);
             } else {
                 msgAdd('There was a problem retrieving your extension, please contact PhreeSoft for assistance.');
             }
@@ -239,7 +242,7 @@ class bizunoSettings
         }
         dbClearCache(getUserCache('profile','email'));
         $cat    = getModuleCache($module, 'properties', 'category', false, 'bizuno');
-        $layout = array_replace_recursive($layout, ['content'=>['rID'=>$module,'action'=>'href','link'=>$this->BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['rID'=>$module,'action'=>'href','link'=>BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]]);
     }
 
     private function setSecurity($menu)
@@ -288,7 +291,7 @@ class bizunoSettings
         msgDebug("\n removed module: $module");
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."configuration WHERE config_key='$module'");
         dbClearCache(); // force reload of all users cache with next page access, menus and permissions, etc.
-        $data = ['content'=>  ['rID'=>$module, 'action'=>'href', 'link'=>$this->BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]];
+        $data = ['content'=>  ['rID'=>$module, 'action'=>'href', 'link'=>BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]];
         $layout = array_replace_recursive($layout, $data);
     }
 

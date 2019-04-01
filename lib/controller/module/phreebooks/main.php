@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-07
+ * @version    3.x Last Update: 2019-03-27
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -324,7 +324,6 @@ if (!formValidate()) return false;\n\treturn true;\n}";
      */
     public function save(&$layout=[])
     {
-        $request = $_POST;
         $rID = clean('id', 'integer', 'post');
         if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", $rID?3:2)) { return; }
         $xChild   = clean('xChild', 'text', 'post');
@@ -341,12 +340,10 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         // iterate through the ref_id's and check for multiple contacts, perhaps pre-processing
         msgDebug("\n  Started order post invoice_num = {$values['invoice_num']} and id = {$rID}");
         dbTransactionStart();
-// STILL NEEDED?       if (!$rID) { clearUserCache('phreebooks'.$this->journalID); } // clear the manager history for new saves, will then show new post on top.
         $ledger = new journal($rID, $this->journalID);
         $ledger->main['description'] = pullTableLabel('journal_main', 'journal_id', $this->journalID);
         $ledger->main = array_replace($ledger->main, $values);
         // add/update address book, address updates need to be here so recur doesn't keep making new contacts
-        // @todo this is duplicated at the start of journal class, if checked add/update here and clear the flag so it's not done again in the journal class
         if (clean('AddUpdate_b', 'bool', 'post')) { if (!$ledger->updateContact('b')) { return; } }
         if (clean('AddUpdate_s', 'bool', 'post')) {
             if (!$ledger->main['contact_id_s']) { $ledger->main['contact_id_s'] = $ledger->main['contact_id_b']; }
@@ -466,15 +463,14 @@ if (!formValidate()) return false;\n\treturn true;\n}";
      */
     public function saveBulk(&$layout=[])
     {
-        $request = $_POST;
+        msgDebug("\n  Started saveBulk");
         if (!$security = validateSecurity('phreebooks', "j20_bulk", 2)) { return; }
         $xChild = clean('xChild', 'text', 'post');
         $structure= [
             'journal_main' => dbLoadStructure(BIZUNO_DB_PREFIX.'journal_main', $this->journalID),
             'journal_item' => dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID)];
-        msgDebug("\n  Started order post invoice_num = {$request['invoice_num']}");
         clearUserCache('phreebooks'.$this->journalID); // clear the manager history for new saves, will then show new post on top.
-        // organize selections by contact_id create mini $request['item_data'] for each contact
+        // organize selections by contact_id create mini 'item_data' for each contact
         $rows = clean('item_array', 'json', 'post');
         $cIDs = array();
         foreach ($rows as $row) {
@@ -484,10 +480,10 @@ if (!formValidate()) return false;\n\treturn true;\n}";
             $cIDs[$row['contact_id']]['ttl']   += clean($row['total'],   'float');
             $cIDs[$row['contact_id']]['rows'][] = $row;
         }
-        $post_date = clean($request['post_date'], 'date');
-        $first_chk = $current_chk = $next_chk = clean($request['invoice_num'], 'text'); // save the first check number for printing
+        $post_date = clean('post_date', 'date', 'post');
+        $first_chk = $current_chk = $next_chk = clean('invoice_num', 'text', 'post'); // save the first check number for printing
         $first_id  = 0;
-        $pmt_total = clean($request['total_amount'], 'float');
+        $pmt_total = clean('total_amount', 'float', 'post');
         if (!$first_chk) { return msgAdd("Ref # cannot be blank!"); }
         // ***************************** START TRANSACTION *******************************
         dbTransactionStart();
@@ -500,10 +496,10 @@ if (!formValidate()) return false;\n\treturn true;\n}";
             $_POST['item_array']     = json_encode($items['rows']); // just the rows for this contact
             $current_chk = $next_chk;
             $main = [
-                'gl_acct_id'    => $request['gl_acct_id'],
+                'gl_acct_id'    => clean('gl_acct_id', 'text', 'post'),
                 'invoice_num'   => $current_chk,
-                'purch_order_id'=> $request['purch_order_id'],
-                'rep_id'        => $request['rep_id'],
+                'purch_order_id'=> clean('purch_order_id', 'text', 'post'),
+                'rep_id'        => clean('rep_id', 'integer', 'post'),
                 'contact_id_b'  => $cID,
                 'address_id_b'  => $address['address_id'],
                 'primary_name_b'=> $address['primary_name'],

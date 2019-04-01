@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-08
+ * @version    3.x Last Update: 2019-03-11
  * @filesource /controller/module/phreebooks/totals/subtotalChk/subtotalChk.php
  */
 
@@ -57,9 +57,11 @@ class subtotalChk {
     var newBalance = 0;
     var rowData = jq('#dgJournalItem').datagrid('getData');
     for (var i=0; i<rowData.rows.length; i++) if (rowData.rows[i]['checked']) {
-        var amount  = parseFloat(rowData.rows[i].amount);
-        if (isNaN(amount)) amount = 0;
-        newBalance += amount;
+        var total   = parseFloat(rowData.rows[i].total);
+        if (isNaN(total)) { total = 0; }
+        var discount= parseFloat(rowData.rows[i].discount);
+        if (isNaN(discount)) { discount = 0; }
+        newBalance += total + discount;
     }
     bizNumSet('totals_subtotal', newBalance);
     return newBalance;

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-31
+ * @version    3.x Last Update: 2019-04-01
  * @filesource /locale/cleaner.php
  */
 
@@ -54,7 +54,7 @@ class cleaner
             case 'array':    return is_array($value) ? $value : [];
             case 'bool':     return substr(trim($value), 0 , 1) == '1' ? true : false;
             case 'char':     return strlen(trim($value))==0 ? $default : substr(trim($value), 0 , 1); // tbd what about length? char(3), etc
-            case 'cmd':      return strlen(trim($value)) ? preg_replace("/[^a-zA-Z0-9\_\-]/", '', $value) : $default;
+            case 'cmd':      return strlen(trim($value)) ? preg_replace("/[^a-zA-Z0-9\_\-\:]/", '', $value) : $default;
             case 'command':  return $this->cleanCommand($value, $default);
             case 'country':  return $this->cleanCountry($value, $option);
             case 'currency': return $this->cleanCurrency($value);
@@ -292,17 +292,18 @@ function jsLang($idx, $suffix='')
  */
 function getLang($module)
 {
-    $lang = [];
+    $myLang= getUserCache('profile', 'language', false, 'en_US');
+    $lang  = [];
     if (!file_exists(BIZUNO_LIB."locale/en_US/module/$module/language.php")) { // bad access
         msgDebug("\nILLEGAL ATTEMPT TO LOAD LANGUAGE FROM A NON-MODULE: $module");
         msgAdd("ILLEGAL ATTEMPT TO LOAD LANGUAGE FROM A NON-MODULE: $module");
     } else {
         require(BIZUNO_LIB."locale/en_US/module/$module/language.php"); // populates $lang
     }
-    $output = $lang;
-    if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') {
-        if (file_exists(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/module/$module/language.php")) {
-            require(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/module/$module/language.php"); // populates $lang
+    $output= $lang;
+    if ($myLang <> 'en_US') {
+        if (file_exists(BIZUNO_ROOT."locale/$myLang/module/$module/language.php")) {
+            require(BIZUNO_ROOT."locale/$myLang/module/$module/language.php"); // populates $lang
             $output = array_replace($output, $lang);
         }
     }
@@ -315,15 +316,16 @@ function getLang($module)
  */
 function getMethLang($module, $mDir, $method)
 {
-    $lang = [];
-    $output = getLang($module);
+    $myLang= getUserCache('profile', 'language', false, 'en_US');
+    $lang  = [];
+    $output= getLang($module);
     if (file_exists(BIZUNO_LIB."locale/en_US/module/$module/$mDir/$method/language.php")) {
         require(BIZUNO_LIB."locale/en_US/module/$module/$mDir/$method/language.php"); // populates $lang
         $output = array_replace($output, $lang);
     }
-    if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') {
-        if (file_exists(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/module/$module/$mDir/$method/language.php")) {
-            require(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/module/$module/$mDir/$method/language.php"); // populates $lang
+    if ($myLang <> 'en_US') {
+        if (file_exists(BIZUNO_ROOT."locale/$myLang/module/$module/$mDir/$method/language.php")) {
+            include(BIZUNO_ROOT."locale/$myLang/module/$module/$mDir/$method/language.php"); // populates $lang
             $output = array_replace($output, $lang);
         }
     }

@@ -51,7 +51,6 @@ class tax_order
 
     public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
         if (empty($main['tax_rate_id'])) { return; } // no tax so don't create gl entry
         $gl       = $rate = [];
         $totalTax = 0;
@@ -70,7 +69,7 @@ class tax_order
             if ($value['amount'] == 0) { continue; }
             if ($roundAuth) { $value['amount'] = roundAmount($value['amount']); }
             $item[] = [
-                'ref_id'       => $main['id'],
+                'ref_id'       => clean('id', 'integer', 'post'),
                 'gl_type'      => $this->settings['gl_type'],
                 'qty'          => '1',
                 'description'  => implode(' : ', $value['text']),

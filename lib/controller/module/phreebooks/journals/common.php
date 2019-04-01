@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-08
+ * @version    3.x Last Update: 2019-03-18
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -804,7 +804,6 @@ class jCommon
                 msgDebug("\n    tracked in inventory");
                 if ($qty > 0) { $row['price'] = 0; } // remove unit_price for builds, leave for unbuilds (to calc delta COGS)
                 $item_cost = $this->calculateCOGS($row, true);
-                // @todo need to update inventory status here for the asi's, what about unpost
             }
             msgDebug("\n    testing item_cost = ".($item_cost===false ? 'false' : $item_cost));
             if ($item_cost === false) { return false; }// error in cogs calculation
@@ -995,10 +994,10 @@ class jCommon
     }
 
     /**
-     * Creates the datagrid structure for customer/vendor order items
+     * Creates the grid structure for customer/vendor order items
      * @param string $name - DOM field name
      * @param char $type - choices are c (customers) or v (vendors)
-     * @return array - datagrid structure
+     * @return array - grid structure
      */
     protected function dgOrders($name, $type) {
         $on_hand    = pullTableLabel('inventory', 'qty_stock');

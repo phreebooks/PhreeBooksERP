@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-06
+ * @version    3.x Last Update: 2019-03-20
  * @filesource /lib/controller/module/phreebooks/totals/discount/discount.php
  */
 
@@ -50,18 +50,18 @@ class discount
 
     public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
-        $discount = isset($request["totals_{$this->code}"]) ? clean($request["totals_{$this->code}"], 'float') : 0;
+        $discount= clean("totals_{$this->code}", ['format'=>'float','default'=>0], 'post');
         if ($discount == 0) { return; }
-        $item[] = [
-            'id'           => clean($request["totals_{$this->code}_id"], 'float'), // for edits
-            'ref_id'       => $request['id'],
+        $desc    = $this->lang['title'].': '.clean('primary_name_b', ['format'=>'text','default'=>''], 'post');
+        $item[]  = [
+            'id'           => clean("totals_{$this->code}_id", ['format'=>'float','default'=>0], 'post'),
+            'ref_id'       => clean('id', 'integer', 'post'),
             'gl_type'      => $this->settings['gl_type'],
             'qty'          => '1',
-            'description'  => $this->lang['title'].': '.($request['primary_name_b']?$request['primary_name_b']:''),
+            'description'  => $desc,
             'debit_amount' => in_array($this->jID, [9,10,12,13,19]) ? $discount : 0,
             'credit_amount'=> in_array($this->jID, [3, 4, 6, 7,21]) ? $discount : 0,
-            'gl_account'   => isset($request["totals_{$this->code}_gl"]) ? $request["totals_{$this->code}_gl"] : $this->settings['gl_account'],
+            'gl_account'   => clean("totals_{$this->code}_gl", ['format'=>'text','default'=>$this->settings['gl_account']], 'post'),
             'post_date'    => $main['post_date']];
         if (empty($main['discount'])) { $main['discount'] = 0; }
         $main['discount'] += $discount;
@@ -100,8 +100,9 @@ class discount
         $output['body'] .= html5("totals_{$this->code}_gl", $this->fields["totals_{$this->code}_gl"])."\n";
         $output['body'] .= "</div>\n";
         $output['jsHead'][] = "function totals_{$this->code}(begBalance) {
-    var newBalance  = begBalance;
-    var decLen      = parseInt(bizDefaults.currency.currencies[currency].dec_len);
+    var newBalance= begBalance;
+    var curISO    = jq('#currency').val() ? jq('#currency').val() : bizDefaults.currency.defaultCur;
+    var decLen    = parseInt(bizDefaults.currency.currencies[curISO].dec_len);
     if (discountType=='pct') {
         var percent = parseFloat(jq('#totals_{$this->code}_pct').val());
         if (isNaN(percent)) { percent = 0; }

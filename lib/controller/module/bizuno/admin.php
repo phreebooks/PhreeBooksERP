@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-21
+ * @version    3.x Last Update: 2019-03-20
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -132,7 +132,7 @@ class bizunoAdmin
     private function settingsStructure()
     {
         foreach ([0,1,2,3,4] as $value) { $selPrec[] = ['id'=>$value, 'text'=>$value]; }
-        $selSep = [['id'=>'.','text'=>'Dot (.)'],['id'=>',','text'=>'Comma (,)'],['id'=>' ','text'=>'Space ( )']];
+        $selSep = [['id'=>'.','text'=>'Dot (.)'],['id'=>',','text'=>'Comma (,)'],['id'=>' ','text'=>'Space ( )'],['id'=>"'",'text'=>"Apostrophe (')"]];
         $locale = localeLoadDB();
         $zones  = viewTimeZoneSel($locale);
         $selDate= [
@@ -364,7 +364,7 @@ class bizunoAdmin
             'NAME'       =>lang('address_book_primary_name'),
             'PLEASE_WAIT'=>lang('please_wait'),
             'SETTINGS'   =>lang('settings'),
-            'SHIPPING_ESTIMATOR'=>lang('shipping_estimator'), // @todo move this to extShipping and add to loadBrowserSession hook for extShipping
+            'SHIPPING_ESTIMATOR'=>lang('shipping_estimator'),
             'STATE'      =>lang('address_book_state'),
             'TITLE'      =>lang('title'),
             'TOTAL'      =>lang('total'),

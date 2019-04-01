@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-07
+ * @version    3.x Last Update: 2019-03-20
  * @filesource /lib/controller/module/phreebooks/totals/fee_order/fee_order.php
  */
 
@@ -51,20 +51,19 @@ class fee_order
 
     public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
-        $fee_order = isset($request['totals_fee_order']) ? clean($request['totals_fee_order'], 'float') : 0;
+        $fee_order= clean("totals_{$this->code}", ['format'=>'float','default'=>0], 'post');
         if ($fee_order == 0) { return; }
-        $item[] = [
-            'id'           => clean($request['totals_fee_order_id'], 'float'), // for edits
-            'ref_id'       => $request['id'],
+        $desc     = $this->lang['title'].': '.clean('primary_name_b', ['format'=>'text','default'=>''], 'post');
+        $item[]   = [
+            'id'           => clean("totals_{$this->code}_id", ['format'=>'float','default'=>0], 'post'),
+            'ref_id'       => clean('id', 'integer', 'post'),
             'gl_type'      => $this->settings['gl_type'],
             'qty'          => '1',
-            'description'  => $this->lang['title'].': '.($request['primary_name_b']?$request['primary_name_b']:''),
+            'description'  => $desc,
             'debit_amount' => in_array(JOURNAL_ID, [9,10,12,13,19]) ? $fee_order : 0,
             'credit_amount'=> in_array(JOURNAL_ID, [3, 4, 6, 7,21]) ? $fee_order : 0,
-            'gl_account'   => isset($request['totals_fee_order_gl']) ? $request['totals_fee_order_gl'] : $this->settings['gl_account'],
+            'gl_account'   => clean("totals_{$this->code}_gl", ['format'=>'text','default'=>$this->settings['gl_account']], 'post'),
             'post_date'    => $main['post_date']];
-//        $main['fee_order'] = $fee_order; // there is no place in the main to put this, negative discount?
         $begBal += $fee_order;
         msgDebug("\nDiscount is returning balance = ".$begBal);
     }
@@ -99,8 +98,9 @@ class fee_order
         $output['body'] .= html5('totals_fee_order_gl', $this->fields['totals_fee_order_gl']);
         $output['body'] .= "</div>\n";
         $output['jsHead'][] = "function totals_fee_order(begBalance) {
-    var newBalance  = parseFloat(begBalance);
-    var decLen      = parseInt(bizDefaults.currency.currencies[currency].dec_len);
+    var newBalance= parseFloat(begBalance);
+    var curISO    = jq('#currency').val() ? jq('#currency').val() : bizDefaults.currency.defaultCur;
+    var decLen    = parseInt(bizDefaults.currency.currencies[curISO].dec_len);
     if (feeType=='pct') {
         var percent = parseFloat(jq('#totals_{$this->code}_pct').val());
         if (isNaN(percent)) { percent = 0; }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-09
+ * @version    3.x Last Update: 2019-03-22
  * @filesource /view/easyUI/html5.php
  */
 
@@ -1414,11 +1414,11 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         $iso = getModuleCache('phreebooks', 'currency', 'iso', $cur);
         if (empty($iso)) { $iso = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD')); }
         $prop['classes'][] = 'easyui-numberbox';
-        $prop['options']['decimalSeparator']= "'{$iso['dec_pt']}'";
-        $prop['options']['groupSeparator']  = "'{$iso['sep']}'";
-        $prop['options']['precision']       = "'{$iso['dec_len']}'";
-        if (!empty($iso['prefix'])) { $prop['options']['prefix'] = "'{$iso['prefix']} '"; }
-        if (!empty($iso['suffix'])) { $prop['options']['suffix'] = "' {$iso['suffix']}'"; }
+        $prop['options']['decimalSeparator']= "'".addslashes($iso['dec_pt'])."'";
+        $prop['options']['groupSeparator']  = "'".addslashes($iso['sep'])."'";
+        $prop['options']['precision']       = intval($iso['dec_len']);
+        if (!empty($iso['prefix'])) { $prop['options']['prefix'] = "'" .addslashes($iso['prefix'])." '"; }
+        if (!empty($iso['suffix'])) { $prop['options']['suffix'] = "' ".addslashes($iso['suffix'])."'"; }
         $prop['styles']['text-align'] = 'right';
         if (empty($prop['options']['width'])) { $prop['options']['width'] = 125; }
         unset($prop['attr']['type'], $prop['attr']['size']);
@@ -1809,54 +1809,63 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 }
 
-/*     * *************************** Datagrid Editors ***************** */
+/** *************************** Datagrid Editors ***************** */
+/**
+ * Creates the datagrid editor for a currency numberbox
+ * @param string $onChange - JavaScript to run on change event
+ * @param boolean $precision - set to true for number precision; false for currency precision
+ * @return string - grid editor JSON
+ */
 function dgEditCurrency($onChange='', $precision=false) {
     $iso  = getUserCache('profile', 'currency', false, 'USD');
     $props= getModuleCache('phreebooks', 'currency', 'iso', $iso, 'USD');
     $prec = $precision ? getModuleCache('bizuno','settings','locale','number_precision','2') : $props['dec_len'];;
-    $dec  = $props['dec_pt'];
-    $tsnd = $props['sep'];
-    $pfx  = $props['prefix'];
-    $sfx  = $props['suffix'];
-    return "{type:'numberbox',options:{precision:$prec,decimalSeparator:'$dec',groupSeparator:'$tsnd',prefix:'$pfx',suffix:'$sfx',onChange:function(){ $onChange } } }";
+    $dec  = str_replace("'", "\\'", $props['dec_pt']);
+    $tsnd = str_replace("'", "\\'", $props['sep']);
+    $pfx  = !empty($props['prefix']) ? str_replace("'", "\\'", $props['prefix'])." " : '';
+    $sfx  = !empty($props['suffix']) ? " ".str_replace("'", "\\'", $props['suffix']) : '';
+    return "{type:'numberbox',options:{precision:$prec,decimalSeparator:'$dec',groupSeparator:'$tsnd',prefix:'$pfx',suffix:'$sfx',onChange:function(newValue, oldValue){ $onChange } } }";
 }
 
 /**
  * This function builds the combo box editor HTML for a datagrid to view GL Accounts
- * @return string set the editor structure
+ * @param string $onClick - JavaScript to run on click event
+ * @return string set for the editor structure
  */
-function dgEditGL() {
-    return "{type:'combogrid',options:{ data:pbChart, mode:'local', width:300, panelWidth:450, idField:'id', textField:'title',
+function dgEditGL($onClick='') {
+    return "{type:'combogrid',options:{ data:pbChart, mode:'local', width:300, panelWidth:450, idField:'id', textField:'title',onClickRow:function(index, row){ $onClick },
 inputEvents:jq.extend({},jq.fn.combogrid.defaults.inputEvents,{ keyup:function(e){ glComboSearch(jq(this).val()); } }),
 rowStyler:  function(index,row){ if (row.inactive=='1') { return { class:'row-inactive' }; } },
 columns:    [[{field:'id',title:'".jsLang('gl_account')."',width:80},{field:'title',title:'".jsLang('title')."',width:200},{field:'type',title:'".jsLang('type')."',width:160}]]}}";
 }
 
 /**
- *
- * @param type $onChange
- * @return type
+ * Creates the datagrid editor for a numberbox
+ * @param string $onChange - JavaScript to run on change event
+ * @return string set for the editor structure
  */
 function dgEditNumber($onChange='') {
-    $prec = getModuleCache('bizuno','settings','locale','number_precision','2');
-    $tsnd = getModuleCache('bizuno','settings','locale','number_thousand', ',');
-    $dec  = getModuleCache('bizuno','settings','locale','number_decimal',  '.');
-    $pfx  = getModuleCache('bizuno','settings','locale','number_prefix',   '');
-    $sfx  = getModuleCache('bizuno','settings','locale','number_suffix',   '');
-    return "{type:'numberbox',options:{precision:$prec,decimalSeparator:'$dec',groupSeparator:'$tsnd',prefix:'$pfx',suffix:'$sfx',onChange:function(){ $onChange } } }";
+    $prec  = getModuleCache('bizuno','settings','locale','number_precision','2');
+    $tsnd  = str_replace("'", "\\'", getModuleCache('bizuno','settings','locale','number_thousand',','));
+    $dec   = str_replace("'", "\\'", getModuleCache('bizuno','settings','locale','number_decimal', '.'));
+    $prefix= getModuleCache('bizuno','settings','locale','number_prefix', '');
+    $pfx   = !empty($prefix) ? str_replace("'", "\\'", $prefix)." " : '';
+    $suffix= getModuleCache('bizuno','settings','locale','number_suffix', '');
+    $sfx   = !empty($suffix) ? " ".str_replace("'", "\\'", $suffix) : '';
+    return "{type:'numberbox',options:{precision:$prec,decimalSeparator:'$dec',groupSeparator:'$tsnd',prefix:'$pfx',suffix:'$sfx',onChange:function(newValue, oldValue){ $onChange } } }";
 }
 
 /**
- *
- * @param type $id
- * @param type $field
- * @param type $type
- * @param type $xClicks
- * @return string
+ * Creates the datagrid editor for a tax combogrid
+ * @param string $id - datagrid ID
+ * @param string $field - datagrid field ID to set
+ * @param char $type - c for customers or v for vendors
+ * @param string $xClicks - callback JavaScript, if any
+ * @return string set for the editor structure
  */
 function dgEditTax($id, $field, $type='c', $xClicks='') {
     return "{type:'combogrid',options:{data: bizDefaults.taxRates.$type.rows,width:120,panelWidth:210,idField:'id',textField:'text',
-        onClickRow:function (idx, data) { jq('#$id').edatagrid('getRows')[curIndex]['$field'] = data.id; $xClicks },
+        onClickRow:function (index, row) { jq('#$id').edatagrid('getRows')[curIndex]['$field'] = row.id; $xClicks },
         rowStyler:function(idx, row) { if (row.status==1) { return {class:'journal-waiting'}; } else if (row.status==2) { return {class:'row-inactive'}; }  },
         columns: [[{field:'id',hidden:true},{field:'text',width:120,title:'".jsLang('journal_main_tax_rate_id')."'},{field:'tax_rate',width:70,title:'".jsLang('amount')."',align:'center'}]]
     }}";

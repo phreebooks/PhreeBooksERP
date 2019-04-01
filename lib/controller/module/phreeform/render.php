@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-08
+ * @version    3.x Last Update: 2019-03-27
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -1173,15 +1173,15 @@ class phreeformRender
 
     private function setEncodedList($boxfield, $rows)
     {
-        msgDebug("\nboxfield = ".print_r($boxfield, true));
-        msgDebug("\nrows = ".print_r($rows, true));
+//        msgDebug("\nboxfield = ".print_r($boxfield, true));
+//        msgDebug("\nrows = ".print_r($rows, true));
+        $data = [];
         foreach ($rows as $row) {
             $output = [];
-            for ($i=0; $i<sizeof($boxfield); $i++) {
-                $output[] = $row["r$i"];
-            }
+            for ($i=0; $i<sizeof($boxfield); $i++) { $output["r$i"] = $row[$boxfield[$i]->fieldname]; }
             $data[] = $output;
         }
+        msgDebug("\nreturning from setEncodedList with = ".print_r($data, true));
         return $data;
     }
 }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-21
+ * @version    3.x Last Update: 2019-04-01
  * @filesource /portal/main.php
  */
 
@@ -78,8 +78,7 @@ class main //extends controller
     {
         global $bizunoUser, $bizunoLang;
         $bizunoUser = $this->setGuestCache();
-        msgDebug("\nvalidateUser lang = ".$bizunoUser['profile']['language']);
-        $bizunoLang = $this->loadBaseLang($bizunoUser['profile']['language']);
+        $this->setLanguage($bizunoUser);
         $session = clean('bizunoSession', 'json', 'cookie');
         msgDebug("\nEntering validateUser with session = ".print_r($session, true)." and lang = ".$bizunoUser['profile']['language']);
         if ($session && constant('BIZUNO_DB_NAME') !== '') { $this->setSession($session); }
@@ -217,13 +216,30 @@ class main //extends controller
         $registry->initRegistry($usrEmail, 1);
     }
 
+    private function setLanguage(&$bizunoUser)
+    {
+        global $bizunoLang;
+        $getLang  = clean('lang',    'cmd', 'get'); // passed at site entry before login
+        $postLang = clean('UserLang','cmd', 'post'); // passed with login
+        if (!empty($getLang) && strlen($getLang)==5) {
+            $bizunoUser['profile']['language'] = $getLang;
+            setcookie('bizunoLang', $getLang,  time()+(60*60*24*7));
+        } elseif (!empty($postLang) && strlen($postLang)==5) {
+            $bizunoUser['profile']['language'] = $postLang;
+            setcookie('bizunoLang', $postLang, time()+(60*60*24*7));
+        } else {
+            $bizunoUser['profile']['language'] = clean('bizunoLang',['format'=>'cmd','default'=>$bizunoUser['profile']['language']],'cookie');
+        }
+        $bizunoLang= $this->loadBaseLang($bizunoUser['profile']['language']);
+    }
+
     private function loadBaseLang($lang='en_US')
     {
         msgDebug("\nEntering loadBaseLang with lang = $lang");
         $langCore = $langByRef = [];
-        if (strlen($lang <> 5)) { $lang = 'en_US'; }
+        if (strlen($lang) <> 5) { $lang = 'en_US'; }
         if (defined('BIZUNO_DATA') && file_exists(BIZUNO_DATA."cache/lang_{$lang}.json")) {
-            msgDebug("\ngetting lang from cache/");
+            msgDebug("\nGetting $lang lang from cache/");
             $langCache = json_decode(file_get_contents(BIZUNO_DATA."cache/lang_{$lang}.json"), true);
         } else {
             require(BIZUNO_LIB."locale/en_US/language.php"); // pulls the current language in English
@@ -231,10 +247,11 @@ class main //extends controller
             $langCache = array_merge($langCore, $langByRef);
         }
         if ($lang <> 'en_US') {
+            $otherLang = [];
             if (defined('BIZUNO_DATA') && file_exists(BIZUNO_DATA."cache/lang_{$lang}.json")) {
                 $otherLang = json_decode(file_get_contents(BIZUNO_DATA."cache/lang_{$lang}.json"), true);
-            } else {
-                require(BIZUNO_LIB."locale/$lang/language.php"); // pulls locale overlay
+            } elseif (file_exists(BIZUNO_ROOT."locale/$lang/language.php")) {
+                require(BIZUNO_ROOT."locale/$lang/language.php"); // pulls locale overlay
                 $otherLang = array_merge($langCore, $langByRef);
             }
             $langCache = array_merge($langCache, $otherLang);

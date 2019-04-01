@@ -56,7 +56,6 @@ class tax_item
 
     public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
         // @todo the below should use the function $tax_rates = loadTaxes($this->cType);
         // this should also be broken into common sub functions as they are shared with tax_order and shipping
         $tax_rates= dbGetMulti(BIZUNO_DB_PREFIX."tax_rates", "type='$this->cType'");
@@ -82,7 +81,7 @@ class tax_item
             if ($value['amount'] == 0) { continue; }
             if ($roundAuth) { $value['amount'] = roundAmount($value['amount']); }
             $item[] = [
-                'ref_id'       => $main['id'],
+                'ref_id'       => clean('id', 'integer', 'post'),
                 'gl_type'      => $this->settings['gl_type'],
                 'qty'          => '1',
                 'description'  => implode(' : ', $value['text']),

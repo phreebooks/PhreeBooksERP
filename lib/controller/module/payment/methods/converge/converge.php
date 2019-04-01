@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-19
+ * @version    3.x Last Update: 2019-03-29
  * @filesource /lib/controller/module/payment/methods/converge.php
  *
  * Source Information:
@@ -199,7 +199,7 @@ $output['body'] .= '</div>
             'ssl_country'           => $ledger->main['country_b'],
             'ssl_avs_zip'           => preg_replace("/[^A-Za-z0-9]/", "", $ledger->main['postal_code_b']),
             'ssl_phone'             => substr(preg_replace("/[^0-9]/", "", $ledger->main['telephone1_b']), 0, 14),
-            'ssl_email'             => isset($ledger->main['email_b']) ? $ledger->main['email_b'] : getModuleCache('bizuno', 'settings', 'company', 'email'),
+            'ssl_email'             => isset($ledger->main['email_b']) ? $ledger->main['email_b'] : '', // getModuleCache('bizuno', 'settings', 'company', 'email'),
             'ssl_show_form'         => 'FALSE',
             'ssl_result_format'     => 'ASCII'];
         msgDebug("\nConverge sale working with fields = ".print_r($fields, true));
@@ -263,7 +263,7 @@ $output['body'] .= '</div>
                     'ssl_country'           => $ledger->main['country_b'],
                     'ssl_avs_zip'           => preg_replace("/[^A-Za-z0-9]/", "", $ledger->main['postal_code_b']),
                     'ssl_phone'             => substr(preg_replace("/[^0-9]/", "", $ledger->main['telephone1_b']), 0, 14),
-                    'ssl_email'             => isset($ledger->main['email_b']) ? $ledger->main['email_b'] : getModuleCache('bizuno', 'settings', 'company', 'email'),
+                    'ssl_email'             => isset($ledger->main['email_b']) ? $ledger->main['email_b'] : '', //getModuleCache('bizuno', 'settings', 'company', 'email'),
                     'ssl_show_form'         => 'FALSE',
                     'ssl_result_format'     => 'ASCII',
                     ];
@@ -326,9 +326,7 @@ $output['body'] .= '</div>
     {
         global $io;
         $tags = '';
-        foreach ($request as $key => $value) {
-            if ($value <> '') { $tags .= "<$key>".urlencode(str_replace('&', '+', $value))."</$key>"; }
-        }
+        foreach ($request as $key => $value) { if ($value <> '') { $tags .= "<$key>".urlencode(str_replace('&', '+', $value))."</$key>"; } }
         $data = "xmldata=<txn>$tags</txn>";
         msgDebug("\nRequest to send to Converge: $data");
         $url = $this->mode=='test' ? PAYMENT_CONVERGE_URL_TEST : PAYMENT_CONVERGE_URL;
@@ -355,7 +353,7 @@ $output['body'] .= '</div>
     }
 
     /**
-     * 
+     *
      * @param type $data
      * @return type
      */

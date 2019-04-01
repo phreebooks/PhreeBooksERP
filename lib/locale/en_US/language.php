@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-08
+ * @version    3.x Last Update: 2019-03-19
  * @filesource /local/en_US/language.php
  */
 
@@ -289,6 +289,7 @@ $langCore = [
     'optional' => 'Optional',
     'options' => 'Options',
     'order' => 'Display Order',
+    'other' => 'Other',
     'owner' => 'Owner',
     'paid' => 'Paid',
     'page' => 'Page',

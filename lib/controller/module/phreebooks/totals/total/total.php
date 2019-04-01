@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-06
+ * @version    3.x Last Update: 2019-03-18
  * @filesource /controller/module/phreebooks/totals/total/total.php
  */
 
@@ -75,26 +75,24 @@ class total
 
     /**
      * Return false if no GL entry needed
-     * @param type $request
      * @param array $main
      * @param type $item
      */
     public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
-        $total = isset($request['total_amount']) ? clean($request['total_amount'], 'float') : 0;
-        $desc  = 'title:'.(isset($main['primary_name_b'])?$main['primary_name_b']:'');
-        $desc  = isset($request['totals_total_desc']) && $request['totals_total_desc'] ? clean($request['totals_total_desc'], 'text') : $desc;
-        $txID  = isset($request['totals_total_txid']) ? clean($request['totals_total_txid'], 'text') : '';
-        $item[] = [
-            'id'           => isset($request['totals_total_id']) ? clean($request['totals_total_id'], 'integer') : 0, // for edits
-            'ref_id'       => $main['id'],
+        $total = clean('total_amount', ['format'=>'float','default'=>0], 'post');
+        $desc  = $this->lang['title'].': '.clean('primary_name_b', ['format'=>'text','default'=>''], 'post');
+        $altDsc= clean('totals_total_desc', 'text', 'post');
+        $txID  = clean('totals_total_txid', 'text', 'post');
+        $item[]= [
+            'id'           => clean("totals_{$this->code}_id", ['format'=>'float','default'=>0], 'post'),
+            'ref_id'       => clean('id', 'integer', 'post'),
             'gl_type'      => $this->settings['gl_type'],
             'qty'          => '1',
-            'description'  => $desc,
+            'description'  => !empty($altDsc) ? $altDsc : $desc,
             'debit_amount' => in_array($main['journal_id'], [7,9,10,12,14,17,18,19]) ? $total : 0,
             'credit_amount'=> in_array($main['journal_id'], [3,4, 6,13,16,20,21,22]) ? $total : 0,
-            'gl_account'   => isset($main['gl_acct_id']) && $main['gl_acct_id'] ? $main['gl_acct_id'] : $this->settings['gl_account'],
+            'gl_account'   => clean('gl_acct_id', ['format'=>'text','default'=>$this->settings['gl_account']], 'post'),
             'trans_code'   => $txID,
             'post_date'    => $main['post_date']];
         $main['total_amount'] = $total;

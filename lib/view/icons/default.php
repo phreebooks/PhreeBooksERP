@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-06
+ * @version    3.x Last Update: 2019-03-19
  * @filesource lib/view/theme/default/icons-default.php
  */
 
@@ -52,6 +52,7 @@ $icons = [
     'dirNew'     => ['dir'=>'default','path'=>'folder-new.png'],
     'docNew'     => ['dir'=>'default','path'=>'document-new.png'],
     'download'   => ['dir'=>'default','path'=>'go-down.png'],
+    'drag'       => ['dir'=>'default','path'=>'drag.png'],
     'edit'       => ['dir'=>'default','path'=>'edit-find-replace.png'],
     'email'      => ['dir'=>'default','path'=>'internet-mail.png'],
     'employee'   => ['dir'=>'default','path'=>'employee.png'],

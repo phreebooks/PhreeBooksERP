@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-04
+ * @version    3.x Last Update: 2019-03-19
  * @filesource lib/controller/functions.php
  */
 
@@ -33,7 +33,7 @@ namespace bizuno;
  * Autoloads files, if it's already loaded, returns true. if not, tests for files existence before requiring else dies.
  * @param string $path - Path to load file
  * @param string $method - [Default: false] A method within the file to test for the loaded presence
- * @param string $type - [Default: class] Whether 'class or 'functions' are being tested
+ * @param string $type - [Default: class] Whether 'class' or 'function' are being tested
  * @return boolean - true if already loaded, script dies with notice if the file is not there
  */
 function bizAutoLoad($path, $method='', $type='class') {

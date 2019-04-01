@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-09
+ * @version    3.x Last Update: 2019-03-18
  * @filesource /lib/controller/module/phreebooks/api.php
  */
 
@@ -301,7 +301,7 @@ class phreebooksApi
                     'debit_amount'  => in_array($jID, [4]) ? $data['LineTotal'] : 0,
                     'credit_amount' => in_array($jID, [10])? $data['LineTotal'] : 0,
                     'gl_account'    => in_array($jID, [4]) ? $inv['gl_inv'] : $inv['gl_sales'],
-                    'tax_rate_id'   => 0, // @todo need to determine this based on SKU tax class
+                    'tax_rate_id'   => 0,
                     'full_price'    => $inv['full_price'],
                     'post_date'     => $postDate];
             }
@@ -322,7 +322,6 @@ class phreebooksApi
             if (!isset($data['ShipContactID'])) { $data['ShipContactID'] = $data['BillContactID']; }
             $this->setContactInfo($main, in_array($jID, [10,12]) ? $data['ShipContactID'] : false, 'c', '_s');
             $main['total_amount'] = $data['Total'];
-            // @todo add tax to item array, use taxGuess from bizuno/api
             if (isset($data['Shipping']) && $data['Shipping']) { $items[] = [
                 'qty'          => 1,
                 'gl_type'      => 'frt',
@@ -331,8 +330,7 @@ class phreebooksApi
                 'credit_amount'=> in_array($jID, [10])? $data['Shipping'] : 0,
                 'gl_account'   => getModuleCache('extShipping', 'settings', 'general', 'gl_shipping_c'),
                 'tax_rate_id'  => 0,
-                'post_date'    => $postDate,
-                ];
+                'post_date'    => $postDate];
             }
             if (in_array($jID, [6,12])) { // for sales, purchases just need a gl account to offset total
                 if (!$data['HoldingGLAccount']) { return msgAdd("Expecting a holding GL account for importing to, didn't find it in the csv file! Aborting..."); }

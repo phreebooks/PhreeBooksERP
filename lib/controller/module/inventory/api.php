@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-07
+ * @version    3.x Last Update: 2019-03-18
  * @filesource /lib/controller/module/inventory/api.php
  */
 
@@ -86,7 +86,6 @@ class inventoryApi
         $csv     = array_map('str_getcsv', file($_FILES['fileInventory']['tmp_name']));
         $head    = array_shift($csv);
         $cnt     = $newCnt = $updCnt = 0;
-        // @todo, this just imports base inventory for now, need to expand for assemblies and options, and ???
         foreach ($csv as $row) {
             $tmp = array_combine($head, $row);
             $sqlData = [];

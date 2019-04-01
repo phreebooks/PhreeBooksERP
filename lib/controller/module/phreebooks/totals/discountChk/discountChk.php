@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-08
+ * @version    3.x Last Update: 2019-03-20
  * @filesource /lib/controller/module/phreebooks/totals/discountChk/discountChk.php
  */
 
@@ -50,9 +50,8 @@ class discountChk
 
     public function glEntry(&$main, &$items, &$begBal=0)
     {
-        $request = $_POST; // @todo THIS NEEDS TO BE DEPRECATED AND REMOVED IN FAVOR OF CLEAN
         $totalDisc = 0;
-        $rows = clean($request['item_array'], 'json');
+        $rows = clean('item_array', 'json', 'post');
         foreach ($rows as $row) {
             $discount = clean($row['discount'], 'float');
             if ($discount == 0) { continue; }
@@ -66,14 +65,14 @@ class discountChk
                 }
             }
             $items[] = [
-                'ref_id'       => $request['id'],
+                'ref_id'       => clean('id', 'integer', 'post'),
                 'item_ref_id'  => $row['item_ref_id'],
                 'gl_type'      => $this->settings['gl_type'],
                 'qty'          => '1',
                 'description'  => $row['description'],
                 'debit_amount' => in_array($this->jID, [17,18]) ? $discount : 0,
                 'credit_amount'=> in_array($this->jID, [20,22]) ? $discount : 0,
-                'gl_account'   => isset($request['totals_discount_gl']) ? $request['totals_discount_gl'] : $this->settings['gl_account'],
+                'gl_account'   => clean('totals_discount_gl', ['format'=>'text','default'=>$this->settings['gl_account']], 'post'),
                 'post_date'    => $main['post_date']];
             $totalDisc += $discount;
         }
@@ -112,7 +111,8 @@ class discountChk
     }
     bizNumSet('totals_discount', totalDisc);
     var newBalance = begBalance - totalDisc;
-    var decLen= parseInt(bizDefaults.currency.currencies[currency].dec_len);
+    var curISO    = jq('#currency').val() ? jq('#currency').val() : bizDefaults.currency.defaultCur;
+    var decLen= parseInt(bizDefaults.currency.currencies[curISO].dec_len);
     return parseFloat(newBalance.toFixed(decLen));
 }";
     }

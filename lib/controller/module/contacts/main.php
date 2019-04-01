@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-05
+ * @version    3.x Last Update: 2019-03-27
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -665,6 +665,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         } elseif (isset($values['short_name']) && !$values['short_name']) {
             unset($values['short_name']); // existing record and no Contact ID passed, leave it alone
         }
+        if (empty($values['inactive'])) { $values['inactive'] = 0; } // fixes bug in conversions and prevents null inactive value
         $result = dbWrite(BIZUNO_DB_PREFIX."contacts", $values, $rID?'update':'insert', "id=$rID");
         if (!$rID) { $rID = $result; }
         $_POST['id'.$suffix] = $rID; // save for customization

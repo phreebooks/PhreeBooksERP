@@ -49,7 +49,7 @@ class subtotal
 
     public function render(&$output)
     {
-        $fields = ['totals_subtotal'=>['label'=>lang('subtotal'),'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']]];
+        $fields = ['totals_subtotal'=>['label'=>lang('subtotal'),'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']]];
         $hide   = $this->hidden ? ';display:none' : '';
         $output['body'] .= '<div style="text-align:right'.$hide.'">'.html5('totals_subtotal',$fields['totals_subtotal']).html5('',['icon'=>'blank','size'=>'small'])."</div>\n";
         $output['jsHead'][]= "function totals_subtotal(begBalance) {

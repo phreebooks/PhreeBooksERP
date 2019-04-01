@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2019-02-01
+ * @version    3.x Last Update: 2019-03-27
  * @filesource /portal/upgrade.php
  */
 
@@ -138,6 +138,10 @@ function bizunoUpgrade($dbVersion='1.0')
             dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_6','group_id'=>'vend:j6','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
         }
         clearModuleCache('bizuno', 'properties', 'encKey'); // Fixes possible bug in storage of encryption key
+    }
+    if (version_compare($dbVersion, '3.1.7') < 0) {
+        dbWrite(BIZUNO_DB_PREFIX.'contacts', ['inactive'=>0], 'update', "inactive=''");
+        dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."contacts` CHANGE `inactive` `inactive` CHAR(1) NOT NULL DEFAULT '0' COMMENT 'type:select;tag:Status;order:20'");
     }
 
     // At every upgrade, run the comments repair tool to fix changes to the view structure

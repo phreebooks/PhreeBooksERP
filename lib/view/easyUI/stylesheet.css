@@ -16,7 +16,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-18
+ * @version    3.x Last Update: 2019-03-18
  * @filesource /view/theme/default/stylesheet.css
  */
 
@@ -41,6 +41,7 @@ body.loading .modal      { display:block; }
 .block25                 { width:25%; display:inline-block; position:relative; vertical-align:top; min-width:200px; min-height:550px; margin:3px; }
 .block33                 { width:32%; display:inline-block; position:relative; vertical-align:top; min-width:400px; min-height:550px; margin:3px; }
 .block50                 { width:49%; display:inline-block; position:relative; vertical-align:top; min-width:600px; min-height:550px; margin:3px; }
+.block66                 { width:66%; display:inline-block; position:relative; vertical-align:top; min-width:800px; min-height:550px; margin:3px; }
 
 .blockView               { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; } /* border:solid 1px red; */
 .blockViewR              { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; text-align:right; } /* border:solid 1px red; */

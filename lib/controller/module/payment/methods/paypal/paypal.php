@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-19
+ * @version    3.x Last Update: 2019-03-21
  * @filesource /lib/controller/module/payment/methods/paypal.php
  */
 
@@ -33,14 +33,13 @@ if (!defined('PAYMENT_PAYPAL_URL_TEST')){ define('PAYMENT_PAYPAL_URL_TEST', "htt
 //if (!defined('PAYMENT_PAYPAL_CERT_URL_TEST')){ define('PAYMENT_PAYPAL_CERT_URL_TEST', "https://api.sandbox.paypal.com/nvp"); }
 
 
-class paypal 
+class paypal
 {
-    private $mode    = 'prod'; // choices are test (Test) and prod (Production)
+    private $mode     = 'prod'; // choices are test (Test) and prod (Production)
     public  $moduleID = 'payment';
     public  $methodDir= 'methods';
     public  $code     = 'paypal';
-    public  $state    = 'dev'; // move to prod when ready
-    public  $sandbox = [
+    public  $sandbox  = [
         'username'  => 'flintstone_api1.phreesoft.com',
         'password'  => '4DS3PAE7GW26YH9C',
         'signature' => 'A-l6fYxQvt9MpbUpkGw-mppIrNfLAFQ4b41PZJnYNmah0EUN6a1aqRU4',
@@ -50,7 +49,7 @@ class paypal
         'number'    => '4032039921024040',
         'month'     => '06',
         'year'      => '2020',
-//        'type'      => 'VISA',
+//      'type'      => 'VISA',
         'cvv'       => ''];
 
     public function __construct()
