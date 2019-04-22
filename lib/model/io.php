@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-14
+ * @version    3.x Last Update: 2019-04-15
  * @filesource /lib/model/io.php
  */
 
@@ -39,7 +39,7 @@ final class io
         $this->dest_dir    = 'backups/';
         $this->dest_file   = 'filename.bak';
         $this->mimeType    = '';
-//        $this->useragent   = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0'; // moved to portal
+//      $this->useragent   = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0'; // moved to portal
         $this->options     = ['upload_dir' => $this->myFolder.$this->dest_dir];
 
     }
@@ -173,34 +173,24 @@ final class io
      * @return array - From empty to a list of files within the folder.
      *
      */
-    public function fileReadGlob($path)
+    public function fileReadGlob($path, $arrExt=[])
     {
         $output= [];
         if (!$this->folderExists($path)) { return $output; }
         $files = glob($this->myFolder.$path."*");
-        if (is_array($files)) {
-            foreach ($files as $file) {
-                $fmTime = filemtime($file);
-                $output[] = [
-                    'name' => str_replace($this->myFolder, "", $file), // everything less the myFolder path, used to delete and navigate to
-                    'title'=> str_replace($this->myFolder.$path, "", $file), // just the filename, part matching the *
-                    'size' => viewFilesize($file),
-                    'mtime'=> $fmTime,
-                    'date' => date(getModuleCache('bizuno', 'settings', 'locale', 'date_short'), $fmTime)];
-            }
+        if (!is_array($files)) { return $output; }
+        foreach ($files as $file) {
+            $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
+            if (!empty($arrExt) && !in_array($ext, $arrExt)) { continue; }
+            $fmTime = filemtime($file);
+            $output[] = [
+                'name' => str_replace($this->myFolder, "", $file), // everything less the myFolder path, used to delete and navigate to
+                'title'=> str_replace($this->myFolder.$path, "", $file), // just the filename, part matching the *
+                'size' => viewFilesize($file),
+                'mtime'=> $fmTime,
+                'date' => date(getModuleCache('bizuno', 'settings', 'locale', 'date_short'), $fmTime)];
         }
         return $output;
-    }
-
-    /**
-     *
-     */
-    public function fileUpload()
-    {
-        msgDebug("\nSending with options = ".print_r($this->options, true));
-        require_once(BIZUNO_ROOT."apps/jquery-file-upload/server/php/UploadHandler.php");
-        $upload_handler = new \UploadHandler($this->options);
-        msgDebug("\nBack with result = ".print_r($upload_handler, true));
     }
 
     /**
@@ -229,26 +219,6 @@ final class io
         }
         fclose($handle);
         msgDebug("\nSaved uploaded file to filename: BIZUNO_DATA/$fn");
-    }
-
-    /**
-     * @TODO this needs to be deprecated for a simple is_dir once the slow NAS gets solved.
-     * Iterates through the folder path, seems to help with slow network storage
-     * @param type $path
-     */
-    public function folderExists($path='')
-    {
-        msgDebug("\nentering folderExists with path = $path");
-        if (strpos($path, '/') === false) { return true; } // root folder
-        $parts = explode('/', pathinfo($path.'tmp', PATHINFO_DIRNAME));
-        msgDebug("\nparts = ".print_r($parts, true));
-        $partial = $this->myFolder;
-        foreach ($parts as $part) {
-            $partial .= "$part/";
-            msgDebug("\nChecking folder $partial");
-            if (!is_dir($partial)) { return false; }
-        }
-        return true;
     }
 
     /**
@@ -302,20 +272,32 @@ final class io
     }
 
     /**
+     * Simple is_dir test to see if the folder exists
+     * @param string $path - path without the path to the data space
+     * @return true if path exists and is a folder, false otherwise
+     */
+    public function folderExists($path='')
+    {
+        msgDebug("\nEntering folderExists with path = $path");
+        if (strpos($path, '/') === false) { return true; } // root folder
+        return is_dir(pathinfo($this->myFolder.$path, PATHINFO_DIRNAME)) ? true : false;
+    }
+
+    /**
      * Recursively moves the contents of a folder to another folder.
-     * @param type $path
-     * @param type $srcID
-     * @param type $destID
+     * @param string $dir_source - source path
+     * @param string $dir_dest - destination path
+     * @param boolean $replace - [default false] whether to overwrite if the destination folder exists
      */
     public function folderMove($dir_source, $dir_dest, $replace=false)
     {
         $srcPath = $this->myFolder.$dir_source;
         if (!is_dir($srcPath)) { return; }
         $files = scandir($srcPath);
-//        msgDebug("\nat folderMove read path: $srcPath and returned with: ".print_r($files, true));
+//      msgDebug("\nat folderMove read path: $srcPath and returned with: ".print_r($files, true));
         foreach ($files as $file) {
             if ($file == "." || $file == "..") { continue; }
-            if ($replace && is_file($srcPath.$file)) {
+            if ($replace && is_file($srcPath . $file)) {
                 rename($srcPath . $file, $dir_dest . $file);
             } else { // folder
                 if (!is_dir($dir_dest.$file)) { @mkdir($dir_dest.$file, 0755, true); }
@@ -328,15 +310,18 @@ final class io
     /**
      * Reads the contents of a folder , cleans out the . and .. directories
      * @param string $path - path from the users home folder
+     * @param array $arrExt - array of extensions to allow, leave empty for all extensions
      * @return array - List of files/directories within the $path
      */
-    public function folderRead($path)
+    public function folderRead($path, $arrExt=[])
     {
         $output = [];
         if (!$this->folderExists($path)) { return $output; }
         $temp = scandir($this->myFolder.$path);
         foreach ($temp as $fn) {
-            if ($fn == '.' || $fn == '..') { continue; }
+            if ($fn=='.' || $fn=='..') { continue; }
+            $ext = strtolower(pathinfo($fn, PATHINFO_EXTENSION));
+            if (!empty($arrExt) && !in_array($ext, $arrExt)) { continue; }
             $output[] = $fn;
         }
         return $output;
@@ -344,19 +329,21 @@ final class io
 
     /**
      * Returns the glob of a folder
-     * !!! THIS RETURNS THE USER FOLDER IN THE ARRAY AS WELL !!!
      * @param string $path - File path to read, user folder will be prepended
+     * @param array $arrExt - array of extensions to allow, leave empty for all extensions
      * @return array, empty for non-folder or no files
      */
-    public function folderReadGlob($path)
+    public function folderReadGlob($path, $arrExt=[])
     {
         $output = [];
-        msgDebug("\nTrying to read contents of $this->myFolder$path");
-        if (!@is_dir($this->myFolder.$path)) { return $output; }
+        msgDebug("\nTrying to read contents of myFolder/$path");
+        if (!is_dir(pathinfo($this->myFolder.$path, PATHINFO_DIRNAME))) { return $output; }
         $temp = glob($this->myFolder.$path);
         foreach ($temp as $fn) {
             if ($fn == '.' || $fn == '..') { continue; }
-            $output[] = $fn;
+            $ext = strtolower(pathinfo($fn, PATHINFO_EXTENSION));
+            if (!empty($arrExt) && !in_array($ext, $arrExt)) { continue; }
+            $output[] = str_replace($this->myFolder, '', $fn);
         }
         return $output;
     }
@@ -409,9 +396,7 @@ final class io
      */
     public function uploadSave($index, $dest, $replace=false)
     {
-        if (!isset($_FILES[$index])) {
-            return msgDebug("\nTried to save uploaded file but nothing uploaded!");
-        }
+        if (!isset($_FILES[$index])) { return msgDebug("\nTried to save uploaded file but nothing uploaded!"); }
         if (!$this->validateUpload($index, '', '', false)) { return; }
         $data = file_get_contents($_FILES[$index]['tmp_name']);
         $filename = clean($_FILES[$index]['name'], 'filename');

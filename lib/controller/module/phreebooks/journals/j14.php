@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-15
+ * @version    3.x Last Update: 2019-04-10
  * @filesource /lib/controller/module/phreebooks/journals/j14.php
  */
 
@@ -125,10 +125,11 @@ class j14 extends jCommon
     public function Post()
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
-        $qty = clean('qty','float','post');
-        $sku = clean('sku','text','post');
-        $desc = clean('description','text','post');
-        $this->main['description'] .= " ($qty) $sku - $desc";
+        $desc = lang('journal_main_journal_id_14');
+        $desc.= clean('qty','float','post') ? " (".clean('qty','float','post').")" : '';
+        $desc.= clean('sku','text', 'post') ? " ".clean('sku','text','post')." -" : '';
+        $desc.= " ".clean('description','text','post');
+        $this->main['description'] = $desc;
         $this->main['closed'] = '1';
         $this->main['closed_date'] = $this->main['post_date'];
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
@@ -198,8 +199,6 @@ class j14 extends jCommon
     private function postInventory()
     {
         msgDebug("\n  Posting Inventory ...");
-        $ref_field = false;
-        $ref_closed= false;
         $str_field = 'qty_stock';
         // adjust inventory stock status levels (also fills inv_list array)
         $item_rows_to_process = count($this->items); // NOTE: variable needs to be here because $this->items may grow within for loop (COGS)
@@ -273,7 +272,9 @@ class j14 extends jCommon
                 'qty'          => ['order'=> 0,'attr' =>['hidden'=>true]],
                 'sku'          => ['order'=>20,'label'=>lang('sku'),'attr'=>['align'=>'center']],
                 'description'  => ['order'=>30,'label'=>lang('description')],
-                'qty_stock'    => ['order'=>40,'label'=>pullTableLabel('inventory','qty_stock'),'attr'=>['align'=>'center']],
-                'qty_required' => ['order'=>50,'label'=>lang('qty_required'),'attr'=>['align'=>'center']]]];
+                'qty_stock'    => ['order'=>40,'label'=>pullTableLabel('inventory','qty_stock'),'attr'=>['align'=>'center'],
+                    'events'=>['formatter'=>"function(value,row){ return formatNumber(value); }"]],
+                'qty_required' => ['order'=>50,'label'=>lang('qty_required'),'attr'=>['align'=>'center'],
+                    'events'=>['formatter'=>"function(value,row){ return formatNumber(value); }"]]]];
     }
 }

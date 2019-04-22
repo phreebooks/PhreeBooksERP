@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-31
+ * @version    3.x Last Update: 2019-04-12
  * @filesource lib/controller/module/bizuno/users.php
  */
 
@@ -63,9 +63,8 @@ class bizunoUsers
     public function managerRows(&$layout)
     {
         if (!$security = validateSecurity('bizuno', 'users', 1)) { return; }
-        $structure = $this->dgUsers('dgUsers', $security);
-        $data = ['type'=>'datagrid', 'structure'=>$structure];
-        $layout = array_replace_recursive($layout, $data);
+        $data  = ['type'=>'datagrid', 'structure'=>$this->dgUsers('dgUsers', $security)];
+        $layout= array_replace_recursive($layout, $data);
     }
     
     /**
@@ -75,7 +74,7 @@ class bizunoUsers
     {
         $data = ['path'=>'bizunoUsers','values' => [
             ['index'=>'rows',  'clean'=>'integer','default'=>getModuleCache('bizuno', 'settings', 'general', 'max_rows')],
-            ['index'=>'page',  'clean'=>'integer','default'=>'1'],
+            ['index'=>'page',  'clean'=>'integer','default'=>1],
             ['index'=>'sort',  'clean'=>'text',   'default'=>BIZUNO_DB_PREFIX."users.title"],
             ['index'=>'order', 'clean'=>'text',   'default'=>'ASC'],
             ['index'=>'f0',    'clean'=>'char',   'default'=>'y'],

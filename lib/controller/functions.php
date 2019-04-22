@@ -32,16 +32,16 @@ namespace bizuno;
 /**
  * Autoloads files, if it's already loaded, returns true. if not, tests for files existence before requiring else dies.
  * @param string $path - Path to load file
- * @param string $method - [Default: false] A method within the file to test for the loaded presence
+ * @param string $method - [Default: false] A class or function within the file to test for the loaded presence
  * @param string $type - [Default: class] Whether 'class' or 'function' are being tested
  * @return boolean - true if already loaded, script dies with notice if the file is not there
  */
 function bizAutoLoad($path, $method='', $type='class') {
-    if (!empty($method)) { $method = __NAMESPACE__.'\\'. str_replace(__NAMESPACE__, '', $method); } // check for just one namespace
+    if     (!empty($method)) { $method = __NAMESPACE__.'\\'. str_replace(__NAMESPACE__, '', $method); } // check for just one namespace
     if     ($type=='class'    && !empty($method) && class_exists   ($method)) { return true; }
     elseif ($type=='function' && !empty($method) && function_exists($method)) { return true; }
-    if (file_exists($path)) { require_once($path); }
-    else { return false; } // msgAdd("Fatal Error - File: $path does not exist!", 'trap'); } Causes issues with failed loads in PhreeForm
+    if     (file_exists($path)) { require_once($path); }
+    else   { return false; } // msgAdd("Fatal Error - File: $path does not exist!", 'trap'); } Causes issues with failed loads in PhreeForm
     return true;
 }
 

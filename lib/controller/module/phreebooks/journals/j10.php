@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-02
+ * @version    3.x Last Update: 2019-04-09
  * @filesource /lib/controller/module/phreebooks/journals/j10.php
  */
 
@@ -231,7 +231,7 @@ class j10 extends jCommon
         $item_array = $this->getStkBalance($data['main']['id']); // user wants to force close/open the journal entry
         foreach ($item_array as $row) {
             $bal = $row['ordered'] - $row['processed'];
-            if ($bal <= 0) { continue; }
+            if ($bal <= 0 || empty($row['sku'])) { continue; }
             $type = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'inventory_type', "sku='{$row['sku']}'");
             if (strpos(COG_ITEM_TYPES, $type) === false) { continue; }
             $amt = $force=='open' ? $bal : -$bal;

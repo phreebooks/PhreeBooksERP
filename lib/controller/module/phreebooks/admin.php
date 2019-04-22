@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-26
+ * @version    3.x Last Update: 2019-04-12
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -444,7 +444,7 @@ class phreebooksAdmin {
         foreach (getModuleCache('phreebooks', 'chart', 'accounts') as $row) {
             $row['asset'] = in_array($row['type'], $this->assets) ? 1 : 0;
             $row['type'] = viewFormat($row['type'], 'glType');
-//            if (!isset($row['inactive']) || $row['inactive']=='0') $accts[] = $row; // doesn't allow for edit of GL Accounts
+//          if (!isset($row['inactive']) || $row['inactive']=='0') $accts[] = $row; // doesn't allow for edit of GL Accounts
             $accts[] = $row; // need to remove keys
         }
         $layout['content']['dictionary']    = array_merge($layout['content']['dictionary'], $this->getBrowserLang());

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-23
+ * @version    3.x Last Update: 2019-04-09
  * @filesource /lib/controller/module/phreebooks/reconcile.php
  */
 
@@ -26,7 +26,7 @@ namespace bizuno;
 class phreebooksReconcile
 {
     /**
-     * Creates structure for main entry of banking reconciliation 
+     * Creates structure for main entry of banking reconciliation
      * @param array $layout - Structure coming in
      * @return modified $layout
      */
@@ -140,7 +140,7 @@ class phreebooksReconcile
         $gl_balance  = dbGetValue(BIZUNO_DB_PREFIX."journal_history", 'beginning_balance+debit_amount-credit_amount AS gl', "gl_account='$glAcct' AND period=".getModuleCache('phreebooks', 'fy', 'period'), false);
         $sql = "SELECT SUM(i.debit_amount - i.credit_amount) AS total
             FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id = i.ref_id
-                    WHERE i.gl_account='$glAcct' AND i.reconciled>$period AND i.reconciled<>0";
+            WHERE i.gl_account='$glAcct' AND i.reconciled>$period AND i.reconciled<>0";
         $stmt = dbGetResult($sql);
         $not_in_period = $stmt->fetch(\PDO::FETCH_ASSOC);
         $footer = [
@@ -200,20 +200,20 @@ class phreebooksReconcile
         msgDebug("\nUpdating cash accounts: ".print_r($glCash, true));
         // closes if any cash records within the journal main that are reconciled
         msgDebug("\nClose cash main records: ".print_r($toCloseMain, true));
-        if (sizeof($toCloseMain)) { 
-            dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id SET m.closed='1' 
+        if (sizeof($toCloseMain)) {
+            dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id SET m.closed='1'
                 WHERE m.id IN (".implode(",", $toCloseMain).") AND i.reconciled>0 AND i.gl_account IN ('".implode("','", $glCash)."')");
         }
         // re-opens if any cash records within the journal main that are not reconciled
         msgDebug("\nOpen cash main records: ".print_r($toOpenMain, true));
         if (sizeof($toOpenMain)) {
-            dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id SET m.closed='0' 
+            dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id SET m.closed='0'
                 WHERE m.id IN (".implode(",", $toOpenMain).") AND i.reconciled=0 AND i.gl_account IN ('".implode("','", $glCash)."')");
         }
         msgAdd(lang('msg_database_write'),'success');
         msgLog(lang('phreebooks_recon').' - '.lang('save')." ($glAcct)");
     }
-    
+
     /**
      * Creates treegrid structure for reconciliation
      * @param string $name - DOM field name

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-06
+ * @version    3.x Last Update: 2019-04-09
  * @filesource /lib/controller/module/phreebooks/totals/balance/balance.php
  */
 
@@ -43,13 +43,13 @@ class balance
         return [
             'gl_type' => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
-            'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','readonly'=>'readonly','value'=>$this->settings['order']]]];
+            'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'readonly'=>'readonly','value'=>$this->settings['order']]]];
     }
 
     public function render(&$output)
     {
         $output['body'] .= '<div style="text-align:right">'."\n";
-        $output['body'] .= html5('total_balance',['label'=>$this->lang['title'],'attr'=>['type'=>'currency','size'=>'15','value'=>0]]);
+        $output['body'] .= html5('total_balance',['label'=>$this->lang['title'],'attr'=>['type'=>'currency','size'=>15,'value'=>0]]);
         $output['body'] .= html5('total_amount', ['attr'=>['type'=>'hidden','value'=>0]]);
         $output['body'] .= "</div>\n";
         $output['jsHead'][] = "function totals_balance(begBalance) {

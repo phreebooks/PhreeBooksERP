@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-20
+ * @version    3.x Last Update: 2019-04-12
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -396,7 +396,7 @@ class bizunoAdmin
         $bID  = clean('rID', 'integer', 'get');
         if (!$bID) { return msgAdd("bad business ID: $bID"); }
         $data = ['type'=>'popup','title'=>$this->lang['bizuno_install_title'],'attr'=>['id'=>'bizInstall','wClosable'=>false],
-            'toolbars' => ['tbInstall'=>  ['icons'=> [
+            'toolbars' => ['tbInstall'=>['icons'=> [
                 'instBack'=> ['order'=>10,'icon'=>'close','label'=>lang('cancel'),'events'=>['onClick'=>"bizWindowClose('bizInstall');"]],
                 'instNext'=> ['order'=>20,'icon'=>'next', 'label'=>lang('next'),  'events'=>['onClick'=>"installSave($bID);"]]]]],
             'divs' => [

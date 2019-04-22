@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-28
+ * @version    3.x Last Update: 2019-04-08
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -460,6 +460,7 @@ function preSubmit() {
         if (is_array($dgData) && sizeof($dgData) > 0) {
             dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."inventory_assy_list WHERE ref_id=$rID");
             foreach ($dgData['rows'] as $row) {
+                if (empty($row['sku'])) { continue; }
                 $bom_array = ['ref_id'=>$rID, 'sku'=>$row['sku'], 'description'=>$row['description'], 'qty'=>$row['qty']];
                 dbWrite(BIZUNO_DB_PREFIX."inventory_assy_list", $bom_array);
             }
@@ -595,26 +596,17 @@ function preSubmit() {
     {
         $data = ['id'  => $name,
             'type'=> 'edatagrid',
-            'attr'=> [
-                'width'       => $locked ? 660 : 740,
-                'pagination'  => false,
-                'rownumbers'  => true,
-                'singleSelect'=> true,
-                'toolbar'     => "#{$name}Toolbar",
-                'idField'     => 'id'],
-            'events' => [
-                'data'       => "assyData",
+            'attr'=> ['width'=>$locked?660:740, 'pagination'=>false, 'rownumbers'=>true, 'singleSelect'=>true, 'toolbar'=>"#{$name}Toolbar", 'idField'=>'id'],
+            'events' => ['data'=>'assyData',
                 'onClickRow' => "function(rowIndex, row) { curIndex = rowIndex; }",
                 'onBeginEdit'=> "function(rowIndex, row) { curIndex = rowIndex; }",
                 'onDestroy'  => "function(rowIndex, row) { curIndex = undefined; }",
                 'onAdd'      => "function(rowIndex, row) { curIndex = rowIndex; }"],
             'source' => ['actions'=>['newAssyItem'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
-            'columns' => [
-                'id'         => ['order'=>0,'attr'=>['hidden'=>true]],
+            'columns' => ['id'=>['order'=>0,'attr'=>['hidden'=>true]],
                 'action'     => ['order'=>1,'label'=>lang('action'),
                     'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
-                    'actions'=> [
-                        'trash'=>  ['icon'=>'trash','order'=>20,'size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jq('#$name').edatagrid('deleteRow', curIndex);"]]]],
+                    'actions'=> ['trash'=>['icon'=>'trash','order'=>20,'size'=>'small','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'sku'=> ['order'=>30,'label'=>lang('sku'),'attr'=>['sortable'=>true,'resizable'=>true,'align'=>'center'],
                     'events' => ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
                         width:150, panelWidth:320, delay:500, idField:'sku', textField:'sku', mode:'remote',
@@ -669,13 +661,13 @@ function preSubmit() {
         $history['update'] = ['label'=>lang('last_update'),                'attr'=>['type'=>'date','readonly'=>'readonly','value'=>$skuInfo['last_update']]];
         $history['journal']= ['label'=>lang('inventory_last_journal_date'),'attr'=>['type'=>'date','readonly'=>'readonly','value'=>$skuInfo['last_journal_date']]];
         // load the SO's and PO's and get order, expected del date
-        $sql = "SELECT m.id, m.journal_id, m.store_id, m.invoice_num, i.qty, i.post_date, i.date_1,
+        $sql = "SELECT m.id, m.journal_id, m.store_id, m.invoice_num, m.waiting, i.qty, i.post_date, i.date_1,
             i.id AS item_id FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
             WHERE m.journal_id IN (4, 10) AND i.sku='$sku' AND m.closed='0' ORDER BY i.date_1";
         if (!$stmt  = dbGetResult($sql)) { return; }
-        $result= $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        msgDebug("\nReturned number of open SO/PO rows = ".sizeof($result));
-        foreach ($result as $row) {
+        $result1= $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        msgDebug("\nReturned number of open SO/PO rows = ".sizeof($result1));
+        foreach ($result1 as $row) {
             switch ($row['journal_id']) {
                 case  4: $hist_type = 'open_po'; break;
                 case 10: $hist_type = 'open_so'; break;
@@ -688,6 +680,7 @@ function preSubmit() {
                     'store_id'   => viewFormat($row['store_id'], 'storeID'),
                     'invoice_num'=> $row['invoice_num'],
                     'post_date'  => viewDate($row['post_date']),
+                    'waiting'    => $row['waiting'],
                     'qty'        => $row['qty'] - $adj,
                     'date_1'     => viewDate($row['date_1'])];
             }
@@ -710,9 +703,9 @@ function preSubmit() {
             WHERE m.journal_id IN (6,7,12,13,14,16,19,21) AND i.sku='$sku' AND m.post_date>='$last_year' AND m.post_date<'$next_month'
             ORDER BY m.post_date DESC";
         $stmt  = dbGetResult($sql);
-        $result= $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        msgDebug("\nReturned monthly sales/purchases rows = ".sizeof($result));
-        foreach ($result as $row) {
+        $result2= $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        msgDebug("\nReturned monthly sales/purchases rows = ".sizeof($result2));
+        foreach ($result2 as $row) {
             $index = substr($row['post_date'], 0, 7);
             switch ($row['journal_id']) {
                 case  6:
@@ -845,7 +838,7 @@ var dataJ12 = ".json_encode($history['sales']).";";
             'events' => ['data'=> $props['data']],
             'columns'=> ['id'=> ['attr'=>['hidden'=>true]],
                 'action'     => ['order'=>1,'label'=>lang('action'),'attr'=>['hidden'=>$hide_cost?true:false],
-                    'events' => ['formatter'=>"function(value,row,index){ return {$props['name']}Formatter(value,row,index); }"],
+                    'events' => ['formatter'=>"function(value,row,index) { return {$props['name']}Formatter(value,row,index); }"],
                     'actions'=> [
                         'edit'=>['order'=>20,'icon'=>'edit','size'=>'small','label'=>lang('edit'),'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD');"]],
                         'fill'=>['order'=>40,'icon'=>$icon, 'size'=>'small','label'=>$label,      'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD&jID=$invID&bizAction=inv');"]]]],
@@ -853,7 +846,8 @@ var dataJ12 = ".json_encode($history['sales']).";";
                 'store_id'   => ['order'=>30,'label'=>lang('contacts_short_name_b'),'attr'=>['hidden'=>$stores?false:true,'width'=>150,'resizable'=>true]],
                 'post_date'  => ['order'=>40,'label'=>lang('post_date'),'attr'=>['width'=>200,'resizable'=>true]],
                 'qty'        => ['order'=>50,'label'=>lang('balance'),  'attr'=>['width'=>150,'resizable'=>true,'align'=>'center']],
-                'date_1'     => ['order'=>60,'label'=>jsLang('journal_item_date_1',10),'attr'=>['width'=>200,'resizable'=>true,'align'=>'center']]]];
+                'date_1'     => ['order'=>60,'label'=>jsLang('journal_item_date_1',10),'attr'=>['width'=>200,'resizable'=>true,'align'=>'center'],
+                    'events'=>['styler'=>"function(value,row,index) { if (row.waiting==1) { return {style:'background-color:yellowgreen'}; } }"]]]];
     }
 
     private function dgJ06J12($jID=12)

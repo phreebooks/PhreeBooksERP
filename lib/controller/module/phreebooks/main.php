@@ -347,7 +347,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         if (clean('AddUpdate_b', 'bool', 'post')) { if (!$ledger->updateContact('b')) { return; } }
         if (clean('AddUpdate_s', 'bool', 'post')) {
             if (!$ledger->main['contact_id_s']) { $ledger->main['contact_id_s'] = $ledger->main['contact_id_b']; }
-            if (!$ledger->updateContact('s')) { return; }
+            if (!$ledger->updateContact('s'))   { return; }
         }
         if (in_array($ledger->journalID, [3,4,6,7,9,10,12,13]) && empty($ledger->main['contact_id_b'])) { return msgAdd($this->lang['msg_missing_contact_id']); }
         if (!$this->getItems($ledger))  { return; }
@@ -650,12 +650,12 @@ if (!formValidate()) return false;\n\treturn true;\n}";
             'post_date'=> ['type'=>'constant', 'value'=>$ledger->main['post_date']]];
         if (!in_array($this->journalID, [2])) {
             $debitCredit = in_array($this->journalID, [3,4,6,13,16,20,21,22]) ? 'debit' : 'credit';
-            $map['credit_amount']= $debitCredit=='credit'? ['type'=>'field','index'=>'total'] : ['type'=>'constant','value'=>'0'];
-            $map['debit_amount'] = $debitCredit=='debit' ? ['type'=>'field','index'=>'total'] : ['type'=>'constant','value'=>'0'];
+            $map['credit_amount']= $debitCredit=='credit'? ['type'=>'field','index'=>'total'] : ['type'=>'constant','value'=>0];
+            $map['debit_amount'] = $debitCredit=='debit' ? ['type'=>'field','index'=>'total'] : ['type'=>'constant','value'=>0];
         }
         if (in_array($this->journalID, [17,18,20,22])) {
-            $map['date_1']     = ['type'=>'field','index'=>'post_date'];
-            $map['trans_code'] = ['type'=>'field','index'=>'invoice_num'];
+            $map['date_1']    = ['type'=>'field','index'=>'post_date'];
+            $map['trans_code']= ['type'=>'field','index'=>'invoice_num'];
         }
         $items    = requestDataGrid(clean('item_array', 'json', 'post'), $structure, $map);
         $skipList = ['sku', 'description', 'credit_amount', 'debit_amount']; // if qty=0 or all these are not set or null, row is blank

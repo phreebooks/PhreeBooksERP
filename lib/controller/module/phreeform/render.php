@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-27
+ * @version    3.x Last Update: 2019-04-10
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -629,8 +629,11 @@ class phreeformRender
                     $data = $special_form->load_table_data($TableObject->boxfield);
                 } elseif (!empty($TableObject->settings->fieldname)) { // for field encoded data, typically json
                     msgDebug("\nProcessing Data for table: ".print_r($report->FieldValues["d$key"], true));
-                    $vals = viewProcess($report->FieldValues["d$key"], $TableObject->settings->processing);
-                    $data = $this->setEncodedList($TableObject->settings->boxfield, $vals);
+                    if (!empty($TableObject->settings->processing)) { // let the processing create the data array
+                        $data = viewProcess($report->FieldValues["d$key"], $TableObject->settings->processing);
+                    } else { // build it by sequence
+                        $data = $this->setEncodedList($TableObject->settings->boxfield, $report->FieldValues["d$key"]);
+                    }
                 } else {
                     $tblField = $this->setFieldList($TableObject->settings->boxfield);
                     if (!$stmt = dbGetResult("SELECT $tblField $TrailingSQL")) { return msgAdd("Error selecting table data! See trace file.", 'trap'); }

@@ -68,7 +68,7 @@ $langByRef = [
     'journal_main_country_s' => sprintf($langCore['tbd_ship'], $langCore['address_book_country']),
     'journal_main_telephone1_s' => sprintf($langCore['tbd_ship'], $langCore['telephone']),
     'journal_main_email_s' => sprintf($langCore['tbd_ship'], $langCore['email']),
-    
+
     'journal_main_tax_rate_id_c' => $langCore['inventory_tax_rate_id_c'],
     'journal_main_tax_rate_id_v' => $langCore['inventory_tax_rate_id_v'],
     'journal_main_terminal_date_9' => $langCore['journal_main_terminal_date_3'],

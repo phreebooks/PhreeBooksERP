@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-28
+ * @version    3.x Last Update: 2019-04-10
  * @filesource /lib/controller/module/phreebooks/journals/j16.php
  */
 
@@ -252,13 +252,14 @@ class j16 extends jCommon
     columns:    [[{field:'sku',title:'".jsLang('sku')."',width:100},{field:'description_short',title:'".jsLang('description')."',width:200},{field:'qty_stock',title:'$on_hand', align:'right',width:90},{field:'qty_po',title:'$on_order',align:'right',width:90}]]
 }}"]],
                 'qty_stock'  => ['order'=>30,'label'=>$on_hand,'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>dgEditNumber("")]], // "{type:'numberbox',options:{disabled:true}}"
+                    'events' => ['editor'=>dgEditNumber(""),'formatter'=>"function(value,row){ return formatNumber(value); }"]], // "{type:'numberbox',options:{disabled:true}}"
                 'qty'        => ['order'=>40,'label'=>lang('journal_item_qty', $this->journalID),'attr' =>['width'=>100,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>dgEditNumber("adjCalc('qty');")]],
+                    'events' => ['editor'=>dgEditNumber("adjCalc('qty');"),'formatter'=>"function(value,row){ return formatNumber(value); }"]],
                 'balance'    => ['order'=>50,'label'=>lang('balance'),'styles'=>['text-align'=>'right'], 'attr'=>['width'=>100,'disabled'=>true,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>dgEditNumber("")]],
+                    'events' => ['editor'=>dgEditNumber(""),'formatter'=>"function(value,row){ return formatNumber(value); }"]],
                 'total'      => ['order'=>60, 'label'=>lang('total'),'format'=>'currency','attr'=>['width'=>120,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>"{type:'numberbox',options:{onChange:function (newValue,oldValue) { var idx=bizDGgetIndex('dgJournalItem'); setDgEdVal(curIndex, 'total', newValue); }}}"]],
+                    'events' => ['editor'=>"{type:'numberbox',options:{onChange:function (newValue,oldValue) { var idx=bizDGgetIndex('dgJournalItem'); setDgEdVal(curIndex, 'total', newValue); }}}",
+                        'formatter'=>"function(value,row){ return formatNumber(value); }"]],
                 'description'=> ['order'=>70,'label'=>lang('description'),'attr'=>['width'=>250,'editor'=>'text','resizable'=>true]]]];
     }
 }

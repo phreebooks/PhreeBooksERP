@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-18
+ * @version    3.x Last Update: 2019-04-08
  * @filesource /lib/controller/module/bizuno/tools.php
  */
 
@@ -85,6 +85,7 @@ class bizunoTools {
      */
     public function ticketSave(&$layout=[])
     {
+        global $io;
         bizAutoLoad(BIZUNO_LIB."model/mail.php", 'bizunoMailer');
         $user = clean('ticketUser', 'text', 'post');
         $email= clean('ticketEmail','text', 'post');
@@ -102,9 +103,7 @@ class bizunoTools {
         $toName  = defined('BIZUNO_SUPPORT_NAME') ? BIZUNO_SUPPORT_NAME : $this->supportEmail;
         $mail    = new bizunoMailer($this->supportEmail, $toName, $subject, $message, $email, $user);
         if (isset($_FILES['ticketFile']['name']) && $_FILES['ticketFile']['name']) {
-            $io  = new \bizuno\io();
             $type= $io->guessMimetype($_FILES['ticketFile']['name']);
-//            $ext = strtolower(substr($_FILES['ticketFile']['name'], strrpos($_FILES['ticketFile']['name'], '.'))+1);
             if ($io->validateUpload('ticketFile', $type, ['png', 'jpg', 'jpeg', 'tiff', 'gif', 'pdf', 'txt', 'csv', 'zip'], false)) {
                 $mail->attach($_FILES['ticketFile']['tmp_name'], $_FILES['ticketFile']['name']);
             }
@@ -177,8 +176,7 @@ class bizunoTools {
     {
         if (!$security = validateSecurity('bizuno', 'impexp', 1)) { return; }
         $title= lang('bizuno_impexp');
-        $data = [
-            'title'=> $title,
+        $data = ['title'=> $title,
             'toolbars' =>['tbImpExp'=>['icons'=>['help'=>['order'=>99,'index'=>'']]]],
             'divs' => [
                 'submenu'=> ['order'=>10,'type'=>'html',   'html'=>viewSubMenu('tools')],

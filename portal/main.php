@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-01
+ * @version    3.x Last Update: 2019-04-08
  * @filesource /portal/main.php
  */
 
@@ -243,7 +243,7 @@ class main //extends controller
             $langCache = json_decode(file_get_contents(BIZUNO_DATA."cache/lang_{$lang}.json"), true);
         } else {
             require(BIZUNO_LIB."locale/en_US/language.php"); // pulls the current language in English
-            require(BIZUNO_LIB."locale/en_US/langByRef.php"); // lang by reference (no translation required)
+            include(BIZUNO_LIB."locale/en_US/langByRef.php"); // lang by reference (no translation required)
             $langCache = array_merge($langCore, $langByRef);
         }
         if ($lang <> 'en_US') {
@@ -252,6 +252,7 @@ class main //extends controller
                 $otherLang = json_decode(file_get_contents(BIZUNO_DATA."cache/lang_{$lang}.json"), true);
             } elseif (file_exists(BIZUNO_ROOT."locale/$lang/language.php")) {
                 require(BIZUNO_ROOT."locale/$lang/language.php"); // pulls locale overlay
+                include(BIZUNO_LIB ."locale/en_US/langByRef.php"); // lang by reference (reset after loading translation)
                 $otherLang = array_merge($langCore, $langByRef);
             }
             $langCache = array_merge($langCache, $otherLang);

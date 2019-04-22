@@ -945,7 +945,7 @@ class jCommon
                     'events'=> ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
                 'discount'   => ['order'=>60,'label'=>lang('discount'), 'styles'=>['text-align'=>'right'],
                     'attr'  => ['type'=>'currency','resizable'=>true,'width'=>100,  'align'=>'right'],
-                    'events'=> ['editor'=>dgEditCurrency("bankingCalc('disc');"),'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
+                    'events'=> ['editor'=>dgEditCurrency("bankingCalc('disc');"),  'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
                 'total'      => ['order'=>70,'label'=>lang('total'), 'styles'=>['text-align'=>'right'],
                     'attr'  => ['type'=>'currency','resizable'=>true,'width'=>100,'align'=>'right'],
                     'events'=> ['editor'=>dgEditCurrency("bankingCalc('direct');"),'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
@@ -1067,7 +1067,7 @@ if (idx!=null) {
                     'events'   => ['editor'=>dgEditGL()]],
                 'tax_rate_id'  => ['order'=>60, 'label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->type),'attr'=>['hidden'=>$hideItemTax,'width'=>150,'resizable'=>true,'align'=>'center'],
                     'events'   => ['editor'=>dgEditTax($name, 'tax_rate_id', $type, "totalUpdate('dgOrders onChangeTax');"),
-                    'formatter'=>"function(value,row){ return getTextValue(bizDefaults.taxRates.$type.rows, value); }"]],
+                    'formatter'=> "function(value,row){ return getTextValue(bizDefaults.taxRates.$type.rows, value); }"]],
                 'price'        => ['order'=>70, 'label'=>lang('price'), 'attr'=>['width'=>80,'value'=>0,'resizable'=>true,'align'=>'right'],
                     'events'   => ['editor'=>dgEditCurrency("ordersCalc('price');", true),'formatter'=>"function(value,row){ return formatCurrency(value); }"]],
                 'total'        => ['order'=>80, 'label'=>lang('total'), 'attr'=>['width'=>80,'value'=>0,'resizable'=>true,'align'=>'right'],
@@ -1085,10 +1085,10 @@ if (idx!=null) {
             case 19: $qty1 = lang('qty');      $qty2 = lang('balance');  $ord1 = 25; $ord2 = 20; break;
             case 21: $qty1 = lang('qty');      $qty2 = lang('balance');  $ord1 = 25; $ord2 = 20; break;
         }
-        $data['columns']['qty'] = ['order'=>$ord1, 'label'=>$qty1, 'attr'=>['value'=>1,'width'=>80,'resizable'=>true,'align'=>'center'],
-            'events'=>  ['editor'=>dgEditNumber("ordersCalc('qty');")]];
-        $data['columns']['bal'] = ['order'=>$ord2, 'label'=>$qty2,
-            'attr' => ['width'=>80,'resizable'=>true,'align'=>'center','hidden'=>($this->rID || $this->action=='inv')?false:true]];
+        $data['columns']['qty'] = ['order'=>$ord1,'label'=>$qty1,'attr'=>['value'=>1,'width'=>80,'resizable'=>true,'align'=>'center'],
+            'events'=>['editor'=>dgEditNumber("ordersCalc('qty');"),'formatter'=>"function(value,row){ return formatNumber(value); }"]];
+        $data['columns']['bal'] = ['order'=>$ord2,'label'=>$qty2,'attr'=>['width'=>80,'resizable'=>true,'align'=>'center','hidden'=>($this->rID || $this->action=='inv')?false:true],
+            'events'=>['formatter'=>"function(value,row){ return formatNumber(value); }"]];
         // restrict prices if not allowed
         if (!validateSecurity('inventory', 'prices_'.$type, 2, false)) { // dis-allow editing of price columns
             $data['columns']['price']['events']['editor'] = "{type:'numberbox',options:{readonly:true }}";

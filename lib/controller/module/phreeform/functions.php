@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-27
+ * @version    3.x Last Update: 2019-04-10
  * @filesource /controller/module/phreeform/functions.php
  */
 
@@ -596,9 +596,9 @@ function BuildDataArray($sql, $report)
             }
             $GrpWorking = $myrow[$GrpField]; // set to new grouping value
         }
-        foreach($seq as $key => $TableCtl) {
+        foreach ($seq as $key => $TableCtl) {
             $processedData = viewProcess($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
-            if ($report->totalonly <> 'on') { // insert data into output array and set to next column
+            if (empty($report->totalonly)) { // insert data into output array and set to next column
                 $OutputArray[$RowCnt][0] = 'd'; // let the display class know its a data element
                 $OutputArray[$RowCnt][$ColCnt] = viewFormat($processedData, $TableCtl['formatting']);
             }

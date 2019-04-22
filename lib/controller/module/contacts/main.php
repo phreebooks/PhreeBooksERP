@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-27
+ * @version    3.x Last Update: 2019-04-10
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -132,7 +132,7 @@ class contactsMain
     private function managerSettings($type=false)
     {
         if (!$type) { $type = $this->type; }
-        $data = ['path'=>'contacts_'.$type, 'values'=>  [
+        $data = ['path'=>'contacts_'.$type, 'values'=>[
             ['index'=>'rows',  'clean'=>'integer','default'=>getModuleCache('bizuno', 'settings', 'general', 'max_rows'), 'method'=>'request'],
             ['index'=>'page',  'clean'=>'integer','default'=>'1'],
             ['index'=>'sort',  'clean'=>'text',   'default'=>BIZUNO_DB_PREFIX."contacts.short_name"],
@@ -624,7 +624,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         $rID  = clean('rID',  'integer','get');
         $aType= clean('aType','char',   'get');
         if (!$rID) { return msgAdd('No id returned!'); }
-        $this->managerSettingsAddress($aType);
+//      $this->managerSettingsAddress($aType); // executed at dgAddress
         $data = ['type'=>'datagrid', 'structure'=>$this->dgAddress($rID, $this->type, $aType, $security)];
         $layout = array_replace_recursive($layout, $data);
     }
@@ -727,7 +727,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
             'events' => ['onDblClickRow'=>"function(rowIndex, rowData){ jsonAction('contacts/main/editAddress', $rID, rowData.address_id); }"],
             'source' => [
                 'tables'  => ['address_book'=> ['table'=>BIZUNO_DB_PREFIX."address_book"]],
-                'search'  => ['primary_name', 'contact', 'telephone1', 'telephone2', 'telephone4', 'city', 'postal_code', 'email'],
+                'search'  => ['primary_name', 'contact', 'telephone1', 'telephone2', 'telephone3', 'telephone4', 'city', 'postal_code', 'email'],
                 'filters' => [
                     'search' => ['order'=>90,'attr'=>['id'=>"search_$aType", 'value'=>$this->defaults["search_$aType"]]],
                     'ref_id' => ['order'=>98,'hidden'=> true, 'sql'=>"ref_id=$rID"],
@@ -794,6 +794,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                     BIZUNO_DB_PREFIX."address_book.contact",
                     BIZUNO_DB_PREFIX."address_book.telephone1",
                     BIZUNO_DB_PREFIX."address_book.telephone2",
+                    BIZUNO_DB_PREFIX."address_book.telephone3",
                     BIZUNO_DB_PREFIX."address_book.telephone4",
                     BIZUNO_DB_PREFIX."address_book.city",
                     BIZUNO_DB_PREFIX."address_book.postal_code"],
@@ -851,7 +852,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                 'postal_code' => ['order'=>60, 'field'=>BIZUNO_DB_PREFIX.'address_book.postal_code',
                     'label' => pullTableLabel("address_book", 'postal_code', $type),
                     'attr'  => ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
-                'telephone1'  => ['order'=>70, 'field' => BIZUNO_DB_PREFIX.'address_book.telephone1',
+                'telephone1'  => ['order'=>70, 'field'=>BIZUNO_DB_PREFIX.'address_book.telephone1',
                     'label' => pullTableLabel("address_book", 'telephone1', $type),
                     'attr'  => ['width'=>100, 'sortable'=>true, 'resizable'=>true]]],
             ];

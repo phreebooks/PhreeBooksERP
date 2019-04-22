@@ -87,7 +87,7 @@ class phreeformMain
                 'collapse'=> ['events'=>['onClick'=>"jq('#treePhreeform').tree('collapseAll');"],'attr'=>['type'=>'button','value'=>lang('collapse_all')]]]];
         if ($rID) {
             $data['tree']['treePhreeform']['events']['onLoadSuccess'] = "function() { var node=jq('#treePhreeform').tree('find',$rID); jq('#treePhreeform').tree('expandTo',node.target);
-jq('#treePhreeform').tree('expand',  node.target); }";
+jq('#treePhreeform').tree('expand', node.target); }";
         }
         $layout = array_replace_recursive($layout, viewMain(), $data);
         return;

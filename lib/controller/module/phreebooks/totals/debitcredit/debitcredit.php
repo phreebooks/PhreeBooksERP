@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-06
+ * @version    3.x Last Update: 2019-04-09
  * @filesource /lib/controller/module/phreebooks/totals/debitcredit/debitcredit.php
  */
 
@@ -43,13 +43,13 @@ class debitCredit
         return [
             'gl_type' => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
-            'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','readonly'=>'readonly','value'=>$this->settings['order']]]];
+            'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'readonly'=>'readonly','value'=>$this->settings['order']]]];
     }
 
     public function render(&$output) {
         $this->fields = [
-            'totals_debit' =>['label'=>lang('total_debits'), 'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']],
-            'totals_credit'=>['label'=>lang('total_credits'),'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']]];
+            'totals_debit' =>['label'=>lang('total_debits'), 'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']],
+            'totals_credit'=>['label'=>lang('total_credits'),'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']]];
         $output['body'] .= '<div style="text-align:right">'."
     ".html5('totals_debit', $this->fields['totals_debit'])."<br />
     ".html5('totals_credit',$this->fields['totals_credit'])."</div>\n";
@@ -67,7 +67,7 @@ class debitCredit
     }
     bizNumSet('totals_debit', debitAmount);
     bizNumSet('totals_credit',creditAmount);
-    return debitAmount - creditAmount;
+    return roundCurrency(debitAmount - creditAmount);
 }";
     }
 }

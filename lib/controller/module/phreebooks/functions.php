@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-22
+ * @version    3.x Last Update: 2019-04-18
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -111,16 +111,15 @@ function processPhreeBooks($value, $format = '')
         case 'invBalance': // needs journal_main.id
             $rID = intval($value);
             if (!$rID) { return ''; }
-            $main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id='$rID'");
-            $jID  = $main['journal_id'];
-            $total_inv = $main['total_amount'];
+            $main      = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id='$rID'");
+            $total_inv = in_array($main['journal_id'], [6,13]) ? -$main['total_amount'] : $main['total_amount'];
             $total_paid= 0;
-            $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "item_ref_id='$rID' AND gl_type='pmt'");
+            $result    = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "item_ref_id='$rID' AND gl_type='pmt'");
             foreach ($result as $row) {
-                if (in_array($jID, [6,13])) { $total_paid += $row['debit_amount'] - $row['credit_amount']; }
+                if (in_array($main['journal_id'], [6,13])) { $total_paid += $row['debit_amount'] - $row['credit_amount']; }
                 else { $total_paid += $row['credit_amount'] - $row['debit_amount']; }
             }
-            return $total_inv + (in_array($jID, [6,13]) ? $total_paid : -$total_paid);
+            return $total_inv + (in_array($main['journal_id'], [6,13]) ? $total_paid : -$total_paid);
         case 'invRefNum': // needs journal_main.id
             $rID = intval($value);
             return dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'invoice_num', "id=$rID");
@@ -158,7 +157,7 @@ function processPhreeBooks($value, $format = '')
             $temp  = localeDueDate($result['post_date'], $result['terms']);
             return $temp['net_date'];
         case 'pmtDisc': return 'TBD';
-         case 'ship_bal': // pass table journal_item.id and check for quantites remaining to be shipped
+        case 'ship_bal': // pass table journal_item.id and check for quantites remaining to be shipped
             msgDebug("\nEntering ship_bal with value = $value");
             $refID = clean($value, 'integer');
             if (!$refID) { return 0; }
@@ -190,12 +189,14 @@ function processPhreeBooks($value, $format = '')
             $invRows= dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id=$rID AND gl_type='itm'");
             $soID   = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'so_po_ref_id', "id=$rID");
             $soRows = dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id=$soID AND gl_type='itm'");
-            foreach (array_keys($soRows) as $idx) { $soRows[$idx]['qty'] = 0; } // erase the qyantity as actuals will be calculated later
-            $invID = 0;
-            foreach ($invRows as $invRow) {
-                $soRows[$invRow['item_cnt']-1] = $invRow;
+            foreach (array_keys($soRows) as $idx) { $soRows[$idx]['qty'] = 0; } // erase the quantity as actuals will be calculated later
+            $invID  = 0;
+            foreach ($invRows as $invRow) { // combine values
+                $idx = pbGetRefRow($invRow['item_ref_id'], $soRows);
+                if ($idx===false) { continue; } // reference not found, shouldn't happen
+                $soRows[$idx] = $invRow;
                 $invID = $invRow['ref_id'];
-            } // combine values
+            }
             foreach ($report->fieldlist as $TableObject) { if ($TableObject->type <> 'Tbl') { continue; } else { break; } } // get the report table field
             $output = [];
             foreach ($soRows as $row) {
@@ -233,6 +234,20 @@ function processPhreeBooks($value, $format = '')
             return in_array($main['journal_id'], [7,13,18,19,20,21]) ? -$main['total_amount'] : $main['total_amount'];
         default:
     }
+}
+
+/**
+ * Finds the proper index of a sale referenced by the sales order. Lines can move since DnD is now allowed
+ * @param integer $ref - index from the invoice to find
+ * @param array $soRows - sales order item array
+ * @return index or item array if found or false if not found (should never happen)
+ */
+function pbGetRefRow($ref, $soRows=[])
+{
+    foreach ($soRows as $idx => $row) {
+        if ($ref == $row['id']) { return $idx; }
+    }
+    return false;
 }
 
 /**

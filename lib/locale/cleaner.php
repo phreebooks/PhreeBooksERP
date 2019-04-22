@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-01
+ * @version    3.x Last Update: 2019-04-10
  * @filesource /locale/cleaner.php
  */
 
@@ -63,11 +63,11 @@ class cleaner
             case 'db_string':return addslashes($value);
             case 'decimal':
             case 'double':
-            case 'float':    return $this->localeNumber($value, 'float', $default);
+            case 'float':    return empty($value) ? (!empty($default) ? $default : 0) : floatval($value);
             case 'email':    return !empty($value) ? preg_replace("/[^a-zA-Z0-9\-\_\.\,\@]/", '', $value) : $default;
             case 'filename': return preg_replace("/[^a-zA-Z0-9\-\_\.\/]/", '', $value);
             case 'implode':  return is_array($value) ? implode(';', $value) : $value;
-            case 'integer':  return $this->localeNumber($value, 'integer', $default);
+            case 'integer':  return empty($value) ? (!empty($default) ? $default : 0) : intval($value);
             case 'json':     return json_decode($value, true);
             case 'jsonObj':  return json_decode($value); // return object format
             case 'numeric':  return preg_replace("/[^0-9 ]/", "", $value);
@@ -157,12 +157,13 @@ class cleaner
     }
 
     /**
+     * DEPRECATED AS VALUES ARE IN US NUMERIC FORMAT
      * Converts a provided number to system format (no thousands character, dot for decimal, dash fo negative)
      * @param string $value
      * @param string $type - [default: integer] Choices are integer or float
      * @return integer/float Result after conversion
      */
-   private function localeNumber($value=0, $type='integer', $default=0)
+/*   private function localeNumber($value=0, $type='integer', $default=0)
    {
        if (!strlen($value)) { return $default===null ? 0 : $default; }
        $vals = getModuleCache('bizuno', 'settings', 'locale');
@@ -179,7 +180,7 @@ class cleaner
        if ($sep)  { $value = str_replace($sep, '', $value); }
        if ($dec)  { $value = str_replace($dec, '.', $value); }
        return $type=='integer' ? intval($value) : floatval($value);
-    }
+    } */
 
     /**
      * Converts locale date formats to db format YYY-MM-DD
@@ -596,8 +597,8 @@ function requestDataGrid($request, $structure, $override=[])
 {
     $output = [];
     if (!isset($request['total'])) { // easyUI getChecked just returns the array not a total and row indexed array
-        $temp = $request;
-        $request = ['total'=>sizeof($request), 'rows'=>$temp];
+        $temp   = $request;
+        $request= ['total'=>sizeof($request), 'rows'=>$temp];
     }
     msgDebug("\n requestDataGrid returning row count = ".$request['total']);
     for ($i = 0; $i < $request['total']; $i++) {
@@ -614,19 +615,19 @@ function requestDataGrid($request, $structure, $override=[])
                         if (!isset($row[$override[$field]['index']])) { $row[$override[$field]['index']] = ''; }
                         if (isset($request['rows'][$i][$override[$field]['index']])) {
                             if ($content['format'] == 'currency') { $content['format'] = 'float'; }
-//                          msgDebug("\nOverriding field: ".$request['rows'][$i][$override[$field]['index']].' with filter = '.$content['format']);
                             $temp[$field] = clean($request['rows'][$i][$override[$field]['index']], $content['format']);
+//                          msgDebug("\nOverriding field: $field at index: ".$request['rows'][$i][$override[$field]['index']].' with filter = '.$content['format']." returning value: {$temp[$field]}");
                         } else {
                             $temp[$field] = '';
                         }
                         break;
                 }
             } elseif (isset($row[$field])) {
-//              msgDebug("\nCleaning field {$row[$field]} with format {$content['attr']['type']}");
                 $temp[$field] = clean($row[$field], $content['attr']['type']);
+//              msgDebug("\nCleaning field $field with index: {$row[$field]} with format {$content['attr']['type']} resulting in value: {$temp[$field]}");
             } elseif (isset($row[$content['tag']])) {
-//              msgDebug("\nCleaning tag {$row[$content['tag']]} with format {$content['attr']['type']}");
                 $temp[$field] = clean($row[$content['tag']], $content['attr']['type']);
+//              msgDebug("\nCleaning tag {$row[$content['tag']]} with format {$content['attr']['type']} resulting in value: {$temp[$field]}");
             }
         }
         $output[] = $temp;
