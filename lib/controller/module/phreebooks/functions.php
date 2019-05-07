@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-18
+ * @version    3.x Last Update: 2019-04-26
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -95,9 +95,19 @@ function processPhreeBooks($value, $format = '')
             break;
         // ************ Bank Processing *******************
         case 'bnkReg':
-            msgDebug("\nbnkReg processing working with currentRow = ".print_r($GLOBALS['currentRow'], true));
             if (!empty($GLOBALS['currentRow']['journal_id']) && in_array($GLOBALS['currentRow']['journal_id'], [7,13,18,19,20,21])) { $value = -$value; }
             return $value;
+        case 'bnkCard': // type of credit card, needs journal_item.description
+            $vals = clean($value, 'bizunzip');
+            $type = !empty($vals['hint']) ? substr($vals['hint'], 0, 1) : '0';
+            $types= ['3'=>'American Express', '4'=>'Visa', '5'=>'MasterCard', '6'=>'Discover'];
+            return  isset($types[$type]) ? $types[$type] : $type;
+        case 'bnkCode': // credit card approval code, needs journal_item.description
+            $vals = clean($value, 'bizunzip');
+            return !empty($vals['code'])? $vals['code'] : '';
+        case 'bnkHint': // last 4 of credit card, needs journal_item.description
+            $vals = clean($value, 'bizunzip');
+            return !empty($vals['hint'])? '**********'.substr($vals['hint'], -4) : '';
         // ************ Income Statement Processing *******************
         case 'isCur':  return $report->currentValues['amount'];       // income_statement current period
         case 'isYtd':  return $report->currentValues['amount_ytd'];   // income_statement year to date
@@ -234,6 +244,7 @@ function processPhreeBooks($value, $format = '')
             return in_array($main['journal_id'], [7,13,18,19,20,21]) ? -$main['total_amount'] : $main['total_amount'];
         default:
     }
+    return $value;
 }
 
 /**

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-10
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /lib/controller/module/contacts/admin.php
  */
 
@@ -52,8 +52,14 @@ class contactsAdmin
                 'fyCloseHome'=> ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50],
                 'fyClose'    => ['page'=>'tools', 'class'=>'contactsTools', 'order'=>50]]]]];
         $this->phreeformProcessing = [
-            'contactID'  => ['text'=>lang('contacts_short_name'),      'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat'],
-            'contactName'=> ['text'=>lang('address_book_primary_name'),'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat']];
+            'qtrNeg0'    => ['text'=>lang('dates_quarter').' (contact_id_b)','group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processContacts'],
+            'qtrNeg1'    => ['text'=>lang('dates_lqtr')   .' (contact_id_b)','group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processContacts'],
+            'qtrNeg2'    => ['text'=>lang('quarter_neg2') .' (contact_id_b)','group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processContacts'],
+            'qtrNeg3'    => ['text'=>lang('quarter_neg3') .' (contact_id_b)','group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processContacts'],
+            'qtrNeg4'    => ['text'=>lang('quarter_neg4') .' (contact_id_b)','group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processContacts'],
+            'qtrNeg5'    => ['text'=>lang('quarter_neg5') .' (contact_id_b)','group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processContacts'],
+            'contactID'  => ['text'=>lang('contacts_short_name'),            'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'contactName'=> ['text'=>lang('address_book_primary_name'),      'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat']];
         $this->crm_actions = [
             'new' =>$this->lang['contacts_crm_new_call'],
             'ret' =>$this->lang['contacts_crm_call_back'],
@@ -64,7 +70,7 @@ class contactsAdmin
 
     /**
      * Sets the structure of the user settings for the contacts module
-     * @return array - user settings 
+     * @return array - user settings
      */
     public function settingsStructure()
     {
@@ -86,7 +92,7 @@ class contactsAdmin
         setModuleCache('contacts', 'crm_actions', false, $this->crm_actions);
         return true;
     }
-    
+
     /**
      * Builds the home menu for settings of the contacts module
      * @param array $layout - current working structure
@@ -104,12 +110,12 @@ class contactsAdmin
 
     private function setToolsTab()
     {
-        $clnDefault = viewFormat(localeCalculateDate(date('Y-m-d'), 0, -1), 'date');
+        $clnDefault = localeCalculateDate(date('Y-m-d'), 0, -1);
         $fields = [
-            'dateJ9Close'  => ['classes'=>['easyui-datebox'],'options'=>['value'=>"'$clnDefault'"]],
-            'btnJ9Close'   => ['events' =>['onClick'=>"jq('body').addClass('loading'); jsonAction('contacts/tools/j9Close', 0, jq('#dateJ9Close').datebox('getValue'));"],
+            'dateJ9Close'  => ['attr'  =>['type'=>'date','value'=>$clnDefault]],
+            'btnJ9Close'   => ['events'=>['onClick'=>"jq('body').addClass('loading'); jsonAction('contacts/tools/j9Close', 0, jq('#dateJ9Close').datebox('getValue'));"],
                 'attr' => ['type'=>'button','value'=>lang('start')]],
-            'btnSyncAttach'=> ['events'=> ['onClick' => "jq('body').addClass('loading'); jsonAction('contacts/tools/syncAttachments&verbose=1');"],
+            'btnSyncAttach'=> ['events'=>['onClick' => "jq('body').addClass('loading'); jsonAction('contacts/tools/syncAttachments&verbose=1');"],
                 'attr'=>  ['type'=>'button','value'=>lang('go')]]];
          return "<fieldset><legend>".$this->lang['close_j9_title']."</legend>
     <p>".$this->lang['close_j9_desc']."</p>
@@ -122,7 +128,7 @@ class contactsAdmin
     }
 
     /**
-     * Saves the users settings 
+     * Saves the users settings
      */
     public function adminSave()
     {

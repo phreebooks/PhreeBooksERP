@@ -185,7 +185,6 @@ class db extends \PDO
                 'col'    => isset($comment['col'])   ? $comment['col'] : 1,
                 'order'  => isset($comment['order']) ? $comment['order'] : $order,
                 'label'  => isset($comment['label']) ? $comment['label'] : pullTableLabel($table, $row['Field'], $suffix),
-//                'classes'=> array('easyui-validatebox'),
                 'attr'   => $this->buildAttr($row, $comment)];
             $output[$row['Field']]['format'] = isset($comment['format']) ? $comment['format'] : $output[$row['Field']]['attr']['type']; // db data type
             if (in_array(substr($row['Type'], 0, 4), ["ENUM", "enum"])) {
@@ -350,14 +349,7 @@ function dbWriteCache($usrEmail=false, $lang=false)
         return msgDebug("\nTrying to write to cache but user is not logged in or Bizuno not installed!");
     }
     if (!$usrEmail) { $usrEmail = $bizunoUser['profile']['email']; }
-    // save the language registry
-    if ($lang) {
-        ksort($bizunoLang); // @todo only create this when reloading registry
-        $io = new io(); // needs to be here as global may not be set up yet
-        $ISO = getUserCache('profile', 'language', false, 'en_US');
-        msgDebug("\nWriting lang file!");
-        $io->fileWrite(json_encode($bizunoLang), "cache/lang_{$ISO}.json", false, false, true);
-    }
+    if ($lang) { dbWriteLang($bizunoLang); } // save the language registry
     // save the users new cache
     if (isset($GLOBALS['updateUserCache']) && $GLOBALS['updateUserCache']) {
         msgDebug("\nWriting user table");
@@ -375,6 +367,15 @@ function dbWriteCache($usrEmail=false, $lang=false)
             }
         }
     }
+}
+
+function dbWriteLang($lang=[], $iso='')
+{
+    ksort($lang); // @todo only create this when reloading registry
+    $io = new io(); // needs to be here as global may not be set up yet
+    if ( empty($iso)) { $iso = getUserCache('profile', 'language'); }
+    msgDebug("\nWriting lang file to iso = $iso");
+    if (!empty($iso)) { $io->fileWrite(json_encode($lang), "cache/lang_{$iso}.json", false, false, true); }
 }
 
 /**

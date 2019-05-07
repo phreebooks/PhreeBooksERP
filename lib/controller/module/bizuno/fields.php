@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-23
+ * @version    3.x Last Update: 2019-05-06
  * @filesource /lib/controller/module/bizuno/fields.php
  */
 
@@ -31,7 +31,7 @@ class bizunoFields
     {
         $this->lang = getLang($this->moduleID);
     }
-    
+
     /**
      * entry point for custom fields, can be put inside of tabs or stand alone
      * @param array modified $layout
@@ -51,63 +51,44 @@ class bizunoFields
     }
 
     /**
-     * Datagrid call to list rows of custom fields datagrid
+     * Grid call to list rows of custom fields grid
      * @param array $layout - structure coming in
      * @return modified $layout
      */
     public function managerRows(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
-        $module= clean('module','text', 'get');
-        $table = clean('table', 'text', 'get');
+        $module = clean('module','text', 'get');
+        $table  = clean('table', 'text', 'get');
         if (!$module || !$table) { return msgAdd("Module and/or table information missing!"); }
-        $output = [];
+        $this->managerSettings();
         $values = dbLoadStructure(BIZUNO_DB_PREFIX.$table);
+        $output = [];
         foreach ($values as $settings) { if ($settings['tab'] != 0) { $output[] = [
             'id'     => $settings['field'],
-            'label'  => $settings['label'],
             'field'  => $settings['field'],
+            'label'  => $settings['label'],
             'order'  => $settings['order'],
             'type'   => $settings['attr']['type'],
             'default'=> $settings['default']];
         } }
-        $total = sizeof($output);
-        $page = clean('page', ['format'=>'integer','default'=>1], 'post');
-        $rows = clean('rows', ['format'=>'integer','default'=>getModuleCache('bizuno', 'settings', 'general', 'max_rows')], 'post');
-        $sort = clean('sort', ['format'=>'text','default'=>'label'], 'post');
-        $order= clean('order',['format'=>'text','default'=>'asc'], 'post');
-        $temp = [];
-        foreach ($output as $key => $value) { $temp[$key] = $value[$sort]; }
-        array_multisort($temp, $order=='desc'?SORT_DESC:SORT_ASC, $output);
-        $slice  = array_slice($output, ($page-1)*$rows, $rows);
-        $layout = array_replace_recursive($layout, ['type'=>'raw', 'content'=>json_encode(['total'=>$total, 'rows'=>$slice])]);
+        $sorted = sortOrder($output, $this->defaults['sort'], $this->defaults['order']);
+        $slice  = array_slice($sorted, ($this->defaults['page']-1)*$this->defaults['rows'], $this->defaults['rows']);
+        $layout = array_replace_recursive($layout, ['type'=>'raw', 'content'=>json_encode(['total'=>sizeof($output), 'rows'=>$slice])]);
     }
 
     /**
-     * Datagrid structure for listing and retrieving custom fields 
-     * @param string $name - datagrid name
-     * @param string $module - module name
-     * @param string $table - database table name to add/delete fields
-     * @param integer $security - user security settings
-     * @return array - structure of datagrid
+     * Saves the users filter settings in cache
      */
-    private function dgFields($name, $module, $table, $security=0)
+    private function managerSettings()
     {
-        return ['id' => $name,
-            'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'field', 'url'=>BIZUNO_AJAX."&p=bizuno/fields/managerRows&module=$module&table=$table"],
-            'events' => ['onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accFields', 'dgFields', 'detail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', rowData.id); }"],
-            'source' => ['actions'=>['newField'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"accordionEdit('accFields','dgFields','detail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', 0);"]]]],
-            'columns'=> [
-                'id' => ['order'=>0,'attr'=>['hidden'=>true]],
-                'action' => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>40, 'formatter'=>$name.'Formatter'],
-                    'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
-                    'actions'=> ['delete' => ['order'=>90,'icon'=>'trash','hidden'=>$security==4?false:true,
-                        'events' => ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/fields/delete&table=$table', 0, 'idTBD');"]]]],
-                'field'  => ['label'=>lang('field'),  'order'=>10,'attr'=>['width'=>100,'sortable'=>true,'resizable'=>true]],
-                'label'  => ['label'=>lang('label'),  'order'=>20,'attr'=>['width'=>160,'sortable'=>true,'resizable'=>true]],
-                'order'  => ['label'=>lang('order'),  'order'=>30,'attr'=>['width'=>80,'resizable'=>true]],
-                'type'   => ['label'=>lang('type'),   'order'=>40,'attr'=>['width'=>80,'resizable'=>true]],
-                'default'=> ['label'=>lang('default'),'order'=>50,'attr'=>['width'=>80,'resizable'=>true]]]];
+        $data = ['path'=>'inventory', 'values'=>  [
+            ['index'=>'rows',  'clean'=>'integer','default'=>getModuleCache('bizuno', 'settings', 'general', 'max_rows'), 'method'=>'request'],
+            ['index'=>'page',  'clean'=>'integer','default'=>'1'],
+            ['index'=>'sort',  'clean'=>'text',   'default'=>'label'],
+            ['index'=>'order', 'clean'=>'text',   'default'=>'ASC']]];
+        if (clean('clr', 'boolean', 'get')) { clearUserCache($data['path']); }
+        $this->defaults = updateSelection($data);
     }
 
     /**
@@ -129,14 +110,14 @@ class bizunoFields
         $tabs  = $gList = [];
         $groups= [['id'=>'', 'text'=>'']];
         foreach (getModuleCache($module, 'tabs') as $tID => $settings) { $tabs[] = ['id'=>$tID, 'text'=>$settings['title']];}
-        foreach ($struc as $value) { 
+        foreach ($struc as $value) {
             if (empty($value['group'])) { continue; }
             if (!in_array($value['group'], $gList)) {
                 $gList[] = $value['group'];
                 $groups[]= ['id'=>$value['group'], 'text'=>$value['group']];
             }
         }
-        $jsBody = "jq('#group').combobox({ 
+        $jsBody = "jq('#group').combobox({
     data:grpData, valueField:'id', textField:'id', width:100, delay:1000,
     onChange: function (newVal) {
         var datas = jq('#group').combobox('options').data;
@@ -173,25 +154,25 @@ class bizunoFields
         $checks= viewKeyDropdown(['0'=>lang('unchecked'),'1'=>lang('checked')]);
         $fields= [
             'module'          => ['attr'=>['type'=>'hidden','value'=>$module]],
-            'table'              => ['attr'=>['type'=>'hidden','value'=>$table]],
+            'table'           => ['attr'=>['type'=>'hidden','value'=>$table]],
             'id'              => ['attr'=>['type'=>'hidden','value'=>$field]], // holds old_field_name
-            'field'              => ['label'=>$this->lang['xf_lbl_field'],'position'=>'after','attr'=>['value'=>$field]],
-            'label'              => ['label'=>$this->lang['xf_lbl_label'],'position'=>'after','attr'=>['value'=>isset($props['label'])?$props['label']:'']],
-            'tag'              => ['label'=>$this->lang['xf_lbl_tag'],  'position'=>'after','attr'=>['value'=>isset($props['tag'])?$props['tag']:'']],
-            'tab'              => ['label'=>$this->lang['xf_lbl_tab'],  'classes' =>['easyui-combobox'],'position'=>'after',
-                'options'=>['data'=>'tabData','width'=>200,'valueField'=>"'id'",'textField'=>"'text'"],
-                'attr'   =>['value'=>isset($props['tab'])?$props['tab']:'']],
-            'group'              => ['label'=>$this->lang['xf_lbl_group'],'classes'=>['easyui-combobox'],'position'=>'after','attr'=>['value'=>isset($props['group'])?$props['group']:'']],
-            'order'              => ['label'=>$this->lang['xf_lbl_order'],'position'=>'after','attr'=>['value'=>isset($props['order'])?$props['order']:'']],
-            'type'              => ['position'=>'after', 'attr'=>['type'=>'radio','value'=>$type]],
-            'text_length'      => ['label'=>$this->lang['xf_lbl_text_length']."<br />"],
-            'text_default'      => ['label'=>lang('default')."<br />", 'attr'=>  ['type'=>'textarea']],
-            'link_default'      => ['label'=>lang('default')."<br />"],
+            'field'           => ['label'=>$this->lang['xf_lbl_field'],'position'=>'after','attr'=>['value'=>$field]],
+            'label'           => ['label'=>$this->lang['xf_lbl_label'],'position'=>'after','attr'=>['value'=>isset($props['label'])?$props['label']:'']],
+            'tag'             => ['label'=>$this->lang['xf_lbl_tag'],  'position'=>'after','attr'=>['value'=>isset($props['tag'])?$props['tag']:'']],
+            'tab'             => ['label'=>$this->lang['xf_lbl_tab'],  'position'=>'after','attr'=>['type'=>'select','value'=>isset($props['tab'])?$props['tab']:''],
+                'options'=>['data'=>'tabData','width'=>200,'valueField'=>"'id'",'textField'=>"'text'",'editable'=>'true']],
+            'group'           => ['label'=>$this->lang['xf_lbl_group'],'position'=>'after','attr'=>['type'=>'select','value'=>isset($props['group'])?$props['group']:''],
+                'options'=>['editable'=>'true']],
+            'order'           => ['label'=>$this->lang['xf_lbl_order'],'position'=>'after','attr'=>['value'=>isset($props['order'])?$props['order']:'']],
+            'type'            => ['position'=>'after', 'attr'=>['type'=>'radio','value'=>$type]],
+            'text_length'     => ['label'=>$this->lang['xf_lbl_text_length']."<br />"],
+            'text_default'    => ['label'=>lang('default')."<br />", 'attr'=>  ['type'=>'textarea']],
+            'link_default'    => ['label'=>lang('default')."<br />"],
             'int_select'      => ['label'=>lang('range')."<br />", 'values'=>$ints, 'attr'=>['type'=>'select']],
-            'int_default'      => ['label'=>lang('default')."<br />", 'attr'=>['value'=>isset($props['attr']['value'])?$props['attr']['value']:'0']],
-            'float_select'      => ['label'=>lang('precision')."<br />",'values'=>$floats, 'attr'=>['type'=>'select']],
-            'float_default'      => ['label'=>lang('default')."<br />", 'attr'=>['value'=>isset($props['attr']['value'])?$props['attr']['value']:'0']],
-            'radio_default'      => ['label'=>$this->lang['xf_lbl_radio_default']."<br />", 'attr'=>['type'=>'textarea']],
+            'int_default'     => ['label'=>lang('default')."<br />", 'attr'=>['value'=>isset($props['attr']['value'])?$props['attr']['value']:'0']],
+            'float_select'    => ['label'=>lang('precision')."<br />",'values'=>$floats, 'attr'=>['type'=>'select']],
+            'float_default'   => ['label'=>lang('default')."<br />", 'attr'=>['value'=>isset($props['attr']['value'])?$props['attr']['value']:'0']],
+            'radio_default'   => ['label'=>$this->lang['xf_lbl_radio_default']."<br />", 'attr'=>['type'=>'textarea']],
             'checkbox_default'=> ['label'=>lang('default')."<br />",'values'=>$checks,'attr'=>['type'=>'select']]];
         switch ($props['attr']['type']) {
             case 'varchar':
@@ -306,7 +287,7 @@ class bizunoFields
         $fields['type']['attr']['value'] = 'select';
         $output .= html5('type', $fields['type'])."<br />";
         $fields['type']['label'] = $this->lang['xf_lbl_radio'];
-        $fields['type']['attr']['checked'] = $type=='radio' ? 'checked' : false;
+        $fields['type']['attr']['checked'] = $type=='radio' ? true : false;
         $fields['type']['attr']['value'] = 'radio';
         $output .= html5('type', $fields['type'])."</td>";
         $output .= "  </td><td>";
@@ -474,5 +455,33 @@ class bizunoFields
             $layout = array_replace_recursive($layout, ['content' => ['action'=>'eval','actionData'=>"jq('#dgFields').datagrid('reload');"],
                 'dbAction'=> [BIZUNO_DB_PREFIX.'TBD' => "ALTER TABLE `".BIZUNO_DB_PREFIX."$table` DROP COLUMN `$field`"]]);
         }
+    }
+
+    /**
+     * Datagrid structure for listing and retrieving custom fields
+     * @param string $name - datagrid name
+     * @param string $module - module name
+     * @param string $table - database table name to add/delete fields
+     * @param integer $security - user security settings
+     * @return array - structure of datagrid
+     */
+    private function dgFields($name, $module, $table, $security=0)
+    {
+        $this->managerSettings();
+        return ['id' => $name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
+            'attr'   => ['idField'=>'field', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&p=bizuno/fields/managerRows&module=$module&table=$table"],
+            'events' => ['onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accFields', 'dgFields', 'detail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', rowData.id); }"],
+            'source' => ['actions'=>['newField'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"accordionEdit('accFields','dgFields','detail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', 0);"]]]],
+            'columns'=> [
+                'id' => ['order'=>0,'attr'=>['hidden'=>true]],
+                'action' => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>40, 'formatter'=>$name.'Formatter'],
+                    'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                    'actions'=> ['delete' => ['order'=>90,'icon'=>'trash','hidden'=>$security==4?false:true,
+                        'events' => ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/fields/delete&table=$table', 0, 'idTBD');"]]]],
+                'field'  => ['label'=>lang('field'),  'order'=>10,'attr'=>['width'=>100,'sortable'=>true,'resizable'=>true]],
+                'label'  => ['label'=>lang('label'),  'order'=>20,'attr'=>['width'=>160,'sortable'=>true,'resizable'=>true]],
+                'order'  => ['label'=>lang('order'),  'order'=>30,'attr'=>['width'=>80,'resizable'=>true]],
+                'type'   => ['label'=>lang('type'),   'order'=>40,'attr'=>['width'=>80,'resizable'=>true]],
+                'default'=> ['label'=>lang('default'),'order'=>50,'attr'=>['width'=>80,'resizable'=>true]]]];
     }
 }

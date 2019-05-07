@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-10
+ * @version    3.x Last Update: 2019-05-01
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -131,9 +131,9 @@ class phreeformRender
             $output .= html5('critDateMax',['attr'=>['type'=>'hidden','value'=>'']]);
         }
         $output .= '<p style="text-align:center">'."\n";
-        $output .= html5('delivery', ['label'=>lang('browser'), 'attr'=>['type'=>'radio','value'=>'I', 'checked'=>'checked'],'events'=>['onClick'=>"jq('#rpt_email').hide('slow')"]])."\n";
-        $output .= html5('delivery', ['label'=>lang('download'),'attr'=>['type'=>'radio','value'=>'D'],'events'=>['onClick'=>"jq('#rpt_email').hide('slow')"]])."\n";
-        $output .= html5('delivery', ['label'=>lang('email'),   'attr'=>['type'=>'radio','value'=>'S'],'events'=>['onClick'=>"jq('#rpt_email').show('slow')"]])."\n";
+        $output .= html5('delivery', ['label'=>lang('browser'), 'attr'=>['type'=>'radio','value'=>'I', 'checked'=>true],'events'=>['onChange'=>"jq('#rpt_email').hide('slow')"]])."\n";
+        $output .= html5('delivery', ['label'=>lang('download'),'attr'=>['type'=>'radio','value'=>'D'],'events'=>['onChange'=>"jq('#rpt_email').hide('slow')"]])."\n";
+        $output .= html5('delivery', ['label'=>lang('email'),   'attr'=>['type'=>'radio','value'=>'S'],'events'=>['onChange'=>"jq('#rpt_email').show('slow')"]])."\n";
         $output .= "</p>\n";
         $output .= '<div id="rpt_email" style="display:none">'."\n";
         $output .= html5('msgFrom',   $viewData['fields']['msgFrom']);
@@ -229,9 +229,9 @@ class phreeformRender
 
         if (sizeof($viewData['fields']['reports']) > 1) {
           $output .= '    <div id="frm_select">'."\n";
-          $output .= "    <br /><p>".$this->lang['phreeform_form_select']."</p>\n";
+          $output .= "    <br /><h2>".$this->lang['phreeform_form_select']."</h2>\n";
           foreach ($viewData['fields']['reports'] as $value) {
-            $output .= "    <div>".html5('rID',['events'=>['onChange'=>"pfGetInfo();"],'attr'=>['type'=>'radio','value'=>$value['id']]]).'&nbsp;'.$value['text']."</div>\n";
+            $output .= '    <p style="min_height:30px">'.html5('rID',['label'=>$value['text'],'events'=>['onChange'=>"if (newVal) { pfGetInfo(this.value); }"],'attr'=>['type'=>'radio','value'=>$value['id']]])."</p>\n";
           }
           $output .= "    </div>\n";
         } elseif (!isset($viewData['fields']['id']['attr']['value'])) {
@@ -245,8 +245,7 @@ class phreeformRender
     private function getViewRenderJS()
     {
         return [
-            'jsHead' =>"function pfGetInfo() {
-    var rID = jq('input[name=rID]:checked', '#frmPhreeform').val();
+            'jsHead' =>"function pfGetInfo(rID) {
     var vars = [], hash;
     var q = document.URL.split('?')[1];
     if (q != undefined) {
@@ -388,11 +387,18 @@ class phreeformRender
                     $sql = $result['data'];
                     if (!isset($report->filter)) { $report->filter = new \stdClass(); }
                     $report->filter->text = $result['description']; // fetch the filter message
-                    if (!$ReportData = BuildDataArray($sql, $report)) { $layout = $dataError; return; } // no data, fail gracefully
-                    if ($format == 'pdf')  { $data = $this->GeneratePDFFile ($ReportData, $report, $delivery); }
-                    if ($format == 'html') { $data = $this->GenerateHTMLFile($ReportData, $report); }
-                    if ($format == 'csv')  { $data = $this->GenerateCSVFile ($ReportData, $report, $delivery); }
-                    if ($format == 'xml')  { $data = $this->GenerateXMLFile ($ReportData, $report, $delivery); }
+                    $ReportData = BuildDataArray($sql, $report);
+                    if ($format == 'html') { // show the format with no results message
+                        $layout = array_replace_recursive($layout, $this->GenerateHTMLFile($ReportData, $report));
+                        return;
+                    }
+                    if (empty($ReportData)) { // no data, fail gracefully
+                        $layout= $dataError;
+                        return;
+                    }
+                    if ($format == 'pdf')  { $data  = $this->GeneratePDFFile ($ReportData, $report, $delivery); }
+                    if ($format == 'csv')  { $data  = $this->GenerateCSVFile ($ReportData, $report, $delivery); }
+                    if ($format == 'xml')  { $data  = $this->GenerateXMLFile ($ReportData, $report, $delivery); }
                 } else { // Houston, we have a problem
                     return msgAdd($result['message'], $result['level']);
                 }
@@ -410,6 +416,7 @@ class phreeformRender
             $msgCC1 = $this->getAddrInfo('msgCC1');
             $msgCC2 = $this->getAddrInfo('msgCC2');
             bizAutoLoad(BIZUNO_LIB."model/mail.php", 'bizunoMailer');
+            if (empty($msgTo['email']) || empty($msgFrom['email'])) { return msgAdd("I cannot find a valid From/To email address to generate the message."); }
             $mail = new bizunoMailer($msgTo['email'], $msgTo['name'], $msgSubject, $msgBody, $msgFrom['email'], $msgFrom['name']);
             if (!empty($msgCC1)) { $mail->addToCC($msgCC1['email'], $msgCC1['name']); }
             if (!empty($msgCC2)) { $mail->addToCC($msgCC2['email'], $msgCC2['name']); }
@@ -674,9 +681,9 @@ class phreeformRender
                 }
             }
             // set the printed flag field if provided
-            if (isset($report->setprintedfield)) {
+            if (isset($report->printedfield)) {
                 $id_field = $report->formbreakfield;
-                $temp     = explode('.', $report->setprintedfield);
+                $temp     = explode('.', $report->printedfield);
                 if (sizeof($temp) == 2) { // need the table name and field name
                     $sql = "UPDATE ".$temp[0]." SET ".$temp[1]."=".$temp[1]."+1 WHERE $report->formbreakfield='$Fvalue'";
                     dbGetResult($sql);
@@ -839,9 +846,9 @@ class phreeformRender
                 }
             }
             // set the printed flag field if provided
-            if (isset($report->setprintedfield)) {
+            if (isset($report->printedfield)) {
                 $id_field = $report->formbreakfield;
-                $temp     = explode('.', $report->setprintedfield);
+                $temp     = explode('.', $report->printedfield);
                 if (sizeof($temp) == 2) { // need the table name and field name
                     dbGetResult("UPDATE ".$temp[0]." SET ".$temp[1]." = ".$temp[1]."+1 WHERE $report->formbreakfield = '$Fvalue'");
                 }

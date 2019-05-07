@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-06
+ * @version    3.x Last Update: 2019-04-25
  * @filesource /lib/controller/module/phreebooks/journals/j02.php
  */
 
@@ -107,7 +107,7 @@ class j02 extends jCommon
     public function Post()
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
-        $this->main['description'] .= ": {$this->items[0]['description']} ...";
+        $this->main['description'] = lang('journal_main_journal_id_2').": {$this->items[0]['description']} ...";
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
         if (!$this->postMain())              { return; }

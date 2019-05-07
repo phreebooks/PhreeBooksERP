@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-10
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /lib/controller/module/bizuno/dashboards/my_notes/my_notes.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_MY_NOTES_VERSION','3.1');
+define('DASHBOARD_MY_NOTES_VERSION','3.2');
 
 class my_notes
 {
@@ -31,7 +31,7 @@ class my_notes
     public $methodDir= 'dashboards';
     public $code     = 'my_notes';
     public $category = 'general';
-    
+
     function __construct($settings)
     {
           $this->security = getUserCache('security', 'profile', 0);
@@ -47,33 +47,22 @@ class my_notes
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']]];
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
-        $data = [
-            $this->code.'_0' => ['label'=>lang('note'),'classes'=>['easyui-validatebox'],'attr'=>['type'=>'text','required'=>'true','size'=>50]],
-            $this->code.'_button' => ['attr'=>['type'=>'button','value'=>lang('new')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]];
-        $html  = '<div>';
-        $html .= '  <div id="'.$this->code.'_attr" style="display:none">';
-        $html .= '    <form id="'.$this->code.'Form" action="">';
-        $html .= '      <div style="white-space:nowrap">'.html5($this->code.'_0',      $data[$this->code.'_0']).'</div>';
-        $html .= '      <div style="text-align:right;">' .html5($this->code.'_button', $data[$this->code.'_button']).'</div>';
-        $html .= '    </form>';
-        $html .= '  </div>';
-        // Build content box
-        $index = 1;
-        if (!isset($this->settings['data'])) { unset($this->settings['users']); unset($this->settings['roles']); $this->settings = ['data' => $this->settings]; } // OLD WAY
-        $html .= html5('', ['classes'=>['easyui-datalist'],'attr'=>['type'=>'ul']])."\n";
-        if (!empty($this->settings['data'])) {
-            foreach ($this->settings['data'] as $entry) {
-                $html .= html5('', ['attr'=>['type'=>'li']]).'<span style="float:left">';
-                $html .= "&#9679; $entry".'</span><span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span></li>';
-                $index++;
-            }
-        } else {
-            $html .= '<li><span>'.lang('no_results')."</span></li>";
-        }
-        $html .= '</ul></div>';
-        return $html;
+        if (empty($this->settings['data'])) { $rows[] = "<span>".lang('no_results')."</span>"; }
+        else { for ($i=0,$j=1; $i<sizeof($this->settings['data']); $i++,$j++) {
+            $row  = '<span style="float:left">'."&#9679; {$this->settings['data'][$i]}</span>";
+            $row .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $j);"]]).'</span>';
+            $rows[] = $row;
+        } }
+        $layout = array_merge_recursive($layout, [
+            'divs'  => [
+                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'_0', $this->code.'_btn']]]],
+                'body' =>['order'=>50,'type'=>'list','key'=>$this->code]],
+            'fields'=> [
+                $this->code.'_0'  =>['order'=>10,'break'=>true,'label'=>lang('note'),'attr'=>['type'=>'text','required'=>true,'size'=>50]],
+                $this->code.'_btn'=>['order'=>70,'attr'=>['type'=>'button','value'=>lang('add')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
+            'lists' => [$this->code=>$rows]]);
     }
 
     public function save()
@@ -85,7 +74,6 @@ class my_notes
         // fetch the current settings
         $result = dbGetRow(BIZUNO_DB_PREFIX."users_profiles", "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND menu_id='$menu_id' AND dashboard_id='$this->code'");
         $settings = json_decode($result['settings'], true);
-        if (!isset($settings['data'])) { unset($settings['users']); unset($settings['roles']); $settings=['data'=>$settings]; } // OLD WAY
         if ($rmID) { array_splice($settings['data'], $rmID - 1, 1); }
         else       { $settings['data'][] = $add_entry; }
         dbWrite(BIZUNO_DB_PREFIX."users_profiles", ['settings'=>json_encode($settings)], 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code' AND menu_id='$menu_id'");

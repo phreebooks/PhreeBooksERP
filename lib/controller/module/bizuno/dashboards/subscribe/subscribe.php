@@ -1,6 +1,6 @@
 <?php
 /*
- * Bizuno dashboard - Subscribe 
+ * Bizuno dashboard - Subscribe
  *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2019-04-23
  * @filesource /lib/controller/module/bizuno/dashboards/subscribe/subscribe.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_SUBSCRIBE_VERSION','1.0');
+define('DASHBOARD_SUBSCRIBE_VERSION','3.2');
 
 class subscribe
 {
@@ -41,7 +41,7 @@ class subscribe
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
     }
 
-    public function render($settings=[])
+    public function render()
     {
         $data = ['btnSubscribe'=>['attr'=>['type'=>'button','value'=>$this->lang['bizuno_subscribe']],'styles'=>['cursor'=>'pointer'],
                 'events'=>['onClick'=>"window.location='https://www.phreesoft.com/product-category/store-bizuno/'"]]];

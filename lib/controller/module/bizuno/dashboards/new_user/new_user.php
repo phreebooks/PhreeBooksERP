@@ -17,15 +17,15 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /lib/controller/module/bizuno/dashboards/new_user/new_user.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_NEW_USER_VERSION','1.0');
+define('DASHBOARD_NEW_USER_VERSION','3.1');
 
-class new_user 
+class new_user
 {
     public $moduleID = 'bizuno';
     public $methodDir= 'dashboards';
@@ -44,22 +44,14 @@ class new_user
     public function render()
     {
         $portal = explode('.', $_SERVER['SERVER_ADDR']);
-        $data = [
-            'type'     => 'html',
-            'title'=> lang('new_user'),
-            'username' => ['label'=>lang('email'), 'attr'=>  ['type'=>'text','required'=>'1','value'=>'','size'=>'40'],
-                'classes' => ['easyui-validatebox']],
-            'password' => ['label'=>$this->lang['reset_code'], 'attr'=>  ['type'=>'password', 'required'=>'1','size'=>'40'],
-                'classes' => ['easyui-validatebox']],
-            'newPass' => ['label'=>lang('password_new'), 'attr'=>  ['type'=>'password', 'required'=>'1','size'=>'40'],
-                'classes' => ['easyui-validatebox']],
-            'newPassrepeat' => ['label'=>lang('password_confirm'), 'attr'=>  ['type'=>'password', 'required'=>'1','size'=>'40'],
-                'classes' => ['easyui-validatebox']],
-            'language' => ['label'=>lang('language'), 'values'=>viewLanguages(), 'attr'=>  ['type'=>'select']],
-            'image_title' => ['label'=>getModuleCache('bizuno', 'properties', 'title'),'attr'=>  ['type'=>'img', 'src'=>BIZUNO_LOGO, 'height'=>'50']],
-            'btnLogin' => ['attr'=>  ['type'=>'button','value'=>$this->lang['btn_create_account']],'styles'=>  ['cursor'=>'pointer'],
-                'events' => ['onClick'=>"jq('#userNewForm').submit();"]],
-                ];
+        $data = ['type'=>'html', 'title'=>lang('new_user'),
+            'username'     => ['label'=>lang('email'),            'attr'=>['type'=>'text',    'required'=>true,'size'=>40,'value'=>'']],
+            'password'     => ['label'=>$this->lang['reset_code'],'attr'=>['type'=>'password','required'=>true,'size'=>40]],
+            'newPass'      => ['label'=>lang('password_new'),     'attr'=>['type'=>'password','required'=>true,'size'=>40]],
+            'newPassrepeat'=> ['label'=>lang('password_confirm'), 'attr'=>['type'=>'password','required'=>true,'size'=>40]],
+            'language'     => ['label'=>lang('language'),'values'=>viewLanguages(),'attr'=>['type'=>'select']],
+            'image_title'  => ['label'=>getModuleCache('bizuno', 'properties', 'title'),'attr'=>['type'=>'img', 'src'=>BIZUNO_LOGO, 'height'=>50]],
+            'btnLogin'     => ['attr'=>['type'=>'button','value'=>$this->lang['btn_create_account']],'events'=>['onClick'=>"jq('#userNewForm').submit();"]]];
         $data['username']['attr']['value'] = clean('bizuno_user', 'text', 'cookie');
         $data['language']['attr']['value'] = clean('bizuno_lang', 'text', 'cookie');
         $html = '<div><!-- new_user section -->

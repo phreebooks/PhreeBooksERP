@@ -450,9 +450,8 @@ function phreeformCriteria($report, $xOnly=false)
       $strCrit     = '';
       $filCrit     = '';
       $crit_prefs  = !$xOnly && isset($report->filterlist) ? $report->filterlist : [];
-    if (isset($report->xfilterlist)) { $crit_prefs[]= $report->xfilterlist; }
+      if (isset($report->xfilterlist)) { $crit_prefs[]= $report->xfilterlist; }
       foreach ($crit_prefs as $settings) {
-          msgDebug("\nWorking with field values = ".print_r($settings, true));
         if (empty($settings->fieldname)) { continue; } // blank row
           if (!isset($settings->default)) { // if no selection was passed, assume it's the first on the list for that selection menu
               $temp = explode(':', $critChoices[$settings->type]);
@@ -701,7 +700,7 @@ function phreeformFonts($show_default=true)
 }
 
 /**
- * Converts a RGB color to hexadecimal format (hash needed for easyui-color widget)
+ * Converts a RGB color to hexadecimal format (hash needed for -color widget)
  * @param string $value - value to convert
  * @return string - converted $value
  */

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-15
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /controller/module/phreeform/main.php
  */
 
@@ -78,7 +78,7 @@ class phreeformMain
                 'docSearch' => ['styles'=>['text-align'=>'center'],'options'=>['title'=>"'".jsLang('search')."'"],'html'=>$divSrch],
                 'docBookMk' => ['options'=>['title'=>"'".$this->lang['my_favorites']."'",  'collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/favorites'"],'html'=>'&nbsp;'],
                 'docRecent' => ['options'=>['title'=>"'".$this->lang['recent_reports']."'",'collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/recent'"],   'html'=>'&nbsp;']],
-            'tree'     => ['treePhreeform'=>['classes'=>['easyui-tree'],'attr'=>['url'=>BIZUNO_AJAX."&p=phreeform/main/managerTree"],'events'=>[
+            'tree'     => ['treePhreeform'=>['attr'=>['type'=>'tree','url'=>BIZUNO_AJAX."&p=phreeform/main/managerTree"],'events'=>[
                 'onClick'  => "function(node) { if (typeof node.id != 'undefined') {
     if (jq('#treePhreeform').tree('isLeaf', node.target)) { jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+node.id); }
     else { jq('#treePhreeform').tree('toggle', node.target); } } }"]]],
@@ -240,16 +240,15 @@ jq('#treePhreeform').tree('expand', node.target); }";
         $dbData= dbGetMulti(BIZUNO_DB_PREFIX."phreeform", "mime_type<>'dir' AND bookmarks LIKE ('%:$myID:%')", 'title');
         foreach ($dbData as $key => $doc) { if (!validateUsersRoles($doc['security'])) { unset($dbData[$key]); } }
         $output= sortOrder($dbData, 'title');
-        $html  = html5('', ['classes'=>['easyui-datalist'],'options'=>['lines'=>'true','onClickRow'=>"function (idx, row) { if (!row.value) { return; } jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+row.value); }"],'attr'=>['type'=>'ul']]);
-        if (sizeof($output) > 0) {
-            foreach ($output as $doc) {
-                $html .= html5('', ['options'=>['value'=>$doc['id']],'attr'=>['type'=>'li']]);
-                $html .= html5('', ['icon'=>viewMimeIcon($doc['mime_type']), 'size'=>'small', 'label'=>$doc['title']]).' '.$doc['title']."</li>";
-            }
-        } else { $html .= html5('', ['options'=>['value'=>0],'attr'=>['type'=>'li']]).lang('msg_no_documents')."</li>"; }
-        $html .= "</ul>";
-        $data = ['type'=>'divHTML','divs'=>['body'=>['order'=>50,'type'=>'html','html'=>$html]]];
-        $layout = array_replace_recursive($layout, $data);
+        if (empty($output)) { $rows[] = "<span>".lang('msg_no_documents')."</span>"; }
+        else { foreach ($output as $doc) {
+                $btnHTML= html5('', ['icon'=>viewMimeIcon($doc['mime_type'])]).$doc['title'];
+                $rows[] = html5('', ['attr'=>['type'=>'a','value'=>$btnHTML],
+                    'events'=>['onClick'=>"jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+{$doc['id']});"]]);
+        } }
+        $layout = array_replace_recursive($layout, ['type'=>'divHTML',
+            'divs'=>['body'=>['order'=>50,'type'=>'list','key'=>'reports']],
+            'lists'=>['reports'=>$rows]]);
     }
 
     /**
@@ -270,16 +269,15 @@ jq('#treePhreeform').tree('expand', node.target); }";
             if (validateUsersRoles($doc['security'])) { $output[] = $doc; $cnt++; }
             if ($cnt >= $this->limit) { break; }
         }
-        $html  = html5('', ['classes'=>['easyui-datalist'],'options'=>['lines'=>'true','onClickRow'=>"function (idx, row) { if (!row.value) { return; } jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+row.value); }"],'attr'=>['type'=>'ul']]);
-        if (sizeof($output) > 0) {
-            foreach ($output as $doc) {
-                $html .= html5('', ['options'=>['value'=>$doc['id']],'attr'=>['type'=>'li']]);
-                $html .= html5('', ['icon'=>viewMimeIcon($doc['mime_type']), 'size'=>'small', 'label'=>$doc['title']]).' '.viewDate($doc['last_update']).'-'.$doc['title']."</li>";
-            }
-        } else { $html .= html5('', ['options'=>['value'=>0],'attr'=>['type'=>'li']]).lang('msg_no_documents')."</li>"; }
-        $html .= "</ul>";
-        $data = ['type'=>'divHTML','divs'=>['body'=>['order'=>50,'type'=>'html','html'=>$html]]];
-        $layout = array_replace_recursive($layout, $data);
+        if (empty($output)) { $rows[] = "<span>".lang('msg_no_documents')."</span>"; }
+        else { foreach ($output as $doc) {
+                $btnHTML= html5('', ['icon'=>viewMimeIcon($doc['mime_type'])]).$doc['title'];
+                $rows[] = html5('', ['attr'=>['type'=>'a','value'=>$btnHTML],
+                    'events'=>['onClick'=>"jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+{$doc['id']});"]]);
+        } }
+        $layout = array_replace_recursive($layout, ['type'=>'divHTML',
+            'divs'=>['body'=>['order'=>50,'type'=>'list','key'=>'reports']],
+            'lists'=>['reports'=>$rows]]);
     }
 
     /**

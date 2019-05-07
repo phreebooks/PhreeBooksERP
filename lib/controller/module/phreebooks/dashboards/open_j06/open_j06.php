@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-10
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /lib/controller/module/phreebooks/dashboards/open_j06/open_j06.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_OPEN_J06_VERSION','3.1');
+define('DASHBOARD_OPEN_J06_VERSION','3.2');
 
 class open_j06
 {
@@ -56,20 +56,11 @@ class open_j06
             'order'   => ['label'=>lang('sort_order'),   'values'=>viewKeyDropdown($this->order),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['order']]]];
     }
 
-    function render()
+    function render(&$layout=[])
     {
         global $currencies;
         bizAutoLoad(BIZUNO_LIB.'controller/module/phreebooks/functions.php', 'getPaymentInfo', 'function');
-        $btn   = ['attr'=>['type'=>'button','value'=>lang('save')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]];
-        $data  = $this->settingsStructure();
-        $html  = '<div>';
-        $html .= '  <div id="'.$this->code.'_attr" style="display:none"><form id="'.$this->code.'Form" action="">';
-        $html .= '    <div style="white-space:nowrap">'.html5($this->code.'num_rows',$data['num_rows']).'</div>';
-        $html .= '    <div style="white-space:nowrap">'.html5($this->code.'order',   $data['order'])   .'</div>';
-        $html .= '    <div style="white-space:nowrap">'.html5($this->code.'limit',   $data['limit'])   .'</div>';
-        $html .= '    <div style="text-align:right;">' .html5($this->code.'_btn', $btn).'</div>';
-        $html .= '  </form></div>';
-        // Build content box
+        $struc  = $this->settingsStructure();
         $filter = "journal_id={$this->settings['jID']} AND closed='0'";
         if ($this->settings['reps'] && getUserCache('profile', 'contact_id', false, '0')) {
             if (getUserCache('security', 'admin', false, 0)<3) { $filter.= " AND rep_id='".getUserCache('profile', 'contact_id', false, '0')."'"; }
@@ -79,29 +70,36 @@ class open_j06
         $order  = $this->settings['order']=='desc' ? 'post_date DESC, invoice_num DESC' : 'post_date, invoice_num';
         $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $filter, $order, ['id','journal_id','total_amount','currency','currency_rate','post_date','invoice_num', 'primary_name_b'], $this->settings['num_rows']);
         $total = 0;
-        $html .= html5('', ['classes'=>['easyui-datalist'],'attr'=>['type'=>'ul']])."\n";
-        if (sizeof($result) > 0) {
-            foreach ($result as $entry) {
+        if (empty($result)) { $rows[] = "<span>".lang('no_results')."</span>"; }
+        else {
+            foreach ($result as $entry) { // build the list
                 $entry['total_amount'] += getPaymentInfo($entry['id'], $entry['journal_id']);
                 $currencies->iso  = $entry['currency'];
                 $currencies->rate = $entry['currency_rate'];
-                $html .= html5('', ['attr'=>['type'=>'li']]).'<span style="float:left">';
+                $row  = '<span style="float:left">';
                 if (empty($entry['invoice_num'])) {
-                    $html .= html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>lang('journal_main_waiting')]]);
+                    $row .= html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>lang('journal_main_waiting')]]);
                 } else {
-                    $html .= html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
+                    $row .= html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
                 }
-                $html .= viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim).'</span><span style="float:right">'.viewFormat($entry['total_amount'], 'currency').'</span></li>';
+                $row .= viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim).'</span><span style="float:right">'.viewFormat($entry['total_amount'], 'currency').'</span></li>';
                 $total += $entry['total_amount'];
+                $rows[]= $row;
             }
             $currencies->iso  = getUserCache('profile', 'currency', false, 'USD');
             $currencies->rate = 1;
-            $html .= '<li><div style="float:right"><b>'.viewFormat($total, 'currency').'</b></div><div style="float:left"><b>'.lang('total')."</b></div></li>\n";
-        } else {
-            $html .= '<li><span>'.lang('no_results')."</span></li>";
+            $rows[] = '<div style="float:right"><b>'.viewFormat($total, 'currency').'</b></div><div style="float:left"><b>'.lang('total')."</b></div>";
         }
-        $html .= '</ul></div>';
-        return $html;
+        $layout = array_merge_recursive($layout, [
+            'divs'  => [
+                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'num_rows', $this->code.'order', $this->code.'limit', $this->code.'_btn']]]],
+                'body' =>['order'=>50,'type'=>'list','key'=>$this->code]],
+            'fields'=> [
+                $this->code.'num_rows'=> array_merge($struc['num_rows'],['order'=>10,'break'=>true]),
+                $this->code.'order'   => array_merge($struc['order'],   ['order'=>20,'break'=>true]),
+                $this->code.'limit'   => array_merge($struc['limit'],   ['order'=>30,'break'=>true]),
+                $this->code.'_btn'    => ['order'=>90,'attr'=>['type'=>'button','value'=>lang('save')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
+            'lists' => [$this->code=>$rows]]);
       }
 
     function save()

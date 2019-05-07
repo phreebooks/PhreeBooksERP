@@ -17,14 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-10
+ * @version    3.x Last Update: 2019-04-23
  * @filesource /lib/controller/module/bizuno/dashboards/my_links/my_links.php
- * 
+ *
  */
 
 namespace bizuno;
 
-define('DASHBOARD_MY_LINKS_VERSION','3.1');
+define('DASHBOARD_MY_LINKS_VERSION','3.2');
 
 class my_links
 {
@@ -32,10 +32,10 @@ class my_links
     public $methodDir= 'dashboards';
     public $code     = 'my_links';
     public $category = 'general';
-    
+
     function __construct($settings)
     {
-        $this->security = getUserCache('security', 'profile', 0);
+        $this->security= getUserCache('security', 'profile', 0);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $defaults      = ['users'=>'-1','roles'=>'-1'];
         $this->settings= array_replace_recursive($defaults, $settings);
@@ -48,9 +48,9 @@ class my_links
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']]];
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
-        $index    = 1;
+        $index = 1;
         if (empty($this->settings['data'])) { $rows[] = '<li><span>'.lang('no_results')."</span></li>"; }
         else { foreach ($this->settings['data'] as $title => $hyperlink) {
             $html  = '<span style="float:left">'.viewFavicon($hyperlink, $title, true)." $title</span>";
@@ -58,14 +58,15 @@ class my_links
             $rows[]= $html;
             $index++;
         } }
-        $data = [
-            'divs'  => [$this->code=> ['order'=>50,'type'=>'list','key'=>$this->code]],
+        $layout = array_merge_recursive($layout, [
+            'divs'  => [
+                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'_0', $this->code.'_1', $this->code.'_btn']]]],
+                'body' =>['order'=>50,'type'=>'list','key'=>$this->code]],
             'fields'=> [
-                $this->code.'_0'  => ['label'=>lang('title'),'attr'=>['required'=>'true']],
-                $this->code.'_1'  => ['label'=>lang('url')." including http:// or https://",'attr'=>['required'=>'true']],
-                $this->code.'_btn'=> ['attr'=>['type'=>'button','value'=>lang('new')],'styles'=>['text-align'=>'right'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
-            'lists' => [$this->code=> $rows]];
-          return $data;
+                $this->code.'_0'  => ['order'=>10,'break'=>true,'label'=>lang('title'),'attr'=>['required'=>'true']],
+                $this->code.'_1'  => ['order'=>20,'break'=>true,'label'=>lang('url')." including http:// or https://",'attr'=>['required'=>'true']],
+                $this->code.'_btn'=> ['order'=>90,'attr'=>['type'=>'button','value'=>lang('add')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
+            'lists' => [$this->code=>$rows]]);
     }
 
     public function save()

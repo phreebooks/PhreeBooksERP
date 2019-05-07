@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-15
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /lib/model/io.php
  */
 
@@ -280,6 +280,7 @@ final class io
     {
         msgDebug("\nEntering folderExists with path = $path");
         if (strpos($path, '/') === false) { return true; } // root folder
+        if (substr($this->myFolder.$path, -1) == '/') { $path .= 'bizuno'; } // path is a dir, add a phony file so pathinfo works
         return is_dir(pathinfo($this->myFolder.$path, PATHINFO_DIRNAME)) ? true : false;
     }
 

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-19
+ * @version    3.x Last Update: 2019-04-26
  * @filesource /lib/controller/module/payment/main.php
  */
 
@@ -26,7 +26,7 @@ namespace bizuno;
 class paymentMain
 {
     public $moduleID  = 'payment';
-    
+
     public function __construct()
     {
         $this->lang = getLang($this->moduleID);
@@ -99,7 +99,7 @@ class paymentMain
         $structure = $this->dgPayment('dgPayment', $rID, $security);
         $layout = array_replace_recursive($layout, ['type'=>'datagrid', 'structure'=>$structure]);
     }
-    
+
     /**
      * Creates the structure for editing payment data
      * @param array $layout - structure coming in
@@ -239,12 +239,6 @@ class paymentMain
             return msgAdd("Cannot apply payment to method: $method since the method is not installed!");
         }
         $iID = dbGetValue(BIZUNO_DB_PREFIX."journal_item", ['id', 'description'], "ref_id={$ledger->main['id']} AND gl_type='ttl'");
-        $desc = [];
-        $props = explode(";", $iID['description']);
-        if (sizeof($props) > 0) { foreach ($props as $row) { // decode the description field
-            $tmp = explode(":", $row);
-            if ($tmp[0]) { $desc[$tmp[0]] = isset($tmp[1]) ? $tmp[1] : ''; }
-        } }
         if (!$fields = $this->process($method, $ledger)) { return; }
         $pmtSet = getModuleCache('payment','methods',$method,'settings');
         $fqcn = "\\bizuno\\$method";
@@ -255,9 +249,11 @@ class paymentMain
             $result['txID'] = '';
         }
         // add to the description
+        $desc = clean($iID['description'], 'bizunzip'); // current encoded description
         $desc['method']= $method;
         $desc['status']= 'cap';
-        if (isset($fields['hint'])) { $desc['hint'] = $fields['hint']; }
+        if (!empty($fields['hint'])) { $desc['hint'] = $fields['hint']; }
+        if (!empty($fields['code'])) { $desc['code'] = $fields['code']; }
         $output = [];
         foreach ($desc as $key => $value) { $output[] = "$key:$value"; }
         $fields = ['description'=>implode(';', $output), 'trans_code'=>$result['txID']];
@@ -329,7 +325,7 @@ class paymentMain
      * @param string $ccNum - credit card number to determine how long to make returning cvv
      * @return string - cleaned cvv ready to submit to method processor
      */
-    private function fixCvv($cvv, $ccNum) 
+    private function fixCvv($cvv, $ccNum)
     {
         return substr("0000".$cvv, substr($ccNum,0,2)=='37' ? -4 : -3);
     }

@@ -67,7 +67,7 @@ function chartRefresh() {
             $data['accordion']['accGL']['divs']['divGLManager']['divs']['selCOA'] = ['order'=>10,'label'=>$this->lang['coa_import_title'],'type'=>'html',
                 'html'=>"<fieldset><legend>".$this->lang['coa_import_title']."</legend><p>".$this->lang['coa_import_blocked']."</p></fieldset>\n"];
         } else {
-            $data['jsHead']['selCOA'] = $this->getViewMgrJS();
+//            $data['jsHead']['selCOA'] = $this->getViewMgrJS();
         }
         $layout = array_replace_recursive($layout, $data);
     }
@@ -77,7 +77,7 @@ function chartRefresh() {
         $charts = [];
         $sel_coa     = ['values'=>$charts,'attr'=>['type'=>'select','size'=>10]];
         $file_coa    = ['label'=>$this->lang['coa_upload_file'], 'attr'=>['type'=>'file']];
-        $btn_coa_pre = ['icon'=>'preview','size'=>'large', 'events'=>['onClick'=>"previewGL();"]];
+        $btn_coa_pre = ['icon'=>'preview','size'=>'large', 'events'=>['onClick'=>"winOpen('popupGL', 'phreebooks/chart/preview&chart='+jq('#sel_coa').val(), 800, 600);"]];
         $btn_coa_imp = ['icon'=>'import', 'size'=>'large', 'events'=>['onClick'=>"if (confirm('".$this->lang['msg_gl_replace_confirm']."')) jsonAction('phreebooks/chart/import', 0, jq('#sel_coa').val());"]];
         $btn_coa_upl = ['attr'=>['type'=>'button', 'value'=>$this->lang['btn_coa_upload']], 'events'=>['onClick'=>"if (confirm('".$this->lang['msg_gl_replace_confirm']."')) jq('#frmGlUpload').submit();"]];
         // Check if import chart is available
@@ -91,25 +91,29 @@ function chartRefresh() {
         return $output;
     }
 
-    private function getViewMgrJS()
+    /**
+     * structure to review a sample chart of accounts, only visible until first GL entry
+     * @param array $layout - Structure coming in
+     * @return modified $layout
+     */
+    public function preview(&$layout=[])
     {
-            return "function previewGL() {
-    if (jq('#popupGL').length) jq('#popupGL').remove();
-    var newdiv1 = jq('<div id=\"popupGL\" title=\"".jsLang($this->lang['btn_coa_preview'])."\" class=\"easyui-window\"></div>');
-    jq('body').append(newdiv1);
-    jq('#popupGL').window({ width:800, height:600, closable:true, modal:true });
-    jq('#popupGL').window('center');
-    jq('#popupGL').html('<table id=\"dgPopupGL\"></table><script type=\"text/javascript\">loadPreview();<'+'/script>');
-}
-function loadPreview() {
-    jq('#dgPopupGL').datagrid({ pagination:false,
-        url:'".BIZUNO_AJAX."&p=phreebooks/chart/preview&chart='+jq('#sel_coa').val(),
-        columns:[[
-            {field:'id',title:'"   .jsLang('gl_account')."',width: 50},
-            {field:'type',title:'" .jsLang('type')      ."',width:100},
-            {field:'title',title:'".jsLang('title')     ."',width:200} ]]
-    });
-}";
+        if (!$security = validateSecurity('bizuno', 'admin', 4)) { return; }
+        $chart   = clean('chart', 'path', 'get');
+        if (!file_exists(BIZUNO_LIB.$chart)) { return msgAdd("Bad path to chart!"); }
+        $accounts= parseXMLstring(file_get_contents(BIZUNO_LIB.$chart));
+        if (is_object($accounts->account)) { $accounts->account = [$accounts->account]; } // in case of only one chart entry
+        $output  = [];
+        if (is_array($accounts->account)) { foreach ($accounts->account as $row) {
+            $output[] = ['id'=>$row->id, 'type'=>lang("gl_acct_type_".trim($row->type)), 'title'=>$row->title,
+                'heading'=> isset($row->heading_only)    && $row->heading_only    ? lang('yes')           : '',
+                'primary'=> isset($row->primary_acct_id) && $row->primary_acct_id ? $row->primary_acct_id : ''];
+        } }
+        $jsReady = "var winChart = ".json_encode($output).";
+jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id',title:'".jsLang('gl_account')."',width: 50},{field:'type',title:'" .jsLang('type')."',width:100},{field:'title',title:'".jsLang('title')."',width:200} ]] });";
+        $layout = array_replace_recursive($layout, ['type'=>'page', 'title'=>$this->lang['btn_coa_preview'],
+            'divs'=>['divLabel'=>['order'=>60,'type'=>'html','html'=>"<table id=\"dgPopupGL\"></table>"]],
+            'jsReady' => ['init'=>$jsReady]]);
     }
 
     /**
@@ -233,30 +237,6 @@ function loadPreview() {
         msgLog(lang('phreebooks_chart_of_accts').' - '.lang('delete')." (".$glRecord['id'].') '.$glRecord['title']);
         msgAdd(lang('phreebooks_chart_of_accts').' - '.lang('delete')." (".$glRecord['id'].') '.$glRecord['title'], 'success');
         $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"reloadSessionStorage(chartRefresh);"]]);
-    }
-
-    /**
-     * structure to review a sample chart of accounts, only visible until first GL entry
-     * @param array $layout - Structure coming in
-     * @return modified $layout
-     */
-    public function preview(&$layout=[])
-    {
-        if (!$security = validateSecurity('bizuno', 'admin', 4)) { return; }
-        $chart = clean('chart', 'path', 'get');
-        if (!file_exists(BIZUNO_LIB.$chart)) { return msgAdd("Bad path to chart!"); }
-        $accounts = parseXMLstring(file_get_contents(BIZUNO_LIB.$chart));
-        if (is_object($accounts->account)) { $accounts->account = [$accounts->account]; } // in case of only one chart entry
-        $output = [];
-        if (is_array($accounts->account)) { foreach ($accounts->account as $row) {
-            $output[] = [
-                'id'     =>$row->id,
-                'type'   =>lang("gl_acct_type_".trim($row->type)),
-                'title'  =>$row->title,
-                'heading'=> isset($row->heading_only)    && $row->heading_only    ? lang('yes')           : '',
-                'primary'=> isset($row->primary_acct_id) && $row->primary_acct_id ? $row->primary_acct_id : ''];
-        } }
-        $layout = array_replace_recursive($layout, ['content'=>['total'=>sizeof($output),'rows'=>$output]]);
     }
 
     /**

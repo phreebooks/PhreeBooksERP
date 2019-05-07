@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-12
+ * @version    3.x Last Update: 2019-04-26
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -113,7 +113,8 @@ class bizunoAdmin
             'curLong' => ['text'=>lang('currency_long'),          'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
             'curNull0'=> ['text'=>$this->lang['pf_cur_null_zero'],'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
             'precise' => ['text'=>$this->lang['pf_proc_precise'], 'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
-            'date'    => ['text'=>$this->lang['pf_proc_date'],    'group'=>lang('date'),   'module'=>$this->moduleID,'function'=>'viewFormat']];
+            'date'    => ['text'=>$this->lang['pf_proc_date'],    'group'=>lang('date'),   'module'=>$this->moduleID,'function'=>'viewFormat'],
+            'dateLong'=> ['text'=>$this->lang['pf_proc_datelong'],'group'=>lang('date'),   'module'=>$this->moduleID,'function'=>'viewFormat']];
         $this->phreeformSeparators = [
             'sp'     => ['text'=>$this->lang['pf_sep_space1'], 'module'=>$this->moduleID,'function'=>'viewSeparator'],
             '2sp'    => ['text'=>$this->lang['pf_sep_space2'], 'module'=>$this->moduleID,'function'=>'viewSeparator'],

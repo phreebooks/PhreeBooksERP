@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-19
+ * @version    3.x Last Update: 2019-04-26
  * @filesource /local/en_US/language.php
  */
 
@@ -104,6 +104,9 @@ $langCore = [
     'bank_check' => 'Bank Checks',
     'bank_deposit' => 'Deposit Slips',
     'bank_register_format' => 'Db/Cr By Journal',
+    'bank_cc_card_type' => 'CC Type',
+    'bank_cc_card_hint' => 'CC Hint',
+    'bank_cc_card_code' => 'CC Auth Code',
     'bill_to' => 'Bill To',
     'both' => 'Both',
     'browse' => 'Browse',
@@ -512,7 +515,7 @@ $langCore = [
     /***************************************************************************************************************/
     // Misc
     /***************************************************************************************************************/
-    // Contacts Terms
+    // Contacts General
     'contacts_terms_custom' => 'Special Terms',
     'contacts_terms_default' => 'Use Default Terms',
     'contacts_terms_cod' => 'Cash On Delivery',
@@ -526,6 +529,10 @@ $langCore = [
     'contacts_terms_discount_short' =>'%s%% %s,',
     'contacts_terms_net_short'=> 'Net %s',
     'contacts_terms_date' => 'Due by %s',
+    'quarter_neg2' => 'Quarter (-2)',
+    'quarter_neg3' => 'Quarter (-3)',
+    'quarter_neg4' => 'Quarter (-4)',
+    'quarter_neg5' => 'Quarter (-5)',
     // Inventory
     'inventory_assy_cost'    => 'Current Assembly Cost',
     'inventory_where_used'   => 'Where Used',
@@ -617,6 +624,7 @@ $langCore = [
     'dates_monthly' => 'Monthly',
     'dates_quarter' => 'This Quarter',
     'dates_qtd' => 'Quarter To Date',
+    'dates_lqtr' => 'Last Quarter',
     'dates_quarterly' => 'Quarterly',
     'dates_this_year' => 'This Year',
     'dates_ytd' => 'Year To Date',

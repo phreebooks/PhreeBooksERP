@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-27
+ * @version    3.x Last Update: 2019-04-25
  * @filesource /controller/module/phreeform/renderHTML.php
  */
 
@@ -169,6 +169,7 @@ class HTML
                     }
                     $rStyle = $fill ? $bgStyle : ($todo[0]=='r' || $todo[0]=='g' ? 'style="background-color:'.$this->ttlColor.'"' : '');
                     $this->writeRow($temp, $rStyle, $dStyle);
+                    if ($rowCnt > 40) { $showHd = true; $rowCnt = 0; } // for long lists or lists without group
                     if ($showHd) { $this->addTableHead($report); $showHd = false; }
                     break;
             }

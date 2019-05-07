@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-10
+ * @version    3.x Last Update: 2019-05-06
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -1141,18 +1141,6 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     }
 
     /**
-     * Gets translated text for a specified encoded term passed through ajax
-     * @param array $layout - current working structure
-     * @return array - modified $layout
-     */
-    public function termsText(&$layout=[])
-    {
-        $terms_encoded = clean('enc', ['format'=>'text','default'=>'0'], 'get');
-        msgDebug("\n Received encoded terms = $terms_encoded");
-        $layout = array_replace_recursive($layout, ['content'=>['text' => viewTerms($terms_encoded)]]);
-    }
-
-    /**
      * Builds the editor for contact payment terms
      * @param array $layout - current working structure
      * @param char $defType - contact type
@@ -1160,22 +1148,16 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     public function editTerms(&$layout=[], $defType='c')
     {
         $call_back= clean('callBack',['format'=>'text','default'=>'terms'], 'get');
-        $data = ['type'=>'popup','title'=>lang('terms'),'attr'=>['id'=>'winTerms'],
+        $data = ['type'=>'popup','title'=>lang('terms'),'attr'=>['id'=>'winTerms','width'=>650],
             'call_back'=> $call_back,
-            'toolbars' => ['tbTerms'=>['icons'=>['next'=>['order'=>20,'events'=>['onClick'=>"termsSave();"]]]]],
+            'toolbars' => ['tbTerms'=>['icons'=>['next'=>['order'=>20,'events'=>['onClick'=>"jq('#frmTerms').submit();"]]]]],
             'divs'     => [
-                'toolbar'     => ['order'=>80,'type'=>'toolbar','key'=>'tbTerms'],
-                'window_terms'=> ['order'=>50,'type'=>'fields','fields'=>$this->getTermsDiv($defType)]],
-            'jsBody'   => ['termsInit' => "function termsSave() {
-    var type  = jq('#terms_type:checked').val();
-    var enc   = type+':'+jq('#terms_disc').val()+':'+jq('#terms_early').val()+':';
-    enc += (type=='4' ? jq('#terms_date').val() : jq('#terms_net').val())+':'+cleanCurrency(jq('#credit_limit').val());
-    jq('#terms').val(enc);
-    jq.ajax({
-        url:     '".BIZUNO_AJAX."&p=contacts/main/termsText&enc='+enc,
-        success: function(json) { processJson(json); if (json.text) { bizTextSet('terms_text', json.text); bizWindowClose('winTerms'); } }
-    });
-}"]];
+                'toolbar' => ['order'=>10,'type'=>'toolbar','key'   =>'tbTerms'],
+                'formBOF' => ['order'=>20,'type'=>'form',   'key'   =>'frmTerms'],
+                'winTerms'=> ['order'=>50,'type'=>'fields', 'fields'=>$this->getTermsDiv($defType)],
+                'formEOF' => ['order'=>99,'type'=>'html',   'html'  =>'</form>']],
+            'forms'    => ['frmTerms'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=contacts/main/setTerms"]]],
+            'jsReady'  => ['init'=>"ajaxForm('frmTerms');"]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -1189,27 +1171,39 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         elseif (!$encoded)              { $encoded = getModuleCache('phreebooks', 'settings', 'customers', 'terms'); }
         $terms  = explode(':', $encoded);
         $defNET = isset($terms[3]) && $terms[0]==3 ? $terms[3] : '30';
-        $defDOM = isset($terms[3]) && $terms[0]==4 ? clean($terms[3], 'date') : date('Y-m-d');
+        $defDOM = isset($terms[3]) && $terms[0]==4 ? $terms[3] : date('Y-m-d');
         $fields = [
-            'terms_type'  => ['position'=>'after',      'attr'=>['type'=>'radio','value'=>$terms[0]]],
             'terms_disc'  => ['options'=>['width'=>40], 'attr'=>['value'=>isset($terms[1]) ? $terms[1] : '0', 'maxlength'=>'3']],
             'terms_early' => ['options'=>['width'=>40], 'attr'=>['value'=>isset($terms[2]) ? $terms[2] : '0', 'maxlength'=>'3']],
-            'terms_net'   => ['options'=>['width'=>40], 'attr'=>['value'=>$defNET,'maxlength'=>'3']],
-            'terms_date'  => ['order'=>61,'break'=>true,'attr'=>['type'=>'date', 'value'=>$defDOM]],
-            'credit_limit'=> ['label'=>lang('contacts_terms_credit_limit'),'position'=>'after','styles'=>['text-align'=>'right'],'attr'=>['format' =>'currency','value'=>isset($terms[4])?$terms[4]:'1000']]];
+            'terms_net'   => ['options'=>['width'=>40], 'attr'=>['value'=>$defNET,'maxlength'=>'3']]];
         $custom = ' - '.sprintf(lang('contacts_terms_discount'), html5('terms_disc', $fields['terms_disc']), html5('terms_early', $fields['terms_early'])).' '.sprintf(lang('contacts_terms_net'), html5('terms_net',$fields['terms_net']));
         $output = [
-            'radio0'    => ['order'=>10,'break'=>true,'label'=>lang('contacts_terms_default'),'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>0,'checked'=>$terms[0]==0?true:false]],
-            'r0Text'    => ['order'=>11,'break'=>true,'html'=>' ['.viewTerms('0', false, $terms[0]).']','attr'=>['type'=>'raw']],
-            'radio3'    => ['order'=>20,'label'=>lang('contacts_terms_custom'),               'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>3,'checked'=>$terms[0]==3?true:false]],
-            'r1Disc'    => ['order'=>21,'break'=>true,'html'=>$custom,'attr'=>['type'=>'raw']],
-            'radio6'    => ['order'=>30,'break'=>true,'label'=>lang('contacts_terms_now'),    'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>6,'checked'=>$terms[0]==6?true:false]],
-            'radio2'    => ['order'=>40,'break'=>true,'label'=>lang('contacts_terms_prepaid'),'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>2,'checked'=>$terms[0]==2?true:false]],
-            'radio1'    => ['order'=>50,'break'=>true,'label'=>lang('contacts_terms_cod'),    'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>1,'checked'=>$terms[0]==1?true:false]],
-            'radio4'    => ['order'=>60,'label'=>lang('contacts_terms_dom'),                  'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>4,'checked'=>$terms[0]==4?true:false]],
-            'terms_date'=> $fields['terms_date'],
-            'radio5'    => ['order'=>70,'break'=>true,'label'=>lang('contacts_terms_eom'),    'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>5,'checked'=>$terms[0]==5?true:false]],
-            'credit'    => $fields['credit_limit']];
+            'radio0'    => ['order'=>10,'break'=>true, 'label'=>lang('contacts_terms_default').' ['.viewTerms('0', false, $terms[0]).']','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>0,'checked'=>$terms[0]==0?true:false]],
+            'radio3'    => ['order'=>20,'label'=>lang('contacts_terms_custom'),                'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>3,'checked'=>$terms[0]==3?true:false]],
+            'r1Disc'    => ['order'=>21,'break'=>true, 'html'=>$custom,'attr'=>['type'=>'raw']],
+            'radio6'    => ['order'=>30,'break'=>true, 'label'=>lang('contacts_terms_now'),    'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>6,'checked'=>$terms[0]==6?true:false]],
+            'radio2'    => ['order'=>40,'break'=>true, 'label'=>lang('contacts_terms_prepaid'),'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>2,'checked'=>$terms[0]==2?true:false]],
+            'radio1'    => ['order'=>50,'break'=>true, 'label'=>lang('contacts_terms_cod'),    'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>1,'checked'=>$terms[0]==1?true:false]],
+            'radio4'    => ['order'=>60,'label'=>lang('contacts_terms_dom'),                   'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>4,'checked'=>$terms[0]==4?true:false]],
+            'terms_date'=> ['order'=>61,'break'=>true, 'attr'=>['type'=>'date', 'value'=>$defDOM]],
+            'radio5'    => ['order'=>70,'break'=>true, 'label'=>lang('contacts_terms_eom'),    'attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>5,'checked'=>$terms[0]==5?true:false]],
+            'hr1'       => ['order'=>71,'html'=>'<hr>','attr'=>['type'=>'raw']],
+            'credit'    => ['order'=>80,'label'=>lang('contacts_terms_credit_limit'),'attr'=>['type' =>'currency','value'=>isset($terms[4])?$terms[4]:'1000']]];
         return $output;
+    }
+
+        /**
+     * Gets translated text for a specified encoded term passed through ajax
+     * @param array $layout - current working structure
+     * @return array - modified $layout
+     */
+    public function setTerms(&$layout=[])
+    {
+        $type = clean('terms_type', 'integer', 'post');
+        $enc  = "$type:".clean('terms_disc', 'float', 'post').":".clean('terms_early', 'integer', 'post').":";
+        $enc .= ($type==4 ? clean('terms_date', 'date', 'post') : clean('terms_net', 'integer', 'post')).":".clean('credit', 'currency', 'post');
+        msgDebug("\n Received and created encoded terms = $enc");
+        $data = ['content'=>['action'=>'eval','actionData'=>"bizTextSet('terms', '$enc'); bizTextSet('terms_text', '".jsLang(viewTerms($enc))."'); bizWindowClose('winTerms');"]];
+        $layout = array_replace_recursive($layout, $data);
     }
 }

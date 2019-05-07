@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-27
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /lib/controller/module/bizuno/dashboards/launchpad/launchpad.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_LAUNCHPAD_VERSION','3.1');
+define('DASHBOARD_LAUNCHPAD_VERSION','3.2');
 
 class launchpad
 {
@@ -39,47 +39,38 @@ class launchpad
         $this->settings= $settings;
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
         $this->choices = [['id'=>'', 'text'=>lang('select')]];
-        $tmp1   = getUserCache('menuBar');
-        $menu1  = sortOrderLang($tmp1['child']);
+        $tmp1 = getUserCache('menuBar');
+        $menu1= sortOrderLang($tmp1['child']);
         $this->listMenus($menu1);
-        $tmp2   = getUserCache('quickBar');
-        $menu2  = sortOrderLang($tmp2['child']);
+        $tmp2 = getUserCache('quickBar');
+        $menu2= sortOrderLang($tmp2['child']);
         $this->listMenus($menu2, lang('settings'));
-        $data   = [
-            "{$this->code}_0"   => ['label'=>lang('select'),   'values'=>$this->choices, 'attr'=>['type'=>'select']],
-            "{$this->code}_btn" => ['attr' =>['type'=>'button','value'=>lang('add')],
-                'styles' => ['cursor'=>'pointer'], 'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]],
-            'delete_icon' => ['icon'=>'trash', 'size'=>'small']];
-        $html  = '<div>';
-        $html .= '  <div id="'.$this->code.'_attr" style="display:none">';
-        $html .= '    <form id="'.$this->code.'Form" action="">';
-        $html .= '      <div style="white-space:nowrap">'.html5("{$this->code}_0",   $data["{$this->code}_0"]).'</div>';
-        $html .= '      <div style="text-align:right;">' .html5("{$this->code}_btn", $data["{$this->code}_btn"]).'</div>';
-        $html .= '    </form>';
+        $data = ['delete_icon'=>['icon'=>'trash', 'size'=>'small']];
         // build the delete list inside of the settings
-        $body  = '';
-        if (is_array($this->settings)) {
-            foreach ($this->settings as $idx => $value) {
-                $parts = explode(':', $value, 2);
-                if (sizeof($parts) > 1) { $parts[0] = $parts[1]; } // for legacy
-                $props = $this->findIdx($menu1, $parts[0]);
-                if (!$props) { $props = $this->findIdx($menu2, $parts[0]); } // try the quickBar
-                $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', ($idx+1));"];
-                $html .= '  <div>';
-                $html .= '    <div style="float:right;height:17px;">'.html5('delete_icon', $data['delete_icon']).'</div>';
-                $html .= '    <div style="min-height:17px;">'.lang($props['label']).'</div>';
-                $html .= '  </div>';
-                // build the body part while we're here
-                $body .= '<a onClick="'.$props['events']['onClick'].'" style="width:75px;height:100px" class="easyui-linkbutton">';
-                $body .= html5('', ['icon'=>$props['icon'], 'size'=>'large']).'<br />'.lang($props['label']).'</a>&nbsp;';
-            }
-        }
-        $html .= "  </div><div>$body</div>";
-        $html .= "</div>\n";
-        return $html;
+        $html = $body = '';
+        if (is_array($this->settings)) { foreach ($this->settings as $idx => $value) {
+            $parts = explode(':', $value, 2);
+            if (sizeof($parts) > 1) { $parts[0] = $parts[1]; } // for legacy
+            $props = $this->findIdx($menu1, $parts[0]);
+            if (!$props) { $props = $this->findIdx($menu2, $parts[0]); } // try the quickBar
+            $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', ($idx+1));"];
+            $html  .= '<div><div style="float:right;height:17px;">'.html5('delete_icon', $data['delete_icon']).'</div>';
+            $html  .= '<div style="min-height:17px;">'.lang($props['label']).'</div></div>';
+            // build the body part while we're here
+            $btnHTML= html5('', ['icon'=>$props['icon']]).'<br />'.lang($props['label']);
+            $body  .= html5('', ['styles'=>['width'=>'100px','height'=>'100px'],'events'=>['onClick'=>$props['events']['onClick']],'attr'=>['type'=>'button','value'=>$btnHTML]])."&nbsp;";
+        } } else { $body .= "<span>".lang('no_results')."</span>"; }
+        $layout = array_merge_recursive($layout, [
+            'divs'  => [
+                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'_0', $this->code.'_btn', $this->code.'_del']]]],
+                'body' =>['order'=>50,'type'=>'html','html'=>$body]],
+            'fields'=> [
+                $this->code.'_0'  =>['order'=>10,'break'=>true,'label'=>lang('select'),'values'=>$this->choices,'attr'=>['type'=>'select']],
+                $this->code.'_btn'=>['order'=>70,'attr'=>['type'=>'button','value'=>lang('add')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]],
+                $this->code.'_del'=>['order'=>90,'html'=>$html,'attr'=>['type'=>'raw']]]]);
     }
 
     private function listMenus($source, $cat=false)

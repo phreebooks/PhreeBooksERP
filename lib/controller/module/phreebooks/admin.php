@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-12
+ * @version    3.x Last Update: 2019-04-26
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -93,11 +93,14 @@ class phreebooksAdmin {
                         'save' => ['order' => 50, 'page' => 'admin', 'class' => 'phreebooksAdmin', 'method' => 'usersSave']]]],
             'api' => ['path' => 'phreebooks/api/journalAPI', 'attr' => ['jID' => 12]]]; // default to import sales
         $this->phreeformProcessing = [
+            'bnkReg'    => ['text'=>lang('bank_register_format'),      'group'=>lang('banking')     ,'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'bnkCard'   => ['text'=>lang('bank_cc_card_type'),         'group'=>lang('banking')     ,'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'bnkHint'   => ['text'=>lang('bank_cc_card_hint'),         'group'=>lang('banking')     ,'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'bnkCode'   => ['text'=>lang('bank_cc_card_code'),         'group'=>lang('banking')     ,'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'subTotal'  => ['text'=>lang('subtotal'),                  'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'invBalance'=> ['text'=>lang('balance'),                   'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'invRefNum' => ['text'=>lang('journal_main_invoice_num_2'),'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'invUnit'   => ['text'=>$this->lang['pb_inv_unit'],        'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'bnkReg'    => ['text'=>lang('bank_register_format'),      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'pmtDate'   => ['text'=>lang('payment_due_date'),          'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'pmtDisc'   => ['text'=>lang('payment_discount'),          'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'paymentDue'=> ['text'=>lang('payment_due'),               'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],

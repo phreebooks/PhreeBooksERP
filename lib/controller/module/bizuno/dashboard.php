@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-08
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /lib/controller/module/bizuno/dashboard.php
  */
 
@@ -66,13 +66,9 @@ class bizunoDashboard
             array_multisort($temp, SORT_ASC, $module);
             $html = $header;
             foreach ($module as $piece) {
-                $checkbox = ['attr'=>  ['type'=>'checkbox','value'=>$piece['module'].':'.$piece['id'], 'checked'=>$piece['active']?'checked':false]];
-                $html .= "  <tr>\n";
-                $html .= "    <td>".html5("dashID[]", $checkbox)."</td>\n";
-                $html .= "    <td>".$piece['title']      ."</td>\n";
-                $html .= "    <td>".$piece['description']."</td>\n";
-                $html .= "  </tr>\n";
-                $html .= '<tr><td colspan="4"><hr /></td></tr>'."\n";
+                $checkbox = ['attr'=>['type'=>'checkbox','value'=>$piece['module'].':'.$piece['id'], 'checked'=>$piece['active']?'checked':false]];
+                $html .= "  <tr><td>".html5("dashID[]", $checkbox)."</td><td>".$piece['title']."</td><td>".$piece['description']."</td></tr>\n";
+                $html .= '  <tr><td colspan="4"><hr /></td></tr>'."\n";
             }
             $html .= $footer;
             $data['tabs']['tabSettings']['divs'][$cat] = ['order'=>$order,'label'=>lang($cat),'type'=>'html','html'=>$html];
@@ -176,24 +172,27 @@ class bizunoDashboard
         }
         $dashboard = $this->loadDashboard($mID, $dID, $settings);
         if (!$dashboard) { return msgAdd("ERROR: Dashboard $dID NOT FOUND!"); }
-        $content = $dashboard->render();
-        if (is_string($content)) { // plain old HTML
-            $html = $content;
+        $html = $dashboard->render($layout);
+        if (is_string($html) && strlen($html)) { // plain old HTML, old way but still used frequently
             if (strpos($html, "{$dID}Form")) { // if there is a form for settings, set the return key to submit form
-                $html .= htmlJS("jq('#{$dID}Form').keypress(function(event) { var keycode=(event.keyCode ? event.keyCode : event.which); if (keycode=='13') { dashboardAttr('$mID:$dID', 0); } });");
+                $html .= htmlJS("jq('#{$dID}Form').keypress(function(event) { var keycode=event.keyCode?event.keyCode:event.which; if (keycode=='13') { dashboardAttr('$mID:$dID', 0); } });");
             }
             $data = ['type'=>'divHTML','divs'=>[$dID=>['order'=>50,'type'=>'html','html'=>$html]]];
         } else { // it's a structure, process it
-            $data = array_replace_recursive(['type'=>'divHTML'], $content);
-            if (!empty($data['fields'])) { // build the settings menu
-                $html  = '<div id="'.$dID.'_attr" style="display:none"><form id="'.$dID.'Form" action="">';
-                foreach ($data['fields'] as $id => $prop) { $html .= html5($id, $prop); }
-                $html .= '</form></div>';
-                $html .= htmlJS("jq('#{$dID}Form').keypress(function(event) { var keycode=(event.keyCode ? event.keyCode : event.which); if (keycode=='13') { dashboardAttr('$mID:$dID', 0); } });");
-                $data['divs']['settings'] = ['order'=>10,'type'=>'html','html'=>$html];
-            }
+            $jsReady= "jq('#{$dID}Form').keypress(function(event) { var keycode=event.keyCode?event.keyCode:event.which; if (keycode=='13') { dashboardAttr('$mID:$dID', 0); } });";
+            $data   = ['type'=>'divHTML',
+                'divs'  => [
+                    'divBOF'=>['order'=> 1,'type'=>'html','html'=>"<div>"],
+//                  'body'  =>['order'=>50,'type'=>'list','key'=>'notes'], // set in individual dashboard
+                    'admin' =>['order'=>10,'styles'=>['display'=>'none'],'attr'=>['id'=>"{$dID}_attr"],'type'=>'divs','divs'=>[
+                        'frmBOF' => ['order'=>20,'type'=>'form',  'key' =>"{$dID}Form"],
+//                      'body'   => ['order'=>50,'type'=>'fields','keys'=>array_keys($layout['fields'])],  // set in individual dashboard
+                        'frmEOF' => ['order'=>90,'type'=>'html',  'html'=>"</form>"]]],
+                    'divBOF'=>['order'=> 1,'type'=>'html','html'=>"</div>"]],
+                'forms' => ["{$dID}Form"=>['attr'=>['type'=>'form','action'=>'']]],
+                'jsReady'=>['init'=>$jsReady]];
         }
-        $layout = array_replace_recursive($layout, $data);
+        $layout = array_replace_recursive($data, $layout);
         msgDebug("\nlayout after processing = ".print_r($layout, true));
     }
 
@@ -254,7 +253,9 @@ class bizunoDashboard
                 dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."users_profiles WHERE dashboard_id='{$values['dashboard_id']}' AND user_id=".getUserCache('profile', 'admin_id', false, 0));
                 continue;
             }
-            $icnSettings = [['iconCls'=>'icon-edit', 'handler'=>"(function () { jq('#{$values['dashboard_id']}_attr').toggle('slow'); })"]];
+            $icnSettings = [
+                ['iconCls'=>'icon-refresh','handler'=>"(function () { jq('#{$values['dashboard_id']}').panel('refresh'); })"],
+                ['iconCls'=>'icon-edit',   'handler'=>"(function () { jq('#{$values['dashboard_id']}_attr').toggle('slow'); })"]];
             $showSettings = empty($myDash->noSettings) ? $icnSettings : false;
             $dashboard[] = [
                 'id'         => $values['dashboard_id'],

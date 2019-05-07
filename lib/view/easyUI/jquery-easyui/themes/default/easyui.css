@@ -943,6 +943,27 @@
   border-color: #ffa8a8;
   background-color: #fff3f3;
 }
+.form-floating-label.form-field .textbox-text {
+  padding: 0;
+}
+.form-floating-label.form-field .textbox-label {
+  position: relative;
+  height: 20px;
+  line-height: 20px;
+  transition: all .3s;
+  font-size: 12px;
+  z-index: 9;
+}
+.form-floating-label.form-field-empty .textbox-label {
+  cursor: text;
+  font-size: 14px;
+  transform: translate(0,25px);
+}
+.form-floating-label.form-field-empty.form-field-focused .textbox-label {
+  cursor: default;
+  font-size: 12px;
+  transform: translate(0,0);
+}
 .passwordbox-open {
   background: url('images/passwordbox_open.png') no-repeat center center;
 }
@@ -3183,8 +3204,6 @@
   border-style: solid;
   border-width: 6px;
   border-color: transparent;
-  _border-color: tomato;
-  _filter: chroma(color=tomato);
 }
 .tooltip-arrow {
   display: none \9;
@@ -3335,6 +3354,12 @@
 .switchbutton-readonly {
   cursor: default;
 }
+.switchbutton:focus {
+  -moz-box-shadow: 0 0 3px 0 #bbb;
+  -webkit-box-shadow: 0 0 3px 0 #bbb;
+  box-shadow: 0 0 3px 0 #bbb;
+  outline: none;
+}
 .radiobutton {
   position: relative;
   border: 2px solid #ffab3f;
@@ -3450,6 +3475,12 @@
 .sidemenu-collapsed .panel-icon {
   left: 50%;
   margin-left: -8px;
+}
+.sidemenu-collapsed .collapsed-icon {
+  position: relative;
+}
+.sidemenu-collapsed .collapsed-text {
+  text-align: center;
 }
 .sidemenu-tooltip {
   padding: 0;

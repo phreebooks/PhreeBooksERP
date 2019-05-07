@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-21
+ * @version    3.x Last Update: 2019-05-07
  * @filesource /portal/functions.php
  */
 
@@ -70,6 +70,8 @@ function biz_user_logout()
     portalWrite('users', ['cache_date'=>''], 'update', "biz_user='$email'");
     setcookie('bizunoSession', '', time()-1, "/");
 }
+
+function bizuno_get_locale() { return substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5); }
 
 function viewSubMenu() { } // hook for creating menu bar within a page
 

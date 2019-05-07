@@ -100,7 +100,7 @@
 </Locale>
 <Locale>
     <Country><Title>Australia</Title><ISO2>AU</ISO2><ISO3>AUS</ISO3></Country>
-    <Currency><ISO>AUD</ISO><Title>Australia Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand> </SymbolThousand><Precision>2</Precision></Currency>
+    <Currency><ISO>AUD</ISO><Title>Australia Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>&#160;</SymbolThousand><Precision>2</Precision></Currency>
     <Number><Prefix></Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>-</PrefixNegative><SuffixNegative></SuffixNegative></Number>
     <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
 </Locale>

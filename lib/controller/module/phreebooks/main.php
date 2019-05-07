@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-27
+ * @version    3.x Last Update: 2019-05-06
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
 namespace bizuno;
 
-bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journal.php", 'journal'); // pulls functions also
+bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journal.php", 'journal');
 bizAutoLoad(BIZUNO_LIB."controller/module/payment/main.php", 'paymentMain');
 
 class phreebooksMain
@@ -292,9 +292,12 @@ if (!formValidate()) return false;\n\treturn true;\n}";
             'toolbars'=> ['tbPhreeBooks'=>['icons'=>[
                 'jSave'=> ['order'=>10,'label'=>lang('save'),  'icon'=>'save','type'=>'menu','hidden'=>$security>1?false:true,
                     'events'=> ['onClick'=>"jq('#frmJournal').submit();"],'child'=>$this->renderMenuSave($security)],
-                'recur'=> ['order'=>50,'label'=>lang('recur'), 'tip'=>lang('recur_new'),'hidden'=>$security>1?false:true,'events'=>['onClick'=>"var data=jq('input[name=radioRecur]:checked').val()+':'+jq('#recur_id').val(); windowEdit('phreebooks/main/popupRecur&data='+data, 'winRecur', '".jsLang('recur')."', 450, 450);"]],
+                'recur'=> ['order'=>50,'label'=>lang('recur'), 'tip'=>lang('recur_new'),'hidden'=>$security>1?false:true,
+                    'events'=>['onClick'=>"jsonAction('phreebooks/main/popupRecur', jq('#recur_id').val(), jq('#recur_frequency').val());"]],
+// 'events'=>['onClick'=>"var data=jq('input[name=radioRecur]:checked').val()+':'+jq('#recur_id').val(); windowEdit('phreebooks/main/popupRecur&data='+data, 'winRecur', '".jsLang('recur')."', 450, 450);"]],
                 'new'  => ['order'=>60,'label'=>lang('new'),   'hidden'=>$security>1?false:true,'events'=>['onClick'=>"journalEdit($this->journalID, 0);"]],
                 'trash'=> ['order'=>70,'label'=>lang('delete'),'hidden'=>$rID && $security==4?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/main/delete&jID=$this->journalID', $rID);"]],
+// @todo help icons are not being displayed properly, need to fix and link to proper page in biz school
                 'help' => ['order'=>99,'label'=>lang('help'),  'align'=>'right','index' =>$this->helpIndex]]]],
             'forms'   => ['frmJournal'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/main/save&jID=$this->journalID"]]],
             'fields'  => $structure,
@@ -341,7 +344,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         msgDebug("\n  Started order post invoice_num = {$values['invoice_num']} and id = {$rID}");
         dbTransactionStart();
         $ledger = new journal($rID, $this->journalID);
-        $ledger->main['description'] = pullTableLabel('journal_main', 'journal_id', $this->journalID);
+        $ledger->main['description'] = pullTableLabel('journal_main', 'journal_id', $this->journalID).": ".(!empty($values['primary_name_b']) ? $values['primary_name_b'] : '');
         $ledger->main = array_replace($ledger->main, $values);
         // add/update address book, address updates need to be here so recur doesn't keep making new contacts
         if (clean('AddUpdate_b', 'bool', 'post')) { if (!$ledger->updateContact('b')) { return; } }
@@ -1250,7 +1253,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         $delSave = ['icon'=>'save','events'=>['onClick'=>"divSubmit('phreebooks/main/deliveryDatesSave&jID=$this->journalID', 'winDelDates');"]];
         $output = '<table style="border-collapse:collapse;width:100%;"><thead><tr class="panel-header"><th>'.lang('qty')."</th><th>".lang('sku')."</th><th>".lang('description')."</th><th>".lang('date')."</th></tr></thead><tbody>";
         foreach ($items as $row) {
-            $output .= "<tr><td>".$row['qty']."</td><td>".$row['sku']."</td><td>".$row['description']."</td><td>".html5("rID_{$row['id']}", ['classes'=> ['easyui-datebox'], 'attr'=> ['value'=>viewFormat($row['date_1'], 'date')]])."</td></tr>";
+            $output .= "<tr><td>".$row['qty']."</td><td>".$row['sku']."</td><td>".$row['description']."</td><td>".html5("rID_{$row['id']}",['attr'=>['type'=>'date','value'=>$row['date_1']]])."</td></tr>";
         }
         $output .= '</tbody><tfooter><tr><td colspan="4" style="text-align:right">'.html5('delSave', $delSave)."</td></tr></tfooter></table>\n";
         return $output;
@@ -1392,19 +1395,24 @@ if (!formValidate()) return false;\n\treturn true;\n}";
      */
     public function popupRecur(&$layout=[])
     {
-        if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", 2)) { return; }
-        $presets= clean('data','text', 'get');
-        $vals = explode(':', $presets);
-        $freq = isset($vals[0]) && clean($vals[0], 'integer') ? clean($vals[0], 'integer') : 1;
-        $times= isset($vals[1]) && clean($vals[1], 'integer') ? clean($vals[1], 'integer') : 2;
-        $html  = "<p>".$this->lang['recur_desc']."</p>";
-        $html .= html5('rcrTimes',  ['label'=>$this->lang['recur_times'],    'position'=>'after', 'attr'=>  ['value'=>$times, 'size'=>'3', 'maxlength'=>'2']]);
-        $html .= "<p>".$this->lang['recur_frequency']."</p>";
-        $html .= html5('radioRecur',['label'=>lang('dates_weekly'),   'position'=>'after','attr'=>  ['type'=>'radio', 'value'=>'1', 'checked'=>$freq==1?true:false]])."<br />";
-        $html .= html5('radioRecur',['label'=>lang('dates_bi_weekly'),'position'=>'after','attr'=>  ['type'=>'radio', 'value'=>'2', 'checked'=>$freq==2?true:false]])."<br />";
-        $html .= html5('radioRecur',['label'=>lang('dates_monthly'),  'position'=>'after','attr'=>  ['type'=>'radio', 'value'=>'3', 'checked'=>$freq==3?true:false]])."<br />";
-        $html .= html5('radioRecur',['label'=>lang('dates_quarterly'),'position'=>'after','attr'=>  ['type'=>'radio', 'value'=>'4', 'checked'=>$freq==4?true:false]])."<br />";
-        $html .= html5('iconGO',    ['icon'=>'next','events'=>['onClick'=>"jq('#recur_id').val(jq('#rcrTimes').val()); jq('#recur_frequency').val(jq('input[name=radioRecur]:checked').val()); bizWindowClose('winRecur');"]]);
-        $layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['winRecur'=>['order'=>50, 'type'=>'html', 'html'=>$html]]]);
+        $times = clean('rID', ['format'=>'integer', 'default'=>2], 'get');
+        $freq  = clean('data',['format'=>'integer', 'default'=>3], 'get');
+        $fields= [
+            'txtIntro'=> ['order'=> 1,'html' =>"<p>{$this->lang['recur_desc']}</p>",'attr'=>['type'=>'raw']],
+            'rcrTimes'=> ['order'=>10,'label'=>$this->lang['recur_times'],'position'=>'after','attr'=>['type'=>'integer','value'=>$times,'size'=>3,'maxlength'=>2]],
+            'hr1'     => ['order'=>20,'html' =>'<hr>','attr'=>['type'=>'raw']],
+            'txtFreq' => ['order'=>21,'html' =>"<p>{$this->lang['recur_frequency']}</p>",'attr'=>['type'=>'raw']],
+            'radio0'  => ['order'=>30,'break'=>true,'label'=>lang('dates_weekly'),   'attr'=>['type'=>'radio','id'=>'radioRecur','name'=>'radioRecur','value'=>1,'checked'=>$freq==1?true:false]],
+            'radio1'  => ['order'=>40,'break'=>true,'label'=>lang('dates_bi_weekly'),'attr'=>['type'=>'radio','id'=>'radioRecur','name'=>'radioRecur','value'=>2,'checked'=>$freq==2?true:false]],
+            'radio2'  => ['order'=>50,'break'=>true,'label'=>lang('dates_monthly'),  'attr'=>['type'=>'radio','id'=>'radioRecur','name'=>'radioRecur','value'=>3,'checked'=>$freq==3?true:false]],
+            'radio3'  => ['order'=>60,'break'=>true,'label'=>lang('dates_quarterly'),'attr'=>['type'=>'radio','id'=>'radioRecur','name'=>'radioRecur','value'=>4,'checked'=>$freq==4?true:false]]];
+        $layout= array_replace_recursive($layout, ['type'=>'popup','title'=>lang('recur'),'attr'=>['id'=>'winRecur','height'=>450],
+            'toolbars' => ['tbRecur'=>['icons'=>['next'=>['order'=>20,'events'=>['onClick'=>"jq('#recur_id').val(jq('#rcrTimes').val()); jq('#recur_frequency').val(jq('input[name=radioRecur]:checked').val()); bizWindowClose('winRecur');"]]]]],
+            'divs'     => [
+                'toolbar' => ['order'=>10,'type'=>'toolbar','key'   =>'tbRecur'],
+                'formBOF' => ['order'=>20,'type'=>'form',   'key'   =>'frmRecur'],
+                'winRecur'=> ['order'=>50,'type'=>'fields', 'fields'=>$fields],
+                'formEOF' => ['order'=>99,'type'=>'html',   'html'  =>'</form>']],
+            'forms'    => ['frmRecur'=>['attr'=>['type'=>'form','action'=>""]]]]);
     }
 }

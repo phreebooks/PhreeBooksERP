@@ -37,6 +37,7 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Upgrade Notice ==
 
+2019-05-07 - 5.2.5 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
 2019-04-22 - 5.2.4 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
 2019-04-01 - 5.2.3 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
 2019-03-09 - 5.2.2 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
@@ -64,6 +65,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.2.5 =
+2019-05-07 - Incorporate Bizuno Library 3.2.2. Bug fixes / rework locale file locations for extensions
 = 5.2.4 =
 2019-04-22 - Incorporate Bizuno Library 3.2.0. Bug fixes / remove jquery-file-upload dependence
 = 5.2.3 =

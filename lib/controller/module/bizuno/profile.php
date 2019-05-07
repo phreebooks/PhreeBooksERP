@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-18
+ * @version    3.x Last Update: 2019-05-07
  * @filesource lib/controller/module/bizuno/profile.php
  */
 
@@ -83,14 +83,15 @@ class bizunoProfile
             'title'           => array_merge($fields['title'], ['order'=>10,'break'=>true]),
             'email'           => array_merge($fields['email'], ['order'=>15,'break'=>true]),
             'gmail'           => ['order'=>20,'break'=>true,'label'=>$this->lang['gmail_address'],'tip'=>$this->lang['gmail_address_tip'],'attr'=>['type'=>'email','size'=>50,'value'=>isset($settings['gmail']) ? $settings['gmail'] : '']],
-            'gzone'           => ['order'=>25,'break'=>true,'label'=>$this->lang['gmail_zone'],   'tip'=>$this->lang['gmail_zone_tip'],'options'=>['width'=>500],'values'=>$zones,'attr'=>['type'=>'select','value'=>isset($settings['gzone'] )?$settings['gzone'] : '']],
-            'password'        => ['order'=>30,'break'=>true,'label'=>$this->lang['password_now'],'attr'=>['type'=>'password']],
-            'password_new'    => ['order'=>35,'break'=>true,'label'=>lang('password_new'),       'attr'=>['type'=>'password']],
-            'password_confirm'=> ['order'=>40,'break'=>true,'label'=>lang('password_confirm'),   'attr'=>['type'=>'password']],
-            'icons'           => ['order'=>45,'break'=>true,'label'=>$this->lang['icon_set'],'values'=>getIcons(), 'attr'=>['type'=>'select','value'=>isset($settings['icons'] )?$settings['icons']:'default']],
-            'theme'           => ['order'=>50,'break'=>true,'label'=>lang('theme'),          'values'=>getThemes(),'attr'=>['type'=>'select','value'=>isset($settings['theme']) ?$settings['theme']:'default']],
-            'menu'            => ['order'=>55,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$docks, 'attr'=>['type'=>'select','value'=>isset($settings['menu'])  ?$settings['menu'] :'left']],
-            'cols'            => ['order'=>60,'break'=>true,'label'=>$this->lang['dashboard_columns'],'attr'=>['value'=>isset($settings['cols'])  ?$settings['cols']  :'3']]];
+            'langForce'       => ['order'=>25,'break'=>true,'label'=>lang('language'),'options'=>['width'=>500],'values'=>viewLanguages(),'attr'=>['type'=>'select','value'=>isset($settings['langForce'] )?$settings['langForce'] : '']],
+            'gzone'           => ['order'=>30,'break'=>true,'label'=>$this->lang['gmail_zone'],   'tip'=>$this->lang['gmail_zone_tip'],'options'=>['width'=>500],'values'=>$zones,'attr'=>['type'=>'select','value'=>isset($settings['gzone'] )?$settings['gzone'] : '']],
+            'password'        => ['order'=>35,'break'=>true,'label'=>$this->lang['password_now'],'attr'=>['type'=>'password']],
+            'password_new'    => ['order'=>40,'break'=>true,'label'=>lang('password_new'),       'attr'=>['type'=>'password']],
+            'password_confirm'=> ['order'=>45,'break'=>true,'label'=>lang('password_confirm'),   'attr'=>['type'=>'password']],
+            'icons'           => ['order'=>50,'break'=>true,'label'=>$this->lang['icon_set'],'values'=>getIcons(), 'attr'=>['type'=>'select','value'=>isset($settings['icons'] )?$settings['icons']:'default']],
+            'theme'           => ['order'=>55,'break'=>true,'label'=>lang('theme'),          'values'=>getThemes(),'attr'=>['type'=>'select','value'=>isset($settings['theme']) ?$settings['theme']:'default']],
+            'menu'            => ['order'=>60,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$docks, 'attr'=>['type'=>'select','value'=>isset($settings['menu'])  ?$settings['menu'] :'left']],
+            'cols'            => ['order'=>65,'break'=>true,'label'=>$this->lang['dashboard_columns'],'attr'=>['value'=>isset($settings['cols'])  ?$settings['cols']  :'3']]];
     }
 
     /**
@@ -101,13 +102,20 @@ class bizunoProfile
     public function save(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'profile', 3)) { return; }
-        setUserCache('profile', 'title', clean('title','text',   'post'));
-        setUserCache('profile', 'icons', clean('icons','text',   'post'));
-        setUserCache('profile', 'theme', clean('theme','text',   'post'));
-        setUserCache('profile', 'menu',  clean('menu', 'text',   'post'));
-        setUserCache('profile', 'cols',  clean('cols', 'integer','post'));
-        setUserCache('profile', 'gmail', clean('gmail','text',   'post'));
-        setUserCache('profile', 'gzone', clean('gzone','text',   'post'));
+        setUserCache('profile', 'title', clean('title', 'text',   'post'));
+        setUserCache('profile', 'icons', clean('icons', 'text',   'post'));
+        setUserCache('profile', 'theme', clean('theme', 'text',   'post'));
+        setUserCache('profile', 'menu',  clean('menu',  'text',   'post'));
+        setUserCache('profile', 'cols',  clean('cols',  'integer','post'));
+        setUserCache('profile', 'gmail', clean('gmail', 'text',   'post'));
+        setUserCache('profile', 'gzone', clean('gzone', 'text',   'post'));
+        $langForce = clean('langForce', 'cmd', 'post');
+        if (empty($langForce)) { $langForce = bizuno_get_locale(); }
+        setUserCache('profile', 'langForce', $langForce);
+        setUserCache('profile', 'language', $langForce); // update the language also
+        dbClearCache(getUserCache('profile', 'email'));
+        $_COOKIE['bizunoLang'] = $langForce;
+        setcookie('bizunoLang', $langForce, time()+(60*60*24*7), "/");
         $pw_cur= clean('password', 'password', 'post');
         $email = getUserCache('profile', 'email');
         if (strlen($pw_cur) > 0 && biz_validate_user_creds($email, $pw_cur, 'email', false)) { // check, see if reset password
@@ -178,7 +186,7 @@ class bizunoProfile
         $flds = ['title','dateStart','recur'];
         $fields   = [
             'title'    => ['order'=>10,'break'=>true,'label'=>lang('title'),'attr'=>['value'=>'']],
-            'dateStart'=> ['order'=>20,'break'=>true,'label'=>$this->lang['start_date'],'classes'=>['easyui-datebox'],'attr'=>['value'=>date('Y-m-d')]],
+            'dateStart'=> ['order'=>20,'break'=>true,'label'=>$this->lang['start_date'],'attr'=>['type'=>'date','value'=>date('Y-m-d')]],
             'recur'    => ['order'=>30,'break'=>true,'label'=>$this->lang['frequency'], 'values'=>viewKeyDropdown($this->freqs),'attr'=>['type'=>'select','value'=>'m']]];
         $data = ['type'=>'divHTML',
             'divs'    => [

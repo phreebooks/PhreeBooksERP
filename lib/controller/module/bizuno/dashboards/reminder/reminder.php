@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-10
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /lib/controller/module/bizuno/dashboards/reminder/reminder.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_REMINDER_VERSION','3.1');
+define('DASHBOARD_REMINDER_VERSION','3.2');
 
 class reminder
 {
@@ -31,7 +31,7 @@ class reminder
     public $methodDir= 'dashboards';
     public $code     = 'reminder';
     public $category = 'general';
-    
+
     function __construct($settings=[])
     {
         $this->security= 4;
@@ -88,7 +88,7 @@ class reminder
      * @param array $settings - dashboard settings field (already json decoded)
      * @return string - formatted html ready for display
      */
-    public function render()
+    public function render(&$layout=[])
     {
         // see if any new reminders need to be added to list
         $result = dbGetRow(BIZUNO_DB_PREFIX."users_profiles", "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code'");
@@ -107,21 +107,18 @@ class reminder
         if ($needsUpdate) {
             dbWrite(BIZUNO_DB_PREFIX."users_profiles", ['settings'=>json_encode($this->settings)], 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code'");
         }
-        $index = 1;
-        $html  = '<div>';
-        $html .= '  <div id="'.$this->code.'_attr" style="display:none"><p>'.$this->lang['msg_settings_info'].'</p></div>';
-        $html .= html5('', ['classes'=>['easyui-datalist'],'attr'=>['type'=>'ul']])."\n";
-          if (!empty($this->settings['current'])) {
-            foreach ($this->settings['current'] as $entry) {
-                $html .= html5('', ['attr'=>['type'=>'li']]).'<span style="float:left">';
-                $html .= viewFormat($entry['date'], 'date').' - '.$entry['title'].'</span><span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span></li>';
-                $index++;
-            }
-        } else {
-            $html .= '<li><span>'.lang('no_results')."</span></li>";
-        }
-        $html .= '</ul></div>';
-        return $html;
+        if (empty($this->settings['current'])) { $rows[] = "<span>".lang('no_results')."</span>"; }
+        else { for ($i=0,$j=1; $i<sizeof($this->settings['current']); $i++,$j++) {
+            $row  = '<span style="float:left">'.viewFormat($this->settings['current'][$i]['date'], 'date').' - '.$this->settings['current'][$i]['title'].'</span>';
+            $row .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $j);"]]).'</span>';
+            $rows[] = $row;
+        } }
+        $layout = array_merge_recursive($layout, [
+            'divs'  => [
+                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'msg']]]],
+                'body' =>['order'=>50,'type'=>'list','key'=>$this->code]],
+            'fields'=> [$this->code.'msg'=>['order'=>10,'html'=>$this->lang['msg_settings_info'],'attr'=>['type'=>'raw']]],
+            'lists' => [$this->code=>$rows]]);
     }
 
     /**
@@ -138,7 +135,7 @@ class reminder
         dbWrite(BIZUNO_DB_PREFIX."users_profiles", ['settings'=>json_encode($settings)], 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code'");
         return $result['id'];
     }
-    
+
     /**
      * Calculates the next date the reminder should be triggered, will skip any dates prior to today.
      * @param sting $dateStart - date to start the calculation, format Y-m-d

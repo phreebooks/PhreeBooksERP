@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-10
+ * @version    3.x Last Update: 2019-04-23
  * @filesource /lib/controller/module/bizuno/dashboards/install/install.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_INSTALL_VERSION','3.1');
+define('DASHBOARD_INSTALL_VERSION','3.2');
 
 class install
 {
@@ -41,7 +41,7 @@ class install
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
     }
 
-    public function render($settings=[])
+    public function render()
     {
         $bID = !empty($GLOBALS['bizuno_install_biz_id']) ? $GLOBALS['bizuno_install_biz_id'] : 0;
         if (!$bID) { return 'Biz_id cannot be zero!'; }

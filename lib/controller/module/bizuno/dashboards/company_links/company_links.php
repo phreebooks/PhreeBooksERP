@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-10
+ * @version    3.x Last Update: 2019-04-23
  * @filesource /lib/controller/module/bizuno/dashboards/company_links/company_links.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_COMPANY_LINKS_VERSION','3.1');
+define('DASHBOARD_COMPANY_LINKS_VERSION','3.2');
 
 class company_links
 {
@@ -31,7 +31,7 @@ class company_links
     public $methodDir= 'dashboards';
     public $code     = 'company_links';
     public $category = 'general';
-    
+
     function __construct($settings)
     {
         $this->security= 1;
@@ -61,31 +61,31 @@ class company_links
         dbWrite(BIZUNO_DB_PREFIX."users_profiles", $sql_data);
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
-        $security = getUserCache('security', 'admin', false, 0);
-        $index    = 1;
+        $security= getUserCache('security', 'admin', false, 0);
+        $index   = 1;
         if (empty($this->settings['data'])) { $rows[] = '<li><span>'.lang('no_results')."</span></li>"; }
         else { foreach ($this->settings['data'] as $title => $hyperlink) {
-            $html = '<span style="float:left">'.viewFavicon($hyperlink, $title, true)." $title</span>";
+            $html  = '<span style="float:left">'.viewFavicon($hyperlink, $title, true)." $title</span>";
             if ($security > 2) { $html .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span>'; }
-            $rows[] = $html;
+            $rows[]= $html;
             $index++;
         } }
-        $data = [
-            'divs'  => [$this->code=> ['order'=>50,'type'=>'list','key'=>$this->code]],
+        $layout  = array_merge_recursive($layout, [
+            'divs'  => [
+                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'_0', $this->code.'_1', $this->code.'_btn']]]],
+                'body' =>['order'=>50,'type'=>'list','key'=>$this->code]],
             'fields'=> [
-                $this->code.'_0'  => ['label'=>lang('title'),'attr'=>['required'=>'true']],
-                $this->code.'_1'  => ['label'=>lang('url')." including http:// or https://",'attr'=>['required'=>'true']],
-                $this->code.'_btn'=> ['attr'=>['type'=>'button','value'=>lang('new')],'styles'=>['text-align'=>'right'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
-            'lists' => [$this->code=> $rows]];
-        if ($security < 3) { unset($data['fields']); }
-          return $data;
+                $this->code.'_0'  => ['order'=>10,'break'=>true,'hidden'=>$security>1?false:true,'label'=>lang('title'),'attr'=>['required'=>'true']],
+                $this->code.'_1'  => ['order'=>20,'break'=>true,'hidden'=>$security>1?false:true,'label'=>lang('url')." including http:// or https://",'attr'=>['required'=>'true']],
+                $this->code.'_btn'=> ['order'=>90,'hidden'=>$security>1?false:true,'attr'=>['type'=>'button','value'=>lang('add')],'styles'=>['text-align'=>'right'],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
+            'lists' => [$this->code => $rows]]);
     }
 
     public function save()
     {
-        if (getUserCache('security', 'admin', false, 0) < 2) { return msgAdd('Illegal Access!'); } 
+        if (getUserCache('security', 'admin', false, 0) < 2) { return msgAdd('Illegal Access!'); }
         $menu_id = clean('menuID', 'cmd', 'get');
         $rmID    = clean('rID', 'integer', 'get');
         $my_title= clean($this->code.'_0', 'text', 'post');

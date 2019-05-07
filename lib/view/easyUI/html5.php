@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-22
+ * @version    3.x Last Update: 2019-05-06
  * @filesource /view/easyUI/html5.php
  */
 
@@ -26,12 +26,12 @@ namespace bizuno;
 final class html5 {
 
     const htmlEditor = 'https://cdn.tinymce.com/4/tinymce.min.js';
-    const bizunoHelp = 'https://www.bizuno.com?p=bizuno/portal/helpMain';
+    const bizunoHelp = 'https://www.phreesoft.com/biz-school/';
 
-    private $pageT  = '50';  // page layout minimum pixel height
-    private $pageB  = '35';
-    private $pageL  = '175';
-    private $pageR  = '175';
+    private $pageT  = 50;  // page layout minimum pixel height
+    private $pageB  = 35;
+    private $pageL  = 175;
+    private $pageR  = 175;
     public  $jsHead  = [];
     public  $jsBody  = [];
     public  $jsReady = [];
@@ -326,8 +326,8 @@ final class html5 {
      */
     private function htmlElBoth($id, $prop) {
         if (isset($prop['attr']['value'])) {
-            $tmp = isset($prop['format']) ? viewFormat($prop['attr']['value'], $prop['format']) : $prop['attr']['value'];
-            $value = str_replace('"', '&quot;', $tmp);
+            $value = isset($prop['format']) ? viewFormat($prop['attr']['value'], $prop['format']) : $prop['attr']['value'];
+//          $value = str_replace('"', '&quot;', $value); // commented out as this prevents html from within the tags
             unset($prop['attr']['value']);
         } else {
             $value = '&nbsp;';
@@ -507,7 +507,7 @@ final class html5 {
         $prop['attr']['title']      = isset($prop['label']) ? $prop['label'] : lang($prop['icon']);
         if ($prop['icon'] == 'help') {
             if (!isset($prop['index'])) { $prop['index'] = ''; }
-            $prop['events']['onClick'] = "window.open('" . self::bizunoHelp . "&amp;idx={$prop['index']}','help','width=800,height=600,resizable=1,scrollbars=1,top=100,left=100')";
+            $prop['events']['onClick'] = "window.open('".self::bizunoHelp."{$prop['index']}','help','width=800,height=600,resizable=1,scrollbars=1,top=100,left=100')";
         }
         unset($prop['icon']);
         return $this->render($id, $prop);
@@ -812,7 +812,7 @@ final class html5 {
         if ($attr['format'] != 'long') { unset($structure['country']['label']); }
         $structure['email']['attr']['size'] = 32; // keep this from overlapping with other divs
         if (!empty($attr['required'])) { foreach (array_keys($structure) as $field) {
-            if (getModuleCache('contacts', 'settings', 'address_book', $field)) { $structure[$field]['options']['required'] = 'true'; }
+            if (getModuleCache('contacts', 'settings', 'address_book', $field)) { $structure[$field]['options']['required'] = true; }
         } }
         // Tool bar
         $toolbar  = [];
@@ -1114,6 +1114,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         } else {
             $props['attr']['type'] = 'ul';
             $props['classes'][] = 'easyui-datalist';
+            $props['options']['nowrap'] = 'false';
             $output = "\n<!-- BOF list -->\n".$this->htmlElOpen(!empty($props['id']) ? $props['id'] : '', $props)."\n";
         }
         foreach ($layout['lists'][$props['key']] as $fld => $li) {
@@ -1348,7 +1349,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         $this->addID($id, $prop);
         $prop['attr']['type'] = 'a';
         $prop['classes'][] = 'easyui-linkbutton';
-//        $prop['styles']['cursor'] = 'pointer';
+//      $prop['styles']['cursor'] = 'pointer';
         if (!isset($prop['attr']['href'])) { $prop['attr']['href'] = '#'; }
         return $this->htmlElBoth($id, $prop);
     }
@@ -1516,7 +1517,8 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         $prop['classes'][] = 'easyui-numberbox';
         $prop['styles']['text-align'] = 'right';
         if ($precision !== false) { $prop['options']['precision'] = 0; }
-        if (empty($prop['options']['width'])) { $prop['options']['width'] = 100; }
+        if ( empty($prop['options']['width']) && empty($prop['attr']['size'])) { $prop['options']['width'] = 100; }
+        if (!empty($prop['attr']['maxlength'])) { $this->jsReady[] = "jq('#$id').numberbox('textbox').attr('maxlength', jq('#$id').attr('maxlength'));"; }
         $this->mapEvents($prop);
         return $this->input($id, $prop);
     }
@@ -1532,8 +1534,10 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     public function inputRadio($id, $prop) {
         if (empty($prop['attr']['checked'])) { unset($prop['attr']['checked']);  }
         if (empty($prop['attr']['selected'])){ unset($prop['attr']['selected']); }
+        $prop['classes'][]= 'easyui-radiobutton';
         $prop['position'] = 'after';
-        return $this->input($id, $prop);
+        $this->mapEvents($prop);
+        return '&nbsp;'.$this->input($id, $prop);
     }
 
     public function inputRange($id, $prop) {
@@ -1610,7 +1614,8 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         if (!empty($prop['inner']) && !empty($prop['label'])) { $prop['options']['prompt'] = jsLang('email'); }
         if (in_array($prop['attr']['type'], ['hidden'])) { unset($prop['break']); return $this->input($id, $prop); }
         $prop['classes'][] = 'easyui-textbox';
-        if (empty($prop['options']['width'])) { $prop['options']['width'] = 200; }
+        if ( empty($prop['options']['width']) && empty($prop['attr']['size'])) { $prop['options']['width'] = 200; }
+        if (!empty($prop['attr']['maxlength'])) { $this->jsReady[] = "jq('#$id').textbox('textbox').attr('maxlength', jq('#$id').attr('maxlength'));"; }
         $this->mapEvents($prop);
         return $this->input($id, $prop);
     }
@@ -1767,10 +1772,10 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         if ( empty($prop['label'])) { return $field; }
         if (!empty($prop['attr']['type']) && $prop['attr']['type'] == 'hidden') { return $field; }
         if (!empty($prop['position'])     && $prop['position'] == 'after') {
-            $mins  = !empty($prop['attr']['type']) && in_array($prop['attr']['type'], ['checkbox','radio'])? 'min-width:60px;' : '';
+            $mins  = !empty($prop['attr']['type']) && in_array($prop['attr']['type'], ['checkbox','radio']) ? 'min-width:60px;min-height:32px;' : '';
             $styles= "vertical-align:top;$mins";
             if (!empty($prop['tip'])) { $field .= $this->addToolTip($id, $prop['tip']); }
-            $field .= '<label for="'.$id.'" class="fldLabel" style="'.$styles.'">'.$prop['label'].'</label>';
+            $field .= '<label for="'.$id.'" class="fldLabel" style="'.$styles.'">&nbsp;'.$prop['label'].'</label>';
         }
         return $field;
     }
@@ -1819,7 +1824,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
 function dgEditCurrency($onChange='', $precision=false) {
     $iso  = getUserCache('profile', 'currency', false, 'USD');
     $props= getModuleCache('phreebooks', 'currency', 'iso', $iso, 'USD');
-    $prec = $precision ? getModuleCache('bizuno','settings','locale','number_precision','2') : $props['dec_len'];;
+    $prec = $precision ? getModuleCache('bizuno','settings','locale','number_precision',2) : $props['dec_len'];
     $dec  = str_replace("'", "\\'", $props['dec_pt']);
     $tsnd = str_replace("'", "\\'", $props['sep']);
     $pfx  = !empty($props['prefix']) ? str_replace("'", "\\'", $props['prefix'])." " : '';

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-27
+ * @version    3.x Last Update: 2019-05-06
  * @filesource /view/main.php
  */
 
@@ -72,12 +72,6 @@ final class view extends portalView
             case 'raw':
                 msgDebug("\n sending type: raw and data = {$data['content']}");
                 echo $data['content'];
-                $msgStack->debugWrite();
-                exit();
-            case 'xml': // Don't think this is ever used
-                $xml = new SimpleXMLElement('<root/>');
-                array_walk_recursive($data['content'], [$xml, 'addChild']);
-                echo createXmlHeader() . $xml . createXmlFooter();
                 $msgStack->debugWrite();
                 exit();
             case 'popup': $this->renderPopup($data); // make layout changes per device
@@ -185,6 +179,7 @@ function viewFormat($value, $format = '')
         case 'curExc':     return viewCurrency($value, $format);
         case 'date':
         case 'datetime':   return viewDate($value);
+        case 'dateLong':   return viewDate($value).' '.substr($value, strpos($value, ' '));
         case 'encryptName':if (!getUserCache('profile', 'admin_encrypt')) { return ''; }
             bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
             $enc = new encryption();
@@ -204,7 +199,6 @@ function viewFormat($value, $format = '')
         case 'inv_mv3':   if (empty($range)) { $range = 'm3'; }
         case 'inv_mv6':   if (empty($range)) { $range = 'm6'; }
         case 'inv_mv12':  if (empty($range)) { $range = 'm12';}
-        case 'inv_mvmnt': if (empty($range)) { $range = 'm12';} // @todo REMOVED AFTER 3/31/2019, deprecated case, replaced with inv_mv12
                           return viewInvSales($value, $range); // value passed should be the SKU
         case 'inv_stk':   return viewInvMinStk($value); // value passed should be the SKU
         case 'lc':        return mb_strtolower($value);
@@ -385,7 +379,7 @@ function viewKeyDropdown($source, $addNull=false)
  */
 function viewProcess($strData, $Process=false)
 {
-    msgDebug("\nEntering viewProcess with $strData = $strData and process = $Process");
+//    msgDebug("\nEntering viewProcess with strData = $strData and process = $Process");
     if ($Process && getModuleCache('phreeform', 'processing', $Process, 'function')) {
         $func = getModuleCache('phreeform', 'processing')[$Process]['function'];
         $fqfn = "\\bizuno\\$func";
@@ -428,10 +422,10 @@ function viewLanguages($skipDefault=false)
     if (!$skipDefault) { $output[] = ['id'=>'','text'=>lang('default')]; }
     $output[]= ['id'=>'en_US','text'=>'English (U.S.) [en_US]']; // put English first
     $langCore= [];
-    $langs   = scandir(BIZUNO_ROOT."locale/");
+    $langs   = scandir(BIZUNO_LOCALE);
     foreach ($langs as $lang) {
-        if (!in_array($lang, ['.', '..', 'en_US']) && is_dir(BIZUNO_ROOT."locale/$lang")) {
-            require(BIZUNO_ROOT."locale/$lang/language.php");
+        if (!in_array($lang, ['.', '..', 'en_US']) && is_dir(BIZUNO_LOCALE."$lang")) {
+            require(BIZUNO_LOCALE."$lang/language.php");
             $output[] = ['id'=>$lang, 'text'=>isset($langCore['language_title']) ? $langCore['language_title']." [$lang]" : $lang];
         }
     }
@@ -507,7 +501,7 @@ function trimTree(&$data)
     }
     if ($allEmpty) {
         msgDebug("\nBranch {$data['text']} is empty unsetting id.");
-        $data = ['id'=>false];
+        $data = ['id'=>false, 'children'=>[]];
     }
     $data['children'] = array_values($data['children']);
 }
@@ -546,11 +540,11 @@ function viewTerms($terms_encoded='', $short=true, $type='c', $inc_limit=false)
             if (!isset($terms[3])) { $terms[3] = 30; }
             $output .=  sprintf($short ? lang('contacts_terms_net_short') : lang('contacts_terms_net'), $terms[3]);
             break;
-        case '1': $output = lang('contacts_terms_cod');                     break; // Cash on Delivery (COD)
-        case '2': $output = lang('contacts_terms_prepaid');                 break; // Prepaid
-        case '4': $output = sprintf(lang('contacts_terms_date'), $terms[3]);break; // Due on date
-        case '5': $output = lang('contacts_terms_eom');                     break; // Due at end of month
-        case '6': $output = lang('contacts_terms_now');                     break; // Due upon receipt
+        case '1': $output = lang('contacts_terms_cod');     break; // Cash on Delivery (COD)
+        case '2': $output = lang('contacts_terms_prepaid'); break; // Prepaid
+        case '4': $output = sprintf(lang('contacts_terms_date'), viewFormat($terms[3], 'date')); break; // Due on date
+        case '5': $output = lang('contacts_terms_eom');     break; // Due at end of month
+        case '6': $output = lang('contacts_terms_now');     break; // Due upon receipt
     }
     if ($inc_limit) { $output .= ' '.lang('contacts_terms_credit_limit').' '.viewFormat($credit_limit, 'currency'); }
     return $output;

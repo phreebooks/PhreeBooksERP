@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-21
+ * @version    3.x Last Update: 2019-05-07
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -96,7 +96,7 @@ class bizunoSettings
                         $modStatus .= html5("remove_$module_id", ['attr'=>['type'=>'button','value'=>lang('remove')],
                            'events'=>['onClick'=>"if (confirm('".$this->lang['msg_module_delete_confirm']."')) jsonAction('bizuno/settings/moduleRemove', '$module_id');"]]);
                     }
-                    $price = isset($settings['price']) && $settings['price'] ? viewFormat($settings['price'], 'currency').' '.lang('buy') : lang('See Website');
+                    $price = !empty($settings['priceUSD']) ? $settings['priceUSD'].' '.lang('buy') : lang('See Website');
                     if (empty($settings['url'])) { $settings['url'] = $this->phreesoftURL; }
                     $modStatus .= html5("buy_$module_id", ['attr'=>['type'=>'button','value'=>$price],'events'=>['onClick'=>"window.open('{$settings['url']}');"]]);
                 }
@@ -149,28 +149,42 @@ class bizunoSettings
 
     public function loadExtension(&$layout=[])
     {
+//      msgTrap();
         global $io;
         $moduleID= clean('data', 'filename', 'get');
         $bizID   = getUserCache('profile', 'biz_id');
         $bizUser = getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_user');
         $bizPass = getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_pass');
-        $data    = http_build_query(['bizID'=>$bizID, 'UserID'=>$bizUser, 'UserPW'=>$bizPass]);
-        $context = stream_context_create(['http'=>['method'=>'POST', 'content'=>$data,
-            'header'=>"Content-type: application/x-www-form-urlencoded\r\n"."Content-Length: ".strlen($data)."\r\n"]]);
+        $bizPost = ['bizID'=>$bizID, 'UserID'=>$bizUser, 'UserPW'=>$bizPass];
         try {
             $source = "https://www.phreesoft.com/wp-admin/admin-ajax.php?action=bizuno_ajax&p=myPortal/admin/loadExtension&mID=$moduleID";
             $dest   = BIZUNO_DATA."temp/$moduleID.zip";
-            copy ($source, $dest, $context);
-            if (file_exists(BIZUNO_DATA."temp/$moduleID.zip")) {
+            msgDebug("\nSource = $source");
+            msgDebug("\nDest = $dest");
+            if (ini_get('allow_url_fopen')) {
+                $data   = http_build_query($bizPost);
+                $context= stream_context_create(['http'=>['method'=>'POST', 'content'=>$data,
+                    'header'=>"Content-type: application/x-www-form-urlencoded\r\n"."Content-Length: ".strlen($data)."\r\n"]]);
+                msgDebug("\nReady to fetch zip, context = ".print_r($context, true));
+                msgDebug("\nTrying copy because allow_url_fopen is enabled.");
+                copy ($source, $dest, $context);
+            }
+            if (!file_exists($dest)) {
+                msgDebug("\nTrying cURL because allow_url_fopen is disabled or copy failed.");
+//              $opts   = ['CURLOPT_HTTPHEADER'=>['Content-type: application/x-www-form-urlencoded', 'Content-Length: '.strlen($bizPost)]];
+                $result = $io->cURLGet($source, $bizPost, 'post'); //, $opts);
+                if (!empty($result)) { file_put_contents($dest, $result); }
+            }
+            if (file_exists($dest)) {
                 $io->folderDelete(BIZUNO_EXT.$moduleID); // remove all current contents
-                $io->zipUnzip(BIZUNO_DATA."temp/$moduleID.zip", BIZUNO_EXT.$moduleID, false);
+                $io->zipUnzip($dest, BIZUNO_EXT.$moduleID, false);
                 if (file_exists(BIZUNO_EXT."$moduleID/bizunoUPG.php")) {
                     require(BIZUNO_EXT."$moduleID/bizunoUPG.php"); // handle any local db or file changes
                     unlink(BIZUNO_EXT."$moduleID/bizunoUPG.php");
                 }
                 dbClearCache();
                 $layout = array_replace_recursive($layout, ['content'=>['action'=>'href','link'=>BIZUNO_HOME."&p=bizuno/settings/manager"]]);
-            } else { msgAdd('There was a problem retrieving your extension, please contact PhreeSoft for assistance.'); }
+            } else { msgAdd('There was a problem retrieving your extension, please contact PhreeSoft for assistance.', 'trap'); }
         } catch (Exception $e) { msgAdd("We had an exception: ". print_r($e, true)); }
         @unlink(BIZUNO_DATA."temp/$moduleID.zip");
     }

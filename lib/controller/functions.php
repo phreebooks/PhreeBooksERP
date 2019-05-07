@@ -17,11 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-19
+ * @version    3.x Last Update: 2019-05-01
  * @filesource lib/controller/functions.php
  */
 
 namespace bizuno;
+
+// ****** DEPRECATE AFTER 6/1/2019 AFTER CONFIG FILES HAVE BEEN UPDATED AND PROPGATED ******
+if (!defined('BIZUNO_LOCALE')) { define('BIZUNO_LOCALE', BIZUNO_ROOT.'locale/'); }
 
 /**
  * Should eventually replace all calls to msgDebugWrite but need way to set file name first.
@@ -688,19 +691,6 @@ function bizuno_simpleXML($strXML) {
 }
 
 /**
- * Creates an XML header used in PhreeForm reports
- * @return string
- */
-function createXmlHeader()
-{
-    header("Content-Type: text/xml");
-    if (!defined("CHARSET")) { define("CHARSET", "UTF-8"); }
-    $str  = '<?xml version="1.0" encoding="'.CHARSET.'" standalone="yes" ?>'."\n";
-    $str .= "<data>\n";
-    return $str;
-}
-
-/**
  * Generates an XML key/value pair
  * @param string $key - XML key
  * @param string $data - XML value
@@ -716,15 +706,6 @@ function xmlEntry($key, $data, $ignore = false)
     }
     $str .= "</$key>\n";
     return $str;
-}
-
-/**
- * Creates the XML footer
- * @return string
- */
-function createXmlFooter()
-{
-    return "</data>\n";
 }
 
 /**

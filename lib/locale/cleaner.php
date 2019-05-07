@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-10
+ * @version    3.x Last Update: 2019-05-01
  * @filesource /locale/cleaner.php
  */
 
@@ -53,6 +53,7 @@ class cleaner
             case 'alpha_num':return preg_replace("/[^a-zA-Z0-9 ]/", "", $value);
             case 'array':    return is_array($value) ? $value : [];
             case 'bool':     return substr(trim($value), 0 , 1) == '1' ? true : false;
+            case 'bizunzip': return $this->cleanBizUnzip($value, $default);
             case 'char':     return strlen(trim($value))==0 ? $default : substr(trim($value), 0 , 1); // tbd what about length? char(3), etc
             case 'cmd':      return strlen(trim($value)) ? preg_replace("/[^a-zA-Z0-9\_\-\:]/", '', $value) : $default;
             case 'command':  return $this->cleanCommand($value, $default);
@@ -86,6 +87,24 @@ class cleaner
 //                msgDebug("\nCleaning with format = {$processing['format']} the value: ".print_r($value, true));
                 return trim(stripslashes($value));
         }
+    }
+
+    /**
+     * Cleans bizuno encoded strings key0:value0;key1:value1
+     * @param type $value
+     * @param type $default
+     * @return type
+     */
+    private function cleanBizUnzip($value='', $default='')
+    {
+        if (empty(trim($value))) { return $default; }
+        $output= [];
+        $rows  = explode(';', $value);
+        foreach ($rows as $row) {
+            $subrow = explode(':', trim($row), 2);
+            $output[$subrow[0]] = !empty($subrow[1]) ? trim($subrow[1]) : '';
+        }
+        return $output;
     }
 
     /**
@@ -301,12 +320,11 @@ function getLang($module)
     } else {
         require(BIZUNO_LIB."locale/en_US/module/$module/language.php"); // populates $lang
     }
-    $output= $lang;
-    if ($myLang <> 'en_US') {
-        if (file_exists(BIZUNO_ROOT."locale/$myLang/module/$module/language.php")) {
-            require(BIZUNO_ROOT."locale/$myLang/module/$module/language.php"); // populates $lang
-            $output = array_replace($output, $lang);
-        }
+    if ($myLang == 'en_US') { return $lang; }
+    $output = $lang;
+    if (file_exists(BIZUNO_LOCALE."$myLang/module/$module/language.php")) {
+        require    (BIZUNO_LOCALE."$myLang/module/$module/language.php"); // populates $lang
+        $output = array_replace($output, $lang);
     }
     return $output;
 }
@@ -321,14 +339,14 @@ function getMethLang($module, $mDir, $method)
     $lang  = [];
     $output= getLang($module);
     if (file_exists(BIZUNO_LIB."locale/en_US/module/$module/$mDir/$method/language.php")) {
-        require(BIZUNO_LIB."locale/en_US/module/$module/$mDir/$method/language.php"); // populates $lang
+        require    (BIZUNO_LIB."locale/en_US/module/$module/$mDir/$method/language.php"); // populates $lang
         $output = array_replace($output, $lang);
     }
-    if ($myLang <> 'en_US') {
-        if (file_exists(BIZUNO_ROOT."locale/$myLang/module/$module/$mDir/$method/language.php")) {
-            include(BIZUNO_ROOT."locale/$myLang/module/$module/$mDir/$method/language.php"); // populates $lang
-            $output = array_replace($output, $lang);
-        }
+    if ($myLang == 'en_US') { return $output; }
+    // merge with locale
+    if (file_exists(BIZUNO_LOCALE."$myLang/module/$module/$mDir/$method/language.php")) {
+        include    (BIZUNO_LOCALE."$myLang/module/$module/$mDir/$method/language.php"); // populates $lang
+        $output = array_replace($output, $lang);
     }
     return $output;
 }
@@ -337,18 +355,18 @@ function getMethLang($module, $mDir, $method)
  * Pulls language files from an extension, overwrites with locale, will keep English if ANY locale index is not set, helps for upgrades where language lags.
  * @return boolean false - But sets the session lang array with the admin language file
  */
-function getExtLang($path)
+function getExtLang($module)
 {
+    $myLang= getUserCache('profile', 'language', false, 'en_US');
     $output = $lang = [];
-    if (file_exists("{$path}/locale/en_US/language.php")) {
-        require("{$path}/locale/en_US/language.php"); // populates $lang
+    if (file_exists(BIZUNO_EXT."$module/locale/en_US/language.php")) {
+        require    (BIZUNO_EXT."$module/locale/en_US/language.php"); // populates $lang
         $output = $lang;
     }
-    if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') {
-        if (file_exists("{$path}/locale/".getUserCache('profile', 'language', false, 'en_US')."/language.php")) {
-            require("{$path}/locale/".getUserCache('profile', 'language', false, 'en_US')."/language.php"); // populates $lang
-            $output = array_replace($output, $lang);
-        }
+    if ($myLang == 'en_US') { return $output; }
+    if (file_exists(BIZUNO_LOCALE."$myLang/ext/$module/language.php")) {
+        require    (BIZUNO_LOCALE."$myLang/ext/$module/language.php"); // populates $lang
+        $output = array_replace($output, $lang);
     }
     return $output;
 }
@@ -359,33 +377,19 @@ function getExtLang($path)
  */
 function getExtMethLang($module, $folder, $method)
 {
+    $myLang= getUserCache('profile', 'language', false, 'en_US');
     $lang = [];
-    $output = getExtLang(BIZUNO_EXT."$module/");
+    $output = getExtLang($module);
     if (file_exists(BIZUNO_EXT."$module/locale/en_US/$folder/$method/language.php")) {
         require    (BIZUNO_EXT."$module/locale/en_US/$folder/$method/language.php"); // populates $lang
         $output = array_replace($output, $lang);
     }
-    if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') {
-        if (file_exists(BIZUNO_EXT."$module/locale/".getUserCache('profile', 'language', false, 'en_US')."/$folder/$method/language.php")) {
-            require    (BIZUNO_EXT."$module/locale/".getUserCache('profile', 'language', false, 'en_US')."/$folder/$method/language.php"); // populates $lang
-            $output = array_replace($output, $lang);
-        }
+    if ($myLang == 'en_US') { return $output; }
+    if (file_exists(BIZUNO_LOCALE."$myLang/ext/$module/$folder/$method/language.php")) {
+        require    (BIZUNO_LOCALE."$myLang/ext/$module/$folder/$method/language.php"); // populates $lang
+        $output = array_replace($output, $lang);
     }
     return $output;
-}
-
-/**
- * For methods and dashboards where the language is stored with the class. This will overwrite the default language definitions with the locale if NOT en_US
- * @param array $arrLang - original language file to be merged with locale language file
- */
-function localeModuleLang(&$arrLang=[], $pathLocale=false)
-{
-    if (getUserCache('profile', 'language', false, 'en_US') <> 'en_US') {
-        if (!$pathLocale || !file_exists($pathLocale)) { return; }
-        $lang = [];
-        require($pathLocale); // pulls locale overlay
-        $arrLang = array_replace($arrLang, $lang);
-    }
 }
 
 /**
@@ -419,8 +423,8 @@ function pullTableLabel($table, $field, $suffix='')
  */
 function localeLoadDB()
 {
-    if (file_exists(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/locale.xml")) {
-        $contents = file_get_contents(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/locale.xml");
+    if (file_exists(BIZUNO_ROOT."locale/".getUserCache('profile', 'language', false, 'en_US')."/locale.xml")) {
+        $contents = file_get_contents(BIZUNO_ROOT."locale/".getUserCache('profile', 'language', false, 'en_US')."/locale.xml");
     } else {
         $contents = file_get_contents(BIZUNO_LIB."locale/en_US/locale.xml");
     }

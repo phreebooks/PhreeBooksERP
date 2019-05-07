@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-02
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /controller/module/phreeform/design.php
  */
 
@@ -356,7 +356,7 @@ function pfTableUpdate() {
                 'attr'      => ['type'=>'select','value'=>isset($report->datefield)?$report->datefield:'']],
             'datedefault'   => ['break'=>true,'label'=>$this->lang['date_default_selected'],'values'=>viewDateChoices(), 'attr'=>['type'=>'select','value'=>(isset($report->datedefault) ? $report->datedefault : '')]],
             'printedfield'  => ['break'=>true,'label'=>$this->lang['lbl_set_printed_flag'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
-                'attr'      => ['type'=>'select','value'=>isset($report->setprintedfield)?$report->setprintedfield:'']],
+                'attr'      => ['type'=>'select','value'=>isset($report->printedfield)?$report->printedfield:'']],
             'contactlog'    => ['break'=>true,'label'=>$this->lang['lbl_phreeform_contact'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->contactlog)?$report->contactlog:'']],
             'defaultemail'  => ['break'=>true,'label'=>$this->lang['lbl_phreeform_email'],  'values'=>$this->emailChoices,'attr'=>['type'=>'select','value'=>(isset($report->defaultemail) ? $report->defaultemail : 'user')]],
@@ -692,24 +692,24 @@ function pfTableUpdate() {
                 'font'       => ['values' =>$selFont, 'attr'=>  ['type'=>'select',      'value'=>isset($settings->font)   ? $settings->font    :'']],
                 'size'       => ['values' =>phreeformSizes(), 'attr'=>['type'=>'select','value'=>isset($settings->size)   ? $settings->size    :'10']],
                 'align'      => ['values' =>phreeformAligns(),'attr'=>['type'=>'select','value'=>isset($settings->align)  ? $settings->align   :'L']],
-                'color'      => ['classes'=>['easyui-color'], 'attr'=>['value'=>isset($settings->color) ? convertHex($settings->color) :'#000000', 'size'=>10]],
+                'color'      => ['attr'=>['type'=>'color','value'=>isset($settings->color) ? convertHex($settings->color) :'#000000', 'size'=>10]],
                 'truncate'   => ['attr'   =>['type'=>'checkbox', 'value'=>'1']],
                 'display'    => ['values' =>$pageShow, 'attr'=>['type'=>'select', 'value'=>isset($settings->display) ? $settings->display: '0']],
                 'totals'     => ['attr'   =>['type'=>'checkbox', 'value'=>'1']],
                 'bshow'      => ['attr'   =>['type'=>'checkbox', 'value'=>'1']],
                 'bsize'      => ['values' =>$linePoints, 'attr'=>['type'=>'select', 'value'=>isset($settings->bsize)   ? $settings->bsize:'1']],
-                'bcolor'     => ['classes'=>['easyui-color'],'attr'=>['value'=>isset($settings->bcolor)  ? convertHex($settings->bcolor) :'#000000', 'size'=>10]],
+                'bcolor'     => ['attr'=>['type'=>'color','value'=>isset($settings->bcolor)  ? convertHex($settings->bcolor) :'#000000', 'size'=>10]],
                 'fshow'      => ['attr'   =>['type'=>'checkbox', 'value'=>'1']],
-                'fcolor'     => ['classes'=>['easyui-color'],'attr'=>['value'=>isset($settings->fcolor)  ? convertHex($settings->fcolor) :'#000000', 'size'=>10]],
+                'fcolor'     => ['attr'=>['type'=>'color','value'=>isset($settings->fcolor)  ? convertHex($settings->fcolor) :'#000000', 'size'=>10]],
                 'hfont'      => ['values' =>$selFont, 'attr'=>['type'=>'select','value'=>isset($settings->hfont)   ? $settings->hfont    :'']],
                 'hsize'      => ['values' =>phreeformSizes(), 'attr'=>['type'=>'select','value'=>isset($settings->hsize)   ? $settings->hsize :'10']],
                 'halign'     => ['values' =>phreeformAligns(),'attr'=>['type'=>'select','value'=>isset($settings->halign)  ? $settings->halign:'L']],
-                'hcolor'     => ['classes'=>['easyui-color'],'attr'=>['value'=>isset($settings->hcolor)  ? convertHex($settings->hcolor) :'#000000', 'size'=>10]],
+                'hcolor'     => ['attr'=>['type'=>'color','value'=>isset($settings->hcolor)  ? convertHex($settings->hcolor) :'#000000', 'size'=>10]],
                 'hbshow'     => ['attr'   =>['type'=>'checkbox', 'value'=>'1']],
                 'hbsize'     => ['values' =>$linePoints, 'attr'=>['type'=>'select', 'value'=>isset($settings->hbsize)  ? $settings->hbsize    :'1']],
-                'hbcolor'    => ['classes'=>['easyui-color'],'attr'=>['value'=>isset($settings->hbcolor) ? convertHex($settings->hbcolor):'#000000', 'size'=>10]],
+                'hbcolor'    => ['attr'=>['type'=>'color','value'=>isset($settings->hbcolor) ? convertHex($settings->hbcolor):'#000000', 'size'=>10]],
                 'hfshow'     => ['attr'   =>['type'=>'checkbox', 'value'=>'1']],
-                'hfcolor'    => ['classes'=>['easyui-color'],'attr'=>['value'=>isset($settings->hfcolor) ? convertHex($settings->hfcolor):'#000000', 'size'=>10]],
+                'hfcolor'    => ['attr'=>['type'=>'color','value'=>isset($settings->hfcolor) ? convertHex($settings->hfcolor):'#000000', 'size'=>10]],
                 'endAbscissa'=> ['label'  =>$this->lang['abscissa'],'attr'=>['size'=>'5']],
                 'endOrdinate'=> ['label'  =>$this->lang['ordinate'],'attr'=>['size'=>'5']],
                 'img_cur'    => ['attr'   =>['type'=>'hidden']],

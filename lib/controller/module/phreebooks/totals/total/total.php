@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-18
+ * @version    3.x Last Update: 2019-04-26
  * @filesource /controller/module/phreebooks/totals/total/total.php
  */
 
@@ -94,7 +94,8 @@ class total
             'credit_amount'=> in_array($main['journal_id'], [3,4, 6,13,16,20,21,22]) ? $total : 0,
             'gl_account'   => clean('gl_acct_id', ['format'=>'text','default'=>$this->settings['gl_account']], 'post'),
             'trans_code'   => $txID,
-            'post_date'    => $main['post_date']];
+            'post_date'    => $main['post_date'],
+            'date_1'       => $main['post_date'].' '.date('H:i:s')]; // timestamp for time of day information
         $main['total_amount'] = $total;
     }
 

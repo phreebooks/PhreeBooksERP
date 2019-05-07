@@ -304,7 +304,7 @@ class inventoryPrices
     {
         $iSec = validateSecurity('inventory', 'prices_'.$this->type, 1, false);
         $pSec = $this->type=='v' ? validateSecurity('phreebooks', 'j6_mgr', 1, false) : validateSecurity('phreebooks', 'j12_mgr', 1, false);
-        if (!$security = max($iSec, $pSec)) { return msgAdd(lang('err_no_permission')." [".'prices_'.$this->type." OR jX_mgr]");; }
+        if (!$security = max($iSec, $pSec)) { return msgAdd(lang('err_no_permission')." [".'prices_'.$this->type." OR jX_mgr]"); }
         $cID = clean('cID', 'integer','get'); // contact ID
         $iID = clean('rID', 'integer','get'); // inventory id
         $sku = clean('sku', 'text',   'get');

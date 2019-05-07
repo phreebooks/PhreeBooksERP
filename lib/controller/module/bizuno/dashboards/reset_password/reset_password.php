@@ -17,15 +17,15 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-05-01
+ * @version    3.x Last Update: 2019-04-24
  * @filesource /lib/controller/module/bizuno/dashboards/reset_password/reset_password.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_RESET_PASSWORD_VERSION','1.0');
+define('DASHBOARD_RESET_PASSWORD_VERSION','3.1');
 
-class reset_password 
+class reset_password
 {
     public $moduleID = 'bizuno';
     public $methodDir= 'dashboards';
@@ -46,10 +46,10 @@ class reset_password
         $portal = explode('.', $_SERVER['SERVER_ADDR']);
         $data = ['type'    => 'html',
             'title'    => lang('reset_password'),
-            'username'     => ['label'=>lang('email'), 'attr'=>['type'=>'text','required'=>'1','value'=>'','size'=>'40'],'classes'=>['easyui-validatebox']],
-            'password'     => ['label'=>$this->lang['reset_code'],'attr'=>['type'=>'password','required'=>'1','size'=>'40'],'classes'=>['easyui-validatebox']],
-            'newPass'      => ['label'=>lang('password_new'), 'attr'=>['type'=>'password','required'=>'1','size'=>'40'],'classes'=>['easyui-validatebox']],
-            'newPassrepeat'=> ['label'=>lang('password_confirm'),'attr'=>['type'=>'password','required'=>'1','size'=>'40'],'classes'=>['easyui-validatebox']],
+            'username'     => ['label'=>lang('email'),            'attr'=>['type'=>'text',    'required'=>true,'size'=>40,'value'=>'']],
+            'password'     => ['label'=>$this->lang['reset_code'],'attr'=>['type'=>'password','required'=>true,'size'=>40]],
+            'newPass'      => ['label'=>lang('password_new'),     'attr'=>['type'=>'password','required'=>true,'size'=>40]],
+            'newPassrepeat'=> ['label'=>lang('password_confirm'), 'attr'=>['type'=>'password','required'=>true,'size'=>40]],
             'language'     => ['label'=>lang('language'), 'values'=>viewLanguages(),'attr'=>['type'=>'select']],
             'image_title'  => ['label'=>getModuleCache('bizuno','properties', 'title'),'attr'=>['type'=>'img','src'=>BIZUNO_LOGO,'height'=>'50']],
             'btnReset'     => ['attr'=>['type'=>'button','value'=>lang('reset')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"jq('#pwResetForm').submit();"]]];
