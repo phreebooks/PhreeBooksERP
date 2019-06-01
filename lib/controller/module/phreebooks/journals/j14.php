@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-10
+ * @version    3.x Last Update: 2019-05-22
  * @filesource /lib/controller/module/phreebooks/journals/j14.php
  */
 
@@ -272,9 +272,9 @@ class j14 extends jCommon
                 'qty'          => ['order'=> 0,'attr' =>['hidden'=>true]],
                 'sku'          => ['order'=>20,'label'=>lang('sku'),'attr'=>['align'=>'center']],
                 'description'  => ['order'=>30,'label'=>lang('description')],
-                'qty_stock'    => ['order'=>40,'label'=>pullTableLabel('inventory','qty_stock'),'attr'=>['align'=>'center'],
+                'qty_stock'    => ['order'=>40,'label'=>pullTableLabel('inventory','qty_stock'),'attr'=>['align'=>'right'],
                     'events'=>['formatter'=>"function(value,row){ return formatNumber(value); }"]],
-                'qty_required' => ['order'=>50,'label'=>lang('qty_required'),'attr'=>['align'=>'center'],
+                'qty_required' => ['order'=>50,'label'=>lang('qty_required'),'attr'=>['align'=>'right'],
                     'events'=>['formatter'=>"function(value,row){ return formatNumber(value); }"]]]];
     }
 }

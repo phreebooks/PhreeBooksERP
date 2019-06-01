@@ -89,7 +89,10 @@ class inventoryApi
         foreach ($csv as $row) {
             $tmp = array_combine($head, $row);
             $sqlData = [];
-            foreach ($tmp as $tag => $value) { if (isset($template[$tag])) { $sqlData[$template[$tag]] = trim($value); } }
+            foreach ($tmp as $tag => $value) {
+                if (!empty($template[$tag])){ $sqlData[$template[$tag]] = trim($value); } // if tags are used
+                if (!empty($fields[$tag]))  { $sqlData[$tag] = trim($value); }  // if field names are used
+            }
             if (!isset($sqlData['sku'])) { return msgAdd("The SKU field cannot be found and is a required field. The operation was aborted!"); }
             if (!$sqlData['sku']) { msgAdd(sprintf("Missing SKU on row: %s. The row will be skipped", $cnt+1)); continue; }
             // validate type

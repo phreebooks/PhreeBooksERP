@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-07
+ * @version    3.x Last Update: 2019-05-31
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -149,7 +149,6 @@ class bizunoSettings
 
     public function loadExtension(&$layout=[])
     {
-//      msgTrap();
         global $io;
         $moduleID= clean('data', 'filename', 'get');
         $bizID   = getUserCache('profile', 'biz_id');

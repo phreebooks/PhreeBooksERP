@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-06
+ * @version    3.x Last Update: 2019-05-21
  * @filesource /controller/module/phreebooks/totals/tax_item/tax_item.php
  */
 
@@ -59,9 +59,10 @@ class tax_item
         // @todo the below should use the function $tax_rates = loadTaxes($this->cType);
         // this should also be broken into common sub functions as they are shared with tax_order and shipping
         $tax_rates= dbGetMulti(BIZUNO_DB_PREFIX."tax_rates", "type='$this->cType'");
-        $gl = [];
+        $gl       = [];
         $totalTax = 0;
         $roundAuth= getModuleCache('phreebooks', 'settings', 'general', 'round_tax_auth', 0);
+        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD'));
         foreach ($item as $row) {
             if (isset($row['tax_rate_id']) && $row['tax_rate_id'] > 0) {
                 foreach ($tax_rates as $key => $value) { if ($row['tax_rate_id'] == $value['id']) { break; } }
@@ -79,7 +80,7 @@ class tax_item
         }
         foreach ($gl as $glAcct => $value) {
             if ($value['amount'] == 0) { continue; }
-            if ($roundAuth) { $value['amount'] = roundAmount($value['amount']); }
+            if ($roundAuth) { $value['amount'] = roundAmount($value['amount'], $isoVals['dec_len']); }
             $item[] = [
                 'ref_id'       => clean('id', 'integer', 'post'),
                 'gl_type'      => $this->settings['gl_type'],
@@ -91,8 +92,8 @@ class tax_item
                 'post_date'    => $main['post_date']];
             $totalTax += $value['amount'];
         }
-        $main['sales_tax'] += roundAmount($totalTax);
-        $begBal += roundAmount($totalTax);
+        $main['sales_tax'] += roundAmount($totalTax, $isoVals['dec_len']);
+        $begBal += roundAmount($totalTax, $isoVals['dec_len']);
         msgDebug("\nTaxItem is returning balance = $begBal");
     }
 

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-18
+ * @version    3.x Last Update: 2019-05-22
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -146,21 +146,21 @@ class inventoryPrices
             $settings= json_decode($row['settings'], true);
             $mID     = $row['method'];
         } else { // set the defaults
-            $row     = ['id'=>0, 'method'=>$mID, 'contact_type'=>$this->type, 'currency'=>getUserCache('profile', 'currency', false, 'USD')];
+            $row     = ['id'=>0, 'method'=>$mID, 'contact_type'=>$this->type];
             $settings= ['attr'=>'', 'title'=>''];
         }
-
-        // These need to be handled in the table comments
+        $row['currency'] = getUserCache('profile', 'currency', false, 'USD'); // force currency to be the users default
+        // @TODO - remove AFTER 2019-06-01
         $structure['contact_id']['attr']['type']  = 'hidden';
         $structure['inventory_id']['attr']['type']= 'hidden';
-        $structure['currency']['attr']['type']    = 'selCurrency';
+        $structure['currency']['attr']['type']    = 'hidden';
 
         unset($structure['settings']);
-        $structure['contact_id']['label']  = lang('contacts_short_name');
-        $structure['inventory_id']['label']= lang('sku');
+        $structure['contact_id']['label']   = lang('contacts_short_name');
+        $structure['inventory_id']['label'] = lang('sku');
         $structure['ref_id']['attr']['type']= 'select';
-        $structure['ref_id']['label']      = $this->lang['price_sheet_to_override'];
-        $structure['ref_id']['values']     = $this->quantityList();
+        $structure['ref_id']['label']       = $this->lang['price_sheet_to_override'];
+        $structure['ref_id']['values']      = $this->quantityList();
 
         dbStructureFill($structure, $row);
         $data = ['type'=>'divHTML',
@@ -495,6 +495,7 @@ class inventoryPrices
             'columns'  => [
                 'id'      => ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.id',      'attr'=>['hidden'=>true]],
                 'inactive'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inactive','attr'=>['hidden'=>true]],
+//              'currency'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.currency','attr'=>['hidden'=>true]],
                 'default' => ['order'=>0,'field'=>'settings:default','attr'=>['hidden'=>true]],
                 'action'  => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> [
@@ -511,8 +512,6 @@ class inventoryPrices
                     'attr'=>  ['sortable'=>true, 'resizable'=>true]],
                 'inventory_id'=> ['order'=>50, 'field'=>BIZUNO_DB_PREFIX.'inventory.description_short','label'=>lang('description'),
                     'attr'=>  ['sortable'=>true, 'resizable'=>true]],
-                'currency'   => ['order'=>60, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.currency',   'label'=>lang('currency'),
-                    'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
                 'last_update'=> ['order'=>70, 'field'=>'settings:last_update',   'label'=>lang('last_update'),'format'=>'date',
                     'attr'=>  ['width'=>70, 'sortable'=>true, 'resizable'=>true]]]];
         $cList  = $iList = [];
@@ -545,7 +544,6 @@ class inventoryPrices
             $data['columns']['title']['attr']['hidden'] = true;
             $data['columns']['method']['attr']['hidden'] = true;
             $data['columns']['ref_id']['attr']['hidden'] = true;
-            $data['columns']['currency']['attr']['hidden'] = true;
             $data['columns']['last_update']['attr']['hidden'] = true;
         }
         return $data;
@@ -557,13 +555,14 @@ class inventoryPrices
      * @return array - datagrid structure
      */
     protected function dgQuantity($name) {
-        return ['id' => $name, 'type'=>'edatagrid',
-            'attr'   => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true],
-            'events' => ['data'=> $name.'Data',
+        return ['id'=>$name, 'type'=>'edatagrid',
+            'attr'     => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true],
+            'events'   => ['data'=> $name.'Data',
                 'onLoadSuccess'=> "function(row) { var rows=jq('#$name').edatagrid('getData'); if (rows.total == 0) jq('#$name').edatagrid('addRow'); }",
                 'onClickRow'   => "function(rowIndex) { jq('#$name').edatagrid('editRow', rowIndex); }"],
-            'source' => ['actions'=>['new'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
-            'columns'=> [
+            'source'   => ['actions'=>['new'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
+            'footnotes'=> ['currency'=>lang('msg_default_currency_assumed')],
+            'columns'  => [
                 'action'  => ['order'=> 1,'label'=>lang('action'), 'attr'=>['width'=>80],
                     'actions'=> ['trash'=>  ['icon'=>'trash','order'=>20,'events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]],
                     'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"]],
@@ -576,13 +575,13 @@ class inventoryPrices
                     'events' => ['formatter'=>"function(value){ return getTextValue(qtyAdj, value); }",
                         'editor'=>"{type:'combobox',options:{valueField:'id',textField:'text',data:qtyAdj}}"]],
                 'adjValue'=> ['order'=>40,'label'=>$this->lang['adj_value'], 'attr'=>['width'=>100, 'align'=>'center', 'size'=>'10'],
-                    'events' => ['editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
+                    'events' => ['editor'=>"{type:'numberbox'}",'formatter'=>"function(value,row){ return formatNumber(value); }"]],
                 'rndType' => ['order'=>50,'label'=>lang('rounding'),'attr' =>['width'=>150],
                     'events' => ['formatter'=>"function(value){ return getTextValue(qtyRnd, value); }",'editor'=>"{type:'combobox',options:{valueField:'id',textField:'text',data:qtyRnd}}"]],
                 'rndValue'=> ['order'=>60,'label'=>$this->lang['rnd_value'], 'attr'=>['width'=>100, 'align'=>'center', 'size'=>'10'],
-                    'events' => ['editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
+                    'events' => ['editor'=>"{type:'numberbox'}",'formatter'=>"function(value,row){ return formatNumber(value); }"]],
                 'price'   => ['order'=>70,'label'=>lang('price'), 'attr'=>['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10'],
-                    'events' => ['formatter'=>"function(value,row){ return formatCurrency(value); }",'editor'=>"{type:'numberbox',options:{formatter:function(value){return formatPrecise(value);}}}"]],
+                    'events' => ['editor'=>"{type:'numberbox'}",'formatter'=>"function(value,row){ return formatNumber(value); }"]],
                 'margin'  => ['order'=>80,'label'=>lang('margin'),'attr'=>['hidden'=>true, 'width'=>100, 'align'=>'right', 'size'=>'10']]]];
     }
 

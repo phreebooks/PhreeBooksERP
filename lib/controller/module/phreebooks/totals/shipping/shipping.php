@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-19
+ * @version    3.x Last Update: 2019-05-21
  * @filesource /lib/controller/module/phreebooks/totals/shipping/shipping.php
  */
 
@@ -55,10 +55,11 @@ class shipping
     {
         $shipping = clean('freight', ['format'=>'float','default'=>0], 'post');
 //      if ($shipping == 0) return; // this will discard bill recipient, 3rd party and resi information if paid by customer
+        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD'));
         $billType = clean('totals_shipping_bill_type', ['format'=>'alpha_num','default'=>'sender'], 'post');
-        $desc = "title:".$this->lang['title'];
-        $desc.= ";resi:".clean('totals_shipping_resi', 'bool', 'post');
-        $desc.= ";type:".$billType;
+        $desc     = "title:".$this->lang['title'];
+        $desc    .= ";resi:".clean('totals_shipping_resi', 'bool', 'post');
+        $desc    .= ";type:".$billType;
         if ($billType <> 'sender') { $desc .= ":".clean('totals_shipping_bill_acct', 'alpha_num', 'post'); }
         $item[] = [
             'id'           => clean("totals_{$this->code}_id", ['format'=>'float','default'=>0], 'post'),
@@ -76,8 +77,8 @@ class shipping
         $taxShipping   = getModuleCache('phreebooks', 'settings', 'general', 'shipping_taxed') ? 1 : 0;
         if ($taxShipping && isset($main['contact_id_b']) && $main['contact_id_b']) {
             $shipTax = $this->getShippingTaxGL($shipping, $main, $item);
-            $begBal += roundAmount($shipTax);
-            $main['sales_tax'] += roundAmount($shipTax);
+            $begBal += roundAmount($shipTax, $isoVals['dec_len']);
+            $main['sales_tax'] += roundAmount($shipTax, $isoVals['dec_len']);
         }
         msgDebug("\nShipping is returning balance = $begBal");
     }

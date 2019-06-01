@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-08
+ * @version    3.x Last Update: 2019-05-08
  * @filesource /portal/main.php
  */
 
@@ -61,7 +61,6 @@ class main //extends controller
             $_GET['p'] = '';
             clean('p', ['format'=>'command','default'=>'bizuno/main/bizunoHome'], 'get');
         }
-        msgDebug("\n compose lang = ".getUserCache('profile','language'));
         compose($GLOBALS['bizunoModule'], $GLOBALS['bizunoPage'], $GLOBALS['bizunoMethod'], $this->layout);
         return $this->layout;
     }
@@ -76,7 +75,7 @@ class main //extends controller
 
     private function validateUser()
     {
-        global $bizunoUser, $bizunoLang;
+        global $bizunoUser;
         $bizunoUser = $this->setGuestCache();
         $this->setLanguage($bizunoUser);
         $session = clean('bizunoSession', 'json', 'cookie');
@@ -132,7 +131,7 @@ class main //extends controller
 
     private function initUserCache()
     {
-        global $bizunoUser, $bizunoLang, $currencies;
+        global $bizunoUser, $currencies;
         $email = getUserCache('profile', 'email');
         msgDebug("\nEntering initUserCache with email = $email");
         if ($email && getUserCache('profile', 'biz_id')) {
@@ -145,9 +144,9 @@ class main //extends controller
                 msgAdd("You do not have an account, please see your Bizuno administrator!");
                 unset($_GET['p']);
             }
-            $bizunoLang = $this->loadBaseLang(getUserCache('profile', 'language')); // load the environment language file, includes module add-ons
-            setlocale(LC_ALL, getUserCache('profile', 'language').'.UTF-8');
         } elseif (!dbTableExists(BIZUNO_DB_PREFIX.'users')) { $this->setInstallView(); }
+        setlocale(LC_COLLATE,getUserCache('profile', 'langauge'));
+        setlocale(LC_CTYPE,  getUserCache('profile', 'langauge'));
         $currencies = new currency();
     }
 
@@ -239,24 +238,23 @@ class main //extends controller
         $langCore = $langByRef = [];
         if (strlen($lang) <> 5) { $lang = 'en_US'; }
         if (defined('BIZUNO_DATA') && file_exists(BIZUNO_DATA."cache/lang_{$lang}.json")) {
-            msgDebug("\nGetting $lang lang from cache/");
+            msgDebug("\nGetting $lang lang from cache");
             $langCache = json_decode(file_get_contents(BIZUNO_DATA."cache/lang_{$lang}.json"), true);
         } else {
             require(BIZUNO_LIB."locale/en_US/language.php"); // pulls the current language in English
             include(BIZUNO_LIB."locale/en_US/langByRef.php"); // lang by reference (no translation required)
             $langCache = array_merge($langCore, $langByRef);
         }
-        if ($lang <> 'en_US') {
-            $otherLang = [];
-            if (defined('BIZUNO_DATA') && file_exists(BIZUNO_DATA."cache/lang_{$lang}.json")) {
-                $otherLang = json_decode(file_get_contents(BIZUNO_DATA."cache/lang_{$lang}.json"), true);
-            } elseif (file_exists(BIZUNO_ROOT."locale/$lang/language.php")) {
-                require(BIZUNO_ROOT."locale/$lang/language.php"); // pulls locale overlay
-                include(BIZUNO_LIB ."locale/en_US/langByRef.php"); // lang by reference (reset after loading translation)
-                $otherLang = array_merge($langCore, $langByRef);
-            }
-            $langCache = array_merge($langCache, $otherLang);
+        if ($lang == 'en_US') { return $langCache; }
+        $otherLang = [];
+        if (defined('BIZUNO_DATA') && file_exists(BIZUNO_DATA."cache/lang_{$lang}.json")) {
+            $otherLang = json_decode(file_get_contents(BIZUNO_DATA."cache/lang_{$lang}.json"), true);
+        } elseif (file_exists(BIZUNO_ROOT."locale/$lang/language.php")) {
+            require(BIZUNO_ROOT."locale/$lang/language.php"); // pulls locale overlay
+            include(BIZUNO_LIB ."locale/en_US/langByRef.php"); // lang by reference (reset after loading translation)
+            $otherLang = array_merge($langCore, $langByRef);
         }
+        $langCache = array_merge($langCache, $otherLang);
         return $langCache;
     }
 

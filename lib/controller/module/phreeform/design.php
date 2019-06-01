@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-24
+ * @version    3.x Last Update: 2019-05-31
  * @filesource /controller/module/phreeform/design.php
  */
 
@@ -603,7 +603,7 @@ function pfTableUpdate() {
                             'fldEdit' => ['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                             'fldTrash'=> ['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                     'fieldname' => ['order'=>5, 'label' => lang('fieldname'), 'attr'=>['width'=>200, 'resizable'=>true],
-                        'events'=> ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
+                        'events'=> ['editor'=>"{type:'combobox',options:{editable:true,mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
                     'title' => ['order'=>10, 'label' => lang('title'), 'attr'=>  ['width'=>150, 'resizable'=>true, 'editor'=>'text']],
                     'break' => ['order'=>20, 'label' => $this->lang['column_break'], 'attr'=>['width'=>80, 'resizable'=>true],
                         'events'=>  ['editor'=>"{type:'checkbox',options:{on:'1',off:''}}"]],

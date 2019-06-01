@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-08
+ * @version    3.x Last Update: 2019-05-22
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -153,8 +153,8 @@ class inventoryMain
         $result= dbGetMulti(BIZUNO_DB_PREFIX."inventory_assy_list", "ref_id=$skuID");
         $total = 0;
         foreach ($result as $key => $row) {
-            $result[$key]['qty_stock']   = viewFormat(dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$row['sku']}'"), 'precise');
-            $result[$key]['qty_required']= viewFormat($row['qty'], 'precise');
+            $result[$key]['qty_stock']   = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$row['sku']}'");
+            $result[$key]['qty_required']= $row['qty'];
             $total += $row['qty'];
         }
         $footer = [['description'=>lang('total'), 'qty_required'=>viewFormat($total, 'precise')]];
@@ -587,10 +587,10 @@ function preSubmit() {
     }
 
     /**
-     * Datagrid structure for assembly material lists
+     * Grid structure for assembly material lists
      * @param string $name - DOM field name
      * @param boolean $locked - [default true] leave unlocked if no journal activity has been entered for this sku
-     * @return string - datagrid structure
+     * @return string - grid structure
      */
     private function dgAssembly($name, $locked=true)
     {
@@ -619,9 +619,10 @@ function preSubmit() {
                                   {field:'description_short',title:'".lang('description')."',width:200}]]
                     }}"]],
                 'description'=> ['order'=>40,'label'=>lang('description'),'attr'=>['editor'=>'text','sortable'=>true,'resizable'=>true]],
-                'qty'        => ['order'=>60, 'label'=>lang('qty_needed'),   'attr'=>['value'=>1,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>"{type:'numberbox'}"]],
-                'qty_stock'  => ['order'=>90,'label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['resizable'=>true,'align'=>'center']]]];
+                'qty'        => ['order'=>60,'label'=>lang('qty_needed'), 'attr'=>['value'=>1,'resizable'=>true,'align'=>'right'],
+                    'events' => ['formatter'=>"function(value) { return formatNumber(value); }",'editor'=>"{type:'numberbox'}"]],
+                'qty_stock'  => ['order'=>90,'label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['resizable'=>true,'align'=>'right'],
+                    'events' => ['formatter'=>"function(value) { return formatNumber(value); }"]]]];
         if ($locked) {
             unset($data['columns']['action']);
             unset($data['columns']['sku']['events']['editor']);

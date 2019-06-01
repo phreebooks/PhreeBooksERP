@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-28
+ * @version    3.x Last Update: 2019-05-16
  * @filesource /lib/controller/module/phreebooks/chart.php
  */
 
@@ -174,12 +174,12 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         // check for dups if insert
         $used = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "gl_account='$acct'");
         if ($used && !$isEdit) { return msgAdd("The GL Account value provided is already being used in your books, please enter a new one!"); }
-        if ($type == 44) { foreach ($glAccounts as $row) {
+        if ($type == 44 && !$isEdit) { foreach ($glAccounts as $row) {
             if ($row['type'] == 44) { return msgAdd("There is already a Retained Earnings type GL Account in your Chart of Accounts. Only the existing Retained Earnings account can be edited, no new accounts can be added of this type."); }
         } }
         if ($used && $heading) { return msgAdd("The account cannot be used as a heading if there are journal entries posted against it!"); }
         if ($parent && empty($glAccounts[$parent]['heading'])) {
-            msgAdd("parent record = ".print_r($glAccounts[$parent], true));
+//          msgAdd("parent record = ".print_r($glAccounts[$parent], true));
             return msgAdd(sprintf("GL Account %s is set as a heading account but the account is not specified as a heading. Please edit the heading gl account and set as heading first.", $parent));
         }
         // make sure type has not changed if edit
@@ -203,6 +203,7 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         }
         ksort($glAccounts, SORT_STRING);
         setModuleCache('phreebooks', 'chart', 'accounts', $glAccounts);
+        $this->checkDefault($acct, $type, getUserCache('profile', 'currency', false, 'USD'));
         if (!$isEdit) { insertChartOfAccountsHistory($acct, $type); } // build the journal_history entries
         // send confirm and reload browser cache (and page since datagrid doesn't reload properly)
         msgLog(lang('gl_account')." - ".lang('save'));
@@ -309,10 +310,10 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
     }
 
     /**
-     * Datagrid structure for chart of accounts
+     * Grid structure for chart of accounts
      * @param string $name - DOM field name
      * @param integer $security - users security level to control visibility
-     * @return array - structure of the datagrid
+     * @return array - structure of the grid
      */
     private function dgChart($name, $security=0)
     {
@@ -337,5 +338,26 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
                     'events'=>['formatter'=>"function(value,row){ return value=='1' ? '".jsLang('yes')."' : ''; }"]],
                 'parent'  => ['order'=>70,'label'=>$this->lang['primary_gl_acct'],'attr'=>['width'=> 80,'align'=>'center'],
                     'events'=>['formatter'=>"function(value,row){ return value ? value : ''; }"]]]];
+    }
+
+    /**
+     * Checks and repairs GL defaults to make sure they exist and are set to an active account
+     * @param string $acct - GL account value
+     * @param integer $type - GL account type
+     * @param string $currency - ISO Currency value, defaults to user cache currency
+     */
+    private function checkDefault($acct, $type, $currency=false)
+    {
+        if (empty($currency)) { $currency = getUserCache('profile', 'currency', false, 'USD'); }
+        $glDefaults = getModuleCache('phreebooks', 'chart', 'defaults');
+        $glAccounts = getModuleCache('phreebooks', 'chart', 'accounts');
+        if (empty($glDefaults[$currency][$type])) { // for some reason the default account has been cleared
+            $glDefaults[$currency][$type] = $acct;
+            setModuleCache('phreebooks', 'chart', 'defaults', $glDefaults);
+        }
+        if (empty($glAccounts["$acct"])) { // the default no longer exists, use this one
+            $glDefaults[$currency][$type] = $acct;
+            setModuleCache('phreebooks', 'chart', 'defaults', $glDefaults);
+        }
     }
 }

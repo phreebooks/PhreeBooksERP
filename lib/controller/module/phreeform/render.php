@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-01
+ * @version    3.x Last Update: 2019-05-15
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -636,9 +636,12 @@ class phreeformRender
                     $data = $special_form->load_table_data($TableObject->boxfield);
                 } elseif (!empty($TableObject->settings->fieldname)) { // for field encoded data, typically json
                     msgDebug("\nProcessing Data for table: ".print_r($report->FieldValues["d$key"], true));
-                    if (!empty($TableObject->settings->processing)) { // let the processing create the data array
+                    if (!empty($TableObject->settings->processing) && !in_array($TableObject->settings->processing, ['json'])) { // let the processing create the data array, mostly used for special processing actions
                         $data = viewProcess($report->FieldValues["d$key"], $TableObject->settings->processing);
                     } else { // build it by sequence
+                        if (in_array($TableObject->settings->processing, ['json'])) {
+                            $report->FieldValues["d$key"] = viewProcess($report->FieldValues["d$key"], $TableObject->settings->processing);
+                        }
                         $data = $this->setEncodedList($TableObject->settings->boxfield, $report->FieldValues["d$key"]);
                     }
                 } else {

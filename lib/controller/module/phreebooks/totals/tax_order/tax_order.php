@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-06
+ * @version    3.x Last Update: 2019-05-21
  * @filesource /controller/module/phreebooks/totals/tax_order/tax_order.php
  */
 
@@ -54,6 +54,7 @@ class tax_order
         if (empty($main['tax_rate_id'])) { return; } // no tax so don't create gl entry
         $gl       = $rate = [];
         $totalTax = 0;
+        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD'));
         $roundAuth= getModuleCache('phreebooks', 'settings', 'general', 'round_tax_auth', 0);
         $rates    = loadTaxes($this->cType);
         foreach ($rates as $rate) { if ($main['tax_rate_id'] == $rate['id']) { break; } }
@@ -67,7 +68,7 @@ class tax_order
         }
         foreach ($gl as $glAcct => $value) {
             if ($value['amount'] == 0) { continue; }
-            if ($roundAuth) { $value['amount'] = roundAmount($value['amount']); }
+            if ($roundAuth) { $value['amount'] = roundAmount($value['amount'], $isoVals['dec_len']); }
             $item[] = [
                 'ref_id'       => clean('id', 'integer', 'post'),
                 'gl_type'      => $this->settings['gl_type'],
@@ -79,8 +80,8 @@ class tax_order
                 'post_date'    => $main['post_date']];
             $totalTax += $value['amount'];
         }
-        $main['sales_tax'] += roundAmount($totalTax);
-        $begBal += roundAmount($totalTax);
+        $main['sales_tax'] += roundAmount($totalTax, $isoVals['dec_len']);
+        $begBal += roundAmount($totalTax, $isoVals['dec_len']);
         msgDebug("\nTaxOrder is returning balance = $begBal");
     }
 

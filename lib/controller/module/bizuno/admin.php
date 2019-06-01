@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-26
+ * @version    3.x Last Update: 2019-05-23
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -454,6 +454,7 @@ class bizunoAdmin
         $ipInfo= file_get_contents('http://ip-api.com/json/'.$_SERVER['REMOTE_ADDR']);
         $data  = json_decode($ipInfo);
         $output= 'America/New_York';
+        if (empty($data->timezone)) { return $output; }
 //date_default_timezone_set($data->timezone);
         foreach ($locale->Timezone as $value) {
             if ($data->timezone == $value->Code) { $output = $value->Code;  break; }

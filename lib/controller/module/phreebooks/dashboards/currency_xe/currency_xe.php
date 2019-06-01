@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-05-11
+ * @version    3.x Last Update: 2019-05-22
  * @filesource /lib/controller/module/phreebooks/dashboards/currency_xe/currency_xe.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_CURRENCY_XE_VERSION','2.0');
+define('DASHBOARD_CURRENCY_XE_VERSION','3.0');
 
 class currency_xe
 {
@@ -32,7 +32,7 @@ class currency_xe
     public $code     = 'currency_xe';
     public $category = 'general_ledger';
     public $noSettings= true;
-    
+
     function __construct($settings=[])
     {
         $this->security= getUserCache('security', 'j2_mgr', false, 0);
@@ -61,7 +61,7 @@ class currency_xe
         $lang  = substr(getUserCache('profile', 'language', false, 'en_US'), 0, 2);
         $size  = 'compact'; // choices are 'compact' (320 x 300), other option is 'normal' (560 x 310)
         $html  = '<div><div id="xecurrencywidget"></div>
-<script>var xeCurrencyWidget = {"domain":"sb.bizuno.com","language":"'.$lang.'","size":"'.$size.'"};</script>
+<script>var xeCurrencyWidget = {"domain":"www.bizuno.com","language":"'.$lang.'","size":"'.$size.'"};</script>
 <script src="https://www.xe.com/syndication/currencyconverterwidget.js"></script>
 </div>';
         if (sizeof($cVals)) {
@@ -72,7 +72,7 @@ class currency_xe
             $html .= '<form id="xeForm" action="'.BIZUNO_AJAX."&p=phreebooks/currency/setExcRate".'">';
             $html .= "<p>".$this->lang['update_desc']."</p>";
             $html .= "<p>1 $defISO = ".html5('excRate', $xRate).' '.html5('excISO', $xSel).'<br />'.html5('', $btnUpd).'</p></div>';
-            $html .= htmlJS($js);            
+            $html .= htmlJS($js);
         } else {
             $html .= '<br />'.$this->lang['no_multi_langs'];
         }

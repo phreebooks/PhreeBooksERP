@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-25
+ * @version    3.x Last Update: 2019-05-31
  * @filesource /lib/controller/module/phreebooks/journals/j15.php
  */
 
@@ -108,7 +108,7 @@ class j15 extends jCommon
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
         if (!$this->journalTransfer($this->items)) { return; }
-        $this->main['description'] = lang('journal_main_journal_id_15').": ({$this->items[0]['qty']}) {$this->item[0]['description']}".(sizeof($this->item)>2 ? ' +++' : '');
+        $this->main['description'] = lang('journal_main_journal_id_15').": ({$this->items[0]['qty']}) {$this->item[0]['description']}".(sizeof($this->items)>2 ? ' +++' : '');
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
         if (!$this->postMain())              { return; }

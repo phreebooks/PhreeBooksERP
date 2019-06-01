@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-22
+ * @version    3.x Last Update: 2019-05-21
  * @filesource /controller/module/phreebooks/totals/disc_item/disc_item.php
  */
 
@@ -50,8 +50,9 @@ class disc_item
 
     public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $totalDisc = 0;
-        $postItm = clean('item_array', 'json', 'post');
+        $totalDisc= 0;
+        $postItm  = clean('item_array', 'json', 'post');
+        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD'));
         foreach ($postItm['rows'] as $idx => $row) {
             msgDebug("\nWorking with row = ".print_r($row, true));
             if (empty($row['unit_discount'])) { continue; }
@@ -68,7 +69,7 @@ class disc_item
             $totalDisc += $row['unit_discount'];
         }
         if (empty($main['discount'])) { $main['discount'] = 0; }
-        $main['discount'] += roundAmount($totalDisc);
+        $main['discount'] += roundAmount($totalDisc, $isoVals['dec_len']);
         $begBal -= $totalDisc;
         msgDebug("\ndisc_item applied discount = $totalDisc and is returning balance = $begBal");
     }

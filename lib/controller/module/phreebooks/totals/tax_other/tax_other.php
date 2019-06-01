@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-20
+ * @version    3.x Last Update: 2019-05-21
  * @filesource /lib/controller/module/phreebooks/totals/tax_other/tax_other.php
  */
 
@@ -52,6 +52,7 @@ class tax_other
     {
         $tax_other= clean("totals_{$this->code}", ['format'=>'float','default'=>0], 'post');
         if ($tax_other == 0) { return; }
+        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD'));
         $desc     = $this->lang['title'].': '.clean('primary_name_b', ['format'=>'text','default'=>''], 'post');
         $item[]   = [
             'id'           => clean("totals_{$this->code}_id", ['format'=>'float','default'=>0], 'post'),
@@ -63,8 +64,8 @@ class tax_other
             'credit_amount'=> $tax_other,
             'gl_account'   => clean("totals_{$this->code}_gl", ['format'=>'text','default'=>$this->settings['gl_account']], 'post'),
             'post_date'    => $main['post_date']];
-        $main['sales_tax'] += roundAmount($tax_other);
-        $begBal += roundAmount($tax_other);
+        $main['sales_tax'] += roundAmount($tax_other, $isoVals['dec_len']);
+        $begBal += roundAmount($tax_other, $isoVals['dec_len']);
         msgDebug("\nTaxOther is returning balance = $begBal");
     }
 

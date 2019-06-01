@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-06
+ * @version    3.x Last Update: 2019-05-21
  * @filesource /view/easyUI/html5.php
  */
 
@@ -1074,7 +1074,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
      */
     public function layoutFields($data=[], $prop=[]) {
         if (!empty($prop['keys'])) { // pull from $data
-            foreach ($prop['keys'] as $key) { $prop['fields'][$key] = $data['fields'][$key]; }
+            foreach ($prop['keys'] as $key) { if (isset($data['fields'][$key])) { $prop['fields'][$key] = $data['fields'][$key]; } }
         }
         $tmp1  = sortOrder($prop['fields']); //sort order first
         $fields= [];
@@ -1614,7 +1614,10 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         if (!empty($prop['inner']) && !empty($prop['label'])) { $prop['options']['prompt'] = jsLang('email'); }
         if (in_array($prop['attr']['type'], ['hidden'])) { unset($prop['break']); return $this->input($id, $prop); }
         $prop['classes'][] = 'easyui-textbox';
-        if ( empty($prop['options']['width']) && empty($prop['attr']['size'])) { $prop['options']['width'] = 200; }
+        if ( empty($prop['options']['width'])) { // patch for Chrome ignoring size value
+            $prop['options']['width'] = !empty($prop['attr']['size']) ? intval($prop['attr']['size']*7) : 200;
+            unset($prop['attr']['size']);
+        }
         if (!empty($prop['attr']['maxlength'])) { $this->jsReady[] = "jq('#$id').textbox('textbox').attr('maxlength', jq('#$id').attr('maxlength'));"; }
         $this->mapEvents($prop);
         return $this->input($id, $prop);

@@ -440,18 +440,23 @@ class bizunoApi
      */
     private function setImage(&$product)
     {
+        global $io;
+        $product['Images'] = [];
         $product['ProductImageData'] = $product['ProductImageDirectory'] = $product['ProductImageFilename'] = '';
-        if (isset($product['Image']) && $product['Image']) { // image file
-            if (strpos($product['Image'], '/') !== false) { // path exists, extract
-                $product['ProductImageDirectory'] = substr($product['Image'], 0, strrpos($product['Image'], '/'));
-                $product['ProductImageFilename']  = substr($product['Image'], strrpos($product['Image'], '/')+1);
-            } else {
-                $product['ProductImageDirectory'] = '';
-                $product['ProductImageFilename']  = $product['Image'];
-            }
-            $io = new \bizuno\io();
-            $image = $io->fileRead("images/{$product['Image']}");
-            if ($image) { $product['ProductImageData'] = base64_encode($image['data']); }
+        if (!empty($product['Image'])) { // primary image file
+            $info = pathinfo($product['Image']);
+            $data = $io->fileRead("images/{$product['Image']}");
+            $product['ProductImageData']     = $data ? base64_encode($data['data']) : '';
+            $product['ProductImageDirectory']= $info['dirname']."/";
+            $product['ProductImageFilename'] = $info['basename'];
+        }
+        if (empty($product['invImages'])) { return; }
+        // ["library\/betta_batteries\/cnfj-cnft_series\/6-cnfj-14\/6-cnfj-14-3.png"]
+        $images = json_decode($product['invImages'], true);
+        foreach ($images as $image) { // invImages extension list
+            $info = pathinfo($image);
+            $data = $io->fileRead("images/$image");
+            $product['Images'][] = ['Title'=>$info['basename'], 'Path'=>$info['dirname']."/", 'Filename'=>$info['basename'], 'Data'=>$data ? base64_encode($data['data']) : ''];
         }
     }
 

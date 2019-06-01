@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-26
+ * @version    3.x Last Update: 2019-05-22
  * @filesource /local/en_US/language.php
  */
 
@@ -505,6 +505,7 @@ $langCore = [
     'msg_period_changed' => 'The accounting period has been changed to %s',
     'msg_gl_post_success' => 'The journal entry was successfully posted - %s %s',
     'msg_gl_post_date_out_of_period' => 'The transaction post date is not within the current period!',
+    'msg_default_currency_assumed' => 'Amounts entered, if any, are based on the default currency.',
     'msg_new_folder_name' => 'Enter the New Folder Name',
     'msg_no_documents' => 'No Documents Found!',
     'msg_no_settings' => 'There are no settings available!',

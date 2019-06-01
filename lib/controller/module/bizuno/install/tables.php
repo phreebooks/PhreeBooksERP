@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-11-16
+ * @version    3.x Last Update: 2019-05-22
  * @filesource /lib/controller/module/bizuno/install/tables.php
  */
 namespace bizuno;
@@ -276,9 +276,9 @@ $tables = [
             'method'      => ['format'=>'VARCHAR(16)',  'attr'=>"DEFAULT ''",             'comment'=>'tag:PriceMethod;order:10'],
             'ref_id'      => ['format'=>'INT(11)',      'attr'=>"NOT NULL DEFAULT '0'",   'comment'=>'tag:ReferenceSheetID;order:20'],
             'contact_type'=> ['format'=>"CHAR(1)",      'attr'=>"DEFAULT 'c'",            'comment'=>'tag:Type;order:30'],
-            'contact_id'  => ['format'=>'INT(11)',      'attr'=>"NOT NULL DEFAULT '0'",   'comment'=>'tag:ContactID;order:40'],
-            'inventory_id'=> ['format'=>'INT(11)',      'attr'=>"NOT NULL DEFAULT '0'",   'comment'=>'tag:InventoryID;order:50'],
-            'currency'    => ['format'=>'CHAR(3)',      'attr'=>"NOT NULL DEFAULT '$iso'",'comment'=>'tag:CurrencyISO;order:60'],
+            'contact_id'  => ['format'=>'INT(11)',      'attr'=>"NOT NULL DEFAULT '0'",   'comment'=>'type:hidden;tag:ContactID;order:40'],
+            'inventory_id'=> ['format'=>'INT(11)',      'attr'=>"NOT NULL DEFAULT '0'",   'comment'=>'type:hidden;tag:InventoryID;order:50'],
+            'currency'    => ['format'=>'CHAR(3)',      'attr'=>"NOT NULL DEFAULT '$iso'",'comment'=>'type:hidden;tag:CurrencyISO;order:60'],
             'inactive'    => ['format'=>"ENUM('0','1')",'attr'=>"DEFAULT '0'",            'comment'=>'tag:Inactive;order:70'],
             'settings'    => ['format'=>"TEXT",         'attr'=>"",                       'comment'=>'type:json;tag:Settings;order:80']],
         'keys' => 'PRIMARY KEY (id)',

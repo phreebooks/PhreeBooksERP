@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-06
+ * @version    3.x Last Update: 2019-05-08
  * @filesource /lib/controller/module/bizuno/fields.php
  */
 
@@ -474,9 +474,8 @@ class bizunoFields
             'source' => ['actions'=>['newField'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"accordionEdit('accFields','dgFields','detail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', 0);"]]]],
             'columns'=> [
                 'id' => ['order'=>0,'attr'=>['hidden'=>true]],
-                'action' => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>40, 'formatter'=>$name.'Formatter'],
-                    'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
-                    'actions'=> ['delete' => ['order'=>90,'icon'=>'trash','hidden'=>$security==4?false:true,
+                'action' => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
+                    'actions'=> ['delete' => ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,
                         'events' => ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/fields/delete&table=$table', 0, 'idTBD');"]]]],
                 'field'  => ['label'=>lang('field'),  'order'=>10,'attr'=>['width'=>100,'sortable'=>true,'resizable'=>true]],
                 'label'  => ['label'=>lang('label'),  'order'=>20,'attr'=>['width'=>160,'sortable'=>true,'resizable'=>true]],
