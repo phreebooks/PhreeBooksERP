@@ -204,6 +204,19 @@ function getColumns()
     return getUserCache('profile', 'cols', false, 3);
 }
 
+function getDefaultCurrency()
+{
+    // BOF - DEPRECATE REMOVE AFTER 2019-09-01 - Temp move default currency to PhreeBooks module cache, can be moved to registry for additional time
+    $defCur = getModuleCache('phreebooks', 'currency', 'defISO');
+    if (empty($defCur)) { setModuleCache('phreebooks', 'currency', 'defISO', getUserCache('profile', 'currency')); }
+    // This can be moved to registry, for occcasional users, this may need to be here for a while
+    if (!empty(getUserCache('profile', 'currency'))) {
+        clearUserCache('profile', 'currency'); // legacy remove from users profile, should be in PhreeBooks profile
+    }
+    // EOF - DEPRECATE
+    return getModuleCache('phreebooks', 'currency', 'defISO', false, 'USD');
+}
+
 /**
  * Retrieves a value from the user cache
  * @global array $bizunoUser - User Cache

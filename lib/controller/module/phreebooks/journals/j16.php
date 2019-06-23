@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-30
+ * @version    3.x Last Update: 2019-06-21
  * @filesource /lib/controller/module/phreebooks/journals/j16.php
  */
 
@@ -230,7 +230,7 @@ class j16 extends jCommon
     var opts = jq('#dgJournalItem').datagrid('getColumnOption', 'balance');  opts.editor.options.disabled = true;
     totalUpdate();
 }",
-                'onBeforeEdit' => "function(rowIndex) { curIndex = rowIndex; var edtURL = jq(this).edatagrid('getColumnOption','sku'); edtURL.editor.options.url = '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID='+jq('#store_id').val(); }",
+                'onBeforeEdit' => "function(rowIndex) { var edtURL = jq(this).edatagrid('getColumnOption','sku'); edtURL.editor.options.url = '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID='+jq('#store_id').val(); }",
                 'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; }",
                 'onDestroy'    => "function(rowIndex) { totalUpdate(); curIndex = undefined; }",
                 'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],

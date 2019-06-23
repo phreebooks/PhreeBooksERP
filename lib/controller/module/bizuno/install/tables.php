@@ -17,12 +17,12 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-22
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/bizuno/install/tables.php
  */
 namespace bizuno;
 
-$iso = getUserCache('profile', 'currency', false, 'USD');
+$iso = getDefaultCurrency();
 $tables = [
     'address_book' => ['module' => 'contacts',
         'fields'=> [
@@ -117,7 +117,7 @@ $tables = [
                 'import'=>true, 'export'=>true,'required'=>false,'desc'=>"Default GL Account for purchases/sales"],
             'gov_id_number' => ['format'=>'VARCHAR(16)',  'attr'=>"NOT NULL DEFAULT ''",    'comment'=> 'tag:GovID;col:3;order:20',
                 'import'=>true, 'export'=>true,'required'=>false,'desc'=>"Government ID Number, i.e. SSN for US citizens"],
-            'tax_rate_id'   => ['format'=>'INT(11)',      'attr'=>"NOT NULL DEFAULT '0'",   'comment'=> 'type:select;tag:TaxRateID;col:3;order:30',
+            'tax_rate_id'   => ['format'=>'INT(11)',      'attr'=>"NOT NULL DEFAULT '0'",   'comment'=> 'type:tax;tag:TaxRateID;col:3;order:30',
                 'import'=>true, 'export'=>true,'required'=>false,'desc'=>"Default Sales tax, this is the ID from the tax_rates table"],
             'terms'         => ['format'=>'VARCHAR(32)',  'attr'=>"NOT NULL DEFAULT '0'",   'comment'=> 'type:hidden;tag:Terms;col:3;order:40',
                 'import'=>true, 'export'=>true,'required'=>false,'desc'=>"[default: 0] Payment terms, this is an encoded value and should generally be not included in the import feed"],

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-17
+ * @version    3.x Last Update: 2019-06-20
  * @filesource portal/view.php
  */
 
@@ -30,7 +30,7 @@ namespace bizuno;
 class portalView
 {
     function __construct() { }
-    
+
     public function setEnvHTML(&$output, $data)
     {
         global $html5;
@@ -76,14 +76,14 @@ class portalView
             case 'desktop':$html5->layoutDesktop($output, $data); break;
         }
     }
-    
+
     public function viewMain()
     {
         $region   = getUserCache('profile', 'menu', false, 'left');
         $logoPath = getModuleCache('bizuno', 'settings', 'company', 'logo');
         $src      = $logoPath ? BIZUNO_URL_FS."&src=".getUserCache('profile', 'biz_id')."/images/$logoPath" : BIZUNO_LOGO;
         $htmlLogo = ['label'=>getModuleCache('bizuno', 'properties', 'title'),'events'=>['onClick'=>"hrefClick('');"],'attr'=>['type'=>'img','src'=>$src,'height'=>'48']];
-        $version  = PHREEBOOKS_VERSION." (Bizuno Library ".MODULE_BIZUNO_VERSION.") ".getUserCache('profile', 'language')."-".getUserCache('profile', 'currency', false, 'No ISO');
+        $version  = PHREEBOOKS_VERSION." (Bizuno Library ".MODULE_BIZUNO_VERSION.") ".getUserCache('profile', 'language')."-".getDefaultCurrency();
         $company  = getModuleCache('bizuno', 'settings', 'company', 'primary_name').' - '.lang('period').': '.getModuleCache('phreebooks', 'fy', 'period').' | '.$version;
         $company .= ' | '.lang('copyright').' &copy;'.date('Y').' <a href="http://www.PhreeSoft.com" target="_blank">PhreeSoft&trade;</a>';
         if ($GLOBALS['bizunoModule'] <> 'bizuno') { $company .= '-'.$GLOBALS['bizunoModule'].' '.getModuleCache($GLOBALS['bizunoModule'], 'properties', 'status'); }
@@ -121,7 +121,7 @@ class portalView
         echo $output['raw'];
         echo "</html>";
     }
-    
+
     private function renderHead($head)
     {
         echo "<head>\n";
@@ -133,7 +133,7 @@ class portalView
         foreach ($js as $value) { echo "\t{$value['html']}\n"; }
         echo "</head>\n";
     }
-    
+
     private function renderMobile($body)
     {
         echo "<body>\n$body</div>\n".'<div id="navPopup" class="easyui-navpanel">'."</div>\n</body>\n"; // close the mobile navpanel div here, add popup panel

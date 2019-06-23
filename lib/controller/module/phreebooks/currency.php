@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-24
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/phreebooks/currency.php
  */
 
@@ -31,7 +31,7 @@ class phreebooksCurrency
     {
         $this->lang = getLang($this->moduleID);
     }
-    
+
     /**
      * Entry point to manage currencies
      * @param array $layout - Structure coming in
@@ -79,7 +79,7 @@ class phreebooksCurrency
         $iso = clean('iso', ['format'=>'text', 'default'=>'USD'], 'get');
         if (!$iso) { return; }
         $values = getModuleCache('phreebooks', 'currency', 'iso', $iso, $this->currencySettings($iso));
-        if ($iso == getUserCache('profile', 'currency')) { $values['value'] = 1; }
+        if ($iso == getDefaultCurrency()) { $values['value'] = 1; }
         $data = ['type'=>'divHTML',
             'divs'     => [
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbCurrency'],
@@ -105,7 +105,7 @@ class phreebooksCurrency
         return [
         'title'  => ['col'=>1,'break'=>true,'label'=>lang('title'),            'attr'=>['value'=>$values['title']]],
         'code'   => ['col'=>1,'break'=>true,'label'=>lang('code'),             'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']],
-        'is_def' => ['col'=>1,'break'=>true,'label'=>lang('default'),          'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getUserCache('profile', 'currency', false, 'USD')==$iso?true:false]],
+        'is_def' => ['col'=>1,'break'=>true,'label'=>lang('default'),          'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getDefaultCurrency()==$iso?true:false]],
         'xrate'  => ['col'=>1,'break'=>true,'label'=>lang('exc_rate'),         'attr'=>['value'=>$values['value']]],
         'dec_len'=> ['col'=>2,'break'=>true,'label'=>$this->lang['dec_length'],'attr'=>['value'=>$values['dec_len']]],
         'dec_pt' => ['col'=>2,'break'=>true,'label'=>$this->lang['dec_point'], 'attr'=>['value'=>$values['dec_pt']]],
@@ -115,7 +115,7 @@ class phreebooksCurrency
         'pfxneg' => ['col'=>3,'break'=>true,'label'=>$this->lang['neg_prefix'],'attr'=>['value'=>isset($values['pfxneg']) ? $values['pfxneg'] : '-']],
         'sfxneg' => ['col'=>3,'break'=>true,'label'=>$this->lang['neg_suffix'],'attr'=>['value'=>isset($values['sfxneg']) ? $values['sfxneg'] : '']]];
     }
-    
+
     /**
      * Structure for saving user edits to a currency
      * @param array $layout - Structure coming in
@@ -124,10 +124,10 @@ class phreebooksCurrency
     public function save(&$layout=[])
     {
         if (!validateSecurity('bizuno', 'admin', 3)) { return; }
-        $is_def = clean('is_def', 'boolean', 'post');
-        $iso    = clean('code', 'text', 'post');
+        $is_def    = clean('is_def', 'boolean', 'post');
+        $iso       = clean('code', 'text', 'post');
         $currencies= getModuleCache('phreebooks', 'currency', 'iso', false, []);
-        $charts    = getModuleCache('phreebooks', 'chart');
+        $defISO    = setModuleCache('phreebooks', 'currency', 'defISO');
         // clean out bad data
 //        $codes = viewCurrencySel();
 //        foreach ($currencies as $iso => $currency) { if (!array_key_exists($iso, $codes)) { unset($currencies[$iso]); } }
@@ -143,19 +143,17 @@ class phreebooksCurrency
             'pfxneg' => clean('pfxneg', ['format'=>'text', 'default'=>''], 'post'),
             'sfxneg' => clean('sfxneg', ['format'=>'text', 'default'=>''], 'post')];
         // check for new default, if so error check journal before replacing
-        if ($is_def && getUserCache('profile', 'currency', false, 'USD') != $iso) { // new default
+        if ($is_def && $defISO != $iso) { // new default
             $id = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id');
             if ($id) { return msgAdd($this->lang['err_currency_change']); }
-            $oldISO = getUserCache('profile', 'currency', false, 'USD');
-            setUserCache('profile', 'currency', $iso);
+            setModuleCache('phreebooks', 'currency', 'defISO', $iso);
             portalWrite('business', ['currency'=>$iso], 'update', "id=".getUserCache('profile', 'biz_id'));
             dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."journal_main CHANGE currency currency CHAR(3) NOT NULL DEFAULT '$iso'");
             dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory_prices CHANGE currency currency CHAR(3) NOT NULL DEFAULT '$iso'");
-            foreach (getModuleCache('phreebooks', 'chart', 'accounts') as $id => $row) { 
-                getModuleCache('phreebooks', 'chart', 'accounts', $id)['cur'] = $iso;
-            }
-            $charts['defaults'][$iso] = $charts['defaults'][$oldISO];
-            unset($charts['defaults'][$oldISO]);
+            $charts = getModuleCache('phreebooks', 'chart');
+            foreach (array_keys($charts['accounts']) as $id) { $charts['accounts'][$id]['cur'] = $iso; }
+            $charts['defaults'][$iso] = $charts['defaults'][$defISO];
+            unset($charts['defaults'][$defISO]);
             setModuleCache('phreebooks', 'chart', false, $charts);
         }
         $currencies[$iso] = $values;
@@ -163,7 +161,7 @@ class phreebooksCurrency
         dbWriteCache();
         msgAdd(lang('currency').": {$values['title']} ({$values['code']}) - ".lang('msg_settings_saved'), 'success');
         msgLog(lang('currency').": {$values['title']} ({$values['code']}) - ".lang('msg_settings_saved'));
-        $actionData = "jq('#dgCurrency').datagrid({rowStyler:function(index, row) { if (row.code=='".getUserCache('profile', 'currency', false, 'USD')."') return {class:'row-default'};}});";
+        $actionData = "jq('#dgCurrency').datagrid({rowStyler:function(index, row) { if (row.code=='".getDefaultCurrency()."') return {class:'row-default'};}});";
         $actionData.= "jq('#dgCurrency').datagrid('loadData', ".json_encode(array_values(getModuleCache('phreebooks', 'currency', 'iso'))).");";
         $actionData.= "jq('#accCurrency').accordion('select', 0); jq('#accCurrencyDtl').html(''); reloadSessionStorage();";
         $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>$actionData]]);
@@ -181,7 +179,7 @@ class phreebooksCurrency
         $iso = clean('data', 'text', 'get');
         if (!$iso) { return msgAdd("Bad data!"); }
         // cannot delete default currency
-        if ($iso == getUserCache('profile', 'currency', false, 'USD')) { return msgAdd($this->lang['err_currency_delete_default']); }
+        if ($iso == getDefaultCurrency()) { return msgAdd($this->lang['err_currency_delete_default']); }
         // Can't delete a currency or if it was used in ANY journal entry
         $exists = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id', "currency='$iso'");
         if ($exists) { return msgAdd($this->lang['err_currency_cannot_delete']); }
@@ -194,7 +192,7 @@ class phreebooksCurrency
         $actionData.= "jq('#accCurrencyDtl').html(''); reloadSessionStorage(); jq('#dgCurrency').datagrid('deleteRow', $idx);";
         $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>$actionData]]);
     }
-    
+
     /**
      * Sets the structure for currencies to be stored in the session cache and browser cache
      * @param string $iso - ISO currency code
@@ -235,7 +233,7 @@ class phreebooksCurrency
         msgAdd("The new rate for $iso ($rate) has been saved!", 'success');
         $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"reloadSessionStorage();"]]);
     }
-    
+
     /**
      * Updates all the ISO currencies with oanda (primary) and yahoo (secondary)
      * @param boolean $verbose - [default true] set to false to suppress user messages
@@ -260,7 +258,7 @@ class phreebooksCurrency
             'events' => ['data'=> "dataCurrency",
                 'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accCurrency', 'dgCurrency', 'accCurrencyDtl', '".lang('details')."', 'phreebooks/currency/edit&iso='+rowData.code); }",
                 'onClickRow'   => "function(rowIndex, rowData) { selectedCurrency = rowData.code; }",
-                'rowStyler'    => "function(index, row) { if (row.code=='".getUserCache('profile', 'currency', false, 'USD')."') { return {class:'row-default'}; }}"],
+                'rowStyler'    => "function(index, row) { if (row.code=='".getDefaultCurrency()."') { return {class:'row-default'}; }}"],
             'source' => ['actions'=>['currencyNew'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"jsonAction('phreebooks/currency/add');"]]]],
             'columns'=> [
                 'action' => ['order'=> 1, 'label'=>lang('action'),

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-26
+ * @version    3.x Last Update: 2019-06-19
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -32,7 +32,7 @@ class phreebooksAdmin {
     function __construct() {
         $this->lang = getLang($this->moduleID);
         $this->totalMethods = ['balance', 'balanceBeg', 'balanceEnd', 'debitcredit', 'discountChk', 'subtotal', 'subtotalChk', 'tax_item', 'total'];
-        $values = getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'));
+        $values = getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency());
         $this->glDefaults = [
             'cash'       => isset($values[0]) ? $values[0] : '',
             'receivables'=> isset($values[2]) ? $values[2] : '',
@@ -113,13 +113,24 @@ class phreebooksAdmin {
             'ttlJrnl'   => ['text'=>$this->lang['pb_total_by_journal'],'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'rep_id'    => ['text'=>lang('contacts_rep_id_c'),         'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
             'taxTitle'  => ['text'=>lang('tax_rates_title'),           'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'cTerms'    => ['text'=>lang('terms')." (contact ID)",     'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
             'terms'     => ['text'=>lang('terms')." (".lang('customers').")",'group'=>$this->lang['title'],'module'=>'bizuno', 'function'=>'viewFormat'],
             'terms_v'   => ['text'=>lang('terms')." (".lang('vendors').")",  'group'=>$this->lang['title'],'module'=>'bizuno', 'function'=>'viewFormat'],
             'soStatus'  => ['text'=>$this->lang['pb_so_status'],       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'age_00'    => ['text'=>$this->lang['pb_gl_age_00'],       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'age_30'    => ['text'=>$this->lang['pb_gl_age_30'],       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'age_60'    => ['text'=>$this->lang['pb_gl_age_60'],       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
-            'age_90'    => ['text'=>$this->lang['pb_gl_age_90'],       'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'AgeCur'    => ['text'=>$this->lang['pb_inv_age_00'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'Age30'     => ['text'=>$this->lang['pb_inv_age_30'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'Age60'     => ['text'=>$this->lang['pb_inv_age_60'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'Age61'     => ['text'=>$this->lang['pb_inv_age_61'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'Age90'     => ['text'=>$this->lang['pb_inv_age_90'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'Age91'     => ['text'=>$this->lang['pb_inv_age_91'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'Age121'    => ['text'=>$this->lang['pb_inv_age_121'],     'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_00'    => ['text'=>$this->lang['pb_cnt_age_00'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_30'    => ['text'=>$this->lang['pb_cnt_age_30'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_60'    => ['text'=>$this->lang['pb_cnt_age_60'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_61'    => ['text'=>$this->lang['pb_cnt_age_61'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_90'    => ['text'=>$this->lang['pb_cnt_age_90'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_91'    => ['text'=>$this->lang['pb_cnt_age_91'],      'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
+            'age_121'   => ['text'=>$this->lang['pb_cnt_age_121'],     'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'begBal'    => ['text'=>lang('beginning_balance'),         'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'endBal'    => ['text'=>lang('ending_balance'),            'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'isCur'     => ['text'=>lang('gl_acct_type_30'),           'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
@@ -131,10 +142,10 @@ class phreebooksAdmin {
             'isLBgt'    => ['text'=>$this->lang['ly_budget'],          'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks'],
             'isLBtd'    => ['text'=>$this->lang['pb_is_last_bdgt_ytd'],'group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processPhreeBooks']];
         $this->phreeformFormatting = [
-            'j_desc'    => ['text'=>lang('journal_main_journal_id'),    'group'=>$this->lang['title'],'module'=>'bizuno',      'function'=>'viewFormat'],
-            'glType'    => ['text'=>lang('gl_acct_type'),               'group'=>$this->lang['title'],'module'=>'bizuno',      'function'=>'viewFormat'],
-            'glTitle'   => ['text'=>lang('gl_acct_title'),              'group'=>$this->lang['title'],'module'=>'bizuno',      'function'=>'viewFormat'],
-            'glActive'  => ['text'=>lang('gl_acct_active'),             'group'=>$this->lang['title'],'module'=>'bizuno',      'function'=>'viewFormat']];
+            'j_desc'    => ['text'=>lang('journal_main_journal_id'),   'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'glType'    => ['text'=>lang('gl_acct_type'),              'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'glTitle'   => ['text'=>lang('gl_acct_title'),             'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'glActive'  => ['text'=>lang('gl_acct_active'),            'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat']];
         $this->notes = [$this->lang['note_phreebooks_install_1'],$this->lang['note_phreebooks_install_2'],$this->lang['note_phreebooks_install_3']];
     }
 
@@ -401,7 +412,7 @@ class phreebooksAdmin {
         msgDebug("\n  Loading chart of accounts");
         $coa->chartInstall(BIZUNO_LIB.getUserCache('profile', 'chart'));
         // set the currencies (should only be one at this time)
-        $iso = getUserCache('profile', 'currency', false, 'USD');
+        $iso = getDefaultCurrency();
         setModuleCache('phreebooks', 'currency', false, ['default' => $iso, 'iso' => [$iso => $cur->currencySettings($iso)]]);
         msgDebug("\n  Building fiscal year.");
         $current_year = date('Y');
@@ -445,10 +456,10 @@ class phreebooksAdmin {
     public function loadBrowserSession(&$layout = []) {
         $accts = []; // load gl Accounts
         foreach (getModuleCache('phreebooks', 'chart', 'accounts') as $row) {
-            $row['asset'] = in_array($row['type'], $this->assets) ? 1 : 0;
+            $row['asset']= in_array($row['type'], $this->assets) ? 1 : 0;
             $row['type'] = viewFormat($row['type'], 'glType');
-//          if (!isset($row['inactive']) || $row['inactive']=='0') $accts[] = $row; // doesn't allow for edit of GL Accounts
-            $accts[] = $row; // need to remove keys
+            if (empty($row['inactive'])) { $row['inactive'] = '0'; } // for some cases this is not set
+            $accts[]     = $row; // need to remove keys
         }
         $layout['content']['dictionary']    = array_merge($layout['content']['dictionary'], $this->getBrowserLang());
         $layout['content']['glAccounts']    = ['total'=>sizeof($accts),  'rows'=>$accts];

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-08
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/phreebooks/tools.php
  */
 
@@ -89,7 +89,7 @@ class phreebooksTools
      */
     private function setChartHistory($firstPeriod, $maxPeriod)
     {
-        $re_acct = getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[44];
+        $re_acct = getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[44];
         $acct_string = $this->getGLtoClose(); // select list of accounts that need to be closed, adjusted
         $records = $carryOver = [];
         $lastPriorPeriod = $firstPeriod - 1;
@@ -477,7 +477,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         $nextPeriod= array_shift($cron['rows']);
         $period    = $nextPeriod['period'];
         $curPerFY  = $nextPeriod['fy'];
-        $re_acct = getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[44];
+        $re_acct = getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[44];
         if (isset($cron['rows']['p'.($period+1)]['fy'])) {
             $nextPerFY = $cron['rows']['p'.($period+1)]['fy'];
         } else {
@@ -604,7 +604,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
      */
     private function glRepairEntry($mID)
     {
-        $precision = getModuleCache('phreebooks', 'currency', 'iso')[getUserCache('profile', 'currency', false, 'USD')]['dec_len'];
+        $precision = getModuleCache('phreebooks', 'currency', 'iso')[getDefaultCurrency()]['dec_len'];
         $tolerance = 50 / pow(10, $precision); // i.e. 50 cent in USD
         $rows = dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id=$mID");
         $diff = $ttlRow = $ttlDbt = $ttlCrt = 0;

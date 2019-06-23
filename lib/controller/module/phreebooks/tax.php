@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-24
+ * @version    3.x Last Update: 2019-06-05
  * @filesource /lib/controller/module/phreebooks/tax.php
  */
 
@@ -126,7 +126,9 @@ class phreebooksTax
     jq('#dgTaxVendors$type').datagrid('getRows')[curIndex]['rate'] = newVal;
     var items = jq('#dgTaxVendors$type').datagrid('getData');
     for (var i=0; i<items['rows'].length; i++) {
-        total += parseFloat(items['rows'][i]['rate']);
+        var amount = parseFloat(items['rows'][i]['rate']);
+        if (isNaN(amount)) amount = 0;
+        total += amount;
     }
     var footer= jq('#dgTaxVendors$type').datagrid('getFooterRows');
     footer[0]['rate'] = formatNumber(total);
@@ -353,18 +355,19 @@ function taxPreSubmit{$type}(type) {
                 'cID'=> ['order'=>10,'label'=>pullTableLabel("contacts", 'short_name', 'v'),
                         'attr'  => ['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'center'],
                         'events'=> ['formatter'=>"function(value, row) { return row.cTitle; }",
-                            'editor'=>"{type:'combogrid',options:{width:130,panelWidth:750,delay:900,idField:'id',textField:'primary_name',mode:'remote',
-    url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type=v',selectOnNavigation:false,columns: [[
+                            'editor'=>"{type:'combogrid', options:{width:130, panelWidth:750, delay:900, idField:'id', textField:'primary_name', mode:'remote',
+    url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type=v', selectOnNavigation:false,
+    onSelect:function(index,row) { bizTextEdSet('$name',curIndex,'text',row.short_name); bizGridEdSet('$name',curIndex,'glAcct',row.gl_account); bizNumEdSet('$name',curIndex,'rate', 0); },
+    columns: [[
       {field:'id',          hidden:true},
       {field:'short_name',  width:100,title:'".jsLang('contacts_short_name')."'},
       {field:'primary_name',width:200,title:'".jsLang('address_book_primary_name')."'},
       {field:'city',        width:100,title:'".jsLang('address_book_city')."'},
-      {field:'state',       width: 50,title:'".jsLang('address_book_state')."'},
-    ]] }}"]],
+      {field:'state',       width: 50,title:'".jsLang('address_book_state')."'} ]] }}"]],
                 'text'  => ['order'=>20,'label'=>lang('description'),'attr'=>['width'=>240,'resizable'=>true,'editor'=>'text']],
                 'glAcct'=> ['order'=>30,'label'=>lang('gl_account'), 'attr'=>['width'=>100,'resizable'=>true,'align' =>'center'],'events'=>['editor'=>dgEditGL()]],
                 'rate'  => ['order'=>40,'label'=>lang('tax_rates_tax_rate'),'attr'=>['width'=>100,'resizable'=>true],
-                    'events'=>['editor'=>"{type:'numberbox',options:{onChange:function(newVal){taxTotal$type(newVal);}} }"]]]];
+                    'events'=>['editor'=>"{ type:'numberbox',options:{ onChange:function(newVal){taxTotal$type(newVal); } } }"]]]];
         return $data;
     }
 }

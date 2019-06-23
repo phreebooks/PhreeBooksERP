@@ -62,7 +62,7 @@ class tax_item
         $gl       = [];
         $totalTax = 0;
         $roundAuth= getModuleCache('phreebooks', 'settings', 'general', 'round_tax_auth', 0);
-        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD'));
+        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getDefaultCurrency());
         foreach ($item as $row) {
             if (isset($row['tax_rate_id']) && $row['tax_rate_id'] > 0) {
                 foreach ($tax_rates as $key => $value) { if ($row['tax_rate_id'] == $value['id']) { break; } }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-06
+ * @version    3.x Last Update: 2019-06-08
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -103,9 +103,9 @@ class contactsMain
      */
     public function managerRows(&$layout=[])
     {
-        $type = clean('type',['format'=>'text','default'=>$this->type], 'get'); // reload here for multi type searches
-        $rID  = clean('rID', 'integer','get');
-        $iID  = clean('ref', 'integer','get');
+        $type = clean('type',  ['format'=>'text','default'=>$this->type], 'get'); // reload here for multi type searches
+        $rID  = clean('rID',   'integer','get');
+        $iID  = clean('ref',   'integer','get');
         $this->restrict_store = clean('store',['format'=>'boolean','default'=>true],'get'); // set store restiction override
         if (strlen($type)>1) { $this->type = 'i'; } // must have CRM access to look at entire contacts table
         if (in_array($this->type, ['b'])) {
@@ -154,9 +154,8 @@ class contactsMain
         $rID = clean('rID', 'integer', 'get');
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX."contacts", $this->type);
 
-        // remove after 2019-01-01
-        $structure['inactive']['attr']['type'] = 'select';
-        $structure['inactive']['attr']['value']= '0';
+        // remove after 2019-07-01
+        $structure['tax_rate_id']['attr']['type'] = 'tax';
 
         // merge data with structure
         $cData = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id=$rID");
@@ -174,13 +173,12 @@ class contactsMain
         $fldGeneral = ['id','type','short_name','inactive','rep_id','tax_rate_id','contact_first','contact_last','price_sheet',
             'flex_field_1','store_id','account_number','gov_id_number','gl_account','terms','terms_text','terms_edit','recordID'];
         // set some special cases
-        $structure['type']['attr']['value']= $this->type;
-        $structure['short_name']['tooltip']= lang('msg_leave_null_to_assign_ref');
-        $structure['inactive']['label']    = lang('status');
-        $structure['inactive']['values']   = $this->status_choices;
-        $structure['rep_id']['values']     = viewRoleDropdown();
-        $structure['tax_rate_id']['values']= viewSalesTaxDropdown($this->type=='b'?'c':$this->type, 'inventory');
-        unset($structure['tax_rate_id']['attr']['size']);
+        $structure['type']['attr']['value']  = $this->type;
+        $structure['short_name']['tooltip']  = lang('msg_leave_null_to_assign_ref');
+        $structure['inactive']['label']      = lang('status');
+        $structure['inactive']['values']     = $this->status_choices;
+        $structure['rep_id']['values']       = viewRoleDropdown();
+        $structure['tax_rate_id']['defaults']= ['value'=>$structure['tax_rate_id']['attr']['value'], 'type'=>$this->type, 'callback'=>"var foo='bar';"];
         // set some new fields
         $structure['terms_text']= ['col'=>3,'label'=>pullTableLabel("contacts", 'terms', $this->type),
             'attr'=>['value'=>viewTerms($structure['terms']['attr']['value'], true, $this->type), 'readonly'=>'readonly']];
@@ -809,11 +807,12 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                     'aType'   => ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."address_book.type='m'"]],
                 'sort' => ['s0'=>['order'=>10,'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
             'columns' => [
-                'id'      => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."contacts.id",       'attr'=>['hidden'=>true]],
-                'email'   => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."address_book.email",'attr'=>['hidden'=>true]],
-                'inactive'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX."contacts.inactive", 'attr'=>['hidden'=>true]],
-                'attach'  => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."contacts.attach",   'attr'=>['hidden'=>true]],
-                'action'  => ['order'=>1,'label'=>lang('action'),
+                'id'        => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."contacts.id",        'attr'=>['hidden'=>true]],
+                'email'     => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."address_book.email", 'attr'=>['hidden'=>true]],
+                'inactive'  => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."contacts.inactive",  'attr'=>['hidden'=>true]],
+                'attach'    => ['order'=>0,'field'=>BIZUNO_DB_PREFIX."contacts.attach",    'attr'=>['hidden'=>true]],
+                'gl_account'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX."contacts.gl_account",'attr'=>['hidden'=>true]],
+                'action'    => ['order'=>1,'label'=>lang('action'),
                     'events' => ['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> [
                         'edit'  => ['icon'=>'edit', 'order'=>20, 'label'=>lang('edit'),
@@ -1102,15 +1101,21 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
      */
     private function dgLog($name, $rID=0, $security=0)
     {
-        $rows   = clean('rows', ['format'=>'integer','default'=>10], 'post');
-        $page   = clean('page', ['format'=>'integer','default'=> 1], 'post');
-        $sort   = clean('sort', ['format'=>'text',   'default'=>'log_date'],'post');
-        $order  = clean('order',['format'=>'text',   'default'=>'desc'],    'post');
+        $rows  = clean('rows', ['format'=>'integer',  'default'=>10],        'post');
+        $page  = clean('page', ['format'=>'integer',  'default'=> 1],        'post');
+        $sort  = clean('sort', ['format'=>'text',     'default'=>'log_date'],'post');
+        $order = clean('order',['format'=>'text',     'default'=>'desc'],    'post');
+        $search= clean('search_log',['format'=>'text','default'=>''],        'post');
         return ['id'=>$name, 'rows'=>$rows, 'page'=>$page,
-            'attr'   => ['nowrap'=>false, 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=contacts/main/managerRowsLog&rID=$rID"],
+            'attr'   => ['nowrap'=>false, 'toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=contacts/main/managerRowsLog&rID=$rID"],
             'source' => [
                 'tables' => ['contacts_log'=>['table'=>BIZUNO_DB_PREFIX."contacts_log"]],
-                'filters'=> ['rID'=> ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."contacts_log.contact_id='$rID'"]],
+                'search' => ['notes'],
+                'actions' => [
+                    'clrSearch' => ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"bizTextSet('search_log', ''); {$name}Reload();"]]],
+                'filters'=> [
+                    'search'=> ['order'=>90,'attr'=>['id'=>"search_log", 'value'=>$search]],
+                    'rID'   => ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."contacts_log.contact_id='$rID'"]],
                 'sort'   => ['s0' => ['order'=>10,'field'=>"$sort $order"]]],
             'columns' => [
                 'id' => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."contacts_log.id",'attr'=>['hidden'=>true]],
@@ -1173,9 +1178,9 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         $defNET = isset($terms[3]) && $terms[0]==3 ? $terms[3] : '30';
         $defDOM = isset($terms[3]) && $terms[0]==4 ? $terms[3] : date('Y-m-d');
         $fields = [
-            'terms_disc'  => ['options'=>['width'=>40], 'attr'=>['value'=>isset($terms[1]) ? $terms[1] : '0', 'maxlength'=>'3']],
-            'terms_early' => ['options'=>['width'=>40], 'attr'=>['value'=>isset($terms[2]) ? $terms[2] : '0', 'maxlength'=>'3']],
-            'terms_net'   => ['options'=>['width'=>40], 'attr'=>['value'=>$defNET,'maxlength'=>'3']]];
+            'terms_disc'  => ['options'=>['width'=>40],'attr'=>['type'=>'float',  'value'=>isset($terms[1])?$terms[1]:0,'maxlength'=>3]],
+            'terms_early' => ['options'=>['width'=>40],'attr'=>['type'=>'float',  'value'=>isset($terms[2])?$terms[2]:0,'maxlength'=>3]],
+            'terms_net'   => ['options'=>['width'=>40],'attr'=>['type'=>'integer','value'=>$defNET,'maxlength'=>'3']]];
         $custom = ' - '.sprintf(lang('contacts_terms_discount'), html5('terms_disc', $fields['terms_disc']), html5('terms_early', $fields['terms_early'])).' '.sprintf(lang('contacts_terms_net'), html5('terms_net',$fields['terms_net']));
         $output = [
             'radio0'    => ['order'=>10,'break'=>true, 'label'=>lang('contacts_terms_default').' ['.viewTerms('0', false, $terms[0]).']','attr'=>['type'=>'radio','id'=>'terms_type','name'=>'terms_type','value'=>0,'checked'=>$terms[0]==0?true:false]],

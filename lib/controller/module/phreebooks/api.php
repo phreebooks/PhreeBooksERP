@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-18
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/phreebooks/api.php
  */
 
@@ -36,7 +36,7 @@ class phreebooksApi
     {
         $this->lang = getLang($this->moduleID);
     }
-    
+
     /**
      * This method builds the div for operating the API to import data, information includes import templates and forms, export forms
      * @param integer jID - journal to post to, passed as $_GET variable
@@ -66,7 +66,7 @@ class phreebooksApi
     {
         $beg_bal = $coa_asset = [];
         foreach (selGLTypes() as $type) { $coa_asset[$type['id']] = $type['asset']; }
-        $precision       = getModuleCache('phreebooks', 'currency', 'iso')[getUserCache('profile', 'currency', false, 'USD')]['dec_len'];
+        $precision       = getModuleCache('phreebooks', 'currency', 'iso')[getDefaultCurrency()]['dec_len'];
         $bb_value        = ['styles'=>["text-align"=>"right"],'attr'=>['size'=>"13", 'value'=>0],'events'=>['onChange'=>"begBalTotal();"]];
         $bb_debit_total  = ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
         $bb_credit_total = ['styles'=>["text-align"=>"right"],'attr'=>['readonly'=>'readonly', 'size'=>13, 'value'=>0]];
@@ -259,7 +259,7 @@ class phreebooksApi
         while (true) {
             if (!$row) { break; }
             msgDebug("\nWorking with input data row = ".print_r($data, true));
-            if ($action=='inv') { // for inventory just update the history table and inventory 
+            if ($action=='inv') { // for inventory just update the history table and inventory
                 $inv = $this->getInventory($data['SKU'], $data['Qty'], $data['Total']);
                 if (!$inv['id'])   { return msgAdd("Cannot locate SKU: {$data['SKU']}, Aborting!"); }
                 if (!$data['Qty']) { return msgAdd("Quantity for SKU: {$data['SKU']} is zero, please verify your data. Aborting!"); }
@@ -342,7 +342,7 @@ class phreebooksApi
                     'credit_amount'=> in_array($jID, [12])? $data['Total'] : 0,
                     'gl_account'   => $data['HoldingGLAccount'],
                     'post_date'    => $postDate,
-                    ];                
+                    ];
             }
             $items[] = [
                 'qty'          => 1,
@@ -376,7 +376,7 @@ class phreebooksApi
         msgAdd(sprintf(lang('import')." ($action) - successfully imported %i entries.", $orderCnt), 'success');
         msgLog(sprintf(lang('import')." ($action) - %i successfully imported", $orderCnt));
     }
-    
+
     /**
      * Creates a new contact record to support journal import
      * @param array $main - data from a line of the import file
@@ -423,12 +423,12 @@ class phreebooksApi
         $main['telephone1'  .$suffix] = $data['address']['telephone1'];
         $main['email'       .$suffix] = $data['address']['email'];
     }
-    
+
     /**
-     * 
+     *
      * @param string $sku - SKU being searched for
-     * @param float $qty - number of units, used to calculate line item cost 
-     * @param float $total - total for qty units, used to calculate line item cost 
+     * @param float $qty - number of units, used to calculate line item cost
+     * @param float $total - total for qty units, used to calculate line item cost
      * @return array - inventory database record information
      */
     private function getInventory($sku='', $qty=1, $total=0)

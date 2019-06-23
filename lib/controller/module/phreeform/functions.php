@@ -17,33 +17,11 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-10
+ * @version    3.x Last Update: 2019-06-19
  * @filesource /controller/module/phreeform/functions.php
  */
 
 namespace bizuno;
-
-/**
- * !!! DEPRECATED !!! use /view/main.php function viewProcess
- *
- * Processes a string of data with a user specified process, returns unprocessed if function not found
- * @param mixed $strData - data to process
- * @param string $Process - process to apply to the data
- * @return mixed - processed string if process found, original string if not
- */
-/*
-function ProcessData($strData, $Process)
-{
-    if (getModuleCache('phreeform', 'processing', $Process, 'function')) {
-        $func = getModuleCache('phreeform', 'processing')[$Process]['function'];
-        $fqfn = "\\bizuno\\$func";
-        $module = getModuleCache('phreeform', 'processing')[$Process]['module'];
-        bizAutoLoad(getModuleCache($module, 'properties', 'path')."functions.php", $fqfn, 'function');
-        return $fqfn($strData, $Process);
-    }
-    return $strData;
-}
-*/
 
 /**
  * Adds a separator to the end of a string, if specified, from a module file, used for extensions and customization
@@ -532,10 +510,11 @@ function phreeformCriteria($report, $xOnly=false)
 function BuildDataArray($sql, $report)
 {
     global $report, $currencies;
-//    $posted_currencies = ['currency' => getUserCache('profile', 'currency', false, 'USD'), 'currency_rate' => 1]; // use default currency
+//    $posted_currencies = ['currency' => getDefaultCurrency(), 'currency_rate' => 1]; // use default currency
     // See if we need to group, fetch the group fieldname
     $GrpFieldName       = '';
     $GrpFieldProcessing = '';
+    $ShowTotals         = false;
     if (isset($report->grouplist) && is_array($report->grouplist)) { foreach ($report->grouplist as $key => $value) {
         if ($report->grouplist[$key]->default) {
             $GrpFieldName       = $value->fieldname;
@@ -572,9 +551,10 @@ function BuildDataArray($sql, $report)
     $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
     if (sizeof($result) == 0) { return msgAdd(lang('phreeform_output_none'), 'caution'); }
     msgDebug("\nreturned number of rows = ".sizeof($result));
+    msgDebug("\nProcessing control sequence = ".print_r($seq, true));
     // Generate the output data array
     if (!isset($report->totalonly)) { $report->totalonly = '0'; }
-    $currencies->isoDest = empty($report->iso) ? getUserCache('profile', 'currency', false, 'USD') : $report->iso;
+    $currencies->isoDest = empty($report->iso) ? getDefaultCurrency() : $report->iso;
     $RowCnt     = 0;
     $ColCnt     = 1;
     $GrpWorking = false;
@@ -605,6 +585,7 @@ function BuildDataArray($sql, $report)
             if ($TableCtl['total']) { // add to the running total if need be
                 $seq[$key]['grptotal'] += $processedData;
                 $seq[$key]['rpttotal'] += $processedData;
+                $ShowTotals = true;
             }
         }
         $RowCnt++;
@@ -614,17 +595,14 @@ function BuildDataArray($sql, $report)
         $gTmp = viewProcess($GrpWorking, $GrpFieldProcessing);
         $OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);
         foreach ($seq as $TotalCtl) {
-            // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total.
+            // NOTE: Do not process here as this is just a total and the processing was used to get here, just format the total.
             $OutputArray[$RowCnt][$ColCnt] = $TotalCtl['total'] ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : ' ';
             $ColCnt++;
         }
         $RowCnt++;
         $ColCnt = 1;
     }
-    // see if we have a total to send
-    $ShowTotals = false;
-    foreach ($seq as $TotalCtl) { if ($TotalCtl['total']=='1') { $ShowTotals = true; } }
-    if ($ShowTotals) {
+    if ($ShowTotals) { // report total
         $OutputArray[$RowCnt][0] = 'r:' . $report->title;
         foreach ($seq as $TotalCtl) {
             // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total.

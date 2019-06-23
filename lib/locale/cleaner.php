@@ -154,7 +154,7 @@ class cleaner
      */
     private function cleanCurrency($value)
     {
-        $iso   = !empty($GLOBALS['bizunoCurrency']) ? $GLOBALS['bizunoCurrency'] : getUserCache('profile', 'currency', false, 'USD');
+        $iso   = !empty($GLOBALS['bizunoCurrency']) ? $GLOBALS['bizunoCurrency'] : getDefaultCurrency();
         $values= getModuleCache('phreebooks', 'currency', 'iso', $iso);
         $temp0 = str_replace([$values['prefix'], $values['suffix'], $values['sep']], '', trim($value));
         $temp1 = str_replace($values['dec_pt'], '.', $temp0);
@@ -491,7 +491,7 @@ function localeCalculateDate($start_date, $day_offset=0, $month_offset=0, $year_
 }
 
 /**
-* This function takes a post date and contact terms and type, calculates the due date and discount date (terms)
+* This function takes a post date and contact terms, calculates the due date and discount date (terms)
 * @param date $post_date
 * @param encoded $terms_encoded
 * @return array $output

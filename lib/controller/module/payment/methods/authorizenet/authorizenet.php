@@ -285,7 +285,7 @@ $output['body'] .= '</div>
             'x_encap_char'     => $this->encapChar,  // The divider to encapsulate response fields
             'x_version'        => '3.1',  // 3.1 is required to use CVV codes
             'x_method'         => 'CC',
-            'x_currency_code'  => getUserCache('profile', 'currency', false, 'USD'),
+            'x_currency_code'  => getDefaultCurrency(),
             ], $submit_data);
         if ($this->mode=='test') { $txnReq['x_test_request'] = 'TRUE'; }
         msgDebug("Request submit_data = ".print_r($txnReq, true));

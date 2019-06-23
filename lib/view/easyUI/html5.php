@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-21
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /view/easyUI/html5.php
  */
 
@@ -1411,9 +1411,9 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 
     public function inputCurrency($id, $prop) {
-        $cur = !empty($GLOBALS['bizunoCurrency']) ? $GLOBALS['bizunoCurrency'] : getUserCache('profile','currency',false,'USD');
+        $cur = !empty($GLOBALS['bizunoCurrency']) ? $GLOBALS['bizunoCurrency'] : getDefaultCurrency();
         $iso = getModuleCache('phreebooks', 'currency', 'iso', $cur);
-        if (empty($iso)) { $iso = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD')); }
+        if (empty($iso)) { $iso = getModuleCache('phreebooks', 'currency', 'iso', getDefaultCurrency()); }
         $prop['classes'][] = 'easyui-numberbox';
         $prop['options']['decimalSeparator']= "'".addslashes($iso['dec_pt'])."'";
         $prop['options']['groupSeparator']  = "'".addslashes($iso['sep'])."'";
@@ -1481,9 +1481,10 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
             $js = "var {$id}Data=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { if (value['inactive'] != '1') { {$id}Data.push(value); } });";
         }
         $this->jsHead[] = $js;
-        $prop['classes'][]         = 'easyui-combogrid';
-        $prop['options']['width']  = "250,rows:100,panelWidth:490,idField:'id',textField:'title',selectOnNavigation:false";
-        $prop['options']['data']   = "{$id}Data";
+        $prop['classes'][]           = 'easyui-combogrid';
+        $prop['options']['width']    = "250,rows:100,panelWidth:490,idField:'id',textField:'title',selectOnNavigation:false";
+        $prop['options']['rowStyler']= "function(index,row){ if (row.inactive=='1') { return { class:'row-inactive' }; } }";
+        $prop['options']['data']     = "{$id}Data";
 //        $prop['options']['onShowPanel'] = "function(){ alert('show panel'); }";
         if (!empty($prop['attr']['value'])) { $prop['options']['value'] = "'".$prop['attr']['value']."'"; }
         $this->mapEvents($prop);
@@ -1594,13 +1595,14 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         $defaults = ['value'=>'', 'type'=>'c', 'callback'=>false];
         if (!empty($prop['defaults']))    { $defaults = array_merge($defaults, $prop['defaults']); }
         if ( empty($defaults['callback'])){ $defaults['callback'] = "totalUpdate('inputTax');"; }
-        $prop['classes'][]          = 'easyui-combogrid';
-        $prop['options']['data']    = "bizDefaults.taxRates.{$defaults['type']}.rows";
-        $prop['options']['value']   = "'{$defaults['value']}'";
-        $prop['options']['width']   = "120,panelWidth:210,delay:500,idField:'id',textField:'text'";
+        $prop['classes'][]           = 'easyui-combogrid';
+        $prop['options']['data']     = "bizDefaults.taxRates.{$defaults['type']}.rows";
+        $prop['options']['value']    = "'{$defaults['value']}'";
+        $prop['options']['width']    = "120,panelWidth:210,delay:500,idField:'id',textField:'text'";
         if (!empty($defaults['data'])) { $prop['options']['data'] = $defaults['data']; }
-        $prop['options']['onSelect']= "function (id, data) { {$defaults['callback']} }";
-        $prop['options']['columns'] = "[[{field:'id',hidden:true},{field:'text',title:'".jsLang('journal_main_tax_rate_id')."',width:120},{field:'tax_rate',title:'".jsLang('amount')."',align:'center',width:70}]]";
+        $prop['options']['rowStyler']= "function(index,row){ if (row.status>0) { return { class:'row-inactive' }; } }";
+        $prop['options']['onSelect'] = "function(id, data) { {$defaults['callback']} }";
+        $prop['options']['columns']  = "[[{field:'id',hidden:true},{field:'status',hidden:true},{field:'text',title:'".jsLang('journal_main_tax_rate_id')."',width:120},{field:'tax_rate',title:'".jsLang('amount')."',align:'center',width:70}]]";
         unset($prop['attr']['type']);
         return $this->input($id, $prop);
     }
@@ -1653,7 +1655,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 
     public function selCurrency($id, $prop) {
-        if (empty($prop['attr']['value'])) { $prop['attr']['value'] = getUserCache('profile', 'currency', false, 'USD'); }
+        if (empty($prop['attr']['value'])) { $prop['attr']['value'] = getDefaultCurrency(); }
         if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
             $prop['attr']['type'] = 'select';
             $prop['values']       = viewDropdown(getModuleCache('phreebooks', 'currency', 'iso'), "code", "title");
@@ -1825,7 +1827,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
  * @return string - grid editor JSON
  */
 function dgEditCurrency($onChange='', $precision=false) {
-    $iso  = getUserCache('profile', 'currency', false, 'USD');
+    $iso  = getDefaultCurrency();
     $props= getModuleCache('phreebooks', 'currency', 'iso', $iso, 'USD');
     $prec = $precision ? getModuleCache('bizuno','settings','locale','number_precision',2) : $props['dec_len'];
     $dec  = str_replace("'", "\\'", $props['dec_pt']);
@@ -1841,7 +1843,7 @@ function dgEditCurrency($onChange='', $precision=false) {
  * @return string set for the editor structure
  */
 function dgEditGL($onClick='') {
-    return "{type:'combogrid',options:{ data:pbChart, mode:'local', width:300, panelWidth:450, idField:'id', textField:'title',onClickRow:function(index, row){ $onClick },
+    return "{type:'combogrid',options:{ data:pbChart, mode:'local', width:300, panelWidth:450, idField:'id', textField:'title', onClickRow:function(index, row){ $onClick },
 inputEvents:jq.extend({},jq.fn.combogrid.defaults.inputEvents,{ keyup:function(e){ glComboSearch(jq(this).val()); } }),
 rowStyler:  function(index,row){ if (row.inactive=='1') { return { class:'row-inactive' }; } },
 columns:    [[{field:'id',title:'".jsLang('gl_account')."',width:80},{field:'title',title:'".jsLang('title')."',width:200},{field:'type',title:'".jsLang('type')."',width:160}]]}}";

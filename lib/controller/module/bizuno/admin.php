@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-23
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -108,6 +108,7 @@ class bizunoAdmin
             'neg'     => ['text'=>$this->lang['pf_proc_neg'],     'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
             'n2wrd'   => ['text'=>$this->lang['pf_proc_n2wrd'],   'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
             'null0'   => ['text'=>$this->lang['pf_proc_null0'],   'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
+            'rnd0d'   => ['text'=>$this->lang['pf_proc_rnd0d'],   'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
             'rnd2d'   => ['text'=>$this->lang['pf_proc_rnd2d'],   'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
             'currency'=> ['text'=>lang('currency'),               'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
             'curLong' => ['text'=>lang('currency_long'),          'group'=>lang('numeric'),'module'=>$this->moduleID,'function'=>'viewFormat'],
@@ -333,7 +334,7 @@ class bizunoAdmin
             $countries[] = ['iso3'=>$value->Country->ISO3, 'iso2'=>$value->Country->ISO2, 'title'=>$value->Country->Title];
             if ($defISO == $value->Country->ISO3) { $defTitle = $value->Country->Title; }
         }
-        $ISOCurrency = getUserCache('profile', 'currency', false, 'USD');
+        $ISOCurrency = getDefaultCurrency();
         $data = [
             'calendar'  => ['format'=>$locale['date_short'], 'delimiter'=>$dateDelimiter],
             'country'   => ['iso'=>$defISO,'title'=>$defTitle],
@@ -477,7 +478,6 @@ class bizunoAdmin
         setUserCache('profile', 'biz_id',   clean('bID',         'text',   'get'));
         setUserCache('profile', 'biz_title',clean('biz_title',   'text',   'post'));
         setUserCache('profile', 'language', clean('biz_lang',    'text',   'post'));
-        setUserCache('profile', 'currency', clean('biz_currency','text',   'post'));
         setUserCache('profile', 'chart',    clean('biz_chart',   'text',   'post'));
         setUserCache('profile', 'first_fy', clean('biz_fy',      'integer','post'));
         // error check title
@@ -521,19 +521,20 @@ class bizunoAdmin
         // build the registry
         $registry= new bizRegistry();
         $registry->initRegistry(getUserCache('profile', 'email'), getUserCache('profile', 'biz_id'));
+        setModuleCache('phreebooks', 'currency', 'defISO', clean('biz_currency', 'text', 'post'));
         $company = getModuleCache('bizuno', 'settings', 'company'); // set the business title and id
         $company['id'] = $company['primary_name'] = getUserCache('profile', 'biz_title');
         setModuleCache('bizuno', 'settings', 'company', $company);
         $locale  = getModuleCache('bizuno', 'settings', 'locale');// set the timezone
         $locale['timezone']    = clean('biz_timezone', 'text', 'post');
         setModuleCache('bizuno', 'settings', 'locale', $locale);
-        portalWrite('business', ['title'=>$company['id'],'currency'=>getUserCache('profile', 'currency'),'date_last_visit'=>date('Y-m-d h:i:s')], 'update', "id='".getUserCache('profile', 'biz_id')."'");
+        portalWrite('business', ['title'=>$company['id'],'currency'=>getDefaultCurrency(),'date_last_visit'=>date('Y-m-d h:i:s')], 'update', "id='".getUserCache('profile', 'biz_id')."'");
         msgLog(lang('user_login')." ".getUserCache('profile', 'email'));
         $layout = ['content'=>['action'=>'eval','actionData'=>"loadSessionStorage();"]];
     }
 
     /**
-     * NOT USED - Displays a tab with datagrid to add email addresses - replaced by settings in users to build drop down with Bizuno company settings
+     * NOT USED - Displays a tab with grid to add email addresses - replaced by settings in users to build drop down with Bizuno company settings
      * @param array $layout
      */
     public function mailMgr(&$layout=[])

@@ -55,7 +55,7 @@ class shipping
     {
         $shipping = clean('freight', ['format'=>'float','default'=>0], 'post');
 //      if ($shipping == 0) return; // this will discard bill recipient, 3rd party and resi information if paid by customer
-        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD'));
+        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getDefaultCurrency());
         $billType = clean('totals_shipping_bill_type', ['format'=>'alpha_num','default'=>'sender'], 'post');
         $desc     = "title:".$this->lang['title'];
         $desc    .= ";resi:".clean('totals_shipping_resi', 'bool', 'post');

@@ -54,7 +54,7 @@ class tax_order
         if (empty($main['tax_rate_id'])) { return; } // no tax so don't create gl entry
         $gl       = $rate = [];
         $totalTax = 0;
-        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD'));
+        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getDefaultCurrency());
         $roundAuth= getModuleCache('phreebooks', 'settings', 'general', 'round_tax_auth', 0);
         $rates    = loadTaxes($this->cType);
         foreach ($rates as $rate) { if ($main['tax_rate_id'] == $rate['id']) { break; } }

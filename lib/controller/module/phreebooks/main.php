@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-06
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -96,8 +96,7 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
         elseif (in_array($this->journalID, [14,16]))            { $submenu = viewSubMenu('inventory'); }
         elseif (in_array($this->journalID, [17,18,19,20,21,22])){ $submenu = viewSubMenu('banking'); }
         else                                                    { $submenu = ''; }
-        $data = [
-            'title'=> $detail,
+        $data = ['title'=> $detail,
             'divs'     => [
                 'submenu'   => ['order'=>10, 'type'=>'html','html'=>$submenu],
                 'phreebooks'=> ['order'=>60, 'type'=>'accordion','key'=>'accJournal']],
@@ -274,7 +273,8 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         $jsTotals.= "}";
         $jsHead  .= $jsTotals;
         // strip inactive accounts from the gl chart
-        $pbChart  = "var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { if (value['inactive'] == '0') { pbChart.push(value); } });";
+        $pbChart  = "if (typeof(bizDefaults.glAccounts) == 'undefined') { alert('I cannot find the chart of accounts stored in your local browser memory. This page will not work properly! Please check your browser settings. You may also visit the PhreeSoft web site for assistance.'); }
+var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { if (typeof(value['inactive'])=='undefined' || value['inactive'] == '0') { pbChart.push(value); } });";
         // Get the item data
         msgDebug("\nGoing to getDataItem, rID = $rID and cID = $cID");
         $ledger->getDataItem($rID, $cID, $security);
@@ -333,7 +333,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
         $xAction  = clean('xAction','text', 'post');
         $recurID  = clean('recur_id', 'integer', 'post');
         $recurFreq= clean('recur_frequency', 'integer', 'post');
-        $GLOBALS['bizunoCurrency'] = clean('currency',['format'=>'alpha_num','default'=>getUserCache('profile','currency',false,'USD')],'post');
+        $GLOBALS['bizunoCurrency'] = clean('currency',['format'=>'alpha_num','default'=>getDefaultCurrency()],'post');
         $structure = ['journal_main' => dbLoadStructure(BIZUNO_DB_PREFIX.'journal_main', $this->journalID)];
         $values = requestData($structure['journal_main'], '', true);
         $values['period']   = calculatePeriod($values['post_date'] ? $values['post_date'] : date('Y-m-d')); // recalc period as post date may have changed
@@ -961,7 +961,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                     'attr'  => ['width'=>120, 'sortable'=>true, 'resizable'=>true, 'hidden'=> in_array($this->journalID, [15]) ? false : true]],
                 'purch_order_id' => ['order'=>30, 'field'=>BIZUNO_DB_PREFIX.'journal_main.purch_order_id',
                     'label' => pullTableLabel('journal_main', 'purch_order_id', $this->journalID),
-                    'attr'  => ['width'=>120, 'sortable'=>true, 'resizable'=>true, 'hidden'=> in_array($this->journalID, [2,14,15,16]) ? true : false]],
+                    'attr'  => ['width'=>120, 'sortable'=>true, 'resizable'=>true, 'hidden'=> in_array($this->journalID, [2,14,15,16,17,18,20,22]) ? true : false]],
                 'description' => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX.'journal_main.description',
                     'label' => pullTableLabel('journal_main', 'description', $this->journalID),
                     'attr'  => ['width'=>240, 'sortable'=>true, 'resizable'=>true, 'hidden'=> !in_array($this->journalID, [0,2,14,15,16]) ? true : false]],
@@ -984,6 +984,7 @@ if (!formValidate()) return false;\n\treturn true;\n}";
                 $data['source']['tables']['journal_item'] = ['table'=>BIZUNO_DB_PREFIX.'journal_item', 'join'=>'JOIN', 'links'=>BIZUNO_DB_PREFIX."journal_main.id=".BIZUNO_DB_PREFIX."journal_item.ref_id"];
                 $data['source']['search'][] = BIZUNO_DB_PREFIX.'journal_main.id';
                 $data['source']['search'][] = BIZUNO_DB_PREFIX.'journal_item.sku';
+                $data['source']['search'][] = BIZUNO_DB_PREFIX.'journal_item.description';
                 unset($data['source']['actions']['newJournal']);
                 unset($data['columns']['id']['attr']['hidden']);
                 $data['columns']['action']['actions']['edit']['events']['onClick'] = "tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD');";

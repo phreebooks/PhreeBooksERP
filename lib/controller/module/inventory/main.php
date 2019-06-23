@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-22
+ * @version    3.x Last Update: 2019-06-10
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -35,10 +35,10 @@ class inventoryMain
         $this->months_of_data= 12;   // valid values are 1, 3, 6, or 12
         $this->med_avg_diff  = 0.25; // the maximum percentage difference from the median and average, for large swings
         $defaults = [
-            'sales'   => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[30],
-            'stock'   => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[4],
-            'nonstock'=> getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[34],
-            'cogs'    => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[32],
+            'sales'   => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[30],
+            'stock'   => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[4],
+            'nonstock'=> getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[34],
+            'cogs'    => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[32],
             'method'  => 'f'];
         $this->inventoryTypes = [
             'si' => ['id'=>'si','text'=>lang('inventory_inventory_type_si'),'hidden'=>0,'tracked'=>1,'order'=>10,'gl_sales'=>$defaults['sales'],'gl_inv'=>$defaults['stock'],   'gl_cogs'=>$defaults['cogs'],'method'=>$defaults['method']], // Stock Item
@@ -336,8 +336,8 @@ class inventoryMain
         if ($rID && empty($structure['inventory_type']['values'][$inventory_type]['gl_inv'])) { $structure['gl_inv']['attr']['type'] = 'hidden'; }
         if ($rID && empty($structure['inventory_type']['values'][$inventory_type]['gl_cogs'])){ $structure['gl_cogs']['attr']['type']= 'hidden'; }
         if (sizeof(getModuleCache('phreebooks', 'currency', 'iso'))>1) {
-            $structure['full_price']['label'].= ' ('.getUserCache('profile', 'currency', false, 'USD').')';
-            $structure['item_cost']['label'] .= ' ('.getUserCache('profile', 'currency', false, 'USD').')';
+            $structure['full_price']['label'].= ' ('.getDefaultCurrency().')';
+            $structure['item_cost']['label'] .= ' ('.getDefaultCurrency().')';
         }
         $hideV= validateSecurity('phreebooks', "j6_mgr", 1, false) ? false : true;
         $data = ['type'=>'divHTML',
@@ -475,25 +475,22 @@ function preSubmit() {
     public function rename(&$layout=[])
     {
         if (!$security = validateSecurity('inventory', 'inv_mgr', 3)) { return; }
-        $rID    = clean('rID', 'integer','get');
-        $newSKU = clean('data','text',   'get');
-        $sku    = dbGetRow(BIZUNO_DB_PREFIX."inventory", "id=$rID");
-        $oldSKU = $sku['sku'];
+        $rID  = clean('rID', 'integer','get');
+        $sku  = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku', "id=$rID");
+        $GLOBALS['invRenameNewSKU'] = $newSKU = clean('data', 'text', 'get');
+        $GLOBALS['invRenameOldSKU'] = $oldSKU = $sku;
         // make sure new SKU is not null
         if (strlen($newSKU) < 1) { return msgAdd($this->lang['err_inv_sku_blank']); }
         // check for duplicate skus
-        $found = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'id', "sku = '$newSKU'");
+        $found= dbGetValue(BIZUNO_DB_PREFIX."inventory", 'id', "sku='$newSKU'");
         if ($found) { return msgAdd(lang('error_duplicate_id')); }
-        $data = [
-            'content' => ['action'=>'eval', 'actionData'=> "jq('#dgInventory').datagrid('reload');"],
-            'dbAction'=> [
+        $data = ['content'=> ['action'=>'eval', 'actionData'=> "jq('#dgInventory').datagrid('reload');"],
+            'dbAction'    => [
                 "inventory"          => "UPDATE ".BIZUNO_DB_PREFIX."inventory SET sku='$newSKU' WHERE id='$rID'",
                 "inventory_assy_list"=> "UPDATE ".BIZUNO_DB_PREFIX."inventory_assy_list SET sku='$newSKU' WHERE sku='$oldSKU'",
                 "inventory_history"  => "UPDATE ".BIZUNO_DB_PREFIX."inventory_history SET sku='$newSKU' WHERE sku='$oldSKU'",
                 "journal_cogs_owed"  => "UPDATE ".BIZUNO_DB_PREFIX."journal_cogs_owed SET sku='$newSKU' WHERE sku='$oldSKU'",
-                "journal_item"       => "UPDATE ".BIZUNO_DB_PREFIX."journal_item SET sku='$newSKU' WHERE sku='$oldSKU'",
-                ],
-            ];
+                "journal_item"       => "UPDATE ".BIZUNO_DB_PREFIX."journal_item SET sku='$newSKU' WHERE sku='$oldSKU'"]];
         msgLog(lang('inventory').' '.lang('rename')." - $oldSKU ($rID) -> $newSKU");
         $layout = array_replace_recursive($layout, $data);
     }

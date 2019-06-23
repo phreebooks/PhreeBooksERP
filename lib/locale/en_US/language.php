@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-22
+ * @version    3.x Last Update: 2019-06-21
  * @filesource /local/en_US/language.php
  */
 
@@ -272,6 +272,7 @@ $langCore = [
     'move_to' => 'Move To ...',
     'my_documents' => 'My Documents',
     'my_phreesoft_account' => 'My PhreeSoft.com Account',
+    'neither' => 'Neither',
     'new' => 'New',
     'next' => 'Next',
     'next_ref' => 'Next Reference: %s',

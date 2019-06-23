@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-05-11
+ * @version    3.x Last Update: 2018-06-20
  * @filesource /lib/controller/module/phreebooks/dashboards/currency_oanda/currency_oanda.php
  */
 
@@ -32,7 +32,7 @@ class currency_oanda
     public $code     = 'currency_oanda';
     public $category = 'general_ledger';
     public $noSettings= true;
-    
+
     function __construct($settings=[])
     {
         $this->security= getUserCache('security', 'j2_mgr', false, 0);
@@ -50,7 +50,7 @@ class currency_oanda
 
     public function render()
     {
-        $defISO= getUserCache('profile','currency');
+        $defISO= getDefaultCurrency();
         $ISOs  = getModuleCache('phreebooks', 'currency', 'iso', false, []);
         $cVals = [];
         foreach ($ISOs as $code => $iso) {
@@ -71,7 +71,7 @@ class currency_oanda
             $html .= '<form id="oandaForm" action="'.$action.'">';
             $html .= "<p>".$this->lang['update_desc']."</p>";
             $html .= "<p>1 $defISO = ".html5('excRate', $xRate).' '.html5('excISO', $xSel).'<br />'.html5('', $btnUpd).'</p></div>';
-            $html .= htmlJS($js);            
+            $html .= htmlJS($js);
         } else {
             $html .= '<br />'.$this->lang['no_multi_langs'];
         }

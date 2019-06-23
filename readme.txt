@@ -37,6 +37,7 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Upgrade Notice ==
 
+2019-06-21 - 5.2.7 - No database changes, Overwrite current files with new version, auto-upgrade script is included to make any db changes
 2019-06-01 - 5.2.6 - No database changes, Overwrite current files with new version, auto-upgrade script is included to make any db changes
 2019-05-07 - 5.2.5 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
 2019-04-22 - 5.2.4 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
@@ -66,6 +67,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.2.7 =
+2019-06-21 - Incorporate Bizuno Library 3.2.4. Change location of default currency in cache, bugs and enhancements
 = 5.2.6 =
 2019-06-01 - Incorporate Bizuno Library 3.2.3. Mostly Bug fixes
 = 5.2.5 =

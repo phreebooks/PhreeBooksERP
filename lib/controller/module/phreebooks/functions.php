@@ -17,14 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-26
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
 namespace bizuno;
 
 /**
- * Creates a drop down ready list of choices for bands used in the gl search
+ * Creates a drop down ready list of choices for bands used in the GL search
  * @return array - ready for a select DOM element
  */
 function selChoices()
@@ -74,24 +74,38 @@ function processPhreeBooks($value, $format = '')
 {
     global $report;
     switch ($format) {
+        case 'AgeCur': // Calculates aging for a specific invoice
+        case 'Age30':
+        case 'Age60':
+        case 'Age61':
+        case 'Age90':
+        case 'Age91':
+        case 'Age120': return procInvAging($value, $format);
         // *********** Statement Processing ***************
-        case 'age_00':
+        case 'age_00': // Calculates aging for the contact covering all invoices
         case 'age_30':
         case 'age_60':
+        case 'age_61':
         case 'age_90':
+        case 'age_91':
+        case 'age_121':
         case 'begBal':
         case 'endBal':
-            if (isset($report->datedefault) && !isset($report->currentValues['aging'])) {
+        case 'ageTot':
+            $cID = clean($value, 'integer');
+            if (isset($report->datedefault) && !isset($GLOBALS['aging']['c'.$cID])) {
                 $dates = explode(":", $report->datedefault); // encoded dates, type:start:end
-                $report->currentValues['aging'] = calculate_aging(clean($value, 'integer'), $dates[1], $dates[2]);
-                $report->currentValues['aging']['curBal'] = $report->currentValues['aging']['beg_bal']; // set the current balance
+                $GLOBALS['aging']['c'.$cID] = calculate_aging($cID, $dates[1], $dates[2]);
             }
-            if ($format=='age_00') { return $report->currentValues['aging']['balance_0'];  } // aging for level 1
-            if ($format=='age_30') { return $report->currentValues['aging']['balance_30']; } // aging for level 2
-            if ($format=='age_60') { return $report->currentValues['aging']['balance_60']; } // aging for level 3
-            if ($format=='age_90') { return $report->currentValues['aging']['balance_90']; } // aging for level 4
-            if ($format=='begBal') { return $report->currentValues['aging']['beg_bal'];    } // beginning balance
-            if ($format=='endBal') { return $report->currentValues['aging']['end_bal'];    } // ending balance
+            if ($format=='age_00') { return $GLOBALS['aging']['c'.$cID]['balance_0'];  } // current
+            if ($format=='age_30') { return $GLOBALS['aging']['c'.$cID]['balance_30']; } // aging  1-30
+            if ($format=='age_60') { return $GLOBALS['aging']['c'.$cID]['balance_60']; } // aging 31-60
+            if ($format=='age_61') { return $GLOBALS['aging']['c'.$cID]['balance_61']; } // aging 61-90
+            if ($format=='age_90') { return $GLOBALS['aging']['c'.$cID]['balance_90']; } // aging Over 60 past due date
+            if ($format=='age_91') { return $GLOBALS['aging']['c'.$cID]['balance_91']; } // aging 91-120
+            if ($format=='age_121'){ return $GLOBALS['aging']['c'.$cID]['balance_121'];} // aging over 120
+            if ($format=='begBal') { return $GLOBALS['aging']['c'.$cID]['beg_bal'];    } // beginning balance
+            if ($format=='endBal') { return $GLOBALS['aging']['c'.$cID]['end_bal'];    } // ending balance, total balance oustanding
             break;
         // ************ Bank Processing *******************
         case 'bnkReg':
@@ -142,11 +156,11 @@ function processPhreeBooks($value, $format = '')
             $rID  = clean($value, 'integer');
             if (!$rID) { return ''; }
             $row  = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id','total_amount','post_date','terms'], "id=$rID");
-            $type = in_array($row['journal_id'], [3,4,6,7]) ? 'v' : 'c';
-            $dates= localeDueDate($row['post_date'], $row['terms'], $type);
-            $discount = $row['post_date'] <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
-            if ($format == 'pmtDisc') { return $discount; }
-            return $row['total_amount'] - $discount;
+//          $type = in_array($row['journal_id'], [3,4,6,7]) ? 'v' : 'c';
+            $dates= localeDueDate($row['post_date'], $row['terms']); //, $type);
+            $disc = $row['post_date'] <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
+            if ($format == 'pmtDisc') { return $disc; }
+            return $row['total_amount'] - $disc;
         case 'paymentRcv': // needs journal_main.id
             $rID   = clean($value, 'integer');
             if (!$rID) { return ''; }
@@ -245,6 +259,42 @@ function processPhreeBooks($value, $format = '')
         default:
     }
     return $value;
+}
+
+/**
+ * Shows the aging amount of a single invoice if it falls within the proper aging column, Pass journal_main record ID
+ * @param type $value
+ */
+function procInvAging($value=false, $format='') {
+    msgDebug("\nEntering procInvAging with value = $value and format = $format");
+    if (empty($value)) { return ''; }
+    $rID  = intval($value);
+    $today= date('Y-m-d');
+    if (empty($GLOBALS['pbAging'][$rID])) {
+        $result   = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['contact_id_b', 'terms', 'post_date', 'total_amount', 'journal_id'], "id=$rID");
+        if (empty($result)) { return ''; }
+        $post_date= $result['post_date'];
+        $balance  = $result['total_amount'] + getPaymentInfo($rID, $result['journal_id']);
+        if (in_array($result['journal_id'], [7,13])) { $balance = -$balance; }
+        $term_date= localeDueDate($result['post_date'], $result['terms']);
+        $due_date = $term_date['net_date'];
+        $late_30  = localeCalculateDate($due_date,  30);
+        $late_60  = localeCalculateDate($due_date,  60);
+        $late_90  = localeCalculateDate($due_date,  90);
+        $late_120 = localeCalculateDate($due_date, 120);
+        $GLOBALS['pbAging'][$rID] = ['post_date'=>$post_date, 'due_date'=>$due_date, 'balance'=>$balance, 'l30'=>$late_30, 'l60'=>$late_60, 'l90'=>$late_90, 'l120'=>$late_120];
+    }
+    $vals = $GLOBALS['pbAging'][$rID];
+    switch ($format) {
+        case 'AgeCur': return $today >= $vals['post_date']&& $today <= $vals['due_date']? $vals['balance'] : 0;
+        case 'Age30':  return $today >  $vals['due_date'] && $today <= $vals['l30']     ? $vals['balance'] : 0;
+        case 'Age60':  return $today >  $vals['l30']      && $today <= $vals['l60']     ? $vals['balance'] : 0;
+        case 'Age61':  return $today >  $vals['l60']      && $today <= $vals['l90']     ? $vals['balance'] : 0;
+        case 'Age91':  return $today >  $vals['l90']      && $today <= $vals['l120']    ? $vals['balance'] : 0;
+        case 'Age90':  return $today >  $vals['l60']                                    ? $vals['balance'] : 0;
+        case 'Age120': return $today >  $vals['l120']                                   ? $vals['balance'] : 0;
+    }
+    return 0;
 }
 
 /**
@@ -356,7 +406,7 @@ function mapContactToJournal($cID = 0, $suffix='_b')
     $cData = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id='$cID'");
     $output['type']    = $cData['type'];
     $output['terms']   = isset($cData['terms']) && $cData['terms'] ? $cData['terms'] : '0';
-    $output['currency']= isset($cData['currencyISO']) && $cData['currencyISO'] ? $cData['currencyISO'] : getUserCache('profile', 'currency', false, 'USD');
+    $output['currency']= isset($cData['currencyISO']) && $cData['currencyISO'] ? $cData['currencyISO'] : getDefaultCurrency();
     return $output;
 }
 
@@ -587,51 +637,45 @@ function chartSales($jID, $range='c', $pieces=10, $reps=false)
 }
 
 /**
- * This function calculates the contact aging entries for purchase/sales order and purchases/invoices
- * @param integer $id - contact id to find aging
+ * This function calculates the contact aging summary entries for purchase/sales order and purchases/invoices
+ * @param integer $cID - contact id to find aging
  * @param string $bb_date -
  * @param string $eb_date -
  * @return array $output - aging results
  */
-function calculate_aging($id, $bb_date=false, $eb_date=false)
+function calculate_aging($cID, $bb_date=false, $eb_date=false)
 {
-    if (!$id) { return []; }
-    $result = dbGetValue(BIZUNO_DB_PREFIX."contacts", ['type', 'terms'], "id=$id");
+    if (!$cID) { return []; }
+    $result = dbGetValue(BIZUNO_DB_PREFIX."contacts", ['type', 'terms'], "id=$cID");
     $idx    = $result['type'] == 'v' ? 'vendors' : 'customers';
     $today  = date('Y-m-d');
     if (!$bb_date) { $bb_date = $today; }
     if (!$eb_date) { $eb_date = localeCalculateDate($today, 1); }
-    $term_date= localeDueDate($today, $result['terms'], $idx);
+    $term_date= localeDueDate($today, $result['terms']); //, $idx);
     $due_days = $term_date['due_days'];
     $due_date = localeCalculateDate($today, -$due_days);
-    $late_30  = localeCalculateDate($today, -30);
-    $late_60  = localeCalculateDate($today, -60);
-    $late_90  = localeCalculateDate($today, -90);
-    msgDebug("\nType=$idx, Today=$today, BB Date=$bb_date, EB Date=$eb_date, DueDate=$due_date, Late30=$late_30, Late60=$late_60, Late90=$late_90");
+    $late_30  = localeCalculateDate($due_date, -30);
+    $late_60  = localeCalculateDate($due_date, -60);
+    $late_90  = localeCalculateDate($due_date, -90);
+    $late_120 = localeCalculateDate($due_date, -120);
+    msgDebug("\nToday=$today, BB Date=$bb_date, EB Date=$eb_date, DueDate=$due_date, Late30=$late_30, Late60=$late_60, Late90=$late_90");
     $output   = [
         'inv_orders'  => [['id'=>'0', 'text'=>lang('select')]],
         'open_quotes' => [['id'=>'0', 'text'=>lang('select')]],
         'open_orders' => [['id'=>'0', 'text'=>lang('select')]],
         'unpaid_inv'  => [['id'=>'0', 'text'=>lang('select')]],
         'unpaid_crd'  => [['id'=>'0', 'text'=>lang('select')]],
-        'balance_0'   => 0,
-        'balance_30'  => 0,
-        'balance_60'  => 0,
-        'balance_90'  => 0,
-        'total'       => 0,
-        'past_due'    => 0,
-        'beg_bal'     => 0,
-        'end_bal'     => 0,
+        'balance_0'   => 0, 'balance_30'=>0, 'balance_60'=>0, 'balance_61'=>0, 'balance_90'=>0, 'balance_91'=>0, 'balance_121'=>0,
+        'total'       => 0, 'past_due'  =>0, 'beg_bal'   =>0, 'end_bal'   =>0,
         'credit_limit'=> $term_date['credit_limit'],
-        'terms_lang'  => viewTerms($result['terms'], false, $result['type'], $inc_limit=true),
-        ];
+        'terms_lang'  => viewTerms($result['terms'], false, $result['type'], $inc_limit=true)];
     $inv_jid  = ($result['type'] == 'v') ? '3,4,6,7' : '9,10,12,13';
-    $open_jID = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", "contact_id_b=$id AND journal_id IN ($inv_jid) AND closed='0'", "post_date");
-//    $inv_jid  = ($type == 'v') ? '6,7'  : '12,13';
-//    $pmt_jid  = ($type == 'v') ? '20,21,22' : '17,18,19';
+    $open_jID = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", "contact_id_b=$cID AND journal_id IN ($inv_jid) AND closed='0'", "post_date");
+//  $inv_jid  = ($type == 'v') ? '6,7'      : '12,13';
+//  $pmt_jid  = ($type == 'v') ? '20,21,22' : '17,18,19';
     foreach ($open_jID as $row) {
         $text = $row['invoice_num']." (".viewDate($row['post_date'])." - ".viewFormat($row['total_amount'], 'currency').")";
-        $entry = ['id'=>$row['id'], 'text'=>$text];
+        $entry= ['id'=>$row['id'], 'text'=>$text];
         msgDebug("\n Found aging record".print_r($entry, true));
         switch ($row['journal_id']) {
             case  3:
@@ -644,18 +688,39 @@ function calculate_aging($id, $bb_date=false, $eb_date=false)
             case 13: $output['unpaid_crd'][] = $entry; break;
         }
         if (in_array($row['journal_id'], [6,7,12,13])) {
-          $total_billed = in_array($row['journal_id'], [7,13]) ? -$row['total_amount'] : $row['total_amount'];
-          $post_date    = $row['post_date'];
-          $result = dbGetValue(BIZUNO_DB_PREFIX."journal_item", ["SUM(debit_amount) AS debits", "SUM(credit_amount) AS credits"], "item_ref_id='".$row['id']."' AND gl_type='pmt'", false);
-          if (!$result) { $result = ['debits'=>0, 'credits'=>0]; }
-          $balance = $total_billed - ($idx=='vendors' ? $result['debits']-$result['credits'] : $result['credits']-$result['debits']);
-          if     ($post_date < $bb_date) { msgDebug("\nAdding BegBal = $balance"); $output['beg_bal']    += $balance; }
-          if     ($post_date < $eb_date) { msgDebug("\nAdding EndBal = $balance"); $output['end_bal']    += $balance; }
-          if     ($post_date < $due_date){ msgDebug("\nAdding PastDue= $balance"); $output['past_due']   += $balance; }
-          if     ($post_date < $late_90) { msgDebug("\nAdding Late90 = $balance"); $output['balance_90'] += $balance; $output['total'] += $balance; }
-          elseif ($post_date < $late_60) { msgDebug("\nAdding Late60 = $balance"); $output['balance_60'] += $balance; $output['total'] += $balance; }
-          elseif ($post_date < $late_30) { msgDebug("\nAdding Late30 = $balance"); $output['balance_30'] += $balance; $output['total'] += $balance; }
-          elseif ($post_date <= $today)  { msgDebug("\nAdding Late00 = $balance"); $output['balance_0']  += $balance; $output['total'] += $balance; } // else it's in the future
+            $total_billed= in_array($row['journal_id'], [7,13]) ? -$row['total_amount'] : $row['total_amount'];
+            $post_date   = $row['post_date'];
+            $result      = dbGetValue(BIZUNO_DB_PREFIX."journal_item", ["SUM(debit_amount) AS debits", "SUM(credit_amount) AS credits"], "item_ref_id='".$row['id']."' AND gl_type='pmt'", false);
+            if (!$result) { $result = ['debits'=>0, 'credits'=>0]; }
+            $balance = $total_billed - ($idx=='vendors' ? $result['debits']-$result['credits'] : $result['credits']-$result['debits']);
+            if       ($post_date < $bb_date) { msgDebug("\nAdding BegBal = $balance"); $output['beg_bal']  += $balance; }
+            if       ($post_date < $eb_date) { msgDebug("\nAdding EndBal = $balance"); $output['end_bal']  += $balance; }
+            if       ($post_date < $due_date){ msgDebug("\nAdding PastDue= $balance"); $output['past_due'] += $balance; }
+            if       ($post_date < $late_120){
+                msgDebug("\nAdding Late 121+ = $balance");
+                $output['balance_121']+= $balance; $output['balance_90'] += $balance;
+                $output['total'] += $balance;
+            } elseif ($post_date < $late_90) {
+                msgDebug("\nAdding Late 91-120 = $balance");
+                $output['balance_91'] += $balance; $output['balance_90'] += $balance;
+                $output['total'] += $balance;
+            } elseif ($post_date < $late_60) {
+                msgDebug("\nAdding Late 61-90 = $balance");
+                $output['balance_61'] += $balance; $output['balance_90'] += $balance;
+                $output['total'] += $balance;
+            } elseif ($post_date < $late_30) {
+                msgDebug("\nAdding Late 31-60 = $balance");
+                $output['balance_60'] += $balance;
+                $output['total'] += $balance;
+            } elseif ($post_date < $due_date) {
+                msgDebug("\nAdding Late  1-30 = $balance");
+                $output['balance_30'] += $balance;
+                $output['total'] += $balance;
+            } elseif ($post_date <= $today)  {
+                msgDebug("\nAdding Current = $balance");
+                $output['balance_0']  += $balance;
+                $output['total'] += $balance;
+            } // else it's in the future, igonre
         }
     }
     return $output;

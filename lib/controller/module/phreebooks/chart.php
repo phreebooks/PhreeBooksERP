@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-16
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/phreebooks/chart.php
  */
 
@@ -187,7 +187,7 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
             return msgAdd("When editing an account that has gl entries posted against it, the account type cannot be changed!");
         }
         // passed all tests, key sort by gl account
-        $glAccounts["$acct"] = ['id'=>"$acct", 'title'=>$desc, 'type'=>$type, 'cur'=>getUserCache('profile', 'currency', false, 'USD')];
+        $glAccounts["$acct"] = ['id'=>"$acct", 'title'=>$desc, 'type'=>$type, 'cur'=>getDefaultCurrency()];
         $glAccounts["$acct"]['inactive']= $inactive? '1' : '0';
         $glAccounts["$acct"]['heading'] = $heading ? '1' : '0';
         $glAccounts["$acct"]['parent']  = $parent  ? $parent : '';
@@ -203,7 +203,7 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         }
         ksort($glAccounts, SORT_STRING);
         setModuleCache('phreebooks', 'chart', 'accounts', $glAccounts);
-        $this->checkDefault($acct, $type, getUserCache('profile', 'currency', false, 'USD'));
+        $this->checkDefault($acct, $type, getDefaultCurrency());
         if (!$isEdit) { insertChartOfAccountsHistory($acct, $type); } // build the journal_history entries
         // send confirm and reload browser cache (and page since datagrid doesn't reload properly)
         msgLog(lang('gl_account')." - ".lang('save'));
@@ -228,7 +228,7 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         if (dbGetValue(BIZUNO_DB_PREFIX."journal_item",'id',"gl_account='$rID'")) { return msgAdd(sprintf($this->lang['err_gl_chart_delete'], 'journal_item')); }
         if (dbGetValue(BIZUNO_DB_PREFIX."contacts",    'id',"gl_account='$rID'")) { return msgAdd(sprintf($this->lang['err_gl_chart_delete'], 'contacts')); }
         if (dbGetValue(BIZUNO_DB_PREFIX."inventory",   'id',"gl_sales='$rID' OR gl_inv='$rID' OR gl_cogs='$rID'")) { return msgAdd(sprintf($this->lang['err_gl_chart_delete'], 'inventory')); }
-        if (!getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[44]) { return msgAdd("Sorry, you cannot delete your retained earnings account."); }
+        if (!getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[44]) { return msgAdd("Sorry, you cannot delete your retained earnings account."); }
         $maxPeriod = dbGetValue(BIZUNO_DB_PREFIX."journal_history", 'MAX(period) as period', "", false);
         if (dbGetValue(BIZUNO_DB_PREFIX."journal_history", "beginning_balance", "gl_account='$rID' AND period=$maxPeriod")) { return msgAdd("The GL account cannot be deleted if the last fiscal year ending balance is not zero!"); }
         unset($glAccounts[$rID]);
@@ -285,28 +285,26 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
      */
     public function chartInstall($chart)
     {
-        if (!dbTableExists(BIZUNO_DB_PREFIX."journal_main") || !dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id')) {
-            msgDebug("\nTrying to load chart at path: $chart");
-            if (!file_exists($chart)) { return msgAdd("Bad path to chart!", 'trap'); }
-            $accounts = parseXMLstring(file_get_contents($chart));
-            if (is_object($accounts->account)) { $accounts->account = [$accounts->account]; } // in case of only one chart entry
-            $output = [];
-            $defRE  = '';
-            if (is_array($accounts->account)) { foreach ($accounts->account as $row) {
-                $tmp = ['id'=>trim($row->id), 'type'=>trim($row->type), 'cur'=>getUserCache('profile', 'currency', false, 'USD'), 'title'=>trim($row->title)];
-                if (isset($row->heading_only) && $row->heading_only) { $tmp['heading'] = 1; }
-                if (isset($row->primary_acct_id) && $row->primary_acct_id) { $tmp['primary'] = $row->primary_acct_id; }
-                $output['accounts'][$row->id] = $tmp;
-                if ($row->type == 44) { $defRE = $row->id; } // keep the retained earnings account
-            } }
-            if (is_array($accounts->defaults->type)) { foreach ($accounts->defaults->type as $row) { // set the defaults
-                $typeID = trim($row->id);
-                $output['defaults'][getUserCache('profile', 'currency', false, 'USD')][$typeID] = $typeID==44 ? $defRE : trim($row->account);
-            } }
-            setModuleCache('phreebooks', 'chart', false, $output);
-        } else {
-            msgAdd(lang('coa_import_blocked'));
-        }
+        if (!dbTableExists(BIZUNO_DB_PREFIX."journal_main") || dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id')) { return msgAdd(lang('coa_import_blocked')); }
+        msgDebug("\nTrying to load chart at path: $chart");
+        if (!file_exists($chart)) { return msgAdd("Bad path to chart!", 'trap'); }
+        $accounts = parseXMLstring(file_get_contents($chart));
+        if (is_object($accounts->account)) { $accounts->account = [$accounts->account]; } // in case of only one chart entry
+        $output = [];
+        $defRE  = '';
+        $curISO = getDefaultCurrency();
+        if (is_array($accounts->account)) { foreach ($accounts->account as $row) {
+            $tmp = ['id'=>trim($row->id), 'type'=>trim($row->type), 'cur'=>$curISO, 'title'=>trim($row->title)];
+            if (isset($row->heading_only) && $row->heading_only) { $tmp['heading'] = 1; }
+            if (isset($row->primary_acct_id) && $row->primary_acct_id) { $tmp['primary'] = $row->primary_acct_id; }
+            $output['accounts'][$row->id] = $tmp;
+            if ($row->type == 44) { $defRE = $row->id; } // keep the retained earnings account
+        } }
+        if (is_array($accounts->defaults->type)) { foreach ($accounts->defaults->type as $row) { // set the defaults
+            $typeID = trim($row->id);
+            $output['defaults'][$curISO][$typeID] = $typeID==44 ? $defRE : trim($row->account);
+        } }
+        setModuleCache('phreebooks', 'chart', false, $output);
     }
 
     /**
@@ -348,7 +346,7 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
      */
     private function checkDefault($acct, $type, $currency=false)
     {
-        if (empty($currency)) { $currency = getUserCache('profile', 'currency', false, 'USD'); }
+        if (empty($currency)) { $currency = getDefaultCurrency(); }
         $glDefaults = getModuleCache('phreebooks', 'chart', 'defaults');
         $glAccounts = getModuleCache('phreebooks', 'chart', 'accounts');
         if (empty($glDefaults[$currency][$type])) { // for some reason the default account has been cleared

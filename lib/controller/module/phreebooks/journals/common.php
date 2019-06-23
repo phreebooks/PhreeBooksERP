@@ -29,7 +29,7 @@ class jCommon
 
     public function __construct()
     {
-        $this->rounding     = getModuleCache('phreebooks', 'currency', 'iso')[getUserCache('profile', 'currency', false, 'USD')]['dec_len'];
+        $this->rounding     = getModuleCache('phreebooks', 'currency', 'iso')[getDefaultCurrency()]['dec_len'];
         $this->isolate_cogs = getModuleCache('phreebooks', 'settings', 'general', 'isolate_stores') ? true : false;
     }
 

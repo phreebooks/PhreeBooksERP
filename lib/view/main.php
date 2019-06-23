@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-06
+ * @version    3.x Last Update: 2019-06-13
  * @filesource /view/main.php
  */
 
@@ -214,10 +214,12 @@ function viewFormat($value, $format = '')
             return ($output == '-'.$zero) ? $zero : $output;
         case 'rep_id':      $result = dbGetValue(BIZUNO_DB_PREFIX."users", 'title', "admin_id='$value'");
             return $result ? $result : $value;
+        case 'rnd0d':     return !is_numeric($value) ? $value : number_format(round($value, 0), 0, '.', '');
         case 'rnd2d':     return !is_numeric($value) ? $value : number_format(round($value, 2), 2, '.', '');
         case 'taxTitle':  return viewTaxTitle($value);
+        case 'cTerms':    return viewTerms($value, true, 'id'); // must be passed contact id, default terms will use customers default
         case 'terms':     return viewTerms($value); // must be passed encoded terms, default terms will use customers default
-        case 'terms_v':   return viewTerms($value, true, 'v'); // must be passed encoded terms, default terms will use customers default
+        case 'terms_v':   return viewTerms($value, true, 'v'); // must be passed encoded terms, default terms will use vendors default
         case 'today':     return date('Y-m-d');
         case 'uc':        return mb_strtoupper($value);
         case 'yesBno':    return !empty($value) ? lang('yes') : '';
@@ -342,7 +344,7 @@ function viewInvSales($sku='',$range='m12')
             }
         }
     }
-    return !empty($GLOBALS['invSkuSales'][$sku][$range]) ? number_format($GLOBALS['invSkuSales'][$sku][$range], 1) : 0;
+    return !empty($GLOBALS['invSkuSales'][$sku][$range]) ? number_format($GLOBALS['invSkuSales'][$sku][$range], 2, '.', '') : 0;
 }
 
 /**
@@ -354,6 +356,7 @@ function viewInvMinStk($sku)
     $tolerance= 0.10; // 10% tolerance band
     $yrSales  = viewInvSales($sku);
     $curMinStk= dbGetValue(BIZUNO_DB_PREFIX."inventory", ['qty_min','lead_time'], "sku='$sku'");
+    msgAdd("yrSales = ".print_r($yrSales, true)." and minStk = ".print_r($curMinStk['lead_time'], true));
     $newMinStk= ($yrSales/12) * (($curMinStk['lead_time']/30) + 1); // 30 days of stock
     return abs($newMinStk - $curMinStk['qty_min']) > abs($curMinStk['qty_min'] * $tolerance) ? number_format($newMinStk,0) : '';
 }
@@ -525,6 +528,13 @@ function viewTaxTitle($value)
  */
 function viewTerms($terms_encoded='', $short=true, $type='c', $inc_limit=false)
 {
+    if ($type=='id') { // type == id for cID passed
+        $cID = intval($terms_encoded);
+        $result = dbGetValue(BIZUNO_DB_PREFIX.'contacts', ['terms','type'], "id=$cID");
+        if (empty($result)) { return 'N/A'; }
+        $type = $result['type'];
+        $terms_encoded = $result['terms'];
+    }
     $idx = $type=='v' ? 'vendors' : 'customers';
     $terms_def = explode(':', getModuleCache('phreebooks', 'settings', $idx, 'terms'));
     if (!$terms_encoded) { $terms = $terms_def; }
@@ -561,7 +571,7 @@ function viewCurrency($value, $format='currency')
 {
     global $currencies;
     if ($format=='curNull0' && (real)$value == 0) { return ''; }
-    $defISO = getUserCache('profile', 'currency', false, 'USD');
+    $defISO = getDefaultCurrency();
     if (!is_numeric($value))         { return $value; }
     if ( empty($currencies->iso))    { $currencies->iso = $defISO; }
     if (!empty($currencies->isoDest)){ $currencies->iso = $currencies->isoDest; unset($currencies->rate); } // force current rate

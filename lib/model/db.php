@@ -343,7 +343,7 @@ function dbWrite($table, $data, $action='insert', $parameters='', $quote=true)
  */
 function dbWriteCache($usrEmail=false, $lang=false)
 {
-    global $bizunoUser, $bizunoLang, $bizunoMod, $io;
+    global $bizunoUser, $bizunoLang, $bizunoMod;
     msgDebug("\nentering dbWriteCache");
     if (!biz_validate_user() || !getUserCache('profile', 'biz_id')) {
         return msgDebug("\nTrying to write to cache but user is not logged in or Bizuno not installed!");

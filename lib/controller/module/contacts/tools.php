@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/contacts/tools.php
  */
 
@@ -86,7 +86,7 @@ class contactsTools
         if (!$stmt = dbGetResult($sql)) { return msgAdd(lang('err_bad_sql')); }
         $result= $stmt->fetchAll(\PDO::FETCH_ASSOC);
         msgDebug("\nresult = ".print_r($result, true));
-        $precision = getModuleCache('phreebooks', 'currency', 'iso')[getUserCache('profile', 'currency', false, 'USD')]['dec_len'];
+        $precision = getModuleCache('phreebooks', 'currency', 'iso')[getDefaultCurrency()]['dec_len'];
         $struc[] = [lang('date'), lang('total')];
         for ($i = 0; $i < 12; $i++) { // since we have 12 months to work with we need 12 array entries
             $struc[$dates['ThisYear'].$dates['ThisMonth']] = [$dates['ThisYear'].'-'.$dates['ThisMonth'], 0];

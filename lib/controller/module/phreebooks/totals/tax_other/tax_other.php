@@ -52,7 +52,7 @@ class tax_other
     {
         $tax_other= clean("totals_{$this->code}", ['format'=>'float','default'=>0], 'post');
         if ($tax_other == 0) { return; }
-        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD'));
+        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getDefaultCurrency());
         $desc     = $this->lang['title'].': '.clean('primary_name_b', ['format'=>'text','default'=>''], 'post');
         $item[]   = [
             'id'           => clean("totals_{$this->code}_id", ['format'=>'float','default'=>0], 'post'),

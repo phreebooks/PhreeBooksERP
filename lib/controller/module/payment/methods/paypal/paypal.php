@@ -215,7 +215,7 @@ return msgAdd("Capture code has not been written for PayPal, this transaction mu
                     'COUNTRYCODE'    => clean($ledger->main['country_b'], 'ISO2'),
                     'ZIP'            => preg_replace("/[^A-Za-z0-9]/", "", $ledger->main['postal_code_b']),
                     'AMT'            => $ledger->main['total_amount'],
-                    'CURRENCYCODE'   => getUserCache('profile', 'currency', false, 'USD'),
+                    'CURRENCYCODE'   => getDefaultCurrency(),
                     'SHIPPINGAMT'    => isset($ledger->main['freight']) ? $ledger->main['freight'] : 0,
                     'TAXAMT'         => $ledger->main['sales_tax'] ? $ledger->main['sales_tax'] : 0,
                     'DESC'           => $ledger->main['description'],

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-08
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/model/registry.php
  */
 
@@ -36,7 +36,12 @@ final class bizRegistry
     }
 
     /**
-     * takes basic module properties and builds interdependencies
+     * Takes basic module properties and builds interdependencies
+     * @global array $bizunoMod
+     * @global array $bizunoUser
+     * @param type $usrEmail
+     * @param type $bizID
+     * @return type
      */
     public function initRegistry($usrEmail='', $bizID=0)
     {
@@ -56,7 +61,6 @@ final class bizRegistry
         $this->initPhreeForm($bizunoMod); // report structure
         dbWriteCache($usrEmail, true);
         msgDebug("\nReturning from initRegistry"); // with bizunoUser: ".print_r($bizunoUser,true));
-//      msgDebug("\nReturning from initRegistry with bizunoMod: " .print_r($bizunoMod, true));
     }
 
     /**
@@ -133,7 +137,6 @@ final class bizRegistry
         $bizunoMod[$module]['properties']= $admin->structure;
         // Restore Bizuno database version for upgrade check. If the dbVersion is the same, then nothing is done
         if ($module=='bizuno') { $bizunoMod['bizuno']['properties']['version'] = $this->dbVersion; }
-//      msgDebug("\nbizunoMod for module $module has properties: ".print_r($bizunoMod[$module]['properties'], true));
         msgDebug("\ndbVersion has been set in bizuno module to $this->dbVersion");
         $GLOBALS['updateModuleCache'][$module] = true;
     }
@@ -161,16 +164,6 @@ final class bizRegistry
         $bizunoUser['profile']['email']   = $usrEmail;
         $bizunoUser['profile']['biz_id']  = $bizID;
         $bizunoUser['profile']['language']= $lang;
-
-        // OLD WAY - DEPRECATED SETTING CAN BE DELETED AFTER 30 DAYS FROM 9/15/2018 also in view.php
-        $colors = getUserCache('profile', 'colors');
-        if (!empty($colors)) {
-            $icons = getUserCache('profile', 'theme', false, 'default');
-            setUserCache('profile', 'icons', $icons);
-            setUserCache('profile', 'theme', $colors);
-            clearUserCache('profile', 'colors');
-        } // END OLD WAY
-
         // Check to make sure the themes and icons folders are still there
         $theme = getUserCache('profile', 'theme');
         if ('default' != $theme) {
@@ -223,6 +216,12 @@ final class bizRegistry
         msgSysWrite($messages);
     }
 
+    /**
+     *
+     * @global array $bizunoMod
+     * @param type $mID
+     * @param type $status
+     */
     private function setModuleStatus($mID, $status=0)
     {
         global $bizunoMod;

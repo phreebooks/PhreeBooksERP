@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-17
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/phreebooks/budget.php
  */
 
@@ -26,7 +26,7 @@ namespace bizuno;
 class phreebooksBudget
 {
     public $moduleID = 'phreebooks';
-    
+
     function __construct()
     {
         $this->lang = getLang($this->moduleID);
@@ -83,7 +83,7 @@ class phreebooksBudget
     <hr>
     <p>".$this->lang['build_next_fy_desc'].html5('btnNextFY', $btnNextFY)."</p>\n</form>\n</fieldset>\n";
     }
-    
+
     private function getViewBudgetJS()
     {
     return "function budgetSave() {
@@ -129,7 +129,7 @@ function budgetDistribute() {
     jq('#dgBudget').edatagrid('loadData', rowData);
 }";
     }
-    
+
     /**
      * Datagrid structure for budgeting
      * @param string $name - DOM field name used for the datagrid
@@ -144,7 +144,7 @@ function budgetDistribute() {
             'attr'   => ['url'=>BIZUNO_AJAX."&p=phreebooks/budget/managerRows",'toolbar'=>"#{$name}Toolbar",'pagination'=>false,'singleSelect'=> true],
             'events' => [
                 'onEndEdit'  => "function(index) { if (index!=12) budgetTotal(); }",
-                'rowStyler'  => "function(index, row) { if (row.code=='".getUserCache('profile', 'currency', false, 'USD')."') { return {class:'row-default'}; }}"],
+                'rowStyler'  => "function(index, row) { if (row.code=='".getDefaultCurrency()."') { return {class:'row-default'}; }}"],
             'source' => [
                 'actions'=> [
                     'saveBgt'=> ['order'=>10,'icon'=>'save',   'events'=>['onClick'=>"budgetSave();"]],
@@ -283,7 +283,7 @@ function budgetDistribute() {
         msgLog(lang('phreebooks_budget').' - '.lang('save')." (FY: {$data['fy']}, GL: {$data['gl']})");
         msgAdd(lang('msg_settings_saved'), 'success');
     }
-    
+
     /**
      * Method to create and analyze cash flow, eventually creating a chart or graph
      * @param array $layout - Structure coming in
@@ -298,7 +298,7 @@ function budgetDistribute() {
         // foreach invoice, adjust running balance based on due date
         // get customer invoices, paid and unpaid, from today on
         // foreach invoice, adjust running balance based on payment due date
-        // get open POs, 
+        // get open POs,
         // send the data to a graphical interface, line chart
         $layout = array_replace_recursive($layout, $data);
     }

@@ -78,7 +78,7 @@ class todays_j03
                 $total += $entry['total_amount'];
                 $rows[]= $row;
             }
-            $currencies->iso  = getUserCache('profile', 'currency', false, 'USD');
+            $currencies->iso  = getDefaultCurrency();
             $currencies->rate = 1;
             $rows[] = '<div style="float:right"><b>'.viewFormat($total, 'currency').'</b></div><div style="float:left"><b>'.lang('total')."</b></div>";
         }

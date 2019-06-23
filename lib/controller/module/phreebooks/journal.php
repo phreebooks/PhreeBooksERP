@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-28
+ * @version    3.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/phreebooks/journal.php
  */
 
@@ -250,7 +250,7 @@ class journal
             'total_amount' => 0,
             'terms'        => getModuleCache('phreebooks', 'settings', $termsType, 'terms'), // default terms
             'gl_acct_id'   => '',
-            'currency'     => getUserCache('profile', 'currency', false, 'USD'),
+            'currency'     => getDefaultCurrency(),
             'currency_rate'=> 1,
             'closed'       => 0,
             'waiting'      => 0,
@@ -342,7 +342,7 @@ class journal
             if (in_array($row['journal_id'], [7,13])) { $row['total_amount'] = -$row['total_amount']; } // added jID=13 for cash receipts
             $row['total_amount'] += getPaymentInfo($row['id'], $row['journal_id']);
             if (in_array(JOURNAL_ID, [17,22])) { $row['total_amount'] = -$row['total_amount']; } // need to negate for reverse cash flow
-            $dates= localeDueDate($row['post_date'], $row['terms'], $type);
+            $dates= localeDueDate($row['post_date'], $row['terms']); //), $type);
             $discount = $today <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
             $output['items'][] = [
                 'idx'         => $itemIdx,
@@ -387,7 +387,7 @@ class journal
             if (in_array($row['journal_id'], [2])) { glFindAPacct($row); }
             if (in_array($row['journal_id'], [7,13])) { $row['total_amount'] = -$row['total_amount']; } // added jID=13 for cash receipts
             $paid    = getPaymentInfo($row['id'], $row['journal_id']);
-            $dates   = localeDueDate($row['post_date'], $row['terms'], 'v');
+            $dates   = localeDueDate($row['post_date'], $row['terms']); //, 'v');
             $discount= $row['post_date'] <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
             $output['items'][] = [
                 'idx'         => $itemIdx,
@@ -446,9 +446,9 @@ class journal
     public function currencyConvert($action=false)
     {
         msgDebug("\nEntering currencyConvert with action = $action");
-        if ( $this->main['currency'] == getUserCache('profile', 'currency', false, 'USD')) { return msgDebug(", returning as the currency is already the default!"); } // is already default currency
+        if ( $this->main['currency'] == getDefaultCurrency()) { return msgDebug(", returning as the currency is already the default!"); } // is already default currency
         if (empty($this->main['currency_rate']) || strlen($this->main['currency'])<>3) { // helps fix invalid currencies, set to default
-            $this->main['currency'] = getUserCache('profile', 'currency', false, 'USD');
+            $this->main['currency'] = getDefaultCurrency();
             $this->main['currency_rate'] = 1;
         }
         $mainFields = ['discount','freight','sales_tax','total_amount']; // table journal_main
@@ -569,7 +569,10 @@ class journal
     private function getAffectedGlAccts(&$affectedGlAccts, $main, $item)
     {
         // For now add the Retained Earnings account since it is also the rounding account
-        if (!$re_acct = getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[44]) { msgAdd(lang('err_gl_no_retained_earnings_acct'), 'caution'); }
+        if (!$re_acct = getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[44]) {
+            msgDebug("\nRetained earnings account error, currency: ".print_r(getDefaultCurrency(), true)." and re_acct = ".print_r($re_acct, true));
+            msgAdd(lang('err_gl_no_retained_earnings_acct'), 'caution');
+        }
         if (!in_array($re_acct, $affectedGlAccts)) { $affectedGlAccts[] = $re_acct; }
         if (!in_array($main['gl_acct_id'], $affectedGlAccts)) { $affectedGlAccts[] = $main['gl_acct_id']; }
         foreach ($item as $row) {
@@ -607,7 +610,7 @@ class journal
         // see if there is another fiscal year to roll into
         if ($fy_props['fy_period_max'] > $fy_props['period_max']) { // close balances for end of this fiscal year and roll post into next fiscal year
             // select retained earnings account
-            $re_acct = getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[44];
+            $re_acct = getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[44];
             $acct_string = $this->getGLtoClose(); // select list of accounts that need to be closed, adjusted
             // fetch the totals for the closed accounts
             $retained_earnings = dbGetValue(BIZUNO_DB_PREFIX."journal_history", "SUM(beginning_balance+debit_amount-credit_amount)", "gl_account IN ('$acct_string') AND period={$fy_props['period_max']}", false);
@@ -634,7 +637,7 @@ class journal
         $result = dbGetValue(BIZUNO_DB_PREFIX."journal_history", ["SUM(beginning_balance) AS balance, SUM(debit_amount) AS debit", "SUM(credit_amount) AS credit"], "period=$period", false);
         $adjustment = $result['balance'] + $result['debit'] - $result['credit'];
         msgDebug("\n    Validating balances for period: $period, adjustment = $adjustment and balance = {$result['balance']} and debits = {$result['debit']} and credits = {$result['credit']}");
-        $adj_gl_account = getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[44]; // retained earnings for now
+        $adj_gl_account = getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[44]; // retained earnings for now
         $tolerance   = 0.02; // i.e. 2 cents in USD
         $balance_total= round($result['balance'],4);
         $debit_total  = round($result['debit'],  4);

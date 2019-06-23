@@ -32,10 +32,10 @@ class inventoryAdmin
         $this->lang      = getLang($this->moduleID);
         $this->invMethods= ['byContact', 'bySKU', 'quantity']; // for install, pre-select some pricing methods to install
         $this->defaults  = [
-            'sales'   => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[30],
-            'stock'   => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[4],
-            'nonstock'=> getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[34],
-            'cogs'    => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[32],
+            'sales'   => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[30],
+            'stock'   => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[4],
+            'nonstock'=> getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[34],
+            'cogs'    => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[32],
             'method'  => 'f'];
         $this->settings = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
         $this->structure = [

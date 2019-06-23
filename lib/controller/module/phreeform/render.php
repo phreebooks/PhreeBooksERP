@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-15
+ * @version    3.x Last Update: 2019-06-19
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -572,7 +572,7 @@ class phreeformRender
                 $report->FieldValues = $stmt->fetch(\PDO::FETCH_ASSOC);
             }
             //echo "\nTrying to find results, sql = $report->sqlField $TrailingSQL";
-            $posted_currencies = ['currency' => getUserCache('profile', 'currency', false, 'USD'), 'currency_rate' => 1];
+            $posted_currencies = ['currency' => getDefaultCurrency(), 'currency_rate' => 1];
             if (sizeof(getModuleCache('phreebooks', 'currency', 'iso', false, [])) > 1 && strpos($report->sqlTable, BIZUNO_DB_PREFIX."journal_main") !== false) {
                 $stmt  = dbGetResult("SELECT currency, currency_rate $TrailingSQL");
                 $result= $stmt->fetch(\PDO::FETCH_ASSOC);
@@ -734,7 +734,7 @@ class phreeformRender
                 $report->FieldValues = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             }
             // load the posted currency values
-            $posted_currencies = ['currency' => getUserCache('profile', 'currency', false, 'USD'), 'currency_rate' => 1];
+            $posted_currencies = ['currency' => getDefaultCurrency(), 'currency_rate' => 1];
             if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1 && strpos($report->sqlTable, BIZUNO_DB_PREFIX."journal_main") !== false) {
                 $stmt  = dbGetResult("SELECT currency, currency_rate $TrailingSQL");
                 $result= $stmt->fetch(\PDO::FETCH_ASSOC);

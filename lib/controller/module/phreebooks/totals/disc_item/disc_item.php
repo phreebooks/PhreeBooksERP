@@ -52,7 +52,7 @@ class disc_item
     {
         $totalDisc= 0;
         $postItm  = clean('item_array', 'json', 'post');
-        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getUserCache('profile', 'currency', false, 'USD'));
+        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getDefaultCurrency());
         foreach ($postItm['rows'] as $idx => $row) {
             msgDebug("\nWorking with row = ".print_r($row, true));
             if (empty($row['unit_discount'])) { continue; }

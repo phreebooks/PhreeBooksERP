@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2019-03-27
+ * @version    3.x Last Update: 2019-06-21
  * @filesource /portal/upgrade.php
  */
 
@@ -121,13 +121,11 @@ function bizunoUpgrade($dbVersion='1.0')
             dbTransactionCommit();
         } // EOF - if (!dbFieldExists(BIZUNO_DB_PREFIX.'journal_main', 'notes'))
         // add new field
-        if (dbTableExists(BIZUNO_DB_PREFIX.'extShipping')) {
-            if (!dbFieldExists(BIZUNO_DB_PREFIX.'extShipping', 'billed')) {
-                dbTransactionStart();
-                dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extShipping` ADD `billed` FLOAT DEFAULT '0' COMMENT 'type:currency;tag:Billed;order:60' AFTER `cost`");
-                dbTransactionCommit();
-            }
-        }
+        if (dbTableExists(BIZUNO_DB_PREFIX.'extShipping')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extShipping', 'billed')) {
+            dbTransactionStart();
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extShipping` ADD `billed` FLOAT DEFAULT '0' COMMENT 'type:currency;tag:Billed;order:60' AFTER `cost`");
+            dbTransactionCommit();
+        } }
     }
 
     if (version_compare($dbVersion, '3.1.3') < 0) {
@@ -142,6 +140,11 @@ function bizunoUpgrade($dbVersion='1.0')
     if (version_compare($dbVersion, '3.1.7') < 0) {
         dbWrite(BIZUNO_DB_PREFIX.'contacts', ['inactive'=>0], 'update', "inactive=''");
         dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."contacts` CHANGE `inactive` `inactive` CHAR(1) NOT NULL DEFAULT '0' COMMENT 'type:select;tag:Status;order:20'");
+    }
+    if (version_compare($dbVersion, '3.2.4') < 0) {
+        if (dbTableExists(BIZUNO_DB_PREFIX.'extReturns')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extReturns', 'fault')) { // add new field to extension returns table
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extReturns` ADD `fault` INT(11) NOT NULL DEFAULT '0' COMMENT 'type:select;tag:FaultCode;order:22' AFTER `code`");
+        } }
     }
 
     // At every upgrade, run the comments repair tool to fix changes to the view structure

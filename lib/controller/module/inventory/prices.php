@@ -149,7 +149,7 @@ class inventoryPrices
             $row     = ['id'=>0, 'method'=>$mID, 'contact_type'=>$this->type];
             $settings= ['attr'=>'', 'title'=>''];
         }
-        $row['currency'] = getUserCache('profile', 'currency', false, 'USD'); // force currency to be the users default
+        $row['currency'] = getDefaultCurrency(); // force currency to be the users default
         // @TODO - remove AFTER 2019-06-01
         $structure['contact_id']['attr']['type']  = 'hidden';
         $structure['inventory_id']['attr']['type']= 'hidden';

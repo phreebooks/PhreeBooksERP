@@ -103,7 +103,7 @@ class ship_j10
                 $rows[] = $row;
             }
             if ($this->sendEmail && !empty($this->emailList)) { $this->notifyEmail(); }
-            $currencies->iso  = getUserCache('profile', 'currency', false, 'USD');
+            $currencies->iso  = getDefaultCurrency();
             $currencies->rate = 1;
             $settings['settings']['notified'] = $notified;
             setModuleCache($this->moduleID, $this->methodDir, $this->code, $settings);

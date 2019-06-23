@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-08
+ * @version    3.x Last Update: 2019-06-19
  * @filesource /locale/en_US/module/phreebooks/language.php
  */
 
@@ -140,10 +140,20 @@ $lang = [
     'pb_tax_by_journal' => 'Tax by Journal',
     'pb_total_by_journal' => 'Total by Journal',
     'pb_so_status' => 'SO Item Details',
-    'pb_gl_age_00' => 'Aging Current',
-    'pb_gl_age_30' => 'Aging 30 Days',
-    'pb_gl_age_60' => 'Aging 60 Days',
-    'pb_gl_age_90' => 'Aging Over 90',
+    'pb_cnt_age_00' => 'Contact Aging (Current)',
+    'pb_cnt_age_30' => 'Contact Aging 1-30 Days',
+    'pb_cnt_age_60' => 'Contact Aging 31-60 Days',
+    'pb_cnt_age_61' => 'Contact Aging 61-90 Days',
+    'pb_cnt_age_91' => 'Contact Aging 91-120 Days',
+    'pb_cnt_age_90' => 'Contact Aging Over 60',
+    'pb_cnt_age_121'=> 'Contact Aging Over 120',
+    'pb_inv_age_00' => 'Inv Aging (Current)',
+    'pb_inv_age_30' => 'Inv Aging 1-30',
+    'pb_inv_age_60' => 'Inv Aging 31-60',
+    'pb_inv_age_61' => 'Inv Aging 61-90',
+    'pb_inv_age_91' => 'Inv Aging 91-120',
+    'pb_inv_age_90' => 'Inv Aging Over 60',
+    'pb_inv_age_121'=> 'Inv Aging Over 120',
     'over_90' => 'Over 90',
     'pb_is_ytd' => 'Income YTD',
     'pb_is_budget_ytd' => 'Budget YTD',

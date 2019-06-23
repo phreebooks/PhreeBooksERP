@@ -32,10 +32,10 @@ class paymentAdmin
         $this->lang      = getLang($this->moduleID);
         $this->pmtMethods= ['cod', 'moneyorder']; // pre-select a couple of payment methods to install
         $this->defaults  = [
-            'gl_payment_c'  => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[0],
-            'gl_discount_c' => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[0],
-            'gl_payment_v'  => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[0],
-            'gl_discount_v' => getModuleCache('phreebooks', 'chart', 'defaults', getUserCache('profile', 'currency', false, 'USD'))[0]];
+            'gl_payment_c'  => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[0],
+            'gl_discount_c' => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[0],
+            'gl_payment_v'  => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[0],
+            'gl_discount_v' => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[0]];
         $this->settings  = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
         $this->structure = [
             'url'       => BIZUNO_URL."controller/module/$this->moduleID/",
