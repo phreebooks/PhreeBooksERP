@@ -35,26 +35,6 @@ After uploading the files to your server, navigate to your root url and follow t
 1. A pop up will appear to enter some initial information, select your preferences and press the Next icon.
 1. Wait about 10 seconds to get everything up and configured and the page will reload with your new Bizuno home page dashboard.
 
-== Upgrade Notice ==
-
-2019-06-21 - 5.2.7 - No database changes, Overwrite current files with new version, auto-upgrade script is included to make any db changes
-2019-06-01 - 5.2.6 - No database changes, Overwrite current files with new version, auto-upgrade script is included to make any db changes
-2019-05-07 - 5.2.5 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
-2019-04-22 - 5.2.4 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
-2019-04-01 - 5.2.3 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
-2019-03-09 - 5.2.2 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
-2019-01-21 - 5.2.1 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
-2018-12-17 - 5.2.0 - Overwrite current files with new version, auto-upgrade script is included to make any db changes
-2018-10-28 - 5.1.6 - No database changes, overwrite current files with new version
-2018-09-26 - 5.1.4 - No database changes, overwrite current files with new version
-2018-09-15 - 5.1.0 - No database changes. Optional to delete /view/* folder and replace with new version. Many files are no longer needed or used.
-2018-07-14 - 5.0.5 - No database changes, overwrite current files with new version
-2018-07-12 - 5.0.4 - No database changes, overwrite current files with new version
-2018-06-13 - 5.0.3 - No database changes, overwrite current files with new version
-2018-06-13 - 5.0.2 - No database changes, overwrite current files with new version
-2018-04-23 - 5.0.1 - No database changes necessary, replace current files with new version
-2018-04-10 - 5.0.0 - Initial Release to GitHub repository
-
 == Frequently Asked Questions ==
 
 = How can I convert from my existing accounting system? =
@@ -67,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.2.8 =
+2019-07-03 - Incorporate Bizuno Library 3.2.5. Addresses security issues that can compromise the server if not properly locked down
 = 5.2.7 =
 2019-06-21 - Incorporate Bizuno Library 3.2.4. Change location of default currency in cache, bugs and enhancements
 = 5.2.6 =

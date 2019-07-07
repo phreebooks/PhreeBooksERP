@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-19
+ * @version    3.x Last Update: 2019-07-02
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -202,7 +202,9 @@ class phreeformRender
                 $props = ['attr'=>['type'=>'checkbox']];
                 if (!empty($viewData['report']->truncate)) { $props['attr']['checked'] = true; }
                 $output .= "<tr><td>".$this->lang['truncate_fit'].'</td><td colspan="3">'.html5('critTruncate', $props)."</tr>\n";
-                $output .= '<tr><td>'.lang('currency').'</td><td colspan="3">'.html5('iso', ['attr'=>['type'=>'selCurrency']])."</tr>\n";
+                if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) {
+                    $output .= '<tr><td>'.lang('currency').'</td><td colspan="3">'.html5('iso', ['attr'=>['type'=>'selCurrency']])."</tr>\n";
+                }
             }
             if (isset($viewData['report']->filterlist) && $viewData['report']->filterlist <> '') {
                 foreach ($viewData['report']->filterlist as $key => $LineItem) { // retrieve the dropdown based on the params field (dropdown type)
@@ -381,7 +383,7 @@ class phreeformRender
                 break;
             case 'rpt':
                 $ReportData = '';
-                $report->iso = clean('iso', 'alpha_num', 'post');
+                $report->iso = clean('iso', ['format'=>'alpha_num', 'default'=>''], 'post');
                 $result = $this->BuildSQL($report);
                 if ($result['level'] == 'success') { // Generate the output data array
                     $sql = $result['data'];
@@ -544,14 +546,14 @@ class phreeformRender
     /**
      * For forms only - PDF style using TCPDF
      * @global object $report - report structure after database has been run and data has been added
-     * @global array $posted_currencies - will be extracted from the data to determine ISO code for formatting
+     * @global array $currencies - will be extracted from the data to determine ISO code for formatting
      * @param object $report - report with modified data
      * @param char $delivery_method - [default D, download] other options S to return with PDF formatted output
      * @return doesn't return if successful, user message if failure
      */
     private function BuildPDF($report, $delivery_method = 'D')
     {
-        global $report, $posted_currencies;
+        global $report, $currencies;
         // Generate a form for each group element
         $output = [];
         if (!empty($report->special_class)) {
@@ -572,11 +574,12 @@ class phreeformRender
                 $report->FieldValues = $stmt->fetch(\PDO::FETCH_ASSOC);
             }
             //echo "\nTrying to find results, sql = $report->sqlField $TrailingSQL";
-            $posted_currencies = ['currency' => getDefaultCurrency(), 'currency_rate' => 1];
+            $currencies = (object)['iso'=>getDefaultCurrency(), 'rate'=>1];
             if (sizeof(getModuleCache('phreebooks', 'currency', 'iso', false, [])) > 1 && strpos($report->sqlTable, BIZUNO_DB_PREFIX."journal_main") !== false) {
                 $stmt  = dbGetResult("SELECT currency, currency_rate $TrailingSQL");
                 $result= $stmt->fetch(\PDO::FETCH_ASSOC);
-                $posted_currencies = ['currency'=>$result['currency'], 'currency_rate'=>$result['currency_rate']];
+                msgDebug("\nFetched posted currencies from this record: ".print_r($result, true));
+                $currencies = (object)['iso'=>$result['currency'], 'rate'=>$result['currency_rate']];
             }
             if (isset($report->skipNullFieldIndex) && !$report->FieldValues[$report->skipNullFieldIndex]) { continue; }
             msgDebug("\n Working with FieldValues = ".print_r($report->FieldValues, true));
@@ -688,7 +691,7 @@ class phreeformRender
                 $id_field = $report->formbreakfield;
                 $temp     = explode('.', $report->printedfield);
                 if (sizeof($temp) == 2) { // need the table name and field name
-                    $sql = "UPDATE ".$temp[0]." SET ".$temp[1]."=".$temp[1]."+1 WHERE $report->formbreakfield='$Fvalue'";
+                    $sql = "UPDATE ".BIZUNO_DB_PREFIX.$temp[0]." SET ".$temp[1]."=".$temp[1]."+1 WHERE ".BIZUNO_DB_PREFIX."$report->formbreakfield='$Fvalue'";
                     dbGetResult($sql);
                 }
             }
@@ -710,14 +713,14 @@ class phreeformRender
      * @todo NOTE: This method needs to be completed and tested before put into operation
      * For forms only - Sequential mode, e.g. receipts
      * @global object $report - report structure after database has been run and data has been added
-     * @global array $posted_currencies - will be extracted from the data to determine ISO code for formatting
+     * @global array $currencies - will be extracted from the data to determine ISO code for formatting
      * @param object $report - report with modified data
      * @param char $delivery_method - [default D, download] other options S to return with PDF formatted output
      * @return doesn't return if successful, user message if failure
      */
     private function BuildSeq($report, $delivery_method='D')
     {
-        global $report, $posted_currencies;
+        global $report, $currencies;
         // Generate a form for each group element
         $output = NULL;
         if ($report->special_class) {
@@ -734,11 +737,11 @@ class phreeformRender
                 $report->FieldValues = $stmt->fetchAll(\PDO::FETCH_ASSOC);
             }
             // load the posted currency values
-            $posted_currencies = ['currency' => getDefaultCurrency(), 'currency_rate' => 1];
+            $currencies = (object)['iso'=>getDefaultCurrency(), 'rate'=>1];
             if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1 && strpos($report->sqlTable, BIZUNO_DB_PREFIX."journal_main") !== false) {
                 $stmt  = dbGetResult("SELECT currency, currency_rate $TrailingSQL");
                 $result= $stmt->fetch(\PDO::FETCH_ASSOC);
-                $posted_currencies = ['currency'=>$result['currency'], 'currency_rate'=>$result['currency_rate']];
+                $currencies = (object)['iso'=>$result['currency'], 'rate'=>$result['currency_rate']];
             }
             foreach ($report->fieldlist as $field) {
                 msgDebug("\nWorking with field $field->type and values: ".print_r($field, true));

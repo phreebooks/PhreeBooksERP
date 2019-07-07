@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-13
+ * @version    3.x Last Update: 2019-07-05
  * @filesource /view/main.php
  */
 
@@ -162,16 +162,14 @@ final class view extends portalView
  */
 function viewFormat($value, $format = '')
 {
-    global $currencies, $bizunoLang;
 //  msgDebug("\nIn viewFormat value = $value and format = $format");
     switch ($format) {
         case 'blank':      return '';
         case 'blankNull':  return $value ? $value : '';
-        case 'contactID':
-            return ($result = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'short_name', "id='$value'")) ? $result : getModuleCache('bizuno', 'settings', 'company', 'id');
+        case 'contactID':  return ($result = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'short_name',   "id='$value'")) ? $result : getModuleCache('bizuno', 'settings', 'company', 'id');
+        case 'contactGID': return ($result = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'gov_id_number',"id='$value'")) ? $result : '';
         case 'contactName':if (!$value) { return ''; }
-            $result = dbGetValue(BIZUNO_DB_PREFIX."address_book", 'primary_name', "ref_id='$value' AND type='m'");
-            return $result ? $result : '';
+            return ($result = dbGetValue(BIZUNO_DB_PREFIX."address_book", 'primary_name', "ref_id='$value' AND type='m'")) ? $result : '';
         case 'contactType':return pullTableLabel(BIZUNO_DB_PREFIX."contacts", 'type', $value);
         case 'curNull0':
         case 'currency':
@@ -190,10 +188,13 @@ function viewFormat($value, $format = '')
         case 'glActive':  return !empty(getModuleCache('phreebooks', 'chart', 'accounts', $value, '')['inactive']) ? lang('yes') : '';
         case 'glType':    return lang('gl_acct_type_'.$value);
         case 'glTitle':   return getModuleCache('phreebooks', 'chart', 'accounts', $value, $value)['title'];
-        case 'inv_sku':      $result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku', "id='$value'");
-            return $result ? $result : $value;
+        case 'image_sku': $result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'image_with_path', "sku='$value'"); // when user is logged in, internal access only
+            return $result ? "images/$result" : '';
+        case 'inv_j06':   return ($result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'description_purchase',"sku='$value'")) ? $result : $value;
+        case 'inv_j12':   return ($result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'description_sales',   "sku='$value'")) ? $result : $value;
+        case 'inv_sku':   return ($result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku',                 "id='$value'")) ? $result : $value;
         case 'inv_image': $result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'image_with_path', "id='$value'"); // when user is logged in, internal access only
-            return $result ? BIZUNO_DATA."images/$result" : '';
+            return $result ? "images/$result" : '';
         case 'inv_mv0':   $range = 'm0';
         case 'inv_mv1':   if (empty($range)) { $range = 'm1'; }
         case 'inv_mv3':   if (empty($range)) { $range = 'm3'; }
@@ -202,7 +203,7 @@ function viewFormat($value, $format = '')
                           return viewInvSales($value, $range); // value passed should be the SKU
         case 'inv_stk':   return viewInvMinStk($value); // value passed should be the SKU
         case 'lc':        return mb_strtolower($value);
-        case 'j_desc':    return isset($bizunoLang["journal_main_journal_id_$value"]) ? $bizunoLang["journal_main_journal_id_$value"] : $value;
+        case 'j_desc':    return lang("journal_main_journal_id_$value");
         case 'json':      return json_decode($value, true);
         case 'neg':       return -$value;
         case 'n2wrd':     return bizAutoLoad(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/functions.php") ? viewCurrencyToWords($value) : $value;
@@ -356,7 +357,6 @@ function viewInvMinStk($sku)
     $tolerance= 0.10; // 10% tolerance band
     $yrSales  = viewInvSales($sku);
     $curMinStk= dbGetValue(BIZUNO_DB_PREFIX."inventory", ['qty_min','lead_time'], "sku='$sku'");
-    msgAdd("yrSales = ".print_r($yrSales, true)." and minStk = ".print_r($curMinStk['lead_time'], true));
     $newMinStk= ($yrSales/12) * (($curMinStk['lead_time']/30) + 1); // 30 days of stock
     return abs($newMinStk - $curMinStk['qty_min']) > abs($curMinStk['qty_min'] * $tolerance) ? number_format($newMinStk,0) : '';
 }
@@ -562,24 +562,23 @@ function viewTerms($terms_encoded='', $short=true, $type='c', $inc_limit=false)
 
 /**
  * ISO source is always the default currency as all values are stored that way. Setting isoDest forces the default to be converted to that ISO
- * @global array $currencies - details of the ISO currency ->iso and ->rate OR ->isoDest ISO currency override
+ * @global object $currencies - details of the ISO currency ->iso and ->rate
  * @param float $value
  * @param string $format - How to format the data
- * @return string - Formatted data to $currencies->iso or $currencies->isoDest
+ * @return string - Formatted data to $currencies->iso if specified, else default currency
  */
 function viewCurrency($value, $format='currency')
 {
     global $currencies;
     if ($format=='curNull0' && (real)$value == 0) { return ''; }
-    $defISO = getDefaultCurrency();
-    if (!is_numeric($value))         { return $value; }
-    if ( empty($currencies->iso))    { $currencies->iso = $defISO; }
-    if (!empty($currencies->isoDest)){ $currencies->iso = $currencies->isoDest; unset($currencies->rate); } // force current rate
-    $isoVals= getModuleCache('phreebooks', 'currency', 'iso', $currencies->iso);
-    if ( empty($currencies->rate))   { $currencies->rate= !empty($isoVals['value']) ? $isoVals['value'] : 1; }
-    $newNum = number_format($value * $currencies->rate, $isoVals['dec_len'], $isoVals['dec_pt'], $isoVals['sep']);
+    if (!is_numeric($value)) { return $value; }
+    $isoDef = getDefaultCurrency();
+    $iso    = !empty($currencies->iso)  ? $currencies->iso  : $isoDef;
+    $isoVals= getModuleCache('phreebooks', 'currency', 'iso', $iso);
+    $rate   = !empty($currencies->rate) ? $currencies->rate : ($iso==$isoDef ? 1 : $isoVals['value']);
+    $newNum = number_format($value * $rate, $isoVals['dec_len'], $isoVals['dec_pt'], $isoVals['sep']);
     $zero   = number_format(0, $isoVals['dec_len']); // to handle -0.00
-    if ($newNum == '-'.$zero) { $newNum = $zero; }
+    if ($newNum == '-'.$zero)       { $newNum  = $zero; }
     if (!empty($isoVals['prefix'])) { $newNum  = $isoVals['prefix'].' '.$newNum; }
     if (!empty($isoVals['suffix'])) { $newNum .= ' '.$isoVals['suffix']; }
     return $newNum;
@@ -612,7 +611,7 @@ function viewTimeZoneSel($locale=[])
 }
 
 /**
- * This function build a drop down array based on the search criteria to list roles for phreebooks screens
+ * This function build a drop down array based on the search criteria to list roles for PhreeBooks screens
  * @param string $type (Default -> sales) - The role type to build list from, set to all for all users
  * @param boolean $inactive (Default - false) - Whether or not to include inactive users
  * @param string $source - where to pull the id from, [default] contacts (contacts table record id), users (users table admin_id)

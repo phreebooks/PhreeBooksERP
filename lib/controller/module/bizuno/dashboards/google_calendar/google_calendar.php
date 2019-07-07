@@ -44,6 +44,6 @@ class google_calendar
         $gmail = getUserCache('profile', 'gmail');
         $gzone = getUserCache('profile', 'gzone');
         if (!$gmail) { return $this->lang['err_no_email']; }
-        return '<iframe src="https://calendar.google.com/calendar/embed?src='.urlencode($gmail).'&ctz='.urlencode($gzone).'" style="border: 0" width="400" height="300" frameborder="0" scrolling="no"></iframe>';
+        return '<iframe src="https://www.google.com/calendar/embed?src='.urlencode($gmail).'&ctz='.urlencode($gzone).'" style="border: 0" width="100%" height="300" frameborder="0" scrolling="no"></iframe>';
     }
 }

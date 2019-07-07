@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2019-06-21
+ * @version    3.x Last Update: 2019-07-02
  * @filesource /portal/upgrade.php
  */
 
@@ -25,6 +25,7 @@ ini_set("max_execution_time", 1000000000);
  */
 function bizunoUpgrade($dbVersion='1.0')
 {
+    global $io;
     if (version_compare($dbVersion, '2.9') < 0) {
         if (!dbFieldExists(BIZUNO_DB_PREFIX.'users', 'cache_date')) {
             dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."users ADD `cache_date` DATETIME DEFAULT NULL COMMENT 'tag:CacheDate;order:70' AFTER `attach`");
@@ -128,15 +129,6 @@ function bizunoUpgrade($dbVersion='1.0')
         } }
     }
 
-    if (version_compare($dbVersion, '3.1.3') < 0) {
-        // add new vendor form folder to phreeform
-        $id = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='vend:j6' AND mime_type='dir'");
-        if (!$id) {
-            $parent = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='vend' AND mime_type='dir'");
-            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_6','group_id'=>'vend:j6','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
-        }
-        clearModuleCache('bizuno', 'properties', 'encKey'); // Fixes possible bug in storage of encryption key
-    }
     if (version_compare($dbVersion, '3.1.7') < 0) {
         dbWrite(BIZUNO_DB_PREFIX.'contacts', ['inactive'=>0], 'update', "inactive=''");
         dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."contacts` CHANGE `inactive` `inactive` CHAR(1) NOT NULL DEFAULT '0' COMMENT 'type:select;tag:Status;order:20'");
@@ -145,6 +137,29 @@ function bizunoUpgrade($dbVersion='1.0')
         if (dbTableExists(BIZUNO_DB_PREFIX.'extReturns')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extReturns', 'fault')) { // add new field to extension returns table
             dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extReturns` ADD `fault` INT(11) NOT NULL DEFAULT '0' COMMENT 'type:select;tag:FaultCode;order:22' AFTER `code`");
         } }
+    }
+    if (version_compare($dbVersion, '3.2.5') < 0) {
+        // add new vendor form folder to phreeform
+        $id = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='vend:j6' AND mime_type='dir'");
+        if (!$id) {
+            $parent = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='vend' AND mime_type='dir'");
+            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_6','group_id'=>'vend:j6','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
+        }
+        clearModuleCache('bizuno', 'properties', 'encKey'); // Fixes possible bug in storage of encryption key
+        // set the .htaccess file
+        if (file_exists('dist.htaccess') && !file_exists('.htaccess')) { rename('dist.htaccess', '.htaccess'); }
+        // Fixes illegal access to uploads/bizuno folder
+        $htaccess = '# secure uploads directory
+<Files ~ ".*\..*">
+	Order Allow,Deny
+	Deny from all
+</Files>
+<FilesMatch "\.(jpg|jpeg|jpe|gif|png|tif|tiff)$">
+	Order Deny,Allow
+	Allow from all
+</FilesMatch>';
+        // write the file to the WordPress Bizuno data folder.
+        $io->fileWrite($htaccess, '.htaccess', false);
     }
 
     // At every upgrade, run the comments repair tool to fix changes to the view structure

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-19
+ * @version    3.x Last Update: 2019-07-02
  * @filesource /controller/module/phreeform/functions.php
  */
 
@@ -76,6 +76,8 @@ function viewSeparator($value, $Process)
         case "2sp":    return "$value  ";
         case "comma":  return "$value,";
         case "com-sp": return "$value, ";
+        case "dash-sp":return "$value - ";
+        case "sep-sp": return "$value | ";
         case "nl":     return "$value\n";
         case "semi-sp":return "$value; ";
         case "del-nl": return $value=='' ? '' : "$value\n";
@@ -510,7 +512,6 @@ function phreeformCriteria($report, $xOnly=false)
 function BuildDataArray($sql, $report)
 {
     global $report, $currencies;
-//    $posted_currencies = ['currency' => getDefaultCurrency(), 'currency_rate' => 1]; // use default currency
     // See if we need to group, fetch the group fieldname
     $GrpFieldName       = '';
     $GrpFieldProcessing = '';
@@ -554,19 +555,20 @@ function BuildDataArray($sql, $report)
     msgDebug("\nProcessing control sequence = ".print_r($seq, true));
     // Generate the output data array
     if (!isset($report->totalonly)) { $report->totalonly = '0'; }
-    $currencies->isoDest = empty($report->iso) ? getDefaultCurrency() : $report->iso;
     $RowCnt     = 0;
     $ColCnt     = 1;
     $GrpWorking = false;
     $OutputArray= [];
     foreach ($result as $myrow) { // Check to see if a total row needs to be displayed
+        $currencies->iso = !empty($report->iso) ? $report->iso : getDefaultCurrency(); // force iso if requested else set default
+        unset($currencies->rate); // reset forces load at viewFormat to current rate
         $GLOBALS['currentRow'] = $myrow; // save the current row for processing
         $report->currentValues = false; // reset the stored processing values to save sql's
         if (isset($GrpField) && $GrpField) { // we're checking for group totals, see if this group is complete
             if (($myrow[$GrpField] <> $GrpWorking) && $GrpWorking !== false) { // it's a new group so print totals
                 $gTmp = viewProcess($GrpWorking, $GrpFieldProcessing);
                 $OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);
-                foreach($seq as $offset => $TotalCtl) {
+                foreach ($seq as $offset => $TotalCtl) {
                     // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total.
                     $OutputArray[$RowCnt][$offset+1] = $TotalCtl['total'] ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : ' ';
                     $seq[$offset]['grptotal'] = 0; // reset the total
@@ -575,6 +577,8 @@ function BuildDataArray($sql, $report)
             }
             $GrpWorking = $myrow[$GrpField]; // set to new grouping value
         }
+        if (!empty($myrow['currency']))     { $currencies->iso = $myrow['currency']; }
+        if (!empty($myrow['currency_rate'])){ $currencies->rate= $myrow['currency_rate']; }
         foreach ($seq as $key => $TableCtl) {
             $processedData = viewProcess($myrow[$TableCtl['fieldname']], $TableCtl['processing']);
             if (empty($report->totalonly)) { // insert data into output array and set to next column
@@ -591,6 +595,8 @@ function BuildDataArray($sql, $report)
         $RowCnt++;
         $ColCnt = 1;
     }
+    $currencies->iso = !empty($report->iso) ? $report->iso : getDefaultCurrency(); // force iso if requested else set default
+    unset($currencies->rate); // reset forces load at viewFormat to current rate
     if ($GrpWorking !== false) { // if we collected group data show the final group total
         $gTmp = viewProcess($GrpWorking, $GrpFieldProcessing);
         $OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);

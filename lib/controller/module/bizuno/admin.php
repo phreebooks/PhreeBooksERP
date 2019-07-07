@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    3.x Last Update: 2019-07-02
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -121,6 +121,8 @@ class bizunoAdmin
             '2sp'    => ['text'=>$this->lang['pf_sep_space2'], 'module'=>$this->moduleID,'function'=>'viewSeparator'],
             'comma'  => ['text'=>$this->lang['pf_sep_comma'],  'module'=>$this->moduleID,'function'=>'viewSeparator'],
             'com-sp' => ['text'=>$this->lang['pf_sep_commasp'],'module'=>$this->moduleID,'function'=>'viewSeparator'],
+            'dash-sp'=> ['text'=>$this->lang['pf_sep_dashsp'], 'module'=>$this->moduleID,'function'=>'viewSeparator'],
+            'sep-sp' => ['text'=>$this->lang['pf_sep_sepsp'],  'module'=>$this->moduleID,'function'=>'viewSeparator'],
             'nl'     => ['text'=>$this->lang['pf_sep_newline'],'module'=>$this->moduleID,'function'=>'viewSeparator'],
             'semi-sp'=> ['text'=>$this->lang['pf_sep_semisp'], 'module'=>$this->moduleID,'function'=>'viewSeparator'],
             'del-nl' => ['text'=>$this->lang['pf_sep_delnl'],  'module'=>$this->moduleID,'function'=>'viewSeparator']];
@@ -475,11 +477,11 @@ class bizunoAdmin
         if (method_exists($guest, 'installBizunoPre')) { if (!$guest->installBizunoPre()) { return; } } // pre-install for portal
         $usrEmail = biz_validate_user()[0];
         if (!$usrEmail) { return msgAdd('User is not logged in!'); }
-        setUserCache('profile', 'biz_id',   clean('bID',         'text',   'get'));
-        setUserCache('profile', 'biz_title',clean('biz_title',   'text',   'post'));
-        setUserCache('profile', 'language', clean('biz_lang',    'text',   'post'));
-        setUserCache('profile', 'chart',    clean('biz_chart',   'text',   'post'));
-        setUserCache('profile', 'first_fy', clean('biz_fy',      'integer','post'));
+        setUserCache('profile', 'biz_id',   clean('bID',      'text',   'get'));
+        setUserCache('profile', 'biz_title',clean('biz_title','text',   'post'));
+        setUserCache('profile', 'language', clean('biz_lang', 'text',   'post'));
+        setUserCache('profile', 'chart',    clean('biz_chart','text',   'post'));
+        setUserCache('profile', 'first_fy', clean('biz_fy',   'integer','post'));
         // error check title
         if (strlen(getUserCache('profile', 'biz_title')) < 3) { return msgAdd('Your business name needs to be from 3 to 15 characters!'); }
         // Here we go, ready to install
@@ -499,9 +501,7 @@ class bizunoAdmin
         // now Modules
         setUserCache('security', 'admin', 4);
         msgDebug("\nModule list to install = ".print_r($guest->getModuleList(true), true));
-        foreach ($guest->getModuleList(true) as $module => $path) {
-            $bAdmin->moduleInstall($layout, $module, $path);
-        }
+        foreach ($guest->getModuleList(true) as $module => $path) { $bAdmin->moduleInstall($layout, $module, $path); }
         // create the admin user account
         setUserCache('profile', 'email', $usrEmail);
         $admin_id = isset($GLOBALS['bizuno_install_admin_id']) ? $GLOBALS['bizuno_install_admin_id'] : 1;
@@ -530,7 +530,27 @@ class bizunoAdmin
         setModuleCache('bizuno', 'settings', 'locale', $locale);
         portalWrite('business', ['title'=>$company['id'],'currency'=>getDefaultCurrency(),'date_last_visit'=>date('Y-m-d h:i:s')], 'update', "id='".getUserCache('profile', 'biz_id')."'");
         msgLog(lang('user_login')." ".getUserCache('profile', 'email'));
+        $this->secureMyFiles();
         $layout = ['content'=>['action'=>'eval','actionData'=>"loadSessionStorage();"]];
+    }
+
+    /**
+     * Secures the root folder with dist.htaccess, and BIZUNO_DATA folder with access to images only
+     */
+    public function secureMyFiles()
+    {
+        global $io;
+        if (file_exists('dist.htaccess') && !file_exists('.htaccess')) { rename('dist.htaccess', '.htaccess'); }
+        $htaccess = '# secure uploads directory
+<Files ~ ".*\..*">
+	Order Allow,Deny
+	Deny from all
+</Files>
+<FilesMatch "\.(jpg|jpeg|jpe|gif|png|tif|tiff)$">
+	Order Deny,Allow
+	Allow from all
+</FilesMatch>';
+        $io->fileWrite($htaccess, '.htaccess', false);
     }
 
     /**

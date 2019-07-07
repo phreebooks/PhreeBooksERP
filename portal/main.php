@@ -160,7 +160,7 @@ class main //extends controller
             if (empty($rows)) { $this->setGuestRegistry(); }
             else {
                 foreach ($rows as $row) { $bizunoMod[$row['config_key']] = json_decode($row['config_value'], true); }
-                $this->validateVersion();
+                $this->validateVersion($bizunoMod['bizuno']['properties']['version']);
             }
         } else { // set guest registry
             $this->setGuestRegistry();
@@ -177,7 +177,7 @@ class main //extends controller
         if (file_exists(BIZUNO_EXT."myPortal/admin.php")) { $registry->initModule('myPortal', BIZUNO_EXT."myPortal/"); }
     }
 
-    private function validateVersion()
+    private function validateVersion($dbVersion=1.0)
     {
         global $io;
         $bizVer = getModuleCache('bizuno', 'versions', 'bizuno', false, ['time_last'=>time(),'version'=>MODULE_BIZUNO_VERSION]);
@@ -189,13 +189,12 @@ class main //extends controller
             $bizVer['time_last'] = time();
             setModuleCache('bizuno', 'versions', 'bizuno', $bizVer); // update cache
         }
-        if (version_compare(MODULE_BIZUNO_VERSION, $bizVer['version']) > 0) {
+        if (version_compare(MODULE_BIZUNO_VERSION, $dbVersion) > 0) {
             msgDebug("\nRetrieving file: ".BIZUNO_ROOT.'portal/upgrade.php');
             require(BIZUNO_ROOT.'portal/upgrade.php');
-            bizunoUpgrade($bizVer['version']);
+            bizunoUpgrade($dbVersion);
             msgDebug("\nUpdating cache with version ".MODULE_BIZUNO_VERSION);
-            $bizVer['version'] = MODULE_BIZUNO_VERSION;
-            setModuleCache('bizuno', 'versions', 'bizuno', $bizVer); // update cache
+            setModuleCache('bizuno','properties','version', MODULE_BIZUNO_VERSION);
         }
     }
 

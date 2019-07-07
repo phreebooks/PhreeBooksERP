@@ -51,7 +51,7 @@ require_once(BIZUNO_LIB."locale/cleaner.php");
 bizAutoLoad(BIZUNO_LIB."model/msg.php", 'messageStack');
 $msgStack= new messageStack();
 $cleaner= new cleaner();
-$icnSet = clean('icons',['format'=>'cmd','default'=>$style],   'get');
+$icnSet = clean('icons',['format'=>'cmd','default'=>'default'],'get');
 $creds  = explode('.', clean('code', ['format'=>'float','default'=>'0'], 'get')); // bizID.userID
 $bizID  = $creds[0];
 $userID = !empty($creds[1]) ? $creds[1] : 0;

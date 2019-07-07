@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-06
+ * @version    3.x Last Update: 2018-06-24
  * @filesource /controller/module/phreeform/renderForm.php
  */
 
@@ -45,7 +45,7 @@ class PDF extends \TCPDF
         global $report;
         $this->defaultFont = getModuleCache('phreeform','settings','general','default_font','helvetica');
         $PaperSize = explode(':', $report->page->size);
-        parent::__construct($report->page->orientation, 'mm', strtoupper($PaperSize[0]), true, 'UTF-8', false); 
+        parent::__construct($report->page->orientation, 'mm', strtoupper($PaperSize[0]), true, 'UTF-8', false);
         $this->SetCellPadding(0);
         if ($report->page->orientation == 'P') { // Portrait - calculate max page height
             $this->pageY = $PaperSize[2] - $report->page->margin->bottom;
@@ -60,9 +60,9 @@ class PDF extends \TCPDF
         $this->SetDrawColor(128, 0, 0);
         $this->SetLineWidth(0.35); // 1 point
     }
-    
+
     /**
-     * Creates the header for every page of a PDF output file. Basically all page static data 
+     * Creates the header for every page of a PDF output file. Basically all page static data
      * @global type $report - complete $report structure with data
      */
     function Header()
@@ -91,16 +91,16 @@ class PDF extends \TCPDF
                     // some special processing if display on first or last page only
                     if ($field->settings->display==2) {
                         $this->tempValues[] = $cellValue;
-                        break; 
+                        break;
                     }
-                case 'TBlk': // same operation as page number 
-                case 'Text': 
-                case 'CDta': 
+                case 'TBlk': // same operation as page number
+                case 'Text':
+                case 'CDta':
                 case 'CBlk':
                 case 'LtrTpl':
                 case 'PgNum':   $this->FormText($field);    break;
                 case 'Img':     $this->FormImage($field);   break;
-                case 'ImgLink': $this->FormImgLink($field, array_shift($tempValues)); break;
+                case 'ImgLink': $this->FormImgLink($field,  array_shift($tempValues)); break;
                 case 'Line':    $this->FormLine($field);    break;
                 case 'Rect':    $this->FormRect($field);    break;
                 case 'BarCode': $this->FormBarCode($field, array_shift($tempValues)); break;
@@ -144,7 +144,7 @@ class PDF extends \TCPDF
      * Create a new page group; call this before calling AddPage()
      */
     function StartPageGroup($page='')
-    { // 
+    { //
         $this->NewPageGroup = true;
     }
 
@@ -159,10 +159,10 @@ class PDF extends \TCPDF
 
     /**
      * Alias of the current page group -- will be replaced by the total number of pages in this group
-     * @return current page group 
+     * @return current page group
      */
     public function PageGroupAlias()
-    { // 
+    { //
         return $this->CurrPageGroup;
     }
 
@@ -175,7 +175,7 @@ class PDF extends \TCPDF
         msgDebug("returning false, page ".$this->GroupPageNo()." of ".$this->PageGroupAlias());
         return false;
     }
-    
+
     /**
      * Starts rending a page, static first then dynamic
      * @param char $orientation - page orientation
@@ -239,15 +239,17 @@ class PDF extends \TCPDF
      */
     function FormImgLink($Params, $path)
     {
-        if (!isset($Params->abscissa)) { return; } // don't do anything if data array has not been set
+        if (!isset($Params->abscissa)){ return; } // don't do anything if data array has not been set
         if (!isset($Params->abscissa)){ $Params->abscissa = '8'; }
         if (!isset($Params->ordinate)){ $Params->ordinate = '8'; }
         if (!isset($Params->width))   { $Params->width    = ''; }
         if (!isset($Params->height))  { $Params->height   = ''; }
         if ( isset($Params->settings->processing)) { $path = viewProcess($path, $Params->settings->processing); }
         $ext = strtolower(substr($path, strrpos($path, '.')+1));
-        if (is_file($path) && ($ext == 'jpg' || $ext == 'jpeg' || $ext == 'png')) {
-            $this->Image($path, $Params->abscissa, $Params->ordinate, $Params->width, $Params->height);
+        if (is_file(BIZUNO_DATA.$path) && ($ext == 'jpg' || $ext == 'jpeg' || $ext == 'png')) {
+            $this->Image(BIZUNO_DATA.$path, $Params->abscissa, $Params->ordinate, $Params->width, $Params->height);
+        } elseif (!empty($Params->hideNone)) {
+            $this->Cell($Params->width, 5, lang('none'), 1, 0, 'C');
         } else { // no image was found at the specified path, draw a box
             $this->SetXY($Params->abscissa, $Params->ordinate);
             $this->SetFont($this->defaultFont, '', '10');
@@ -265,7 +267,7 @@ class PDF extends \TCPDF
      * @return updated  class variables ready to render.
      */
     public function FormLine($Params) {
-        if (!isset($Params->abscissa)) { return; } // don't do anything if data array has not been set
+        if (!isset($Params->abscissa))          { return; } // don't do anything if data array has not been set
         if (!isset($Params->settings->bsize))   { $Params->settings->bsize    = '1'; }
         if (!isset($Params->settings->bcolor))  { $Params->settings->bcolor  = $this->defaultColor; }
         if (!isset($Params->settings->linetype)){ $Params->settings->linetype= 'H'; }
@@ -282,7 +284,7 @@ class PDF extends \TCPDF
         } elseif ($Params->settings->linetype == 'C') { // Custom
             $XEnd = $Params->endabscissa;
             $YEnd = $Params->endordinate;
-        } 
+        }
         $this->Line($Params->abscissa, $Params->ordinate, $XEnd, $YEnd);
     }
 
@@ -299,7 +301,7 @@ class PDF extends \TCPDF
             $FC = $this->convertRGB($Params->settings->bcolor);
             $this->SetDrawColor($FC[0], $FC[1], $FC[2]);
             $this->SetLineWidth($Params->settings->bsize * 0.35);
-        } else { 
+        } else {
             $this->SetDrawColor(255);
             $this->SetLineWidth(0);
         }
@@ -325,8 +327,8 @@ class PDF extends \TCPDF
         if (!isset($Params->height))          { $Params->height = ''; }
         if (!isset($Params->settings->fshow)) { $Params->settings->fshow = '0'; }
         $style = [
-            'position'    => '', 
-            'border'      => isset($Params->settings->bshow) && $Params->settings->bshow ? true : false, 
+            'position'    => '',
+            'border'      => isset($Params->settings->bshow) && $Params->settings->bshow ? true : false,
 //            'padding'     => 2, // in user units
             'text'        => true, // print text below barcode
             'font'        => $Params->settings->font == 'default' ? $this->defaultFont : $Params->settings->font,
@@ -346,8 +348,8 @@ class PDF extends \TCPDF
         }
         if (isset($Params->settings->processing)) { $data = viewProcess($data, $Params->settings->processing); }
         if (isset($Params->settings->formatting)) { $data = viewFormat ($data, $Params->settings->formatting); }
-        $data = clean($data, 'alpha_num'); // need to remove all special characters
-        $this->write1DBarcode($data, $Params->settings->barcode, $Params->abscissa, $Params->ordinate, $Params->width, $Params->height, 0.4, $style, 'N');
+        $data1 = clean($data, 'alpha_num'); // need to remove all special characters
+        $this->write1DBarcode($data1, $Params->settings->barcode, $Params->abscissa, $Params->ordinate, $Params->width, $Params->height, 0.4, $style, 'N');
     }
 
     /**
@@ -366,14 +368,14 @@ class PDF extends \TCPDF
             $FC = $this->convertRGB($Params->settings->bcolor);
             $this->SetDrawColor($FC[0], $FC[1], $FC[2]);
             $this->SetLineWidth($Params->settings->bsize * 0.35);
-        } else { 
+        } else {
             $Border = '0';
         }
         if (isset($Params->settings->fshow) && $Params->settings->fshow == '1') { // Fill
             $Fill = '1';
             $FC = $this->convertRGB($Params->settings->fcolor);
             $this->SetFillColor($FC[0], $FC[1], $FC[2]);
-        } else { 
+        } else {
             $Fill = '0';
         }
         if ($Params->type <> 'PgNum') { $TextField = isset($Params->settings->text) ? $Params->settings->text : ''; }
@@ -395,7 +397,6 @@ class PDF extends \TCPDF
         $FC = $this->convertRGB($Params->settings->fcolor);
         $hFC = (!$hRGB) ? $FC : $this->convertRGB($hRGB);
         $MaxBoxY = $Params->ordinate + $Params->height; // figure the max y position on page
-
         $FillThisRow = false;
         $MaxRowHt = 0; //track the tallest row to estimate page breaks
         $HeadingHt= 0;
@@ -436,7 +437,7 @@ class PDF extends \TCPDF
      * @param boolean $Heading - [default false] set to true to generate a heading at top of table
      * @return integer - max row height used to control pagination and end of page position
      */
-    public function ShowTableRow($Params, $myrow, $FillThisRow, $FC, $Heading = false) {
+    public function ShowTableRow($Params, $myrow, $FillThisRow, $FC, $Heading=false) {
         if (!isset($Params->settings->hfshow)) { $Params->settings->hfshow = '0'; }
         if (!isset($Params->settings->fshow))  { $Params->settings->fshow  = '0'; }
         if (!isset($Params->settings->hbshow)) { $Params->settings->hbshow = '1'; }
@@ -447,14 +448,13 @@ class PDF extends \TCPDF
         $MaxBoxY = $Params->ordinate + $Params->height; // figure the max y position on page
         $fillReq = $Heading ? $Params->settings->hfshow : $Params->settings->fshow;
         if ($FillThisRow && $fillReq) {
-            $this->SetFillColor($FC[0], $FC[1], $FC[2]); 
+            $this->SetFillColor($FC[0], $FC[1], $FC[2]);
         } else {
             $this->SetFillColor(255);
         }
         if ($fillReq) { $this->Cell($Params->width, $MaxBoxY - $this->y0, '', 0, 0, 'L', 1); } // sets background to white
         $maxY     = $this->y0; // set to current top of row
-        $Col      = 0;
-        $MaxRowHt = 0;
+        $Col      = $MaxRowHt = $maxImgHt = 0;
         $NextXPos = $Params->abscissa;
         foreach ($myrow as $key => $value) {
             if (substr($key, 0, 1) == 'r') { $key = substr($key, 1); }
@@ -468,22 +468,31 @@ class PDF extends \TCPDF
             $TC = $this->convertRGB($color);
             $this->SetTextColor($TC[0], $TC[1], $TC[2]);
             $CellHeight = ($size + 2) * 0.35;
-//            if ($trunc) $value=$this->TruncData($value, $value->width);
+//          if ($trunc) $value=$this->TruncData($value, $value->width);
             // special code for heading and data
             if ($Heading) {
                 if ($align == 'A') { $align = $Params->settings->boxfield[$key]->align; } // auto align
             } else {
-                if (isset($Params->settings->boxfield[$key]->processing)) $value = viewProcess($value, $Params->settings->boxfield[$key]->processing);
-                if (isset($Params->settings->boxfield[$key]->formatting)) $value = viewFormat ($value, $Params->settings->boxfield[$key]->formatting);
+                msgDebug("\nChecking processing, key array: ".print_r($Params->settings->boxfield[$key], true));
+                if (isset($Params->settings->boxfield[$key]->processing)) { $value = viewProcess($value, $Params->settings->boxfield[$key]->processing); }
+                if (isset($Params->settings->boxfield[$key]->formatting)) { $value = viewFormat ($value, $Params->settings->boxfield[$key]->formatting); }
             }
-            $this->MultiCell($Params->settings->boxfield[$key]->width, $CellHeight, $value, 0, $align, $fillReq?true:false);
-            if ($this->GetY() > $maxY) $maxY = $this->GetY();
+            // if processing is image_sku OR inv_image, set the Params object and call formImgLink
+            if (!$Heading && isset($Params->settings->boxfield[$key]->processing) && in_array($Params->settings->boxfield[$key]->processing, ['inv_image','image_sku'])) {
+                $width = $Params->settings->boxfield[$key]->width;
+                $props = (object)['abscissa'=>$this->GetX(), 'ordinate'=>$this->GetY(), 'width'=>$width, 'height'=>$width*3/4, 'hideNone'=>true];
+                $this->FormImgLink($props, $value);
+                $maxImgHt = $width * 3 / 4;
+            } else {
+                $this->MultiCell($Params->settings->boxfield[$key]->width, $CellHeight, $value, 0, $align, $fillReq?true:false);
+            }
+            if ($this->GetY() > $maxY) { $maxY = $this->GetY(); }
             $NextXPos += $Params->settings->boxfield[$key]->width;
             $Col++;
         }
-        $ThisRowHt = $maxY - $this->y0; // seee how tall this row was
-        if ($ThisRowHt > $MaxRowHt) $MaxRowHt = $ThisRowHt; // keep that largest row so far to track pagination
-        $this->y0 = $maxY; // set y position to largest value for next row
+        $ThisRowHt = max($maxImgHt, $maxY - $this->y0); // see how tall this row was
+        if ($ThisRowHt > $MaxRowHt) { $MaxRowHt = $ThisRowHt; } // keep that largest row so far to track pagination
+        $this->y0 = $this->y0 + $MaxRowHt; // set y position to largest value for next row
         if ($Heading && $Params->settings->hbshow) { // then it's the heading draw a line after if fill is set
             $this->Line($Params->abscissa, $maxY, $Params->abscissa + $Params->width, $maxY);
             $this->y0 = $this->y0 + ($Params->settings->hsize * 0.35);
@@ -492,7 +501,7 @@ class PDF extends \TCPDF
     }
 
     /**
-     * Draws lines all the lines in a table 
+     * Draws lines all the lines in a table
      * @param array $Params - field settings
      * @param float $HeadingHt - height of the heading to determine ordinate starting point
      * @return null - data is added to PDF output string
@@ -505,7 +514,7 @@ class PDF extends \TCPDF
         $DC = $this->convertRGB($Params->settings->bcolor);
         $hDC = (!$hRGB) ? $DC : $this->convertRGB($hRGB);
         $MaxBoxY = $Params->ordinate + $Params->height; // figure the max y position on page
-        // draw the heading 
+        // draw the heading
         $this->SetDrawColor($hDC[0], $hDC[1], $hDC[2]);
         $this->SetLineWidth($Params->settings->hbsize * 0.35);
         if ($Params->settings->hbshow) {
@@ -537,7 +546,7 @@ class PDF extends \TCPDF
     }
 
     /**
-     * Truncates long data strings to fit within column width 
+     * Truncates long data strings to fit within column width
      * @param sting $strData - data string to measure and operate on
      * @param float $ColWidth - width of a column in ems
      * @return string - truncated string if longer than 90% of the width, original string if not
@@ -554,7 +563,7 @@ class PDF extends \TCPDF
         }
         return $strData;
     }
-    
+
     /**
      * Converts a RGB color to hexadecimal format
      * @param string $value - value to convert

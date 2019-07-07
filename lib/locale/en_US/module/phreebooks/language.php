@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-19
+ * @version    3.x Last Update: 2019-06-25
  * @filesource /locale/en_US/module/phreebooks/language.php
  */
 
@@ -137,6 +137,7 @@ $lang = [
     'fill_purchase' => 'Receive/Fill Purchase',
     'fill_sale' => 'Invoice/Fill Sale',
     'pb_inv_unit' => 'Unit Price',
+    'pb_line_item_tax' => 'Line Item Tax',
     'pb_tax_by_journal' => 'Tax by Journal',
     'pb_total_by_journal' => 'Total by Journal',
     'pb_so_status' => 'SO Item Details',

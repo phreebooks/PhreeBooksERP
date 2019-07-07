@@ -152,11 +152,15 @@ function processPhreeBooks($value, $format = '')
             if (!$rID) { return ''; }
             $row =  dbGetValue(BIZUNO_DB_PREFIX.'journal_item', ['qty','credit_amount','debit_amount'], "id=$rID");
             return !empty($row['qty']) ? ($row['credit_amount'] + $row['debit_amount'])/$row['qty'] : 0;
+        case 'itmTaxAmt': // needs journal_item.id, journal item tax rate amount
+            $rID = intval($value);
+            $row = dbGetValue(BIZUNO_DB_PREFIX.'journal_item', ['tax_rate_id','credit_amount','debit_amount'], "id=$rID");
+            if (empty($row)) { return 0; }
+            return ($row['credit_amount'] + $row['debit_amount']) * getTaxRate($row['tax_rate_id']);
         case 'paymentDue': // needs journal_main.id
             $rID  = clean($value, 'integer');
             if (!$rID) { return ''; }
             $row  = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id','total_amount','post_date','terms'], "id=$rID");
-//          $type = in_array($row['journal_id'], [3,4,6,7]) ? 'v' : 'c';
             $dates= localeDueDate($row['post_date'], $row['terms']); //, $type);
             $disc = $row['post_date'] <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
             if ($format == 'pmtDisc') { return $disc; }
@@ -252,6 +256,7 @@ function processPhreeBooks($value, $format = '')
             $rID = intval($value);
             $main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'sales_tax'], "id=$rID");
             return in_array($main['journal_id'], [7,13,18,19,20,21]) ? -$main['sales_tax'] : $main['sales_tax'];
+        case 'taxRate': return (getTaxRate(intval($value)) * 100) . "%"; // needs tax rate id
         case 'ttlJrnl':
             $rID = intval($value);
             $main = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['journal_id', 'total_amount'], "id=$rID");
@@ -511,6 +516,21 @@ function getPeriodInfo($period)
 }
 
 /**
+ * Gets the current tax rate for a specified database table record id
+ * @param integer $taxID - tax_rate_id from journal_main or journal_item table
+ * @return float - tax rate value
+ */
+function getTaxRate($taxID=0)
+{
+    $ratesC= getModuleCache('phreebooks', 'sales_tax', 'c', false, []); // try customers first
+    foreach ($ratesC as $row) { if ($row['id'] == $taxID) { return $row['rate']/100; } }
+    $ratesV= getModuleCache('phreebooks', 'sales_tax', 'v', false, []); // not found, try vendors
+    foreach ($ratesV as $row) { if ($row['id'] == $taxID) { return $row['rate']/100; } }
+    return 0; // not found return 0
+}
+
+
+/**
  * Loads the tax rate information from the database and creates a structure for the session cache
  * @param char $type - choices are c for customers or v for vendors
  * @param string $date - [default Y-m-d] date to use to limit results to start date before passed date
@@ -522,8 +542,6 @@ function loadTaxes($type, $date=false)
     $output  = [];
     $taxRates= getModuleCache('phreebooks', 'sales_tax', $type, false, []);
     foreach ($taxRates as $row) {
-        if (empty($row['rate'])) { $row['rate'] = $row['tax_rate']; } // delete after 4/15/2018, now set in registry
-        if (!is_array($row['settings'])) { $row['settings'] = json_decode($row['settings'], true); } // delete after 4/15/2018, now set in registry
         $output[] = ['id'=>$row['id'],'text'=>$row['title'],'tax_rate'=>$row['rate']." %",'status'=>$row['status'],'auths'=>$row['settings']];
     }
     array_unshift($output, ['id'=>'0', 'text'=>lang('none'), 'status'=>0, 'tax_rate'=>"0 %", 'auths'=>[]]);

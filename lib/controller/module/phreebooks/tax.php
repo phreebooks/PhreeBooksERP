@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-05
+ * @version    3.x Last Update: 2019-06-24
  * @filesource /lib/controller/module/phreebooks/tax.php
  */
 
@@ -84,31 +84,35 @@ class phreebooksTax
      */
     public function edit(&$layout=[])
     {
-        if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
-        $type= clean('type',['format'=>'char','default'=>'c'], 'get');
-        $rID = clean('rID', 'integer', 'get');
+        $rID   = clean('rID', 'integer', 'get');
+        if (!$security = validateSecurity('bizuno', 'admin', $rID?3:2)) { return; }
+        $type  = clean('type',['format'=>'char','default'=>'c'], 'get');
         $struc = dbLoadStructure(BIZUNO_DB_PREFIX."tax_rates", $type);
-        if ($rID) {
-            $dbData = dbGetRow(BIZUNO_DB_PREFIX."tax_rates", "id=$rID");
+        $struc['settings'.$type]['attr']['type'] = 'hidden'; // for saving the grid data
+        $struc['settings'.$type]['attr']['value']= '';
+        $fldTax= ['id', 'type', 'inactive', 'title', 'start_date', 'end_date', 'settings'.$type];
+        if ($rID) { // existing record
+            $dbData= dbGetRow(BIZUNO_DB_PREFIX."tax_rates", "id=$rID");
             dbStructureFill($struc, $dbData);
             $rates = $this->getRateDetail($dbData['settings']); // already encoded
-        } else {
-            $rates = $this->getRateDetail(false);
+        } else { // new record
+            $struc['type']['attr']['value']      = $type;
             $struc['start_date']['attr']['value']= date('Y-m-d');
-            $struc['end_date']['attr']['value']  = localeCalculateDate(date('Y-m-d'), 0, 0, 10);
+            $struc['end_date']['attr']['value']  = localeCalculateDate(date('Y-m-d'), 0, 0, 10); // 10 years
+            $rates = $this->getRateDetail(false);
         }
         unset($struc['settings']);
         $data = ['type'=>'divHTML',
-            'divs'     => [
+            'divs'    => [
                 'toolbar'=>['order'=>10,'type'=>'toolbar','key'=>'tbTax'],
                 'body'   =>['order'=>50,'type'=>'divs','divs'=>[
-                    'formBOF' => ['order'=>15,'type'=>'form',    'key'   =>"frmTax$type"],
-                    'body'    => ['order'=>50,'type'=>'fields',  'fields'=>$this->getViewTax($struc, $type)],
-                    'datagrid'=> ['order'=>70,'type'=>'datagrid','key'   =>'dgTaxVendors'],
-                    'formEOF' => ['order'=>95,'type'=>'html',    'html'  =>"</form>"]]]],
+                    'formBOF' => ['order'=>15,'type'=>'form',    'key' =>"frmTax$type"],
+                    'body'    => ['order'=>50,'type'=>'fields',  'keys'=>$fldTax],
+                    'datagrid'=> ['order'=>70,'type'=>'datagrid','key' =>'dgTaxVendors'],
+                    'formEOF' => ['order'=>95,'type'=>'html',    'html'=>"</form>"]]]],
             'toolbars'=> ['tbTax'=>['icons'=>[
-                "taxSave$type" => ['order'=>20,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"taxPreSubmit$type('$type'); jq('#frmTax$type').submit();"]],
-                "taxNew$type"  => ['order'=>40,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"accordionEdit('accTax$type','dgTax$type','divTax{$type}Detail','".jsLang('details')."', 'phreebooks/tax/edit&type=$type', 0);"]]]]],
+                "taxSave$type"=> ['order'=>20,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"taxPreSubmit$type('$type'); jq('#frmTax$type').submit();"]],
+                "taxNew$type" => ['order'=>40,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"accordionEdit('accTax$type','dgTax$type','divTax{$type}Detail','".jsLang('details')."', 'phreebooks/tax/edit&type=$type', 0);"]]]]],
             'forms'   => ["frmTax$type"=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/tax/save&type=$type"]]],
             'datagrid'=> ['dgTaxVendors'=>$this->dgTaxVendors("dgTaxVendors$type", $type, $rates)],
             'fields'  => $struc,
@@ -142,16 +146,6 @@ function taxPreSubmit{$type}(type) {
 }";
     }
 
-    private function getViewTax($struc, $type)
-    {
-        return ['id'    .$type => array_merge($struc['id']),
-            'settings'  .$type => array_merge($struc['type']),
-            'title'     .$type => array_merge($struc['title'],     ['break'=>true]),
-            'inactive'  .$type => array_merge($struc['inactive'],  ['break'=>true]),
-            'start_date'.$type => array_merge($struc['start_date'],['col'=>2,'break'=>true]),
-            'end_date'  .$type => array_merge($struc['end_date'],  ['col'=>2,'break'=>true])];
-    }
-
     /**
      * Structure for saving user defined sales tax information
      * @param array $layout - Structure coming in
@@ -159,11 +153,11 @@ function taxPreSubmit{$type}(type) {
      */
     public function save(&$layout=[])
     {
-        $type = clean('type', ['format'=>'char','default'=>'c'], 'get');
-        $values = requestData(dbLoadStructure(BIZUNO_DB_PREFIX."tax_rates"), $type);
-        $rID = isset($values['id']) ? $values['id'] : 0;
+        $type  = clean('type', ['format'=>'char','default'=>'c'], 'get');
+        $values= requestData(dbLoadStructure(BIZUNO_DB_PREFIX."tax_rates"));
+        $rID   = isset($values['id']) ? $values['id'] : 0;
         if (!validateSecurity('bizuno', 'admin', $rID?3:2)) { return; }
-        $settings = clean($values['settings'], 'json');
+        $settings = clean('settings'.$type, 'json', 'post');
         $values['type'] = $type;
         $values['settings'] = json_encode($settings['rows']);
         $values['tax_rate'] = $settings['footer'][0]['rate'];

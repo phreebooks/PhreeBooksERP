@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-21
+ * @version    3.x Last Update: 2019-07-02
  * @filesource /portal/guest.php
  */
 
@@ -202,6 +202,8 @@ class guest
         if (file_exists('bizunoCFG.php')) { chmod('bizunoCFG.php', 0644); } // make writable if not
         file_put_contents('bizunoCFG.php', $rows);
         chmod('bizunoCFG.php', 0444); // make not writable, if possible
+        // set the .htaccess file
+        if (file_exists('dist.htaccess') && !file_exists('.htaccess')) { rename('dist.htaccess', '.htaccess'); }
         return true;
     }
 

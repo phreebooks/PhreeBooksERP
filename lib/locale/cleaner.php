@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-01
+ * @version    3.x Last Update: 2019-07-02
  * @filesource /locale/cleaner.php
  */
 
@@ -529,8 +529,8 @@ function localeDueDate($post_date, $terms_encoded=0)
             break;
         case '4': // Due on day of next month
             $result['discount']   = 0;
-            $result['early_date'] = clean($terms[3], 'date');
-            $result['net_date']   = clean($terms[3], 'date');
+            $result['early_date'] = $terms[3];
+            $result['net_date']   = $terms[3];
             $result['due_days']   = 0;
             break;
         case '5': // Due at end of month

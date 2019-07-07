@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-14
+ * @version    3.x Last Update: 2019-07-02
  * @filesource /bizunoFS.php
  */
 
@@ -49,16 +49,21 @@ $GLOBALS['dbBizuno'] = $GLOBALS['dbPortal'] = ['type'=>'mysql','host'=>BIZUNO_DB
 
 require("portal/functions.php");
 require_once(BIZUNO_LIB."controller/functions.php");
-require_once(BIZUNO_LIB."locale/cleaner.php");
-require_once(BIZUNO_LIB."model/db.php");
-require_once(BIZUNO_LIB."model/msg.php");
+bizAutoLoad(BIZUNO_LIB."locale/cleaner.php", 'cleaner');
+bizAutoLoad(BIZUNO_LIB."model/db.php", 'db');
+bizAutoLoad(BIZUNO_LIB."model/msg.php", 'messageStack');
+bizAutoLoad(BIZUNO_LIB."model/io.php", 'io');
 $msgStack= new messageStack();
-$cleaner = new cleaner;
+$cleaner = new cleaner();
+$io      = new io();
 $parts   = explode('/', clean('src', 'path_rel', 'get'), 2);
 $fn      = BIZUNO_DATA.$parts[1];
-if (!file_exists($fn)) { 
-    $fn = BIZUNO_ROOT . str_replace(BIZUNO_SRVR, '', BIZUNO_LOGO);
-}
+$path    = pathinfo($fn, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR;
+$ext     = strtolower(pathinfo($fn, PATHINFO_EXTENSION));
+$fBad    = !file_exists($fn) ? true : false;
+$pBad    = !$io->validatePath($path) ? true : false;
+$tBad    = !in_array($ext, ['jpg','jpeg','jpe','gif','png','tif','tiff']) ? true : false;
+if ($tBad || $pBad || $fBad) { $fn = BIZUNO_ROOT . str_replace(BIZUNO_SRVR, '', BIZUNO_LOGO); }
 header("Accept-Ranges: bytes");
 header("Content-Type: "  .getMimeType($fn));
 header("Content-Length: ".filesize($fn));

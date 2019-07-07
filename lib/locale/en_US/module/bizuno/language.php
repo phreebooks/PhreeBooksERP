@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-13
+ * @version    3.x Last Update: 2019-06-25
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -151,11 +151,13 @@ $lang = [
     'pf_proc_precise' => 'Precise',
     'pf_proc_rep_id' => 'Sales Rep',
     'pf_cur_null_zero' => 'Currency (Null if Zero)',
-    'pf_sep_comma'  => 'Comma (,)',
-    'pf_sep_commasp'=> 'Comma-Space',
+    'pf_sep_comma' => 'Comma (,)',
+    'pf_sep_commasp' => 'Comma-Space',
+    'pf_sep_dashsp' => 'Dash-Space',
+    'pf_sep_sepsp' => 'Separator-Space',
     'pf_sep_newline'=> 'Line Break',
     'pf_sep_semisp' => 'Semicolon-space',
-    'pf_sep_delnl'  => 'Skip Blank-Line Break',
+    'pf_sep_delnl' => 'Skip Blank-Line Break',
     'pf_sep_space1' => 'Single Space',
     'pf_sep_space2' => 'Double Space',
     // Extra fields

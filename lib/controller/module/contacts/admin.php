@@ -59,7 +59,8 @@ class contactsAdmin
             'qtrNeg4'    => ['text'=>lang('quarter_neg4') .' (contact_id_b)','group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processContacts'],
             'qtrNeg5'    => ['text'=>lang('quarter_neg5') .' (contact_id_b)','group'=>$this->lang['title'],'module'=>$this->moduleID,'function'=>'processContacts'],
             'contactID'  => ['text'=>lang('contacts_short_name'),            'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
-            'contactName'=> ['text'=>lang('address_book_primary_name'),      'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat']];
+            'contactName'=> ['text'=>lang('address_book_primary_name'),      'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
+            'contactGID' => ['text'=>lang('contacts_gov_id_number')." (".lang('id').")",'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat']];
         $this->crm_actions = [
             'new' =>$this->lang['contacts_crm_new_call'],
             'ret' =>$this->lang['contacts_crm_call_back'],

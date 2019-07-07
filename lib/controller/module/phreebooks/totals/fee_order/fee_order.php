@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-20
+ * @version    3.x Last Update: 2019-06-24
  * @filesource /lib/controller/module/phreebooks/totals/fee_order/fee_order.php
  */
 
@@ -32,8 +32,8 @@ class fee_order
 
     public function __construct()
     {
-        if (!defined('JOURNAL_ID')) { define('JOURNAL_ID', 2); }
-        $type          = in_array(JOURNAL_ID, [3,4,6,7,21]) ? 'vendors' : 'customers';
+        $this->jID     = clean('jID', ['format'=>'integer', 'default'=>2], 'get');
+        $type          = in_array($this->jID, [3,4,6,7,21]) ? 'vendors' : 'customers';
         $this->settings= ['gl_type'=>'fee','journals'=>'[3,4,6,7,9,10,12,13,19,21]','gl_account'=>getModuleCache('phreebooks','settings',$type,'gl_discount'),'order'=>70];
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
@@ -46,7 +46,7 @@ class fee_order
             'gl_type'   => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'  => ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
             'gl_account'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_account']]],
-            'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
+            'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'value'=>$this->settings['order']]]];
     }
 
     public function glEntry(&$main, &$item, &$begBal=0)
@@ -60,8 +60,8 @@ class fee_order
             'gl_type'      => $this->settings['gl_type'],
             'qty'          => '1',
             'description'  => $desc,
-            'debit_amount' => in_array(JOURNAL_ID, [9,10,12,13,19]) ? $fee_order : 0,
-            'credit_amount'=> in_array(JOURNAL_ID, [3, 4, 6, 7,21]) ? $fee_order : 0,
+            'debit_amount' => in_array($this->jID, [3, 4, 6, 7,21]) ? $fee_order : 0,
+            'credit_amount'=> in_array($this->jID, [9,10,12,13,19]) ? $fee_order : 0,
             'gl_account'   => clean("totals_{$this->code}_gl", ['format'=>'text','default'=>$this->settings['gl_account']], 'post'),
             'post_date'    => $main['post_date']];
         $begBal += $fee_order;

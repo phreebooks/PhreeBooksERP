@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-08
+ * @version    3.x Last Update: 2019-06-27
  * @filesource /lib/controller/module/bizuno/fields.php
  */
 
@@ -343,7 +343,7 @@ class bizunoFields
         if ($new_field == '') { return msgAdd(lang('err_field_empty')); }
         if (!$old_field || $old_field <> $new_field) { // changed field name
             $exists = dbFieldExists(BIZUNO_DB_PREFIX.$table, $new_field);
-            if ($exists) { return msgAdd(lang('xf_err_field_exists')); }
+            if ($exists) { return msgAdd($this->lang['xf_err_field_exists']); }
         }
         $type   = clean('type', ['format'=>'text', 'default'=>'text'], 'post');
         $comment= [];

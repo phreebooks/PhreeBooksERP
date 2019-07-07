@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-10
+ * @version    3.x Last Update: 2019-06-27
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -223,6 +223,53 @@ class inventoryMain
     }
 
     /**
+     * Grid structure for assembly material lists
+     * @param string $name - DOM field name
+     * @param boolean $locked - [default true] leave unlocked if no journal activity has been entered for this sku
+     * @return string - grid structure
+     */
+    private function dgAssembly($name, $locked=true)
+    {
+        $data = ['id'  => $name,
+            'type'=> 'edatagrid',
+            'attr'=> ['pagination'=>false, 'rownumbers'=>true, 'singleSelect'=>true, 'toolbar'=>"#{$name}Toolbar", 'idField'=>'id'],
+            'events' => ['data'=>'assyData',
+                'onClickRow' => "function(rowIndex, row) { curIndex = rowIndex; }",
+                'onBeginEdit'=> "function(rowIndex, row) { curIndex = rowIndex; }",
+                'onDestroy'  => "function(rowIndex, row) { curIndex = undefined; }",
+                'onAdd'      => "function(rowIndex, row) { curIndex = rowIndex; }"],
+            'source' => ['actions'=>['newAssyItem'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
+            'columns' => ['id'=>['order'=>0,'attr'=>['hidden'=>true]],
+                'action'     => ['order'=>1,'label'=>lang('action'),
+                    'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
+                    'actions'=> ['trash'=>['icon'=>'trash','order'=>20,'size'=>'small','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
+                'sku'=> ['order'=>30,'label'=>lang('sku'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'center'],
+                    'events' => ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
+                        width:150, panelWidth:320, delay:500, idField:'sku', textField:'sku', mode:'remote',
+                        onClickRow: function (idx, data) {
+                            var descEditor= jq('#$name').datagrid('getEditor', {index:curIndex,field:'description'});
+                            descEditor.target.val(data.description_short);
+                            var qtyEditor = jq('#$name').datagrid('getEditor', {index:curIndex,field:'qty'});
+                            jq(qtyEditor.target).numberbox('setValue',1); },
+                        columns:[[{field:'sku',              title:'".lang('sku')."',        width:100},
+                                  {field:'description_short',title:'".lang('description')."',width:200}]]
+                    }}"]],
+                'description'=> ['order'=>40,'label'=>lang('description'),'attr'=>['width'=>250,'editor'=>'text','sortable'=>true,'resizable'=>true]],
+                'qty'        => ['order'=>60,'label'=>lang('qty_needed'), 'attr'=>['width'=>100,'value'=>1,'resizable'=>true,'align'=>'right'],
+                    'events' => ['formatter'=>"function(value) { return formatNumber(value); }",'editor'=>"{type:'numberbox'}"]],
+                'qty_stock'  => ['order'=>90,'label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['width'=>100,'resizable'=>true,'align'=>'right'],
+                    'events' => ['formatter'=>"function(value) { return formatNumber(value); }"]]]];
+        if ($locked) {
+            unset($data['columns']['action']);
+            unset($data['columns']['sku']['events']['editor']);
+            unset($data['columns']['description']['attr']['editor']);
+            unset($data['columns']['qty']['events']['editor']);
+            unset($data['source']);
+        }
+        return $data;
+    }
+
+    /**
      * Lists the details of a given inventory item from the database table
      * @param array $layout - structure coming in
      * @return modified structure
@@ -355,8 +402,8 @@ class inventoryMain
             'tabs'   => ['tabInventory'=> ['divs'=>[
                 'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
                     'general' => ['order'=>10,'type'=>'fields','keys'=>$fldGeneral],
-                    'sales'   => ['order'=>20,'label'=>lang('details').' ('.lang('customers').')','type'=>'fields','keys'=>$fldCustomer],
-                    'purchase'=> ['order'=>50,'label'=>lang('details').' ('.lang('vendors').')','hidden'=>$hideV,'type'=>'fields','keys'=>$fldVendor],
+                    'sales'   => ['order'=>20,'label'=>lang('details').' ('.lang('customers').')',                                'type'=>'fields','keys'=>$fldCustomer],
+                    'purchase'=> ['order'=>50,'label'=>lang('details').' ('.lang('vendors').')','hidden'=>$hideV,                 'type'=>'fields','keys'=>$fldVendor],
                     'ledger'  => ['order'=>60,'label'=>lang('details').' ('.getModuleCache('phreebooks','properties','title').')','type'=>'fields','keys'=>$fldLedger],
                     'attach'  => ['order'=>80,'type'=>'attach','defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>"rID_{$rID}_"]]]],
                 'history' => ['order'=>30,'label'=>lang('history'),'hidden'=>$rID?false:true,'type'=>'html','html'=>'',
@@ -584,60 +631,15 @@ function preSubmit() {
     }
 
     /**
-     * Grid structure for assembly material lists
-     * @param string $name - DOM field name
-     * @param boolean $locked - [default true] leave unlocked if no journal activity has been entered for this sku
-     * @return string - grid structure
-     */
-    private function dgAssembly($name, $locked=true)
-    {
-        $data = ['id'  => $name,
-            'type'=> 'edatagrid',
-            'attr'=> ['width'=>$locked?660:740, 'pagination'=>false, 'rownumbers'=>true, 'singleSelect'=>true, 'toolbar'=>"#{$name}Toolbar", 'idField'=>'id'],
-            'events' => ['data'=>'assyData',
-                'onClickRow' => "function(rowIndex, row) { curIndex = rowIndex; }",
-                'onBeginEdit'=> "function(rowIndex, row) { curIndex = rowIndex; }",
-                'onDestroy'  => "function(rowIndex, row) { curIndex = undefined; }",
-                'onAdd'      => "function(rowIndex, row) { curIndex = rowIndex; }"],
-            'source' => ['actions'=>['newAssyItem'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
-            'columns' => ['id'=>['order'=>0,'attr'=>['hidden'=>true]],
-                'action'     => ['order'=>1,'label'=>lang('action'),
-                    'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
-                    'actions'=> ['trash'=>['icon'=>'trash','order'=>20,'size'=>'small','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
-                'sku'=> ['order'=>30,'label'=>lang('sku'),'attr'=>['sortable'=>true,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
-                        width:150, panelWidth:320, delay:500, idField:'sku', textField:'sku', mode:'remote',
-                        onClickRow: function (idx, data) {
-                            var descEditor= jq('#$name').datagrid('getEditor', {index:curIndex,field:'description'});
-                            descEditor.target.val(data.description_short);
-                            var qtyEditor = jq('#$name').datagrid('getEditor', {index:curIndex,field:'qty'});
-                            jq(qtyEditor.target).numberbox('setValue',1); },
-                        columns:[[{field:'sku',              title:'".lang('sku')."',        width:100},
-                                  {field:'description_short',title:'".lang('description')."',width:200}]]
-                    }}"]],
-                'description'=> ['order'=>40,'label'=>lang('description'),'attr'=>['editor'=>'text','sortable'=>true,'resizable'=>true]],
-                'qty'        => ['order'=>60,'label'=>lang('qty_needed'), 'attr'=>['value'=>1,'resizable'=>true,'align'=>'right'],
-                    'events' => ['formatter'=>"function(value) { return formatNumber(value); }",'editor'=>"{type:'numberbox'}"]],
-                'qty_stock'  => ['order'=>90,'label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['resizable'=>true,'align'=>'right'],
-                    'events' => ['formatter'=>"function(value) { return formatNumber(value); }"]]]];
-        if ($locked) {
-            unset($data['columns']['action']);
-            unset($data['columns']['sku']['events']['editor']);
-            unset($data['columns']['description']['attr']['editor']);
-            unset($data['columns']['qty']['events']['editor']);
-            unset($data['source']);
-        }
-        return $data;
-    }
-
-    /**
-     * calculates the cost of building an assembly
+     * Calculates the cost of building an assembly
      * @return entry is made in the message queue with current assembly cost
      */
     public function getCostAssy($rID=0)
     {
+        global $currencies;
         if (!$rID) { $rID = clean('rID', 'integer', 'get'); }
         $cost = dbGetInvAssyCost($rID);
+        $currencies = (object)['iso'=>getDefaultCurrency(), 'rate'=>1];
         msgAdd(sprintf($this->lang['msg_inventory_assy_cost'], viewFormat($cost, 'currency')), 'caution');
     }
 

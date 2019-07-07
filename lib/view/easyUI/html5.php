@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    3.x Last Update: 2019-06-25
  * @filesource /view/easyUI/html5.php
  */
 
@@ -892,10 +892,10 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
      * @param type $prop
      */
     public function layoutAttach(&$output, $prop) {
-        global $viewData;
+        global $viewData, $io;
+        msgDebug("\nEntering layoutAttach with prop = ".print_r($prop, true));
         $upload_mb= min((int)(ini_get('upload_max_filesize')), (int)(ini_get('post_max_size')), (int)(ini_get('memory_limit')));
         $path     = $prop['defaults']['path'].$prop['defaults']['prefix'];
-        $io       = new \bizuno\io();
         msgDebug("\nbefore read rows");
         $rows     = $io->fileReadGlob($path);
         msgDebug("\nafter read rows: ".print_r($rows, true));
@@ -921,7 +921,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
      * This function builds the HTML (and JavaScript) content to render a jQuery easyUI datagrid
      * @param array $output - running HTML string to render the page
      * @param string $prop - The structure source data to pull from, if key is present then it's viewData, else it's the prop of the div for the datagrid
-     * @param array $idx - The index in $data to grab the structure to build
+     * @param array $key - The index in $data to grab the structure to build
      * @return string - HTML formatted EasyUI datagrid appended to $output
      */
     public function layoutDatagrid(&$output, $prop, $key=false) {
@@ -1422,7 +1422,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         if (!empty($iso['suffix'])) { $prop['options']['suffix'] = "' ".addslashes($iso['suffix'])."'"; }
         $prop['styles']['text-align'] = 'right';
         if (empty($prop['options']['width'])) { $prop['options']['width'] = 125; }
-        unset($prop['attr']['type'], $prop['attr']['size']);
+        unset($prop['attr']['type'], $prop['attr']['size'], $prop['format']);
         $this->mapEvents($prop);
         return $this->input($id, $prop);
     }

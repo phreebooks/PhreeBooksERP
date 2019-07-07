@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-30
+ * @version    3.x Last Update: 2019-07-02
  * @filesource /lib/controller/module/bizuno/image.php
  */
 
@@ -45,7 +45,7 @@ class bizunoImage
             switch ($action) {
                 case 'parent':  $path   = dirname($path); break;
                 case 'refresh': $search = '';             break;
-                case 'upload':  return $io->uploadSave('imgFile', "images/$path/");
+                case 'upload':  return $io->uploadSave('imgFile', "images/$path/", false, 'image');
             }
             if (substr($action, 0, 6) == 'newdir') {
                 $parts = explode(":", $action);
@@ -85,7 +85,7 @@ class bizunoImage
      * @param string $path - relative path from images root, must not contain trailing slash (/), empty string for root folder
      * @param string $srch - search string, if any
      * @param string $target - folder to put uploaded images
-     * @return string - HTML to render window 
+     * @return string - HTML to render window
      */
     private function managerRows($path='', $srch, $target)
     {
@@ -184,13 +184,13 @@ jq('#winImgMgr').window({'title':'".addslashes($title)."'});";
         }
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#winImgMgr').window('refresh','$href');"]]);
     }
-    
+
     public function view(&$layout=[])
     {
         $bID   = clean('rID', 'integer', 'get');
         $img   = clean('data', 'path', 'get');
         $html  = html5('', ['styles'=>['max-width'=>'100%;','max-height'=>'100%;'],'events'=>['onClick'=>"jq('#winImage').window('close');"],
-            'attr'=>['type'=>'img','src'=>BIZUNO_URL_FS."src=$bID/images/$img"]]); 
+            'attr'=>['type'=>'img','src'=>BIZUNO_URL_FS."src=$bID/images/$img"]]);
         $data  = ['type'=>'popup','title'=>lang('terms'),'attr'=>['id'=>'winImage'], // ,'width'=>600,'height'=>600
             'divs'=>['winImage'=>['order'=>50,'type'=>'html','html'=>$html]]];
         $layout= array_replace_recursive($layout, $data);

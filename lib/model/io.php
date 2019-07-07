@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-24
+ * @version    3.x Last Update: 2019-07-02
  * @filesource /lib/model/io.php
  */
 
@@ -176,8 +176,10 @@ final class io
     public function fileReadGlob($path, $arrExt=[])
     {
         $output= [];
+        msgDebug("\nEntering fileReadGlob with path = $path");
         if (!$this->folderExists($path)) { return $output; }
         $files = glob($this->myFolder.$path."*");
+        msgDebug("\nresults from glob = ".print_r($files, true));
         if (!is_array($files)) { return $output; }
         foreach ($files as $file) {
             $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
@@ -210,7 +212,8 @@ final class io
         $path = substr($filename, 0, strrpos($filename, '/') + 1); // pull the path from the full path and file
         if (!is_dir($path)) {
             msgDebug("\nMaking folder: BIZUNO_DATA/$fn");
-            @mkdir($path,0775,true); }
+            @mkdir($path, 0775, true);
+        }
         if (!$handle = @fopen($filename, $append?'a':'w')) {
             return $verbose ? msgAdd(sprintf(lang('err_io_file_open'), $fn)) : false;
         }
@@ -389,21 +392,47 @@ final class io
      * Saves an uploaded file, validates first, creates path if not there
      * @param string $index - index of the $_FILES array where the file is located
      * @param string $dest - destination path/filename where the uploaded files are to be placed
-     * @param string $type [default text] Sets the type of file to expect
-     * @param string $ext [default txt] checks to make sure the extension is what was expected
-     * @param boolean $verbose [default true] set to false to suppress error reporting
      * @param boolean $replace [default false] set to true to replace the file if it already exists
      * @return boolean true on success, false (with msg) on error
      */
-    public function uploadSave($index, $dest, $replace=false)
+    public function uploadSave($index, $dest, $replace=false, $mime='')
     {
         if (!isset($_FILES[$index])) { return msgDebug("\nTried to save uploaded file but nothing uploaded!"); }
-        if (!$this->validateUpload($index, '', '', false)) { return; }
+        $extensions = [];
+        switch ($mime) {
+            default:
+            case 'file' : $extensions = array_merge($extensions, ['zip','gz','pdf','doc','docx','xls','xlsx','ods','']);
+            case 'image': $extensions = array_merge($extensions, ['jpg','jpeg','jpe','gif','png','tif','tiff']);
+        }
+        if (!$this->validateUpload($index, '', $extensions, false)) { return; }
+        if (!$this->validatePath($dest)) { return; }
         $data = file_get_contents($_FILES[$index]['tmp_name']);
+//        if (strpos($data, ['<'.'?'.'php', 'eval(']) !== false) { return msgAdd("Illegal file contents!"); }
         $filename = clean($_FILES[$index]['name'], 'filename');
         $path = $dest.str_replace(' ', '_', $filename);
         $this->fileWrite($data, $path, false, false, $replace);
         return true;
+    }
+
+    /**
+     * Validates path sent by user to be within the BIZUNO_DATA folder, i.e. stops ../../../../ hacking
+     * @param type $path
+     * @return type
+     */
+    public function validatePath($path) {
+        // cannot use empty() because it can be a string equating to "0"
+        $error = false;
+        if ($path === '' || $path === null || $path === false) { $error = true; }
+        $path = pathinfo(BIZUNO_DATA. $path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR; // pull the path from the full path and file
+        if (!is_dir($path)) { @mkdir($path, 0775, true); }
+        $pPath = realpath($path);
+        $fPath = realpath(BIZUNO_DATA);
+        if ($pPath === false || $fPath === false) { $error = true; }
+        $fPath = rtrim($fPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        $pPath = rtrim($pPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
+        if (strlen($pPath) < strlen($fPath)) { $error = true; }
+        if (substr($pPath, 0, strlen($fPath)) !== $fPath) { $error = true; }
+        return $error ? msgAdd("Path validation error!") : true; // passed all tests
     }
 
     /**
@@ -431,18 +460,20 @@ final class io
         } elseif ($_FILES[$index]['error']) {
             return;
         } elseif (!is_uploaded_file($_FILES[$index]['tmp_name'])) { // file not uploaded through HTTP POST
-            msgAdd("The upload file was not via HTTP POST!");
-            return;
+            return $verbose ? msgAdd("The upload file was not via HTTP POST!") : false;
         } elseif ($_FILES[$index]['size'] == 0) { // upload contains no data, error
-            msgAdd("The uploaded file was empty!");
-            return;
+            return $verbose ? msgAdd("The uploaded file was empty!") : false;
         }
-        $type_match= !empty($type) && (strpos($_FILES[$index]['type'], $type) === false) ? false : true;
-        $fExt      = strtolower(substr($_FILES[$index]['name'], strrpos($_FILES[$index]['name'], '.')+1));
-        if (!is_array($ext)) { $ext = array($ext); }
-        $ext_match = !empty($ext) && (in_array(strtolower($fExt), $ext)) ? true : false;
-        if ($type_match || $ext_match) { return true; }
-        msgAdd("Unknown upload validation error.");
+        if (!empty($type)) {
+            $type_match = strpos($_FILES[$index]['type'], $type) === false ? true : false;
+        } else { $type_match = true; }
+        if (!empty($ext)) {
+            if (!is_array($ext)) { $ext = [$ext]; }
+            $fExt      = strtolower(pathinfo($_FILES[$index]['name'], PATHINFO_EXTENSION));
+            $ext_match = in_array($fExt, $ext) ? true : false;
+        } else { $ext_match = true; }
+        if ($type_match && $ext_match) { return true; }
+        return $verbose ? msgAdd("Unknown upload validation error. type = $type and fExt = $fExt and ext = ".print_r($ext, true)) : false;
     }
 
     /**

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-20
+ * @version    3.x Last Update: 2019-06-24
  * @filesource /lib/controller/module/phreebooks/totals/discount/discount.php
  */
 
@@ -31,7 +31,7 @@ class discount
 
     public function __construct()
     {
-        $this->jID     = clean('jID', ['format'=>'cmd', 'default'=>'2'], 'get');
+        $this->jID     = clean('jID', ['format'=>'integer', 'default'=>2], 'get');
         $type          = in_array($this->jID, [3,4,6,7,21]) ? 'vendors' : 'customers';
         $this->settings= ['gl_type'=>'dsc','journals'=>'[3,4,6,7,9,10,12,13,19,21]','gl_account'=>getModuleCache('phreebooks','settings',$type,'gl_discount'),'order'=>30];
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
@@ -45,7 +45,7 @@ class discount
             'gl_type'   => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'  => ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
             'gl_account'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_account']]],
-            'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
+            'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'value'=>$this->settings['order']]]];
     }
 
     public function glEntry(&$main, &$item, &$begBal=0)

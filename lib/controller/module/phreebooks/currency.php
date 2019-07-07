@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    3.x Last Update: 2019-06-30
  * @filesource /lib/controller/module/phreebooks/currency.php
  */
 
@@ -127,7 +127,7 @@ class phreebooksCurrency
         $is_def    = clean('is_def', 'boolean', 'post');
         $iso       = clean('code', 'text', 'post');
         $currencies= getModuleCache('phreebooks', 'currency', 'iso', false, []);
-        $defISO    = setModuleCache('phreebooks', 'currency', 'defISO');
+        $defISO    = getModuleCache('phreebooks', 'currency', 'defISO');
         // clean out bad data
 //        $codes = viewCurrencySel();
 //        foreach ($currencies as $iso => $currency) { if (!array_key_exists($iso, $codes)) { unset($currencies[$iso]); } }

@@ -1,8 +1,8 @@
-## Default .htaccess file
+## Default .htaccess file for PhreeBooks 5
 # Dynamically force cache reload for .css and .js files when source files are changed at the portal
 RewriteEngine on
 RewriteRule ^(.*)\.[\d]{10}\.(css|js)$ $1.$2 [L]
-# Do not allow access to mybiz folder
-RewriteRule ^mybiz/(.*)$ / [L,R=301]
+# Do not allow access to myFiles folder
+RewriteRule ^myFiles/(.*)$ / [L,R=301]
 # Do not allow random browsing (disable directory listing if no index.php file)
 Options -Indexes

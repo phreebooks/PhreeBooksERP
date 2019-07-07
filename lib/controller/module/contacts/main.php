@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-08
+ * @version    3.x Last Update: 2019-06-24
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -262,17 +262,7 @@ class contactsMain
                     'options'=>['href'=>"'".BIZUNO_AJAX."&p=payment/main/manager&rID=$rID'"]];
                 break;
             case 'j': // Projects/Jobs
-            case 'v': break; // Vendors
-            case 'b':
-                $data['fields']['gl_account']['label']           = lang('default_gl_account').': '.lang('gl_acct_type_30'); // sales gl acct
-                $data['fields']['flex_field_1']['label']         = lang('default_gl_account').': '.lang('sales_discounts'); // discount gl acct
-                $data['fields']['account_number']['label']       = lang('default_gl_account').': '.lang('gl_acct_type_2');  // AR gl acct
-                $data['fields']['gov_id_number']['label']        = lang('default_gl_account').': '.lang('gl_acct_type_20'); // AP gl acct
-                $data['fields']['gl_account']['attr']['type']    = 'ledger';
-                $data['fields']['flex_field_1']['attr']['type']  = 'ledger';
-                $data['fields']['account_number']['attr']['type']= 'ledger';
-                $data['fields']['gov_id_number']['attr']['type'] = 'ledger';
-                unset($data['fields']['contact_first'],$data['fields']['contact_last'],$data['fields']['store_id']);
+            case 'v': // Vendors
                 break;
             case 'e': // Employees
                 $fldGeneral = ['id','type','short_name','inactive','contact_first','contact_last',
@@ -293,7 +283,7 @@ class contactsMain
                 $data['fields']['gl_account']['attr']['type']    = 'hidden';
                 $data['fields']['terms']['attr']['type']         = 'hidden';
                 $data['fields']['account_number']['attr']['type']= 'hidden';
-                unset($data['fields']['rep_id']['attr']['size'],$data['fields']['rep_id']['values']);
+                unset($data['fields']['rep_id']['attr']['size'], $data['fields']['rep_id']['values']);
                 $primary_name = $linkID ? dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'primary_name', "ref_id=$linkID AND type='m'") : '';
                 $data['jsReady']['repIDi'] = "
 jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textField:'primary_name',mode:'remote',
@@ -306,8 +296,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         {field:'primary_name',title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'primary_name')."',width:200},
         {field:'address1',    title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'address1')."',    width:200},
         {field:'city',        title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'city')."',        width:100},
-        {field:'postal_code', title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'postal_code')."', width:100}
-    ]]
+        {field:'postal_code', title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'postal_code')."', width:100}]]
 }).combogrid('setValue', {id:'$linkID',primary_name:'$primary_name'});";
                 break;
         }
@@ -316,10 +305,8 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
             if (!validateSecurity('phreebooks', $jIdx, 1, false)) { $data['tabs']['tabContacts']['divs']['history']['hidden'] = true; }
             if (!getModuleCache('extShipping', 'properties', 'status')) { unset($data['tabs']['tabContacts']['divs']['ship_add']); }
         } else {
-            unset($data['tabs']['tabContacts']['divs']['crm_add']);
-            unset($data['tabs']['tabContacts']['divs']['history']);
-            unset($data['tabs']['tabContacts']['divs']['bill_add']);
-            unset($data['tabs']['tabContacts']['divs']['ship_add']);
+            unset($data['tabs']['tabContacts']['divs']['crm_add'], $data['tabs']['tabContacts']['divs']['history']);
+            unset($data['tabs']['tabContacts']['divs']['bill_add'],$data['tabs']['tabContacts']['divs']['ship_add']);
         }
     }
 
@@ -1007,7 +994,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     {
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
         $rID   = clean('rID', 'integer','get');
-        $type  = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID");
+//        $type  = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID");
         $notes = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'notes',"ref_id=$rID AND type='m'");
         $fldLog= [
             'crm_date'  => ['order'=>10,'label'=>lang('date'),  'break'=>true,'attr'=>['type'=>'date', 'value'=>viewDate(date('Y-m-d'))]],
@@ -1032,7 +1019,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
 
     /**
      * Adds the extra fields to the address block for CRM records
-     * @param array $data - working data with CRM information
+     * @param array $structure - working data with CRM information
      * @return string - table html with additional CRM fields for render
      */
     private function crmXFields($structure)
