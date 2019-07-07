@@ -24,7 +24,7 @@
 namespace bizuno;
 
 define('MODULE_BIZUNO_VERSION','3.2.5');
-define('PHREEBOOKS_VERSION','5.2.7'); // keep the sub-rev x.x.# at same level as Bizuno
+define('PHREEBOOKS_VERSION','5.2.8'); // keep the sub-rev x.x.# at same level as Bizuno
 
 ini_set('display_errors', true);
 //error_reporting(E_ALL);
