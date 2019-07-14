@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-27
+ * @version    3.x Last Update: 2019-07-11
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -92,7 +92,7 @@ class inventoryMain
         msgDebug("\n ready to build inventory datagrid, security = $security");
         $structure = $this->dgInventory('dgInventory', $filter, $security);
         if ($rID) { $structure['source']['filters']['rID'] = ['order'=>99, 'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."inventory.id=$rID"]; }
-        $layout = array_replace_recursive($layout, ['type'=>'datagrid', 'structure'=>$structure]);
+        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'manager','datagrid'=>['manager'=>$structure]]);
     }
 
     /**

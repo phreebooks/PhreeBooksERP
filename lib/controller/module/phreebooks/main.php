@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    3.x Last Update: 2019-07-11
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -121,7 +121,7 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
         if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", 1)) { return; }
         $structure = $this->dgPhreeBooks('dgPhreeBooks', $security);
         if ($this->journalID==0) { $structure['strict'] = true; } // needed to search journal_item and limit rows per id
-        $layout = array_replace_recursive($layout, ['type'=>'datagrid', 'structure'=>$structure]);
+        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'manager','datagrid'=>['manager'=>$structure]]);
     }
 
     /**
@@ -144,7 +144,7 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
             $data['source']['filters']['method_code']= ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."journal_main.method_code<>''"];
         }
         $data['source']['sort'] = ['s0'=>['order'=>10,'field'=>BIZUNO_DB_PREFIX."journal_main.invoice_num"]];
-        $layout = array_replace_recursive($layout, ['type'=>'datagrid','structure'=>$data]);
+        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'manager','datagrid'=>['manager'=>$data]]);
     }
 
     /**
@@ -810,7 +810,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
 
     /**
      * Datagrid manager structure for all PhreeBooks journals
-     * @param string $name - datagrid HTML id
+     * @param string $name - datagrid HTML ID
      * @param integer $security - Security level to set tool bar and access permissions
      * @return array -Data structure ready to render
      */

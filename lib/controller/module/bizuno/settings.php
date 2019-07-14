@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-10
+ * @version    3.x Last Update: 2019-07-12
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -407,14 +407,9 @@ class bizunoSettings
      */
     function adminInstDirs($adm)
     {
+        global $io;
         if (!isset($adm->dirlist)) { return; }
-        if (is_array($adm->dirlist)) {
-            foreach ($adm->dirlist as $dir) {
-                if (!file_exists(BIZUNO_DATA . $dir)) {
-                    if ( !@mkdir(BIZUNO_DATA . $dir, 0755, true)) { msgAdd(sprintf(lang('err_io_dir_create'), $dir)); }
-                }
-            }
-        }
+        if (is_array($adm->dirlist)) { foreach ($adm->dirlist as $dir) { $io->validatePath($dir); } }
     }
 
     /**
@@ -429,7 +424,7 @@ class bizunoSettings
         if (is_array($mod_admin->dirlist)) {
             $temp = array_reverse($mod_admin->dirlist);
             foreach($temp as $dir) {
-                if (!@rmdir(BIZUNO_DATA . $dir)) { msgAdd(sprintf(lang('err_io_dir_remove'), BIZUNO_DATA . $dir)); }
+                if (!@rmdir(BIZUNO_DATA . $dir)) { msgAdd(sprintf(lang('err_io_dir_remove'), $dir)); }
             }
         }
         return true;

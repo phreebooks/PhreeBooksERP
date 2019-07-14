@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    3.x Last Update: 2019-07-12
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -373,7 +373,6 @@ function getPaymentInfo($mID, $jID) {
 function getInvoiceInfo($mID, $jID) {
     msgDebug("\nIn getInvoiceInfo with main ID = $mID and journal ID = $jID");
     $total= 0;
-    $jRef = in_array($jID, [3,4]) ? '6,7' : '12,13';
     $rows = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "ref_id=$mID AND gl_type='itm'", 'id', ['id']);
     foreach ($rows as $row) {
         $total += dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(debit_amount)-SUM(credit_amount) AS credits", "item_ref_id={$row['id']} AND gl_type='itm'", false);

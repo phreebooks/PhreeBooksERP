@@ -35,9 +35,9 @@ class bizunoProfile
         $this->freqs = ['d'=>$this->lang['daily'],'w'=>$this->lang['weekly'],'m'=>$this->lang['monthly'],'q'=>$this->lang['quarterly'],'y'=>$this->lang['yearly']];
         $this->zones = [
             ['id'=>'America/Los Angeles','text'=>'America/Los Angeles'],
-            ['id'=>'America/Denver','text'=>'America/Denver'],
-            ['id'=>'America/Chicago','text'=>'America/Chicago'],
-            ['id'=>'America/New York','text'=>'America/New York']];
+            ['id'=>'America/Denver',     'text'=>'America/Denver'],
+            ['id'=>'America/Chicago',    'text'=>'America/Chicago'],
+            ['id'=>'America/New York',   'text'=>'America/New York']];
     }
 
     /**
@@ -47,6 +47,7 @@ class bizunoProfile
      */
     public function edit(&$layout=[])
     {
+        global $io;
         if (!$security = validateSecurity('bizuno', 'profile', 1)) { return; }
         $rID     = getUserCache('profile', 'admin_id', false, 0);
         $struc   = dbLoadStructure(BIZUNO_DB_PREFIX."users");

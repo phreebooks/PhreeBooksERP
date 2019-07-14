@@ -11,13 +11,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2019-07-02
+ * @version    3.x Last Update: 2019-07-12
  * @filesource /portal/upgrade.php
  */
 
 namespace bizuno;
 
-ini_set("max_execution_time", 1000000000);
+ini_set("max_execution_time", 60*60*3); // 3 hours
 
 /**
  * Handles the db upgrade for all versions of Bizuno to the current release level
@@ -162,6 +162,8 @@ function bizunoUpgrade($dbVersion='1.0')
         $io->fileWrite($htaccess, '.htaccess', false);
     }
 
+    // Verify dummy php index files in all data folders to prevent directory browsing on unprotected servers
+    $io->validateNullIndex();
     // At every upgrade, run the comments repair tool to fix changes to the view structure
     bizAutoLoad(BIZUNO_LIB."controller/module/bizuno/tools.php", 'bizunoTools');
     $ctl = new bizunoTools();

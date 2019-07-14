@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-02
+ * @version    3.x Last Update: 2019-07-13
  * @filesource /lib/model/io.php
  */
 
@@ -41,7 +41,6 @@ final class io
         $this->mimeType    = '';
 //      $this->useragent   = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0'; // moved to portal
         $this->options     = ['upload_dir' => $this->myFolder.$this->dest_dir];
-
     }
 
     /**
@@ -79,15 +78,18 @@ final class io
     public function download($type='data', $src='', $fn='download.txt', $delete_source=false)
     {
         switch ($type) {
-            case 'file':
-                // unzip the file to remove security encryption
-                if (!$output = $this->fileRead($src . $fn, 'rb')) { return false; }
-                $this->mimeType = $this->guessMimetype($src.$fn);
+            case 'file': // unzip the file to remove security encryption
+                $realFN = $src . $fn;
+                if (!realpath($this->myFolder.$realFN)) { return msgAdd("Invalid path!"); }
+                if (!in_array(strtolower(pathinfo($fn, PATHINFO_EXTENSION)), $this->getValidExt())) { return msgAdd("Invalid file type!"); }
+                if (!$this->validatePath($realFN)) { return; }
+                if (!$output = $this->fileRead($realFN, 'rb')) { return; }
+                $this->mimeType = $this->guessMimetype($realFN);
                 if ($delete_source) {
-                    msgDebug("\nUnlinking file: $src$fn");
-                    @unlink($this->myFolder.$src.$fn);
+                    msgDebug("\nUnlinking file: $realFN");
+                    @unlink($this->myFolder.$realFN);
                 }
-                msgDebug("\n Downloading filename {$src}{$fn} of size = ".$output['size']);
+                msgDebug("\n Downloading filename $realFN of size = ".$output['size']);
                 break;
             default:
             case 'data':
@@ -121,9 +123,7 @@ final class io
         if (!$path) { return msgAdd("No file specified to delete!"); }
         $files = glob($this->myFolder.$path);
         msgDebug("\nDeleting files: ".print_r($files,true));
-        if (is_array($files)) {
-            foreach ($files as $filename) { @unlink($filename); }
-        }
+        if (is_array($files)) { foreach ($files as $filename) { @unlink($filename); } }
     }
 
     /**
@@ -207,21 +207,16 @@ final class io
     public function fileWrite($data, $fn, $verbose=true, $append=false, $replace=false)
     {
         if (strlen($data) < 1) { return; }
-        $filename = $this->myFolder.$fn;
-        if (!$append && $replace && file_exists($filename)) { @unlink($filename); }
-        $path = substr($filename, 0, strrpos($filename, '/') + 1); // pull the path from the full path and file
-        if (!is_dir($path)) {
-            msgDebug("\nMaking folder: BIZUNO_DATA/$fn");
-            @mkdir($path, 0775, true);
-        }
-        if (!$handle = @fopen($filename, $append?'a':'w')) {
+        if (!$append && $replace && file_exists($this->myFolder.$fn)) { $this->fileDelete($fn); }
+        if (!$this->validatePath($fn, true)) { return $verbose ? msgAdd('Cannot write file, invalid path!') : false; }
+        if (!$handle = @fopen($this->myFolder.$fn, $append?'a':'w')) {
             return $verbose ? msgAdd(sprintf(lang('err_io_file_open'), $fn)) : false;
         }
         if (false === @fwrite($handle, $data)) {
             return $verbose ? msgAdd(sprintf(lang('err_io_file_write'), $fn)) : false;
         }
         fclose($handle);
-        msgDebug("\nSaved uploaded file to filename: BIZUNO_DATA/$fn");
+        msgDebug("\nSaved file to filename: BIZUNO_DATA/$fn");
     }
 
     /**
@@ -243,8 +238,8 @@ final class io
                 copy($dir_source . $file, $dir_dest . $file);
                 touch($dir_dest . $file, $mTime, $aTime);
             } else {
-                @mkdir($dir_dest . $file, 0755, true);
-                $this->folderCopy($dir_source . $file . "/", $dir_dest . $file . "/");
+                $this->validatePath($dir_dest."$file/index.php");
+                $this->folderCopy($dir_source . "$file/", $dir_dest."$file/");
             }
         }
     }
@@ -389,6 +384,24 @@ final class io
     }
 
     /**
+     *
+     * @param string $fn - File name to validate extensions
+     */
+    public function getValidExt($mime='file')
+    {
+        $extensions = [];
+        switch ($mime) {
+            case 'zip':    return ['gz','zip'];
+            case 'backup': return ['sql','gz','zip'];
+            default:
+            case 'file' : $extensions = array_merge($extensions, ['zip','gz','pdf','doc','docx','xls','xlsx','ods','txt']); // add valid file extensions, fall through
+            case 'image': $extensions = array_merge($extensions, ['jpg','jpeg','jpe','gif','png','tif','tiff']); // then add valid image extensions
+            
+        }
+        return $extensions;
+    }
+
+    /**
      * Saves an uploaded file, validates first, creates path if not there
      * @param string $index - index of the $_FILES array where the file is located
      * @param string $dest - destination path/filename where the uploaded files are to be placed
@@ -398,16 +411,11 @@ final class io
     public function uploadSave($index, $dest, $replace=false, $mime='')
     {
         if (!isset($_FILES[$index])) { return msgDebug("\nTried to save uploaded file but nothing uploaded!"); }
-        $extensions = [];
-        switch ($mime) {
-            default:
-            case 'file' : $extensions = array_merge($extensions, ['zip','gz','pdf','doc','docx','xls','xlsx','ods','']);
-            case 'image': $extensions = array_merge($extensions, ['jpg','jpeg','jpe','gif','png','tif','tiff']);
-        }
+        $extensions = $this->getValidExt($mime);
         if (!$this->validateUpload($index, '', $extensions, false)) { return; }
-        if (!$this->validatePath($dest)) { return; }
+        $dest = rtrim($dest, '/') . '/';
         $data = file_get_contents($_FILES[$index]['tmp_name']);
-//        if (strpos($data, ['<'.'?'.'php', 'eval(']) !== false) { return msgAdd("Illegal file contents!"); }
+//      if (strpos($data, ['<'.'?'.'php', 'eval(']) !== false) { return msgAdd("Illegal file contents!"); }
         $filename = clean($_FILES[$index]['name'], 'filename');
         $path = $dest.str_replace(' ', '_', $filename);
         $this->fileWrite($data, $path, false, false, $replace);
@@ -416,23 +424,45 @@ final class io
 
     /**
      * Validates path sent by user to be within the BIZUNO_DATA folder, i.e. stops ../../../../ hacking
-     * @param type $path
-     * @return type
+     * @param string $path - full path including filename
+     * @return true on valid path, false otherwise
      */
-    public function validatePath($path) {
-        // cannot use empty() because it can be a string equating to "0"
+    public function validatePath($srcPath, $verbose=true) {
         $error = false;
-        if ($path === '' || $path === null || $path === false) { $error = true; }
-        $path = pathinfo(BIZUNO_DATA. $path, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR; // pull the path from the full path and file
-        if (!is_dir($path)) { @mkdir($path, 0775, true); }
-        $pPath = realpath($path);
-        $fPath = realpath(BIZUNO_DATA);
+        // cannot use empty() because it can be a string equating to "0"
+        if ($srcPath === '' || $srcPath === null || $srcPath === false) { $error = true; }
+        $path  = pathinfo(BIZUNO_DATA . $srcPath, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR; // pull the path from the full path and file
+        $pPath = realpath($path) . DIRECTORY_SEPARATOR;
+        $fPath = realpath(BIZUNO_DATA) . DIRECTORY_SEPARATOR;
+        if (!is_dir($path)) {
+            msgDebug("\nMaking path = $path");
+            @mkdir($path, 0775, true);
+            $blnkDir = pathinfo($srcPath, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR;
+            $this->fileWrite('<'.'?'.'php', "$blnkDir/index.php", false);
+        }
         if ($pPath === false || $fPath === false) { $error = true; }
         $fPath = rtrim($fPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         $pPath = rtrim($pPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         if (strlen($pPath) < strlen($fPath)) { $error = true; }
         if (substr($pPath, 0, strlen($fPath)) !== $fPath) { $error = true; }
-        return $error ? msgAdd("Path validation error!") : true; // passed all tests
+//      msgDebug("\npPath = $pPath and fPath = $fPath and dirMatch = ".($dirMatch?'true':'false'));
+        return $error ? ($verbose ? msgAdd("Path validation error!") : false) : true; // passed all tests
+    }
+
+    /**
+     * Recursive method to make sure all folders within the BIZUNO_DATA path have null index.php files
+     */
+    public function validateNullIndex($srcPath='/')
+    {
+        $path = rtrim(trim($srcPath, '/'), '/'); // remove leading and trailing slashes
+        if (!is_dir(BIZUNO_DATA.$path)) { return; }
+        $filename = trim("$path/index.php", '/');
+        if (!file_exists(BIZUNO_DATA.$filename)) { $this->fileWrite('<'.'?'.'php', $filename, false); }
+        $files = scandir(BIZUNO_DATA.$path);
+        foreach ($files as $file) {
+            if ($file == "." || $file == "..") { continue; }
+            if (is_dir(BIZUNO_DATA."$path/$file")) { $this->validateNullIndex("$path/$file/"); }
+        }
     }
 
     /**
@@ -465,7 +495,7 @@ final class io
             return $verbose ? msgAdd("The uploaded file was empty!") : false;
         }
         if (!empty($type)) {
-            $type_match = strpos($_FILES[$index]['type'], $type) === false ? true : false;
+            $type_match = strpos($_FILES[$index]['type'], $type) !== false ? true : false;
         } else { $type_match = true; }
         if (!empty($ext)) {
             if (!is_array($ext)) { $ext = [$ext]; }
@@ -473,7 +503,7 @@ final class io
             $ext_match = in_array($fExt, $ext) ? true : false;
         } else { $ext_match = true; }
         if ($type_match && $ext_match) { return true; }
-        return $verbose ? msgAdd("Unknown upload validation error. type = $type and fExt = $fExt and ext = ".print_r($ext, true)) : false;
+        return $verbose ? msgAdd("Unknown upload validation error. Make sure the file type is correct and it has one of the approved extensions.") : false;
     }
 
     /**
@@ -685,10 +715,10 @@ final class io
                 if (function_exists(__NAMESPACE__.'\mime_content_type')) { # if mime_content_type exists use it.
                     $m = mime_content_type($filename);
                 } else {    # if nothing left try shell
-                    if (strstr($_SERVER[HTTP_USER_AGENT], "Windows")) { # Nothing to do on windows
+                    if (strstr($_SERVER['HTTP_USER_AGENT'], "Windows")) { # Nothing to do on windows
                         return ""; # Blank mime display most files correctly especially images.
                     }
-                    if (strstr($_SERVER[HTTP_USER_AGENT], "Macintosh")) { $m = trim(exec('file -b --mime '.escapeshellarg($filename))); }
+                    if (strstr($_SERVER['HTTP_USER_AGENT'], "Macintosh")) { $m = trim(exec('file -b --mime '.escapeshellarg($filename))); }
                     else { $m = trim(exec('file -bi '.escapeshellarg($filename))); }
                 }
                 $m = explode(";", $m);

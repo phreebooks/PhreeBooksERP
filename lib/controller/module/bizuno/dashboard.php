@@ -128,7 +128,7 @@ class bizunoDashboard
             if (in_array($dashboard, $current)) { continue; } // already active, skip
             $newAdd = $this->loadDashboard($path[0], $path[1]);
             if ($newAdd) {
-                if (method_exists('newAdd', 'install')) {
+                if (method_exists($newAdd, 'install')) {
                     $newAdd->install($path[0], $menu_id);
                 } else {
                     if (empty($newAdd->settings)) { $newAdd->settings = []; }
@@ -142,7 +142,7 @@ class bizunoDashboard
             $path = explode(':', $dashboard);
             $newDel = $this->loadDashboard($path[0], $path[1]);
             if ($newDel) {
-                if (method_exists('newAdd', 'remove')) {
+                if (method_exists($newDel, 'remove')) {
                     $newDel->remove($menu_id);
                 } else {
                     dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."users_profiles WHERE user_id=".getUserCache('profile', 'admin_id', false, 0)." AND menu_id='$menu_id' AND dashboard_id='{$path[1]}'");
@@ -207,7 +207,7 @@ class bizunoDashboard
         $dashboard_id= clean('dashboardID','text','get');
         $dashboard   = $this->loadDashboard($module_id, $dashboard_id);
         if (!$dashboard) { return msgAdd('ERROR: Dashboard delete failed!'); }
-        if (method_exists('newAdd', 'remove')) {
+        if (method_exists($dashboard, 'remove')) {
             $dashboard->remove($menu_id);
         } else {
             dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."users_profiles WHERE user_id=".getUserCache('profile', 'admin_id', false, 0)." AND menu_id='$menu_id' AND dashboard_id='$dashboard_id'");

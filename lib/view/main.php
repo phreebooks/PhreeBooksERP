@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-05
+ * @version    3.x Last Update: 2019-07-11
  * @filesource /view/main.php
  */
 
@@ -50,7 +50,8 @@ final class view extends portalView
         $type = !empty($data['type']) ? $data['type'] : 'json';
         switch ($type) {
             case 'datagrid':
-                $content = dbTableRead($data['structure']);
+                if (!empty($data['key'])){ $content = dbTableRead($data['datagrid'][$data['key']]); } // new way, aligns with manager structures
+                else                     { $content = dbTableRead($data['structure']); } // old way
                 $content['message'] = $msgStack->error;
                 msgDebug("\n datagrid results = ".print_r($content, true));
                 echo json_encode($content);
@@ -64,6 +65,10 @@ final class view extends portalView
                 $msgStack->debugWrite();
                 exit();
             case 'page':
+                if (!empty($data['jsHead'])) { // move the jsHead to the HTML <head> tag
+                    $data['htmlHead'] = $data['jsHead'];
+                    unset($data['jsHead']);
+                }
                 $this->setEnvHTML($this->output, $data);
                 $this->renderJS($data);
                 $this->renderDOM($this->output);
@@ -206,7 +211,7 @@ function viewFormat($value, $format = '')
         case 'j_desc':    return lang("journal_main_journal_id_$value");
         case 'json':      return json_decode($value, true);
         case 'neg':       return -$value;
-        case 'n2wrd':     return bizAutoLoad(BIZUNO_LIB."locale/".getUserCache('profile', 'language', false, 'en_US')."/functions.php") ? viewCurrencyToWords($value) : $value;
+        case 'n2wrd':     return viewNumToWords($value);
         case 'null0':     return (round((real)$value, 4) == 0) ? '' : $value;
         case 'number':    return number_format((float)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'), getModuleCache('bizuno', 'settings', 'locale', 'number_decimal'), getModuleCache('bizuno', 'settings', 'locale', 'number_thousand'));
         case 'printed':   return $value ? '' : lang('duplicate');
@@ -374,6 +379,20 @@ function viewKeyDropdown($source, $addNull=false)
     return $output;
 }
 
+function viewNumToWords($value=0)
+{
+    $lang = getUserCache('profile', 'language', false, 'en_US');
+    if ($lang <> 'en_US') {
+        if (file_exists(BIZUNO_ROOT."locale/".getUserCache('profile', 'language')."/functions.php")) { // PhreeBooks 5
+            bizAutoLoad(BIZUNO_ROOT."locale/".getUserCache('profile', 'language')."/functions.php", 'viewCurrencyToWords', 'function');
+        } elseif (file_exists(BIZUNO_DATA."locale/".getUserCache('profile', 'language')."/functions.php")) { // WordPress
+            bizAutoLoad(BIZUNO_DATA."locale/".getUserCache('profile', 'language')."/functions.php", 'viewCurrencyToWords', 'function');
+        }
+    }
+    bizAutoLoad(BIZUNO_LIB."locale/en_US/functions.php", 'viewCurrencyToWords', 'function');
+    return viewCurrencyToWords($value);
+}
+
 /**
  * Processes a string of data with a user specified process, returns unprocessed if function not found
  * @param mixed $strData - data to process
@@ -425,6 +444,7 @@ function viewLanguages($skipDefault=false)
     if (!$skipDefault) { $output[] = ['id'=>'','text'=>lang('default')]; }
     $output[]= ['id'=>'en_US','text'=>'English (U.S.) [en_US]']; // put English first
     $langCore= [];
+    if (!defined('BIZUNO_LOCALE') || !file_exists(BIZUNO_LOCALE)) { return $output; }
     $langs   = scandir(BIZUNO_LOCALE);
     foreach ($langs as $lang) {
         if (!in_array($lang, ['.', '..', 'en_US']) && is_dir(BIZUNO_LOCALE."$lang")) {

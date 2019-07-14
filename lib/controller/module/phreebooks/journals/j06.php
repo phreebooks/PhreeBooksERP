@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-28
+ * @version    3.x Last Update: 2019-07-09
  * @filesource /lib/controller/module/phreebooks/journals/j06.php
  */
 
@@ -135,6 +135,7 @@ class j06 extends jCommon
         if ($rID || $this->action=='inv') {
             $data['datagrid']['item']['source']['actions']['fillAll'] = ['order'=>10,'icon'=>'select_all','size'=>'large','hidden'=>$security>1?false:true,'events'=>['onClick'=>"phreebooksSelectAll();"]];
         }
+        $data['fields']['terminal_date']['attr']['value'] = getTermsDate($data['fields']['terms']['attr']['value'], 'v');
         $data['fields']['invoice_num']['tooltip'] = lang('err_gl_invoice_num_empty');
         unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
         $data['fields']['purch_order_id']['attr']['readonly'] = 'readonly';

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-28
+ * @version    3.x Last Update: 2019-07-09
  * @filesource /lib/controller/module/phreebooks/journals/j07.php
  */
 
@@ -119,7 +119,8 @@ class j07 extends jCommon
         $data['jsHead']['datagridData'] = $this->dgDataItem;
         $data['datagrid']['item'] = $this->dgOrders('dgJournalItem', 'v');
         if ($rID) { unset($data['datagrid']['item']['source']['actions']['insertRow']); } // only allow insert for new orders
-        $data['fields']['gl_acct_id']['attr']['value'] = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');
+        $data['fields']['gl_acct_id']['attr']['value']   = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');
+        $data['fields']['terminal_date']['attr']['value']= getTermsDate($data['fields']['terms']['attr']['value'], 'v');
         if (!$rID) { // new order
             $data['fields']['closed'] = ['attr'=>['type'=>'hidden', 'value'=>'0']];
         } elseif (isset($data['fields']['closed']['attr']['checked']) && $data['fields']['closed']['attr']['checked'] == 'checked') {

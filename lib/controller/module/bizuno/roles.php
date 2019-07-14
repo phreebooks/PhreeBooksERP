@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-10
+ * @version    3.x Last Update: 2019-07-11
  * @filesource /lib/controller/module/bizuno/roles.php
  */
 
@@ -39,7 +39,7 @@ class bizunoRoles
             ['id'=>'4', 'text'=>lang('full')],
             ['id'=>'5', 'text'=>lang('admin')]];
     }
-    
+
     /**
      * Roles manager main entry point
      * @param array $layout - structure coming in
@@ -68,13 +68,11 @@ class bizunoRoles
     public function managerRows(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'roles', 1)) { return; }
-        $structure = $this->dgRoles('dgRoles', $security);
-        $data = ['type'=>'datagrid', 'structure'=>$structure];
-        $layout = array_replace_recursive($layout, $data);
+        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'dgRoles','datagrid'=>['dgRoles'=>$this->dgRoles('dgRoles', $security)]]);
     }
 
     /**
-     * Saves the user preferences for the roles datagrid in a session array
+     * Saves the user preferences for the roles grid in a session array
      */
     private function managerSettings()
     {
@@ -120,7 +118,7 @@ class bizunoRoles
             'fields'  => $structure,
             'jsHead'  => ['init'=>"function autoFill() {
     var setting = jq('#selFill').val();
-    jq('#frmRoles select').each(function() { 
+    jq('#frmRoles select').each(function() {
         if (typeof jq(this).attr('id') !== 'undefined' && jq(this).attr('id').substr(0, 4) == 'sID_') {
             bizSelSet(jq(this).attr('id'), setting);
         }
@@ -142,7 +140,7 @@ class bizunoRoles
           'selFill'  => array_merge($selFill,          ['break'=>true]),
           'restrict' => array_merge($restrict,         ['break'=>true])];
     }
-    
+
     /**
      * Structure for saving roles after edit
      * @param array $layout - structure coming in
@@ -220,7 +218,7 @@ class bizunoRoles
             ];
         $layout = array_replace_recursive($layout, $data);
     }
-    
+
     /**
      * Loads additional tabs to the roles edit page for modules other than Bizuno
      * @param integer $security - security setting to control output displayed
@@ -235,7 +233,8 @@ class bizunoRoles
         $temp   = [];
         foreach ($theList as $key => $value) { $temp[$key] = $value['properties']['title']; }
         array_multisort($temp, SORT_ASC, $theList);
-        foreach ($theList as $mID => $props) { 
+        foreach ($theList as $mID => $props) {
+        msgDebug("\nModule ID = $mID");
             if (!getModuleCache($mID, 'properties', 'status')) { continue; }
             if (!isset($props['properties']['path']) || !file_exists("{$props['properties']['path']}/admin.php")) { continue; }
             $fqcn = "\\bizuno\\{$mID}Admin";
@@ -258,7 +257,7 @@ class bizunoRoles
     }
 
     /**
-     * Sets the possible role security levels for menu children 
+     * Sets the possible role security levels for menu children
      * @param array $children - list of menu children
      * @param type $security - Security setting of parent
      * @return string - HTML view

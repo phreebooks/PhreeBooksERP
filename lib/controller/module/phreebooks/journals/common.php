@@ -881,7 +881,7 @@ class jCommon
         msgDebug("\n  Record ID: {$this->main['id']}".($closed ? " Closed Record ID: " : " Opened Record ID: ").$id);
     }
 
-        /**
+    /**
      * Cleans and extracts the address from the journal main database row
      * @param array $data - current working structure
      * @param string $suffix - form field suffix to extract from

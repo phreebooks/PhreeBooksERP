@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-02
+ * @version    3.x Last Update: 2019-07-12
  * @filesource /lib/controller/module/bizuno/image.php
  */
 
@@ -49,8 +49,8 @@ class bizunoImage
             }
             if (substr($action, 0, 6) == 'newdir') {
                 $parts = explode(":", $action);
-                if (isset($parts[1]) && $parts[1]) { // folder name
-                    mkdir($path ? BIZUNO_DATA."images/$path/{$parts[1]}" : BIZUNO_DATA."images/{$parts[1]}", 0755);
+                if (!empty($parts[1])) { // folder name
+                    $io->fileWrite('', str_replace('//', '/', "images/$path/{$parts[1]}/index.php"), true, false, true);
                     $action = 'refresh';
                 } else { return msgAdd("Folder name is required!"); }
             }
@@ -89,11 +89,12 @@ class bizunoImage
      */
     private function managerRows($path='', $srch, $target)
     {
+        global $io;
         msgDebug("\nFinding rows, working with path: $path");
         $output  = '';
         $search  = strtolower($srch);
         if (!is_dir(BIZUNO_DATA."images/$path")) { // if the folder is not there, make it
-            mkdir(BIZUNO_DATA."images/$path", 0755, true);
+            $io->fileWrite('', str_replace('//', '/', "images/$path/index.php"), true, false, true);
         }
         $theList = scandir(BIZUNO_DATA."images/$path");
         msgDebug("\nWorking path is now: $path");
@@ -101,8 +102,13 @@ class bizunoImage
             if ($fn=='.' || $fn=='..') { continue; }
             if ($search && strpos(strtolower($fn), $search) === false) { continue; }
             $newPath = clean("$path/$fn", 'path_rel'); // remove double slashes, if present
-            $isDir   = is_dir(BIZUNO_DATA."images/$newPath");
-            $src     = $isDir ? BIZUNO_URL."view/icons/default/32x32/folder.png" : BIZUNO_URL_FS."&src=0/images/$newPath";
+            if (is_dir(BIZUNO_DATA."images/$newPath")) {
+                $src = BIZUNO_URL."view/icons/default/32x32/folder.png";
+            } else {
+                $ext = pathinfo(BIZUNO_DATA."images/$newPath", PATHINFO_EXTENSION);
+                if (!in_array($ext, $io->getValidExt('image'))) { continue; }
+                $src = BIZUNO_URL_FS."&src=0/images/$newPath";
+            }
             $output .= '<div style="float:left;width:150px;height:150px;border:2px solid #a1a1a1;margin:5px"><div style="float:right">';
             $output .= html5('', ['icon'=>'trash','size'=>'small','label'=>lang('trash'),
                 'events'=>  ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/image/delete&path=$path&fn=$fn&target=$target&search=$search');"]]);

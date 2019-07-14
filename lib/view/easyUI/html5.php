@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-25
+ * @version    3.x Last Update: 2019-07-12
  * @filesource /view/easyUI/html5.php
  */
 
@@ -897,7 +897,7 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         $upload_mb= min((int)(ini_get('upload_max_filesize')), (int)(ini_get('post_max_size')), (int)(ini_get('memory_limit')));
         $path     = $prop['defaults']['path'].$prop['defaults']['prefix'];
         msgDebug("\nbefore read rows");
-        $rows     = $io->fileReadGlob($path);
+        $rows     = $io->fileReadGlob($path, $io->getValidExt('file'));
         msgDebug("\nafter read rows: ".print_r($rows, true));
         $attr     = ['delPath'=>'bizuno/main/fileDelete','getPath'=>'bizuno/main/fileDownload','dgName'=>'dgAttachment'];
         $datagrid = ['id'=>$attr['dgName'],'title'=>lang('attachments').' '.sprintf(lang('max_upload'), $upload_mb),

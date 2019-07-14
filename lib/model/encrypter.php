@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-13
+ * @version    3.x Last Update: 2019-07-10
  * @filesource /lib/model/encrypter.php
  */
 
@@ -50,9 +50,7 @@ final class encryption {
      */
     function decrypt($key, $source)
     {
-        if (strlen(getUserCache('profile', 'admin_encrypt')) < 1) {
-            return msgAdd(lang('err_encrypt_key_missing'));
-        }
+        if (strlen(getUserCache('profile', 'admin_encrypt')) < 1) { return msgAdd(lang('err_encrypt_key_missing')); }
         if (!$fudgefactor = $this->_convertKey($key)) { return; }
         if (empty($source)) { return msgAdd('No value has been supplied for decryption'); }
         $target  = null;
@@ -159,7 +157,7 @@ final class encryption {
         return $hint;
     }
 
-    /** 
+    /**
      * Special function to decrypt credit card information
      * @param type $id
      * @param type $fields
@@ -267,12 +265,12 @@ function encryptValue($plain)
 }
 
 /**
- * 
+ *
  * @param type $request
  * @param type $refs
  * @return boolean
  */
-function paymentEncrypt($request, $refs) 
+function paymentEncrypt($request, $refs)
 {
     $cc_info = [
         'name'    => isset($request['name'])    ? $request['name']    : '',

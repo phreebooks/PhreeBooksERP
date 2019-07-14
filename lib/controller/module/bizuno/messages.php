@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-30
+ * @version    3.x Last Update: 2019-07-11
  * @filesource /lib/controller/module/bizuno/messages.php
  */
 
@@ -31,7 +31,7 @@ class bizunoMessages
     {
         $this->lang = getLang($this->moduleID);
     }
-    
+
     /**
      * Message manager main entry point
      * @param array $layout - structure coming in
@@ -62,8 +62,7 @@ class bizunoMessages
     {
         if (!$security = validateSecurity('bizuno', 'message', 1)) { return; }
         $structure = $this->dgMessage('dgMessage', $security);
-        $data = ['type'=>'datagrid', 'structure'=>$structure];
-        $layout = array_replace_recursive($layout, $data);
+        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'dgMessage','datagrid'=>['dgMessage'=>$structure]]);
     }
 
     /**
@@ -109,12 +108,12 @@ class bizunoMessages
             $response['sysMsg'] = $row['body'];
         } else { // go the PhreeSoft servers to try to retrieve it
             $response = $io->apiPhreeSoft('getSysMessage', ['msgID'=>$row['msg_id']]);
-            if (!$response || !isset($response['sysMsg'])) { $response = ['sysMsg'=>"Error communicating with PhreeSoft servers! Please check your account settings."]; }            
+            if (!$response || !isset($response['sysMsg'])) { $response = ['sysMsg'=>"Error communicating with PhreeSoft servers! Please check your account settings."]; }
         }
         msgDebug("\nReady to generate window with SysMessage: ".print_r($response, true));
         dbWrite(BIZUNO_DB_PREFIX.'phreemsg', ['status'=>'1'], 'update', "id=$rID"); // set status to read, lower new message count
         $quickBar = getUserCache('quickBar');
-        if (!empty($quickBar['child']['sysMsg']['attr']['value'])) { 
+        if (!empty($quickBar['child']['sysMsg']['attr']['value'])) {
             $quickBar['child']['sysMsg']['attr']['value']--;
             if ($quickBar['child']['sysMsg']['attr']['value'] < 1) { // prevents showing 0
                 unset($quickBar['child']['sysMsg']['attr']['value']);
@@ -143,7 +142,7 @@ class bizunoMessages
         $msgCnt = '';
         $row    = dbGetRow(BIZUNO_DB_PREFIX."phreemsg", "id=$rID");
         $quickBar = getUserCache('quickBar');
-        if (!$row['status'] && !empty($quickBar['child']['sysMsg']['attr']['value'])) { 
+        if (!$row['status'] && !empty($quickBar['child']['sysMsg']['attr']['value'])) {
             $quickBar['child']['sysMsg']['attr']['value']--;
             if ($quickBar['child']['sysMsg']['attr']['value'] < 1) { // prevents showing 0
                 unset($quickBar['child']['sysMsg']['attr']['value']);

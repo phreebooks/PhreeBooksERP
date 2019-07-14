@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-24
+ * @version    3.x Last Update: 2019-07-11
  * @filesource /lib/controller/module/phreebooks/tax.php
  */
 
@@ -57,9 +57,9 @@ class phreebooksTax
     public function managerRows(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'admin', 3)) { return; }
-        $type = clean('type', 'char', 'get');
-        $structure = $this->dgTax('tax_main', $type, getUserCache('security', 'admin', false, 0));
-        $layout = array_replace_recursive($layout, ['type'=>'datagrid', 'structure'=>$structure]);
+        $type  = clean('type', 'char', 'get');
+        $struc = $this->dgTax('tax_main', $type, getUserCache('security', 'admin', false, 0));
+        $layout= array_replace_recursive($layout, ['type'=>'datagrid','key'=>"dgTax$type",'datagrid'=>["dgTax$type"=>$struc]]);
     }
 
     /**

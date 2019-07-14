@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-31
+ * @version    3.x Last Update: 2019-07-09
  * @filesource /lib/controller/module/phreebooks/journals/j15.php
  */
 
@@ -33,7 +33,7 @@ class j15 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->items = $item;
+        $this->items= $item;
     }
 
 /*******************************************************************************************************************/
@@ -107,7 +107,8 @@ class j15 extends jCommon
     public function Post()
     {
         msgDebug("\n/********* Posting Journal main ... id = {$this->main['id']} and journal_id = {$this->main['journal_id']}");
-        if (!$this->journalTransfer($this->items)) { return; }
+        if (!$this->journalFillAddress($this->main)){ return; }
+        if (!$this->journalTransfer($this->items))  { return; }
         $this->main['description'] = lang('journal_main_journal_id_15').": ({$this->items[0]['qty']}) {$this->item[0]['description']}".(sizeof($this->items)>2 ? ' +++' : '');
         $this->setItemDefaults(); // makes sure the journal_item fields have a value
         $this->unSetCOGSRows(); // they will be regenerated during the post
@@ -234,16 +235,28 @@ class j15 extends jCommon
         return true;
     }
 
-        /**
+    private function journalFillAddress(&$main)
+    {
+        $srcStoreID = clean('so_po_ref_id','integer', 'post');
+        $destStoreID= clean('store_id',    'integer', 'post');
+        if ($srcStoreID == $destStoreID) { return msgAdd($this->lang['err_gl_xfr_same_store']); }
+        // fill in the address fields in journal_main
+        $main['contact_id_b'] = $main['so_po_ref_id']; // copy the source address to the address billing part
+        $addSrc     = addressLoad($main['contact_id_b'], '_b');
+        foreach ($addSrc as $key => $value) { if (isset($main[$key])) { $main[$key] = $value; } }
+        $main['contact_id_s'] = $main['store_id']; // copy the destination address to the address shipping part
+        $addDest    = addressLoad($main['store_id'], '_s');
+        foreach ($addDest as $key => $value) { if (isset($main[$key])) { $main[$key] = $value; } }
+        return true;
+    }
+
+    /**
      * This method takes the line items from a transfer operation and builds the new 'effective' line items
      * @param array $item - the list of items to transfer, after initial processing
      */
     private function journalTransfer(&$item)
     {
         msgDebug("\nAdding rows for Inventory Store Transfer");
-        $srcStoreID = clean('so_po_ref_id','integer', 'post');
-        $destStoreID= clean('store_id',    'integer', 'post');
-        if ($srcStoreID == $destStoreID) { return msgAdd($this->lang['err_gl_xfr_same_store']); }
         // take the line items and create a negative list for the receiving store
         $output = [];
         foreach ($item as $row) {

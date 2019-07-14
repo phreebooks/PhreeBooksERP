@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-12
+ * @version    3.x Last Update: 2019-07-13
  * @filesource /lib/controller/module/bizuno/backup.php
  */
 
@@ -86,8 +86,7 @@ class bizunoBackup
     public function mgrRows(&$layout=[])
     {
         global $io;
-        $arrExt = clean('db', 'integer', 'get') ? ['sql','gz','zip'] : [];
-        $rows   = $io->fileReadGlob($this->dirBackup, $arrExt);
+        $rows   = $io->fileReadGlob($this->dirBackup, $io->getValidExt('zip'));
         $totRows= sizeof($rows);
         $rowNum = clean('rows',['format'=>'integer','default'=>10],'post');
         $pageNum= clean('page',['format'=>'integer','default'=>1], 'post');
@@ -271,9 +270,9 @@ class bizunoBackup
     }
 
     /**
-     * Datagrid to create the list of backup files from the backup folder
-     * @param string $name - html element id of the datagrid
-     * @return array $data - datagrid structure
+     * Grid to create the list of backup files from the backup folder
+     * @param string $name - HTML element id of the grid
+     * @return array $data - grid structure
      */
     private function dgBackup($name, $security=0)
     {
@@ -293,14 +292,14 @@ class bizunoBackup
     }
 
     /**
-     * Datagrid to list files to restore
-     * @param string $name - html element id of the datagrid
-     * @return array $data - datgrid structure
+     * Grid to list files to restore
+     * @param string $name - HTML element id of the grid
+     * @return array $data - grid structure
      */
     private function dgRestore($name='dgRestore')
     {
         $data = ['id'=>$name, 'title'=>lang('files'),
-            'attr'   => ['idField'=>'title', 'url'=>BIZUNO_AJAX."&p=bizuno/backup/mgrRows&db=1"],
+            'attr'   => ['idField'=>'title', 'url'=>BIZUNO_AJAX."&p=bizuno/backup/mgrRows"],
             'columns'=> [
                 'action' => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index) { return {$name}Formatter(value,row,index); }"],
                     'actions'=> [

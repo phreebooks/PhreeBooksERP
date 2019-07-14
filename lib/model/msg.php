@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-06
+ * @version    3.x Last Update: 2019-07-09
  * @filesource /lib/model/msg.php
  */
 
@@ -175,7 +175,7 @@ function msgLog($msg)
 function msgDebug($msg, $trap=false)
 {
     global $msgStack;
-    $msgStack->debug($msg, $trap=false);
+    if (is_object($msgStack)) { $msgStack->debug($msg, $trap=false); }
 }
 
 /**
@@ -186,7 +186,7 @@ function msgDebug($msg, $trap=false)
 function msgDebugWrite($filename=false, $append=false, $force=false)
 {
     global $msgStack;
-    $msgStack->debugWrite($filename, $append, $force);
+    if (is_object($msgStack)) { $msgStack->debugWrite($filename, $append, $force); }
 }
 
 /**
@@ -195,8 +195,10 @@ function msgDebugWrite($filename=false, $append=false, $force=false)
 function msgTrap()
 {
     global $msgStack;
-    msgDebug("\nTRACE msgTrap SET");
-    $msgStack->trap = true; //$capture;
+    if (is_object($msgStack)) {
+        msgDebug("\nTRACE msgTrap SET");
+        $msgStack->trap = true; //$capture;
+    }
 }
 
 /**

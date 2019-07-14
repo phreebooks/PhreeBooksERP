@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-24
+ * @version    3.x Last Update: 2019-07-12
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -122,7 +122,7 @@ class contactsMain
             $data['source']['filters']['rep_id'] = ['order'=>98, 'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."contacts.rep_id=$iID"];
         }
         $data['strict'] = true;
-        $layout = array_replace_recursive($layout, ['type'=>'datagrid', 'structure'=>$data]);
+        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'manager','datagrid'=>['manager'=>$data]]);
     }
 
     /**
@@ -520,16 +520,19 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         if ($rID) { $row = dbGetRow(BIZUNO_DB_PREFIX.'contacts', "id=$rID"); }
         else      { $row = ['type'=>'c','first_date'=>date('Y-m-d'),'first_date'=>date('Y-m-d')]; }
         msgDebug("\nread row = ".print_r($row, true));
-        $first_date  = ['order'=>10,'label'=>pullTableLabel('contacts','first_date'), 'break'=>true,'attr'=>['type'=>'date','value'=>$row['first_date'], 'readonly'=>'readonly']];
-        $last_update = ['order'=>20,'label'=>pullTableLabel('contacts','last_update'),'break'=>true,'attr'=>['type'=>'date','value'=>$row['last_update'],'readonly'=>'readonly']];
+        $fields = [
+            'histPay'  => ['order'=>10,'attr'=>['type'=>'button','value'=>$this->lang['payment_history']],'events'=>['onClick'=>"jsonAction('contacts/main/historyPayment', $rID);"]],
+            'dateFirst'=> ['order'=>20,'label'=>pullTableLabel('contacts','first_date'), 'attr'=>['type'=>'date','value'=>$row['first_date'], 'readonly'=>'readonly']],
+            'dateLast' => ['order'=>30,'label'=>pullTableLabel('contacts','last_update'),'attr'=>['type'=>'date','value'=>$row['last_update'],'readonly'=>'readonly']]];
         $data = ['type'=>'divHTML',
             'divs'    => [
-                'props' => ['order'=>20,'type'=>'fields','attr'=>['id'=>'fldProps'],'fields'=>['first_date'=>$first_date, 'last_update'=>$last_update]],
+                'props' => ['order'=>20,'type'=>'fields','attr'=>['id'=>'fldProps'],'type'=>'fields','keys'=>['dateFirst','dateLast','histPay']],
                 'dgSoPo'=> ['order'=>30,'type'=>'datagrid','classes'=>['blockView'],'attr'=>['id'=>'dgSoPo'],'key'=>'po_so'],
                 'dgInv' => ['order'=>40,'type'=>'datagrid','classes'=>['blockView'],'attr'=>['id'=>'dgInv'], 'key'=>'inv']],
             'datagrid'=> [
-                'po_so'=> $this->dgHistory('dgHistory10', $row['type']=='v'?4:10, $rID),
-                'inv'  => $this->dgHistory('dgHistory12', $row['type']=='v'?6:12, $rID)]];
+                'po_so' => $this->dgHistory('dgHistory10', $row['type']=='v'?4:10, $rID),
+                'inv'   => $this->dgHistory('dgHistory12', $row['type']=='v'?6:12, $rID)],
+            'fields'  =>$fields];
         $layout = array_replace_recursive($layout, $data);
         msgDebug("\nlayout is now = ".print_r($layout, true));
     }
@@ -564,6 +567,30 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
             $data['showStatus'] = getModuleCache('phreebooks', 'settings', $type, 'show_status', 1);
         }
         $layout = array_replace_recursive($layout, ['content'=>$data]);
+    }
+
+    public function historyPayment()
+    {
+        $rID   = clean('rID', 'integer', 'get');
+        $terms = viewFormat($rID, 'cTerms');
+        $lYear = localeCalculateDate(date('Y-m-d'), 0, 0, -1);
+        $rows  = dbGetMulti(BIZUNO_DB_PREFIX.'journal_main', "contact_id_b=$rID AND journal_id=12 AND closed='1' AND post_date>'$lYear'", 'id', ['journal_id','post_date','closed_date','terms','total_amount']);
+        $total = $delta = 0;
+        foreach ($rows as $row) {
+            $dateDue  = getTermsDate($row['terms'], 'c', $row['post_date']);
+            $datetime1= strtotime($row['post_date']);
+            $datetime2= strtotime($dateDue);
+            $datetime3= strtotime($row['closed_date']);
+            $expDays  = ($datetime2 - $datetime1) / (60*60*24);
+            $lateDays = ($datetime3 - $datetime1) / (60*60*24);
+            $delta   += $lateDays - $expDays;
+            $total   += $row['total_amount'];
+            msgDebug("\nPost_date = {$row['post_date']} and expected date = $dateDue and actual date = {$row['closed_date']} with delta = $delta and total = {$row['total_amount']}");
+        }
+        if (empty($rows)) { return msgAdd("No paid invoices this past year!"); }
+        $avgSales= viewFormat($total / sizeof($rows), 'currency');
+        $avgPmt  = number_format($delta / sizeof($rows), 1);
+        msgAdd(sprintf($this->lang['payment_history_resp'], $terms, $avgSales, $avgPmt), 'info');
     }
 
     /**
@@ -609,9 +636,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         $rID  = clean('rID',  'integer','get');
         $aType= clean('aType','char',   'get');
         if (!$rID) { return msgAdd('No id returned!'); }
-//      $this->managerSettingsAddress($aType); // executed at dgAddress
-        $data = ['type'=>'datagrid', 'structure'=>$this->dgAddress($rID, $this->type, $aType, $security)];
-        $layout = array_replace_recursive($layout, $data);
+        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'address','datagrid'=>['address'=>$this->dgAddress($rID, $this->type, $aType, $security)]]);
     }
 
     /**
@@ -1050,7 +1075,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         $jID = clean('jID', 'integer', 'get');
         $rID = clean('rID', 'integer', 'get');
         $structure = $this->dgHistory('dgHistory'.$jID, $jID, $rID);
-        $layout = array_replace_recursive($layout, ['type'=>'datagrid', 'structure'=>$structure]);
+        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'history','datagrid'=>['history'=>$structure]]);
     }
 
     /**
@@ -1060,9 +1085,8 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
      */
     public function managerRowsLog(&$layout=[])
     {
-        $rID = clean('rID', 'integer', 'get');
-        $structure = $this->dgLog('dgLog', $rID);
-        $layout = array_replace_recursive($layout, ['type'=>'datagrid', 'structure'=>$structure]);
+        $rID   = clean('rID', 'integer', 'get');
+        $layout= array_replace_recursive($layout, ['type'=>'datagrid','key'=>'log','datagrid'=>['log'=>$this->dgLog('dgLog', $rID)]]);
     }
 
     /**

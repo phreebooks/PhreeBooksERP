@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-02
+ * @version    3.x Last Update: 2019-07-11
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -467,7 +467,7 @@ class bizunoAdmin
 
     public function installBizuno(&$layout=[])
     {
-        global $bizunoUser;
+        global $bizunoUser, $io;
         bizAutoLoad(BIZUNO_LIB ."controller/module/bizuno/settings.php", 'bizunoSettings');
         bizAutoLoad(BIZUNO_LIB ."controller/module/phreebooks/admin.php", 'phreebooksAdmin');
         bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
@@ -487,7 +487,7 @@ class bizunoAdmin
         // Here we go, ready to install
         $bAdmin = new bizunoSettings();
         msgDebug("\n  Creating the company directory");
-        if (!is_dir(BIZUNO_DATA)) { mkdir(BIZUNO_DATA, 0755); }
+        $io->validatePath("index.php"); // create the data folder
         // ready to install, tables first
         if (dbTableExists(BIZUNO_DB_PREFIX.'journal_main')) { return msgAdd("Cannot install, the database has tables present. Aborting!"); }
         $tables = [];

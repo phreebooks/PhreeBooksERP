@@ -121,6 +121,7 @@ $icons = [
     'select_all' => ['dir'=>'default','path'=>'package-x-generic.png'],
     'settings'   => ['dir'=>'default','path'=>'applications-system.png'],
     'shipping'   => ['dir'=>'default','path'=>'package-x-generic.png'],
+    'steps'      => ['dir'=>'default','path'=>'start-here.png'],
     'support'    => ['dir'=>'default','path'=>'edit-paste.png'],
     'tip'        => ['dir'=>'default','path'=>'dialog-information.png'],
     'toggle'     => ['dir'=>'default','path'=>'system-shutdown.png'],

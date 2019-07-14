@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-01
+ * @version    3.x Last Update: 2019-07-12
  * @filesource lib/controller/functions.php
  */
 
@@ -423,9 +423,10 @@ function settingsFill(&$structure, $module='')
     }
 }
 
-function getTermsDate($terms_encoded='', $type='c')
+function getTermsDate($terms_encoded='', $type='c', $post_date=false)
 {
     $idx = $type=='v' ? 'vendors' : 'customers';
+    if (empty($post_date)) { $post_date = date('Y-m-d'); }
     $terms_def = explode(':', getModuleCache('phreebooks', 'settings', $idx, 'terms'));
     if (!$terms_encoded){ $terms = $terms_def; }
     else                { $terms = explode(':', $terms_encoded); }
@@ -435,13 +436,13 @@ function getTermsDate($terms_encoded='', $type='c')
         case '0': // Default terms
         case '3': // Special terms
             if (!isset($terms[3])) { $terms[3] = 30; }
-            return localeCalculateDate(date('Y-m-d'), $terms[3]);
+            return localeCalculateDate($post_date, $terms[3]);
         case '1': // Cash on Delivery (COD)
         case '2': // Prepaid
         case '6': // Due upon receipt
-            return date('Y-m-d');
+            return $post_date;
         case '4': return $terms[3];     // Due on date
-        case '5': return date('Y-m-t'); // Due at end of month
+        case '5': return localeCalculateDate(substr($post_date, 0, 7)."-01", -1, 1); // Due at end of month
     }
 }
 

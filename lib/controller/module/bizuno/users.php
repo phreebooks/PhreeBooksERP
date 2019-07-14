@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-12
+ * @version    3.x Last Update: 2019-07-12
  * @filesource lib/controller/module/bizuno/users.php
  */
 
@@ -34,7 +34,7 @@ class bizunoUsers
     {
         $this->lang = getLang($this->moduleID);
     }
-    
+
     /**
      * Main entry point structure for Bizuno users
      * @param array $layout - structure coming in
@@ -63,10 +63,9 @@ class bizunoUsers
     public function managerRows(&$layout)
     {
         if (!$security = validateSecurity('bizuno', 'users', 1)) { return; }
-        $data  = ['type'=>'datagrid', 'structure'=>$this->dgUsers('dgUsers', $security)];
-        $layout= array_replace_recursive($layout, $data);
+        $layout= array_replace_recursive($layout, ['type'=>'datagrid','key'=>'dgUsers','datagrid'=>['dgUsers'=>$this->dgUsers('dgUsers', $security)]]);
     }
-    
+
     /**
      * saves user selections in cache for page re-entry
      */
@@ -137,7 +136,7 @@ class bizunoUsers
     }
 
     /**
-     * 
+     *
      * @param array $fields
      * @param type $settings
      * @return array
@@ -298,7 +297,7 @@ class bizunoUsers
      * @param integer $security - users defined security level
      * @return array - datagrid structure
      */
-    private function dgUsers($name, $security=0) 
+    private function dgUsers($name, $security=0)
     {
         $this->managerSettings();
         $yes_no_choices = [['id'=>'a','text'=>lang('all')], ['id'=>'y','text'=>lang('active')], ['id'=>'n','text'=>lang('inactive')]];

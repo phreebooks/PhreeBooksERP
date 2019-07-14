@@ -61,7 +61,7 @@ class phreebooksAdmin {
                     'recon'   => ['order'=>85,'label'=>lang('phreebooks_recon'),          'icon'=>'apply',     'events'=>['onClick'=>"hrefClick('phreebooks/reconcile/manager');"]],
                     'rpt_bank'=> ['order'=>99,'label'=>lang('reports'),                   'icon'=>'mimeDoc',   'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=bnk');"]]]],
                 'customers' => ['child'=>[
-                    'sales' => ['order'=>45,'label'=>lang('journal_main_journal_id_12_mgr'),'icon'=>'sales','events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=12&mgr=1');"],'child'=>[
+                    'sales' => ['order'=>45,'label'=>lang('journal_main_journal_id_12_mgr'), 'icon'=>'sales', 'events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=12&mgr=1');"],'child'=>[
                         'j9_mgr' => ['order'=>30,'label'=>lang('journal_main_journal_id_9'), 'icon'=>'quote', 'events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=9');"]],
                         'j10_mgr'=> ['order'=>20,'label'=>lang('journal_main_journal_id_10'),'icon'=>'order', 'events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=10');"]],
                         'j12_mgr'=> ['order'=>10,'label'=>lang('journal_main_journal_id_12'),'icon'=>'sales', 'events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=12');"]],

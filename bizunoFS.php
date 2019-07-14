@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-02
+ * @version    3.x Last Update: 2019-07-08
  * @filesource /bizunoFS.php
  */
 
@@ -56,14 +56,15 @@ bizAutoLoad(BIZUNO_LIB."model/io.php", 'io');
 $msgStack= new messageStack();
 $cleaner = new cleaner();
 $io      = new io();
+
 $parts   = explode('/', clean('src', 'path_rel', 'get'), 2);
 $fn      = BIZUNO_DATA.$parts[1];
 $path    = pathinfo($fn, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR;
 $ext     = strtolower(pathinfo($fn, PATHINFO_EXTENSION));
 $fBad    = !file_exists($fn) ? true : false;
-$pBad    = !$io->validatePath($path) ? true : false;
-$tBad    = !in_array($ext, ['jpg','jpeg','jpe','gif','png','tif','tiff']) ? true : false;
-if ($tBad || $pBad || $fBad) { $fn = BIZUNO_ROOT . str_replace(BIZUNO_SRVR, '', BIZUNO_LOGO); }
+$pBad    = !$io->validatePath($parts[1]) ? true : false;
+$eBad    = !in_array($ext, $io->getValidExt('image')) ? true : false;
+if ($eBad || $pBad || $fBad) { $fn = BIZUNO_ROOT . str_replace(BIZUNO_SRVR, '', BIZUNO_LOGO); }
 header("Accept-Ranges: bytes");
 header("Content-Type: "  .getMimeType($fn));
 header("Content-Length: ".filesize($fn));
@@ -144,10 +145,10 @@ function getMimeType($filename)
             if (function_exists(__NAMESPACE__.'\mime_content_type')) { # if mime_content_type exists use it.
                 $m = mime_content_type($filename);
             } else {    # if nothing left try shell
-                if (strstr($_SERVER[HTTP_USER_AGENT], "Windows")) { # Nothing to do on windows
+                if (strstr($_SERVER['HTTP_USER_AGENT'], "Windows")) { # Nothing to do on windows
                     return ""; # Blank mime display most files correctly especially images.
                 }
-                if (strstr($_SERVER[HTTP_USER_AGENT], "Macintosh")) { $m = trim(exec('file -b --mime '.escapeshellarg($filename))); }
+                if (strstr($_SERVER['HTTP_USER_AGENT'], "Macintosh")) { $m = trim(exec('file -b --mime '.escapeshellarg($filename))); }
                 else { $m = trim(exec('file -bi '.escapeshellarg($filename))); }
             }
             $m = explode(";", $m);

@@ -17,23 +17,47 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-07
+ * @version    3.x Last Update: 2019-07-10
  * @filesource /portal/functions.php
  */
 
 namespace bizuno;
 
 // set some application specific defines, in HTML format
-define('BIZUNO_MY_FOOTER', '');
+if (!defined('BIZUNO_MY_FOOTER')) { define('BIZUNO_MY_FOOTER', ''); }
+if (!defined('BIZUNO_KEY'))       { define('BIZUNO_KEY', 'xsdRGg5sF65hdwfD'); }
 
 /**
- * Validates the user is logged in and returns the email address if true
+ * Validates the user is logged in and returns the creds if true
  */
 function biz_validate_user()
 {
-    $creds = clean('bizunoSession', 'json', 'cookie');
-    // make sure BOTH user and business are set
+    global $mixer;
+    if (strlen(getUserCache('profile', 'admin_encrypt')) < 1) { setUserCache('profile', 'admin_encrypt', 'TBD'); }
+    $creds = clean('bizunoSession', 'json', 'cookie'); // @todo DEPRECATED
+    if (empty($creds)) { // try the new scrambled method
+        $scramble = clean('bizunoSession', 'text', 'cookie');
+        if (empty($scramble)) { return false; }
+        $creds = json_decode(base64_decode($mixer->decrypt(BIZUNO_KEY, $scramble), true));
+    }
     return !empty($creds[0]) && !empty($creds[1]) ? $creds : false;
+}
+
+/**
+ * Set the encrypted cookie for the current user
+ * @global class $mixer - Encryption class
+ * @param string $email - users email address
+ * @param integer $time - future time to set expiration in seconds
+ */
+function set_user_cookie($email='', $time=false)
+{
+    global $mixer;
+    if (strlen(getUserCache('profile', 'admin_encrypt')) < 1) { setUserCache('profile', 'admin_encrypt', 'TBD'); }
+    if (empty($time)) { $time = 60*60; } // 1 hour
+    $now = time();
+    $cookie = $mixer->encrypt(BIZUNO_KEY, base64_encode("[\"$email\",".$now."]"));
+    $_COOKIE['bizunoSession'] = $cookie;
+    setcookie('bizunoSession', $cookie, $now+$time, "/");
 }
 
 /**
@@ -72,6 +96,17 @@ function biz_user_logout()
 }
 
 function bizuno_get_locale() { return substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5); }
+
+/**
+ * Fix for Google that changes the format of the language to en-US (underscore to dash)
+ * @param string $iso
+ */
+function cleanLang(&$iso='en_US') {
+    $gcln = str_replace('-', '_', $iso);
+    $parts = explode('_', $gcln);
+    $iso = strtolower($parts[0]).'_'.strtoupper($parts[1]);
+    if (strpos(getUserCache('profile', 'language'), '-') !== false) { setUserCache('profile', 'language', $iso); }
+}
 
 function viewSubMenu() { } // hook for creating menu bar within a page
 

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-02
+ * @version    3.x Last Update: 2019-07-10
  * @filesource /portal/guest.php
  */
 
@@ -177,9 +177,7 @@ class guest
         // validate user
         $email = $_SESSION['UserEmail']= clean('UserEmail', 'email', 'post');
         $pass  = $_SESSION['UserPass'] = biz_hash_password(clean('UserPass', 'text', 'post'));
-        $cookie= '["'.$email.'",1,'.time().']';
-        $_COOKIE['bizunoSession'] = $cookie;
-        setcookie('bizunoSession', $cookie, time()+(60*60*12), "/"); // 12 hours
+        set_user_cookie($email);
         $GLOBALS['dbBizuno'] = $GLOBALS['dbPortal'] = ['type'=>'mysql',
             'host'  => clean('dbHost', 'text', 'post'),
             'name'  => clean('dbName', 'text', 'post'),

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-08
+ * @version    3.x Last Update: 2019-07-10
  * @filesource /portal/main.php
  */
 
@@ -26,15 +26,16 @@ namespace bizuno;
 // set some sitewide constants
 define('COG_ITEM_TYPES', 'ma,mi,ms,sa,si,sr');
 
-require_once(BIZUNO_ROOT."portal/functions.php");
-require_once(BIZUNO_LIB ."controller/functions.php");
-require_once(BIZUNO_LIB ."locale/cleaner.php");
-require_once(BIZUNO_LIB ."locale/currency.php");
-require_once(BIZUNO_LIB ."model/db.php");
-require_once(BIZUNO_LIB ."model/io.php");
-require_once(BIZUNO_LIB ."model/msg.php");
-require_once(BIZUNO_LIB ."view/main.php");
-require_once(BIZUNO_LIB ."view/easyUI/html5.php");
+require_once(BIZUNO_LIB."controller/functions.php");
+bizAutoLoad(BIZUNO_ROOT."portal/functions.php", 'biz_validate_user', 'function');
+bizAutoLoad(BIZUNO_LIB ."locale/cleaner.php",   'cleaner');
+bizAutoLoad(BIZUNO_LIB ."locale/currency.php",  'currency');
+bizAutoLoad(BIZUNO_LIB ."model/db.php",         'db');
+bizAutoLoad(BIZUNO_LIB ."model/encrypter.php",  'encryption');
+bizAutoLoad(BIZUNO_LIB ."model/io.php",         'io');
+bizAutoLoad(BIZUNO_LIB ."model/msg.php",        'messageStack');
+bizAutoLoad(BIZUNO_LIB ."view/main.php",        'view');
+bizAutoLoad(BIZUNO_LIB ."view/easyUI/html5.php",'html5');
 
 class main //extends controller
 {
@@ -42,11 +43,12 @@ class main //extends controller
 
     function __construct()
     {
-        global $msgStack, $cleaner, $html5, $io;
-        $msgStack = new messageStack();
-        $cleaner  = new cleaner();
-        $html5    = new html5();
-        $io       = new io();
+        global $msgStack, $cleaner, $html5, $io, $mixer;
+        $msgStack= new messageStack();
+        $cleaner = new cleaner();
+        $html5   = new html5();
+        $io      = new io();
+        $mixer   = new encryption();
         $GLOBALS['myDevice'] = detectDevice(); // 'desktop' or 'mobile';
 //      $GLOBALS['myDevice'] = 'mobile'; // for testing mobile behavior on desktop devices
         $this->initDB();
@@ -55,7 +57,7 @@ class main //extends controller
         $this->initBusiness();
         $this->initUserCache();
         $this->initModuleCache();
-        clean('p', ['format'=>'command','default'=>'bizuno/main/bizunoHome'], 'get');
+        clean('p', ['format'=>'command', 'default'=>'bizuno/main/bizunoHome'], 'get');
         if (getUserCache('profile', 'biz_id', false, 0)) { // keep going
         } elseif (!in_array($GLOBALS['bizunoModule'], ['bizuno'])) { // not logged in or not installed, restrict to parts of module bizuno
             $_GET['p'] = '';
@@ -78,7 +80,7 @@ class main //extends controller
         global $bizunoUser;
         $bizunoUser = $this->setGuestCache();
         $this->setLanguage($bizunoUser);
-        $session = clean('bizunoSession', 'json', 'cookie');
+        $session = biz_validate_user();
         msgDebug("\nEntering validateUser with session = ".print_r($session, true)." and lang = ".$bizunoUser['profile']['language']);
         if ($session && constant('BIZUNO_DB_NAME') !== '') { $this->setSession($session); }
         else { // not logged in, try to log in
@@ -86,10 +88,9 @@ class main //extends controller
             if (!$pass = clean('UserPW','text', 'post')) { return; }
             if (!biz_validate_user_creds($email, $pass)) { return; }
             $bizunoUser['profile']['email'] = $email;
-            $cookie = "[\"{$bizunoUser['profile']['email']}\",0,".time()."]";
-            $_COOKIE['bizunoSession'] = $cookie;
-            setcookie('bizunoSession', $cookie, time()+(60*60*1), "/"); // 1 hour
+            set_user_cookie($email);
         }
+        $bizunoUser['profile']['biz_id'] = 1;
         // refresh cookies
         setcookie('bizunoUser', $bizunoUser['profile']['email'],   time()+(60*60*24*7)); // 7 days
         msgDebug("\nLeaving validateUser with email = {$bizunoUser['profile']['email']}");
@@ -101,24 +102,20 @@ class main //extends controller
         global $bizunoUser;
         msgDebug("\nEntering setSession");
         if (isset($creds[0])) { $bizunoUser['profile']['email']  = $creds[0]; }
-        if (isset($creds[1])) { $bizunoUser['profile']['biz_id'] = $creds[1]; }
-        if (isset($creds[2])) { $bizunoUser['profile']['session']= $creds[2]; }
-        $GLOBALS['updateUserCache'] = false;
-        $GLOBALS['updateModuleCache'] = [];
+        if (isset($creds[1])) { $bizunoUser['profile']['session']= $creds[1]; }
+        $GLOBALS['updateUserCache']  = false;
+        $GLOBALS['updateModuleCache']= [];
     }
 
     private function validateBusiness()
     {
-        global $bizunoUser;
         msgDebug("\nEntering validateBusiness with biz_id = ".getUserCache('profile', 'biz_id'));
         if (getUserCache('profile', 'biz_id')) { return true; } // logged in and business selected
         if (constant('BIZUNO_DB_NAME')=='') { $this->setInstallView(); } // logged in but configure.php file is not set, install
         if (!$email = getUserCache('profile', 'email')) { return; } // not logged in
         setUserCache('profile', 'biz_id', 1);
         portalWrite('users', ['last_login'=>date('Y-m-d h:i:s')], 'update', "biz_user='$email'");
-        $cookie = "[\"{$bizunoUser['profile']['email']}\",1,".time()."]";
-        $_COOKIE['bizunoSession'] = $cookie;
-        setcookie('bizunoSession', $cookie, time()+(60*60*12), "/"); // 12 hours
+        set_user_cookie($email, 60*60*12); // 12 hours
         msgDebug("\nReturning from validateBusiness");
    }
 
@@ -228,6 +225,7 @@ class main //extends controller
         } else {
             $bizunoUser['profile']['language'] = clean('bizunoLang',['format'=>'cmd','default'=>$bizunoUser['profile']['language']],'cookie');
         }
+        cleanLang($bizunoUser['profile']['language']);
         $bizunoLang= $this->loadBaseLang($bizunoUser['profile']['language']);
     }
 

@@ -69,7 +69,11 @@ class portalView
         $output['head']['js'][]  = ['order'=>45,'html'=>'<script type="text/javascript">var myDevice='."'$myDevice';var bizID=1;</script>"];
         $output['head']['js'][]  = ['order'=>50,'html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'portal/view.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
         $output['head']['js'][]  = ['order'=>55,'html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/common.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
-        if (getModuleCache('bizuno', 'settings', 'general', 'session_max') === 0) { $output['jsReady']['sessionClk'] = "refreshSessionClock();"; }
+//        if (getModuleCache('bizuno', 'settings', 'general', 'session_max') === 0) { $output['jsReady']['sessionClk'] = "refreshSessionClock();"; }
+        if (!empty($data['htmlHead'])) {
+            $html = implode("\n", $data['htmlHead']);
+            $output['head']['js'][] = ['order'=>80,'html'=>'<script type="text/javascript">'."\n$html\n".'</script>'];
+        }
         switch ($myDevice) {
             case 'mobile': $html5->layoutMobile ($output, $data); break;
             case 'tablet': $html5->layoutTablet ($output, $data); break;

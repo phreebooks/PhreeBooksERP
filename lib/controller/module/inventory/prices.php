@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-22
+ * @version    3.x Last Update: 2019-07-11
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -83,7 +83,7 @@ class inventoryPrices
         $_POST['search'] = getSearch('search');
         msgDebug("\n ready to build prices datagrid, security = $security");
         $structure = $this->dgPrices('dgPricesMgr', $this->type, $security, $mID, $cID, $iID);
-        $layout = array_replace_recursive($layout, ['type'=>'datagrid', 'structure'=>$structure]);
+        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'dgPricesMgr','datagrid'=>['dgPricesMgr'=>$structure]]);
     }
 
     /**

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-02
+ * @version    3.x Last Update: 2019-07-09
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -593,7 +593,7 @@ class phreeformRender
                         $tField = $special_form->load_text_block_data($field->settings->boxfield);
                     } else {
                         $strTxtBlk = $this->setFieldList($field->settings->boxfield);
-                        msgDebug("\n Executing textblock sql = SELECT $strTxtBlk $TrailingSQL");
+//                        msgDebug("\n Executing textblock sql = SELECT $strTxtBlk $TrailingSQL");
                         if (!$stmt= dbGetResult("SELECT $strTxtBlk $TrailingSQL")) { return msgAdd("Error selecting data! See trace file.", 'trap'); }
                         $result   = $stmt->fetch(\PDO::FETCH_ASSOC);
                         $tField   = '';
@@ -611,7 +611,7 @@ class phreeformRender
                         return msgAdd($this->lang['err_pf_field_empty'] . $field->title);
                     }
                     $strTxtBlk = $this->setFieldList($field->settings->boxfield);
-                    msgDebug("\n Executing textblock sql = SELECT $strTxtBlk $TrailingSQL");
+//                    msgDebug("\n Executing LtrTpl sql = SELECT $strTxtBlk $TrailingSQL");
                     if (!$stmt= dbGetResult("SELECT $strTxtBlk $TrailingSQL")) { return msgAdd("Error selecting data! See trace file.", 'trap'); }
                     $result   = $stmt->fetch(\PDO::FETCH_ASSOC);
                     msgDebug("\nResult fo template sql = ".print_r($result, true));

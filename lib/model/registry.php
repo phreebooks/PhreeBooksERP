@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    3.x Last Update: 2019-07-12
  * @filesource /lib/model/registry.php
  */
 
@@ -505,6 +505,7 @@ final class bizRegistry
         $temp = scandir($path);
         foreach ($temp as $fn) {
             if ($fn == '.' || $fn == '..') { continue; }
+            if (!is_dir($path.$fn))        { continue; }
             $methods[$fn] = "{$path}$fn/";
         }
         return $output;

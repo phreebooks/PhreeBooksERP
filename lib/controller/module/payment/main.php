@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-26
+ * @version    3.x Last Update: 2019-07-11
  * @filesource /lib/controller/module/payment/main.php
  */
 
@@ -97,7 +97,7 @@ class paymentMain
         if (!$security = validateSecurity('contacts', 'mgr_c', 1)) { return; }
         $rID = clean('rID', 'integer', 'get');
         $structure = $this->dgPayment('dgPayment', $rID, $security);
-        $layout = array_replace_recursive($layout, ['type'=>'datagrid', 'structure'=>$structure]);
+        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'dgPayment','datagrid'=>['dgPayment'=>$structure]]);
     }
 
     /**

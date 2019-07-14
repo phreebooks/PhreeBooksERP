@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-09
+ * @version    3.x Last Update: 2019-07-09
  * @filesource /lib/controller/module/phreebooks/journals/j04.php
  */
 
@@ -84,7 +84,8 @@ class j04 extends jCommon
         $data['jsHead']['datagridData'] = $this->dgDataItem;
         $data['datagrid']['item'] = $this->dgOrders('dgJournalItem', 'v');
         if ($rID) { unset($data['datagrid']['item']['source']['actions']['insertRow']); } // only allow insert for new orders
-        $data['fields']['gl_acct_id']['attr']['value'] = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');
+        $data['fields']['gl_acct_id']['attr']['value']   = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');
+        $data['fields']['terminal_date']['attr']['value']= getTermsDate($data['fields']['terms']['attr']['value'], 'v');
         $isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? '1' : '0';
         $data['fields']['waiting'] = ['attr'=>  ['type'=>'hidden', 'value'=>$isWaiting]]; // field not used
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
