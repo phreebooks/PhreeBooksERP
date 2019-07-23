@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-24
+ * @version    3.x Last Update: 2019-07-22
  * @filesource /lib/controller/module/contacts/admin.php
  */
 
@@ -62,11 +62,8 @@ class contactsAdmin
             'contactName'=> ['text'=>lang('address_book_primary_name'),      'group'=>$this->lang['title'],'module'=>'bizuno',       'function'=>'viewFormat'],
             'contactGID' => ['text'=>lang('contacts_gov_id_number')." (".lang('id').")",'group'=>$this->lang['title'],'module'=>'bizuno','function'=>'viewFormat']];
         $this->crm_actions = [
-            'new' =>$this->lang['contacts_crm_new_call'],
-            'ret' =>$this->lang['contacts_crm_call_back'],
-            'flw' =>$this->lang['contacts_crm_follow_up'],
-            'lead'=>$this->lang['contacts_crm_new_lead'],
-            'inac'=>lang('inactive')];
+            'new' =>$this->lang['contacts_crm_new_call'], 'ret' =>$this->lang['contacts_crm_call_back'], 'flw' =>$this->lang['contacts_crm_follow_up'],
+            'lead'=>$this->lang['contacts_crm_new_lead'], 'inac'=>lang('inactive')];
     }
 
     /**
@@ -90,6 +87,7 @@ class contactsAdmin
 
     public function initialize()
     {
+        asort($this->crm_actions);
         setModuleCache('contacts', 'crm_actions', false, $this->crm_actions);
         return true;
     }

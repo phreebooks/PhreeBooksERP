@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2019-07-22
  * @filesource /lib/controller/module/inventory/tools.php
  */
 
@@ -58,7 +58,7 @@ class inventoryTools
         $html  = '<div style="width:100%" id="chartInventoryChart"></div>';
         $html .= '<div style="text-align:right"><form id="frmInventoryChart" action="'.$action.'">'.html5('', $iconExp).'</form></div>';
         $html .= htmlJS($js);
-        $layout = array_replace_recursive($layout, ['type'=>'raw', 'content'=>$html]);
+        $layout= array_replace_recursive($layout, ['type'=>'raw', 'content'=>$html]);
     }
 
     private function chartSalesData($sku)
@@ -175,6 +175,7 @@ class inventoryTools
     {
         if (!$security = validateSecurity('bizuno', 'admin', 3)) { return; }
         $skuList = [];
+        $this->inv_types[] = 'ns'; // add some more that should be checked
         $jItems = $this->getJournalQty(); // fetch the PO's and SO's balances
         $items  = dbGetMulti(BIZUNO_DB_PREFIX."inventory", "inventory_type IN ('".implode("','",$this->inv_types)."')", 'sku', ['id','sku','qty_so','qty_po']);
         foreach ($items as $row) {

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-11
+ * @version    3.x Last Update: 2019-07-22
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -107,7 +107,13 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
             'jsHead'   => ['init' => "jq.cachedScript('".BIZUNO_URL."controller/module/phreebooks/phreebooks.js?ver=".MODULE_BIZUNO_VERSION."');"],
             'jsBody'   => ['init' => $jsBody],
             'jsReady'  => ['init' => $jsReady]];
-        if ($this->journalID == 0) { unset($data['accordion']['accJournal']['divs']['divJournalDetail']); }
+        if ($this->journalID == 0) {
+            unset($data['accordion']['accJournal']['divs']['divJournalDetail']);
+            for ($i=2; $i<23; $i++) { $jtitles['j'.$i] = lang('journal_main_journal_id_'.$i); }
+            $data['jsHead']['frmGrps'] = "var formGroups = ".json_encode(getDefaultFormID(0, true)).";";
+            $data['jsHead']['jTitles'] = "var jrnlTitles = ".json_encode($jtitles).";";
+            $data['datagrid']['manager']['columns']['action']['actions']['print']['events']['onClick'] = "winOpen('phreeformOpen', 'phreeform/render/open&group='+formGroups['jjrnlTBD']+'&date=a&xfld=journal_main.id&xcr=equal&xmin=idTBD');";
+        }
         $layout = array_replace_recursive($layout, viewMain(), $data);
     }
 
@@ -821,7 +827,8 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         $dateRange  = dbSqlDates($this->defaults['period']);
         $sqlPeriod  = $dateRange['sql']; // BIZUNO_DB_PREFIX."journal_main.period={$this->defaults['period']}";
         $formID     = explode(':', getDefaultFormID($this->journalID));
-        $formGroup  = $this->journalID==18 ? 'cust:j19' : $formID[0].':jjrnlTBD'; // special case for customer receipts, make like POS
+        $formGroup  = $formID[0].':jjrnlTBD';
+//      $formGroup  = $this->journalID==18 ? 'cust:j19' : $formID[0].':jjrnlTBD'; // deprecated to allow different forms for cash receipts and POS sales
         $jHidden    = true;
         $jID_values = [];
         $valid_jIDs = [$this->journalID];
@@ -988,22 +995,14 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                 unset($data['source']['actions']['newJournal']);
                 unset($data['columns']['id']['attr']['hidden']);
                 $data['columns']['action']['actions']['edit']['events']['onClick'] = "tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD');";
-                unset($data['columns']['action']['actions']['print']);
-                $data['columns']['journal_id'] = ['order'=>15, 'field'=>BIZUNO_DB_PREFIX.'journal_main.journal_id', 'format'=>'j_desc',
-                    'label' => pullTableLabel('journal_main', 'journal_id'), 'attr'=>  ['width'=>120, 'resizable'=>true]];
-
+                $data['columns']['journal_id'] = ['order'=>15, 'field'=>BIZUNO_DB_PREFIX.'journal_main.journal_id','label'=>pullTableLabel('journal_main', 'journal_id'),
+                    'events'=>['formatter'=>"function(value) { return jrnlTitles['j'+value]; }"], 'attr'=>['width'=>80, 'resizable'=>true]];
                 $journalID = clean('journalID', 'integer', 'post');
                 $jVals = $this->selJournals(); // needs to be here for generating $this->blocked_journals
                 if     ($journalID)              { $sql = BIZUNO_DB_PREFIX."journal_main.journal_id=$journalID"; }
                 elseif ($this->blocked_journals) { $sql = BIZUNO_DB_PREFIX."journal_main.journal_id NOT IN ($this->blocked_journals)"; }
                 else                             { $sql = ''; }
                 $data['source']['filters']['journalID']= ['order'=>55,'break'=>true,'sql'=>$sql, 'label'=>pullTableLabel('journal_main', 'journal_id'),'values'=>$jVals,'attr'=>['type'=>'select','value'=>$journalID]];
-
-//                $data['source']['filters']['hdcol1'] = ['order'=>56,              'classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('fieldname')]];
-//                $data['source']['filters']['hdcol2'] = ['order'=>57,              'classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('operator')]];
-//                $data['source']['filters']['hdMin']  = ['order'=>58,              'classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('minimum')]];
-//                $data['source']['filters']['hdMax']  = ['order'=>59,'break'=>true,'classes'=>['row-default'],'attr'=>['type'=>'label','value'=>lang('maximum')]];
-
                 $sql1 = $this->searchCriteriaSQL('postDate', BIZUNO_DB_PREFIX.'journal_main.post_date', 'date', 'band', getModuleCache('phreebooks', 'fy', 'period_start'), getModuleCache('phreebooks', 'fy', 'period_end'));
                 $temp1 = explode(':', $this->defaults['postDate']);
                 if (!$temp1[0]) { $temp1[0] = 'band'; }

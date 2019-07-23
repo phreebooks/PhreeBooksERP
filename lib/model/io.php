@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-13
+ * @version    3.x Last Update: 2019-07-15
  * @filesource /lib/model/io.php
  */
 
@@ -179,7 +179,6 @@ final class io
         msgDebug("\nEntering fileReadGlob with path = $path");
         if (!$this->folderExists($path)) { return $output; }
         $files = glob($this->myFolder.$path."*");
-        msgDebug("\nresults from glob = ".print_r($files, true));
         if (!is_array($files)) { return $output; }
         foreach ($files as $file) {
             $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
@@ -192,6 +191,7 @@ final class io
                 'mtime'=> $fmTime,
                 'date' => date(getModuleCache('bizuno', 'settings', 'locale', 'date_short'), $fmTime)];
         }
+        msgDebug("\nReturned results from fileReadGlob = ".print_r($output, true));
         return $output;
     }
 
@@ -385,7 +385,7 @@ final class io
 
     /**
      *
-     * @param string $fn - File name to validate extensions
+     * @param string $mime - sets the type of extension to allow
      */
     public function getValidExt($mime='file')
     {
@@ -394,9 +394,9 @@ final class io
             case 'zip':    return ['gz','zip'];
             case 'backup': return ['sql','gz','zip'];
             default:
-            case 'file' : $extensions = array_merge($extensions, ['zip','gz','pdf','doc','docx','xls','xlsx','ods','txt']); // add valid file extensions, fall through
-            case 'image': $extensions = array_merge($extensions, ['jpg','jpeg','jpe','gif','png','tif','tiff']); // then add valid image extensions
-            
+            case 'file' :  $extensions = array_merge($extensions, ['zip','gz','pdf','doc','docx','xls','xlsx','ods','txt']); // add valid file extensions, fall through
+            case 'image':  $extensions = array_merge($extensions, ['jpg','jpeg','jpe','gif','png','tif','tiff']); // then add valid image extensions
+
         }
         return $extensions;
     }
@@ -405,20 +405,25 @@ final class io
      * Saves an uploaded file, validates first, creates path if not there
      * @param string $index - index of the $_FILES array where the file is located
      * @param string $dest - destination path/filename where the uploaded files are to be placed
+     * @param string $prefix - File name prefix to prepend
+     * @param string $mime - MIME types to allow
      * @param boolean $replace [default false] set to true to replace the file if it already exists
      * @return boolean true on success, false (with msg) on error
      */
-    public function uploadSave($index, $dest, $replace=false, $mime='')
+    public function uploadSave($index, $dest, $prefix='', $mime='')
     {
         if (!isset($_FILES[$index])) { return msgDebug("\nTried to save uploaded file but nothing uploaded!"); }
         $extensions = $this->getValidExt($mime);
         if (!$this->validateUpload($index, '', $extensions, false)) { return; }
-        $dest = rtrim($dest, '/') . '/';
+        if (empty($prefix) && substr($dest, -1)<>'/') {
+            $prefix= pathinfo($dest, PATHINFO_BASENAME);
+            $dest  = pathinfo($dest, PATHINFO_DIRNAME).'/';
+        }
         $data = file_get_contents($_FILES[$index]['tmp_name']);
 //      if (strpos($data, ['<'.'?'.'php', 'eval(']) !== false) { return msgAdd("Illegal file contents!"); }
         $filename = clean($_FILES[$index]['name'], 'filename');
-        $path = $dest.str_replace(' ', '_', $filename);
-        $this->fileWrite($data, $path, false, false, $replace);
+        $path = $dest.str_replace(' ', '_', $prefix.$filename);
+        $this->fileWrite($data, $path, false);
         return true;
     }
 
@@ -428,24 +433,26 @@ final class io
      * @return true on valid path, false otherwise
      */
     public function validatePath($srcPath, $verbose=true) {
-        $error = false;
+        msgDebug("\nEntering validatePath with srcPath = $srcPath");
         // cannot use empty() because it can be a string equating to "0"
-        if ($srcPath === '' || $srcPath === null || $srcPath === false) { $error = true; }
+        if ($srcPath === '' || $srcPath === null || $srcPath === false) { return false; }
         $path  = pathinfo(BIZUNO_DATA . $srcPath, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR; // pull the path from the full path and file
+        if (!is_dir($path)) {
+//          msgDebug("\nMaking path = $path");
+            @mkdir($path, 0775, true);
+            $blnkDir = pathinfo($srcPath, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR; // need to remove BIZUNO_DATA before writing file
+            $this->fileWrite('<'.'?'.'php', "{$blnkDir}index.php", false);
+        }
+        $error = false;
         $pPath = realpath($path) . DIRECTORY_SEPARATOR;
         $fPath = realpath(BIZUNO_DATA) . DIRECTORY_SEPARATOR;
-        if (!is_dir($path)) {
-            msgDebug("\nMaking path = $path");
-            @mkdir($path, 0775, true);
-            $blnkDir = pathinfo($srcPath, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR;
-            $this->fileWrite('<'.'?'.'php', "$blnkDir/index.php", false);
-        }
         if ($pPath === false || $fPath === false) { $error = true; }
         $fPath = rtrim($fPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         $pPath = rtrim($pPath, DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR;
         if (strlen($pPath) < strlen($fPath)) { $error = true; }
         if (substr($pPath, 0, strlen($fPath)) !== $fPath) { $error = true; }
-//      msgDebug("\npPath = $pPath and fPath = $fPath and dirMatch = ".($dirMatch?'true':'false'));
+//      msgDebug("\nExiting validatePath with Path = $pPath and fPath = $fPath and error = ".($error?'true':'false'));
+        msgDebug("\nExiting validatePath with error = ".($error?'true':'false'));
         return $error ? ($verbose ? msgAdd("Path validation error!") : false) : true; // passed all tests
     }
 

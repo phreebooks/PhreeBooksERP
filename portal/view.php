@@ -60,7 +60,7 @@ class portalView
         $output['head']['css'][] = ['order'=>20,'html'=>'<link type="text/css" rel="stylesheet" href="'.BIZUNO_URL .'view/easyUI/jquery-easyui/themes/icon.css">'];
         $output['head']['css'][] = ['order'=>30,'html'=>'<link type="text/css" rel="stylesheet" href="'.BIZUNO_URL .'view/easyUI/stylesheet.css" />'];
         $output['head']['css'][] = ['order'=>40,'html'=>'<link type="text/css" rel="stylesheet" href="'.BIZUNO_SRVR.'bizunoCSS.php?icons='.$icons.'&code='.$myBiz.'" />'];
-        $output['head']['js'][]  = ['order'=>10,'html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-3.2.1.js"></script>'];
+        $output['head']['js'][]  = ['order'=>10,'html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-3.4.1.js"></script>'];
         $output['head']['js'][]  = ['order'=>15,'html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/jquery.easyui.min.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
         $output['head']['js'][]  = ['order'=>25,'html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/easyui-extensions.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
         $output['head']['js'][]  = ['order'=>30,'html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-i18n/src/jquery.i18n.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-12
+ * @version    3.x Last Update: 2019-07-16
  * @filesource /view/easyUI/html5.php
  */
 
@@ -1378,13 +1378,17 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         $url .= "&type=" .(!empty($attr['drop'])  ? 'c' : $attr['type']);
         $url .= "&store=".(!empty($attr['store']) ? '1' : '0');
         $url .= "'";
-        $prop['classes'][] = 'easyui-combogrid';
-        $prop['options']['width']       = "250,panelWidth:750,delay:900,idField:'id',textField:'primary_name',mode:'remote',iconCls:'icon-search',hasDownArrow:false,selectOnNavigation:false";
-        $prop['options']['url']         = $url;
-        $prop['options']['onBeforeLoad']= "function (param) { var newValue=jq('#$id').combogrid('getValue'); if (newValue.length < 3) return false; }";
+        $prop['classes'][]               = 'easyui-combogrid';
+        $prop['options']['width']        = "250,panelWidth:750,delay:900,idField:'id',textField:'primary_name',mode:'remote',iconCls:'icon-search',hasDownArrow:false,selectOnNavigation:false";
+        $prop['options']['url']          = $url;
+        $prop['options']['onBeforeLoad'] = "function (param) { var newValue=jq('#$id').combogrid('getValue'); if (newValue.length < 3) return false; }";
+        if (!empty($prop['attr']['value']) && empty($attr['data'])) {
+            $selText = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'primary_name', "ref_id='{$prop['attr']['value']}'");
+            $this->jsReady[] = "jq('#$id').combogrid({data:".json_encode([['id'=>$prop['attr']['value'], 'primary_name'=>$selText]])."});";
+        }
         if (!empty($attr['data']))     { $prop['options']['data']      = $attr['data']; }
         if (!empty($attr['callback'])) { $prop['options']['onClickRow']= "function (idx, row) { {$attr['callback']} }"; }
-        $prop['options']['columns']       = "[[{field:'id', hidden:true},
+        $prop['options']['columns']      = "[[{field:'id', hidden:true},
     {field:'short_name',  title:'".jsLang('contacts_short_name')."', width:100},
     {field:'type',        hidden:".(strlen($attr['type'])>1?'false':'true').",title:'".jsLang('contacts_type')."', width:100},
     {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},

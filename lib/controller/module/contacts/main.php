@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-12
+ * @version    3.x Last Update: 2019-07-22
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -40,6 +40,7 @@ class contactsMain
         $this->securityModule = 'contacts';
         $this->securityMenu   = 'mgr_'.$this->type;
         switch ($this->type) {
+            case 'a': $this->helpIndex=' ';     $this->f0_default='a'; break; // all contacts
             case 'b': $this->securityMenu = 'mgr_c'; // allow access o branches if access to customers
                       $this->helpIndex='40.80'; $this->f0_default='0'; break; // branches
             case 'c': $this->helpIndex='40.30'; $this->f0_default='a'; break; // customers
@@ -108,7 +109,7 @@ class contactsMain
         $iID  = clean('ref',   'integer','get');
         $this->restrict_store = clean('store',['format'=>'boolean','default'=>true],'get'); // set store restiction override
         if (strlen($type)>1) { $this->type = 'i'; } // must have CRM access to look at entire contacts table
-        if (in_array($this->type, ['b'])) {
+        if (in_array($this->type, ['a','b'])) { // a - all contacts, b - branches
             $security = 1; // branches are part of bizuno admin settings and restricted in settings, needs to be read-only here for address searches of branches for users without access to settings
         } else {
             if (!$security = validateSecurity('contacts', "mgr_{$this->type}", 1)) { return; }
@@ -258,7 +259,7 @@ class contactsMain
     {
         switch ($this->type) {
             case 'c': // Customers
-                $data['tabs']['tabContacts']['divs']['payment'] = ['order'=>60,'label'=>lang('payment'),'hidden'=>$rID && getUserCache('profile', 'admin_encrypt', false, '')?false:true,'type'=>'html','html'=>'',
+                $data['tabs']['tabContacts']['divs']['payment'] = ['order'=>60,'label'=>lang('payment'),'hidden'=>$rID && getUserCache('profile', 'admin_encrypt')?false:true,'type'=>'html','html'=>'',
                     'options'=>['href'=>"'".BIZUNO_AJAX."&p=payment/main/manager&rID=$rID'"]];
                 break;
             case 'j': // Projects/Jobs
@@ -815,7 +816,6 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                 'filters' => [
                     "f0_$type"=> ['order'=>10,'break'=>true,'label'=>lang('status'),'sql'=>$f0_value,'values'=>$statusValues,'attr'=>['type'=>'select','value'=>$this->defaults['f0_'.$type]]],
                     'search'  => ['order'=>90,'attr'=>['id'=>"search_$type", 'value'=>$this->defaults['search_'.$type]]],
-                    'cType'   => ['order'=>98,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."contacts.type='$type'"],
                     'aType'   => ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."address_book.type='m'"]],
                 'sort' => ['s0'=>['order'=>10,'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
             'columns' => [
@@ -867,6 +867,9 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                     'label' => pullTableLabel("address_book", 'telephone1', $type),
                     'attr'  => ['width'=>100, 'sortable'=>true, 'resizable'=>true]]],
             ];
+        if ($type <> 'a') {
+            $data['source']['filters']['cType'] = ['order'=>98,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."contacts.type='$type'"];
+        }
         if ($type=='c' || $type == 'v') {
             $data['source']['actions']['mergeContact'] = ['order'=>20,'icon'=>'merge','events'=>['onClick'=>"jsonAction('contacts/main/merge&type=$type', 0);"]];
         } elseif (strlen($type)>1) { // search only certain types, all types are listed (i.e. cv)
@@ -1019,7 +1022,6 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     {
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
         $rID   = clean('rID', 'integer','get');
-//        $type  = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID");
         $notes = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'notes',"ref_id=$rID AND type='m'");
         $fldLog= [
             'crm_date'  => ['order'=>10,'label'=>lang('date'),  'break'=>true,'attr'=>['type'=>'date', 'value'=>viewDate(date('Y-m-d'))]],
@@ -1045,7 +1047,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     /**
      * Adds the extra fields to the address block for CRM records
      * @param array $structure - working data with CRM information
-     * @return string - table html with additional CRM fields for render
+     * @return string - table HTML with additional CRM fields for render
      */
     private function crmXFields($structure)
     {

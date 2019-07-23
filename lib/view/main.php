@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-11
+ * @version    3.x Last Update: 2019-07-23
  * @filesource /view/main.php
  */
 
@@ -183,7 +183,7 @@ function viewFormat($value, $format = '')
         case 'date':
         case 'datetime':   return viewDate($value);
         case 'dateLong':   return viewDate($value).' '.substr($value, strpos($value, ' '));
-        case 'encryptName':if (!getUserCache('profile', 'admin_encrypt')) { return ''; }
+        case 'encryptName':if (empty(getUserCache('profile', 'admin_encrypt'))) { return ''; }
             bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
             $enc = new encryption();
             $result = $enc->decrypt(getUserCache('profile', 'admin_encrypt'), $value);
@@ -214,6 +214,7 @@ function viewFormat($value, $format = '')
         case 'n2wrd':     return viewNumToWords($value);
         case 'null0':     return (round((real)$value, 4) == 0) ? '' : $value;
         case 'number':    return number_format((float)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'), getModuleCache('bizuno', 'settings', 'locale', 'number_decimal'), getModuleCache('bizuno', 'settings', 'locale', 'number_thousand'));
+        case 'percent':   return floatval($value) ? number_format($value * 100, 1)." %" : '';
         case 'printed':   return $value ? '' : lang('duplicate');
         case 'precise':   $output = number_format((real)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'));
             $zero = number_format(0, getModuleCache('bizuno', 'settings', 'locale', 'number_precision')); // to handle -0.00

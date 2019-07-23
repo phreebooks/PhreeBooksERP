@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-23
+ * @version    3.x Last Update: 2019-07-22
  * @filesource /lib/controller/module/bizuno/install/phreeform.php
  */
 
@@ -35,7 +35,8 @@ $phreeform = [
         'cust:j10' => ['type'=>'dir', 'title'=>'journal_main_journal_id_10'],
         'cust:j12' => ['type'=>'dir', 'title'=>'journal_main_journal_id_12'],
         'cust:j13' => ['type'=>'dir', 'title'=>'journal_main_journal_id_13'],
-        'cust:j19' => ['type'=>'dir', 'title'=>'sales_receipt'],
+        'cust:j18' => ['type'=>'dir', 'title'=>'sales_receipt'],
+        'cust:j19' => ['type'=>'dir', 'title'=>'pos_receipt'],
         'cust:lblc'=> ['type'=>'dir', 'title'=>'label'],
         'cust:ltr' => ['type'=>'dir', 'title'=>'letter'],
         'cust:stmt'=> ['type'=>'dir', 'title'=>'statement']]],
@@ -44,6 +45,8 @@ $phreeform = [
     'hr'   => ['title'=>'employees', 'folders'=>[
         'hr:rpt'   => ['type'=>'dir', 'title'=>'reports']]],
     'inv'  => ['title'=>'inventory', 'folders'=>[
+        'inv:j14'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_14'],
+        'inv:j16'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_16'],
         'inv:rpt'  => ['type'=>'dir', 'title'=>'reports']]],
     'vend' => ['title'=>'vendors',   'folders'=>[
         'vend:rpt' => ['type'=>'dir', 'title'=>'reports'],

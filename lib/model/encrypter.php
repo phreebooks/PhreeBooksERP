@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-10
+ * @version    3.x Last Update: 2019-07-15
  * @filesource /lib/model/encrypter.php
  */
 
@@ -50,7 +50,7 @@ final class encryption {
      */
     function decrypt($key, $source)
     {
-        if (strlen(getUserCache('profile', 'admin_encrypt')) < 1) { return msgAdd(lang('err_encrypt_key_missing')); }
+        if (strlen($key) < 1) { return msgAdd(lang('err_encrypt_key_missing')); }
         if (!$fudgefactor = $this->_convertKey($key)) { return; }
         if (empty($source)) { return msgAdd('No value has been supplied for decryption'); }
         $target  = null;
@@ -79,7 +79,7 @@ final class encryption {
    */
     function encrypt($key, $source, $sourcelen = 0)
     {
-        if (strlen(getUserCache('profile', 'admin_encrypt')) < 1) { return msgAdd(lang('err_encrypt_key_missing')); }
+        if (strlen($key) < 1) { return msgAdd(lang('err_encrypt_key_missing')); }
         if (!$fudgefactor = $this->_convertKey($key)) { return; }
         if (empty($source)) { return msgAdd('No value has been supplied for encryption'); }
         while (strlen($source) < $sourcelen) { $source .= ' '; }

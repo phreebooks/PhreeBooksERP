@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-12
+ * @version    3.x Last Update: 2019-07-23
  * @filesource /lib/model/registry.php
  */
 
@@ -136,8 +136,11 @@ final class bizRegistry
         unset($admin->structure['api']);
         $bizunoMod[$module]['properties']= $admin->structure;
         // Restore Bizuno database version for upgrade check. If the dbVersion is the same, then nothing is done
-        if ($module=='bizuno') { $bizunoMod['bizuno']['properties']['version'] = $this->dbVersion; }
-        msgDebug("\ndbVersion has been set in bizuno module to $this->dbVersion");
+        if ($module=='bizuno') {
+            $bizunoMod['bizuno']['properties']['version'] = $this->dbVersion;
+            msgDebug("\ndbVersion has been set in bizuno module to $this->dbVersion");
+        }
+        msgDebug("\nFinished initModule for module: $module, updating cache.");
         $GLOBALS['updateModuleCache'][$module] = true;
     }
 
@@ -475,7 +478,7 @@ final class bizRegistry
                 $url   = isset($structure['url']) ? "{$structure['url']}$folderID/$method/" : '';
             }
             $fqcn = "\\bizuno\\$method";
-            bizAutoLoad("{$path}$method.php", $fqcn);
+            if (!bizAutoLoad("{$path}$method.php", $fqcn)) { continue; }
             $clsMeth = new $fqcn($settings['settings']);
             $bizunoMod[$module][$folderID][$method] = [
                 'id'         => $method,
@@ -501,7 +504,8 @@ final class bizRegistry
     public function methodRead(&$methods, $path)
     {
         $output = [];
-        if (!@is_dir($path)) { return $output; }
+        msgDebug("\nEntering methodRead with path = $path");
+        if (!is_dir($path)) { return $output; }
         $temp = scandir($path);
         foreach ($temp as $fn) {
             if ($fn == '.' || $fn == '..') { continue; }

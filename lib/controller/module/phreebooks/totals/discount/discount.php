@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-24
+ * @version    3.x Last Update: 2019-07-22
  * @filesource /lib/controller/module/phreebooks/totals/discount/discount.php
  */
 
@@ -59,8 +59,8 @@ class discount
             'gl_type'      => $this->settings['gl_type'],
             'qty'          => '1',
             'description'  => $desc,
-            'debit_amount' => in_array($this->jID, [9,10,12,13,19]) ? $discount : 0,
-            'credit_amount'=> in_array($this->jID, [3, 4, 6, 7,21]) ? $discount : 0,
+            'debit_amount' => in_array($this->jID, [7, 9,10,12,19]) ? $discount : 0,
+            'credit_amount'=> in_array($this->jID, [3, 4, 6,13,21]) ? $discount : 0,
             'gl_account'   => clean("totals_{$this->code}_gl", ['format'=>'text','default'=>$this->settings['gl_account']], 'post'),
             'post_date'    => $main['post_date']];
         if (empty($main['discount'])) { $main['discount'] = 0; }

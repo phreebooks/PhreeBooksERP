@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-08
+ * @version    3.x Last Update: 2019-07-22
  * @filesource /lib/controller/module/bizuno/tools.php
  */
 
@@ -102,12 +102,9 @@ class bizunoTools {
         if (!$this->supportEmail) { return msgAdd("You do not have a support email address defined for your business , Please visit the PhreeSoft website for support."); }
         $toName  = defined('BIZUNO_SUPPORT_NAME') ? BIZUNO_SUPPORT_NAME : $this->supportEmail;
         $mail    = new bizunoMailer($this->supportEmail, $toName, $subject, $message, $email, $user);
-        if (isset($_FILES['ticketFile']['name']) && $_FILES['ticketFile']['name']) {
-            $type= $io->guessMimetype($_FILES['ticketFile']['name']);
-            if ($io->validateUpload('ticketFile', $type, ['png', 'jpg', 'jpeg', 'tiff', 'gif', 'pdf', 'txt', 'csv', 'zip'], false)) {
-                $mail->attach($_FILES['ticketFile']['tmp_name'], $_FILES['ticketFile']['name']);
-            }
-        }
+        if (!empty($_FILES['ticketFile']['name'])) { if ($io->validateUpload('ticketFile', '', $io->getValidExt('image'))) {
+            $mail->attach($_FILES['ticketFile']['tmp_name'], $_FILES['ticketFile']['name']);
+        } }
         $mail->sendMail();
         msgAdd("Your email has been sent to the PhreeSoft Support team. We'll be in contact with you shortly.", 'success');
         $this->ticketMain($layout);

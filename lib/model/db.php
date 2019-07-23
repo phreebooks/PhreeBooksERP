@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-06
+ * @version    3.x Last Update: 2019-07-22
  * @filesource /lib/model/db.php
  */
 
@@ -122,22 +122,21 @@ class db extends \PDO
     function alterField($table, $field, $props=[])
     {
         if (!$table || !$field) { return; }
-        $comment = array();
+        $comment = $temp = [];
         $sql = "ALTER TABLE $table CHANGE `$field` `$field` ";
-        if (isset($props['dbType']) && sizeof($props['dbType']) > 0) { $sql .= ' '.$props['dbType']; }
-        if (isset($props['collate'])&& sizeof($props['collate'])> 0) { $sql .= " CHARACTER SET utf8 COLLATE ".$props['collate']; }
-        if (isset($props['null'])   && strtolower($props['null'])=='no') { $sql .= ' NOT NULL'; }
-        if (isset($props['default']))                                { $sql .= " DEFAULT '".$props['default']."'"; }
-        if (isset($props['extra'])  && sizeof($props['extra'])  > 0) { $sql .= ' '.$props['extra']; }
-        if (isset($props['tag'])    && sizeof($props['tag'])    > 0) { $comment['tag']  = $props['tag']; }
-        if (isset($props['tab'])    && sizeof($props['tab'])    > 0) { $comment['tab']  = $props['tab']; }
-        if (isset($props['order'])  && sizeof($props['order'])  > 0) { $comment['order']= $props['order']; }
-        if (isset($props['label'])  && sizeof($props['label'])  > 0) { $comment['label']= $props['label']; }
-        if (isset($props['group'])  && sizeof($props['group'])  > 0) { $comment['group']= $props['group']; }
-        if (isset($props['type'])   && sizeof($props['type'])   > 0) { $comment['type'] = $props['type']; }
-        if (isset($props['req'])    && sizeof($props['req'])    > 0) { $comment['req']  = $props['req']; }
-        $temp = array();
-        foreach ($comment as $key => $value) { $temp[] = $key.":".$value; }
+        if (!empty($props['dbType'])) { $sql .= ' '.$props['dbType']; }
+        if (!empty($props['collate'])){ $sql .= " CHARACTER SET utf8 COLLATE ".$props['collate']; }
+        if (isset($props['null']) && strtolower($props['null'])=='no') { $sql .= ' NOT NULL'; }
+        if (isset($props['default'])) { $sql .= " DEFAULT '".$props['default']."'"; }
+        if (!empty($props['extra']))  { $sql .= ' '.$props['extra']; }
+        if (!empty($props['tag']))    { $comment['tag']  = $props['tag']; }
+        if (!empty($props['tab']))    { $comment['tab']  = $props['tab']; }
+        if (!empty($props['order']))  { $comment['order']= $props['order']; }
+        if (!empty($props['label']))  { $comment['label']= $props['label']; }
+        if (!empty($props['group']))  { $comment['group']= $props['group']; }
+        if (!empty($props['type']))   { $comment['type'] = $props['type']; }
+        if (!empty($props['req']))    { $comment['req']  = $props['req']; }
+        foreach ($comment as $key => $value) { $temp[] = "$key:$value"; }
         if (sizeof($temp) > 0) { $sql .= " COMMENT '".implode(';',$temp)."'"; }
         dbGetResult($sql);
     }
@@ -408,6 +407,7 @@ function dbConnected()
  */
 function dbDump($filename='bizuno_backup', $dirWrite='', $dbTable='')
 {
+    global $io;
     // set execution time limit to a large number to allow extra time
     set_time_limit(20000);
     $dbHost = $GLOBALS['dbBizuno']['host'];
@@ -420,6 +420,7 @@ function dbDump($filename='bizuno_backup', $dirWrite='', $dbTable='')
         if (!$stmt= dbGetResult("SHOW TABLES FROM $dbName LIKE '".BIZUNO_DB_PREFIX."%'")) { return; }
         if ( $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC)) { foreach ($rows as $row) { $dbTable .= array_shift($row).' '; } }
     }
+    if (!$io->validatePath($dirWrite.$dbFile, true)) { return; }
     $cmd    = "mysqldump --opt -h $dbHost -u $dbUser -p$dbPass $dbName $dbTable | gzip > $dbPath$dbFile";
     msgDebug("\n Executing command: $cmd");
     if (!function_exists('exec')) { msgAdd("php exec is disabled, the backup cannot be achieved this way!"); }
@@ -440,10 +441,12 @@ function dbRestore($filename)
     $dbUser = $GLOBALS['dbBizuno']['user'];
     $dbPass = $GLOBALS['dbBizuno']['pass'];
     $dbName = $GLOBALS['dbBizuno']['name'];
-    $path_parts = pathinfo($dbFile);
-    if (in_array(strtolower($path_parts['extension']), ['sql'])) { // raw sql in text format
+    $ext = strtolower(pathinfo($dbFile, PATHINFO_EXTENSION));
+    if (in_array($ext, ['sql'])) { // raw sql in text format
         $cmd = "mysql --verbose --host=$dbHost --user=$dbUser --password=$dbPass --default_character_set=utf8 --database=$dbName < $dbFile";
-    } else { // assume zipped, gz or zip will work
+    } elseif (in_array($ext, ['zip'])) { // in zip format
+        $cmd = "unzip -p $dbFile | mysql --verbose --host=$dbHost --user=$dbUser --password=$dbPass --default_character_set=utf8 --database=$dbName";
+    } else { // assume gz format
         $cmd = "gunzip < $dbFile | mysql --verbose --host=$dbHost --user=$dbUser --password=$dbPass --default_character_set=utf8 --database=$dbName";
     }
     msgDebug("\n Executing command: $cmd");
@@ -452,6 +455,7 @@ function dbRestore($filename)
     msgDebug("\n returned result: ".print_r($result,  true));
 //  msgDebug("\n returned output: ".print_r($output,  true)); // echoes the uncompressed sql, VERY LONG makes large debug files!
     msgDebug("\n returned status value: " .print_r($retValue, true));
+    return (!empty($retValue)) ? false : true;
 }
 
 /**

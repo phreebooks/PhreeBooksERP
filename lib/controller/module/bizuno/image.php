@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-12
+ * @version    3.x Last Update: 2019-07-15
  * @filesource /lib/controller/module/bizuno/image.php
  */
 
@@ -45,7 +45,7 @@ class bizunoImage
             switch ($action) {
                 case 'parent':  $path   = dirname($path); break;
                 case 'refresh': $search = '';             break;
-                case 'upload':  return $io->uploadSave('imgFile', "images/$path/", false, 'image');
+                case 'upload':  return $io->uploadSave('imgFile', "images/$path/", '', 'image');
             }
             if (substr($action, 0, 6) == 'newdir') {
                 $parts = explode(":", $action);
@@ -104,10 +104,12 @@ class bizunoImage
             $newPath = clean("$path/$fn", 'path_rel'); // remove double slashes, if present
             if (is_dir(BIZUNO_DATA."images/$newPath")) {
                 $src = BIZUNO_URL."view/icons/default/32x32/folder.png";
+                $isDir = true;
             } else {
                 $ext = pathinfo(BIZUNO_DATA."images/$newPath", PATHINFO_EXTENSION);
                 if (!in_array($ext, $io->getValidExt('image'))) { continue; }
                 $src = BIZUNO_URL_FS."&src=0/images/$newPath";
+                $isDir = false;
             }
             $output .= '<div style="float:left;width:150px;height:150px;border:2px solid #a1a1a1;margin:5px"><div style="float:right">';
             $output .= html5('', ['icon'=>'trash','size'=>'small','label'=>lang('trash'),

@@ -113,11 +113,13 @@ final class messageStack
     function debugWrite($filename=false, $append=false, $force=false)
     {
         global $db;
+        $script_time = (int)(1000 * (microtime(true) - SCRIPT_START_TIME));
+//      if ($script_time > 500) { $force = true; }
         if (!$force && (!$this->trap || strlen($this->trace) < 1)) { return; }
         $dbCnt = !empty($db->total_count)? $db->total_count : 0;
         $dbTime= !empty($db->total_time) ? (int)($db->total_time * 1000) : 0;
         msgDebug("\nMessageStack array contains: ".print_r($this->error, true));
-        msgDebug("\nPage trace stats: Execution Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms, $dbCnt queries taking $dbTime ms");
+        msgDebug("\nPage trace stats: Execution Time: $script_time ms, $dbCnt queries taking $dbTime ms");
         $dest = $filename ? $filename : $this->debug_file;
         $io = new \bizuno\io();
         $io->fileWrite($this->trace, $dest, true, $append, true);

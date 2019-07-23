@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-11
+ * @version    3.x Last Update: 2019-07-15
  * @filesource /lib/controller/module/payment/main.php
  */
 
@@ -75,7 +75,7 @@ class paymentMain
 
     private function getViewMgr()
     {
-        if (!getUserCache('profile', 'admin_encrypt')) { return lang('err_encrypt_key_missing'); }
+        if (empty(getUserCache('profile', 'admin_encrypt'))) { return lang('err_encrypt_key_missing'); }
         $cc_exp= pullExpDates();
         $output = [
             'payment_id'  => ['order'=>10,'attr'=>['type'=>'hidden']], // hidden

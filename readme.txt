@@ -47,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.3.2.7 =
+2019-07-23 - Incorporate Bizuno Library 3.2.7. Improve security and prevent unauthorized directory access.
 = 5.3.2.6 =
 2019-07-14 - Incorporate Bizuno Library 3.2.6. More security issues, bug fixes from 3.2 5 security work
 = 5.2.8 =

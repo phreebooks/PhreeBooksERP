@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-12
+ * @version    3.x Last Update: 2019-07-22
  * @filesource lib/controller/functions.php
  */
 
@@ -716,7 +716,7 @@ function xmlEntry($key, $data, $ignore = false)
     $str = "\t<$key>";
     if ($data != NULL) {
         if ($ignore) { $str .= $data; }
-        else { $str .= "<![CDATA[" . $data . "]]>"; }
+        else { $str .= "<![CDATA[$data]]>"; }
     }
     $str .= "</$key>\n";
     return $str;
@@ -725,31 +725,15 @@ function xmlEntry($key, $data, $ignore = false)
 /**
  * Retrieves the default PhreeForm group id for a specific journal ID
  * @param integer $jID - Journal ID
+ * @param boolean $rtnSrc - [default: false] If true returns source array, if false, just the value for the specified journal ID
  * @return string - PhreeForm Form Group encoded ID
  */
-function getDefaultFormID($jID = 0)
+function getDefaultFormID($jID=0, $rtnSrc=false)
 {
-    switch ($jID) {
-        default:
-        case  2: return 'gl:j2';
-        case  3: return 'vend:j3';
-        case  4: return 'vend:j4';
-        case  6: return 'vend:j6';
-        case  7: return 'vend:j7';
-        case  9: return 'cust:j9';
-        case 10: return 'cust:j10';
-        case 12: return 'cust:j12';
-        case 13: return 'cust:j13';
-        case 14: return 'inv:j14';
-        case 15: return 'inv:j15';
-        case 16: return 'inv:j16';
-        case 17:
-        case 18: return 'bnk:j18';
-        case 19: return 'cust:j19';
-        case 20:
-        case 21:
-        case 22: return 'bnk:j20';
-    }
+    $values = ['j0'=>'',   'j2' =>'gl:j2',    'j3' =>'vend:j3',  'j4' =>'vend:j4', 'j6' =>'vend:j6', 'j7' =>'vend:j7', 'j9' =>'cust:j9',
+        'j10'=>'cust:j10', 'j12'=>'cust:j12', 'j13'=>'cust:j13', 'j14'=>'inv:j14', 'j15'=>'inv:j15', 'j16'=>'inv:j16', 'j17'=>'cust:j18',
+        'j18'=>'cust:j18', 'j19'=>'cust:j19', 'j20'=>'bnk:j20',  'j21'=>'bnk:j20', 'j22'=>'bnk:j20'];
+    return $rtnSrc ? $values : $values['j'.$jID];
 }
 
 /**
