@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-05
+ * @version    3.x Last Update: 2019-07-31
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
@@ -68,8 +68,8 @@ class bizunoApi
         if (!dbConnected()) { return msgAdd('There was an issue connecting to your account! Please check your credentials.'); }
         $this->itemTotal = 0;
         $this->main = $this->items = $map = [];
-        $this->defaultAR      = getModuleCache('bizuno','settings','bizuno_api','gl_receivables', getModuleCache('phreebooks','settings','customers','gl_receivables'));
-        $this->defaultGlSales = getModuleCache('bizuno','settings','bizuno_api','gl_sales',       getModuleCache('phreebooks','settings','customers','gl_sales'));
+        $this->defaultAR      = getModuleCache('bizuno','settings','bizuno_api','gl_receivables',getModuleCache('phreebooks','settings','customers','gl_receivables'));
+        $this->defaultGlSales = getModuleCache('bizuno','settings','bizuno_api','gl_sales',      getModuleCache('phreebooks','settings','customers','gl_sales'));
         $this->inStock        = true;
         require(BIZUNO_LIB."controller/module/bizuno/apiMaps/journal.php"); // loads the journal map file structure
         $this->setJournalMain($map, $order);
@@ -108,9 +108,10 @@ class bizunoApi
         dbTransactionStart();
         $journal = new journal(0, $jID, $this->main['post_date']);
         $journal->main = array_replace($journal->main, $this->main);
-        $journal->items = $this->items;
         // guess Sales Tax
         $journal->main['tax_rate_id'] = $this->taxGuess($order['General'], $order['General']['OrderTotal']); // try to determine tax rate at the order level
+        if (!empty($journal->main['tax_rate_id'])) { $this->setTaxItems($journal->main['tax_rate_id']); } // changes $this->items
+        $journal->items = $this->items;
         // Check to see if customer already exists in db
         $cID = dbGetContact($this->main, '_b');
         unset($this->main['short_name_b'], $journal->main['short_name_b']); // causes post errors as field is not in journal_main
@@ -276,6 +277,14 @@ class bizunoApi
             default:
         }
         dbWrite(BIZUNO_DB_PREFIX."journal_item", ['description'=>$iID['description'],'trans_code'=>$pmtInfo['transaction_id']], 'update', "id={$iID['id']}");
+    }
+
+    private function setTaxItems($taxID=0)
+    {
+        foreach ($this->items as $idx => $row) {
+            if ($row['gl_type'] <> 'itm') { continue; }
+            if (empty($row['tax_rate_id'])) { $this->items[$idx]['tax_rate_id'] = $taxID; }
+        }
     }
 
     /**
@@ -691,13 +700,12 @@ class bizunoApi
      */
     protected function installStoreFields()
     {
-        $id1 = validateTab($module_id='inventory', 'inventory', lang('details'), 60);
-        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'description_long')){ dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD description_long TEXT COMMENT 'type:textarea;label:Long Description;tag:DescriptionLong;tab:$id1;order:10'"); }
         $id = validateTab($module_id='inventory', 'inventory', lang('estore'), 80);
-        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'manufacturer'))    { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD manufacturer VARCHAR(24) NOT NULL DEFAULT '' COMMENT 'label:Manufacturer;tag:Manufacturer;tab:$id;order:40'"); }
-        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'model'))           { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD model VARCHAR(24) NOT NULL DEFAULT '' COMMENT 'label:Model;tag:Model;tab:$id;order:41'"); }
-        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'msrp'))            { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD msrp DOUBLE NOT NULL DEFAULT '0' COMMENT 'label:Mfg Suggested Retail Price;tag:MSRPrice;tab:$id;order:42'"); }
-        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'meta_keywords'))   { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD meta_keywords VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'label:Meta Keywords;tag:MetaKeywords;tab:$id;o rder:90;group:General'"); }
+        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'description_long')) { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD description_long TEXT COMMENT 'type:textarea;label:Long Description;tag:DescriptionLong;tab:$id;order:10'"); }
+        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'manufacturer'))     { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD manufacturer VARCHAR(24) NOT NULL DEFAULT '' COMMENT 'label:Manufacturer;tag:Manufacturer;tab:$id;order:40'"); }
+        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'model'))            { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD model VARCHAR(24) NOT NULL DEFAULT '' COMMENT 'label:Model;tag:Model;tab:$id;order:41'"); }
+        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'msrp'))             { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD msrp DOUBLE NOT NULL DEFAULT '0' COMMENT 'label:Mfg Suggested Retail Price;tag:MSRPrice;tab:$id;order:42'"); }
+        if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'meta_keywords'))    { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD meta_keywords VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'label:Meta Keywords;tag:MetaKeywords;tab:$id;o rder:90;group:General'"); }
          if (!dbFieldExists(BIZUNO_DB_PREFIX."inventory", 'meta_description')){ dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD meta_description VARCHAR(255) NOT NULL DEFAULT '' COMMENT 'label:Meta Description;tag:MetaDescription;tab:$id;order:91;group:General'"); }
         bizAutoLoad(BIZUNO_LIB."controller/module/inventory/admin.php", 'inventoryAdmin');
         $inv = new inventoryAdmin();

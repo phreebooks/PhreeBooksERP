@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-31
+ * @version    3.x Last Update: 2019-08-01
  * @filesource /controller/module/phreeform/design.php
  */
 
@@ -45,7 +45,7 @@ class phreeformDesign
             10 => '1:less_than',
             11 => '1:greater_than'];
         $this->emailChoices = [
-            ['id'=>'user','text'=>lang('phreeform_current_user')],
+            ['id'=>'user','text'=>$this->lang['phreeform_current_user']],
             ['id'=>'gen', 'text'=>lang('address_book_contact_m')],
             ['id'=>'ap',  'text'=>lang('address_book_contact_p')],
             ['id'=>'ar',  'text'=>lang('address_book_contact_r')]];

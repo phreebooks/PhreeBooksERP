@@ -94,11 +94,11 @@ class tax_order
         $tax_id= !empty($data['fields']['tax_rate_id']['attr']['value']) ? $data['fields']['tax_rate_id']['attr']['value'] : $defTax;
         $this->fields = [
             'totals_tax_order'     => ['label'=>pullTableLabel('journal_main','tax_rate_id',$this->cType).' '.$this->lang['extra_title'],'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']],
-            'tax_rate_id'          => ['attr' =>['type'=>'tax'],'defaults'=>['value'=>$tax_id,'type'=>$type]],
+            'tax_rate_id'          => ['defaults'=>['type'=>$type], 'attr'=>['type'=>'tax','value'=>$tax_id]],
             'totals_tax_order_text'=> ['attr' =>['value'=>'textTBD','size'=>'16','readonly'=>'readonly']],
-            'totals_tax_order_gl'  => ['label'=>lang('gl_account'), 'attr'=>['type'=>'text', 'value'=>'glTBD','readonly'=>'readonly']],
-            'totals_tax_order_amt' => ['attr' =>['value'=>'amtTBD','size'=>'15','style'=>'text-align:right','readonly'=>'readonly']],
-            'totals_tax_order_opt' => ['icon' =>'settings', 'size'=>'small','events'=> ['onClick'=>"jq('#phreebooks_totals_tax_order').toggle('slow');"]]];
+            'totals_tax_order_gl'  => ['label'=>lang('gl_account'), 'attr'=>['type'=>'text','value'=>'glTBD','readonly'=>'readonly']],
+            'totals_tax_order_amt' => ['attr' =>['value'=>'amtTBD', 'size'=>'15','style'=>'text-align:right','readonly'=>'readonly']],
+            'totals_tax_order_opt' => ['icon' =>'settings',         'size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_tax_order').toggle('slow');"]]];
         $output['body'] .= '<div style="text-align:right'.$hide.'">';
         $output['body'] .= html5('totals_tax_order',$this->fields['totals_tax_order']);
         $output['body'] .= html5('',                $this->fields['totals_tax_order_opt'])."<br />";

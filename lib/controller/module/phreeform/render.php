@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-09
+ * @version    3.x Last Update: 2019-08-01
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -1103,6 +1103,11 @@ class phreeformRender
         return $output;
     }
 
+    /**
+     * Pulls the From address and sets the default
+     * @param array $output - Render output structure
+     * @param object $report - Working report structure
+     */
     private function getFromAddress(&$output, $report)
     {
         $def  = !empty($report->defaultemail) ? $report->defaultemail : 'user';
@@ -1114,13 +1119,18 @@ class phreeformRender
             $name = getModuleCache('bizuno', 'settings', 'company', "contact$suffix");
             $email= getModuleCache('bizuno', 'settings', 'company', "email$suffix");
             if (empty($email)) { continue; }
-            $val = (!empty($name) ? $name : $email)." <$email>";
+            $val  = (!empty($name) ? $name : $email)." <$email>";
             $vals[$key] = ['id'=>$val, 'text'=>($val)];
             if ($key == $def) { $output['defFrom'] = $val; }
         }
         $output['valsFrom'] = $vals;
     }
 
+    /**
+     * Pulls the To address and sets the default
+     * @param array $output - Render output structure
+     * @param object $report - Working report structure
+     */
     private function getToAddress(&$output, $report)
     {
         if ($report->xfilterlist->fieldname <> 'journal_main.id' || $report->xfilterlist->default <> 'equal') { return; }

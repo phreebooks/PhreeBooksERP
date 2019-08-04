@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-21
+ * @version    3.x Last Update: 2019-07-25
  * @filesource /local/en_US/language.php
  */
 
@@ -328,6 +328,7 @@ $langCore = [
     'production' => 'Production',
     'properties' => 'Properties',
     'profile' => 'Profile',
+    'purchase_tax' => 'Purchase Tax',
     'qty' => 'Qty',
     'qty_needed' => 'Qty Needed',
     'quantity' => 'Quantity',
@@ -357,6 +358,7 @@ $langCore = [
     'sales' => 'Sales',
     'sales_discounts' => 'Sales Discounts',
     'sales_receipt' => 'Sales Receipts',
+    'sales_tax' => 'Sales Tax',
     'save' => 'Save',
     'save_as' => 'Save as ...',
     'save_fill' => 'Save and Fill Order',
@@ -735,8 +737,6 @@ $langCore = [
     'inventory_gl_sales' => 'GL Sales Acct',
     'inventory_gl_inv' => 'GL Inv Acct',
     'inventory_gl_cogs' => 'GL COGS Acct',
-    'inventory_tax_rate_id_c' => 'Sales Tax',
-    'inventory_tax_rate_id_v' => 'Purchase Tax',
     'inventory_item_cost' => 'Item Cost',
     'inventory_cost_method' => 'Costing Method',
     'inventory_cost_method_a' => 'Average',

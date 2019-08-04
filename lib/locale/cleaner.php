@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-02
+ * @version    3.x Last Update: 2019-07-31
  * @filesource /locale/cleaner.php
  */
 
@@ -582,7 +582,7 @@ function requestData($structure, $suffix='', $voidLabels=false)
             $output[$field] = clean($field.$suffix, $content, 'post');
         } elseif (isset($request[$content['tag'].$suffix])) {
             $output[$field] = clean($content['tag'].$suffix, $content, 'post');
-        } elseif ($content['attr']['type'] == 'checkbox') {
+        } elseif (in_array($content['attr']['type'], ['checkbox','selNoYes'])) {
             $output[$field] = '0';
         }
     }

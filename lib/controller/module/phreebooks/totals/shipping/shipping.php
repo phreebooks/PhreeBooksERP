@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-21
+ * @version    3.x Last Update: 2019-07-31
  * @filesource /lib/controller/module/phreebooks/totals/shipping/shipping.php
  */
 
@@ -53,15 +53,14 @@ class shipping
 
     public function glEntry(&$main, &$item, &$begBal=0)
     {
-        $shipping = clean('freight', ['format'=>'float','default'=>0], 'post');
+        $shipping= clean('freight', ['format'=>'float','default'=>0], 'post');
 //      if ($shipping == 0) return; // this will discard bill recipient, 3rd party and resi information if paid by customer
-        $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getDefaultCurrency());
-        $billType = clean('totals_shipping_bill_type', ['format'=>'alpha_num','default'=>'sender'], 'post');
-        $desc     = "title:".$this->lang['title'];
-        $desc    .= ";resi:".clean('totals_shipping_resi', 'bool', 'post');
-        $desc    .= ";type:".$billType;
+        $billType= clean('totals_shipping_bill_type', ['format'=>'alpha_num','default'=>'sender'], 'post');
+        $desc    = "title:".$this->lang['title'];
+        $desc   .= ";resi:".clean('totals_shipping_resi', 'bool', 'post');
+        $desc   .= ";type:".$billType;
         if ($billType <> 'sender') { $desc .= ":".clean('totals_shipping_bill_acct', 'alpha_num', 'post'); }
-        $item[] = [
+        $item[]  = [
             'id'           => clean("totals_{$this->code}_id", ['format'=>'float','default'=>0], 'post'),
             'ref_id'       => clean('id', 'integer', 'post'),
             'gl_type'      => $this->settings['gl_type'],
@@ -74,11 +73,11 @@ class shipping
         $main['freight']    = $shipping;
         $main['method_code']= clean('method_code', ['format'=>'cmd','default'=>''], 'post');
         $begBal += $shipping;
-        $taxShipping   = getModuleCache('phreebooks', 'settings', 'general', 'shipping_taxed') ? 1 : 0;
-        if ($taxShipping && isset($main['contact_id_b']) && $main['contact_id_b']) {
-            $shipTax = $this->getShippingTaxGL($shipping, $main, $item);
-            $begBal += roundAmount($shipTax, $isoVals['dec_len']);
-            $main['sales_tax'] += roundAmount($shipTax, $isoVals['dec_len']);
+        if (getModuleCache('phreebooks', 'settings', 'general', 'shipping_taxed')) {
+            $shipTax           = $this->getShippingTaxGL($shipping, $main, $item);
+            $isoVals           = getModuleCache('phreebooks', 'currency', 'iso', getDefaultCurrency());
+            $begBal           += roundAmount($shipTax, $isoVals['dec_len']);
+            $main['sales_tax']+= roundAmount($shipTax, $isoVals['dec_len']);
         }
         msgDebug("\nShipping is returning balance = $begBal");
     }
@@ -196,17 +195,18 @@ class shipping
     private function getShippingTaxGL($shipping, $main, &$item)
     {
         msgDebug("\nEntering getShippingTaxGL with shipping = $shipping");
-        if (!empty($main['tax_rate_id'])) {
+        $taxID = $totalTax = 0;
+        if (!empty($main['contact_id_b'])) { // if contact is set, it takes priority, for tax exempt to override tax put on freight
+            $taxID = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'tax_rate_id', "id={$main['contact_id_b']}"); // causes bad behavior if contact record is not set properly
+            if ($taxID == 0) { msgDebug(" ... returning tax = 0 as customer tax rate = None"); return 0; } // set to none
+        } elseif (!empty($main['tax_rate_id'])) {
             $taxID = $main['tax_rate_id']; // pull from main record as it has been set
-        } else {
-          $taxID = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'tax_rate_id', "id={$main['contact_id_b']}"); // causes bad behavior is contact record is not set properly
         }
-        if (!$taxID || $taxID==-1) { return 0; } // return if no tax or per inventory item,
+        if (!$taxID || $taxID==-1) { return 0; } // return if no tax or per inventory item
         $gl      = [];
-        $totalTax= 0;
         $rates   = loadTaxes($this->cType);
         while ($rate = array_shift($rates)) { if ($rate['id'] == $taxID) { break; } }
-        if (!$rate) { return msgAdd($this->lang['msg_no_tax_found']); }
+        if (!$rate) { msgAdd($this->lang['msg_no_tax_found']); return 0; }
         foreach ($rate['auths'] as $auth) {
             $tax = ($auth['rate'] / 100) * $shipping;
             if (!isset($gl[$auth['glAcct']]['text']))  { $gl[$auth['glAcct']]['text']  = []; }
@@ -228,6 +228,7 @@ class shipping
                 'post_date'    => $main['post_date']];
             $totalTax += $value['amount'];
         }
-        return $totalTax;
+        $isoVals = getModuleCache('phreebooks', 'currency', 'iso', getDefaultCurrency());
+        return roundAmount($totalTax, $isoVals['dec_len']);
     }
 }

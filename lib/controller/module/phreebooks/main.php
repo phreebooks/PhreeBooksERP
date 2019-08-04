@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-22
+ * @version    3.x Last Update: 2019-07-25
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -835,6 +835,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         $jrnl_sql   = BIZUNO_DB_PREFIX."journal_main.journal_id={$this->journalID}";
         $jID_statuses = [['id'=>'a','text'=>lang('all')],['id'=>'0','text'=>lang('open')],['id'=>'1','text'=>lang('closed')]];
         $jrnl_status= '';
+        $sec3_09 = $sec4_10 = $sec6_12 = $sec7_13 = 0;
         switch ($this->journalID) {
             case  0: $valid_jIDs = []; break; // search
             case  3:
@@ -851,10 +852,14 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                 }
 
                 $jID_values = [['id'=>'a','text'=>lang('all')]];
-                if (getUserCache('security', 'j3_mgr')) { $jID_values[] = ['id'=>'3','text'=>lang('journal_main_journal_id_3')]; }
-                if (getUserCache('security', 'j4_mgr')) { $jID_values[] = ['id'=>'4','text'=>lang('journal_main_journal_id_4')]; }
-                if (getUserCache('security', 'j6_mgr')) { $jID_values[] = ['id'=>'6','text'=>lang('journal_main_journal_id_6')]; }
-                if (getUserCache('security', 'j7_mgr')) { $jID_values[] = ['id'=>'7','text'=>lang('journal_main_journal_id_7')]; }
+                $sec3_09 = getUserCache('security', 'j3_mgr');
+                $sec4_10 = getUserCache('security', 'j4_mgr');
+                $sec6_12 = getUserCache('security', 'j6_mgr');
+                $sec7_13 = getUserCache('security', 'j7_mgr');
+                if ($sec3_09) { $jID_values[] = ['id'=>'3','text'=>lang('journal_main_journal_id_3')]; }
+                if ($sec4_10) { $jID_values[] = ['id'=>'4','text'=>lang('journal_main_journal_id_4')]; }
+                if ($sec6_12) { $jID_values[] = ['id'=>'6','text'=>lang('journal_main_journal_id_6')]; }
+                if ($sec7_13) { $jID_values[] = ['id'=>'7','text'=>lang('journal_main_journal_id_7')]; }
                 $jID_statuses[] = ['id'=>'w','text'=>lang('confirmed_waiting')];
                 switch ($this->defaults['status']) {
                     case '0': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.closed='0'";  break;
@@ -875,10 +880,14 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                     case 13: $valid_jIDs = [13]; break;
                 }
                 $jID_values = [['id'=>'a','text'=>lang('all')]];
-                if (getUserCache('security', 'j9_mgr'))  { $jID_values[] = ['id'=> '9','text'=>lang('journal_main_journal_id_9')];  }
-                if (getUserCache('security', 'j10_mgr')) { $jID_values[] = ['id'=>'10','text'=>lang('journal_main_journal_id_10')]; }
-                if (getUserCache('security', 'j12_mgr')) { $jID_values[] = ['id'=>'12','text'=>lang('journal_main_journal_id_12')]; }
-                if (getUserCache('security', 'j13_mgr')) { $jID_values[] = ['id'=>'13','text'=>lang('journal_main_journal_id_13')]; }
+                $sec3_09 = getUserCache('security', 'j9_mgr');
+                $sec4_10 = getUserCache('security', 'j10_mgr');
+                $sec6_12 = getUserCache('security', 'j12_mgr');
+                $sec7_13 = getUserCache('security', 'j13_mgr');
+                if ($sec3_09) { $jID_values[] = ['id'=> '9','text'=>lang('journal_main_journal_id_9')];  }
+                if ($sec4_10) { $jID_values[] = ['id'=>'10','text'=>lang('journal_main_journal_id_10')]; }
+                if ($sec6_12) { $jID_values[] = ['id'=>'12','text'=>lang('journal_main_journal_id_12')]; }
+                if ($sec7_13) { $jID_values[] = ['id'=>'13','text'=>lang('journal_main_journal_id_13')]; }
                 $jID_statuses[] = ['id'=>'w','text'=>lang('confirmed_unshipped')];
                 switch ($this->defaults['status']) {
                     case '0': $jrnl_status = BIZUNO_DB_PREFIX."journal_main.closed='0'";  break;
@@ -931,25 +940,25 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                             'events' => ['onClick'=>"var jID=jq('#journal_id').val(); winOpen('phreeformOpen', 'phreeform/render/open&group={$formGroup}&date=a&xfld=journal_main.id&xcr=equal&xmin=idTBD');"]],
                         'edit'       => ['order'=>20,'icon'=>'edit',   'label'=>lang('edit'),
                             'events' => ['onClick' => "journalEdit(jrnlTBD, idTBD);"]],
-                        'toggle'     => ['order'=>40,'icon'=>'toggle','label'=>lang('toggle_status'),'hidden'=> $security>2?false:true,
+                        'toggle'     => ['order'=>40,'icon'=>'toggle','label'=>lang('toggle_status'),'hidden'=>$sec4_10>2?false:true,
                             'events' => ['onClick' => "jsonAction('phreebooks/main/toggleWaiting&jID=jrnlTBD', idTBD);"],
                             'display'=> "row.journal_id=='4' || row.journal_id=='10' || row.journal_id=='12'"],
-                        'dates'      => ['order'=>50,'icon'=>'date','label'=>$this->lang['expected_delivery_dates'],
+                        'dates'      => ['order'=>50,'icon'=>'date','label'=>$this->lang['expected_delivery_dates'],'hidden'=>$sec4_10>1?false:true,
                             'events' => ['onClick' => "windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".$this->lang['expected_delivery_dates']."', 500, 400);"],
                             'display'=> "row.journal_id=='4' || row.journal_id=='10'"],
-                        'invoice'    => ['order'=>70,'icon'=>'invoice',   'label'=>$this->lang['set_invoice_num'],
+                        'invoice'    => ['order'=>70,'icon'=>'invoice',   'label'=>$this->lang['set_invoice_num'],'hidden'=>$sec6_12>2?false:true,
                             'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_invoice_num']."'); if (invNum) { jsonAction('phreebooks/main/setInvoiceNum&jID=6', idTBD, invNum); }"],
                             'display'=> "row.waiting=='1' && row.journal_id=='6'"],
                         'reference'  => ['order'=>70,'icon'=>'invoice',   'label'=>$this->lang['set_ref_num'],
                             'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_ref_num']."'); jsonAction('phreebooks/main/setReferenceNum&jID=18', idTBD, invNum);"],
                             'display'=> "row.journal_id=='18' || row.journal_id=='20'"],
-                        'purchase'   => ['order'=>70,'icon'=>'purchase','label'=>$this->lang['fill_purchase'],
+                        'purchase'   => ['order'=>70,'icon'=>'purchase','label'=>$this->lang['fill_purchase'],'hidden'=>$sec6_12>1?false:true,
                             'events' => ['onClick' => "journalEdit(6, 0, cIDTBD, 'inv', '', idTBD);"],
                             'display'=> "row.closed=='0' && (row.journal_id=='3' || row.journal_id=='4')"],
-                        'sale'       => ['order'=>70,'icon'=>'sales',   'label'=>$this->lang['fill_sale'],
+                        'sale'       => ['order'=>70,'icon'=>'sales',   'label'=>$this->lang['fill_sale'],'hidden'=>$sec6_12>1?false:true,
                             'events' => ['onClick' => "journalEdit(12, 0, cIDTBD, 'inv', '', idTBD);"],
                             'display'=> "row.closed=='0' && (row.journal_id=='9' || row.journal_id=='10')"],
-                        'vcred'      => ['order'=>80,'icon'=>'credit',   'label'=>$this->lang['create_credit'],
+                        'vcred'      => ['order'=>80,'icon'=>'credit',   'label'=>$this->lang['create_credit'],'hidden'=>$sec7_13>1?false:true,
                             'events' => ['onClick' => "setCrJournal(jrnlTBD, cIDTBD, idTBD);"],
                             'display'=> "row.closed=='0' && (row.journal_id=='6' || row.journal_id=='12')"],
                         'payment'    => ['order'=>80,'icon'=>'payment','label'=>lang('payment'),

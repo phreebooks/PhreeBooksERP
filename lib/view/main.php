@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-23
+ * @version    3.x Last Update: 2019-07-2
  * @filesource /view/main.php
  */
 
@@ -668,10 +668,12 @@ function viewRoleDropdown($type='sales', $inactive=false, $source='contacts')
 function viewSalesTaxDropdown($type='c', $opts='')
 {
     $output = [];
-    if ($opts=='contacts')  { $output[] = ['id'=>'-1', 'text'=>lang('per_contact')]; }
-    if ($opts=='inventory') { $output[] = ['id'=>'-1', 'text'=>lang('per_inventory')]; }
-    $output[] = ['id'=>'0', 'text'=>lang('none')];
-    foreach (getModuleCache('phreebooks', 'sales_tax', $type, false, []) as $row) { $output[] = ['id'=>$row['id'], 'text'=>$row['title']]; }
+    if ($opts=='contacts')  { $output[] = ['id'=>'-1', 'text'=>lang('per_contact'), 'status'=>0, 'tax_rate'=>'-']; }
+    if ($opts=='inventory') { $output[] = ['id'=>'-1', 'text'=>lang('per_inventory'), 'status'=>0, 'tax_rate'=>'-']; }
+    $output[] = ['id'=>'0', 'text'=>lang('none'), 'status'=>0, 'tax_rate'=>0];
+    foreach (getModuleCache('phreebooks', 'sales_tax', $type, false, []) as $row) {
+        if ($row['status'] == 0) { $output[] = ['id'=>$row['id'], 'text'=>$row['title'], 'status'=>$row['status'], 'tax_rate'=>$row['rate']]; }
+    }
     return $output;
 }
 

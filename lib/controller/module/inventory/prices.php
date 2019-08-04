@@ -321,7 +321,7 @@ class inventoryPrices
         } else {
             $inv = dbGetValue(BIZUNO_DB_PREFIX.'inventory', ['id', 'item_cost', 'full_price', 'price_sheet_c', 'price_sheet_v'], "id=$iID");
         }
-        if (!isset($inv['id']) || !$inv['id']) { return; }
+        if (empty($inv['id'])) { return; }
         if ($cost) { $inv['item_cost'] = $cost; }
         if ($full) { $inv['full_price'] = $full; }
         if (!$inv['price_sheet_c']) { // if no customer price sheet, see if a default is set

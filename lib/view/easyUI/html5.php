@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-16
+ * @version    3.x Last Update: 2019-07-24
  * @filesource /view/easyUI/html5.php
  */
 
@@ -1509,8 +1509,11 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         $prop['classes'][]              = 'easyui-combogrid';
         $prop['options']['onBeforeLoad']= "function () { var newValue=jq('#$id').combogrid('getValue'); if (newValue.length < 2) return false; }";
         $prop['options']['onClickRow']  = "function (id, data) { {$prop['options']['callback']} }";
-        if (isset($prop['attr']['value'])) { $prop['options']['value'] = "'".$prop['attr']['value']."'"; }
         unset($prop['options']['callback'], $prop['attr']['type']);
+        if (!empty($prop['attr']['value']) && empty($attr['data'])) {
+            $selText = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'description_short', "id='{$prop['attr']['value']}'");
+            $this->jsReady[] = "jq('#$id').combogrid({data:".json_encode([['id'=>$prop['attr']['value'], 'description_short'=>$selText]])."});";
+        }
         return $this->input($id, $prop);
     }
 
@@ -1596,18 +1599,20 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 
     public function inputTax($id, $prop) {
-        $defaults = ['value'=>'', 'type'=>'c', 'callback'=>false];
+        $defaults = ['type'=>'c', 'callback'=>false, 'target'=>''];
         if (!empty($prop['defaults']))    { $defaults = array_merge($defaults, $prop['defaults']); }
         if ( empty($defaults['callback'])){ $defaults['callback'] = "totalUpdate('inputTax');"; }
         $prop['classes'][]           = 'easyui-combogrid';
-        $prop['options']['data']     = "bizDefaults.taxRates.{$defaults['type']}.rows";
-        $prop['options']['value']    = "'{$defaults['value']}'";
         $prop['options']['width']    = "120,panelWidth:210,delay:500,idField:'id',textField:'text'";
-        if (!empty($defaults['data'])) { $prop['options']['data'] = $defaults['data']; }
-        $prop['options']['rowStyler']= "function(index,row){ if (row.status>0) { return { class:'row-inactive' }; } }";
+        $prop['options']['data']     = "[]";
+//      if (!empty($prop['attr']['value'])) { $prop['options']['value'] = $prop['attr']['value']; }
+//        $prop['options']['rowStyler']= "function(index,row){ if (row.status>0) { return { class:'row-inactive' }; } }";
         $prop['options']['onSelect'] = "function(id, data) { {$defaults['callback']} }";
         $prop['options']['columns']  = "[[{field:'id',hidden:true},{field:'status',hidden:true},{field:'text',title:'".jsLang('journal_main_tax_rate_id')."',width:120},{field:'tax_rate',title:'".jsLang('amount')."',align:'center',width:70}]]";
         unset($prop['attr']['type']);
+        if (!empty($defaults['data'])) { $data = $defaults['data']; }
+        else { $data = json_encode(viewSalesTaxDropdown($defaults['type'], $defaults['target'])); } //"bizDefaults.taxRates.{$defaults['type']}.rows";
+        $this->jsReady[] = "jq('#$id').combogrid({data:$data});";
         return $this->input($id, $prop);
     }
 

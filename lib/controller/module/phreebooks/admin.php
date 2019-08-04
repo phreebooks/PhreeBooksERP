@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-19
+ * @version    3.x Last Update: 2019-07-25
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -156,7 +156,7 @@ class phreebooksAdmin {
      * @return array - structure used in the main settings tab
      */
     public function settingsStructure() {
-       $data = [
+        $data = [
             'general'  => ['order'=>10,'label'=>lang('general'),'fields'=>[
                 'round_tax_auth' => ['attr'=>['type'=>'selNoYes', 'value'=>0]],
                 'shipping_taxed' => ['attr'=>['type'=>'selNoYes', 'value'=>0]],
@@ -169,6 +169,7 @@ class phreebooksAdmin {
                 'gl_deposit_cash'=> ['attr'=>['type'=>'ledger','id'=>'customers_gl_deposit_cash','value'=>$this->glDefaults['cash']]],
                 'gl_liability'   => ['attr'=>['type'=>'ledger','id'=>'customers_gl_liability',   'value'=>$this->glDefaults['liability']]],
                 'gl_expense'     => ['attr'=>['type'=>'ledger','id'=>'customers_gl_expense',     'value'=>$this->glDefaults['expense']]],
+                'tax_rate_id_c'  => ['label'=>lang('sales_tax'),'defaults'=>['type'=>'c','target'=>'contacts'], 'attr'=>['type'=>'tax','value'=>0]],
                 'terms_text'     => ['break'=>false,'attr'=>['value'=>'']],
                 'terms'          => ['break'=>false,'attr'=>['type'=>'hidden','value'=>'2']],
                 'terms_edit'     => ['icon'=>'settings','label'=>lang('terms'),'attr'=>['type'=>'hidden'],'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=c&callBack=customers_terms', 0, jq('#customers_terms').val());"]],
@@ -183,11 +184,11 @@ class phreebooksAdmin {
                 'gl_deposit_cash'=> ['attr'=>['type'=>'ledger','id'=>'vendors_gl_deposit_cash','value'=>$this->glDefaults['cash']]],
                 'gl_liability'   => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_liability',   'value'=>$this->glDefaults['liability']]],
                 'gl_expense'     => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_expense',     'value'=>$this->glDefaults['expense']]],
+                'tax_rate_id_v'  => ['label'=>lang('purchase_tax'),'defaults'=>['type'=>'v','target'=>'contacts'], 'attr'=>['type'=>'tax','value'=>0]],
                 'terms_text'     => ['break'=>false,'attr'=>['value'=>'']],
                 'terms'          => ['break'=>false,'attr'=>['type'=>'hidden','value'=>'3:0:0:30:1000.00']],
                 'terms_edit'     => ['icon'=>'settings','label'=>lang('terms'),'attr'=>['type'=>'hidden'],'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=v&callBack=vendors_terms', 0, jq('#vendors_terms').val());"]],
-                'show_status'    => ['attr'=>['type'=>'selNoYes', 'value'=>1]]]],
-        ];
+                'show_status'    => ['attr'=>['type'=>'selNoYes', 'value'=>1]]]]];
         settingsFill($data, $this->moduleID);
         return $data;
     }
@@ -214,11 +215,11 @@ class phreebooksAdmin {
         $data    = [
             'tabs'    => ['tabAdmin'=>['divs'=>[
                 'tabGL'    => ['order'=>20,'label'=>lang('phreebooks_chart_of_accts'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/chart/manager'"]],
-                'tabCur'   => ['order'=>30,'label'=>lang('currencies'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/currency/manager'"]],
-                'tabTaxc'  => ['order'=>40,'label'=>lang('inventory_tax_rate_id_c'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/tax/manager&type=c'"]],
-                'tabTaxv'  => ['order'=>50,'label'=>lang('inventory_tax_rate_id_v'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/tax/manager&type=v'"]],
-                'tabTotals'=> ['order'=>60,'label'=>lang('totals'),    'attr'=>['module'=>$this->moduleID,'path'=>$this->structure['dirMethods']],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
-                'tabDBs'   => ['order'=>70,'label'=>lang('dashboards'),'attr'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
+                'tabCur'   => ['order'=>30,'label'=>lang('currencies'),     'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/currency/manager'"]],
+                'tabTaxc'  => ['order'=>40,'label'=>lang('sales_tax'),      'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/tax/manager&type=c'"]],
+                'tabTaxv'  => ['order'=>50,'label'=>lang('purchase_tax'),   'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/tax/manager&type=v'"]],
+                'tabTotals'=> ['order'=>60,'label'=>lang('totals'),         'attr'=>['module'=>$this->moduleID,'path'=>$this->structure['dirMethods']],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
+                'tabDBs'   => ['order'=>70,'label'=>lang('dashboards'),     'attr'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
                 'tabFY'    => ['order'=>80,'label'=>lang('fiscal_calendar'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/admin/managerFY'"]],
                 'tabTools' => ['order'=>90,'label'=>$this->lang['journal_tools'],'type'=>'html','html'=>$tools['body']]]]],
             'datagrid'=> ['dgCurrency'  =>$currency->dgCurrency('dgCurrency', $security)],

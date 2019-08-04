@@ -18,7 +18,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-04-05
+ * @version    3.x Last Update: 2019-07-25
  * @filesource /local/en_US/locale.php
  */
 
@@ -69,8 +69,8 @@ $langByRef = [
     'journal_main_telephone1_s' => sprintf($langCore['tbd_ship'], $langCore['telephone']),
     'journal_main_email_s' => sprintf($langCore['tbd_ship'], $langCore['email']),
 
-    'journal_main_tax_rate_id_c' => $langCore['inventory_tax_rate_id_c'],
-    'journal_main_tax_rate_id_v' => $langCore['inventory_tax_rate_id_v'],
+    'journal_main_tax_rate_id_c' => $langCore['sales_tax'],
+    'journal_main_tax_rate_id_v' => $langCore['purchase_tax'],
     'journal_main_terminal_date_9' => $langCore['journal_main_terminal_date_3'],
     'journal_main_terminal_date_10' => $langCore['ship_date'],
     'journal_main_terminal_date_12' => $langCore['ship_date'],

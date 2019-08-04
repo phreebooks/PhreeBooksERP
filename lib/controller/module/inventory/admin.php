@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-24
+ * @version    3.x Last Update: 2019-07-25
  * @filesource /lib/controller/module/inventory/admin.php
  */
 
@@ -81,8 +81,6 @@ class inventoryAdmin
             ['id'=>'MM','text'=>lang('millimeters')],
             ['id'=>'CM','text'=>lang('centimeters')],
             ['id'=>'M', 'text'=>lang('meters')]];
-        $taxes_c  = viewSalesTaxDropdown('c', 'contacts');
-        $taxes_v  = viewSalesTaxDropdown('v', 'contacts');
         $autoCosts= [['id'=>'0','text'=>lang('none')],  ['id'=>'PO', 'text'=>lang('journal_main_journal_id_4')], ['id'=>'PR', 'text'=>lang('journal_main_journal_id_6')]];
         $invCosts = [['id'=>'f','text'=>lang('inventory_cost_method_f')], ['id'=>'l', 'text'=>lang('inventory_cost_method_l')], ['id'=>'a', 'text'=>lang('inventory_cost_method_a')]];
         $si = lang('inventory_inventory_type_si');
@@ -97,14 +95,14 @@ class inventoryAdmin
         $ci = lang('inventory_inventory_type_ci');
         $data = [
             'general'=> ['order'=>10,'label'=>lang('general'),'fields'=>[
-                'weight_uom'     => ['values'=>$weights,  'attr'=>  ['type'=>'select', 'value'=>'LB']],
-                'dim_uom'        => ['values'=>$dims,     'attr'=>  ['type'=>'select', 'value'=>'IN']],
-                'tax_rate_id_v'  => ['values'=>$taxes_v,  'attr'=>  ['type'=>'select', 'value'=>0]],
-                'tax_rate_id_c'  => ['values'=>$taxes_c,  'attr'=>  ['type'=>'select', 'value'=>0]],
-                'auto_add'       => ['attr'=>  ['type'=>'selNoYes', 'value'=>0]],
-                'auto_cost'      => ['values'=>$autoCosts,'attr'=>  ['type'=>'select', 'value'=>0]],
-                'allow_neg_stock'=> ['attr'=>  ['type'=>'selNoYes', 'value'=>1]],
-                'stock_usage'    => ['attr'=>  ['type'=>'selNoYes', 'value'=>1]]]],
+                'weight_uom'     => ['values'=>$weights,  'attr'=>['type'=>'select', 'value'=>'LB']],
+                'dim_uom'        => ['values'=>$dims,     'attr'=>['type'=>'select', 'value'=>'IN']],
+                'tax_rate_id_c'  => ['defaults'=>['type'=>'c','target'=>'contacts'],'attr'=>['type'=>'tax','value'=>0]],
+                'tax_rate_id_v'  => ['defaults'=>['type'=>'v','target'=>'contacts'],'attr'=>['type'=>'tax','value'=>0]],
+                'auto_add'       => ['attr'=>['type'=>'selNoYes', 'value'=>0]],
+                'auto_cost'      => ['values'=>$autoCosts,'attr'=>['type'=>'select', 'value'=>0]],
+                'allow_neg_stock'=> ['attr'=>['type'=>'selNoYes', 'value'=>1]],
+                'stock_usage'    => ['attr'=>['type'=>'selNoYes', 'value'=>1]]]],
             'phreebooks'=> ['order'=>20,'label'=>getModuleCache('phreebooks', 'properties', 'title'),'fields'=>[
                 'sales_si'  => ['label'=>$this->lang['inv_sales_lbl'].$si,'tip'=>$this->lang['inv_sales_'].lang('inventory_inventory_type_si'),'attr'=>['type'=>'ledger','id'=>'phreebooks_sales_si','value'=>$this->defaults['sales']]],
                 'inv_si'    => ['label'=>$this->lang['inv_inv_lbl'].$si,  'tip'=>$this->lang['inv_inv_']  .$si,'attr'=>['type'=>'ledger','id'=>'phreebooks_inv_si',  'value'=>$this->defaults['stock']]],

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-22
+ * @version    3.x Last Update: 2019-07-25
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -50,13 +50,15 @@ class contactsMain
             case 'v': $this->helpIndex='40.20'; $this->f0_default='0'; break; // vendors
             default:
         }
+        $postTaxID = clean('tax_rate_id', ['format'=>'integer','default'=>null], 'post');
+        $defTaxID  = $this->type=='v' ? getModuleCache('phreebooks', 'settings', 'vendors', 'tax_rate_id_v') : getModuleCache('phreebooks', 'settings', 'customers', 'tax_rate_id_c');
         $this->contact = [
             'id'         => 0,
             'type'       => $this->type,
             'gl_account' => $this->type=='v'? getModuleCache('phreebooks', 'settings', 'vendors', 'gl_expense') : getModuleCache('phreebooks', 'settings', 'customers', 'gl_sales'),
             'terms'      => '0',
             'price_sheet'=> '',
-            'tax_rate_id'=> clean('tax_rate_id', ['format'=>'integer','default'=>0], 'post'),
+            'tax_rate_id'=> $postTaxID !== null ? $postTaxID : $defTaxID,
             'first_date' => date('Y-m-d'),
             'last_update'=> date('Y-m-d')];
         $this->status_choices = [['id'=>'0','text'=>lang('active')],['id'=>'1','text'=>lang('inactive')],['id'=>'2','text'=>lang('locked')]];
@@ -156,7 +158,7 @@ class contactsMain
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX."contacts", $this->type);
 
         // remove after 2019-07-01
-        $structure['tax_rate_id']['attr']['type'] = 'tax';
+//        $structure['tax_rate_id']['attr']['type'] = 'tax';
 
         // merge data with structure
         $cData = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id=$rID");
@@ -179,7 +181,7 @@ class contactsMain
         $structure['inactive']['label']      = lang('status');
         $structure['inactive']['values']     = $this->status_choices;
         $structure['rep_id']['values']       = viewRoleDropdown();
-        $structure['tax_rate_id']['defaults']= ['value'=>$structure['tax_rate_id']['attr']['value'], 'type'=>$this->type, 'callback'=>"var foo='bar';"];
+        $structure['tax_rate_id']['defaults']= ['value'=>$structure['tax_rate_id']['attr']['value'],'type'=>$this->type,'target'=>'contacts','callback'=>"var foo=0;"];
         // set some new fields
         $structure['terms_text']= ['col'=>3,'label'=>pullTableLabel("contacts", 'terms', $this->type),
             'attr'=>['value'=>viewTerms($structure['terms']['attr']['value'], true, $this->type), 'readonly'=>'readonly']];
@@ -1179,6 +1181,11 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         $layout = array_replace_recursive($layout, $data);
     }
 
+    /**
+     *
+     * @param type $defType
+     * @return array
+     */
     private function getTermsDiv($defType='c')
     {
         $type   = clean('type',['format'=>'char',   'default'=>$defType],'get');
@@ -1210,7 +1217,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         return $output;
     }
 
-        /**
+    /**
      * Gets translated text for a specified encoded term passed through ajax
      * @param array $layout - current working structure
      * @return array - modified $layout
