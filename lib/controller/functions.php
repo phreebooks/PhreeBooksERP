@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-22
+ * @version    3.x Last Update: 2019-09-05
  * @filesource lib/controller/functions.php
  */
 
@@ -423,6 +423,29 @@ function settingsFill(&$structure, $module='')
     }
 }
 
+/**
+ * Verifies the default settings for the PhreeForm processing and formatting options as added by modules and extensions
+ * @param array $values - array of processing or formatting to be checked
+ * @param string $mID - Module ID
+ * @param string $title - Module title
+ * @return modified $values
+ */
+function setProcessingDefaults(&$values, $mID='bizuno', $title='General')
+{
+    foreach ($values as $idx => $value) {
+        if (empty($value['group']))   { $values[$idx]['group']   = $title; }
+        if (empty($value['module']))  { $values[$idx]['module']  = $mID; }
+        if (empty($value['function'])){ $values[$idx]['function']= $mID=='bizuno' ? 'viewFormat' : "{$mID}Process"; }
+    }
+}
+
+/**
+ * Calculates the due date in database format given the customers/vendors terms
+ * @param string $terms_encoded - Encoded payment terms
+ * @param char $type [default: c] - customer (c) or vendor (v)
+ * @param string $post_date [default: false] - post dat of transaction for date calculations
+ * @return string - date in db format
+ */
 function getTermsDate($terms_encoded='', $type='c', $post_date=false)
 {
     $idx = $type=='v' ? 'vendors' : 'customers';
@@ -448,7 +471,6 @@ function getTermsDate($terms_encoded='', $type='c', $post_date=false)
 
 /**
  * Returns the first hit from $_REQUEST of the array of possible indices.
- *
  * @param array $indices - [default: array('search','q')] - List of indices to comb through, q first as when instantiating the combo, q is empty but once
  * the use start typing, q has a value and should take precedence.
  * @return string - First hit
