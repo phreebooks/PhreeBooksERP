@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-25
+ * @version    3.x Last Update: 2019-08-18
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -940,16 +940,16 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                             'events' => ['onClick'=>"var jID=jq('#journal_id').val(); winOpen('phreeformOpen', 'phreeform/render/open&group={$formGroup}&date=a&xfld=journal_main.id&xcr=equal&xmin=idTBD');"]],
                         'edit'       => ['order'=>20,'icon'=>'edit',   'label'=>lang('edit'),
                             'events' => ['onClick' => "journalEdit(jrnlTBD, idTBD);"]],
-                        'toggle'     => ['order'=>40,'icon'=>'toggle','label'=>lang('toggle_status'),'hidden'=>$sec4_10>2?false:true,
+                        'toggle'     => ['order'=>40,'icon'=>'toggle', 'label'=>lang('toggle_status'),'hidden'=>$sec4_10>2?false:true,
                             'events' => ['onClick' => "jsonAction('phreebooks/main/toggleWaiting&jID=jrnlTBD', idTBD);"],
                             'display'=> "row.journal_id=='4' || row.journal_id=='10' || row.journal_id=='12'"],
-                        'dates'      => ['order'=>50,'icon'=>'date','label'=>$this->lang['expected_delivery_dates'],'hidden'=>$sec4_10>1?false:true,
-                            'events' => ['onClick' => "windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".$this->lang['expected_delivery_dates']."', 500, 400);"],
+                        'dates'      => ['order'=>50,'icon'=>'date',   'label'=>lang('delivery_dates'), 'hidden'=>$sec4_10>1?false:true,
+                            'events' => ['onClick' => "windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".lang('delivery_dates')."', 500, 400);"],
                             'display'=> "row.journal_id=='4' || row.journal_id=='10'"],
-                        'invoice'    => ['order'=>70,'icon'=>'invoice',   'label'=>$this->lang['set_invoice_num'],'hidden'=>$sec6_12>2?false:true,
+                        'invoice'    => ['order'=>70,'icon'=>'invoice','label'=>$this->lang['set_invoice_num'],'hidden'=>$sec6_12>2?false:true,
                             'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_invoice_num']."'); if (invNum) { jsonAction('phreebooks/main/setInvoiceNum&jID=6', idTBD, invNum); }"],
                             'display'=> "row.waiting=='1' && row.journal_id=='6'"],
-                        'reference'  => ['order'=>70,'icon'=>'invoice',   'label'=>$this->lang['set_ref_num'],
+                        'reference'  => ['order'=>70,'icon'=>'invoice','label'=>$this->lang['set_ref_num'],
                             'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_ref_num']."'); jsonAction('phreebooks/main/setReferenceNum&jID=18', idTBD, invNum);"],
                             'display'=> "row.journal_id=='18' || row.journal_id=='20'"],
                         'purchase'   => ['order'=>70,'icon'=>'purchase','label'=>$this->lang['fill_purchase'],'hidden'=>$sec6_12>1?false:true,

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-08-24
+ * @version    3.x Last Update: 2019-08-12
  * @filesource /lib/controller/module/phreebooks/register.php
  */
 
@@ -56,7 +56,7 @@ class phreebooksRegister
         $period = clean('period', ['format'=>'integer','default'=>getModuleCache('phreebooks', 'fy', 'period')], 'post');
         $glAcct = clean('glAcct', ['format'=>'text',   'default'=>getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash')], 'post');
         $balance= dbGetValue(BIZUNO_DB_PREFIX."journal_history", 'beginning_balance', "gl_account='$glAcct' AND period=$period");
-        $entries= [['id'=>'0','post_date'=>'','reference'=>'','description'=>lang('beginning_balance'),'debit'=>'','credit'=>'','balance'=>viewFormat($balance, 'currency')]];
+        $entries= [['id'=>'0','post_date'=>'','reference'=>'','description'=>lang('beginning_balance'),'debit'=>'','credit'=>'','balance'=>$balance]];
         $sql    = "SELECT i.description, m.id, m.journal_id, m.post_date, m.total_amount, m.invoice_num, m.primary_name_b,
            i.debit_amount, i.credit_amount FROM ".BIZUNO_DB_PREFIX."journal_main"." m INNER JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id = i.ref_id
            WHERE m.period='$period' AND i.gl_account='$glAcct' ORDER BY m.post_date, m.invoice_num";
@@ -69,11 +69,11 @@ class phreebooksRegister
               'post_date'  => viewDate($row['post_date']),
               'reference'  => $row['invoice_num'],
               'description'=> $row['primary_name_b']   ? $row['primary_name_b']: $row['description'],
-              'debit'      => $row['debit_amount'] <>0 ? viewFormat($row['debit_amount'], 'currency')  : '',
-              'credit'     => $row['credit_amount']<>0 ? viewFormat($row['credit_amount'], 'currency') : '',
-              'balance'    => viewFormat($balance, 'currency')];
+              'debit'      => $row['debit_amount'] <>0 ? $row['debit_amount']  : '',
+              'credit'     => $row['credit_amount']<>0 ? $row['credit_amount'] : '',
+              'balance'    => $balance];
         }
-        $entries[] = ['id'=>'999999999','post_date'=>'','reference'=>'','description'=>lang('ending_balance'),'debit'=>'','credit'=>'','balance'=>viewFormat($balance, 'currency')];
+        $entries[] = ['id'=>'999999999','post_date'=>'','reference'=>'','description'=>lang('ending_balance'),'debit'=>'','credit'=>'','balance'=>$balance];
         msgDebug("found ".sizeof($entries)." rows");
         $layout = array_replace_recursive($layout, ['content'=>['total'=>sizeof($entries),'rows'=>$entries]]);
     }
@@ -95,8 +95,11 @@ class phreebooksRegister
                 'post_date'  => ['order'=>10,'label'=>lang('date'),       'attr'=>['resizable'=>true]],
                 'reference'  => ['order'=>20,'label'=>lang('reference'),  'attr'=>['resizable'=>true]],
                 'description'=> ['order'=>30,'label'=>lang('description'),'attr'=>['resizable'=>true]],
-                'debit'      => ['order'=>40,'label'=>lang('deposit'),    'attr'=>['resizable'=>true,'align'=>'right']],
-                'credit'     => ['order'=>50,'label'=>lang('payment'),    'attr'=>['resizable'=>true,'align'=>'right']],
-                'balance'    => ['order'=>60,'label'=>lang('balance'),    'attr'=>['resizable'=>true,'align'=>'right']]]];
+                'debit'      => ['order'=>40,'label'=>lang('deposit'),    'attr'=>['resizable'=>true,'align'=>'right'],
+                    'events' => ['formatter' => "function(value) { return value != '' ? formatCurrency(value) : ''; }"]],
+                'credit'     => ['order'=>50,'label'=>lang('payment'),    'attr'=>['resizable'=>true,'align'=>'right'],
+                    'events' => ['formatter' => "function(value) { return value != '' ? formatCurrency(value) : ''; }"]],
+                'balance'    => ['order'=>60,'label'=>lang('balance'),    'attr'=>['resizable'=>true,'align'=>'right'],
+                    'events' => ['formatter' => "function(value,row,index) { return formatCurrency(value); }"]]]];
     }
 }

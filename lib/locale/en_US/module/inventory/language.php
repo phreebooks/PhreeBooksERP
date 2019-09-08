@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-19
+ * @version    3.x Last Update: 2019-08-13
  * @filesource /locale/en_US/module/inventory/language.php
  */
 
@@ -28,7 +28,7 @@ $lang = [
     'weight_uom_lbl' => 'Weight UOM',
     'dim_uom_lbl' => 'Dimension UOM',
     'tax_rate_id_c_lbl' => 'Sales Tax - Customers',
-    'tax_rate_id_v_lbl' => 'Sales Tax - Vendors',
+    'tax_rate_id_v_lbl' => 'Purchase Tax - Vendors',
     'auto_add_lbl' => 'Auto Add SKU',
     'auto_cost_lbl' => 'Update Cost',
     'allow_neg_stock_lbl'=> 'Allow No Stock Sales',
@@ -36,7 +36,7 @@ $lang = [
     'weight_uom_tip'     => 'Default weight unit of measure.',
     'dim_uom_tip'        => 'Default dimension unit of measure.',
     'tax_rate_id_c_tip'  => 'Default sales tax rate to use for all inventory items for Sales.',
-    'tax_rate_id_v_tip'  => 'Default sales tax rate to use for all inventory items for Purchases.',
+    'tax_rate_id_v_tip'  => 'Default purchase tax rate to use for all inventory items for Purchases.',
     'auto_add_tip'       => 'Yes - Enable auto-add new items to inventory, default type will be Stock Item. No - SKUs must exist in inventory database to post to general ledger.',
     'auto_cost_tip'      => 'If set, will set the latest cost in the inventory database when (PO) Purchase Orders are posted, (PR) Inventory items are received. This feature helps to keep your Unit Cost up to date with the latest costing.',
     'allow_neg_stock_tip'=> 'Yes - Allow sales of items that are not in stock. No - require adequate stock to post to general journal.',
@@ -58,6 +58,9 @@ $lang = [
     '12month' => '12 Months Average',
     'adj_value' => 'Adj Value',
     'rnd_value' => 'Rnd Value',
+    'inv_hst_qty' => 'Qty Stock',
+    'inv_hst_val' => 'Inv Value',
+    'inv_hst_cst' => 'Average Cost',
     // Messages
     'msg_sku_entry_copy' => 'Enter a SKU to be created from this record:',
     'msg_sku_entry_rename' => 'Enter a new SKU for this record:',

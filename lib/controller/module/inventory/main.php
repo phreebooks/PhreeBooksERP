@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-11
+ * @version    3.x Last Update: 2019-08-18
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -334,12 +334,14 @@ class inventoryMain
         $imgSrc = $structure['image_with_path']['attr']['value'];
         $imgDir = dirname($structure['image_with_path']['attr']['value']).'/';
         // complete the structure and validate
-        $structure['qty_stock']['attr']['readonly']  = 'readonly';
-        $structure['qty_po']['attr']['readonly']     = 'readonly';
-        $structure['qty_so']['attr']['readonly']     = 'readonly';
-        $structure['qty_alloc']['attr']['readonly']  = 'readonly';
-        $structure['inventory_type']['values']       = $this->inventoryTypes;
-        $structure['cost_method']['values']          = $cost_methods;
+        $structure['tax_rate_id_c']['label']       = lang('sales_tax');
+        $structure['tax_rate_id_v']['label']       = lang('purchase_tax');
+        $structure['qty_stock']['attr']['readonly']= 'readonly';
+        $structure['qty_po']['attr']['readonly']   = 'readonly';
+        $structure['qty_so']['attr']['readonly']   = 'readonly';
+        $structure['qty_alloc']['attr']['readonly']= 'readonly';
+        $structure['inventory_type']['values']     = $this->inventoryTypes;
+        $structure['cost_method']['values']        = $cost_methods;
         if ($rID) {
             $locked = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "sku='{$structure['sku']['attr']['value']}'"); // was inventory_history but if a SO exists will not lock sku field and can change
             $title  = $structure['sku']['attr']['value'].' - '.$structure['description_short']['attr']['value'];
@@ -818,6 +820,11 @@ var dataJ12 = ".json_encode($history['sales']).";";
         return $output;
     }
 
+    /**
+     * Grid structure for PO/SO history with options
+     * @param type $jID
+     * @return type
+     */
     private function dgJ04J10($jID=10)
     {
         $hide_cost= validateSecurity('phreebooks', "j6_mgr", 1, false) ? false : true;
@@ -840,8 +847,9 @@ var dataJ12 = ".json_encode($history['sales']).";";
                 'action'     => ['order'=>1,'label'=>lang('action'),'attr'=>['hidden'=>$hide_cost?true:false],
                     'events' => ['formatter'=>"function(value,row,index) { return {$props['name']}Formatter(value,row,index); }"],
                     'actions'=> [
-                        'edit'=>['order'=>20,'icon'=>'edit','size'=>'small','label'=>lang('edit'),'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD');"]],
-                        'fill'=>['order'=>40,'icon'=>$icon, 'size'=>'small','label'=>$label,      'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD&jID=$invID&bizAction=inv');"]]]],
+                        'edit' =>['order'=>20,'icon'=>'edit','label'=>lang('edit'),          'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD');"]],
+                        'dates'=>['order'=>50,'icon'=>'date','label'=>lang('delivery_dates'),'events'=>['onClick'=>"windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".lang('delivery_dates')."', 500, 400);"]],
+                        'fill' =>['order'=>80,'icon'=>$icon, 'label'=>$label,                'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD&jID=$invID&bizAction=inv');"]]]],
                 'invoice_num'=> ['order'=>20,'label'=>lang('journal_main_invoice_num_10'),'attr'=>['width'=>200,'resizable'=>true]],
                 'store_id'   => ['order'=>30,'label'=>lang('contacts_short_name_b'),'attr'=>['hidden'=>$stores?false:true,'width'=>150,'resizable'=>true]],
                 'post_date'  => ['order'=>40,'label'=>lang('post_date'),'attr'=>['width'=>200,'resizable'=>true]],

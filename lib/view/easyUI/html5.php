@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-24
+ * @version    3.x Last Update: 2019-09-06
  * @filesource /view/easyUI/html5.php
  */
 
@@ -408,7 +408,8 @@ final class html5 {
     /**
      * This function takes the menu structure and builds the easyUI HTML markup
      * @param string $output - The running HTML output
-     * @return string - HTML formatted EasyUI menu appended to $output
+     * @param array $prop - properties of the div element
+     * @return string - modified $output - HTML formatted EasyUI menu appended to $output
      */
     function menu(&$output, $prop) {
         if (empty($prop['data']['child'])) { return; }
@@ -417,11 +418,11 @@ final class html5 {
         $orient    = in_array($prop['region'], ['east', 'left', 'right', 'west']) ? 'v' : 'h';
         $hideLabel = !empty($prop['hideLabels']) ? $prop['hideLabels'] : false;
         $hideBorder= !empty($prop['hideBorder']) ? $prop['hideBorder'] : false;
-        if ($orient == 'v') {
+        if ($orient == 'v') { // vertical
             if (empty($prop['size'])) { $prop['size'] = 'small'; }
             $prop['classes'][] = 'easyui-menu';
             $prop['options']['inline'] = 'true';
-        } else {
+        } else { // horizontal
             if (empty($prop['size'])) { $prop['size'] = 'large'; }
         }
         $output['body'] .= $this->htmlElOpen('', $prop)."\n";
@@ -431,9 +432,11 @@ final class html5 {
 
     /**
      * This function takes a menu child structure and builds the easyUI HTML markup, it is recursive for multi-level menus
-     * @param string $id - root ID for the parent element
-     * @param string $struc - The menu structure
-     * @return string - HTML formatted EasyUI menu (child) appended to parent menu $output
+     * @param array $struc - page structure piece for this menu
+     * @param string $size [default: small]- icon size, small or large
+     * @param char $orient [default: v] - menu orientation, v - vertical or h - horizontal
+     * @param boolean $hideLabel [default: false] - Show or hide textual labels (hide for short format)
+     * @return string - HTML menu ready to render
      */
     public function menuChild($struc=[], $size='small', $orient='v', $hideLabel=false) {
         $output = '';
@@ -478,7 +481,7 @@ final class html5 {
             }
         }
         if ($orient == 'h') { foreach ($subQueue as $child) { // process the submenu queue
-                $output .= '  <div id="' . $child['id'] . '">' . $this->menuChild($child['menu'], 'small', 'v') . "</div>\n";
+                $output .= "\n".'  <div id="'.$child['id'].'">' . $this->menuChild($child['menu'], 'small', 'v') . "</div>\n";
         } }
         return $output;
     }
@@ -1603,12 +1606,12 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
         if (!empty($prop['defaults']))    { $defaults = array_merge($defaults, $prop['defaults']); }
         if ( empty($defaults['callback'])){ $defaults['callback'] = "totalUpdate('inputTax');"; }
         $prop['classes'][]           = 'easyui-combogrid';
-        $prop['options']['width']    = "120,panelWidth:210,delay:500,idField:'id',textField:'text'";
+        $prop['options']['width']    = "180,panelWidth:230,delay:500,idField:'id',textField:'text'";
         $prop['options']['data']     = "[]";
 //      if (!empty($prop['attr']['value'])) { $prop['options']['value'] = $prop['attr']['value']; }
 //        $prop['options']['rowStyler']= "function(index,row){ if (row.status>0) { return { class:'row-inactive' }; } }";
         $prop['options']['onSelect'] = "function(id, data) { {$defaults['callback']} }";
-        $prop['options']['columns']  = "[[{field:'id',hidden:true},{field:'status',hidden:true},{field:'text',title:'".jsLang('journal_main_tax_rate_id')."',width:120},{field:'tax_rate',title:'".jsLang('amount')."',align:'center',width:70}]]";
+        $prop['options']['columns']  = "[[{field:'id',hidden:true},{field:'status',hidden:true},{field:'text',title:'".jsLang('journal_main_tax_rate_id')."',width:160},{field:'tax_rate',title:'".jsLang('amount')."',align:'center',width:70}]]";
         unset($prop['attr']['type']);
         if (!empty($defaults['data'])) { $data = $defaults['data']; }
         else { $data = json_encode(viewSalesTaxDropdown($defaults['type'], $defaults['target'])); } //"bizDefaults.taxRates.{$defaults['type']}.rows";
@@ -1892,4 +1895,24 @@ function dgEditTax($id, $field, $type='c', $xClicks='') {
 
 function dgEditText() {
     return 'text';
+}
+
+function dgSorterDate() {
+    $fmtDate = getModuleCache('bizuno', 'settings', 'locale', 'date_short', 'm/d/Y');
+    switch ($fmtDate) {
+        case 'Y/m/d': $delim='/'; $type=0; break;
+        case 'Y-m-d': $delim='-'; $type=0; break;
+        case 'Y.m.d': $delim='.'; $type=0; break;
+        case 'd/m/Y': $delim='/'; $type=1; break;
+        case 'd.m.Y': $delim='.'; $type=1; break;
+        case 'm/d/Y': $delim='/'; $type=2; break;
+        default:      return "function(a,b) { return (a>b?1:-1); }"; // covers Ymd but fails for dmY (no solution at this time, perhaps substr and rebuild as Ymd)
+    }
+    if ($type==0) {
+        return "function(a,b) { a=a.split('$delim'); b=b.split('$delim'); if (a[0]==b[0]) { if (a[1]==b[1]) { return (a[2]>b[2]?1:-1); } else { return (a[1]>b[1]?1:-1); } } else { return (a[0]>b[0]?1:-1); } }";
+    } elseif ($type==1) {
+        return "function(a,b) { a=a.split('$delim'); b=b.split('$delim'); if (a[2]==b[2]) { if (a[1]==b[1]) { return (a[0]>b[0]?1:-1); } else { return (a[1]>b[1]?1:-1); } } else { return (a[2]>b[2]?1:-1); } }";
+    } else { // $type==2, USA
+        return "function(a,b) { a=a.split('$delim'); b=b.split('$delim'); if (a[2]==b[2]) { if (a[0]==b[0]) { return (a[1]>b[1]?1:-1); } else { return (a[0]>b[0]?1:-1); } } else { return (a[2]>b[2]?1:-1); } }";
+    }
 }

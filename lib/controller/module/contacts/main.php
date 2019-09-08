@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-25
+ * @version    3.x Last Update: 2019-09-06
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -156,10 +156,6 @@ class contactsMain
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
         $rID = clean('rID', 'integer', 'get');
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX."contacts", $this->type);
-
-        // remove after 2019-07-01
-//        $structure['tax_rate_id']['attr']['type'] = 'tax';
-
         // merge data with structure
         $cData = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id=$rID");
         dbStructureFill($structure, $cData);
@@ -181,7 +177,7 @@ class contactsMain
         $structure['inactive']['label']      = lang('status');
         $structure['inactive']['values']     = $this->status_choices;
         $structure['rep_id']['values']       = viewRoleDropdown();
-        $structure['tax_rate_id']['defaults']= ['value'=>$structure['tax_rate_id']['attr']['value'],'type'=>$this->type,'target'=>'contacts','callback'=>"var foo=0;"];
+        $structure['tax_rate_id']['defaults']= ['value'=>$structure['tax_rate_id']['attr']['value'],'type'=>$this->type,'target'=>'inventory','callback'=>"var foo=0;"];
         // set some new fields
         $structure['terms_text']= ['col'=>3,'label'=>pullTableLabel("contacts", 'terms', $this->type),
             'attr'=>['value'=>viewTerms($structure['terms']['attr']['value'], true, $this->type), 'readonly'=>'readonly']];

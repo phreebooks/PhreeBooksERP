@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-23
+ * @version    3.x Last Update: 2019-08-05
  * @filesource /lib/model/registry.php
  */
 
@@ -438,8 +438,8 @@ final class bizRegistry
         if (!isset($structure['dirMethods']))    { $structure['dirMethods'] = []; }
         if (!is_array($structure['dirMethods'])) { $structure['dirMethods'] = [$structure['dirMethods']]; }
         $structure['dirMethods'][] = 'dashboards'; // auto-add dashboards
-        $methods = [];
         foreach ($structure['dirMethods'] as $folderID) {
+            $methods = [];
             msgDebug("\ninitMethods is looking at module: {$structure['id']} and path {$structure['path']} and folder $folderID");
             if (!file_exists($structure['path']."$folderID/")) { continue; }
             msgDebug("\nreading methods");

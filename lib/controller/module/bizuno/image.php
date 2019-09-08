@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-15
+ * @version    3.x Last Update: 2019-08-08
  * @filesource /lib/controller/module/bizuno/image.php
  */
 
@@ -50,7 +50,7 @@ class bizunoImage
             if (substr($action, 0, 6) == 'newdir') {
                 $parts = explode(":", $action);
                 if (!empty($parts[1])) { // folder name
-                    $io->fileWrite('', str_replace('//', '/', "images/$path/{$parts[1]}/index.php"), true, false, true);
+                    $io->fileWrite('<?php', str_replace('//', '/', "images/$path/{$parts[1]}/index.php"), true, false, true);
                     $action = 'refresh';
                 } else { return msgAdd("Folder name is required!"); }
             }

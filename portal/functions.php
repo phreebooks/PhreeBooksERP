@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-15
+ * @version    3.x Last Update: 2019-08-15
  * @filesource /portal/functions.php
  */
 
@@ -137,13 +137,14 @@ function portalUpdateBizID() { }
  * @return result if successful, false (plus messageStack error) if fails
  */
 function portalCurl($url, $data='', $type='get', $opts=[]) {
+    $useragent = 'Mozilla/5.0 (Windows NT 5.1; rv:31.0) Gecko/20100101 Firefox/31.0';
     $size = is_array($data) ? 'array('.sizeof($data).')' : strlen($data);
     msgDebug("\nAt class io, sending request of length $size to url: $url via $type with opts = ".print_r($opts, true));
     if ($type == 'get') { $url = $url.'?'.$data; }
     $ch = curl_init();
     if (isset($opts) && sizeof($opts)>0 ) { foreach ($opts as $opt => $value) {
         switch ($opt) {
-            case 'useragent': curl_setopt($ch, CURLOPT_USERAGENT, $this->useragent); break;
+            case 'useragent': curl_setopt($ch, CURLOPT_USERAGENT, $useragent); break;
             default:          curl_setopt($ch, constant($opt), $value); break;
         }
     } }

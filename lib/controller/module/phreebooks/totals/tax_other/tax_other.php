@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-21
+ * @version    3.x Last Update: 2019-08-06
  * @filesource /lib/controller/module/phreebooks/totals/tax_other/tax_other.php
  */
 
@@ -71,11 +71,12 @@ class tax_other
 
     public function render(&$output, $data)
     {
+        $this->cType  = defined('CONTACT_TYPE') ? CONTACT_TYPE : 'c';
         $this->fields = [
             'totals_tax_other_id' => ['label'=>'', 'attr'=>['type'=>'hidden']],
             'totals_tax_other_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
             'totals_tax_other_opt'=> ['icon'=>'settings','size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_tax_other').toggle('slow');"]],
-            'totals_tax_other'    => ['label'=>lang('inventory_tax_rate_id_c').' '.$this->lang['extra_title'], 'events'=>['onBlur'=>"totalUpdate();"],
+            'totals_tax_other'    => ['label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->cType).' '.$this->lang['extra_title'], 'events'=>['onBlur'=>"totalUpdate();"],
                 'attr' => ['type'=>'currency','value'=>0]]];
         if (!empty($data['items'])) { foreach ($data['items'] as $row) { // fill in the data if available
             if ($row['gl_type'] == $this->settings['gl_type']) {

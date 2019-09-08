@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-31
+ * @version    3.x Last Update: 2019-08-17
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
@@ -35,9 +35,8 @@ class bizunoApi
     /**
      * Handles incoming requests through the API, parses and calls appropriate method
      * User is validated before we reach this point
-     *
-     * @param type $layout
-     * @return type
+     * @param array $layout - structure coming in, typically empty array
+     * @return modified $layout
      */
     public function processRcv(&$layout=[])
     {
@@ -136,6 +135,11 @@ class bizunoApi
         $layout    = ['content'=>['resultCode'=>0]];
     }
 
+    /**
+     * Maps the JSON input key/value pair to the Bizuno journal_main table format.
+     * @param array $map - map of API keys to journal_main fields
+     * @param array $order - data received through the API
+     */
     private function setJournalMain($map, $order=[])
     {
         foreach ($map['General'] as $idx => $value) {
@@ -151,6 +155,11 @@ class bizunoApi
         unset($this->main['short_name_s']);
     }
 
+    /**
+     * Maps the JSON input key/value pair to the Bizuno journal_item table format.
+     * @param array $map - map of API keys to journal_main fields
+     * @param array $order - data received through the API
+     */
     private function setJournalItem($map, $order=[])
     {
         $itmCnt = 1;
@@ -175,7 +184,7 @@ class bizunoApi
 
     /**
      * Sets the shipping item record
-     * @param type $order
+     * @param array $order - order as received through the API
      */
     private function setJournalFreight($order=[])
     {
@@ -193,9 +202,9 @@ class bizunoApi
 
     /**
      * Creates a tax item record making the assumption that the tax has been properly calculated at the cart
-     * @param type $order
+     * @param array $order - order as received through the API
      */
-    private function setJournalTax($order)
+    private function setJournalTax($order=[])
     {
         if (empty($order['General']['SalesTaxAmount'])) { return; }
         $this->main['sales_tax']  = $order['General']['SalesTaxAmount'];
@@ -213,9 +222,9 @@ class bizunoApi
 
     /**
      * check item total to order total, any difference should be made into a discount record
-     * @param type $order
+     * @param array $order - order as received through the API
      */
-    private function setJournalDiscount($order)
+    private function setJournalDiscount($order=[])
     {
         $balanceCheck = $this->main['total_amount'] - $this->itemTotal;
         if ($balanceCheck == 0) { return; }
@@ -231,9 +240,9 @@ class bizunoApi
 
     /**
      * Creates the total item record
-     * @param type $order
+     * @param array $order - order as received through the API
      */
-    private function setJournalTotal($order)
+    private function setJournalTotal($order=[])
     {
         $this->items[] = [
             'qty'          => 1,
@@ -247,6 +256,10 @@ class bizunoApi
 
     /**
      * Set the payment status of an order
+     * @param array $map - map of API keys to journal table fields
+     * @param array $order - order as received through the API
+     * @param integer $rID - db record id of the journal entry if it exists
+     * @return type
      */
     private function setJournalPayment($map, $order=[], $rID=0)
     {
@@ -279,6 +292,10 @@ class bizunoApi
         dbWrite(BIZUNO_DB_PREFIX."journal_item", ['description'=>$iID['description'],'trans_code'=>$pmtInfo['transaction_id']], 'update', "id={$iID['id']}");
     }
 
+    /**
+     * Sets the tax rate to every entry in the item table to a set value.
+     * @param integer $taxID - db record id of the tax rate
+     */
     private function setTaxItems($taxID=0)
     {
         foreach ($this->items as $idx => $row) {
@@ -309,7 +326,7 @@ class bizunoApi
      * Tries to determine the tax rate based on the order data supplied
      * @param array $data - order data after being mapped to Bizuno API format
      * @param float $itemTotal = order total
-     * @return int
+     * @return integer - best guess, if possible, of the tax rate based on what is in the tax rate table
      */
     private function taxGuess($data=[], $itemTotal=0, $cID=0)
     {
@@ -351,6 +368,11 @@ class bizunoApi
         return 0; // no tax data found
     }
 
+    /**
+     * Takes a stab at guessing the shipping method based on the title match
+     * @param string $method - shipping method as passed through the API
+     * @return string - encoded shipping method, if found.
+     */
     private function guessShipMethod($method='')
     {
         $defCarrier = false;
@@ -380,8 +402,8 @@ class bizunoApi
 
     /**
      * Fetches the list of SKUs to upload
-     * @param unknown $result
-     * @return multitype:multitype:multitype:unknown
+     * @param array $result - list of SKUs build upload list from
+     * @return modified $layout
      */
     public function apiInvCount(&$layout=[], $result=[])
     {
@@ -391,7 +413,7 @@ class bizunoApi
     }
 
     /**
-     *
+     * Sends an inventory item up to the destination server
      * @param array $product - array of filtered product data indexed by the product Tag name
      * @param string $url - remote site to send data
      * @param string $user - remote site username
@@ -446,6 +468,7 @@ class bizunoApi
     /**
      * Sets the image path and populates image data, if present
      * @param type $product
+     * @return modified $product
      */
     private function setImage(&$product)
     {
@@ -568,13 +591,13 @@ class bizunoApi
         if (!$confirmDate) { $confirmDate = date('Y-m-d'); }
         $output = [];
         $this->confirmShip   ($output, $confirmDate);
-//        $this->confirmPartial($output, $confirmDate);
+//        $this->confirmPartial($output, $confirmDate); // maybe later?
 //        $this->confirmCancel ($output, $confirmDate);
 //        $this->confirmReturn ($output, $confirmDate);
         if (!sizeof($output)) { return msgAdd('No shipments could be found for this date!', 'success'); }
         $request = [
-            'UserID'=> $user,
-            'UserPW'=> $pass,
+            'UserID'  => $user,
+            'UserPW'  => $pass,
             'Language'=> getUserCache('profile', 'language', false, 'en_US'),
             'Version' => "1.0",
             'Function'=> "",

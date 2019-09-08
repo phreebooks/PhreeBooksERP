@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-25
+ * @version    3.x Last Update: 2019-08-18
  * @filesource /locale/en_US/module/phreebooks/language.php
  */
 
@@ -126,7 +126,6 @@ $lang = [
     'phreebooks_repost_title' => 'Re-post Journal Entries',
     'phreebooks_fiscal_years' => 'Fiscal Years',
     'phreebooks_journal_periods' => 'Accounting Periods',
-    'expected_delivery_dates' => 'Expected Delivery Dates',
     'status_orders_invoice' => 'Invoice Orders/Quotes',
     'status_open_j9'  => 'Open Quotes',
     'status_open_j10' => 'Open Orders',

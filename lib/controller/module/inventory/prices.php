@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-11
+ * @version    3.x Last Update: 2019-09-05
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -305,10 +305,10 @@ class inventoryPrices
         $iSec = validateSecurity('inventory', 'prices_'.$this->type, 1, false);
         $pSec = $this->type=='v' ? validateSecurity('phreebooks', 'j6_mgr', 1, false) : validateSecurity('phreebooks', 'j12_mgr', 1, false);
         if (!$security = max($iSec, $pSec)) { return msgAdd(lang('err_no_permission')." [".'prices_'.$this->type." OR jX_mgr]"); }
-        $cID = clean('cID', 'integer','get'); // contact ID
-        $iID = clean('rID', 'integer','get'); // inventory id
-        $sku = clean('sku', 'text',   'get');
-        $UPC = clean('upc', 'text',   'get');  // inventory UPC Code
+        $cID = clean('cID', 'integer','get'); // contact record ID
+        $iID = clean('rID', 'integer','get'); // inventory record ID
+        $sku = clean('sku', 'text',   'get'); // inventory SKU
+        $UPC = clean('upc', 'text',   'get'); // inventory UPC Code
         $qty = clean('qty', ['format'=>'float', 'default'=>1], 'get'); // quantity purchased, assume 1
         if ($cID) {
             $contact = dbGetValue(BIZUNO_DB_PREFIX.'contacts', ['type', 'price_sheet'], "id=$cID");

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-15
+ * @version    3.x Last Update: 2019-08-17
  * @filesource /lib/model/io.php
  */
 
@@ -45,6 +45,11 @@ final class io
 
     /**
      * Deletes a module attachment file and resets the attach flag if no more attachments are present
+     * @param array $layout - page structure coming in
+     * @param integer $mID - module ID
+     * @param string $pfxID [default: rID_] - prefix for the filename followed by the record ID
+     * @param boolean $dbID - table name
+     * @return modified $structure
      */
     public function attachDelete(&$layout, $mID, $pfxID='rID_', $dbID=false)
     {
@@ -129,9 +134,9 @@ final class io
     /**
      * Recursively moves the all files matching source pattern to destination pattern
      * Used in merging contacts, etc.
-     * @param type $path
-     * @param type $srcID
-     * @param type $destID
+     * @param string $path - path to the source
+     * @param string $srcID - filename at the source (can contain wildcards)
+     * @param string $destID - path of where the files go
      */
     public function fileMove($path, $srcID, $destID)
     {
@@ -170,8 +175,8 @@ final class io
     /**
      * Reads a directory via the glob function
      * @param string $path - path relative to users myFolder to read
+     * @param array $arrExt [default: empty] - list of extensions to skip
      * @return array - From empty to a list of files within the folder.
-     *
      */
     public function fileReadGlob($path, $arrExt=[])
     {
@@ -307,12 +312,12 @@ final class io
     }
 
     /**
-     * Reads the contents of a folder , cleans out the . and .. directories
-     * @param string $path - path from the users home folder
-     * @param array $arrExt - array of extensions to allow, leave empty for all extensions
+     * Reads the contents of a folder, cleans out the . and .. directories
+     * @param string $path - [default ''] path from the users home folder
+     * @param array $arrExt - [default {empty}]array of extensions to allow, leave empty for all extensions
      * @return array - List of files/directories within the $path
      */
-    public function folderRead($path, $arrExt=[])
+    public function folderRead($path='', $arrExt=[])
     {
         $output = [];
         if (!$this->folderExists($path)) { return $output; }
@@ -332,7 +337,7 @@ final class io
      * @param array $arrExt - array of extensions to allow, leave empty for all extensions
      * @return array, empty for non-folder or no files
      */
-    public function folderReadGlob($path, $arrExt=[])
+    public function folderReadGlob($path='', $arrExt=[])
     {
         $output = [];
         msgDebug("\nTrying to read contents of myFolder/$path");
@@ -348,12 +353,12 @@ final class io
     }
 
     /**
-     *
-     * @param type $host
-     * @param type $user
-     * @param type $pass
-     * @param type $port
-     * @return type
+     * Establishes a FTP connection to a remote host. 
+     * @param string $host - FTP Host to connect to
+     * @param string $user - username
+     * @param string $pass - password
+     * @param integer $port [default: 21] - FTP port
+     * @return object - valid ftp connection
      */
     public function ftpConnect($host, $user='', $pass='', $port=21) {
         msgDebug("Ready to write to url $host to port $port with user $user");
@@ -363,10 +368,10 @@ final class io
     }
 
     /**
-     *
-     * @param type $con
-     * @param type $local_file
-     * @param type $remote_file
+     * Uploads a file to the remote host though an established connection
+     * @param object $con - valid FTP connection
+     * @param string $local_file - path from myFiles including filename
+     * @param string $remote_file [default: empty] - remote file to write, uses same name as source if left empty
      * @return boolean
      */
     public function ftpUploadFile($con, $local_file, $remote_file='') {
@@ -384,8 +389,8 @@ final class io
     }
 
     /**
-     *
-     * @param string $mime - sets the type of extension to allow
+     * Pulls a list of valid extensions based on expectations
+     * @param string $mime [default: file] - sets the type of extension to allow, file, zip, backup, or image
      */
     public function getValidExt($mime='file')
     {
@@ -407,7 +412,6 @@ final class io
      * @param string $dest - destination path/filename where the uploaded files are to be placed
      * @param string $prefix - File name prefix to prepend
      * @param string $mime - MIME types to allow
-     * @param boolean $replace [default false] set to true to replace the file if it already exists
      * @return boolean true on success, false (with msg) on error
      */
     public function uploadSave($index, $dest, $prefix='', $mime='')
@@ -429,7 +433,8 @@ final class io
 
     /**
      * Validates path sent by user to be within the BIZUNO_DATA folder, i.e. stops ../../../../ hacking
-     * @param string $path - full path including filename
+     * @param string $srcPath - full path including filename
+     * @param boolean $verbose [default: true] - false to suppress error messages or true to show them
      * @return true on valid path, false otherwise
      */
     public function validatePath($srcPath, $verbose=true) {
@@ -458,6 +463,8 @@ final class io
 
     /**
      * Recursive method to make sure all folders within the BIZUNO_DATA path have null index.php files
+     * @param string $srcPath - path from myFiles to test
+     * @return null - files are generated if the folder is empty
      */
     public function validateNullIndex($srcPath='/')
     {
@@ -478,7 +485,7 @@ final class io
      * @param string $type [default ''] validates the type of file updated
      * @param mixed $ext [default ''] restrict to specific extension(s)
      * @param string $verbose [default true] Suppress error messages for the upload operation
-     * @return boolean
+     * @return boolean - true on success, false if failure
      */
     public function validateUpload($index, $type='', $ext='', $verbose=true)
     {
@@ -515,7 +522,7 @@ final class io
 
     /**
      * Wrapper to retrieve from a remote server using cURL, this method is portal dependent
-     * @param string $url - url to request data
+     * @param string $url - URL to request data
      * @param string $data - data string, will be attached for get and through setopt as post or an array
      * @param string $type - [default 'get'] Choices are 'get' or 'post'
      * @param array $opts - cURL options
@@ -527,9 +534,11 @@ final class io
     }
 
     /**
-     *
+     * Attempts to retrieve information from the PhreeSoft server
      * @param string $method - method to use @PhreeSoft to gather user account info
-     * @return type
+     * @param array $myData [default: empty] - credentials to use as override to cache settings
+     * @param type $type [default: post] - sets the type of transaction, get or post
+     * @return array - response from PhreeSoft.com servers with messages
      */
     public function apiPhreeSoft($method='', $myData=[], $type='post')
     {
@@ -582,10 +591,10 @@ final class io
 
     /**
      * Recursively adds a folder to an existing ZipArchive
-     * @param type $dir
-     * @param class $zip
-     * @param type $dest_path
-     * @return type
+     * @param string $dir - current working folder
+     * @param class $zip - active ZIP class
+     * @param string $dest_path - sets the destination path of the current folder
+     * @return null
      */
     public function zipAddFolder($dir, $zip, $dest_path=NULL)
     {
@@ -623,30 +632,9 @@ final class io
     }
 
     /**
-     * DEPRECATED - Creates a BZ2 zipped file
-     * @param sring $type - file for a single file, null for the entire directory
-     * @return boolean
-     */
-    public function bz2Create($type='file')
-    {
-        $error = false;
-        if ($type == 'file') {
-            exec("cd " . $this->source_dir . "; nice -n 19 bzip2 -k " . $this->source_file . " 2>&1", $output, $res);
-            exec("mv " . $this->source_dir . $this->db_name . ".bz2 " . $this->dest_dir . $this->dest_file, $output, $res);
-        } else { // compress all
-            exec("cd " . $this->source_dir . "; nice -n 19 tar -jcf " . $this->dest_dir . $this->dest_file . " " . $this->source_dir . " 2>&1", $output, $res);
-        }
-        if ($res > 0) {
-            msgAdd(ERROR_COMPRESSION_FAILED . implode(": ", $output));
-            $error = true;
-        }
-        return $error;
-    }
-
-    /**
      * Attempts to guess the files mime type based on the extension
      * @param string $filename
-     * @return string
+     * @return string - mime guess
      */
     public function guessMimetype($filename)
     {

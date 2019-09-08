@@ -73,7 +73,7 @@ foreach ($methods as $method => $settings) {
         $output['body'] .= "</td>\n";
         $output['body'] .= '<td valign="top" nowrap="nowrap" style="text-align:right;">' . "\n";
         $viewData['btnMethodDel']['events']['onClick'] = "if (confirm('".lang('msg_method_delete_confirm')."')) jsonAction('bizuno/settings/methodRemove&module=$module&type=$dirMeth&method=$method');";
-        if ($viewData['security'] == 5 && $dirMeth <> 'dashboards' && (!isset($clsMeth->required) || !$clsMeth->required)) { 
+        if ($viewData['security'] == 5 && $dirMeth <> 'dashboards' && (!isset($clsMeth->required) || !$clsMeth->required)) {
             $output['body'] .= html5('remove_'.$method, $viewData['btnMethodDel']) . "\n";
         }
         $viewData['btnMethodProp']['events']['onClick'] = "jq('#divMethod_".$method."').toggle('slow');";

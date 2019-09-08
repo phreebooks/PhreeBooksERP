@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-22
+ * @version    3.x Last Update: 2019-08-24
  * @filesource /lib/model/db.php
  */
 
@@ -33,6 +33,7 @@ class db extends \PDO
 
     /**
      * Constructor to connect to db, sets $connected to true if successful, returns if no params sent
+     * @param array $dbData - database credentials to auto-connect, if set
      */
     function __construct($dbData)
     {
@@ -55,10 +56,10 @@ class db extends \PDO
     }
 
     /**
-     * Generic sql query wrapper for executing sql's, has error logging and debug messages
-     * @param string $sql
-     * @param string $action - action to perform, choices are: insert, update, delete, row, rows, stmt [default]
-     * @return false on error, array or statement on success
+     * Generic SQL query wrapper for executing queries, has error logging and debug messages
+     * @param string $sql - The SQL statement
+     * @param string $action [default: stmt] - action to perform, choices are: insert, update, delete, row, rows, stmt
+     * @return false on error, array or statement on success depending on request
      */
     function Execute($sql, $action='stmt', $verbose=false)
     {
@@ -113,8 +114,8 @@ class db extends \PDO
     }
 
     /**
-     * Used to update a database table to the bizuno structure. Mostly for conversion from anther base (i.e. PhreeBooks)
-     * @param string $table - The database table to update (performs an ALTER TABLE sql command)
+     * Used to update a database table to the Bizuno structure. Mostly for conversion from anther base (i.e. PhreeBooks)
+     * @param string $table - The database table to update (performs an ALTER TABLE SQL command)
      * @param string $field - The database field name to alter
      * @param array $props - information pulled from the table structure of settings to add to the altered field.
      * @return boolean - Nothing of interest, just writes the table
@@ -200,7 +201,7 @@ class db extends \PDO
     }
 
     /**
-     * Builds the attributes to best guess the html structure, primarily used to build html input tags
+     * Builds the attributes to best guess the HTML structure, primarily used to build HTML input tags
      * @param array $fields - Contains the indexed field settings
      * @param array $comment - contains the working COMMENT array to build the attributes, stuff not contained in the badic mysql table information
      * @return array $output - becomes the 'attr' index of the database field
@@ -259,7 +260,6 @@ class db extends \PDO
         }
         return $result;
     }
-
 }
 
 /**
@@ -303,6 +303,7 @@ function dbTransactionRollback()
  * @param array $data example array("field_name" => 'value_update' ...)
  * @param string $action choices are insert [DEFAULT] or update
  * @param string $parameters make up the WHERE statement during an update, only used for action == update
+ * @param $quote [default: true] - quotes added to field, if turned off allows SQL methods
  * @return record id for insert, affected rows for update, false on error
  */
 function dbWrite($table, $data, $action='insert', $parameters='', $quote=true)
@@ -339,6 +340,12 @@ function dbWrite($table, $data, $action='insert', $parameters='', $quote=true)
 
 /**
  * Write the cache to the db if changes have been made
+ * @global array $bizunoUser - User cache structure
+ * @global array $bizunoLang - Language translation array
+ * @global array $bizunoMod - Module cache structure
+ * @param string $usrEmail - Users email address
+ * @param string $lang - (xx_XX) ISO language to use for saving the language translations to a file in the myFiles folder
+ * @return null - cache is written to database
  */
 function dbWriteCache($usrEmail=false, $lang=false)
 {
@@ -368,6 +375,11 @@ function dbWriteCache($usrEmail=false, $lang=false)
     }
 }
 
+/**
+ * Writes the language file to the users cache in JSON format. Saves rebuilding every pass through
+ * @param array $lang - language file after including all active modules
+ * @param string $iso - ISO language to store (xx_XX)
+ */
 function dbWriteLang($lang=[], $iso='')
 {
     ksort($lang); // @todo only create this when reloading registry
@@ -379,7 +391,7 @@ function dbWriteLang($lang=[], $iso='')
 
 /**
  * Clears the users cache by making it 'expired' for an individual user (if passed) or all users if not
- * @param type $email
+ * @param string $email - users email address
  */
 function dbClearCache($email='')
 {
@@ -388,9 +400,9 @@ function dbClearCache($email='')
 }
 
 /**
- * Tests if the users db connection is valid
- * @global \bizuno\type $db
- * @return type
+ * Wrapper to test if the users db connection is valid
+ * @global object $db - database object to do the work
+ * @return boolean - true if connected to db, false otherwise
  */
 function dbConnected()
 {
@@ -462,8 +474,8 @@ function dbRestore($filename)
  * Deletes rows from the db based on the specified filter, if no filter is sent, a delete is not performed (as a safety measure)
  * @global type $db - database connection
  * @param string $table database table to act upon
- * @param string $filter forms the WHERE statement
- * @return integer $rows affected rows
+ * @param string $filter [default: false] - forms the WHERE statement
+ * @return integer - number of affected rows
  */
 function dbDelete($table, $filter=false)
 {
@@ -479,8 +491,9 @@ function dbDelete($table, $filter=false)
  * @global type $db - database connection
  * @param string $table - database table name
  * @param mixed $field - one (string) or more (array) fields to retrieve
- * @param string $filter - criteria to limit results
- * @param boolean $quote - (DEFAULT true) to add quotes to field names, false to leave off for executing sql functions, i.e. SUM(field)
+ * @param string $filter - [default: false] criteria to limit results
+ * @param boolean $quote - [default: true] to add quotes to field names, false to leave off for executing SQL functions, i.e. SUM(field)
+ * @param boolean $verbose [default: false] - true to show any errors or messages if there is a problem
  * @return multitype - false if no results, string if field is string, keyed array if field is array
  */
 function dbGetValue($table, $field, $filter=false, $quote=true, $verbose=false)
@@ -501,8 +514,8 @@ function dbGetValue($table, $field, $filter=false, $quote=true, $verbose=false)
 /**
  * Pulls a single row from a db table
  * @global type $db - database connection
- * @param string $table
- * @param string $filter
+ * @param string $table - database table name, prefix will be added
+ * @param string $filter - query filter parameters, 
  * @return array - table row results, false if error/no data
  */
 function dbGetRow($table, $filter='', $quote=true, $verbose=false)
@@ -548,10 +561,10 @@ function dbGetMulti($table, $filter='', $order='', $field='*', $limit=0, $quote=
 
 /**
  * Executes a query and returns the resulting PDO statement
- * @global type $db - database connection
- * @param string $sql - the QUOTED, ESCAPED sql to be executed
- * @param string $action - action to perform, i.e. expected results
- * @return PDOStatement - Must be handled by caller to properly handle results
+ * @global object $db - database connection
+ * @param string $sql - the QUOTED, ESCAPED SQL to be executed
+ * @param string $action [default: stmt] - action to perform, i.e. expected results
+ * @return PDOStatement - Must be handled by caller to properly process results
  */
 function dbGetResult($sql, $action='stmt')
 {
@@ -590,7 +603,7 @@ function dbAction(&$data, $hide_result=false)
 /**
  * Pulls the next status value from the table current_status, increments it, and stores the next value. This function should be used within a transaction to assure proper incrementing of the reference value.
  * @param string $field - Table current_status field name to retrieve the value
- * @return string $ref - The current reference value
+ * @return string - The current reference value
  */
 function dbPullReference($field='')
 {
@@ -608,7 +621,7 @@ function dbPullReference($field='')
  * @param string $table - db table name
  * @param string $index - index within the settings to extract information
  * @param string $filter - db filter used to restrict results to a single row
- * @return string $output - Result of setting, null if not present
+ * @return string - Result of setting, null if not present
  */
 function dbPullSetting($table, $index, $filter = false)
 {
@@ -651,8 +664,8 @@ function dbFieldExists($table, $field)
  * Wrapper to load the structure of a table to parse input variables
  * @global type $db - database connection
  * @param type $table - db table
- * @param type $suffix - [Optional - default ''] suffix to use when building attributes
- * @param type $prefix - [Optional - default ''] prefix to use when building attributes
+ * @param type $suffix - [default: ''] suffix to use when building attributes
+ * @param type $prefix - [default: ''] prefix to use when building attributes
  * @return type
  */
 function dbLoadStructure($table, $suffix='', $prefix='')
@@ -665,6 +678,8 @@ function dbLoadStructure($table, $suffix='', $prefix='')
  * This function merges database data into the structure attributes
  * @param array $structure - database table structure
  * @param array $data - database data row to fill attr['value']
+ * @param string $suffix [default: ''] - adds a suffix to the index if present
+ * @return array - modified $structure
  */
 function dbStructureFill(&$structure, $data=[], $suffix='')
 {
@@ -684,9 +699,9 @@ function dbStructureFill(&$structure, $data=[], $suffix='')
 }
 
 /**
- * This function builds the sql and loads into an array the result of the query.
- * @param array $data - the structure to build the sql and read data
- * @return array - integer [total] - total number of rows, array [rows] - row data
+ * This function builds the SQL and loads into an array the result of the query.
+ * @param array $data - the structure to build the SQL and read data
+ * @return array - integer [total] - total number of rows, array [rows] - row data - can be sent directly to view
  */
 function dbTableRead($data)
 {
@@ -769,7 +784,7 @@ function dbTableRead($data)
  * @param string $table - db table name
  * @param string $id - table field name to be used as the id of the select drop down
  * @param string $field - table field name to be used as the description of the select drop down
- * @param string $filter - sql filter to limit results
+ * @param string $filter - SQL filter to limit results
  * @param string $nullText - description to use for no selection (null id assumed)
  * @return array $output - formatted result array to be used for HTML5 input type select render function
  */
@@ -787,7 +802,7 @@ function dbBuildDropdown($table, $id='id', $field='description', $filter='', $nu
 
 /**
  * Tries to find a contact record to match a set of submitted fields, currently set to use primary_name, address1, and city
- * @param type $request - typically the _POST array
+ * @param type $request - typically the cleaned _POST array
  * @param type $suffix - suffix of the request array to pull data
  * @return array [contact_id, address_id] if found, false if not found
  */
@@ -813,6 +828,11 @@ function dbGetContact($request, $suffix='')
     }
 }
 
+/**
+ * Retrieves the cost of an inventory assembly using the item_cost field from the inventory table
+ * @param integer $rID - inventory table record ID
+ * @return float - calculated cost of the inventory item
+ */
 function dbGetInvAssyCost($rID=0)
 {
     $items= dbGetMulti(BIZUNO_DB_PREFIX.'inventory_assy_list', "ref_id=$rID");
@@ -827,7 +847,7 @@ function dbGetInvAssyCost($rID=0)
 /**
  * Creates a list of available stores, including main store for use in views
  * @param boolean $addAll - [default false] Adds option All at top of list
- * @return arrray - ready to render as pull down
+ * @return array - ready to render as pull down
  */
 function dbGetStores($addAll=false)
 {
@@ -868,7 +888,8 @@ function dbFiscalDropDown()
 
 /**
  * Generates a drop down list of the accounting periods in the system
- * @param string $include_all
+ * @param string $incAll [default: true] - Add the 'All' choice at the beginning
+ * @param boolean $incRecent [default: false] - true to include the recent choices, last 30, 60 90, etc.
  * @return array - formatted result array to be used for HTML5 input type select render function
  */
 function dbPeriodDropDown($incAll=true, $incRecent=false)
@@ -889,7 +910,7 @@ function dbPeriodDropDown($incAll=true, $incRecent=false)
 /**
  * Generates a drop down list of GL Accounts
  * @param string $inc_sel = include Please Select at beginning of drop down
- * @param array $limits - gl account types to restrict list to
+ * @param array $limits - GL account types to restrict list to
  * @return array - formatted result array to be used for HTML5 input type select render function
  */
 function dbGLDropDown($inc_sel=true, $limits=array())
@@ -905,6 +926,13 @@ function dbGLDropDown($inc_sel=true, $limits=array())
     return $output;
 }
 
+/**
+ * Generates the date part of the SQL WHERE clause based on the encoded data.
+ * Also generates the textual description for reports and forms
+ * @param string $dateType - encoded date to format, typically: format:start_date:end_date
+ * @param string $df - field to use in the table (less the DB_PREFIX)
+ * @return array - [sql, description, start_date, end_date]
+ */
 function dbSqlDates($dateType='a', $df=false) {
     if (!$df) { $df = 'post_date'; }
     $dates = localeGetDates();
@@ -1068,11 +1096,10 @@ function dbSqlDates($dateType='a', $df=false) {
 }
 /**
  * Prepares a drop down values list of users
- * @param boolean $active_only - [default true] Restrict list to active users only, default true
- * @param boolean $showNone - [default true] Show None option (appears after ShowAll option and showSelect option
- * @param boolean $showAll - [default true] Show All option (appears second, first if showSelect is false)
- * @param boolean $showSelect - [default false] Shows Select option (appears first if set to true)
- * @return array - list of users in array ready for view in a html list element
+ * @param boolean $active_only - [default: true] Restrict list to active users only, default true
+ * @param boolean $showNone - [default: true] Show None option (appears after ShowAll option and showSelect option
+ * @param boolean $showAll - [default: true] Show All option (appears second, first if showSelect is false)
+ * @return array - list of users in array ready for view in a HTML list element
  */
 function listUsers($active_only=true, $showNone=true, $showAll=true)
 {
@@ -1087,7 +1114,9 @@ function listUsers($active_only=true, $showNone=true, $showAll=true)
 /**
  * Prepares a drop down values list of roles
  * @param boolean $active_only - Restrict list to active roles only, default true
- * @return array - list of roles in array ready for view in a html list element
+ * @param boolean $showNone - Show the None selection after the showAll and before the list
+ * @param boolean $showAll - Show the All selection first
+ * @return array - list of roles in array ready for view in a HTML list element
  */
 function listRoles($active_only=true, $showNone=true, $showAll=true)
 {
@@ -1111,11 +1140,11 @@ function encodeType($value)
         default:
         case "resource":
         case "integer":
-        case "double": return $value; // no quotes required
+        case "double":  return $value; // no quotes required
         case "NULL":
-        case "string": return "'".str_replace("'", "\'", $value)."'"; // add quotes
+        case "string":  return "'".str_replace("'", "\'", $value)."'"; // add quotes
         case "array":
-        case "object": return json_encode($value);
+        case "object":  return json_encode($value);
     }
 }
 

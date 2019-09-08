@@ -573,7 +573,7 @@ class bizunoSettings
         if (!$security = validateSecurity('bizuno', 'admin', 3)) { return; }
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX."current_status");
         $values = requestData($structure);
-        $result = dbWrite(BIZUNO_DB_PREFIX."current_status", $values, 'update');
+        dbWrite(BIZUNO_DB_PREFIX."current_status", $values, 'update');
         msgAdd(lang('msg_settings_saved'), 'success');
     }
 }

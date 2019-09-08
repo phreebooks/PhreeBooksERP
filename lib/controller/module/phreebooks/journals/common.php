@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-18
+ * @version    3.x Last Update: 2019-08-14
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -983,7 +983,8 @@ class jCommon
                 'amount'      => ['order'=>40,'label'=>lang('amount_due'),'attr'=>['type'=>'currency', 'width'=>100,'resizable'=>true, 'align'=>'right'],
                     'events'=> ['formatter'=>"function(value,row){ return formatCurrency(value); }"]],
                 'description' => ['order'=>50,'label'=>lang('notes'),     'attr'=>['width'=>220,'resizable'=>true,'editor'=>'text']],
-                'date_1'      => ['order'=>60,'label'=>pullTableLabel('journal_item', 'date_1', $journalID),'attr'=>['type'=>'date','width'=>90,'sortable'=>true, 'resizable'=>true, 'align'=>'center']],
+                'date_1'      => ['order'=>60,'label'=>pullTableLabel('journal_item', 'date_1', $journalID),'attr'=>['type'=>'date','width'=>90,'sortable'=>true, 'resizable'=>true, 'align'=>'center'],
+                    'events'=>['sorter' => dgSorterDate()]],
                 'discount'    => ['order'=>70,'label'=>lang('discount'),'styles'=>['text-align'=>'right'],
                     'attr'  => ['type'=>'currency','width'=>80, 'resizable'=>true, 'align'=>'right'],
                     'events'=>  ['editor'=>dgEditCurrency("bankingCalc('disc');"),'formatter'=>"function(value,row){ return formatCurrency(value); }"]],

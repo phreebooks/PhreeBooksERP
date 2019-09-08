@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-13
+ * @version    3.x Last Update: 2019-08-17
  * @filesource /lib/controller/module/bizuno/backup.php
  */
 
@@ -138,10 +138,15 @@ class bizunoBackup
         $layout = array_replace_recursive($layout, $data);
     }
 
+    /**
+     * Generates the page view (confirmation) to start the upgrade script
+     * @param array $layout - structure coming in
+     * @return modified $layout
+     */
     public function managerUpgrade(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'backup', 4)) { return; }
-        $btnUpgrade = ['icon'=>'next', 'size'=>'large','label'=>lang('go'), 'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('bizuno/backup/bizunoUpgradeGo');"]];
+        $btnUpgrade = ['icon'=>'next', 'size'=>'large','label'=>lang('go'), 'events'=>['onClick'=>"jq('body').addClass('loading'); jsonAction('bizuno/backup/bizunoUpgradeGo');"]];
         $html  = "<h1>".lang('bizuno_upgrade')."</h1>\n";
         $html .= "<fieldset><legend>".lang('bizuno_upgrade')."</legend>";
         $html .= "<p>Click here to start your upgrade. Please make sure all users are not using the system. Once complete, all users will need to sign off and back in to reset their cache.</p>";
@@ -155,6 +160,12 @@ class bizunoBackup
         $layout = array_replace_recursive($layout, viewMain(), $data);
     }
 
+    /**
+     * 
+     * @global class $io -  needed for the call to download the current version from PhreeSoft
+     * @param array $layout - structure coming in
+     * @return modified $layout
+     */
     public function bizunoUpgradeGo(&$layout=[])
     {
         global $io;
@@ -195,9 +206,9 @@ class bizunoBackup
     }
 
     /**
-     *
-     * @param type $path
-     * @return type
+     * Tries to determine the file name of the latest version that has been uploaded
+     * @param string $path - location of where the uploaded version file is placed
+     * @return string - File 
      */
     private function guessFolder($path)
     {

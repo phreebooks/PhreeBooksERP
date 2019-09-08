@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    3.x Last Update: 2019-08-26
  * @filesource portal/view.php
  */
 
@@ -97,15 +97,16 @@ class portalView
         $divHome   = '<div style="float:left;cursor:pointer">'.html5('imgFooter', $htmlLogo).'</div>';
         $footer    = '<div style="font-size:9px;float:right">'.$company."</div>\n";
         $data = ['type'=>'page', 'divs'=>[
-            'qlinks' => ['order'=> 1,'type'=>'menu','region'=>'top','size'=>'large','classes'=>['menuHide'],'styles'=>['float'=>'right','display'=>'none'],'data'=>getUserCache('quickBar')],
-            'imgHome'=> ['order'=> 2,'type'=>'html','region'=>'top','html'=>$divHome],
-//          'bizsrch'=> ['order'=>50,'type'=>'html','region'=>'top','html'=>$bizSearch],
-            'menu'   => ['order'=> 5,'type'=>'menu','region'=>$region,'classes'=>['menuHide'],'styles'=>['display'=>'none'],'data'=>getUserCache('menuBar')],
-            'footer' => ['order'=>99,'type'=>'divs','region'=>'bottom','id'=>'bizFooter','divs'=>[
+            'qlinks'  => ['order'=> 1,'type'=>'menu','region'=>'top','size'=>'large','classes'=>['menuHide'],'styles'=>['float'=>'right','display'=>'none'],'data'=>getUserCache('quickBar')],
+            'imgHome' => ['order'=> 2,'type'=>'html','region'=>'top','html'=>$divHome],
+//          'bizsrch' => ['order'=>50,'type'=>'html','region'=>'top','html'=>$bizSearch],
+            'menu'    => ['order'=> 5,'type'=>'menu','region'=>$region,'classes'=>['menuHide'],'styles'=>['display'=>'none'],'data'=>getUserCache('menuBar'),'attr'=>['id'=>'rootMenu']],
+            'footer'  => ['order'=>99,'type'=>'divs','region'=>'bottom','id'=>'bizFooter','divs'=>[
                 'sTag' => ['order'=> 1,'type'=>'html','html'=>"<!-- Footer -->\n<footer>"],
                 'stats'=> ['order'=>50,'type'=>'html','html'=>$footer],
                 'eTag' => ['order'=>99,'type'=>'html','html'=>"</footer>"]]]],
-            'jsReady'=> ['initPage'=>"jq('.menuHide').css('display', 'inline-block');"]];
+            'jsReady' => ['initPage'=>"jq('.menuHide').css('display', 'inline-block'); bizMenuResize();"],
+            'jsResize'=>['rootMenu'=>" bizMenuResize();"]];
         if (defined('BIZUNO_MY_FOOTER')) {
             $data['divs']['footer']['divs']['myFooter'] = ['order'=>10, 'type'=>'html', 'html'=>BIZUNO_MY_FOOTER];
         }

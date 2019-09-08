@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-10
+ * @version    3.x Last Update: 2019-09-07
  * @filesource /portal/main.php
  */
 
@@ -185,6 +185,9 @@ class main //extends controller
             }
             $bizVer['time_last'] = time();
             setModuleCache('bizuno', 'versions', 'bizuno', $bizVer); // update cache
+            // write cache and reload with new changes
+            dbWriteCache();
+            $this->reloadCache(getUserCache('profile', 'email'), 1);
         }
         if (version_compare(MODULE_BIZUNO_VERSION, $dbVersion) > 0) {
             msgDebug("\nRetrieving file: ".BIZUNO_ROOT.'portal/upgrade.php');

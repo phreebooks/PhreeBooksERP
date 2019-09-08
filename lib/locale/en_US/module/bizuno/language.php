@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-18
+ * @version    3.x Last Update: 2019-09-05
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -230,7 +230,8 @@ $lang = [
     'bi-monthly' => 'Bi-Monthly',
     'monthly' => 'Monthly',
     'quarterly' => 'Quarterly',
-    'yearly' => 'Yearly',
+    'semi-annually' => 'Semi-Annually',
+    'yearly' => 'Annually',
     'one_time' => 'One Time',
     'gmail_address' => 'gMail Address',
     'gmail_address_tip' => 'Enter your Google email address if you plan on using Google integration (Calendar, etc.). Note that your browser must also be logged into your Google account under the same email address for the calendar to load.',

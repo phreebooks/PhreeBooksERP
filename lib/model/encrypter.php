@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-15
+ * @version    3.x Last Update: 2019-08-24
  * @filesource /lib/model/encrypter.php
  */
 
@@ -70,13 +70,13 @@ final class encryption {
         return rtrim($target);
     }
 
-  /**
-   * Encrypts the string based on the encryption key
-   * @param string $key - the encryption key
-   * @param string $source - The value to encrypt
-   * @param integer $sourcelen - (Default: 0) Pads the string to a minimum length, a value of zero will skip padding
-   * @return boolean -  encrypted value
-   */
+    /**
+     * Encrypts the string based on the encryption key
+     * @param string $key - the encryption key
+     * @param string $source - The value to encrypt
+     * @param integer $sourcelen - (Default: 0) Pads the string to a minimum length, a value of zero will skip padding
+     * @return boolean -  encrypted value
+     */
     function encrypt($key, $source, $sourcelen = 0)
     {
         if (strlen($key) < 1) { return msgAdd(lang('err_encrypt_key_missing')); }
@@ -113,9 +113,9 @@ final class encryption {
             $currentNum = substr($cardNumber, $i, 1);
             if ($i % 2 == 1) { $currentNum *= 2; } // Double every second digit
             if ($currentNum > 9) { // Add digits of 2-digit numbers together
-                $firstNum = $currentNum % 10;
+                $firstNum  = $currentNum % 10;
                 $secondNum = ($currentNum - $firstNum) / 10;
-                $currentNum = $firstNum + $secondNum;
+                $currentNum= $firstNum + $secondNum;
             }
             $numSum += $currentNum;
         }
@@ -159,9 +159,9 @@ final class encryption {
 
     /**
      * Special function to decrypt credit card information
-     * @param type $id
-     * @param type $fields
-     * @return boolean
+     * @param integer $id - record id from the data_security table
+     * @param array $fields - credit card information to encrypt
+     * @return boolean - true on success, false on failure
      */
     public function decryptCC($id=0, &$fields=[])
     {
@@ -265,10 +265,10 @@ function encryptValue($plain)
 }
 
 /**
- *
- * @param type $request
- * @param type $refs
- * @return boolean
+ * Stores an encrypted payment data in the data_security table
+ * @param array $request - card information to encrypt
+ * @param array $refs - reference data to use with encrypted data to link to contact/transaction
+ * @return boolean - true on success, false on failure
  */
 function paymentEncrypt($request, $refs)
 {
