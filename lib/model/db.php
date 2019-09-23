@@ -382,10 +382,10 @@ function dbWriteCache($usrEmail=false, $lang=false)
  */
 function dbWriteLang($lang=[], $iso='')
 {
-    ksort($lang); // @todo only create this when reloading registry
-    $io = new io(); // needs to be here as global may not be set up yet
+    global $io;
+    ksort($lang);
     if ( empty($iso)) { $iso = getUserCache('profile', 'language'); }
-    msgDebug("\nWriting lang file to iso = $iso");
+    msgDebug("\nin dbWriteLang, writing lang file to iso = $iso");
     if (!empty($iso)) { $io->fileWrite(json_encode($lang), "cache/lang_{$iso}.json", false, false, true); }
 }
 
@@ -515,7 +515,7 @@ function dbGetValue($table, $field, $filter=false, $quote=true, $verbose=false)
  * Pulls a single row from a db table
  * @global type $db - database connection
  * @param string $table - database table name, prefix will be added
- * @param string $filter - query filter parameters, 
+ * @param string $filter - query filter parameters,
  * @return array - table row results, false if error/no data
  */
 function dbGetRow($table, $filter='', $quote=true, $verbose=false)

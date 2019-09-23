@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-09
+ * @version    3.x Last Update: 2019-09-09
  * @filesource /lib/controller/module/phreebooks/journals/j04.php
  */
 
@@ -83,6 +83,7 @@ class j04 extends jCommon
             'purch_order_id','invoice_num','waiting','closed','terms_text','terms_edit','post_date','terminal_date','rep_id','currency','currency_rate'];
         $data['jsHead']['datagridData'] = $this->dgDataItem;
         $data['datagrid']['item'] = $this->dgOrders('dgJournalItem', 'v');
+        $data['datagrid']['item']['columns']['action']['actions']['trash']['display'] = "typeof row.bal==='undefined' || row.bal==0"; // do not allow trash if line has received qty
         if ($rID) { unset($data['datagrid']['item']['source']['actions']['insertRow']); } // only allow insert for new orders
         $data['fields']['gl_acct_id']['attr']['value']   = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');
         $data['fields']['terminal_date']['attr']['value']= getTermsDate($data['fields']['terms']['attr']['value'], 'v');

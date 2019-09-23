@@ -47,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.3.3.0 =
+2019-09-23 - Incorporate Bizuno Library 3.3.0. Final cleanup of all 3.2.x bugs, prep for ISO9001 module
 = 5.3.2.9 =
 2019-09-06 - Incorporate Bizuno Library 3.2.9. Minor bug fixes and code cleanup.
 = 5.3.2.8 =

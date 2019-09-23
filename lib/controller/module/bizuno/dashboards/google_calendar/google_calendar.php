@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2019-09-09
  * @filesource /lib/controller/module/bizuno/dashboards/google_calendar/google_calendar.php
  */
 
 namespace bizuno;
 
-define('DASHBOARD_GOOGLE_CALENDAR_VERSION','1.0');
+define('DASHBOARD_GOOGLE_CALENDAR_VERSION','3.2.1');
 
 class google_calendar
 {
@@ -32,7 +32,7 @@ class google_calendar
     public $code     = 'google_calendar';
     public $category = 'general';
     public $noSettings= true;
-    
+
     function __construct()
     {
         $this->security= 4;
@@ -42,7 +42,8 @@ class google_calendar
     public function render()
     {
         $gmail = getUserCache('profile', 'gmail');
-        $gzone = getUserCache('profile', 'gzone');
+//      $gzone = getUserCache('profile', 'gzone'); // old way - @todo DEPRECATED can be removed at any time
+        $gzone = getModuleCache('bizuno', 'settings', 'locale', 'timezone', 'America/New_York');
         if (!$gmail) { return $this->lang['err_no_email']; }
         return '<iframe src="https://www.google.com/calendar/embed?src='.urlencode($gmail).'&ctz='.urlencode($gzone).'" style="border: 0" width="100%" height="300" frameborder="0" scrolling="no"></iframe>';
     }

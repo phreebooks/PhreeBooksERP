@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-05
+ * @version    3.x Last Update: 2019-09-09
  * @filesource /lib/controller/module/inventory/admin.php
  */
 
@@ -148,7 +148,6 @@ class inventoryAdmin
      */
     private function setPriceProcessing(&$processing)
     {
-        msgTrap();
         $rows = dbGetMulti(BIZUNO_DB_PREFIX.'inventory_prices', "method='quantity'");
         foreach ($rows as $row) {
             $settings = json_decode($row['settings'], true);

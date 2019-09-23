@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-22
+ * @version    3.x Last Update: 2019-09-19
  * @filesource /lib/controller/module/phreebooks/totals/discount/discount.php
  */
 
@@ -113,7 +113,7 @@ class discount
         var discount= bizNumGet('totals_{$this->code}');
         if (isNaN(discount)) { discount = 0; }
         var percent = begBalance ? 100 * (1 - ((begBalance - discount) / begBalance)) : 0;
-        percent     = percent.toFixed(decLen+1);
+        percent     = percent.toFixed(decLen+2);
         bizNumSet('totals_{$this->code}_pct', percent);
         bizNumSet('totals_{$this->code}', discount);
     }

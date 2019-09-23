@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-07
+ * @version    3.x Last Update: 2019-09-09
  * @filesource lib/controller/module/bizuno/profile.php
  */
 
@@ -68,16 +68,17 @@ class bizunoProfile
                 'general'  => ['order'=>10,'label'=>lang('general'),'type'=>'fields','fields'=>$this->getViewProfile($struc, $settings)],
                 'reminders'=> ['order'=>50,'label'=>$this->lang['reminders'],'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=bizuno/profile/reminderManager&uID=".getUserCache('profile', 'admin_id', false, 0)."'"]]]]],
             'jsReady' => ['jsProfile'=>"ajaxForm('frmProfile');"]];
-//"<fieldset><legend>".lang('general')."</legend>".
-//"<fieldset><legend>".'Google Interface'."</legend>".
-//"<fieldset><legend>".lang('password_lost')."</legend>".
-//"<fieldset><legend>".lang('profile')."</legend>";
         $layout = array_replace_recursive($layout, viewMain(), $data);
     }
 
+    /**
+     * Generates the view for the profile editor
+     * @param type $fields
+     * @param type $settings
+     * @return type
+     */
     private function getViewProfile($fields, $settings)
     {
-        $zones = viewTimeZoneSel();
         $docks = [['id'=>'top','text'=>lang('top')],['id'=>'left','text'=>lang('left')]];
         unset($fields['password']['attr']['value']);
         return [
@@ -85,14 +86,17 @@ class bizunoProfile
             'email'           => array_merge($fields['email'], ['order'=>15,'break'=>true]),
             'gmail'           => ['order'=>20,'break'=>true,'label'=>$this->lang['gmail_address'],'tip'=>$this->lang['gmail_address_tip'],'attr'=>['type'=>'email','size'=>50,'value'=>isset($settings['gmail']) ? $settings['gmail'] : '']],
             'langForce'       => ['order'=>25,'break'=>true,'label'=>lang('language'),'options'=>['width'=>500],'values'=>viewLanguages(),'attr'=>['type'=>'select','value'=>isset($settings['langForce'] )?$settings['langForce'] : '']],
-            'gzone'           => ['order'=>30,'break'=>true,'label'=>$this->lang['gmail_zone'],   'tip'=>$this->lang['gmail_zone_tip'],'options'=>['width'=>500],'values'=>$zones,'attr'=>['type'=>'select','value'=>isset($settings['gzone'] )?$settings['gzone'] : '']],
+// DEPRECATED 'gzone'         => ['order'=>30,'break'=>true,'label'=>$this->lang['gmail_zone'],   'tip'=>$this->lang['gmail_zone_tip'],'options'=>['width'=>500],'values'=>viewTimeZoneSel(),'attr'=>['type'=>'select','value'=>isset($settings['gzone'] )?$settings['gzone'] : '']],
             'password'        => ['order'=>35,'break'=>true,'label'=>$this->lang['password_now'],'attr'=>['type'=>'password']],
             'password_new'    => ['order'=>40,'break'=>true,'label'=>lang('password_new'),       'attr'=>['type'=>'password']],
             'password_confirm'=> ['order'=>45,'break'=>true,'label'=>lang('password_confirm'),   'attr'=>['type'=>'password']],
             'icons'           => ['order'=>50,'break'=>true,'label'=>$this->lang['icon_set'],'values'=>getIcons(), 'attr'=>['type'=>'select','value'=>isset($settings['icons'] )?$settings['icons']:'default']],
             'theme'           => ['order'=>55,'break'=>true,'label'=>lang('theme'),          'values'=>getThemes(),'attr'=>['type'=>'select','value'=>isset($settings['theme']) ?$settings['theme']:'default']],
             'menu'            => ['order'=>60,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$docks, 'attr'=>['type'=>'select','value'=>isset($settings['menu'])  ?$settings['menu'] :'left']],
-            'cols'            => ['order'=>65,'break'=>true,'label'=>$this->lang['dashboard_columns'],'attr'=>['value'=>isset($settings['cols'])  ?$settings['cols']  :'3']]];
+            'cols'            => ['order'=>65,'break'=>true,'label'=>$this->lang['dashboard_columns'],'attr'=>['value'=>isset($settings['cols'])  ?$settings['cols']  :'3']],
+// DELETE THE BELOW LINE - USED FOR TIMEZONE DEBUGGING
+            'datetime'        => ['order'=>90,'break'=>true,'label'=>'time','attr'=>['value'=>date('Y-m-d h:i:s')],'events'=>['onClick'=>"var today = new Date(); var date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate(); var time = today.getHours() + ':' + today.getMinutes() + ':' + today.getSeconds(); alert('date: '+date+' '+time);"]],
+            ];
     }
 
     /**
@@ -109,7 +113,7 @@ class bizunoProfile
         setUserCache('profile', 'menu',  clean('menu',  'text',   'post'));
         setUserCache('profile', 'cols',  clean('cols',  'integer','post'));
         setUserCache('profile', 'gmail', clean('gmail', 'text',   'post'));
-        setUserCache('profile', 'gzone', clean('gzone', 'text',   'post'));
+//      setUserCache('profile', 'gzone', clean('gzone', 'text',   'post')); // DEPRECATED - use business timezone set in Bizuno -> settings
         $langForce = clean('langForce', 'cmd', 'post');
         if (empty($langForce)) { $langForce = bizuno_get_locale(); }
         setUserCache('profile', 'langForce', $langForce);
@@ -149,7 +153,7 @@ class bizunoProfile
     }
 
     /**
-     * lists the reminders for the user to support the manager
+     * Lists the reminders for the user to support the manager
      * @param array $layout - structure coming in
      * @return modified structure
      */

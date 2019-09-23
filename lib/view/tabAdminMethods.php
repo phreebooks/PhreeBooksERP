@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-05
+ * @version    3.x Last Update: 2019-09-10
  * @filesource /lib/view/tabAdminMethods.php
  */
 
@@ -26,8 +26,8 @@ namespace bizuno;
 $module = isset($prop['settings']['module'])? $prop['settings']['module']: false;
 $dirMeth= isset($prop['settings']['path'])  ? $prop['settings']['path']  : false;
 // set the buttons
-$viewData['btnMethodAdd']  = ['attr'=>['type'=>'button','value'=>lang('install')],'hidden'=>$viewData['security']> 1?false:true];
-$viewData['btnMethodDel']  = ['attr'=>['type'=>'button','value'=>lang('remove')], 'hidden'=>$viewData['security']==4?false:true];
+$viewData['btnMethodAdd']  = ['attr'=>['type'=>'button','value'=>lang('install')],'hidden'=>$viewData['security']>1?false:true];
+$viewData['btnMethodDel']  = ['attr'=>['type'=>'button','value'=>lang('remove')], 'hidden'=>$viewData['security']>4?false:true];
 $viewData['btnMethodProp'] = ['icon'=>'settings','size'=>'large'];
 $viewData['settingSave']   = ['icon'=>'save',    'size'=>'large'];
 
@@ -73,7 +73,7 @@ foreach ($methods as $method => $settings) {
         $output['body'] .= "</td>\n";
         $output['body'] .= '<td valign="top" nowrap="nowrap" style="text-align:right;">' . "\n";
         $viewData['btnMethodDel']['events']['onClick'] = "if (confirm('".lang('msg_method_delete_confirm')."')) jsonAction('bizuno/settings/methodRemove&module=$module&type=$dirMeth&method=$method');";
-        if ($viewData['security'] == 5 && $dirMeth <> 'dashboards' && (!isset($clsMeth->required) || !$clsMeth->required)) {
+        if ($viewData['security']>4 && $dirMeth<>'dashboards' && empty($clsMeth->required)) {
             $output['body'] .= html5('remove_'.$method, $viewData['btnMethodDel']) . "\n";
         }
         $viewData['btnMethodProp']['events']['onClick'] = "jq('#divMethod_".$method."').toggle('slow');";

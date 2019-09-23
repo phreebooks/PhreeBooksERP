@@ -41,7 +41,9 @@ final class messageStack
         $this->trace  = "Trace information for debug purposes. Bizuno release $version, portal {$portal[3]} - generated ".date('Y-m-d H:i:s')."\n";
         $this->trace .= "Trace Start Time: ".(int)(1000 * (microtime(true) - SCRIPT_START_TIME))." ms\n\n";
         $this->trace .= "GET Vars = " .print_r($_GET, true)."\n";
+        if (!empty($_POST['UserPW'])) { $temp = $_POST['UserPW']; $_POST['UserPW'] = '****'; } // remove the password if it is there
         $this->trace .= "POST Vars = ".print_r($_POST,true)."\n";
+        if (!empty($_POST['UserPW'])) { $_POST['UserPW'] = $temp; }
         set_error_handler("\bizuno\myErrorHandler");
         set_exception_handler("\bizuno\myExceptionHandler");
     }

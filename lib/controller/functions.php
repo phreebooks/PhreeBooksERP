@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-05
+ * @version    3.x Last Update: 2019-09-12
  * @filesource lib/controller/functions.php
  */
 
@@ -33,7 +33,7 @@ if (!defined('BIZUNO_LOCALE')) { define('BIZUNO_LOCALE', BIZUNO_ROOT.'locale/');
 //register_shutdown_function("\\bizuno\\bizShutdown");
 
 /**
- * Autoloads files, if it's already loaded, returns true. if not, tests for files existence before requiring else dies.
+ * Auto loads files, if it's already loaded, returns true. if not, tests for files existence before requiring else dies.
  * @param string $path - Path to load file
  * @param string $method - [Default: false] A class or function within the file to test for the loaded presence
  * @param string $type - [Default: class] Whether 'class' or 'function' are being tested
@@ -92,9 +92,9 @@ function compose($module, $page, $method, &$layout=[])
 
 /**
  * This function merges the primary method (at position 0) with any hooks, hooks with a negative order will preceed the primary method, positive order will follow
- * @param type $module - Module ID
- * @param type $page - Page ID, is also the filename where to find the method
- * @param type $method - method ID within the page
+ * @param string $module - Module ID
+ * @param string $page - Page ID, is also the filename where to find the method
+ * @param string $method - method ID within the page
  * @return string $hooks - Sorted list of processes to execute
  */
 function mergeHooks($module, $page, $method)
@@ -110,10 +110,10 @@ function mergeHooks($module, $page, $method)
 
 /**
  * Error handler function to aid in debugging
- * @param type $errno
- * @param type $errstr
- * @param type $errfile
- * @param type $errline
+ * @param integer $errno - PHP error number
+ * @param string $errstr - PHP error description
+ * @param string $errfile - PHP file where the error occurred
+ * @param integer $errline - line in the script that the error occurred
  * @return boolean true
  */
 function myErrorHandler($errno, $errstr, $errfile, $errline)
@@ -138,6 +138,11 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
     return true; /* Don't execute PHP internal error handler */
 }
 
+/**
+ * Handles fatal errors gracefully
+ * @global array $msgStack
+ * @param object $e - the exception that triggered this function
+ */
 function myExceptionHandler($e)
 {
     global $msgStack;
@@ -813,6 +818,20 @@ function getFavIcon($host, $scheme=false)
     $arr = $xml->xpath('//link[@rel="icon"]');
     if (empty($arr)) { $arr = $xml->xpath('//link[@rel="shortcut icon"]'); } // try other option
     return $arr;
+}
+
+/**
+ * Converts a array of data (also in array format) to a .csv string to export
+ * @param type $arrData
+ */
+function arrayToCSV($rows=[])
+{
+    $output = [];
+    foreach ($rows as $row) {
+        foreach ($row as $idx => $value) { $row[$idx] = csvEncapsulate($value); }
+        $output[] = implode(",", $row);
+    }
+    return implode("\n", $output);
 }
 
 /**

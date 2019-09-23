@@ -645,9 +645,9 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
     }
 
     /**
-     * Gets the datagrid items and removes empty rows
-     * @param type $ledger
-     * @return type
+     * Gets the grid items and removes empty rows
+     * @param array $ledger - Structure coming in
+     * @return modified $layout
      */
     private function getItems(&$ledger)
     {
@@ -684,7 +684,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
 
     /**
      * Pulls posted total values and creates the GL entries
-     * @param type $ledger
+     * @param array $ledger - structure coming in
      */
     private function getTotals(&$ledger)
     {
@@ -815,10 +815,10 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
     }
 
     /**
-     * Datagrid manager structure for all PhreeBooks journals
-     * @param string $name - datagrid HTML ID
+     * Grid manager structure for all PhreeBooks journals
+     * @param string $name - grid HTML ID
      * @param integer $security - Security level to set tool bar and access permissions
-     * @return array -Data structure ready to render
+     * @return array - Data structure ready to render
      */
     public function dgPhreeBooks($name, $security=0)
     {

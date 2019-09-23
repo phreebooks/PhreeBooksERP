@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-05
+ * @version    3.x Last Update: 2019-09-09
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -311,16 +311,6 @@ class bizunoAdmin
         $output .= "</tbody></table>\n</fieldset>\n";
         return $output;
     }
-    /**
-     * Special operations to save settings page beyond core settings
-     * Check for company name change and update portal
-     */
-    public function adminSave()
-    {
-        $newTitle = clean('company_primary_name', 'text', 'post');
-        if (getUserCache('profile', 'biz_title') <> $newTitle) { portalUpdateBizID($newTitle); }
-        readModuleSettings($this->moduleID, $this->settingsStructure());
-    }
 
     /**
      * This method pulls common data and uploads to browser to speed up page updates. It should be extended by every module that wants to upload static data for a browser session
@@ -530,7 +520,7 @@ class bizunoAdmin
         $locale  = getModuleCache('bizuno', 'settings', 'locale');// set the timezone
         $locale['timezone']    = clean('biz_timezone', 'text', 'post');
         setModuleCache('bizuno', 'settings', 'locale', $locale);
-        portalWrite('business', ['title'=>$company['id'],'currency'=>getDefaultCurrency(),'date_last_visit'=>date('Y-m-d h:i:s')], 'update', "id='".getUserCache('profile', 'biz_id')."'");
+        portalWrite('business', ['title'=>$company['id'],'currency'=>getDefaultCurrency(),'time_zone'=>$locale['timezone'],'date_last_visit'=>date('Y-m-d h:i:s')], 'update', "id='".getUserCache('profile', 'biz_id')."'");
         msgLog(lang('user_login')." ".getUserCache('profile', 'email'));
         $this->secureMyFiles();
         $layout = ['content'=>['action'=>'eval','actionData'=>"loadSessionStorage();"]];
@@ -611,5 +601,17 @@ class bizunoAdmin
                 'host'   => ['order'=>40,'label'=>lang('host'),       'attr'=>['width'=>200, 'editor'=>'text']],
                 'port'   => ['order'=>50,'label'=>lang('port'),       'attr'=>['width'=>200],'events'=>['editor'=>"{type:'numberbox',options:{precision:0}}"]],
                 'pass'   => ['order'=>60,'label'=>lang('password'),   'attr'=>['width'=>200],'events'=>['editor'=>"{type:'textbox',options:{type:'password'}}"]]]];
+    }
+
+    /**
+     * Special operations to save settings page beyond core settings
+     * Check for company name change and update portal
+     */
+    public function adminSave()
+    {
+        $newTitle = clean('company_primary_name', 'text', 'post');
+        $timezone = clean('locale_timezone', 'text', 'post');
+        portalUpdateBiz($newTitle, $timezone);
+        readModuleSettings($this->moduleID, $this->settingsStructure());
     }
 }

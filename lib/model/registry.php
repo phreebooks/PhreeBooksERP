@@ -36,17 +36,18 @@ final class bizRegistry
     }
 
     /**
-     * Takes basic module properties and builds interdependencies
+     * Takes basic module properties and builds inter-dependencies
      * @global array $bizunoMod
      * @global array $bizunoUser
-     * @param type $usrEmail
-     * @param type $bizID
-     * @return type
+     * @param string $usrEmail - user email
+     * @param integer $bizID - business ID
+     * @return  null - registry created and saved
      */
     public function initRegistry($usrEmail='', $bizID=0)
     {
-        global $bizunoMod, $bizunoUser; //, $bizunoLang;
+        global $bizunoMod, $bizunoUser, $bizunoLang;
         msgDebug("\nEntering initRegistry with email = $usrEmail");
+        $bizunoLang= $this->initLanguage($bizunoUser['profile']['language']);
         $bizunoMod = $this->initSettings();
         $this->initModules($bizunoMod);
         if (!$this->initUser($usrEmail, $bizID)) { return; }
@@ -61,6 +62,27 @@ final class bizRegistry
         $this->initPhreeForm($bizunoMod); // report structure
         dbWriteCache($usrEmail, true);
         msgDebug("\nReturning from initRegistry"); // with bizunoUser: ".print_r($bizunoUser,true));
+    }
+    /**
+     * Resets the language translation array to the latest version base, adds extension global adds during module init, writes at the end of registry creation
+     * @param string $lang [default: en_US] - ISO language file to create
+     * @return array - language file with latest updates
+     */
+    private function initLanguage($lang='en_US')
+    {
+        msgDebug("\nEntering initLanguage with lang = $lang");
+        $langCore = $langByRef = [];
+        if (strlen($lang) <> 5) { $lang = 'en_US'; }
+        require(BIZUNO_LIB."locale/en_US/language.php");  // pulls the current language in English
+        include(BIZUNO_LIB."locale/en_US/langByRef.php"); // lang by reference (no translation required)
+        $langCache = array_merge($langCore, $langByRef);
+        if ($lang == 'en_US') { return $langCache; } // just english, we're done
+        if (file_exists(BIZUNO_ROOT."locale/$lang/language.php")) {
+            require(BIZUNO_ROOT."locale/$lang/language.php");  // pulls locale overlay
+            include(BIZUNO_LIB ."locale/en_US/langByRef.php"); // lang by reference (reset after loading translation)
+            $otherLang = array_merge($langCore, $langByRef);
+        } else { $otherLang = []; }
+        return array_merge($langCache, $otherLang);
     }
 
     /**
@@ -85,8 +107,8 @@ final class bizRegistry
     }
 
     /**
-     * get all available modules and paths, guess default language
-     * @param type $bizunoMod
+     * Gets all available modules and paths
+     * @param array $bizunoMod
      */
     private function initModules(&$bizunoMod)
     {

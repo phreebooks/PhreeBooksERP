@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2019-07-23
+ * @version    3.x Last Update: 2019-09-10
  * @filesource /portal/upgrade.php
  */
 
@@ -179,6 +179,18 @@ function bizunoUpgrade($dbVersion='1.0')
             dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['title'    =>'pos_receipt'],'update', "group_id='cust:j19' AND mime_type ='dir'");
             dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['group_id' =>'cust:j18'],   'update', "group_id='cust:j19' AND mime_type<>dir'");
         }
+    }
+    if (version_compare($dbVersion, '3.3.0') < 0) { // New extensions to support ISO 9001 and improved stability
+        if (dbTableExists(BIZUNO_DB_PREFIX.'extTraining')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extTraining', 'lead_time')) { // add new field to extension training table
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extTraining` ADD `lead_time` CHAR(2) NOT NULL DEFAULT '1w' COMMENT 'type:select;tag:LeadTime;order:25' AFTER `title`");
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extTraining` CHANGE `training_date` `train_date` DATE NULL DEFAULT NULL COMMENT 'type:date;tag:TrainingDate;order:30'");
+        } }
+        if (dbTableExists(BIZUNO_DB_PREFIX.'extMaint')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extMaint', 'lead_time')) { // add new field to extension maintenance table
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extMaint` ADD `lead_time` CHAR(2) NOT NULL DEFAULT '1w' COMMENT 'type:select;tag:LeadTime;order:25' AFTER `title`;");
+        } }
+        if (dbTableExists(BIZUNO_DB_PREFIX.'extAudit')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extAudit', 'lead_time')) { // add new field to extension maintenance table
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extAudit` ADD `lead_time` CHAR(2) NOT NULL DEFAULT '1w' COMMENT 'type:select;tag:LeadTime;order:25' AFTER `title`");
+        } }
     }
 
     // At every upgrade, run the comments repair tool to fix changes to the view structure
