@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-05
+ * @version    3.x Last Update: 2019-10-09
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -300,30 +300,28 @@ class inventoryPrices
      * @param array $layout - structure coming in
      * @return array - modified $layout
      */
-    public function quote(&$layout=[], $cost=0, $full=0)
+    public function quote(&$layout=[], $cost=0, $full=0, $sku='', $cID=0)
     {
         $iSec = validateSecurity('inventory', 'prices_'.$this->type, 1, false);
         $pSec = $this->type=='v' ? validateSecurity('phreebooks', 'j6_mgr', 1, false) : validateSecurity('phreebooks', 'j12_mgr', 1, false);
         if (!$security = max($iSec, $pSec)) { return msgAdd(lang('err_no_permission')." [".'prices_'.$this->type." OR jX_mgr]"); }
-        $cID = clean('cID', 'integer','get'); // contact record ID
+        if (empty($cID)) { $cID = clean('cID', 'integer','get'); } // contact record ID
+        if (empty($sku)) { $sku = clean('sku', 'text',   'get'); }// inventory SKU
         $iID = clean('rID', 'integer','get'); // inventory record ID
-        $sku = clean('sku', 'text',   'get'); // inventory SKU
         $UPC = clean('upc', 'text',   'get'); // inventory UPC Code
         $qty = clean('qty', ['format'=>'float', 'default'=>1], 'get'); // quantity purchased, assume 1
-        if ($cID) {
+        if (!empty($cID)) {
             $contact = dbGetValue(BIZUNO_DB_PREFIX.'contacts', ['type', 'price_sheet'], "id=$cID");
         } else {
             $contact = ['type'=>$this->type, 'price_sheet'=>''];
         }
-        if (!$iID) {
-            if ($sku)    { $inv = dbGetValue(BIZUNO_DB_PREFIX.'inventory', ['id', 'item_cost', 'full_price', 'price_sheet_c', 'price_sheet_v'], "sku='$sku'"); }
-            elseif ($UPC){ $inv = dbGetValue(BIZUNO_DB_PREFIX.'inventory', ['id', 'item_cost', 'full_price', 'price_sheet_c', 'price_sheet_v'], "upc='$UPC'"); }
-        } else {
-            $inv = dbGetValue(BIZUNO_DB_PREFIX.'inventory', ['id', 'item_cost', 'full_price', 'price_sheet_c', 'price_sheet_v'], "id=$iID");
-        }
+        if     (empty($iID) && !empty($sku)) { $filter = "sku='$sku'"; }
+        elseif (empty($iID) && !empty($UPC)) { $filter = "upc='$UPC'"; }
+        else                                 { $filter = "id = $iID";  }
+        $inv = dbGetValue(BIZUNO_DB_PREFIX.'inventory', ['id', 'item_cost', 'full_price', 'price_sheet_c', 'price_sheet_v'], $filter);
         if (empty($inv['id'])) { return; }
         if ($cost) { $inv['item_cost'] = $cost; }
-        if ($full) { $inv['full_price'] = $full; }
+        if ($full) { $inv['full_price']= $full; }
         if (!$inv['price_sheet_c']) { // if no customer price sheet, see if a default is set
             $result = dbGetMulti(BIZUNO_DB_PREFIX."inventory_prices", "method='quantity'");
             foreach ($result as $row) {
@@ -332,15 +330,36 @@ class inventoryPrices
             }
         }
         if (!$contact['price_sheet']) { $contact['price_sheet'] = $inv['price_sheet_c']; } // if not set, set to inventory default
-        $values = [
+        $this->values = [
             'iID'=>$inv['id'],'iSheetc'=>$inv['price_sheet_c'],  'iSheetv'=>$inv['price_sheet_v'], 'iCost'=>$inv['item_cost'], 'iList'=>$inv['full_price'],
-            'cID'=>$cID,      'cSheet' =>$contact['price_sheet'],'cType'=>$contact['type'],
+            'cID'=>$cID,      'cSheet' =>$contact['price_sheet'],'cType'  =>$contact['type'],
             'qty'=>abs($qty)]; // to properly handle negative sales/purchases and still get pricing based on method
-        msgDebug("\nFinding pricing with qty = $qty and values = ".print_r($values, true));
-        $prices = [];
-        $this->pricesLevels($prices, $values);
-          msgDebug("\nPrice return array = ".print_r($prices, true));
-        $layout = array_replace_recursive($layout, ['source'=>$values, 'content'=>$prices]);
+        msgDebug("\nFinding pricing with qty = $qty and values = ".print_r($this->values, true));
+        $this->prices = [];
+        $this->pricesLevels($this->prices, $this->values);
+//      msgDebug("\nPrice return array = ".print_r($this->prices, true));
+        $layout = array_replace_recursive($layout, ['source'=>$this->values, 'content'=>$this->prices]);
+    }
+
+    /**
+     * Determines the price matrix for a given SKU and customer
+     * @param array $layout - structure coming in
+     * @param string $sku [default: ''] - inventory item SKU
+     * @param integer $cID [default: 0] - Contact ID, can be customer or vendor
+     * @return array - price matrix for the given customer and SKU, default price sheet or special pricing applied
+     */
+    public function quoteLevels(&$layout=[], $sku='', $cID=0)
+    {
+        msgDebug("\nEntering quoteLevels with sku = $sku and cID = $cID");
+        $this->quote($layout, 0, 0, $sku, $cID);
+        // extract the default price tier
+        if (!empty($this->prices['sheets']) && is_array($this->prices['sheets'])) {
+            $sheets   = array_shift($this->prices['sheets']);
+            $skuPrices= $sheets['levels']; // first sheet is the default from the quote method
+        } else {
+            $skuPrices= [['qty'=>1, 'price'=>$this->prices['price']]];
+        }
+        return $skuPrices;
     }
 
     /**
@@ -362,7 +381,7 @@ class inventoryPrices
                 }
             }
         }
-        if (!isset($prices['price'])) { $prices['price'] = $values['cType']=='v'?$values['iCost']:$values['iList']; }
+        if (!isset($prices['price'])) { $prices['price'] = $values['cType']=='v' ? $values['iCost'] : $values['iList']; }
         // put the default price sheet first
         if (isset($prices['sheets']) && is_array($prices['sheets'])) {
             foreach ($prices['sheets'] as $key => $sheet) {

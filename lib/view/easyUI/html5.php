@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-06
+ * @version    3.x Last Update: 2019-10-18
  * @filesource /view/easyUI/html5.php
  */
 
@@ -803,14 +803,16 @@ final class html5 {
 
     /**
      * Handles the layout of an address block. Send defaults to override default configuration settings
-     * @param type $output
-     * @param type $props
+     * @param array $output - Output HTML string
+     * @param array $props - Element properties
      */
     public function layoutAddress(&$output, $props) {
+        global $viewData;
         $defaults = ['type'=>'c','format'=>'short','suffix' =>'','search'=>false,'props'=>true,'clear'=>true,'copy'=>false,'cols'=>true,
             'update'=>false,'validate'=>false,'required'=>false,'store'=>true,'drop' =>false,'fill'=>'none','notes'=>false];
         $attr     = array_replace($defaults, $props['settings']);
-        $structure= $props['content'];
+        if   (!empty($props['content'])) { $structure = $props['content']; }// @todo Deprecated - duplicates field structure and makes it hard to customize
+        else { foreach ($props['fields'] as $field) { $structure[$field] = $viewData['fields'][$field.$attr['suffix']]; } }
         $structure['country']['attr']['type'] = 'country'; // triggers the combogrid
         if ($attr['format'] != 'long') { unset($structure['country']['label']); }
         $structure['email']['attr']['size'] = 32; // keep this from overlapping with other divs
@@ -856,11 +858,11 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     columns:  [[
         {field:'address_id', hidden:true},
         {field:'primary_name',title:'".jsLang('address_book_primary_name')."', width:200},
-        {field:'address1',    title:'".jsLang('address_book_address1')."', width:100},
-        {field:'city',        title:'".jsLang('address_book_city')."', width:100},
-        {field:'state',       title:'".jsLang('address_book_state')."', width: 50},
-        {field:'postal_code', title:'".jsLang('address_book_postal_code')."', width:100},
-        {field:'telephone1',  title:'".jsLang('address_book_telephone1')."', width:100}]] });";
+        {field:'address1',    title:'".jsLang('address_book_address1')    ."', width:100},
+        {field:'city',        title:'".jsLang('address_book_city')        ."', width:100},
+        {field:'state',       title:'".jsLang('address_book_state')       ."', width: 50},
+        {field:'postal_code', title:'".jsLang('address_book_postal_code') ."', width:100},
+        {field:'telephone1',  title:'".jsLang('address_book_telephone1')  ."', width:100}]] });";
             // show the address drop down if values are present
 //          if (isset($data['address'][$attr['suffix']])) { $output['jsReady'][] = "jq('#addressDiv{$attr['suffix']}').show();"; }
         } else {
@@ -885,8 +887,6 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
             $data['fields'][$idx.$attr['suffix']] = $attr['cols'] ? array_merge($structure[$idx], ['col'=>2]) : array_merge($structure[$idx], ['col'=>1]);
         } }
         $output['body'] .= $this->layoutFields([], $data);
-        // @todo is the below line ever used?
-//      if ($attr['notes']) { $output['body'] .= html5('notes'.$attr['suffix'],$structure['notes']); }
     }
 
     /**

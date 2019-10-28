@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-14
+ * @version    3.x Last Update: 2019-10-18
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -879,26 +879,6 @@ class jCommon
         $dbData = ['closed'=>$closed?'1':'0', 'closed_date'=>$closed?$this->main['post_date']:''];
         dbWrite(BIZUNO_DB_PREFIX."journal_main", $dbData, 'update', "id=$id");
         msgDebug("\n  Record ID: {$this->main['id']}".($closed ? " Closed Record ID: " : " Opened Record ID: ").$id);
-    }
-
-    /**
-     * Cleans and extracts the address from the journal main database row
-     * @param array $data - current working structure
-     * @param string $suffix - form field suffix to extract from
-     * @return array - cleaned address ready to render
-     */
-    protected function cleanAddress($data, $suffix='')
-    {
-        $addStruc= dbLoadStructure(BIZUNO_DB_PREFIX.'address_book');
-        $output  = [];
-        foreach (array_keys($addStruc) as $field) {
-            if (isset($data[$field.$suffix])) {
-                $output[$field] = $data[$field.$suffix];
-                $output[$field]['label'] = $addStruc[$field]['label'];
-            }
-        }
-        $output['contact_id'] = !empty($data['contact_id'.$suffix]) ? $data['contact_id'.$suffix] : $addStruc['id'];
-        return $output;
     }
 
     /**

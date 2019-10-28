@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-18
+ * @version    3.x Last Update: 2019-10-18
  * @filesource /locale/en_US/module/phreebooks/language.php
  */
 
@@ -53,7 +53,7 @@ $lang = [
     'gl_expense_tip' => 'Default account to use for expenses. Typically an Expense type account.',
     'terms_text_lbl' => 'Payment Terms',
     'terms_text_tip' => 'Default payment terms and credit limit.',
-    'show_status_lbl' => 'Show Customer Status',
+    'show_status_lbl' => 'Show Status',
     'show_status_tip' => 'This feature displays a contact status popup on the order screens when a customer/vendor is selected from the search popup. It displays balances, account aging as well as the active status of the contact.',
     'include_all_lbl' => 'Fill All SKUs',
     'include_all_tip'=> 'Include all lines that have SKUs when filling a Sales Order irregardless of whether they are being filled with this invoice. No - only line items that have a non-zero quantity will be added to the invoice. Yes - All line items with non-blank SKUs will be included in the invoice, handy for displaying shipped prior/balance due information on blanket purchase orders.',

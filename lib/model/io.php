@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-17
+ * @version    3.x Last Update: 2019-10-02
  * @filesource /lib/model/io.php
  */
 
@@ -322,6 +322,7 @@ final class io
         $output = [];
         if (!$this->folderExists($path)) { return $output; }
         $temp = scandir($this->myFolder.$path);
+        if (!is_array($temp)) { return $output; }
         foreach ($temp as $fn) {
             if ($fn=='.' || $fn=='..') { continue; }
             $ext = strtolower(pathinfo($fn, PATHINFO_EXTENSION));
@@ -353,7 +354,7 @@ final class io
     }
 
     /**
-     * Establishes a FTP connection to a remote host. 
+     * Establishes a FTP connection to a remote host.
      * @param string $host - FTP Host to connect to
      * @param string $user - username
      * @param string $pass - password

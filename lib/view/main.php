@@ -617,8 +617,16 @@ function viewTimeZoneSel($locale=[])
     return $zones;
 }
 
+function viewRoles($none=true, $inactive=false)
+{
+    $result = dbGetMulti(BIZUNO_DB_PREFIX.'roles', $inactive ? '' : "inactive='0'", 'title', ['id','title']);
+    foreach ($result as $row) { $output[] = ['id'=>$row['id'], 'text'=>$row['title']]; }
+    if ($none) { array_unshift($output, ['id'=>'0', 'text'=>lang('none')]); }
+    return $output;
+}
+
 /**
- * This function build a drop down array based on the search criteria to list roles for PhreeBooks screens
+ * This function build a drop down array of users based on their assigned role
  * @param string $type (Default -> sales) - The role type to build list from, set to all for all users
  * @param boolean $inactive (Default - false) - Whether or not to include inactive users
  * @param string $source - where to pull the id from, [default] contacts (contacts table record id), users (users table admin_id)
@@ -626,11 +634,11 @@ function viewTimeZoneSel($locale=[])
  */
 function viewRoleDropdown($type='sales', $inactive=false, $source='contacts')
 {
-    $result = dbGetMulti(BIZUNO_DB_PREFIX."roles", $inactive ? '' : "inactive='0'");
+    $result = dbGetMulti(BIZUNO_DB_PREFIX.'roles', $inactive ? '' : "inactive='0'");
     $roleIDs= [];
     foreach ($result as $row) {
         $settings = json_decode($row['settings'], true);
-        if (isset($settings['bizuno']['roles'][$type]) && $settings['bizuno']['roles'][$type]) { $roleIDs[] = $row['id']; }
+        if ($type=='all' || !empty($settings['bizuno']['roles'][$type])) { $roleIDs[] = $row['id']; }
     }
     $output = [];
     if (sizeof($roleIDs) > 0) {
@@ -930,7 +938,7 @@ function dgHtmlTaxData($id, $field, $type='c', $xClicks='')
 function htmlAccordion(&$output, $prop, $idx=false)
 {
     global $html5;
-    if ($idx) {  // legacy to old style
+    if ($idx) { // legacy to old style
         $prop = array_merge($prop['accordion'][$idx], ['id'=>$idx]);
     }
     $html5->layoutAccordion($output, $prop);
@@ -943,11 +951,11 @@ function htmlAddress(&$output, $prop)
 }
 
 /**
- * This function builds the html (and javascript) content to render a jquery easyUI datagrid
+ * This function builds the HTML (and JavaScript) content to render a jQuery easyUI grid
  * @param array $output - running HTML string to render the page
  * @param string $prop - The structure source data to pull from
  * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI datagrid appended to $output
+ * @return string - HTML formatted EasyUI grid appended to $output
  */
 function htmlDatagrid(&$output, $prop, $idx=false)
 {

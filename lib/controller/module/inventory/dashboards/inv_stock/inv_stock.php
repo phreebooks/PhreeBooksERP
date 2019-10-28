@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-04
+ * @version    3.x Last Update: 2019-10-10
  * @filesource /lib/controller/module/phreebooks/dashboards/inv_stock/inv_stock.php
  */
 
@@ -29,7 +29,7 @@ class inv_stock
     public $methodDir= 'dashboards';
     public $code     = 'inv_stock';
     public $category = 'inventory';
-    
+
     function __construct($settings)
     {
         $this->security= getUserCache('security', 'inv_mgr', false, 0);

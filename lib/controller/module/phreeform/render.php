@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-01
+ * @version    3.x Last Update: 2019-10-23
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -99,7 +99,7 @@ class phreeformRender
                 'msgFrom'   => ['break'=>true,'label'=>lang('from'),    'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsFrom'],'attr'=>['type'=>'select','value'=>$emailData['defFrom']]],
                 'msgTo'     => ['break'=>true,'label'=>lang('to'),      'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>$emailData['defTo']]],
                 'msgCC1'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>$emailData['defCC']]],
-                'msgCC2'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select']],
+                'msgCC2'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>'']],
                 'msgSubject'=> ['break'=>true,'label'=>lang('email_subject'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>600],'attr'=>['size'=>40,'value'=>$emailData['msgSubject']]],
                 'msgBody'   => ['break'=>true,'label'=>lang('email_body'),'lblStyle'=>['min-width'=>'60px'],'attr' =>['type'=>'textarea','value'=>$emailData['msgBody'],'cols'=>'80','rows'=>'10']],
                 'reports'   => $reports],
@@ -1133,10 +1133,22 @@ class phreeformRender
      */
     private function getToAddress(&$output, $report)
     {
-        if ($report->xfilterlist->fieldname <> 'journal_main.id' || $report->xfilterlist->default <> 'equal') { return; }
+        if (!in_array($report->xfilterlist->fieldname, ['journal_main.id','contacts.id']) || $report->xfilterlist->default <> 'equal') { return; }
         $mID  = $report->xfilterlist->min;
-        $data = dbGetRow(BIZUNO_DB_PREFIX.'journal_main', "id=$mID");
-        if (empty($data)) { return $output; }
+        switch ($report->xfilterlist->fieldname) {
+            default:
+            case 'journal_main.id':
+                $data = dbGetRow(BIZUNO_DB_PREFIX.'journal_main', "id=$mID");
+                if (empty($data)) { return; }
+                $name = !empty(trim($data['contact_b'])) ? trim($data['contact_b']) : trim($data['primary_name_b']);
+                $this->extractAddresses($output, $name, $data['email_b']);
+                break;
+            case 'contacts.id':
+                $cData = dbGetValue(BIZUNO_DB_PREFIX.'address_book', ['primary_name', 'email'], "ref_id=$mID AND type='m'", '', ['id','contact_first','contact_last']);
+                $this->extractAddresses($output, $cData['primary_name'], $cData['email']);
+                $data = ['contact_id_b'=>$mID];
+                break;
+        }
         $xKeys= $xVals = [];
         foreach ($data as $key => $val) { $xKeys[] = "%$key%"; $xVals[] = $val; }
         $sParts = isset($report->filenamefield) && $report->filenamefield ? explode('.', $report->filenamefield) : false;
@@ -1146,8 +1158,6 @@ class phreeformRender
         $output['msgBody']   = TextReplace($output['msgBody'], $xKeys, $xVals);
         $this->toNames = [];
         $output['valsTo'][]  = ['id'=>'', 'text'=>lang('select')];
-        $name = !empty(trim($data['contact_b'])) ? trim($data['contact_b']) : trim($data['primary_name_b']);
-        $this->extractAddresses($output, $name, $data['email_b']);
         if (sizeof($this->toNames)) { $output['valsTo'][0]['text'] .= " (".implode(', ', $this->toNames).")"; }
         if (empty($data['contact_id_b'])) { return; }
         $this->toNames = array_map('strtolower', $this->toNames);

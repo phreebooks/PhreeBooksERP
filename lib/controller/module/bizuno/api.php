@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-17
+ * @version    3.x Last Update: 2019-10-01
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
@@ -401,6 +401,57 @@ class bizunoApi
     }
 
     /**
+     *
+     * @param array $layout - structure coming in
+     * @param array $rows - list of inventory items to upload data for
+     * @param string $url - destination cart admin URL
+     * @param string $user - destination user name
+     * @param string $pass - destination user password
+     * @return modified $structure
+     */
+    protected function apiInvRefresh(&$layout, $rows, $url, $user, $pass)
+    {
+        if (empty($rows)) { return; }
+        bizAutoLoad(BIZUNO_LIB."controller/module/inventory/prices.php", 'inventoryPrices');
+        $prices = new inventoryPrices();
+        $output = [];
+        foreach ($rows as $rID) {
+            $result  = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['sku', 'qty_stock', 'full_price', 'inventory_type'], "id=$rID");
+            if (strpos(COG_ITEM_TYPES, $result['inventory_type']) === false) { $result['qty_stock'] = 1; } // Fix some special cases, non-stock types need qty > 0
+            $_GET['rID']= $rID;
+            $pDetails   = [];
+            $prices->quote($pDetails);
+//          msgDebug("\nRetrieved price data in api = ".print_r($pDetails, true));
+            $product = ['SKU'=>$result['sku'], 'QtyStock'=>$result['qty_stock'], 'FullPrice'=>$result['full_price'],'Price'=>$pDetails['content']['price']];
+            if (!empty($pDetails['content']['regular_price'])){ $product['RegularPrice']= $pDetails['content']['regular_price']; }
+            if (!empty($pDetails['content']['sale_price']))   { $product['SalePrice']   = $pDetails['content']['sale_price']; }
+            if (!empty($pDetails['content']['sheets']))       { $product['PriceLevels'] = $pDetails['content']['sheets']; }
+            $output[] = $product;
+        }
+        $request = [
+            'UserID'  => $user,
+            'UserPW'  => $pass,
+            'Language'=> getUserCache('profile', 'language', false, 'en_US'),
+            'Version' => '1.0',
+            'Function'=> '',
+            'Action'  => 'invRefresh',
+            'Products'=> json_encode($output)];
+        msgDebug("\nSending inventory data: ".print_r($output, true));
+        $data = [
+            'product'     => $product, // keep for mods
+            'curlAction'  => ['url'=>$url,'mode'=>'post','data'=>$request,'quiet'=>1,'opts'=>['useragent'=>true]],
+//          'curlResponse'=> ['module'=>'bizuno','page'=>'api','method'=>'apiInvRefreshResp'],
+            ];
+        $layout = array_replace_recursive($layout, $data);
+    }
+
+    /**
+     * This handles the response of the cart for apiInventory.
+     * @param array $layout - working structure
+     */
+//    public function apiInvRefreshResp(&$layout) { $this->apiResp($layout); }
+
+    /**
      * Fetches the list of SKUs to upload
      * @param array $result - list of SKUs build upload list from
      * @return modified $layout
@@ -442,20 +493,20 @@ class bizunoApi
         $product['Price'] = $pDetails['content']['price'];
         if (!empty($pDetails['content']['regular_price'])){ $product['RegularPrice']= $pDetails['content']['regular_price']; }
         if (!empty($pDetails['content']['sale_price']))   { $product['SalePrice']   = $pDetails['content']['sale_price']; }
-        if (isset($pDetails['content']['sheets']) && sizeof($pDetails['content']['sheets']) > 0) { $product['PriceLevels'] = $pDetails['content']['sheets']; }
-        $product['WeightUOM']   = getModuleCache('inventory', 'settings', 'general', 'weight_uom', 'LB');
-        $product['DimensionUOM']= getModuleCache('inventory', 'settings', 'general', 'dim_uom', 'IN');
+        if ( isset($pDetails['content']['sheets']) && sizeof($pDetails['content']['sheets']) > 0) { $product['PriceLevels'] = $pDetails['content']['sheets']; }
+        $product['WeightUOM']   = getModuleCache('inventory', 'settings', 'general', 'weight_uom','LB');
+        $product['DimensionUOM']= getModuleCache('inventory', 'settings', 'general', 'dim_uom',   'IN');
         if (!empty($product['sendImage'])) { $this->setImage($product); }
         else                               { unset($product['Image']); }
         $this->setAccessories($product);
         $this->setAttributes ($product);
         $request = [
-            'UserID'=> $user,
-            'UserPW'=> $pass,
+            'UserID'  => $user,
+            'UserPW'  => $pass,
             'Language'=> getUserCache('profile', 'language', false, 'en_US'),
-            'Version' => "1.0",
-            'Function'=> "",
-            'Action'  => "uploadProduct",
+            'Version' => '1.0',
+            'Function'=> '',
+            'Action'  => 'uploadProduct',
             'Product' => json_encode($product)];
         msgDebug("\nSending Product: ".print_r($product, true));
         $data = [

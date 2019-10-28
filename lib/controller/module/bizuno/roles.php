@@ -234,7 +234,7 @@ class bizunoRoles
         foreach ($theList as $key => $value) { $temp[$key] = $value['properties']['title']; }
         array_multisort($temp, SORT_ASC, $theList);
         foreach ($theList as $mID => $props) {
-        msgDebug("\nModule ID = $mID");
+            msgDebug("\nModule ID = $mID");
             if (!getModuleCache($mID, 'properties', 'status')) { continue; }
             if (!isset($props['properties']['path']) || !file_exists("{$props['properties']['path']}/admin.php")) { continue; }
             $fqcn = "\\bizuno\\{$mID}Admin";
@@ -259,18 +259,24 @@ class bizunoRoles
     /**
      * Sets the possible role security levels for menu children
      * @param array $children - list of menu children
-     * @param type $security - Security setting of parent
+     * @param string $title - Category title
+     * @param array $security - Security setting of parent
      * @return string - HTML view
      */
     private function roleTabsChildren($children=[], $title='', $security=0)
     {
         $tab = '';
         foreach ($children as $id => $props) {
-            if (isset($props['child'])) { $tab .= $this->roleTabsChildren($props['child'], $title, $security); }
-            elseif (empty($props['required'])) {
+            if (isset($props['child'])) {
+                if (!empty($props['show'])) { // setting show=1 in the structure forces the security setting to be displayed (if child they sometimes disappear)
+                    $value = array_key_exists($id, $security) ? $security[$id] : 0;
+                    $tab .= html5("sID_$id", ['label'=>$props['label'],'position'=>'after','values'=>$this->securityChoices,'attr'=>['type'=>'select','value'=>$value]])."<br />\n";
+                }
+                $tab .= $this->roleTabsChildren($props['child'], $title, $security);
+            } elseif (empty($props['required'])) {
                 $value = array_key_exists($id, $security) ? $security[$id] : 0;
                 if (empty($props['label'])) { msgAdd("label not set: ".print_r($props, true)); }
-                $label = $props['label'] == 'reports' ? lang($title).' - '.lang($props['label']) : lang($props['label']);
+                $label = $props['label']=='reports' ? lang($title).' - '.lang($props['label']) : lang($props['label']);
                 $tab  .= html5("sID_$id", ['label'=>$label,'position'=>'after','values'=>$this->securityChoices,'attr'=>['type'=>'select','value'=>$value]])."<br />\n";
             }
         }
@@ -278,10 +284,10 @@ class bizunoRoles
     }
 
     /**
-     * Datagrid structure for roles manager
-     * @param string $name - DOM id of the datagrid
+     * Grid structure for roles manager
+     * @param string $name - DOM id of the grid
      * @param integer $security - security setting for the user
-     * @return array - datagrid structure
+     * @return array - grid structure
      */
     private function dgRoles($name, $security=0)
     {
@@ -292,25 +298,25 @@ class bizunoRoles
                 'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; }}",
                 'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', rowData.id); }"],
             'source' => [
-                'tables' => ['roles'=>['table'=>BIZUNO_DB_PREFIX."roles"]],
+                'tables'  => ['roles'=>['table'=>BIZUNO_DB_PREFIX."roles"]],
                 'actions' => [
                     'newRole'  => ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', 0);"]],
                     'clrSearch'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]],
-                'search' => [BIZUNO_DB_PREFIX."roles".'.title'],
-                'sort'   => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
-                'filters'=> ['search' => ['order'=>'90','attr'=>['value'=>$this->defaults['search']]]]],
+                'search'  => [BIZUNO_DB_PREFIX."roles".'.title'],
+                'sort'    => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
+                'filters' => ['search' => ['order'=>'90','attr'=>['value'=>$this->defaults['search']]]]],
             'columns' => [
                 'id'      => ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.id",      'attr'=>['hidden'=>true]],
                 'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."roles.inactive",'attr'=>['hidden'=>true]],
                 'action'  => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
                     'actions'=> [
-                        'edit' => ['order'=>20,'icon'=>'edit',
+                        'edit'  => ['order'=>20,'icon'=>'edit',
                             'events'=> ['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', idTBD);"]],
-                        'copy' => ['order'=>40,'icon'=>'copy',
+                        'copy'  => ['order'=>40,'icon'=>'copy',
                             'events'=> ['onClick'=>"var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/roles/copy', idTBD, title);"]],
-                        'delete' => ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,
+                        'delete'=> ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,
                             'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/roles/delete', idTBD);"]]]],
-                'title'=> ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."roles.title", 'label'=>pullTableLabel(BIZUNO_DB_PREFIX."roles", 'title'),
+                'title'   => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."roles.title", 'label'=>pullTableLabel(BIZUNO_DB_PREFIX."roles", 'title'),
                     'attr' => ['sortable'=>true,'resizable'=>true]]]];
     }
 }

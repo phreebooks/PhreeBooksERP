@@ -36,12 +36,13 @@ $output['body'] .= ' <thead class="panel-header">'."\n";
 if ($dirMeth == 'dashboards') { // special case for dashboards
     $output['body'] .= "  <tr><th>&nbsp;</th><th>".lang('dashboard')."</th><th>".lang('description')."</th><th>".lang('action')."</th></tr>\n";
 } else {
-    $output['body'] .= "  <tr><th>&nbsp;</th><th>".lang('method')."</th><th>".lang('description')."</th><th>".lang('action')."</th></tr>\n";
+    $output['body'] .= "  <tr><th>&nbsp;</th><th>".lang('method')   ."</th><th>".lang('description')."</th><th>".lang('action')."</th></tr>\n";
 }
 $output['body'] .= " </thead>\n";
 $output['body'] .= " <tbody>\n";
 $methods = $module ? getModuleCache($module, $dirMeth) : [];
 msgDebug("\nprop = ".print_r($prop, true));
+msgDebug("\nmethods = ".print_r($methods, true));
 foreach ($methods as $method => $settings) {
     $fqcn = "\\bizuno\\$method";
     bizAutoLoad("{$settings['path']}$method.php", $fqcn);
@@ -76,7 +77,7 @@ foreach ($methods as $method => $settings) {
         if ($viewData['security']>4 && $dirMeth<>'dashboards' && empty($clsMeth->required)) {
             $output['body'] .= html5('remove_'.$method, $viewData['btnMethodDel']) . "\n";
         }
-        $viewData['btnMethodProp']['events']['onClick'] = "jq('#divMethod_".$method."').toggle('slow');";
+        $viewData['btnMethodProp']['events']['onClick'] = "jq('#divMethod_{$method}').toggle('slow');";
         $output['body'] .= html5('prop_'.$method, $viewData['btnMethodProp'])."\n";
         $output['body'] .= "</td>\n";
     }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-22
+ * @version    3.x Last Update: 2019-10-09
  * @filesource /lib/controller/module/inventory/tools.php
  */
 
@@ -98,6 +98,47 @@ class inventoryTools
         $output= [];
         foreach ($struc as $row) { $output[] = implode(",", $row); }
         $io->download('data', implode("\n", $output), "SKU-Sales-$sku.csv");
+    }
+
+    /**
+     * Downloads the stock aging data
+     * @global class $io - I/O class
+     * @return exits if successful, msg otherwise
+     */
+    public function stockAging()
+    {
+        global $io;
+        $ttlQty  = $ttlCost = 0;
+        $output  = [];
+        $this->ageFld = dbFieldExists(BIZUNO_DB_PREFIX.'inventory', 'shelf_life') ? true : false;
+        $rows    = dbGetMulti(BIZUNO_DB_PREFIX.'inventory_history', "remaining>0", 'post_date', ['sku', 'post_date', 'remaining', 'unit_cost']);
+        foreach ($rows as $row) {
+            $ageDate = $this->getAgingValue($row['sku']);
+            msgDebug("\nsku {$row['sku']} comparing ageDate: $ageDate with post date: {$row['post_date']}");
+            if ($row['post_date'] >= $ageDate) { continue; }
+            $ttlQty += $row['remaining'];
+            $value   = $row['unit_cost'] * $row['remaining'];
+            $ttlCost+= $value;
+            $raw[]   = [viewFormat($row['post_date'], 'date'), $row['sku'], intval($row['remaining']), viewFormat($value, 'currency')];
+        }
+        $raw[] = [jslang('total'), '', intval($ttlQty), viewFormat($ttlCost,'currency')];
+        if (sizeof($raw) < 2) { return msgAdd('There are no items aged over their expected aging date!'); }
+        foreach ($raw as $row) { $output[] = '"'.implode('","', $row).'"'; }
+        $io->download('data', implode("\n", $output), "Shelf-Life-".date('Y-m-d').".csv");
+    }
+
+    /**
+     * Retrieves the aging date based on the SKU provided
+     * @param string $sku - sku to search
+     * @return string - aged date to compare for filter
+     */
+    private function getAgingValue($sku)
+    {
+        if (!empty($this->skuDates[$sku])) { return $this->skuDates[$sku]; }
+        $numWeeks = $this->ageFld ? dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'shelf_life', "sku='$sku'") : $this->struc['defAge']['attr']['value'];
+        $this->skuDates[$sku] = localeCalculateDate(date('Y-m-d'), -($numWeeks * 7));
+        msgDebug("\n num weeks = $numWeeks and calculated date = {$this->skuDates[$sku]}");
+        return $this->skuDates[$sku];
     }
 
     /**

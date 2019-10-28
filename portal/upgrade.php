@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2019-09-10
+ * @version    3.x Last Update: 2019-10-14
  * @filesource /portal/upgrade.php
  */
 
@@ -188,9 +188,8 @@ function bizunoUpgrade($dbVersion='1.0')
         if (dbTableExists(BIZUNO_DB_PREFIX.'extMaint')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extMaint', 'lead_time')) { // add new field to extension maintenance table
             dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extMaint` ADD `lead_time` CHAR(2) NOT NULL DEFAULT '1w' COMMENT 'type:select;tag:LeadTime;order:25' AFTER `title`;");
         } }
-        if (dbTableExists(BIZUNO_DB_PREFIX.'extAudit')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extAudit', 'lead_time')) { // add new field to extension maintenance table
-            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extAudit` ADD `lead_time` CHAR(2) NOT NULL DEFAULT '1w' COMMENT 'type:select;tag:LeadTime;order:25' AFTER `title`");
-        } }
+    }
+    if (version_compare($dbVersion, '3.3.1') < 0) {
     }
 
     // At every upgrade, run the comments repair tool to fix changes to the view structure

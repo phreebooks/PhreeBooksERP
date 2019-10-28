@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-09
+ * @version    3.x Last Update: 2019-10-15
  * @filesource /portal/functions.php
  */
 
@@ -33,12 +33,9 @@ if (!defined('BIZUNO_KEY'))       { define('BIZUNO_KEY', 'xsdRGg5sF65hdwfD'); }
 function biz_validate_user()
 {
     global $mixer;
-    $creds = clean('bizunoSession', 'json', 'cookie'); // @todo DEPRECATED
-    if (empty($creds)) { // try the new scrambled method
-        $scramble = clean('bizunoSession', 'text', 'cookie');
-        if (empty($scramble)) { return false; }
-        $creds = json_decode(base64_decode($mixer->decrypt(BIZUNO_KEY, $scramble), true));
-    }
+    $scramble = clean('bizunoSession', 'text', 'cookie');
+    if (empty($scramble)) { return false; }
+    $creds = json_decode(base64_decode($mixer->decrypt(BIZUNO_KEY, $scramble), true));
     return !empty($creds[0]) && !empty($creds[1]) ? $creds : false;
 }
 

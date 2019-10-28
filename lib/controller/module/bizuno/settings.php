@@ -37,7 +37,7 @@ class bizunoSettings
     /**
      * Main Settings page, builds a list of all available modules and puts into groups
      * @param array $layout - structure coming in
-     * @return modified $ayout
+     * @return modified $layout
      */
     public function manager(&$layout=[])
     {
@@ -206,7 +206,8 @@ class bizunoSettings
      * @global array $msgStack - working messages to be returned to user
      * @param array $layout - structure coming in
      * @param string $module - name of module to install
-     * @return modified layout
+     * @param string $path -
+     * @return modified $layout
      */
     public function moduleInstall(&$layout=[], $module=false, $path='')
     {
@@ -257,6 +258,10 @@ class bizunoSettings
         $layout = array_replace_recursive($layout, ['content'=>['rID'=>$module,'action'=>'href','link'=>BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]]);
     }
 
+    /**
+     * Sets security for the menu items into the database
+     * @param array $menu - menu structure
+     */
     private function setSecurity($menu)
     {
         $roleID  = getUserCache('profile', 'role_id');

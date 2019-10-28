@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-05
+ * @version    3.x Last Update: 2019-10-22
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -45,12 +45,12 @@ class phreebooksAdmin {
         $this->settings  = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
         $this->structure = [
             'url' => BIZUNO_URL."controller/module/$this->moduleID/",
-            'version' => MODULE_BIZUNO_VERSION,
-            'category' => 'bizuno',
-            'required' => '1',
-            'dirMethods' => 'totals',
-            'attachPath' => 'data/phreebooks/uploads/',
-            'menuBar' => ['child'=>[
+            'version'   => MODULE_BIZUNO_VERSION,
+            'category'  => 'bizuno',
+            'required'  => '1',
+            'dirMethods'=> 'totals',
+            'attachPath'=> 'data/phreebooks/uploads/',
+            'menuBar'   => ['child'=>[
                 'banking' => ['order'=>40,'label'=>lang('banking'),'group'=>'bnk','icon'=>'bank','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=banking');"],'child'=>[
                     'j17_mgr' => ['order'=>70,'label'=>lang('journal_main_journal_id_17'),'icon'=>'payment',   'events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=17');"]],
                     'j18_mgr' => ['order'=>10,'label'=>lang('journal_main_journal_id_18'),'icon'=>'payment',   'events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=18');"]],
@@ -71,7 +71,7 @@ class phreebooksAdmin {
                     'j16_mgr' => ['order'=>50,'label'=>lang('journal_main_journal_id_16'),'icon'=>'inv-adj','events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=16');"]]]],
                 'ledger' => ['order'=>50,'label'=>lang('general_ledger'),'group'=>'gl','icon'=>'journal','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=ledger');"],'child'=>[
                     'j2_mgr'  => ['order'=>10, 'label'=>lang('journal_main_journal_id_2'),'icon'=>'journal','events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=2');"]],
-//                    'cashflow'=> ['order'=>80,'label'=>lang('cash_flow')),       'icon'=>'linechart','events'=>['onClick'=>"hrefClick('phreebooks/budget/cashFlow');"]],
+//                  'cashflow'=> ['order'=>80,'label'=>lang('cash_flow')),       'icon'=>'linechart','events'=>['onClick'=>"hrefClick('phreebooks/budget/cashFlow');"]],
                     'budget'  => ['order'=>90,'label'=>lang('phreebooks_budget'),'icon'=>'budget',   'events'=>['onClick'=>"hrefClick('phreebooks/budget/manager');"]],
                     'rpt_jrnl'=> ['order'=>99,'label'=>lang('reports'),          'icon'=>'mimeDoc',  'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=gl');"]]]],
                 'tools' => ['child'=>[

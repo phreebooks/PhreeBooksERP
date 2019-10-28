@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-28
+ * @version    3.x Last Update: 2019-10-24
  * @filesource /lib/controller/module/phreebooks/journals/j13.php
  */
 
@@ -45,7 +45,20 @@ class j13 extends jCommon
     public function getDataItem()
     {
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
-        if (!empty($this->main['so_po_ref_id']) || $this->action == 'inv') { // complex merge the two by item, keep the rest from the rID only
+        if ($this->action == 'inv') {
+            foreach ($this->items as $idx => $row) { // clear all of the id's
+                if ($row['gl_type'] == 'itm') {
+                    $this->items[$idx]['item_ref_id'] = $this->items[$idx]['id'];
+                    $this->items[$idx]['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0;
+                    $this->items[$idx]['total'] = 0;
+                    $this->items[$idx]['bal'] = $row['qty'];
+                    $this->items[$idx]['qty'] = 0;
+                }
+                unset($this->items[$idx]['id']);
+                unset($this->items[$idx]['ref_id']);
+            }
+        }
+        if (!empty($this->main['so_po_ref_id'])) { // complex merge the two by item, keep the rest from the rID only
             $sopo = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "ref_id={$this->main['so_po_ref_id']}");
             foreach ($sopo as $row) {
                 if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
@@ -69,15 +82,13 @@ class j13 extends jCommon
                     $this->items[]     = $row;
                 }
             }
-            $temp = []; // now sort to get item_cnt in order
-            foreach ($this->items as $key => $value) { $temp[$key] = $value['item_cnt']; }
-            array_multisort($temp, SORT_ASC, $this->items);
+            $this->items = sortOrder($this->items, 'item_cnt');
         }
         $dbData = [];
         foreach ($this->items as $row) {
             if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
-            if (empty($row['bal'])) { $row['bal'] = 0; }
-            if (empty($row['qty'])) { $row['qty'] = 0; }
+            if (empty($row['bal']))   { $row['bal'] = 0; }
+            if (empty($row['qty']))   { $row['qty'] = 0; }
             if (is_null($row['sku'])) { $row['sku'] = ''; } // bug fix for easyui combogrid, doesn't like null value
             $row['description'] = str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
             if (!isset($row['price'])) { $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
@@ -107,6 +118,7 @@ class j13 extends jCommon
     {
         $fldKeys = ['id','journal_id','so_po_ref_id','terms','override_user','override_pass','recur_id','recur_frequency','item_array','xChild','xAction','store_id',
             'purch_order_id','invoice_num','waiting','closed','terms_text','terms_edit','post_date','terminal_date','rep_id','currency','currency_rate'];
+        $fldAddr = ['contact_id','address_id','primary_name','contact','address1','address2','city','state','postal_code','country','telephone1','email'];
         $data['jsHead']['datagridData'] = $this->dgDataItem;
         $data['datagrid']['item'] = $this->dgOrders('dgJournalItem', 'c');
         if ($rID) { unset($data['datagrid']['item']['source']['actions']['insertRow']); } // only allow insert for new orders
@@ -123,11 +135,11 @@ class j13 extends jCommon
         $isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? '1' : '0';
         $data['fields']['waiting'] = ['attr'=>['type'=>'hidden', 'value'=>$isWaiting]];
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields'], '_b'),
+            'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
                 'settings'=>['suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false,'cols'=>false]],
-            'shipAD' => ['order'=>30,'type'=>'address','label'=>lang('ship_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_s'],'content'=>$this->cleanAddress($data['fields'], '_s'),
+            'shipAD' => ['order'=>30,'type'=>'address','label'=>lang('ship_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_s'],'fields'=>$fldAddr,
                 'settings'=>['suffix'=>'_s','search'=>true,'update'=>true,'validate'=>true,'drop'=>true,'cols'=>false]],
-            'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'keys'=>$fldKeys],
+            'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'], 'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
             'totals' => ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
         $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
         $data['divs']['other']  = ['order'=>70,'type'=>'html','html'=>'<div id="shippingEst"></div><div id="shippingVal"></div>'];

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-05
+ * @version    3.x Last Update: 2019-10-23
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -370,6 +370,12 @@ function getPaymentInfo($mID, $jID) {
     return $paid;
 }
 
+/**
+ * Calculates the value items received on a PO/SO to subtract from the original total
+ * @param integer $mID - journal_main record ID
+ * @param integer $jID - journal ID
+ * @return type
+ */
 function getInvoiceInfo($mID, $jID) {
     msgDebug("\nIn getInvoiceInfo with main ID = $mID and journal ID = $jID");
     $total= 0;

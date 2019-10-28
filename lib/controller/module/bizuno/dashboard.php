@@ -286,14 +286,16 @@ class bizunoDashboard
         msgDebug("\nloadDashboard for module = $module");
         if ($module <> 'portal' && !getModuleCache($module, 'properties', 'status')) { return; }
         $path = $module=='portal' ? BIZUNO_ROOT.'/portal':  getModuleCache($module, 'properties', 'path');
-        msgDebug("\getModuleCache for dash = $dashboard and path {$path}/dashboards/$dashboard/$dashboard.php");
+        msgDebug("\nfetching dashboard = $dashboard and path {$path}dashboards/$dashboard/$dashboard.php");
         $modSettings= getModuleCache($module, 'dashboards', $dashboard, 'settings', []);
         $settings   = array_replace_recursive($modSettings, $usrSettings); // merge the user settings on top of defaults
-        if (file_exists ("$path/dashboards/$dashboard/$dashboard.php")) {
+        if (file_exists ("{$path}dashboards/$dashboard/$dashboard.php")) {
             $fqcn = "\\bizuno\\$dashboard";
             bizAutoLoad("$path/dashboards/$dashboard/$dashboard.php", $fqcn);
             $myDash = new $fqcn($settings);
+            msgDebug("\nChecking security with value = $myDash->security");
             if ($this->checkSecurity($myDash)) { return $myDash; }
+            msgDebug(" BUT failed security check!");
         } elseif (getUserCache('profile', 'admin_id')) { // delete from profile as the dashboard is no longer there
             msgDebug("\nDeleting dashboard $dashboard from the users profile since it no longer exists!");
             dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."users_profiles WHERE dashboard_id='$dashboard' AND user_id=".getUserCache('profile', 'admin_id', false, 0));
@@ -313,9 +315,10 @@ class bizunoDashboard
         if (is_array($loaded_dashboards['Dashboard'])) { foreach ($loaded_dashboards['Dashboard'] as $dashboard) { $loaded[] = $dashboard['id']; } }
         foreach ($bizunoMod as $module => $settings) {
             if (empty($settings['properties']['path']) || !is_dir($settings['properties']['path']."dashboards")) { continue; }
-            msgDebug("\nFound path {$settings['properties']['path']}/dashboards");
+            msgDebug("\nFound path {$settings['properties']['path']}dashboards");
             if (!getModuleCache($module, 'properties', 'status')) { continue; } // skip if module not loaded
-            $thelist = scandir($settings['properties']['path']."/dashboards");
+            $thelist = scandir($settings['properties']['path']."dashboards");
+            msgDebug("\ntheList read from cache = ".print_r($thelist, true));
             foreach ($thelist as $dashboard) {
                 if ($dashboard == '.' || $dashboard == '..' || !is_dir($settings['properties']['path']."/dashboards/$dashboard")) { continue; }
                 $myDash = $this->loadDashboard($module, $dashboard);

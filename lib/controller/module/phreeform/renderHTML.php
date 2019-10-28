@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-25
+ * @version    3.x Last Update: 2019-10-23
  * @filesource /controller/module/phreeform/renderHTML.php
  */
 
@@ -67,7 +67,7 @@ class HTML
         $align="C";
         foreach ($report->fieldlist as $value) {
             if (isset($value->visible) && $value->visible) {
-                $data .= ($value->title);
+                $data .= !empty($value->title) ? $value->title : '';
                 if (isset($value->columnbreak) && $value->columnbreak) {
                     $data .= '<br />';
                     continue;
@@ -142,6 +142,7 @@ class HTML
         foreach ($data as $myrow) {
             $Action = array_shift($myrow);
             $todo = explode(':', $Action, 2); // contains a letter of the date type and title/groupname
+            if (!isset($todo[1])) { $todo[1] = ''; }
             switch ($todo[0]) {
                 case "h": // Heading
                     $this->writeRow([['align'=>$report->data->align, 'value'=>$todo[1]]], '', $dStyle);

@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<PhreeformReport>
+	<reporttype><![CDATA[rpt]]></reporttype>
+<tables>
+	<tablename><![CDATA[journal_main]]></tablename>
+</tables>
+<tables>
+	<joinopt><![CDATA[JOIN]]></joinopt>
+	<tablename><![CDATA[journal_item]]></tablename>
+	<relationship><![CDATA[journal_main.id = journal_item.ref_id]]></relationship>
+</tables>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.post_date]]></fieldname>
+	<title><![CDATA[Post Date]]></title>
+	<visible><![CDATA[1]]></visible>
+	<width><![CDATA[22]]></width>
+	<break><![CDATA[1]]></break>
+	<align><![CDATA[L]]></align>
+	<formatting><![CDATA[date]]></formatting>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_item.qty]]></fieldname>
+	<title><![CDATA[Qty]]></title>
+	<visible><![CDATA[1]]></visible>
+	<width><![CDATA[25]]></width>
+	<break><![CDATA[1]]></break>
+	<align><![CDATA[R]]></align>
+	<total><![CDATA[1]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_item.sku]]></fieldname>
+	<title><![CDATA[SKU]]></title>
+	<visible><![CDATA[1]]></visible>
+	<width><![CDATA[25]]></width>
+	<break><![CDATA[1]]></break>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_main.invoice_num]]></fieldname>
+	<title><![CDATA[Reference]]></title>
+	<visible><![CDATA[1]]></visible>
+	<width><![CDATA[30]]></width>
+	<break><![CDATA[1]]></break>
+	<align><![CDATA[L]]></align>
+	<total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_item.debit_amount - journal_item.credit_amount]]></fieldname>
+	<title><![CDATA[Amount]]></title>
+	<visible><![CDATA[1]]></visible>
+	<width><![CDATA[25]]></width>
+	<break><![CDATA[1]]></break>
+	<align><![CDATA[R]]></align>
+	<total><![CDATA[1]]></total>
+	<formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<fieldlist>
+	<fieldname><![CDATA[journal_item.description]]></fieldname>
+	<title><![CDATA[SKU Desc]]></title>
+	<break><![CDATA[1]]></break>
+	<width><![CDATA[40]]></width>
+	<visible><![CDATA[1]]></visible>
+</fieldlist>
+<grouplist>
+	<fieldname><![CDATA[journal_item.sku]]></fieldname>
+	<title><![CDATA[SKU]]></title>
+	<default><![CDATA[1]]></default>
+</grouplist>
+<sortlist>
+	<fieldname><![CDATA[journal_main.post_date]]></fieldname>
+	<title><![CDATA[Invoice Date]]></title>
+	<default><![CDATA[1]]></default>
+</sortlist>
+<sortlist>
+	<fieldname><![CDATA[journal_item.sku]]></fieldname>
+</sortlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.invoice_num]]></fieldname>
+	<title><![CDATA[Reference]]></title>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.post_date]]></fieldname>
+	<title><![CDATA[Post Date]]></title>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_item.sku]]></fieldname>
+	<title><![CDATA[SKU]]></title>
+	<visible><![CDATA[1]]></visible>
+	<type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_item.gl_type]]></fieldname>
+	<title><![CDATA[GL Type]]></title>
+	<type><![CDATA[6]]></type>
+	<min><![CDATA[asy]]></min>
+</filterlist>
+<filterlist>
+	<fieldname><![CDATA[journal_main.journal_id]]></fieldname>
+	<title><![CDATA[Journal ID]]></title>
+	<type><![CDATA[9]]></type>
+	<min><![CDATA[14]]></min>
+</filterlist>
+	<title><![CDATA[Inventory Assembly Activity]]></title>
+	<description><![CDATA[Shows the inventory assembly journal records. Report size: Letter, Landscape.]]></description>
+<page>
+	<size><![CDATA[Letter:216:282]]></size>
+	<orientation><![CDATA[L]]></orientation>
+	<margin>
+		<top><![CDATA[8]]></top>
+		<bottom><![CDATA[8]]></bottom>
+		<left><![CDATA[8]]></left>
+		<right><![CDATA[8]]></right>
+	</margin>
+</page>
+<heading>
+	<show><![CDATA[1]]></show>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[12]]></size>
+	<color><![CDATA[#000000]]></color>
+	<align><![CDATA[C]]></align>
+</heading>
+<title1>
+	<text><![CDATA[%reportname%]]></text>
+	<show><![CDATA[1]]></show>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<color><![CDATA[#000000]]></color>
+	<align><![CDATA[C]]></align>
+</title1>
+<title2>
+	<text><![CDATA[Report Generated %date%]]></text>
+	<show><![CDATA[1]]></show>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<color><![CDATA[#000000]]></color>
+	<align><![CDATA[C]]></align>
+</title2>
+<filter>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[8]]></size>
+	<color><![CDATA[#000000]]></color>
+	<align><![CDATA[L]]></align>
+</filter>
+<data>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<color><![CDATA[#000000]]></color>
+	<align><![CDATA[C]]></align>
+</data>
+<totals>
+	<font><![CDATA[helvetica]]></font>
+	<size><![CDATA[10]]></size>
+	<color><![CDATA[#000000]]></color>
+	<align><![CDATA[L]]></align>
+</totals>
+	<datelist><![CDATA[abcdelfghijk]]></datelist>
+	<datedefault><![CDATA[f]]></datedefault>
+	<datefield><![CDATA[journal_main.post_date]]></datefield>
+	<filenameprefix><![CDATA[assy-]]></filenameprefix>
+	<groupname><![CDATA[inv:rpt]]></groupname>
+	<security><![CDATA[u:-1;g:-1]]></security>
+</PhreeformReport>

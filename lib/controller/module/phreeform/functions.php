@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-20
+ * @version    3.x Last Update: 2019-10-23
  * @filesource /controller/module/phreeform/functions.php
  */
 
@@ -530,7 +530,7 @@ function BuildDataArray($sql, $report)
     foreach ($report->fieldlist as $fields) {
         if (empty($fields->visible)) { continue; }
         if ($fields->fieldname == $GrpFieldName) { $GrpField = 'c'.$i; }
-        $heading[$i]= $fields->title;
+        $heading[$i]= !empty($fields->title) ? $fields->title : '';
         $seq[$i]    = [
             'dbField'   => $fields->fieldname,
             'break'     => isset($fields->columnbreak)? $fields->columnbreak : '1',
@@ -570,7 +570,7 @@ function BuildDataArray($sql, $report)
                 $OutputArray[$RowCnt][0] = 'g:'.viewFormat($gTmp, $GrpFieldFormatting);
                 foreach ($seq as $offset => $TotalCtl) {
                     // NOTE: Do not process here as this is just a total and the processing was used to get here, just display the total.
-                    $OutputArray[$RowCnt][$offset+1] = $TotalCtl['total'] ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : $TotalCtl['grptotal'];
+                    $OutputArray[$RowCnt][$offset+1] = $TotalCtl['total'] ? viewFormat($TotalCtl['grptotal'], $TotalCtl['formatting']) : ($report->totalonly ? $TotalCtl['grptotal'] : ' ');
                     $seq[$offset]['grptotal'] = 0; // reset the total
                 }
                 $RowCnt++; // go to next row
@@ -591,7 +591,7 @@ function BuildDataArray($sql, $report)
                 $seq[$key]['rpttotal'] += $processedData;
                 $ShowTotals = true;
             } else {
-                $seq[$key]['grptotal']  = $processedData; // set to last value for summary reports to show something
+                $seq[$key]['grptotal']  = $report->totalonly ? $processedData : ' '; // set to last value for summary reports to show something
             }
         }
         $RowCnt++;

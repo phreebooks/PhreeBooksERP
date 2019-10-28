@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-05
+ * @version    3.x Last Update: 2019-10-24
  * @filesource /lib/controller/module/contacts/functions.php
  */
 
@@ -47,10 +47,18 @@ function contactsProcess($value, $format = '')
  * Pulls the average sales over the past 12 months of the specified SKU, with cache for multiple hits
  * @param type integer - number of sales, zero if not found or none
  */
-function viewContactSales($cID='',$range='m12')
+function viewContactSales($cID='',$range='q0')
 {
+    global $report;
     if (empty($GLOBALS['contactSales'])) {
-        $dates  = dbSqlDates('h'); // this quarter
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'calculatePeriod', 'function');
+        $parts  = explode(":", $report->datedefault); // encoded dates, type:start:end
+        $period = calculatePeriod($parts[1], false);
+        $QtrStrt= $period - (($period - 1) % 3);
+        $temp0  = dbGetFiscalDates($QtrStrt);
+        $dates['start_date'] = $temp0['start_date'];
+        $temp1  = dbGetFiscalDates($QtrStrt + 2);
+        $dates['end_date'] = localeCalculateDate($temp1['end_date'], 1);
         $qtrNeg0= $dates['start_date'];
         $qtrNeg1= localeCalculateDate($qtrNeg0, 0,  -3);
         $qtrNeg2= localeCalculateDate($qtrNeg1, 0,  -3);

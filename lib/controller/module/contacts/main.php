@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-06
+ * @version    3.x Last Update: 2019-10-18
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -563,7 +563,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
             }
             $address= dbGetMulti(BIZUNO_DB_PREFIX."address_book", "ref_id=$rID", "primary_name");
             $data   = ['prefix'=>$prefix, 'suffix'=>$suffix, 'fill'=>$fill, 'contact'=>$contact, 'address'=>$address];
-            $data['showStatus'] = getModuleCache('phreebooks', 'settings', $type, 'show_status', 1);
+            $data['showStatus'] = empty(getModuleCache('phreebooks', 'settings', $type, 'show_status')) ? '0' : '1';
         }
         $layout = array_replace_recursive($layout, ['content'=>$data]);
     }

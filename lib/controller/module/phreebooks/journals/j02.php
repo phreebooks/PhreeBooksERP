@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-25
+ * @version    3.x Last Update: 2019-10-18
  * @filesource /lib/controller/module/phreebooks/journals/j02.php
  */
 
@@ -61,12 +61,13 @@ class j02 extends jCommon
     public function customizeView(&$data, $rID=0)
     {
         $fldKeys = ['id','journal_id','recur_id','recur_frequency','item_array','store_id','invoice_num','post_date','currency','currency_rate'];
+        $fldAddr = ['contact_id','address_id','primary_name','contact','address1','address2','city','state','postal_code','country','telephone1','email'];
         $data['fields']['currency']['callback'] = 'totalsCurrency';
         $data['jsHead']['datagridData']= $this->dgDataItem;
         $data['jsHead']['pbChart']     = "var pbChart = bizDefaults.glAccounts.rows;"; // show all accounts from the gl chart, including inactive
         $data['datagrid']['item']      = $this->dgLedger('dgJournalItem');
         $data['divs']['divDetail']     = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'content'=>$this->cleanAddress($data['fields'], '_b'),
+            'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
                 'settings'=>['type'=>'ceiv','suffix'=>'_b','search'=>true,'required'=>false,'store'=>false]],
             'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
             'totals' => ['order'=>50,'type'=>'totals','classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
