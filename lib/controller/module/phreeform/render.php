@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-23
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -495,17 +495,19 @@ class phreeformRender
         sqlFilter($report); // fetch criteria and date filter info
         sqlSort  ($report); // fetch the sort order and add to group by string to finish ORDER BY string
         // We now have the sql, find out how many groups in the query (to determine the number of forms)
-        $form_field_list = prefixTables($report->formbreakfield);
-        if (isset($report->filenamefield) && $report->filenamefield<>'') { $form_field_list .= ', '.prefixTables($report->filenamefield); }
-        $sql = "SELECT $form_field_list FROM $report->sqlTable";
-        if ($report->sqlCrit) { $sql .= " WHERE $report->sqlCrit"; }
-        $sql .= " GROUP BY ".prefixTables($report->formbreakfield);
-        if ($report->sqlSort) { $sql .= " ORDER BY $report->sqlSort"; }
+        if (empty($report->formbreakfield) && empty($report->filenamefield)) { return msgAdd("Form design error: Either the Form Page Break Field or Field Name must be specified!"); }
+        $form_field_list = [];
+        if (!empty($report->formbreakfield)){ $form_field_list[] = prefixTables($report->formbreakfield); }
+        if (!empty($report->filenamefield)) { $form_field_list[] = prefixTables($report->filenamefield); }
+        $sql = "SELECT ".implode(', ', $form_field_list)." FROM $report->sqlTable";
+        if (!empty($report->sqlCrit))       { $sql .= " WHERE $report->sqlCrit"; }
+        if (!empty($report->formbreakfield)){ $sql .= " GROUP BY ".prefixTables($report->formbreakfield); }
+        if (!empty($report->sqlSort))       { $sql .= " ORDER BY $report->sqlSort"; }
         // execute sql to see if we have data
         msgDebug("\nTrying to find results, sql = $sql");
         if (!$stmt = dbGetResult($sql)) { return msgAdd(lang('phreeform_output_none'), 'caution'); }
         $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        if (sizeof($result) == 0) { return msgAdd(lang('phreeform_output_none'), 'caution'); }
+        if (sizeof($result) == 0)       { return msgAdd(lang('phreeform_output_none'), 'caution'); }
 
         // set the filename for download or email
         if (isset($report->filenameprefix) || isset($report->filenamefield)) {

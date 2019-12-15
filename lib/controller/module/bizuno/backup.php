@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-17
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/bizuno/backup.php
  */
 
@@ -56,7 +56,7 @@ class bizunoBackup
         $data = ['title'=>lang('bizuno_backup'),
             'toolbars'=> ['tbBackup'=>['icons'=>[
                 'restore'=> ['order'=>20,'hidden'=>$security==4?false:true,'events'=>['onClick'=>"hrefClick('bizuno/backup/managerRestore');"]],
-                'help'   => ['order'=>99,'index'=>'']]]],
+                'help'   => ['order'=>99,'icon'=>'help','label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>'backup-restore']]]],
             'divs'    => [
                 'submenu'=> ['order'=> 5,'type'=>'html',   'html'=>viewSubMenu('tools')],
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbBackup'],
@@ -90,7 +90,7 @@ class bizunoBackup
         $totRows= sizeof($rows);
         $rowNum = clean('rows',['format'=>'integer','default'=>10],'post');
         $pageNum= clean('page',['format'=>'integer','default'=>1], 'post');
-        $output = array_slice($rows, ($pageNum-1)*$rowNum, $rowNum); 
+        $output = array_slice($rows, ($pageNum-1)*$rowNum, $rowNum);
         $layout = array_replace_recursive($layout, ['type'=>'raw', 'content'=>json_encode(['total'=>$totRows, 'rows'=>$output])]);
     }
 
@@ -161,7 +161,7 @@ class bizunoBackup
     }
 
     /**
-     * 
+     *
      * @global class $io -  needed for the call to download the current version from PhreeSoft
      * @param array $layout - structure coming in
      * @return modified $layout
@@ -208,7 +208,7 @@ class bizunoBackup
     /**
      * Tries to determine the file name of the latest version that has been uploaded
      * @param string $path - location of where the uploaded version file is placed
-     * @return string - File 
+     * @return string - File
      */
     private function guessFolder($path)
     {

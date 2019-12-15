@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-18
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /view/easyUI/html5.php
  */
 
@@ -26,7 +26,7 @@ namespace bizuno;
 final class html5 {
 
     const htmlEditor = 'https://cdn.tinymce.com/4/tinymce.min.js';
-    const bizunoHelp = 'https://www.phreesoft.com/biz-school/';
+    const bizunoHelp = 'https://www.phreesoft.com/biz-school';
 
     private $pageT  = 50;  // page layout minimum pixel height
     private $pageB  = 35;
@@ -487,10 +487,10 @@ final class html5 {
     }
 
     /**
-     *
-     * @param type $id
-     * @param type $prop
-     * @return type
+     * Renders an icon without any text (image only)
+     * @param string $id - DOM element ID
+     * @param array $prop - element properties
+     * @return HTML element string
      */
     public function menuIcon($id, $prop) {
         if (empty($prop['size'])) { $prop['size'] = 'large'; } // default to large icons
@@ -508,9 +508,10 @@ final class html5 {
         $prop['styles']['min-width']= $size;
         $prop['styles']['cursor']   = 'pointer';
         $prop['attr']['title']      = isset($prop['label']) ? $prop['label'] : lang($prop['icon']);
+        if (!empty($prop['align']) && $prop['align']=='right') { $prop['styles']['float'] = 'right'; }
         if ($prop['icon'] == 'help') {
-            if (!isset($prop['index'])) { $prop['index'] = ''; }
-            $prop['events']['onClick'] = "window.open('".self::bizunoHelp."{$prop['index']}','help','width=800,height=600,resizable=1,scrollbars=1,top=100,left=100')";
+            $idx = !empty($prop['index']) ? "?section={$prop['index']}" : '';
+            $prop['events']['onClick'] = "var win=window.open('".self::bizunoHelp."$idx', '_blank'); win.focus();";
         }
         unset($prop['icon']);
         return $this->render($id, $prop);
@@ -1543,12 +1544,14 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 
     public function inputRadio($id, $prop) {
-        if (empty($prop['attr']['checked'])) { unset($prop['attr']['checked']);  }
-        if (empty($prop['attr']['selected'])){ unset($prop['attr']['selected']); }
-        $prop['classes'][]= 'easyui-radiobutton';
-        $prop['position'] = 'after';
+        if ( empty($prop['attr']['name']))    { $prop['attr']['name'] = $id;  }
+        if (!empty($prop['attr']['checked'])) { $prop['options']['checked'] = true; }
+        if (!empty($prop['attr']['selected'])){ $prop['options']['checked'] = true; unset($prop['attr']['selected']); }
+        unset($prop['attr']['checked']);
+        $prop['position']  = 'after';
+        $prop['classes'][] = 'easyui-radiobutton';
         $this->mapEvents($prop);
-        return '&nbsp;'.$this->input($id, $prop);
+        return '&nbsp;'.$this->input('', $prop); // remove the id for radio as there are more than 1
     }
 
     public function inputRange($id, $prop) {

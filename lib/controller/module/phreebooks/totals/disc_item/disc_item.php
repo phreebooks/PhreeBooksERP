@@ -39,6 +39,10 @@ class disc_item
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
     }
 
+    /**
+     *
+     * @return array - the structure
+     */
     public function settingsStructure()
     {
         return [
@@ -48,6 +52,13 @@ class disc_item
             'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'value'=>$this->settings['order']]]];
     }
 
+    /**
+     * sets the journal_item record for this method
+     * @param array $main - journal main record
+     * @param array $item - journal item record
+     * @param float $begBal - beginning balance used for calculation purposes
+     * @return modified $item
+     */
     public function glEntry(&$main, &$item, &$begBal=0)
     {
         $totalDisc= 0;
@@ -74,6 +85,11 @@ class disc_item
         msgDebug("\ndisc_item applied discount = $totalDisc and is returning balance = $begBal");
     }
 
+    /**
+     * generates the structure for the edit page
+     * @param array $output - working structure
+     * @param array $data - [not used] working page data
+     */
     public function render(&$output, $data=[])
     {
         $this->fields = [

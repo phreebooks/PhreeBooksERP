@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-12
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -25,13 +25,14 @@ namespace bizuno;
 
 class bizunoSettings
 {
-    public $notes        = [];
-    public $moduleID     = 'bizuno';
+    public  $notes       = [];
+    public  $moduleID    = 'bizuno';
     private $phreesoftURL= 'https://www.phreesoft.com';
 
     function __construct()
     {
-        $this->lang = getLang($this->moduleID);
+        $this->lang     = getLang($this->moduleID);
+        $this->helpIndex= "module-settings";
     }
 
     /**
@@ -53,10 +54,12 @@ class bizunoSettings
         ksort($modules);
         $devStatus= in_array(getUserCache('profile','level', false, ''), ['developer']) ? true : false;
         $data     = [
-            'divs' => [
-                'heading' => ['type'=>'html', 'order'=>30, 'html'=>"<h1>".lang('settings')."</h1>\n"],
-                'adminSet'=> ['type'=>'tabs', 'order'=>60, 'key'=>'tabSettings']],
-            'tabs'=>['tabSettings'=>['attr'=>['tabPosition'=>'left','focus'=>$focus]]]]; // removed 'fit'=>true, for WordPress
+            'divs'    => [
+                'toolbar' => ['order'=>20,'type'=>'toolbar','key' =>'tbImgMgr'],
+                'heading' => ['order'=>30,'type'=>'html',   'html'=>"<h1>".lang('settings')."</h1>\n"],
+                'adminSet'=> ['order'=>60,'type'=>'tabs',   'key' =>'tabSettings']],
+            'toolbars'=> ['tbImgMgr'=>['icons'=>['help'=>['order'=>99,'icon'=>'help','label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
+            'tabs'    => ['tabSettings'=>['attr'=>['tabPosition'=>'left','focus'=>$focus]]]]; // removed 'fit'=>true, for WordPress
         $order = 1;
         foreach ($modules as $cat => $catList) {
             $modlist = sortOrder($catList, 'title');

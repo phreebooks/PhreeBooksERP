@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-06
+ * @version    3.x Last Update: 2019-12-10
  * @filesource /lib/controller/module/phreebooks/chart.php
  */
 
@@ -245,10 +245,10 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
      */
     public function import(&$layout=[])
     {
-        if (!$security = validateSecurity('bizuno', 'admin', 4)) { return; }
+        if (!$security = validateSecurity('bizuno', 'admin', 4)){ return; }
         $chart = clean('data', 'path', 'get');
-        if (dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'id')) { return msgAdd($this->lang['coa_import_blocked']); }
-        $this->chartInstall(BIZUNO_LIB.$chart);
+        if (dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'id'))  { return msgAdd($this->lang['coa_import_blocked']); }
+        if (!$this->chartInstall(BIZUNO_LIB.$chart))            { return; }
         dbGetResult("TRUNCATE ".BIZUNO_DB_PREFIX."journal_history");
         buildChartOfAccountsHistory();
         msgAdd($this->lang['msg_gl_replace_success'], 'success');
@@ -268,7 +268,7 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         if (!$io->validateUpload('file_coa', 'xml', 'xml', true)) { return; }
         $chart = $_FILES['file_coa']['tmp_name'];
         if (dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'id'))    { return msgAdd($this->lang['coa_import_blocked']); }
-        $this->chartInstall($chart);
+        if (!$this->chartInstall($chart))                         { return; }
         dbGetResult("TRUNCATE ".BIZUNO_DB_PREFIX."journal_history");
         buildChartOfAccountsHistory();
         msgAdd($this->lang['msg_gl_replace_success'], 'success');
@@ -287,14 +287,15 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         msgDebug("\nTrying to load chart at path: $chart");
         if (!file_exists($chart)) { return msgAdd("Bad path to chart!", 'trap'); }
         $accounts = parseXMLstring(file_get_contents($chart));
+        if (empty($accounts)) { return msgAdd('Invalid chart of accounts. Is the XML properly formed?'); }
         if (is_object($accounts->account)) { $accounts->account = [$accounts->account]; } // in case of only one chart entry
         $output = [];
         $defRE  = '';
         $curISO = getDefaultCurrency();
         if (is_array($accounts->account)) { foreach ($accounts->account as $row) {
             $tmp = ['id'=>trim($row->id), 'type'=>trim($row->type), 'cur'=>$curISO, 'title'=>trim($row->title)];
-            if (isset($row->heading_only) && $row->heading_only) { $tmp['heading'] = 1; }
-            if (isset($row->primary_acct_id) && $row->primary_acct_id) { $tmp['parent'] = $row->primary_acct_id; }
+            if (!empty($row->heading_only))   { $tmp['heading']= 1; }
+            if (!empty($row->primary_acct_id)){ $tmp['parent'] = $row->primary_acct_id; }
             $output['accounts'][$row->id] = $tmp;
             if ($row->type == 44) { $defRE = $row->id; } // keep the retained earnings account
         } }
@@ -303,6 +304,7 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
             $output['defaults'][$curISO][$typeID] = $typeID==44 ? $defRE : trim($row->account);
         } }
         setModuleCache('phreebooks', 'chart', false, $output);
+        return true;
     }
 
     /**

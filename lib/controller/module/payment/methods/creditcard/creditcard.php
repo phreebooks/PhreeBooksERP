@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-19
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/payment/methods/creditcard.php
  */
 
@@ -96,8 +96,8 @@ class creditcard
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account', discGL:'$discount_gl', ref:'$invoice_num', refAX:'$invoice_amex'};
 function payment_$this->code() {
     bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
-    bizGridSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
-    bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
+    bizSelSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
+    bizSelSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
 }
 function creditcardRefNum(type) {
     if (type=='stored') { var ccNum = bizSelGet('{$this->code}selCards'); }
@@ -109,9 +109,9 @@ function creditcardRefNum(type) {
         if ($this->code == $dispFirst) { $output['jsReady'][] = "bizTextSet('invoice_num', '$invoice_num');"; }
         $output['body'] .= html5($this->code.'_action', ['label'=>lang('stored'), 'hidden'=>($show_s?false:true),'attr'=>['type'=>'radio','value'=>'s','checked'=>$checked=='s'?true:false],
     'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}n').hide(); jq('#div{$this->code}s').show();"]]).
-html5($this->code.'_action', ['label'=>lang('new'),    'hidden'=>($show_n?false:true),'attr'=>['type'=>'radio','value'=>'n','checked'=>$checked=='n'?true:false],
+html5($this->code.'_action', ['label'=>lang('new'),    'hidden'=>($show_n?false:true),  'attr'=>['type'=>'radio','value'=>'n','checked'=>$checked=='n'?false:false],
     'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').show();"]]).
-html5($this->code.'_action', ['label'=>$this->lang['at_creditcard'],                    'attr'=>['type'=>'radio','value'=>'w','checked'=>$checked=='w'?true:false],
+html5($this->code.'_action', ['label'=>$this->lang['at_creditcard'],                    'attr'=>['type'=>'radio','value'=>'w','checked'=>$checked=='w'?false:false],
     'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').hide();"]]).'<br />';
 $output['body'] .= '<div id="div'.$this->code.'s">';
 if ($show_s) { $output['body'] .= lang('payment_stored_cards').'<br />'.html5($this->code.'selCards', $this->viewData['selCards']); }

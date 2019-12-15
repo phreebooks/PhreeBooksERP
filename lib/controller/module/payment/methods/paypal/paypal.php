@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-21
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/payment/methods/paypal.php
  */
 
@@ -124,8 +124,8 @@ class paypal
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account', discGL:'$discount_gl', ref:'$invoice_num'};
 function payment_$this->code() {
     bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
-    bizGridSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
-    bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
+    bizSelSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
+    bizSelSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
 }
 function paypalRefNum(type) {
     if (type=='stored') { var ccNum = bizSelGet('{$this->code}selCards'); }

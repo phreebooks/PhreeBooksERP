@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-07
+ * @version    3.x Last Update: 2019-12-15
  * @filesource /portal/main.php
  */
 
@@ -128,7 +128,7 @@ class main //extends controller
 
     private function initUserCache()
     {
-        global $bizunoUser, $currencies;
+        global $bizunoUser;
         $email = getUserCache('profile', 'email');
         msgDebug("\nEntering initUserCache with email = $email");
         if ($email && getUserCache('profile', 'biz_id')) {
@@ -144,12 +144,11 @@ class main //extends controller
         } elseif (!dbTableExists(BIZUNO_DB_PREFIX.'users')) { $this->setInstallView(); }
         setlocale(LC_COLLATE,getUserCache('profile', 'langauge'));
         setlocale(LC_CTYPE,  getUserCache('profile', 'langauge'));
-        $currencies = new currency();
     }
 
     private function initModuleCache()
     {
-        global $bizunoMod;
+        global $bizunoMod, $currencies;
         msgDebug("\nEntering initModuleCache");
         $bizunoMod = [];
         if (getUserCache('profile','biz_id') && empty($GLOBALS['noBizunoDB'])) { // logged in, fetch the cache from db
@@ -162,6 +161,7 @@ class main //extends controller
         } else { // set guest registry
             $this->setGuestRegistry();
         }
+        $currencies = new currency();
         date_default_timezone_set(getModuleCache('bizuno', 'settings', 'locale', 'timezone', 'EST'));
     }
 

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-18
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -40,14 +40,14 @@ class contactsMain
         $this->securityModule = 'contacts';
         $this->securityMenu   = 'mgr_'.$this->type;
         switch ($this->type) {
-            case 'a': $this->helpIndex=' ';     $this->f0_default='a'; break; // all contacts
+            case 'a': $this->helpIndex='';                    $this->f0_default='a'; break; // all contacts
             case 'b': $this->securityMenu = 'mgr_c'; // allow access o branches if access to customers
-                      $this->helpIndex='40.80'; $this->f0_default='0'; break; // branches
-            case 'c': $this->helpIndex='40.30'; $this->f0_default='a'; break; // customers
-            case 'e': $this->helpIndex='40.50'; $this->f0_default='0'; break; // employees
-            case 'i': $this->helpIndex='40.40'; $this->f0_default='a'; break; // crm
-            case 'j': $this->helpIndex='40.70'; $this->f0_default='a'; break; // jobs/projects
-            case 'v': $this->helpIndex='40.20'; $this->f0_default='0'; break; // vendors
+                      $this->helpIndex='creating-a-new-store';$this->f0_default='0'; break; // branches
+            case 'c': $this->helpIndex='customer-manager';    $this->f0_default='a'; break; // customers
+            case 'e': $this->helpIndex='employees';           $this->f0_default='0'; break; // employees
+            case 'i': $this->helpIndex='crm-manager';         $this->f0_default='a'; break; // crm
+            case 'j': $this->helpIndex='';                    $this->f0_default='a'; break; // jobs/projects
+            case 'v': $this->helpIndex='vendor-manager';      $this->f0_default='0'; break; // vendors
             default:
         }
         $postTaxID = clean('tax_rate_id', ['format'=>'integer','default'=>null], 'post');
@@ -808,9 +808,9 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                     BIZUNO_DB_PREFIX."address_book.city",
                     BIZUNO_DB_PREFIX."address_book.postal_code"],
                 'actions' => [
-                    'help'      => ['order'=> 0,'icon'=>'help', 'align' =>'right','index'=>$this->helpIndex],
-                    'newContact'=> ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accContacts', 'dgContacts', 'divContactDetail', '".lang('details')."', 'contacts/main/edit&type=$type', 0, '');"]],
-                    'clrSearch' => ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#f0_{$type}').val('$this->f0_default'); bizTextSet('search_$type', ''); ".$name."Reload();"]]],
+                    'newContact'=>['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accContacts', 'dgContacts', 'divContactDetail', '".lang('details')."', 'contacts/main/edit&type=$type', 0, '');"]],
+                    'clrSearch' =>['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#f0_{$type}').val('$this->f0_default'); bizTextSet('search_$type', ''); ".$name."Reload();"]],
+                    'help'      =>['order'=>99,'icon'=>'help',   'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
                 'filters' => [
                     "f0_$type"=> ['order'=>10,'break'=>true,'label'=>lang('status'),'sql'=>$f0_value,'values'=>$statusValues,'attr'=>['type'=>'select','value'=>$this->defaults['f0_'.$type]]],
                     'search'  => ['order'=>90,'attr'=>['id'=>"search_$type", 'value'=>$this->defaults['search_'.$type]]],

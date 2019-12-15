@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-19
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/payment/methods/directdebit.php
  */
 
@@ -64,8 +64,8 @@ class directdebit
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account',discGL:'$discount_gl',ref:'$invoice_num'};
 function payment_".$this->code."() {
     bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
-    bizGridSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
-    bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
+    bizSelSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
+    bizSelSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
 }";
         if ($this->code == $dispFirst) { $output['jsReady'][] = "bizTextSet('invoice_num', '$invoice_num');"; }
         $output['body'] .= html5($this->code.'_ref_1',$this->viewData['ref_1']);
@@ -84,7 +84,7 @@ function payment_".$this->code."() {
         } }
         return $this->settings['disc_gl_acct']; // not found, return default
     }
-    
+
     private function getRefValue($rID=0)
     {
         $items = dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id=$rID");

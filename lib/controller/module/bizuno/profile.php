@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-09
+ * @version    3.x Last Update: 2019-11-05
  * @filesource lib/controller/module/bizuno/profile.php
  */
 
@@ -31,9 +31,10 @@ class bizunoProfile
 
     public function __construct()
     {
-        $this->lang  = getLang($this->moduleID);
-        $this->freqs = ['d'=>$this->lang['daily'],'w'=>$this->lang['weekly'],'m'=>$this->lang['monthly'],'q'=>$this->lang['quarterly'],'y'=>$this->lang['yearly']];
-        $this->zones = [
+        $this->lang     = getLang($this->moduleID);
+        $this->helpIndex= "profiles";
+        $this->freqs    = ['d'=>$this->lang['daily'],'w'=>$this->lang['weekly'],'m'=>$this->lang['monthly'],'q'=>$this->lang['quarterly'],'y'=>$this->lang['yearly']];
+        $this->zones    = [
             ['id'=>'America/Los Angeles','text'=>'America/Los Angeles'],
             ['id'=>'America/Denver',     'text'=>'America/Denver'],
             ['id'=>'America/Chicago',    'text'=>'America/Chicago'],
@@ -56,7 +57,9 @@ class bizunoProfile
         unset($dbData['settings']);
         dbStructureFill($struc, $dbData);
         $data = ['title'=>lang('bizuno_profile'),
-            'toolbars'=> ['tbProfile' =>['icons'=>['save'=>['order'=>40,'hidden'=>$security<2?true:false,'events'=>['onClick'=>"jq('#frmProfile').submit();"]]]]],
+            'toolbars'=> ['tbProfile' =>['icons'=>[
+                'save'=>['order'=>40,'hidden'=>$security<2?true:false,'events'=>['onClick'=>"jq('#frmProfile').submit();"]],
+                'help'=>['order'=>99,'icon'=>'help','label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
             'forms'   => ['frmProfile'=>['attr' =>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/profile/save"]]],
             'divs'    => [
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbProfile'],

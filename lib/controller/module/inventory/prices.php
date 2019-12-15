@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-09
+ * @version    3.x Last Update: 2019-12-15
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -32,6 +32,7 @@ class inventoryPrices
         $this->lang = getLang($this->moduleID);
         // set some defaults
         $this->type     = clean('type', ['format'=>'char', 'default'=>'c'], 'get');
+        $this->helpIndex= $this->type=='v' ? "vendor-prices" : "customer-prices";
         $this->qtySource= ['1'=>lang('direct_entry'), '2'=>lang('inventory_item_cost'), '3'=>lang('inventory_full_price'), '4'=>lang('price_level_1')];
         $this->qtyAdj   = ['0'=>lang('none'), '1'=>lang('decrease_by_amount'), '2'=>lang('decrease_by_percent'), '3'=>lang('increase_by_amount'), '4'=>lang('increase_by_percent')];
         $this->qtyRnd   = ['0'=>lang('none'), '1'=>lang('next_integer'), '2'=>lang('next_fraction'), '3'=>lang('next_increment')];
@@ -50,8 +51,8 @@ class inventoryPrices
         $iID  = clean('iID','integer',  'get');
         $mod  = clean('mod','text',     'get');
         $title= sprintf(lang('tbd_prices'), lang('contacts_type_'.$this->type));
-        if     (!$mod && $this->type == 'c') { $submenu = viewSubMenu('customers'); }
-        elseif (!$mod && $this->type == 'v') { $submenu = viewSubMenu('vendors'); }
+        if     (!$mod && $this->type == 'c') { $submenu=viewSubMenu('customers'); }
+        elseif (!$mod && $this->type == 'v') { $submenu=viewSubMenu('vendors'); }
         else   { $submenu = ''; }
         $data = ['type'=>'page','title'=>$title,
             'divs'     => [
@@ -256,45 +257,33 @@ class inventoryPrices
     public function details(&$layout=[])
     {
         if (!$security = validateSecurity('inventory', 'inv_mgr', 1)) { return; }
-        $sku = clean('sku', 'text',   'get');
-        $rID = clean('rID', 'integer','get');
+        $sku   = clean('sku', 'text',   'get');
+        $rID   = clean('rID', 'integer','get');
         if     ($rID) { $inv = dbGetRow(BIZUNO_DB_PREFIX."inventory", "id=$rID"); }
         elseif ($sku) { $inv = dbGetRow(BIZUNO_DB_PREFIX."inventory", "sku='$sku'"); }
         else   { return msgAdd("Bad SKU sent!"); }
-        $cost= clean('itemCost', ['format'=>'float','default'=>0],'get');
-        $full= clean('fullPrice',['format'=>'float','default'=>0],'get');
-        if (!$cost) { $cost = $inv['item_cost']; }
-        if (!$full) { $full = $inv['full_price']; }
-        $prices = [];
+        $cost  = clean('itemCost', ['format'=>'float','default'=>$inv['item_cost']], 'get');
+        $full  = clean('fullPrice',['format'=>'float','default'=>$inv['full_price']],'get');
+        $prices= [];
         $this->quote($prices, $cost, $full);
-        $data = ['type'=>'popup', 'title'=>lang('inventory_prices', $this->type), 'attr'=>['id'=>'winPrices','width'=>275,'height'=>600],
-            'divs' => ['winStatus'=>['order'=>50,'type'=>'html','html'=>$this->getViewPrices($prices['content'], $cost, $full)]]];
-        $layout = array_replace_recursive($layout, $data);
-    }
-
-    private function getViewPrices($prices=[], $cost=0, $full=0)
-    {
-        msgDebug("\nprices = ".print_r($prices, true));
-        $output = '<table style="border-collapse:collapse;"><thead class="panel-header"><tr><th colspan="2">'.lang('general').'</th></tr></thead><tbody>
-    <tr class="panel-header"><td style="width:125px;">'.lang('qty').'</td><td style="width:125px;">'.lang('price').'</td></tr>
-    <tr><td style="width:125px;">'.lang('price').'</td><td style="width:125px;">'.viewFormat($prices['price'], 'currency').'</td></tr>
-    <tr><td style="width:125px;">'.lang('inventory_full_price').'</td><td style="width:125px;">'.viewFormat($full, 'currency').'</td></tr>';
+        if (empty($prices['price'])) { $prices['price'] = $full; }
+        $rows[]= '<span style="background-color:#6293BB;">'.lang('general')."</span>";
+        $rows[]= '<span style="float:right">'.viewFormat($prices['price'], 'currency').'</span><span>'.lang('price')."</span>";
+        $rows[]= '<span style="float:right">'.viewFormat($full, 'currency').'</span><span>'.lang('inventory_full_price')."</span>";
         if (validateSecurity('phreebooks', 'j6_mgr', 1, false)) {
-            $output .= '<tr><td style="width:125px;">'.lang('inventory_item_cost').'</td><td style="width:125px;">'.viewFormat($cost, 'currency').'</td></tr>';
+            $rows[] = '<span style="float:right">'.viewFormat($cost, 'currency').'</span><span>'.lang('inventory_item_cost')."</span>";
         }
-        $output .= "</tbody></table>\n";
-        if (empty($prices['sheets'])) { return $output; }
-        $output .= '<table style="border-collapse:collapse;"><thead class="panel-header"><tr><th colspan="2">'.lang('inventory_prices')."</th></tr></thead><tbody>\n";
-        foreach ($prices['sheets'] as $level) {
-            $output .= '<tr class="panel-header"><td colspan="2" style="text-align:center;">'.$level['title']."</td></tr>\n";
-            $output .= '<tr class="panel-header"><td style="width:125px;">'.lang('qty').'</td><td style="width:125px;">'.lang('price')."</td></tr>\n";
+        if (!empty($prices['sheets'])) { foreach ($prices['sheets'] as $level) {
+            $rows[] = '<span style="background-color:#6293BB;">'.$level['title']."</span>";
+            $rows[] = '<span style="float:right;background-color:#6293BB;">'.lang('price').'</span><span style="background-color:#6293BB;>'.lang('qty')."</span>";
             foreach ($level['levels'] as $entry) {
-                $output .= '<tr><td style="width:125px;">'.$entry['qty'].'</td><td style="width:125px;">'.viewFormat($entry['price'], 'currency')."</td></tr>\n";
+                $rows[] = '<span style="float:right;background-color:#6293BB;">'.viewFormat($entry['price'], 'currency').'</span><span style="background-color:#6293BB;>'.$entry['qty']."</span>";
             }
-        }
-        return $output."</tbody></table>";
+        } }
+        $layout  = array_merge_recursive($layout, ['type'=>'popup', 'title'=>lang('inventory_prices', $this->type), 'attr'=>['id'=>'winPrices','width'=>275,'height'=>600],
+            'divs' => ['winStatus'=>['order'=>50,'type'=>'list','key'=>'prices']],
+            'lists'=> ['prices'   =>$rows]]);
     }
-
     /**
      * Retrieves the best price for a given customer/sku using available price sheets
      * @param array $layout - structure coming in
@@ -505,7 +494,8 @@ class inventoryPrices
                 'search' => ['settings', 'method', 'sku', 'description_short', 'description_purchase', 'description_sales'],
                 'actions'=> [
                     'newPrices'=> ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"windowEdit('inventory/prices/add&type=$type".($mod?"&mod=$mod":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":'')."','winNewPrice','".jsLang('inventory_prices_method')."',400,200);"]],
-                    'clrPrices'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"bizTextSet('search', ''); ".$name."Reload();"]]],
+                    'clrPrices'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"bizTextSet('search', ''); ".$name."Reload();"]],
+                    'help'     => ['order'=>99,'icon'=>'help', 'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
                 'filters'=> [
                     'search'   => ['order'=>90,'html'  =>['attr'=>['id'=>'search','value'=>$this->defaults['search']]]],
                     'typePrice'=> ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."inventory_prices.contact_type='$type'"]],

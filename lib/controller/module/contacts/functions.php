@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-24
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/contacts/functions.php
  */
 
@@ -33,14 +33,15 @@ namespace bizuno;
 function contactsProcess($value, $format = '')
 {
     switch ($format) {
-        case 'qtrNeg0': $range = 'q0';
-        case 'qtrNeg1': if (empty($range)) { $range = 'q1'; }
-        case 'qtrNeg2': if (empty($range)) { $range = 'q2'; }
-        case 'qtrNeg3': if (empty($range)) { $range = 'q3'; }
-        case 'qtrNeg4': if (empty($range)) { $range = 'q4'; }
-        case 'qtrNeg5': if (empty($range)) { $range = 'q5'; }
-            return viewContactSales($value, $range);
+        default:
+        case 'qtrNeg0': $range='q0'; break;
+        case 'qtrNeg1': $range='q1'; break;
+        case 'qtrNeg2': $range='q2'; break;
+        case 'qtrNeg3': $range='q3'; break;
+        case 'qtrNeg4': $range='q4'; break;
+        case 'qtrNeg5': $range='q5'; break;
     }
+    return viewContactSales($value, $range);
 }
 
 /**
@@ -53,12 +54,12 @@ function viewContactSales($cID='',$range='q0')
     if (empty($GLOBALS['contactSales'])) {
         bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'calculatePeriod', 'function');
         $parts  = explode(":", $report->datedefault); // encoded dates, type:start:end
-        $period = calculatePeriod($parts[1], false);
+        $period = calculatePeriod($parts[2], false);
         $QtrStrt= $period - (($period - 1) % 3);
         $temp0  = dbGetFiscalDates($QtrStrt);
-        $dates['start_date'] = $temp0['start_date'];
+        $dates['start_date']= $temp0['start_date'];
         $temp1  = dbGetFiscalDates($QtrStrt + 2);
-        $dates['end_date'] = localeCalculateDate($temp1['end_date'], 1);
+        $dates['end_date']  = localeCalculateDate($temp1['end_date'], 1);
         $qtrNeg0= $dates['start_date'];
         $qtrNeg1= localeCalculateDate($qtrNeg0, 0,  -3);
         $qtrNeg2= localeCalculateDate($qtrNeg1, 0,  -3);
@@ -71,13 +72,16 @@ function viewContactSales($cID='',$range='q0')
         foreach ($rows as $row) {
             if (empty($GLOBALS['contactSales'][$row['contact_id_b']])) { $GLOBALS['contactSales'][$row['contact_id_b']] = ['q0'=>0,'q1'=>0,'q2'=>0,'q3'=>0,'q4'=>0,'q5'=>0]; }
             if ($row['journal_id']==13)            { $row['total_amount'] = -$row['total_amount']; }
-            if     ($row['post_date'] >= $qtrNeg0) { $GLOBALS['contactSales'][$row['contact_id_b']]['q0'] += $row['total_amount']; }
-            elseif ($row['post_date'] >= $qtrNeg1) { $GLOBALS['contactSales'][$row['contact_id_b']]['q1'] += $row['total_amount']; }
-            elseif ($row['post_date'] >= $qtrNeg2) { $GLOBALS['contactSales'][$row['contact_id_b']]['q2'] += $row['total_amount']; }
-            elseif ($row['post_date'] >= $qtrNeg3) { $GLOBALS['contactSales'][$row['contact_id_b']]['q3'] += $row['total_amount']; }
-            elseif ($row['post_date'] >= $qtrNeg4) { $GLOBALS['contactSales'][$row['contact_id_b']]['q4'] += $row['total_amount']; }
-            else                                   { $GLOBALS['contactSales'][$row['contact_id_b']]['q5'] += $row['total_amount']; }
+
+            msgDebug("\ncontact id = {$row['contact_id_b']} and journal_id = {$row['journal_id']} and post_date = {$row['post_date']} and amount = {$row['total_amount']}");
+
+            if     ($row['post_date'] >= $qtrNeg0) { msgDebug(" ... adding qtrNeg0"); $GLOBALS['contactSales'][$row['contact_id_b']]['q0'] += $row['total_amount']; }
+            elseif ($row['post_date'] >= $qtrNeg1) { msgDebug(" ... adding qtrNeg1"); $GLOBALS['contactSales'][$row['contact_id_b']]['q1'] += $row['total_amount']; }
+            elseif ($row['post_date'] >= $qtrNeg2) { msgDebug(" ... adding qtrNeg2"); $GLOBALS['contactSales'][$row['contact_id_b']]['q2'] += $row['total_amount']; }
+            elseif ($row['post_date'] >= $qtrNeg3) { msgDebug(" ... adding qtrNeg3"); $GLOBALS['contactSales'][$row['contact_id_b']]['q3'] += $row['total_amount']; }
+            elseif ($row['post_date'] >= $qtrNeg4) { msgDebug(" ... adding qtrNeg4"); $GLOBALS['contactSales'][$row['contact_id_b']]['q4'] += $row['total_amount']; }
+            else                                   { msgDebug(" ... adding qtrNeg5"); $GLOBALS['contactSales'][$row['contact_id_b']]['q5'] += $row['total_amount']; }
         }
     }
-    return !empty($GLOBALS['contactSales'][$cID][$range]) ? number_format($GLOBALS['contactSales'][$cID][$range], 2) : '';
+    return !empty($GLOBALS['contactSales'][$cID][$range]) ? $GLOBALS['contactSales'][$cID][$range] : 0;
 }

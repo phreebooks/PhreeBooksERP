@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2019-10-14
+ * @version    3.x Last Update: 2019-12-02
  * @filesource /portal/upgrade.php
  */
 
@@ -189,7 +189,27 @@ function bizunoUpgrade($dbVersion='1.0')
             dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extMaint` ADD `lead_time` CHAR(2) NOT NULL DEFAULT '1w' COMMENT 'type:select;tag:LeadTime;order:25' AFTER `title`;");
         } }
     }
-    if (version_compare($dbVersion, '3.3.1') < 0) {
+    if (version_compare($dbVersion, '3.3.1') < 0) { }
+    if (version_compare($dbVersion, '3.3.2') < 0) {
+        $id = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv:frm' AND mime_type='dir'");
+        if (!$id) { // add new inventory form folder in phreeform
+            $parent = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv' AND mime_type='dir'");
+            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'forms','group_id'=>'inv:frm','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
+        }
+        if (dbTableExists(BIZUNO_DB_PREFIX.'extFixedAssets')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extFixedAssets', 'store_id')) { // add new field to extension Fixed Assets table
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extFixedAssets` ADD `store_id` INT(11) NOT NULL DEFAULT '0' COMMENT 'type:hidden;tag:StoreID;order:25' AFTER `status`");
+        } }
+        if (dbTableExists(BIZUNO_DB_PREFIX.'extFixedAssets')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extFixedAssets', 'dep_sched')) { // add new field to extension Fixed Assets table
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extFixedAssets` ADD `dep_sched` VARCHAR(32) NOT NULL DEFAULT '' COMMENT 'type:select;tag:Schedules;order:90' AFTER `date_retire`");
+        } }
+        if (dbTableExists(BIZUNO_DB_PREFIX.'extFixedAssets')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extFixedAssets', 'dep_value')) { // add new field to extension Fixed Assets table
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extFixedAssets` ADD `dep_value` FLOAT NOT NULL DEFAULT '0' COMMENT 'tag:DepreciatedValue;order:95' AFTER `dep_sched`");
+        } }
+        if (dbTableExists(BIZUNO_DB_PREFIX.'extReturns')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extReturns', 'preventable')) { // add new field to extension Returns table
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extReturns` ADD `preventable` ENUM('0','1') NOT NULL DEFAULT '0' COMMENT 'type:selNoYes;tag:Preventable;order:21' AFTER `code`");
+            dbGetResult("UPDATE `".BIZUNO_DB_PREFIX."extReturns` SET preventable='1' WHERE fault='1' OR fault='3'");
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extReturns` DROP fault");
+        } }
     }
 
     // At every upgrade, run the comments repair tool to fix changes to the view structure

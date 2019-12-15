@@ -17,18 +17,18 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-19
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/payment/methods/cod.php
  */
 
 namespace bizuno;
 
-class cod 
+class cod
 {
     public $code     = 'cod';
     public $moduleID = 'payment';
     public $methodDir= 'methods';
-    
+
     public function __construct()
     {
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
@@ -62,8 +62,8 @@ class cod
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account',discGL:'$discount_gl',ref:'$invoice_num'};
 function payment_".$this->code."() {
     bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
-    bizGridSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
-    bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
+    bizSelSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
+    bizSelSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
 }";
         if ($this->code == $dispFirst) { $output['jsReady'][] = "bizTextSet('invoice_num', '$invoice_num');"; }
     }

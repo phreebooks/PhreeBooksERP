@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-18
+ * @version    3.x Last Update: 2019-12-15
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -30,7 +30,7 @@ class inventoryMain
     function __construct()
     {
         $this->lang = getLang($this->moduleID);
-        $this->helpIndex     = '';
+        $this->helpIndex     = 'inventory-manager';
         $this->percent_diff  = 0.10; // the percentage differnece from current value to notify for adjustment
         $this->months_of_data= 12;   // valid values are 1, 3, 6, or 12
         $this->med_avg_diff  = 0.25; // the maximum percentage difference from the median and average, for large swings
@@ -162,138 +162,6 @@ class inventoryMain
     }
 
     /**
-     * Inventory datagrid structure
-     * @param string $name - DOM field name
-     * @param string $filter - control to limit filtering by inventory type
-     * @param integer $security - users security level
-     * @return string - datagrid structure
-     */
-    private function dgInventory($name, $filter='none', $security=0)
-    {
-        $this->managerSettings();
-        $yes_no_choices = [['id'=>'a','text'=>lang('all')],['id'=>'y','text'=>lang('active')],['id'=>'n','text'=>lang('inactive')]];
-        switch ($this->defaults['f0']) { // clean up the filter
-            default:
-            case 'a': $f0_value = ""; break;
-            case 'y': $f0_value = "inactive='0'"; break;
-            case 'n': $f0_value = "inactive='1'"; break;
-        }
-        $data = ['id'=> $name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
-            'attr'     => ['idField'=>'id', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&p=inventory/main/managerRows"],
-            'events'   => [
-                'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".jsLang('details')."', 'inventory/main/edit', rowData.id); }",
-                'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; }}"],
-            'footnotes'=> ['codes'=>jsLang('color_codes').': <span class="row-inactive">'.jsLang('inactive').'</span>'],
-            'source'   => [
-                'tables' => ['inventory' => ['table'=>BIZUNO_DB_PREFIX."inventory"]],
-                'search' => [BIZUNO_DB_PREFIX.'inventory.id',BIZUNO_DB_PREFIX.'inventory.sku','description_short','description_purchase','description_sales','upc_code'],
-                'actions' => [
-                    'newInventory'=>['order'=>10,'icon'=>'new',  'hidden'=>$security>1?false:true,'events'=>['onClick'=>"accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', 0);"]],
-                    'clrSearch'   =>['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#f0').val('y'); jq('#search').val(''); ".$name."Reload();"]]],
-                'filters'=> [
-                    'f0'     => ['order'=>10,'label'=>lang('status'),'break'=>true,'sql'=>$f0_value,'values'=> $yes_no_choices,'attr'=>['type'=>'select','value'=>$this->defaults['f0']]],
-                    'search' => ['order'=>90,'attr'=>['value'=>$this->defaults['search']]]],
-                'sort' => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
-            'columns'  => [
-                'id'            => ['order'=>0, 'field'=>'inventory.id',      'attr'=>['hidden'=>true]],
-                'inactive'      => ['order'=>0, 'field'=>'inventory.inactive','attr'=>['hidden'=>true]],
-                'attach'        => ['order'=>0, 'field'=>'attach',            'attr'=>['hidden'=>true]],
-                'inventory_type'=> ['order'=>0, 'field'=>'inventory_type',    'attr'=>['hidden'=>true]],
-                'action' => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
-                    'actions'=> [
-                        'prices'=> ['order'=>20,'icon'=>'price',  'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=c', idTBD);"]],
-                        'edit'  => ['order'=>30,'icon'=>'edit',   'events'=>['onClick'=>"accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', idTBD);"]],
-                        'rename'=> ['order'=>40,'icon'=>'rename', 'events'=>['onClick'=>"var title=prompt('".$this->lang['msg_sku_entry_rename']."'); if (title!=null) jsonAction('inventory/main/rename', idTBD, title);"]],
-                        'copy'  => ['order'=>50,'icon'=>'copy',   'events'=>['onClick'=>"var title=prompt('".$this->lang['msg_sku_entry_copy']."'); if (title!=null) jsonAction('inventory/main/copy', idTBD, title);"]],
-                        'chart' => ['order'=>60,'icon'=>'mimePpt','label'=>lang('sales'),'events'=>['onClick'=>"windowEdit('inventory/tools/chartSales&rID=idTBD', 'myInvChart', '&nbsp;', 600, 500);"]],
-                        'trash' => ['order'=>90,'icon'=>'trash',  'hidden'=>$security>3?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/main/delete', idTBD);"]],
-                        'attach'=> ['order'=>95,'icon'=>'attachment','display'=>"row.attach=='1'"]]],
-                'sku'              => ['order'=>10,'field'=>BIZUNO_DB_PREFIX.'inventory.sku','label'=>pullTableLabel("inventory", 'sku'), 'attr'=>['width'=>200,'sortable'=>true,'resizable'=>true]],
-                'description_short'=> ['order'=>20,'field'=>'description_short','label'=>pullTableLabel("inventory", 'description_short'),'attr'=>['width'=>500,'sortable'=>true,'resizable'=>true]],
-                'qty_stock'        => ['order'=>30,'field'=>'qty_stock','label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]],
-                'qty_po'           => ['order'=>40,'field'=>'qty_po',   'label'=>pullTableLabel("inventory", 'qty_po'),   'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]],
-                'qty_so'           => ['order'=>50,'field'=>'qty_so',   'label'=>pullTableLabel("inventory", 'qty_so'),   'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]],
-                'qty_alloc'        => ['order'=>60,'field'=>'qty_alloc','label'=>pullTableLabel("inventory", 'qty_alloc'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]]]];
-        switch ($filter) {
-            case 'stock': $data['source']['filters']['restrict'] = ['order'=>99, 'sql'=>"inventory_type in ('si','sr','ms','mi','ma')"]; break;
-            case 'assy':  $data['source']['filters']['restrict'] = ['order'=>99, 'sql'=>"inventory_type in ('ma')"]; break;
-            default:
-        }
-        return $data;
-    }
-
-    /**
-     * Grid structure for assembly material lists
-     * @param string $name - DOM field name
-     * @param boolean $locked - [default true] leave unlocked if no journal activity has been entered for this sku
-     * @return string - grid structure
-     */
-    private function dgAssembly($name, $locked=true)
-    {
-        $data = ['id'  => $name,
-            'type'=> 'edatagrid',
-            'attr'=> ['pagination'=>false, 'rownumbers'=>true, 'singleSelect'=>true, 'toolbar'=>"#{$name}Toolbar", 'idField'=>'id'],
-            'events' => ['data'=>'assyData',
-                'onClickRow' => "function(rowIndex, row) { curIndex = rowIndex; }",
-                'onBeginEdit'=> "function(rowIndex, row) { curIndex = rowIndex; }",
-                'onDestroy'  => "function(rowIndex, row) { curIndex = undefined; }",
-                'onAdd'      => "function(rowIndex, row) { curIndex = rowIndex; }"],
-            'source' => ['actions'=>['newAssyItem'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
-            'columns' => ['id'=>['order'=>0,'attr'=>['hidden'=>true]],
-                'action'     => ['order'=>1,'label'=>lang('action'),
-                    'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
-                    'actions'=> ['trash'=>['icon'=>'trash','order'=>20,'size'=>'small','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
-                'sku'=> ['order'=>30,'label'=>lang('sku'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
-                        width:150, panelWidth:320, delay:500, idField:'sku', textField:'sku', mode:'remote',
-                        onClickRow: function (idx, data) {
-                            var descEditor= jq('#$name').datagrid('getEditor', {index:curIndex,field:'description'});
-                            descEditor.target.val(data.description_short);
-                            var qtyEditor = jq('#$name').datagrid('getEditor', {index:curIndex,field:'qty'});
-                            jq(qtyEditor.target).numberbox('setValue',1); },
-                        columns:[[{field:'sku',              title:'".lang('sku')."',        width:100},
-                                  {field:'description_short',title:'".lang('description')."',width:200}]]
-                    }}"]],
-                'description'=> ['order'=>40,'label'=>lang('description'),'attr'=>['width'=>250,'editor'=>'text','sortable'=>true,'resizable'=>true]],
-                'qty'        => ['order'=>60,'label'=>lang('qty_needed'), 'attr'=>['width'=>100,'value'=>1,'resizable'=>true,'align'=>'right'],
-                    'events' => ['formatter'=>"function(value) { return formatNumber(value); }",'editor'=>"{type:'numberbox'}"]],
-                'qty_stock'  => ['order'=>90,'label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['width'=>100,'resizable'=>true,'align'=>'right'],
-                    'events' => ['formatter'=>"function(value) { return formatNumber(value); }"]]]];
-        if ($locked) {
-            unset($data['columns']['action']);
-            unset($data['columns']['sku']['events']['editor']);
-            unset($data['columns']['description']['attr']['editor']);
-            unset($data['columns']['qty']['events']['editor']);
-            unset($data['source']);
-        }
-        return $data;
-    }
-
-    /**
-     * Lists the details of a given inventory item from the database table
-     * @param array $layout - structure coming in
-     * @return modified structure
-     */
-    public function detailsType(&$layout=[])
-    {
-        if (!$security = validateSecurity('inventory', 'inv_mgr', 2)) { return; }
-        $type = clean('data', 'text', 'get');
-        if (!$type) { msgAdd("No Type passed!"); }
-        msgDebug("\n Loading defaults for type = $type");
-        $settings = getModuleCache('inventory', 'phreebooks');
-        $data = [
-            'sales' => isset($settings['sales_'.$type]) ? $settings['sales_'.$type]  : '',
-            'inv'   => isset($settings['inv_'.$type])   ? $settings['inv_'.$type]    : '',
-            'cogs'  => isset($settings['cog_'.$type])   ? $settings['cog_'.$type]    : '',
-            'method'=> isset($settings['method_'.$type])? $settings['method_'.$type] : 'f'];
-        $html  = "jq('#gl_sales').val('".$data['sales']."');";
-        $html .= "jq('#gl_inv').val('".$data['inv']."');";
-        $html .= "jq('#gl_cogs').val('".$data['cogs']."');";
-        $html .= "jq('#cost_method').val('".$data['method']."');";
-        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval', 'actionData'=>$html]]);
-    }
-
-    /**
      * Generates the inventory item edit structure
      * @param array $layout - structure coming in
      * @return modified structure
@@ -317,12 +185,12 @@ class inventoryMain
         $structure['dg_assy'] = ['attr'=>['type'=>'hidden']];
         $structure['dg_assy'] = ['attr'=>['type'=>'hidden']];
         if (validateSecurity('inventory', 'prices_c', 1, false)) {
-            $structure['show_prices_c'] = ['order'=>42,'icon'=>'price','label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=c&itemCost='+bizTextGet('item_cost')+'&fullPrice='+bizTextGet('full_price'), $rID);"]];
+            $structure['show_prices_c'] = ['order'=>42,'icon'=>'price','label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=c&itemCost='+bizNumGet('item_cost')+'&fullPrice='+bizNumGet('full_price'), $rID);"]];
             unset($structure['full_price']['break']);
             $fldCustomer[] = 'show_prices_c';
         }
         if (validateSecurity('inventory', 'prices_v', 1, false)) {
-            $structure['show_prices_v'] = ['order'=>42,'icon'=>'price','break'=>true,'label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=v&itemCost='+bizTextGet('item_cost')+'&fullPrice='+bizTextGet('full_price'), $rID);"]];
+            $structure['show_prices_v'] = ['order'=>42,'icon'=>'price','break'=>true,'label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=v&itemCost='+bizNumGet('item_cost')+'&fullPrice='+bizNumGet('full_price'), $rID);"]];
             unset($structure['item_cost']['break']);
             $fldVendor[] = 'show_prices_v';
         }
@@ -400,7 +268,7 @@ class inventoryMain
                 'save' => ['order'=>20,'hidden'=>$security >1?false:true,      'events'=>['onClick'=>"jq('#frmInventory').submit();"]],
                 'new'  => ['order'=>40,'hidden'=>$security >1?false:true,      'events'=>['onClick'=>"accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', 0);"]],
                 'trash'=> ['order'=>80,'hidden'=>$rID&&$security==4?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/main/delete', $rID);"]],
-                'help' => ['order'=>99,'index' =>$this->helpIndex]]]],
+                'help' => ['order'=>99,'icon'=>'help','label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
             'tabs'   => ['tabInventory'=> ['divs'=>[
                 'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
                     'general' => ['order'=>10,'type'=>'fields','keys'=>$fldGeneral],
@@ -436,6 +304,30 @@ function preSubmit() {
                 'options'=>['href'=>"'".BIZUNO_AJAX."&p=inventory/main/managerBOM&rID=$rID'"]];
         }
         $layout = array_replace_recursive($layout, $data);
+    }
+
+    /**
+     * Lists the details of a given inventory item from the database table
+     * @param array $layout - structure coming in
+     * @return modified structure
+     */
+    public function detailsType(&$layout=[])
+    {
+        if (!$security = validateSecurity('inventory', 'inv_mgr', 2)) { return; }
+        $type = clean('data', 'text', 'get');
+        if (!$type) { msgAdd("No Type passed!"); }
+        msgDebug("\n Loading defaults for type = $type");
+        $settings = getModuleCache('inventory', 'phreebooks');
+        $data = [
+            'sales' => isset($settings['sales_'.$type]) ? $settings['sales_'.$type]  : '',
+            'inv'   => isset($settings['inv_'.$type])   ? $settings['inv_'.$type]    : '',
+            'cogs'  => isset($settings['cog_'.$type])   ? $settings['cog_'.$type]    : '',
+            'method'=> isset($settings['method_'.$type])? $settings['method_'.$type] : 'f'];
+        $html  = "jq('#gl_sales').val('".$data['sales']."');";
+        $html .= "jq('#gl_inv').val('".$data['inv']."');";
+        $html .= "jq('#gl_cogs').val('".$data['cogs']."');";
+        $html .= "jq('#cost_method').val('".$data['method']."');";
+        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval', 'actionData'=>$html]]);
     }
 
     /**
@@ -818,6 +710,115 @@ var dataJ12 = ".json_encode($history['sales']).";";
     </tbody>
 </table></div>';
         return $output;
+    }
+
+    /**
+     * Inventory datagrid structure
+     * @param string $name - DOM field name
+     * @param string $filter - control to limit filtering by inventory type
+     * @param integer $security - users security level
+     * @return string - datagrid structure
+     */
+    private function dgInventory($name, $filter='none', $security=0)
+    {
+        $this->managerSettings();
+        $yes_no_choices = [['id'=>'a','text'=>lang('all')],['id'=>'y','text'=>lang('active')],['id'=>'n','text'=>lang('inactive')]];
+        switch ($this->defaults['f0']) { // clean up the filter
+            default:
+            case 'a': $f0_value = ""; break;
+            case 'y': $f0_value = "inactive='0'"; break;
+            case 'n': $f0_value = "inactive='1'"; break;
+        }
+        $data = ['id'=> $name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
+            'attr'     => ['idField'=>'id', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&p=inventory/main/managerRows"],
+            'events'   => [
+                'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".jsLang('details')."', 'inventory/main/edit', rowData.id); }",
+                'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; }}"],
+            'footnotes'=> ['codes'=>jsLang('color_codes').': <span class="row-inactive">'.jsLang('inactive').'</span>'],
+            'source'   => [
+                'tables' => ['inventory' => ['table'=>BIZUNO_DB_PREFIX."inventory"]],
+                'search' => [BIZUNO_DB_PREFIX.'inventory.id',BIZUNO_DB_PREFIX.'inventory.sku','description_short','description_purchase','description_sales','upc_code'],
+                'actions' => [
+                    'newInventory'=>['order'=>10,'icon'=>'new',  'hidden'=>$security>1?false:true,'events'=>['onClick'=>"accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', 0);"]],
+                    'clrSearch'   =>['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#f0').val('y'); jq('#search').val(''); ".$name."Reload();"]],
+                    'help'        =>['order'=>99,'icon'=>'help', 'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
+                'filters'=> [
+                    'f0'     => ['order'=>10,'label'=>lang('status'),'break'=>true,'sql'=>$f0_value,'values'=> $yes_no_choices,'attr'=>['type'=>'select','value'=>$this->defaults['f0']]],
+                    'search' => ['order'=>90,'attr'=>['value'=>$this->defaults['search']]]],
+                'sort' => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
+            'columns'  => [
+                'id'            => ['order'=>0, 'field'=>'inventory.id',      'attr'=>['hidden'=>true]],
+                'inactive'      => ['order'=>0, 'field'=>'inventory.inactive','attr'=>['hidden'=>true]],
+                'attach'        => ['order'=>0, 'field'=>'attach',            'attr'=>['hidden'=>true]],
+                'inventory_type'=> ['order'=>0, 'field'=>'inventory_type',    'attr'=>['hidden'=>true]],
+                'action' => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                    'actions'=> [
+                        'prices'=> ['order'=>20,'icon'=>'price',  'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=c', idTBD);"]],
+                        'edit'  => ['order'=>30,'icon'=>'edit',   'events'=>['onClick'=>"accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', idTBD);"]],
+                        'rename'=> ['order'=>40,'icon'=>'rename', 'events'=>['onClick'=>"var title=prompt('".$this->lang['msg_sku_entry_rename']."'); if (title!=null) jsonAction('inventory/main/rename', idTBD, title);"]],
+                        'copy'  => ['order'=>50,'icon'=>'copy',   'events'=>['onClick'=>"var title=prompt('".$this->lang['msg_sku_entry_copy']."'); if (title!=null) jsonAction('inventory/main/copy', idTBD, title);"]],
+                        'chart' => ['order'=>60,'icon'=>'mimePpt','label'=>lang('sales'),'events'=>['onClick'=>"windowEdit('inventory/tools/chartSales&rID=idTBD', 'myInvChart', '&nbsp;', 600, 500);"]],
+                        'trash' => ['order'=>90,'icon'=>'trash',  'hidden'=>$security>3?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/main/delete', idTBD);"]],
+                        'attach'=> ['order'=>95,'icon'=>'attachment','display'=>"row.attach=='1'"]]],
+                'sku'              => ['order'=>10,'field'=>BIZUNO_DB_PREFIX.'inventory.sku','label'=>pullTableLabel("inventory", 'sku'), 'attr'=>['width'=>200,'sortable'=>true,'resizable'=>true]],
+                'description_short'=> ['order'=>20,'field'=>'description_short','label'=>pullTableLabel("inventory", 'description_short'),'attr'=>['width'=>500,'sortable'=>true,'resizable'=>true]],
+                'qty_stock'        => ['order'=>30,'field'=>'qty_stock','label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]],
+                'qty_po'           => ['order'=>40,'field'=>'qty_po',   'label'=>pullTableLabel("inventory", 'qty_po'),   'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]],
+                'qty_so'           => ['order'=>50,'field'=>'qty_so',   'label'=>pullTableLabel("inventory", 'qty_so'),   'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]],
+                'qty_alloc'        => ['order'=>60,'field'=>'qty_alloc','label'=>pullTableLabel("inventory", 'qty_alloc'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]]]];
+        switch ($filter) {
+            case 'stock': $data['source']['filters']['restrict'] = ['order'=>99, 'sql'=>"inventory_type in ('si','sr','ms','mi','ma')"]; break;
+            case 'assy':  $data['source']['filters']['restrict'] = ['order'=>99, 'sql'=>"inventory_type in ('ma')"]; break;
+            default:
+        }
+        return $data;
+    }
+
+    /**
+     * Grid structure for assembly material lists
+     * @param string $name - DOM field name
+     * @param boolean $locked - [default true] leave unlocked if no journal activity has been entered for this sku
+     * @return string - grid structure
+     */
+    private function dgAssembly($name, $locked=true)
+    {
+        $data = ['id'  => $name,
+            'type'=> 'edatagrid',
+            'attr'=> ['pagination'=>false, 'rownumbers'=>true, 'singleSelect'=>true, 'toolbar'=>"#{$name}Toolbar", 'idField'=>'id'],
+            'events' => ['data'=>'assyData',
+                'onClickRow' => "function(rowIndex, row) { curIndex = rowIndex; }",
+                'onBeginEdit'=> "function(rowIndex, row) { curIndex = rowIndex; }",
+                'onDestroy'  => "function(rowIndex, row) { curIndex = undefined; }",
+                'onAdd'      => "function(rowIndex, row) { curIndex = rowIndex; }"],
+            'source' => ['actions'=>['newAssyItem'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
+            'columns' => ['id'=>['order'=>0,'attr'=>['hidden'=>true]],
+                'action'     => ['order'=>1,'label'=>lang('action'),
+                    'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
+                    'actions'=> ['trash'=>['icon'=>'trash','order'=>20,'size'=>'small','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
+                'sku'=> ['order'=>30,'label'=>lang('sku'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'center'],
+                    'events' => ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
+                        width:150, panelWidth:320, delay:500, idField:'sku', textField:'sku', mode:'remote',
+                        onClickRow: function (idx, data) {
+                            var descEditor= jq('#$name').datagrid('getEditor', {index:curIndex,field:'description'});
+                            descEditor.target.val(data.description_short);
+                            var qtyEditor = jq('#$name').datagrid('getEditor', {index:curIndex,field:'qty'});
+                            jq(qtyEditor.target).numberbox('setValue',1); },
+                        columns:[[{field:'sku',              title:'".lang('sku')."',        width:100},
+                                  {field:'description_short',title:'".lang('description')."',width:200}]]
+                    }}"]],
+                'description'=> ['order'=>40,'label'=>lang('description'),'attr'=>['width'=>250,'editor'=>'text','sortable'=>true,'resizable'=>true]],
+                'qty'        => ['order'=>60,'label'=>lang('qty_needed'), 'attr'=>['width'=>100,'value'=>1,'resizable'=>true,'align'=>'right'],
+                    'events' => ['formatter'=>"function(value) { return formatNumber(value); }",'editor'=>"{type:'numberbox'}"]],
+                'qty_stock'  => ['order'=>90,'label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['width'=>100,'resizable'=>true,'align'=>'right'],
+                    'events' => ['formatter'=>"function(value) { return formatNumber(value); }"]]]];
+        if ($locked) {
+            unset($data['columns']['action']);
+            unset($data['columns']['sku']['events']['editor']);
+            unset($data['columns']['description']['attr']['editor']);
+            unset($data['columns']['qty']['events']['editor']);
+            unset($data['source']);
+        }
+        return $data;
     }
 
     /**

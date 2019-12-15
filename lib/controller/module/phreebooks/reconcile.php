@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-09
+ * @version    3.x Last Update: 2019-11-21
  * @filesource /lib/controller/module/phreebooks/reconcile.php
  */
 
@@ -33,10 +33,13 @@ class phreebooksReconcile
     public function manager(&$layout=[])
     {
         if (!$security = validateSecurity('phreebooks', 'recon', 3)) { return; }
+        $this->helpIndex= 'cash-reconciliation';
         $htmlHead = html5('frmReconcile',['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/reconcile/save"]]).
                     html5('item_array',  ['attr'=>['type'=>'hidden']]);
         $data = ['title'=> lang('phreebooks_recon'),
-            'toolbars'=> ['tbRecon'=>['icons'=>['save'=>['order'=>40,'events'=>['onClick'=>"jq('#frmReconcile').submit();"]]]]],
+            'toolbars'=> ['tbRecon'=>['icons'=>[
+                'save'=> ['order'=>40,'events'=>['onClick'=>"jq('#frmReconcile').submit();"]],
+                'help'=> ['order'=>99,'icon'=>'help', 'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
             'datagrid'=> ['manager'=>$this->tgReconcile('tgReconcile')],
             'divs'    => [
                 'submenu'=> ['order'=>10,'type'=>'html',    'html'=>viewSubMenu('banking')],
@@ -44,7 +47,7 @@ class phreebooksReconcile
                 'formBOF'=> ['order'=>40,'type'=>'html',    'html'=>$htmlHead],
                 'dgRecon'=> ['order'=>60,'type'=>'datagrid','key' =>'manager','label'=>lang('phreebooks_recon')],
                 'formEOF'=> ['order'=>90,'type'=>'html',    'html'=>'</form>']],
-            'jsHead'  => ['init'=>"jq.cachedScript('".BIZUNO_URL."controller/module/phreebooks/phreebooks.js?ver=".MODULE_BIZUNO_VERSION."');"],
+//            'jsHead'  => ['init'=>"jq.cachedScript('".BIZUNO_URL."controller/module/phreebooks/phreebooks.js?ver=".MODULE_BIZUNO_VERSION."');"],
             'jsBody'  => ['preSubmit'=>"function preSubmit() {
     var items = jq('#tgReconcile').treegrid('getData');
     var rowsChk = [];

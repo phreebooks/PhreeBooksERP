@@ -169,7 +169,7 @@ final class io
         $data = fread($handle, $size);
         msgDebug("\n Read file of size = $size");
         fclose($handle);
-        return array('data'=>$data, 'size'=>$size);
+        return ['data'=>$data, 'size'=>$size];
     }
 
     /**

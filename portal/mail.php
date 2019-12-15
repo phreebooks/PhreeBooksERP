@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-02-18
+ * @version    3.x Last Update: 2019-11-04
  * @filesource /portal/mail.php
  *
  */
@@ -30,8 +30,12 @@ class portalMail
     public function sendMail()
     {
         error_reporting(E_ALL & ~E_NOTICE); // This is to eliminate errors from undefined constants in phpmailer
-        require_once(BIZUNO_ROOT."apps/PHPMailer/class.phpmailer.php");
-        $mail = new \PHPMailer(true);
+        require_once(BIZUNO_ROOT."apps/PHPMailer/src/PHPMailer.php"); // uses version 6.0.7
+        require_once(BIZUNO_ROOT."apps/PHPMailer/src/Exception.php");
+        $mail = new \PHPMailer\PHPMailer\PHPMailer(true);
+        // For debugging connections and such
+//      $mail->SMTPDebug = 2;
+//      $mail->Debugoutput = function($str, $level) { msgDebug("\nphpMailer Debug level $level; message: $str"); };
         try {
             $mail->CharSet = defined('CHARSET') ? CHARSET : 'utf-8'; // default "iso-8859-1";
             $mail->isHTML(true); // set email format to HTML
@@ -54,8 +58,9 @@ class portalMail
             }
             foreach ($this->attach as $file) { $mail->AddAttachment($file['path'], $file['name']); }
             $smtp = $this->setTransport();
+//          msgDebug("\nSMTP credentials = ".print_r($smtp, true));
             if (!empty($smtp['smtp_enable'])) {
-                require_once(BIZUNO_ROOT."apps/PHPMailer/class.smtp.php");
+                require_once(BIZUNO_ROOT."apps/PHPMailer/src/SMTP.php");
                 $mail->isSMTP();
                 $mail->SMTPAuth = true;
                 $mail->Host = $smtp['smtp_host'];

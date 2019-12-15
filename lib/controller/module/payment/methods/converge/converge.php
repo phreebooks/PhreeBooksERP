@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-18
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/payment/methods/converge.php
  *
  * Source Information:
@@ -130,8 +130,8 @@ class converge
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account', discGL:'$discount_gl', ref:'$invoice_num', refAX:'$invoice_amex'};
 function payment_$this->code() {
     bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
-    bizGridSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
-    bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
+    bizSelSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
+    bizSelSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
 }
 function convergeRefNum(type) {
     if (type=='stored') { var ccNum = jq('#{$this->code}selCards').val(); }

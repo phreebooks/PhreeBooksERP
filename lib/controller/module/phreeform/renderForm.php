@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-24
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /controller/module/phreeform/renderForm.php
  */
 
@@ -232,9 +232,9 @@ class PDF extends \TCPDF
     }
 
     /**
-     * Creates an image link on the PDF output file
+     * Renders an image from a link on the PDF output file
      * @param object $Params - typically the settings of a specific field
-     * @param string $path - full path of where to find file
+     * @param string $path - relative path of where to find file in the images folder
      * @return updated class variables ready to render PDF element
      */
     function FormImgLink($Params, $path)
@@ -245,9 +245,10 @@ class PDF extends \TCPDF
         if (!isset($Params->width))   { $Params->width    = ''; }
         if (!isset($Params->height))  { $Params->height   = ''; }
         if ( isset($Params->settings->processing)) { $path = viewProcess($path, $Params->settings->processing); }
-        $ext = strtolower(substr($path, strrpos($path, '.')+1));
-        if (is_file(BIZUNO_DATA.$path) && ($ext == 'jpg' || $ext == 'jpeg' || $ext == 'png')) {
-            $this->Image(BIZUNO_DATA.$path, $Params->abscissa, $Params->ordinate, $Params->width, $Params->height);
+        $ext = pathinfo($this->myFolder."images/$path", PATHINFO_EXTENSION);
+        msgDebug("\nLooking for image at BIZUNO_DATA/images/$path");
+        if (is_file(BIZUNO_DATA."images/$path") && (in_array(strtolower($ext), ['jpg', 'jpeg', 'png']))) {
+            $this->Image(BIZUNO_DATA."images/$path", $Params->abscissa, $Params->ordinate, $Params->width, $Params->height);
         } elseif (!empty($Params->hideNone)) {
             $this->Cell($Params->width, 5, lang('none'), 1, 0, 'C');
         } else { // no image was found at the specified path, draw a box

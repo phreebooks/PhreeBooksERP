@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-09
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -35,7 +35,7 @@ class bizunoAdmin
         $this->structure= [
             'url'            => BIZUNO_URL."controller/module/$this->moduleID/",
             'version'        => MODULE_BIZUNO_VERSION,
-            'category'         => 'bizuno',
+            'category'       => 'bizuno',
             'required'       => '1',
             'usersAttachPath'=> 'data/bizuno/users/uploads',
             'quickBar'       => ['styles'=>['float'=>'right','padding'=>'1px'],'child'=>[
@@ -48,7 +48,7 @@ class bizunoAdmin
                     'profile'=> ['order'=>20,'label'=>lang('profile'), 'icon'=>'profile', 'events'=>['onClick'=>"hrefClick('bizuno/profile/edit');"]],
                     'roles'  => ['order'=>30,'label'=>lang('roles'),   'icon'=>'roles',   'events'=>['onClick'=>"hrefClick('bizuno/roles/manager');"]],
                     'users'  => ['order'=>40,'label'=>lang('users'),   'icon'=>'users',   'events'=>['onClick'=>"hrefClick('bizuno/users/manager');"]],
-                    'help'   => ['order'=>50,'label'=>lang('help'),    'icon'=>'help',    'required'=>true,'events'=>['onClick'=>"winHref('bizuno_help', 'https://www.bizuno.com?p=bizuno/portal/helpMain')"]],
+                    'help'   => ['order'=>50,'label'=>lang('help'),    'icon'=>'help',    'required'=>true,'events'=>['onClick'=>"bizHelp();"]],
                     'message'=> ['order'=>60,'label'=>lang('messages'),'icon'=>'email',   'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
                     'ticket' => ['order'=>70,'label'=>lang('support'), 'icon'=>'support', 'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/tools/ticketMain');"],'hidden'=>defined('BIZUNO_SUPPORT_EMAIL')?false:true],
                     'logout' => ['order'=>90,'label'=>lang('logout'),  'icon'=>'logout',  'required'=>true,'events'=>['onClick'=>"jsonAction('bizuno/portal/logout');"]]]]]],

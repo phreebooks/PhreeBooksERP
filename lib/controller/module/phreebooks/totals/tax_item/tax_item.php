@@ -1,6 +1,6 @@
 <?php
 /*
- * PhreeBooks Total method to calculate sales tax at the item level (shipping will not be taxed)
+ * PhreeBooks Total method to calculate sales tax at the item level (shipping will not be taxed here)
  *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-21
+ * @version    3.x Last Update: 2019-12-03
  * @filesource /controller/module/phreebooks/totals/tax_item/tax_item.php
  */
 
@@ -37,28 +37,37 @@ class tax_item
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
-        $this->fields = [
-            'totals_tax_item' => ['label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->cType).' '.$this->lang['extra_title'],
+        $this->fields  = [
+            'totals_tax_item'     => ['label'=>pullTableLabel('journal_main', 'tax_rate_id', $this->cType).' '.$this->lang['extra_title'],
                 'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']],
-            'totals_tax_item_text'=> ['attr' =>['value'=>'textTBD','size'=>'16','readonly'=>'readonly']],
-            'totals_tax_item_gl'  => ['label'=>lang('gl_account'),'attr'=>['type'=>'text', 'value'=>'glTBD','size'=>'5','readonly'=>'readonly']],
-            'totals_tax_item_amt' => ['attr' =>['value'=>'amtTBD','size'=>'10','style'=>'text-align:right','readonly'=>'readonly']],
+            'totals_tax_item_text'=> ['attr' =>['value'=>'textTBD','size'=>16,'readonly'=>'readonly']],
+//          'totals_tax_item_gl'  => ['label'=>lang('gl_account'),'attr'=>['type'=>'text','value'=>'glTBD','size'=>5,'readonly'=>'readonly']],
+            'totals_tax_item_amt' => ['attr' =>['value'=>'amtTBD', 'size'=>10,'style'=>'text-align:right','readonly'=>'readonly']],
             'totals_tax_item_opt' => ['icon' =>'settings','size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_tax_item').toggle('slow');"]]];
     }
 
+    /**
+     *
+     * @return type
+     */
     public function settingsStructure()
     {
         return [
-            'gl_type' => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
-            'journals'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
-            'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
+            'gl_type' => ['attr' =>['type'=>'hidden','value'=>$this->settings['gl_type']]],
+            'journals'=> ['attr' =>['type'=>'hidden','value'=>$this->settings['journals']]],
+            'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'value'=>$this->settings['order']]]];
     }
 
+    /**
+     *
+     * @param array $main
+     * @param type $item
+     * @param type $begBal
+     */
     public function glEntry(&$main, &$item, &$begBal=0)
     {
-        // @todo the below should use the function $tax_rates = loadTaxes($this->cType);
-        // this should also be broken into common sub functions as they are shared with tax_order and shipping
-        $tax_rates= dbGetMulti(BIZUNO_DB_PREFIX."tax_rates", "type='$this->cType'");
+        $type     = in_array($main['journal_id'], [3,4,6,7,21]) ? 'v' : 'c';
+        $tax_rates= loadTaxes($type); // dbGetMulti(BIZUNO_DB_PREFIX."tax_rates", "type='$this->cType'");
         $gl       = [];
         $totalTax = 0;
         $roundAuth= getModuleCache('phreebooks', 'settings', 'general', 'round_tax_auth', 0);
@@ -66,15 +75,12 @@ class tax_item
         foreach ($item as $row) {
             if (isset($row['tax_rate_id']) && $row['tax_rate_id'] > 0) {
                 foreach ($tax_rates as $key => $value) { if ($row['tax_rate_id'] == $value['id']) { break; } }
-                $rates = json_decode($tax_rates[$key]['settings'], true);
-                foreach ($rates as $rate) {
-                    // calculate the tax
-                    $tax = ($rate['rate'] / 100) * ($row['debit_amount'] + $row['credit_amount']);
-                    // add it to the $gl by glAcct
-                    if (!isset($gl[$rate['glAcct']]['amount'])) { $gl[$rate['glAcct']]['amount'] = 0; }
-                    if (!isset($gl[$rate['glAcct']]['text']))   { $gl[$rate['glAcct']]['text'] = []; }
+                foreach ($tax_rates[$key]['auths'] as $rate) {
+                    if (empty($gl[$rate['glAcct']]['amount'])) { $gl[$rate['glAcct']]['amount']= 0;  }
+                    if (empty($gl[$rate['glAcct']]['text']))   { $gl[$rate['glAcct']]['text']  = []; }
+                    $tax = ($rate['rate'] / 100) * ($row['debit_amount'] + $row['credit_amount'] - $this->getDiscount($item, $row['item_cnt']));
                     if (!in_array($rate['text'], $gl[$rate['glAcct']]['text'])) { $gl[$rate['glAcct']]['text'][] = $rate['text']; }
-                    $gl[$rate['glAcct']]['amount'] += $tax;
+                    $gl[$rate['glAcct']]['amount'] += $tax; // add it by glAcct
                 }
             }
         }
@@ -86,17 +92,22 @@ class tax_item
                 'gl_type'      => $this->settings['gl_type'],
                 'qty'          => '1',
                 'description'  => implode(' : ', $value['text']),
-                'debit_amount' => in_array($main['journal_id'], [3,4, 6,13,20,21,22])       ? $value['amount'] : 0,
-                'credit_amount'=> in_array($main['journal_id'], [7,9,10,12,14,16,17,18,19]) ? $value['amount'] : 0,
+                'debit_amount' => in_array($main['journal_id'], [3,4, 6,13,21]) ? $value['amount'] : 0,
+                'credit_amount'=> in_array($main['journal_id'], [7,9,10,12,19]) ? $value['amount'] : 0,
                 'gl_account'   => $glAcct,
                 'post_date'    => $main['post_date']];
             $totalTax += $value['amount'];
         }
-        $main['sales_tax'] += roundAmount($totalTax, $isoVals['dec_len']);
-        $begBal += roundAmount($totalTax, $isoVals['dec_len']);
+        $main['sales_tax']+= roundAmount($totalTax, $isoVals['dec_len']);
+        $begBal           += roundAmount($totalTax, $isoVals['dec_len']);
         msgDebug("\nTaxItem is returning balance = $begBal");
     }
 
+    /**
+     *
+     * @param type $output
+     * @param type $data
+     */
     public function render(&$output, $data=[])
     {
         $hide = $this->hidden ? ';display:none' : '';
@@ -110,6 +121,11 @@ class tax_item
         $output['jsHead'][] = $this->jsTotal($data);
     }
 
+    /**
+     *
+     * @param type $data
+     * @return type
+     */
     public function jsTotal($data=[])
     {
         $jID = $data['fields']['journal_id']['attr']['value'];
@@ -129,10 +145,13 @@ function totals_tax_item(begBalance) {
         for (var idx=0; idx<bizDefaults.taxRates.$type.rows.length; idx++) {
             if (rate_id != bizDefaults.taxRates.$type.rows[idx].id) { continue; }
             if (typeof bizDefaults.taxRates.$type.rows[idx].auths == 'undefined') { continue; }
-            var taxAuths = bizDefaults.taxRates.$type.rows[idx].auths;
+            var taxAuths  = bizDefaults.taxRates.$type.rows[idx].auths;
             if (typeof taxAuths == 'undefined') { continue; }
-            var rowBalance = roundCurrency(parseFloat(rowData.rows[rowIndex]['total']));
-            if (isNaN(rowBalance)) { continue; }
+            var rowBalance= roundCurrency(parseFloat(rowData.rows[rowIndex]['total']));
+            if ( isNaN(rowBalance)) { continue; }
+// NEED TO FACTOR IN DISCOUNT BY LINE IF THE FIELD IS SET: unit_discount
+            var unitDisc  = roundCurrency(parseFloat(rowData.rows[rowIndex]['unit_discount']));
+            if (!isNaN(unitDisc))   { rowBalance -= unitDisc; }
             for (var i=0; i<taxAuths.length; i++) {
                 cID = taxAuths[i].text;
                 if (typeof taxOutput[cID] == 'undefined') taxOutput[cID] = new Object();
@@ -161,5 +180,16 @@ function totals_tax_item(begBalance) {
     bizNumSet('totals_tax_item', newTaxItem);
     return newBalance;
 }";
+    }
+
+    /**
+     *
+     */
+    private function getDiscount($item, $item_cnt)
+    {
+        foreach ($item as $row) {
+            if ($row['gl_type']=='dsi' && $row['item_cnt']==$item_cnt) { return $row['debit_amount'] + $row['credit_amount']; }
+        }
+        return 0;
     }
 }

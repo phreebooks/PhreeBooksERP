@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-09
+ * @version    3.x Last Update: 2019-12-03
  * @filesource /lib/controller/module/inventory/dashboards/stock_aging/stock_aging.php
  */
 
@@ -50,12 +50,12 @@ class stock_aging
 
     public function render(&$layout=[])
     {
-        $ttlQty  = $ttlCost = $value = 0;
-        $this->struc  = $this->settingsStructure();
-        $this->ageFld = dbFieldExists(BIZUNO_DB_PREFIX.'inventory', 'shelf_life') ? true : false;
-        $iconExp = ['attr'=>['type'=>'button','value'=>lang('download')],'events'=>['onClick'=>"jq('#form{$this->code}').submit();"]];
-        $action  = BIZUNO_AJAX."&p=$this->category/tools/stockAging";
-        $js      = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');
+        $ttlQty      = $ttlCost = $value = 0;
+        $this->struc = $this->settingsStructure();
+        $this->ageFld= dbFieldExists(BIZUNO_DB_PREFIX.'inventory', 'shelf_life') ? true : false;
+        $iconExp     = ['attr'=>['type'=>'button','value'=>lang('download')],'events'=>['onClick'=>"jq('#form{$this->code}').submit();"]];
+        $action      = BIZUNO_AJAX."&p=$this->category/tools/stockAging";
+        $js          = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');
 ajaxDownload('form{$this->code}');
 function chart{$this->code}() {
     var data = new google.visualization.DataTable();
@@ -64,7 +64,7 @@ function chart{$this->code}() {
     data.addColumn('number','" .jsLang('remaining')."');
     data.addColumn('number', '".jsLang('value')."');
     data.addRows([";
-        $rows    = dbGetMulti(BIZUNO_DB_PREFIX.'inventory_history', "remaining>0", 'post_date', ['sku', 'post_date', 'remaining', 'unit_cost']);
+        $rows = dbGetMulti(BIZUNO_DB_PREFIX.'inventory_history', "remaining>0", 'post_date', ['sku', 'post_date', 'remaining', 'unit_cost']);
         foreach ($rows as $row) {
             $ageDate = $this->getAgingValue($row['sku']);
             msgDebug("\nsku {$row['sku']} comparing ageDate: $ageDate with post date: {$row['post_date']}");
@@ -83,7 +83,7 @@ google.charts.load('current', {'packages':['table']});
 google.charts.setOnLoadCallback(chart{$this->code});\n";
         $layout = array_merge_recursive($layout, [
             'divs'  => [
-                'admin' =>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'defAge', $this->code.'_btn']]]],
+                'admin' =>['divs' =>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'defAge', $this->code.'_btn']]]],
                 'body'  =>['order'=>40,'type'=>'html','html'=>'<div style="width:100%" id="'.$this->code.'_chart"></div>'],
                 'export'=>['order'=>80,'type'=>'html','html'=>'<form id="form'.$this->code.'" action="'.$action.'">'.html5('', $iconExp).'</form>']],
             'fields'=> [

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-19
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/payment/methods/authorizenet.php
  *
  * Source Information:
@@ -120,8 +120,8 @@ class authorizenet
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account', discGL:'$discount_gl', ref:'$invoice_num', refAX:'$invoice_amex'};
 function payment_$this->code() {
     bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
-    bizGridSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
-    bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
+    bizSelSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
+    bizSelSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
 }
 function authorizenetRefNum(type) {
     if (type=='stored') { var ccNum = jq('#{$this->code}selCards').val(); }
@@ -289,7 +289,7 @@ $output['body'] .= '</div>
             ], $submit_data);
         if ($this->mode=='test') { $txnReq['x_test_request'] = 'TRUE'; }
         msgDebug("Request submit_data = ".print_r($txnReq, true));
-        $url = $this->mode=='test' ? PAYMENT_AUTHORIZENET_URL_TEST : PAYMENT_AUTHORIZENET_URL; 
+        $url = $this->mode=='test' ? PAYMENT_AUTHORIZENET_URL_TEST : PAYMENT_AUTHORIZENET_URL;
         $output = [];
         foreach ($txnReq as $key => $value) {
             if ($key != 'x_delim_char' && $key != 'x_encap_char') {

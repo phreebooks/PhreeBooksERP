@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    3.x Last Update: 2019-11-04
  * @filesource /lib/controller/module/phreebooks/journal.php
  */
 
@@ -359,7 +359,7 @@ class journal
                 'amount'      => roundAmount($row['total_amount']),
                 'gl_account'  => $row['gl_acct_id'],
                 'post_date'   => $row['post_date'],
-                'date_1'      => $dates['net_date'],
+                'date_1'      => !empty($row['terminal_date']) ? $row['terminal_date'] : $dates['net_date'], // priority to posted due date
                 'discount'    => $discount,
                 'total'       => roundAmount($row['total_amount']) - $discount,
                 'checked'     => in_array($row['id'], $preChecked) ? true : false];
@@ -403,7 +403,7 @@ class journal
                 'amount'      => $row['total_amount'] + $paid,
                 'gl_account'  => $row['gl_acct_id'],
                 'inv_date'    => $row['post_date'],
-                'date_1'      => $dates['net_date'],
+                'date_1'      => !empty($row['terminal_date']) ? $row['terminal_date'] : $dates['net_date'], // priority to posted due date
                 'discount'    => $discount,
                 'total'       => $row['total_amount'] + $paid - $discount,
                 'checked'     => $row['waiting'] ? false : true];

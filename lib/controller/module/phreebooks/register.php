@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-12
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/phreebooks/register.php
  */
 
@@ -32,9 +32,10 @@ class phreebooksRegister
      */
     public function manager(&$layout=[])
     {
-        if (!$security = validateSecurity('phreebooks', 'register', 1)) { return; }
-        $title = lang('phreebooks_register');
-        $layout = array_replace_recursive($layout, viewMain(), [
+        if (!$security  = validateSecurity('phreebooks', 'register', 1)) { return; }
+        $this->helpIndex= 'bank-register';
+        $title          = lang('phreebooks_register');
+        $layout         = array_replace_recursive($layout, viewMain(), [
             'title'=> $title,
             'datagrid' => ['manager'=>$this->dgRegister('dgRegister', $security)],
             'divs'     => [
@@ -89,7 +90,8 @@ class phreebooksRegister
             'attr'   => ['toolbar'=>"#{$name}Toolbar",'url'=>BIZUNO_AJAX."&p=phreebooks/register/managerRows"],
             'source' => ['filters'=>[
                 'period'=> ['order'=>10,'options'=>['width'=>300],'label'=>lang('period'),'break'=>true,'values'=>dbPeriodDropDown(false),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'fy', 'period')]],
-                'glAcct'=> ['order'=>20,'options'=>['width'=>350],'label'=>lang('gl_account'),'values'=>dbGLDropDown(false, ['0']),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash')]]]],
+                'glAcct'=> ['order'=>20,'options'=>['width'=>350],'label'=>lang('gl_account'),'values'=>dbGLDropDown(false, ['0']),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash')]],
+                'help'  => ['order'=>99,'icon'=>'help', 'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]],
             'columns'=> [
                 'id'         => ['order'=> 0,'attr'=>['hidden'=>true]],
                 'post_date'  => ['order'=>10,'label'=>lang('date'),       'attr'=>['resizable'=>true]],

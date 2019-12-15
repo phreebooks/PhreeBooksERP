@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-11
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/bizuno/roles.php
  */
 
@@ -29,7 +29,8 @@ class bizunoRoles
 
     function __construct()
     {
-        $this->lang = getLang($this->moduleID);
+        $this->lang     = getLang($this->moduleID);
+        $this->helpIndex= "roles";
         $this->securityChoices = [
             ['id'=>'-1','text'=>lang('select')],
             ['id'=>'0', 'text'=>lang('none')],
@@ -112,7 +113,7 @@ class bizunoRoles
             'toolbars'=> ['tbRoles'=>['icons'=>[
                 'save' => ['order'=>20,'hidden'=>$security>1?'0':'1',   'events'=>['onClick'=>"jq('#frmRoles').submit();"]],
                 'new'  => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"accordionEdit('accRoles','dgRoles','divRolesDetail','".jsLang('details')."','bizuno/roles/edit', 0);"]],
-                'help' => ['order'=>99,'index' =>'']]]],
+                'help'=>['order'=>99,'icon'=>'help','label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
             'tabs'    => ['tabRoles'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]]],
             'forms'   => ['frmRoles'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/roles/save"]]],
             'fields'  => $structure,
@@ -301,7 +302,8 @@ class bizunoRoles
                 'tables'  => ['roles'=>['table'=>BIZUNO_DB_PREFIX."roles"]],
                 'actions' => [
                     'newRole'  => ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', 0);"]],
-                    'clrSearch'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]],
+                    'clrSearch'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]],
+                    'help'     => ['order'=>99,'icon'=>'help','label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
                 'search'  => [BIZUNO_DB_PREFIX."roles".'.title'],
                 'sort'    => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
                 'filters' => ['search' => ['order'=>'90','attr'=>['value'=>$this->defaults['search']]]]],

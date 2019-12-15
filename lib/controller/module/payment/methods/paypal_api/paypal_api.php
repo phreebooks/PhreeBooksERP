@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-12-19
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/payment/methods/paypal_api.php
  */
 
@@ -28,7 +28,7 @@ class paypal_api
     public $moduleID = 'payment';
     public $methodDir= 'methods';
     public $code     = 'paypal_api';
-    
+
     public function __construct()
     {
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
@@ -65,19 +65,19 @@ arrPmtMethod['$this->code'] = {cashGL:'$gl_account',discGL:'$discount_gl',ref:'$
 function payment_{$this->code}() {
     if (!jq('#id').val()) {
         bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
-        bizGridSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
-        bizGridSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
+        bizSelSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
+        bizSelSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
     }
 }";
         if ($this->code == $dispFirst) { $output['jsReady'][] = "bizTextSet('invoice_num', '$invoice_num');"; }
         $output['body'] .= html5($this->code.'_ref_1',$this->viewData['ref_1']);
     }
-    
+
     public function sale($fields)
     {
         return ['txID'=>$fields['ref_1'], 'txTime'=>date('c')];
     }
-    
+
     /**
      * @method paymentDelete - This method will delete/void a payment made BEFORE the processor commits the payment, typically must be run the same day as the sale
      * @param string $request - data from which to pull transaction and perform delete

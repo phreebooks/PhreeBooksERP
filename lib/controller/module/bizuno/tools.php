@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-22
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/bizuno/tools.php
  */
 
@@ -30,9 +30,9 @@ class bizunoTools {
 
     function __construct()
     {
-        $this->lang = getLang($this->moduleID);
-        $this->supportEmail = defined('BIZUNO_SUPPORT_EMAIL') ? BIZUNO_SUPPORT_EMAIL : '';
-        $this->reasons = [
+        $this->lang        = getLang($this->moduleID);
+        $this->supportEmail= defined('BIZUNO_SUPPORT_EMAIL') ? BIZUNO_SUPPORT_EMAIL : '';
+        $this->reasons     = [
             'question'  => $this->lang['ticket_question'],
             'bug'       => $this->lang['ticket_bug'],
             'suggestion'=> $this->lang['ticket_suggestion'],
@@ -174,7 +174,7 @@ class bizunoTools {
         if (!$security = validateSecurity('bizuno', 'impexp', 1)) { return; }
         $title= lang('bizuno_impexp');
         $data = ['title'=> $title,
-            'toolbars' =>['tbImpExp'=>['icons'=>['help'=>['order'=>99,'index'=>'']]]],
+            'toolbars' =>['tbImpExp'=>['icons'=>['help'=>['order'=>99,'icon'=>'help','label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>'importing-exporting']]]],
             'divs' => [
                 'submenu'=> ['order'=>10,'type'=>'html',   'html'=>viewSubMenu('tools')],
                 'toolbar'=> ['order'=>20,'type'=>'toolbar','key' =>'tbImpExp'],

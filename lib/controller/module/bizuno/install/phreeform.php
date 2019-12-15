@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-22
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/bizuno/install/phreeform.php
  */
 
@@ -47,7 +47,8 @@ $phreeform = [
     'inv'  => ['title'=>'inventory', 'folders'=>[
         'inv:j14'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_14'],
         'inv:j16'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_16'],
-        'inv:rpt'  => ['type'=>'dir', 'title'=>'reports']]],
+        'inv:rpt'  => ['type'=>'dir', 'title'=>'reports'],
+        'inv:frm'  => ['type'=>'dir', 'title'=>'forms']]],
     'vend' => ['title'=>'vendors',   'folders'=>[
         'vend:rpt' => ['type'=>'dir', 'title'=>'reports'],
         'vend:j3'  => ['type'=>'dir', 'title'=>'journal_main_journal_id_3'],

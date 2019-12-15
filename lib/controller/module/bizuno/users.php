@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-12
+ * @version    3.x Last Update: 2019-11-05
  * @filesource lib/controller/module/bizuno/users.php
  */
 
@@ -32,7 +32,8 @@ class bizunoUsers
 
     function __construct()
     {
-        $this->lang = getLang($this->moduleID);
+        $this->lang     = getLang($this->moduleID);
+        $this->helpIndex= "users";
     }
 
     /**
@@ -119,7 +120,7 @@ class bizunoUsers
             'toolbars'=> ['tbUsers'=>['icons'=>[
                 'save'=> ['order'=>20,'hidden'=>$security>1?'0':'1',   'events'=>['onClick'=>"jq('#frmUsers').submit();"]],
                 'new' => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".jsLang('details')."', 'bizuno/users/edit', 0);"]],
-                'help'=> ['order'=>99,'index' =>'']]]],
+                'help'=> ['order'=>99,'icon'=>'help','label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
             'tabs'=> ['tabUsers'=>['divs'=>[
                 'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
                     'body'  => ['order'=>30,'type'=>'fields','keys'=>$keys],
@@ -321,7 +322,8 @@ class bizunoUsers
                     'roles' => ['table'=>BIZUNO_DB_PREFIX."roles", 'join'=>'join','links'=>BIZUNO_DB_PREFIX."roles.id=".BIZUNO_DB_PREFIX."users.role_id"]],
                 'actions' => [
                     'newUser'  => ['order'=>10, 'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', 0);"]],
-                    'clrSearch'=> ['order'=>50, 'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]]],
+                    'clrSearch'=> ['order'=>50, 'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]],
+                    'help'     => ['order'=>99,'icon'=>'help','label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
                 'search' => [BIZUNO_DB_PREFIX."users.email", BIZUNO_DB_PREFIX."roles".'.title'],
                 'sort'   => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
                 'filters'=> [

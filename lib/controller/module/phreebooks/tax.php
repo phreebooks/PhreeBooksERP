@@ -351,7 +351,7 @@ function taxPreSubmit{$type}(type) {
                         'events'=> ['formatter'=>"function(value, row) { return row.cTitle; }",
                             'editor'=>"{type:'combogrid', options:{width:130, panelWidth:750, delay:900, idField:'id', textField:'primary_name', mode:'remote',
     url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type=v', selectOnNavigation:false,
-    onSelect:function(index,row) { bizTextEdSet('$name',curIndex,'text',row.short_name); bizGridEdSet('$name',curIndex,'glAcct',row.gl_account); bizNumEdSet('$name',curIndex,'rate', 0); },
+    onSelect:function(index,row) { bizSelEdSet('$name',curIndex,'text',row.short_name); bizGridEdSet('$name',curIndex,'glAcct',row.gl_account); bizNumEdSet('$name',curIndex,'rate', 0); },
     columns: [[
       {field:'id',          hidden:true},
       {field:'short_name',  width:100,title:'".jsLang('contacts_short_name')."'},

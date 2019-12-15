@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-18
+ * @version    3.x Last Update: 2019-12-03
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -34,34 +34,34 @@ class phreebooksMain
 
     function __construct()
     {
-        $this->lang   = getLang($this->moduleID);
-        $this->rID    = clean('rID', 'integer', 'get');
-        $this->action = clean('bizAction', 'text', 'get');
+        $this->lang  = getLang($this->moduleID);
+        $this->rID   = clean('rID', 'integer', 'get');
+        $this->action= clean('bizAction', 'text', 'get');
         if ($this->rID && $this->action <> 'inv') { $_GET['jID'] = $this->journalID = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'journal_id', "id=$this->rID"); }
         else { $this->journalID = clean('jID', 'integer', 'get'); }
         if (!defined('JOURNAL_ID')) { define('JOURNAL_ID', $this->journalID); }
-        $this->type   = clean('type', ['format'=>'char', 'default'=>in_array($this->journalID, [2,3,4,6,7,17,20,21]) ? 'v' : 'c'], 'get');
+        $this->type  = clean('type', ['format'=>'char', 'default'=>in_array($this->journalID, [2,3,4,6,7,17,20,21]) ? 'v' : 'c'], 'get');
         if (!defined('CONTACT_TYPE')) { define('CONTACT_TYPE', $this->type); }
-        $this->helpIndex = "phreebooks.main.intro.$this->journalID";
+        $this->helpIndex = "";
         switch ($this->journalID) {
-            case  2: $this->gl_type= 'gl';   break; // General Journal
-            case  3: // Vendor RFQ
-            case  4: // Vendor PO
-            case  6: // Vendor Purchases
-            case  7: // Vendor Credit Memos
-            case  9: // Customer RFQ
-            case 10: // Customer SO
-            case 12: // Customer Sales
-            case 13: // Customer Credit Memos
-            case 19: // Point of Sale
-            case 21: $this->gl_type = 'itm'; break; // Point of Purchase
-            case 14: $this->gl_type = 'asy'; break; // Inventory Assemblies
-            case 15: // Inventory Store Transfers
-            case 16: $this->gl_type = 'adj'; break; // Inventory Adjustments
-            case 17: // Vendor Receipts
-            case 18: $this->gl_type = 'pmt'; break; // Customer Receipts
-            case 20: // Vendor Payments
-            case 22: $this->gl_type = 'pmt'; break; // Customer Payments
+            case  2: $this->helpIndex = "gl-manager";           $this->gl_type= 'gl'; break; // General Journal
+            case  3: $this->helpIndex = "vendors-rfq";          $this->gl_type='itm'; break; // Vendor RFQ
+            case  4: $this->helpIndex = "purchase-order";       $this->gl_type='itm'; break; // Vendor PO
+            case  6: $this->helpIndex = "purchase";             $this->gl_type='itm'; break; // Vendor Purchases
+            case  7: $this->helpIndex = "vendors-cm";           $this->gl_type='itm'; break; // Vendor Credit Memos
+            case  9: $this->helpIndex = "customers-rfq";        $this->gl_type='itm'; break; // Customer RFQ
+            case 10: $this->helpIndex = "sales-order";          $this->gl_type='itm'; break; // Customer SO
+            case 12: $this->helpIndex = "sale";                 $this->gl_type='itm'; break; // Customer Sales
+            case 13: $this->helpIndex = "customers-cm";         $this->gl_type='itm'; break; // Customer Credit Memos
+            case 14: $this->helpIndex = "inventory-assemblies"; $this->gl_type='asy'; break; // Inventory Assemblies
+            case 15: $this->helpIndex = "";                     $this->gl_type='adj'; break; // Inventory Store Transfers
+            case 16: $this->helpIndex = "inventory-adjustments";$this->gl_type='adj'; break; // Inventory Adjustments
+            case 17: $this->helpIndex = "vendor-refunds";       $this->gl_type='pmt'; break; // Vendor Receipts
+            case 18: $this->helpIndex = "customer-receipts";    $this->gl_type='pmt'; break; // Customer Receipts
+            case 19: $this->helpIndex = "";                     $this->gl_type='itm'; break; // Point of Sale
+            case 20: $this->helpIndex = "vendor-payments";      $this->gl_type='pmt'; break; // Vendor Payments
+            case 21: $this->helpIndex = "";                     $this->gl_type='itm'; break; // Point of Purchase
+            case 22: $this->helpIndex = "customer-refunds";     $this->gl_type='pmt'; break; // Customer Payments
         }
     }
 
@@ -78,21 +78,25 @@ class phreebooksMain
         $mgr   = clean('mgr', 'boolean', 'get');
         $jsBody= $jsReady = '';
         $detail= lang('journal_main_journal_id', $this->journalID);
-        if     (in_array($this->journalID, [3, 4, 6, 7])) { $manager = sprintf(lang('tbd_manager'), lang('journal_main_journal_id_6')); }
-        elseif (in_array($this->journalID, [9,10,12,13])) { $manager = sprintf(lang('tbd_manager'), lang('journal_main_journal_id_12')); }
-        else   { $manager= sprintf(lang('tbd_manager'), lang('journal_main_journal_id', $this->journalID)); }
+        if     (in_array($this->journalID, [3, 4, 6, 7])) {
+            $manager = sprintf(lang('tbd_manager'), lang('journal_main_journal_id_6'));
+            $this->helpIndex = "purchase-manager";
+            $submenu = viewSubMenu('vendors');
+        } elseif (in_array($this->journalID, [9,10,12,13])) {
+            $manager = sprintf(lang('tbd_manager'), lang('journal_main_journal_id_12'));
+            $this->helpIndex = "sales-manager";
+            $submenu = viewSubMenu('customers');
+        } else { $manager= sprintf(lang('tbd_manager'), lang('journal_main_journal_id', $this->journalID)); }
         if ($this->journalID == 0) { // search
             $jsBody = "jq('#postDateMin').datebox({onChange:function (newDate) { jq('#postDateMin').val(newDate); } });
 jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val(newDate); } });";
+            $submenu = viewSubMenu('tools');
         } elseif (!$mgr || $rID || $cID) { // get the detail screen
             if ($this->action=='inv') { $jsReady = "setTimeout(function () { journalEdit($this->journalID, 0,    $cID, '$this->action', '', $rID) }, 500);\n"; }
             else                      { $jsReady = "setTimeout(function () { journalEdit($this->journalID, $rID, $cID, '$this->action') }, 500);\n"; }
         }
         $jsReady .= "bizFocus('search', 'dgPhreeBooks');";
-        if     (in_array($this->journalID, [3, 4, 6, 7]))       { $submenu = viewSubMenu('vendors'); }
-        elseif (in_array($this->journalID, [9,10,12,13]))       { $submenu = viewSubMenu('customers'); }
-        elseif (in_array($this->journalID, [0]))                { $submenu = viewSubMenu('tools'); }
-        elseif (in_array($this->journalID, [2]))                { $submenu = viewSubMenu('ledger'); }
+        if     (in_array($this->journalID, [2]))                { $submenu = viewSubMenu('ledger'); }
         elseif (in_array($this->journalID, [14,16]))            { $submenu = viewSubMenu('inventory'); }
         elseif (in_array($this->journalID, [17,18,19,20,21,22])){ $submenu = viewSubMenu('banking'); }
         else                                                    { $submenu = ''; }
@@ -104,7 +108,8 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
                 'divJournalManager'=> ['order'=>30,'label'=>$manager,'type'=>'datagrid','key' =>'manager'],
                 'divJournalDetail' => ['order'=>60,'label'=>$detail, 'type'=>'html',    'html'=>lang('msg_edit_new')]]]],
             'datagrid' => ['manager'=> $this->dgPhreeBooks('dgPhreeBooks', $security)],
-            'jsHead'   => ['init' => "jq.cachedScript('".BIZUNO_URL."controller/module/phreebooks/phreebooks.js?ver=".MODULE_BIZUNO_VERSION."');"],
+            'jsHead'   => ['init' => $this->jsFormValidate()],
+//          'jsHead'   => ['init' => "jq.cachedScript('".BIZUNO_URL."controller/module/phreebooks/phreebooks.js?ver=".MODULE_BIZUNO_VERSION."');"],
             'jsBody'   => ['init' => $jsBody],
             'jsReady'  => ['init' => $jsReady]];
         if ($this->journalID == 0) {
@@ -115,6 +120,69 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
             $data['datagrid']['manager']['columns']['action']['actions']['print']['events']['onClick'] = "winOpen('phreeformOpen', 'phreeform/render/open&group='+formGroups['jjrnlTBD']+'&date=a&xfld=journal_main.id&xcr=equal&xmin=idTBD');";
         }
         $layout = array_replace_recursive($layout, viewMain(), $data);
+    }
+
+    private function jsFormValidate()
+    {
+        return "
+ function formValidate() { // check form
+    var error  = false;
+    var message= '';
+    var notes  = '';
+    // With edit of order and recur, ask if roll through future entries or only this entry
+    if (jq('#id').val() > 0 && parseInt(jq('#recur_id').val()) > 0) {
+        if (confirm(jq.i18n('PB_RECUR_EDIT'))) { jq('#recur_frequency').val('1'); }
+        else { jq('#recur_frequency').val('0'); }
+    }
+    switch (bizDefaults.phreebooks.journalID) {
+        case  2:
+            var balance = cleanCurrency(jq('#total_balance').val());
+            if (balance) {
+                error = true;
+                message += jq.i18n('PB_DBT_CRT_NOT_ZERO')+'<br>';
+            }
+            break;
+        case  6:
+        case  7: // Check for invoice_num exists with a recurring entry
+            if (!jq('#invoice_num').val() && jq('#recur_id').val()>0) {
+                message += jq.i18n('PB_INVOICE_RQD')+'<br>';
+                error = true;
+            }
+            // validate that for purchases, either the waiting box needs to be checked or an invoice number needs to be entered
+            if (!jq('#invoice_num').val() && !bizCheckBoxGet('waiting')) {
+                message += jq.i18n('PB_INVOICE_WAITING')+'<br>';
+                error = true;
+            }
+            break;
+        case  9:
+        case 10:
+        case 12: //validate item status (inactive, out of stock [SO] etc.)
+            var rowData = jq('#dgJournalItem').edatagrid('getData');
+            for (var rowIndex=0; rowIndex<rowData.total; rowIndex++) {
+                var sku   = parseFloat(rowData.rows[rowIndex].sku);
+                var qty   = parseFloat(rowData.rows[rowIndex].qty);
+                var stock = parseFloat(rowData.rows[rowIndex].qty_stock);
+                var track = jq.inArray(rowData.rows[rowIndex].inventory_type, cogs_types);
+                if (rowData.rows[rowIndex].sku != '' && qty>stock && track>-1) {
+                    notes+= jq.i18n('PB_NEG_STOCK')+'\\n';
+                    notes = notes.replace(/%s/g, rowData.rows[rowIndex].sku);
+                    notes = notes.replace(/%i/g, stock);
+                }
+            }
+            break;
+        case  3:
+        case  4:
+        case 13:
+        case 18:
+        case 20:
+        default:
+    }
+    if (error) { alert(message);    return false; }
+    if (notes) if (!confirm(notes)) return false;
+    if (!jq('#frmJournal').form('validate')) return false;
+    jq('body').addClass('loading');
+    return true;
+}";
     }
 
     /**
@@ -213,12 +281,12 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
      */
     public function edit(&$layout=[])
     {
-        $rID       = $this->rID = clean('rID', ['format'=>'integer','default'=>0], 'get');
-        $cID       = clean('cID', 'integer', 'get'); // contact record for banking stuff
-        $references= (array)explode(":", clean('iID', 'text', 'get'));
-        $xAction   = clean('xAction','text', 'get');
-        $prefix    =  $rID && $this->action<>'inv' ? "rID_{$rID}_" : "rID_0_";
-        $min_level = !$rID || $this->action=='inv' ? 2 : 1; // if converting SO/PO then add else read-only and above
+        $rID        = $this->rID = clean('rID', ['format'=>'integer','default'=>0], 'get');
+        $cID        = clean('cID', 'integer', 'get'); // contact record for banking stuff
+        $references = (array)explode(":", clean('iID', 'text', 'get'));
+        $xAction    = clean('xAction','text', 'get');
+        $prefix     =  $rID && $this->action<>'inv' ? "rID_{$rID}_" : "rID_0_";
+        $min_level  = !$rID || $this->action=='inv' ? 2 : 1; // if converting SO/PO then add else read-only and above
         if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", $min_level)) { return; }
         if (!$cID && sizeof($references) && !empty($references[0])) { // attempt to pull contact_id from prechecked records
             $cID = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'contact_id_b', "id={$references[0]}");
@@ -303,8 +371,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
 // 'events'=>['onClick'=>"var data=jq('input[name=radioRecur]:checked').val()+':'+jq('#recur_id').val(); windowEdit('phreebooks/main/popupRecur&data='+data, 'winRecur', '".jsLang('recur')."', 450, 450);"]],
                 'new'  => ['order'=>60,'label'=>lang('new'),   'hidden'=>$security>1?false:true,'events'=>['onClick'=>"journalEdit($this->journalID, 0);"]],
                 'trash'=> ['order'=>70,'label'=>lang('delete'),'hidden'=>$rID && $security==4?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/main/delete&jID=$this->journalID', $rID);"]],
-// @todo help icons are not being displayed properly, need to fix and link to proper page in biz school
-                'help' => ['order'=>99,'label'=>lang('help'),  'align'=>'right','index' =>$this->helpIndex]]]],
+                'help' => ['order'=>99,'label'=>lang('help'),  'icon'=>'help','align'=>'right','hideLabel'=>true,'index' =>$this->helpIndex]]]],
             'forms'   => ['frmJournal'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/main/save&jID=$this->journalID"]]],
             'fields'  => $structure,
             'items'   => $ledger->items,
@@ -916,7 +983,8 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                     BIZUNO_DB_PREFIX.'journal_main.total_amount'],
                 'actions' => [
                     'newJournal'=>['order'=>10,'icon'=>'new',    'events'=>['onClick'=>"journalEdit($this->journalID, 0);"]],
-                    'clrSearch' =>['order'=>50,'icon'=>'refresh','events'=>['onClick'=>"hrefClick('phreebooks/main/manager&mgr=1&jID=$this->journalID');"]]],
+                    'clrSearch' =>['order'=>50,'icon'=>'refresh','events'=>['onClick'=>"hrefClick('phreebooks/main/manager&mgr=1&jID=$this->journalID');"]],
+                    'help'      =>['order'=>99,'icon'=>'help',   'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
                 'filters' => [
                     'period' => ['order'=>10,'break'=>true,'options'=>['width'=>300],'sql'=>$sqlPeriod,
                         'label'=>lang('period'), 'values'=>dbPeriodDropDown(true, true),'attr'=>['type'=>'select','value'=>$this->defaults['period']]],
@@ -960,7 +1028,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                             'display'=> "row.closed=='0' && (row.journal_id=='9' || row.journal_id=='10')"],
                         'vcred'      => ['order'=>80,'icon'=>'credit',   'label'=>$this->lang['create_credit'],'hidden'=>$sec7_13>1?false:true,
                             'events' => ['onClick' => "setCrJournal(jrnlTBD, cIDTBD, idTBD);"],
-                            'display'=> "row.closed=='0' && (row.journal_id=='6' || row.journal_id=='12')"],
+                            'display'=> "row.waiting=='0' && (row.journal_id=='6' || row.journal_id=='12')"],
                         'payment'    => ['order'=>80,'icon'=>'payment','label'=>lang('payment'),
                             'events' => ['onClick' => "setPmtJournal(jrnlTBD, cIDTBD, idTBD);"],
                             'display'=> "row.closed=='0' && (row.journal_id=='6' || row.journal_id=='7' || row.journal_id=='12' || row.journal_id=='13')"],

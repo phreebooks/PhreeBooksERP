@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-18
+ * @version    3.x Last Update: 2019-11-05
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -1018,8 +1018,9 @@ if (idx!=null) {
                 'date_1'        => ['order'=>0, 'attr'=>['hidden'=>'true']],
                 'action'        => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index) { return {$name}Formatter(value,row,index); }"],
                     'actions' => [
-                        'settings'=> ['order'=>10,'icon'=>'settings','events'=>['onClick'=>"var rowIndex=jq('#$name').datagrid('getRowIndex', jq('#$name').datagrid('getSelected')); inventoryProperties(rowIndex);"]],
-                        'price'   => ['order'=>40,'icon'=>'price',   'events'=>['onClick'=>"var rowIndex=jq('#$name').datagrid('getRowIndex', jq('#$name').datagrid('getSelected')); inventoryGetPrice(rowIndex, '$type');"]],
+                        'settings'=> ['order'=>10,'icon'=>'settings','events'=>['onClick'=>"inventoryProperties(bizGridGetRow('$name'));"]],
+                        'price'   => ['order'=>40,'icon'=>'price',   'events'=>['onClick'=>"inventoryGetPrice(bizGridGetRow('$name'), '$type');"]],
+                        'print'   => ['order'=>80,'icon'=>'print',   'events'=>['onClick'=>"inventoryForm(bizGridGetRow('$name'));"]],
                         'trash'   => ['order'=>90,'icon'=>'trash',   'events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"],
                             'display' => "typeof row.item_ref_id==='undefined' || row.item_ref_id=='0' || row.item_ref_id==''"]]],
                 'sku'=> ['order'=>30, 'label'=>pullTableLabel('journal_item', 'sku', $this->journalID),
