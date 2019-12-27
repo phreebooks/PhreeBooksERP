@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-05
+ * @version    3.x Last Update: 2019-12-20
  * @filesource /lib/controller/module/inventory/functions.php
  */
 
@@ -34,20 +34,18 @@ function inventoryProcess($value, $format='')
 {
     global $report;
     switch ($format) {
-        case 'image_sku': $result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'image_with_path', "sku='$value'"); // when user is logged in, internal access only
-            return $result ? "images/$result" : '';
-        case 'inv_j06':   return ($result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'description_purchase',"sku='$value'"))? $result : $value;
-        case 'inv_j12':   return ($result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'description_sales',   "sku='$value'"))? $result : $value;
-        case 'inv_sku':   return ($result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku',                 "id='$value'")) ? $result : $value;
-        case 'inv_image': $result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'image_with_path', "id='$value'"); // when user is logged in, internal access only
-            return $result ? "images/$result" : '';
-        case 'inv_mv0':   $range = 'm0';
-        case 'inv_mv1':   if (empty($range)) { $range = 'm1'; }
-        case 'inv_mv3':   if (empty($range)) { $range = 'm3'; }
-        case 'inv_mv6':   if (empty($range)) { $range = 'm6'; }
-        case 'inv_mv12':  if (empty($range)) { $range = 'm12';}
-                          return viewInvSales($value, $range); // value passed should be the SKU
-        case 'inv_stk':   return viewInvMinStk($value); // value passed should be the SKU
+        case 'image_sku':return dbGetValue(BIZUNO_DB_PREFIX."inventory", 'image_with_path', "sku='$value'");
+        case 'inv_image':return dbGetValue(BIZUNO_DB_PREFIX."inventory", 'image_with_path', "id='$value'");
+        case 'inv_j06':  return ($result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'description_purchase',"sku='$value'"))? $result : $value;
+        case 'inv_j12':  return ($result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'description_sales',   "sku='$value'"))? $result : $value;
+        case 'inv_sku':  return ($result = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku',                 "id='$value'")) ? $result : $value;
+        case 'inv_mv0':  $range = 'm0';
+        case 'inv_mv1':  if (empty($range)) { $range = 'm1'; }
+        case 'inv_mv3':  if (empty($range)) { $range = 'm3'; }
+        case 'inv_mv6':  if (empty($range)) { $range = 'm6'; }
+        case 'inv_mv12': if (empty($range)) { $range = 'm12';}
+                         return viewInvSales($value, $range); // value passed should be the SKU
+        case 'inv_stk':  return viewInvMinStk($value); // value passed should be the SKU
         default:
     }
     if (substr($format, 0, 5) == 'skuPS') { // get the sku price based on the price sheet passed

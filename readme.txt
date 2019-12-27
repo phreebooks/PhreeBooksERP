@@ -47,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.3.3.3 =
+2019-12-26 - Incorporate Bizuno Library 3.3.3. Fixes bug retrieving pricing from price lists.
 = 5.3.3.2 =
 2019-12-15 - Incorporate Bizuno Library 3.3.2. Minor bug fixes.
 = 5.3.3.1 =

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-02
+ * @version    3.x Last Update: 2019-12-17
  * @filesource /lib/model/io.php
  */
 
@@ -440,6 +440,7 @@ final class io
      */
     public function validatePath($srcPath, $verbose=true) {
         msgDebug("\nEntering validatePath with srcPath = $srcPath");
+        if (!defined('BIZUNO_DATA')) { return msgAdd("Error: Bizuno not initialized!"); }
         // cannot use empty() because it can be a string equating to "0"
         if ($srcPath === '' || $srcPath === null || $srcPath === false) { return false; }
         $path  = pathinfo(BIZUNO_DATA . $srcPath, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR; // pull the path from the full path and file

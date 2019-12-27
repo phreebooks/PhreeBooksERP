@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-05
+ * @version    3.x Last Update: 2019-12-19
  * @filesource /lib/controller/module/inventory/prices/quantity.php
  */
 
@@ -171,7 +171,8 @@ function preSubmitPrices() {
                     'levels' => $levels['levels']];
             }
         }
-        if (!isset($prices['price']) && $default_price) { $prices['price'] = $default_price; }
+        if (!isset($prices['price']) && $default_price) { $prices['price'] = $default_price; }   // set default if defined
+        if (!isset($prices['price']))                   { $prices['price'] = $values['iList']; } // still no price, use full price
 //      msgDebug("\nLeaving $this->code with price = ".(isset($prices['price']) ? $prices['price'] : 'undefined'));
     }
 }

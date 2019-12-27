@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-23
+ * @version    3.x Last Update: 2019-12-20
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -144,6 +144,9 @@ function phreebooksProcess($value, $format = '')
                 else { $total_paid += $row['credit_amount'] - $row['debit_amount']; }
             }
             return $total_inv + (in_array($main['journal_id'], [6,13]) ? $total_paid : -$total_paid);
+        case 'invCOGS': // get journal post cogs given the journal main record id
+            $rID = intval($value);
+            return dbGetValue(BIZUNO_DB_PREFIX.'journal_item', 'debit_amount', "ref_id=$rID AND gl_type='asy'");
         case 'invRefNum': // needs journal_main.id
             $rID = intval($value);
             return dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'invoice_num', "id=$rID");

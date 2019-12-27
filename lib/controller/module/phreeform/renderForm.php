@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2019-12-20
  * @filesource /controller/module/phreeform/renderForm.php
  */
 
@@ -245,7 +245,7 @@ class PDF extends \TCPDF
         if (!isset($Params->width))   { $Params->width    = ''; }
         if (!isset($Params->height))  { $Params->height   = ''; }
         if ( isset($Params->settings->processing)) { $path = viewProcess($path, $Params->settings->processing); }
-        $ext = pathinfo($this->myFolder."images/$path", PATHINFO_EXTENSION);
+        $ext = pathinfo(BIZUNO_DATA."images/$path", PATHINFO_EXTENSION);
         msgDebug("\nLooking for image at BIZUNO_DATA/images/$path");
         if (is_file(BIZUNO_DATA."images/$path") && (in_array(strtolower($ext), ['jpg', 'jpeg', 'png']))) {
             $this->Image(BIZUNO_DATA."images/$path", $Params->abscissa, $Params->ordinate, $Params->width, $Params->height);

@@ -176,7 +176,7 @@ function preSubmitPrices() {
      */
     public function priceQuote(&$prices, $values)
     {
-        if (!isset($values['iID']) || !$values['iID']) { return; }
+        if (empty($values['iID'])) { return; }
         $type = $values['cType'];
         $sheets = dbGetMulti(BIZUNO_DB_PREFIX."inventory_prices", "contact_type='$type' AND method='$this->code' AND inventory_id='{$values['iID']}'");
         if (!$sheets) { return; }

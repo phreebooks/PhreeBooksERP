@@ -25,7 +25,7 @@ namespace bizuno;
 
 bizAutoLoad(BIZUNO_LIB."controller/module/inventory/prices.php", 'inventoryPrices');
 
-class byContact extends inventoryPrices 
+class byContact extends inventoryPrices
 {
     public $moduleID = 'inventory';
     public $methodDir= 'prices';
@@ -53,7 +53,7 @@ class byContact extends inventoryPrices
      * @param array $layout - Structure coming in
      * @return modified $layout
      */
-    public function edit(&$layout=[]) 
+    public function edit(&$layout=[])
     {
         $type = clean('type',['format'=>'char','default'=>'c'], 'get');
         $cID  = clean('rID', 'integer', 'get');
@@ -62,18 +62,18 @@ class byContact extends inventoryPrices
         $layout['tabs']['tabContacts']['divs'][$this->code] = ['order'=>35, 'label'=>$this->lang['tab_label'], 'type'=>'html', 'html'=>'',
             'options'=>['href'=>"'".BIZUNO_AJAX."&p=inventory/prices/manager&type=$type&security=$security&mID=$this->code&cID=$cID&mod={$GLOBALS['bizunoModule']}'"]];
     }
-    
+
     /**
      * Extends /contacts/main/delete
      * @param array $layout - Structure coming in
      * @return modified $layout
      */
-    public function delete(&$layout=[]) 
+    public function delete(&$layout=[])
     {
         $rID  = clean('rID', 'integer', 'get');
         $type = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID");
         if (!$security = validateSecurity('inventory', 'prices_'.$type, 4, false)) { return; }
-        if ($rID && !empty($layout['dbAction'])) { 
+        if ($rID && !empty($layout['dbAction'])) {
             $layout['dbAction']['price_byContact'] = "DELETE FROM ".BIZUNO_DB_PREFIX."inventory_prices WHERE contact_id=$rID";
         }
     }
@@ -147,9 +147,9 @@ function preSubmitPrices() {
             'currency'    .$this->code => array_merge($structure['currency'],    ['break'=>true])];
         return $output;
     }
-    
+
     /**
-     * This method saves the form contents for quantity pricing into the database, it is called from method: inventoryPrices:save 
+     * This method saves the form contents for quantity pricing into the database, it is called from method: inventoryPrices:save
      * @param string $request
      * @return true if successful, NULL and messageStack with error message if failed
      */
@@ -192,18 +192,18 @@ function preSubmitPrices() {
      */
     public function priceQuote(&$prices, $values)
     {
-        if (!isset($values['cID']) || !$values['cID']) { return; }
+        if (empty($values['cID'])) { return; }
         $sheets = dbGetMulti(BIZUNO_DB_PREFIX."inventory_prices", "method='$this->code' AND inventory_id='{$values['iID']}' AND contact_id='{$values['cID']}'");
         if (!$sheets) { return; }
         foreach ($sheets as $row) {
-            $settings = json_decode($row['settings'], true);
-            $levels = $this->decodeQuantity($values['iCost'], $values['iList'], $values['qty'], $settings['attr']);
+            $settings= json_decode($row['settings'], true);
+            $levels  = $this->decodeQuantity($values['iCost'], $values['iList'], $values['qty'], $settings['attr']);
             msgDebug("\nMethod = $this->code with attr = ".$settings['attr']." returned levels: ".print_r($levels, true));
             $prices['price'] = isset($prices['price']) ? min($prices['price'], $levels['price']) : $levels['price'];
-            if (!isset($prices['sheets'][$row['ref_id']]) && $levels['price']) { // only add price sheet if a price was returned
-                $prices['sheets'][$row['ref_id']] = ['title'=>$this->lang['title'], 'default'=>1, 'levels'=>$levels['levels']];
-            }
+//          if (!isset($prices['sheets'][$row['ref_id']]) && $levels['price']) { // only add price sheet if a price was returned
+            $prices['sheets'][$row['ref_id']] = ['title'=>$this->lang['title'], 'default'=>1, 'levels'=>$levels['levels']];
+//          }
         }
-        msgDebug("\nLeaving $this->code with price = {$prices['price']}"); 
+        msgDebug("\nLeaving $this->code with price = {$prices['price']}");
     }
 }

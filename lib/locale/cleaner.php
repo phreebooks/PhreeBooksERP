@@ -504,8 +504,8 @@ function localeDueDate($post_date, $terms_encoded=0)
     if (empty($terms[3])) { $terms[3] = 30; }
     if (empty($terms[4])) { $terms[4] = 1000; }
     $date_details = localeGetDates($post_date);
-    $result = array();
-    msgDebug("\nin localeDueDate with post_date = $post_date and terms_encoded = $terms_encoded and terms = ".print_r($terms, true));
+    $result = [];
+    msgDebug("\nin localeDueDate with post_date = $post_date and terms_encoded = $terms_encoded");
     switch ($terms[0]) {
         default:
         case '0': // Default terms

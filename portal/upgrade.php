@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2019-12-02
+ * @version    3.x Last Update: 2019-12-20
  * @filesource /portal/upgrade.php
  */
 
@@ -161,13 +161,7 @@ function bizunoUpgrade($dbVersion='1.0')
         // write the file to the WordPress Bizuno data folder.
         $io->fileWrite($htaccess, '.htaccess', false);
     }
-    if (version_compare($dbVersion, '3.2.6') < 0) { // add new vendor form folder to phreeform
-        $id = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv:j14' AND mime_type='dir'");
-        if (!$id) {
-            $parent = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv' AND mime_type='dir'");
-            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_14','group_id'=>'inv:j14','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
-            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_16','group_id'=>'inv:j16','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
-        }
+    if (version_compare($dbVersion, '3.2.6') < 0) {
         // Verify dummy php index files in all data folders to prevent directory browsing on unprotected servers
         $io->validateNullIndex();
     }
@@ -210,6 +204,14 @@ function bizunoUpgrade($dbVersion='1.0')
             dbGetResult("UPDATE `".BIZUNO_DB_PREFIX."extReturns` SET preventable='1' WHERE fault='1' OR fault='3'");
             dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extReturns` DROP fault");
         } }
+    }
+    if (version_compare($dbVersion, '3.3.3') < 0) { // add new vendor form folder to phreeform, didn't take for upgrade in 3.2.6
+        $id = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv:j14' AND mime_type='dir'");
+        if (!$id) {
+            $parent = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv' AND mime_type='dir'");
+            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_14','group_id'=>'inv:j14','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
+            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_16','group_id'=>'inv:j16','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
+        }
     }
 
     // At every upgrade, run the comments repair tool to fix changes to the view structure

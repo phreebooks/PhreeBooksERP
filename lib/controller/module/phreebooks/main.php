@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-03
+ * @version    3.x Last Update: 2019-12-23
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -805,6 +805,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
             $fldNotes = ['notes'=>['label'=>lang('notes'),'attr'=>['type'=>'p','value'=>$notes]]];
             $data['divs']['notes'] = ['order'=>20,'label'=>lang('notes'),  'type'=>'fields','fields'=>$fldNotes];
         }
+        $GLOBALS['aging'] = $new_data;
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -900,9 +901,9 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         $jID_values = [];
         $valid_jIDs = [$this->journalID];
         $jrnl_sql   = BIZUNO_DB_PREFIX."journal_main.journal_id={$this->journalID}";
-        $jID_statuses = [['id'=>'a','text'=>lang('all')],['id'=>'0','text'=>lang('open')],['id'=>'1','text'=>lang('closed')]];
+        $jID_statuses= [['id'=>'a','text'=>lang('all')],['id'=>'0','text'=>lang('open')],['id'=>'1','text'=>lang('closed')]];
         $jrnl_status= '';
-        $sec3_09 = $sec4_10 = $sec6_12 = $sec7_13 = 0;
+        $sec3_09    = $sec4_10 = $sec6_12 = $sec7_13 = 0;
         switch ($this->journalID) {
             case  0: $valid_jIDs = []; break; // search
             case  3:

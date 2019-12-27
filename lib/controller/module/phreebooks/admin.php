@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-22
+ * @version    3.x Last Update: 2019-12-20
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -115,6 +115,7 @@ class phreebooksAdmin {
             'bnkCode'   => ['text'=>lang('bank_cc_card_code'),   'group'=>lang('banking')],
             'subTotal'  => ['text'=>lang('subtotal')],
             'invBalance'=> ['text'=>lang('balance')],
+            'invCOGS'   => ['text'=>lang('inventory_cogs')],
             'invRefNum' => ['text'=>lang('journal_main_invoice_num_2')],
             'invUnit'   => ['text'=>$this->lang['pb_inv_unit']],
             'itmTaxAmt' => ['text'=>$this->lang['pb_line_item_tax']],

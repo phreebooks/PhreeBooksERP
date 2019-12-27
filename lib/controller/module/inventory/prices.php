@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2019, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-15
+ * @version    3.x Last Update: 2019-12-19
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -257,33 +257,34 @@ class inventoryPrices
     public function details(&$layout=[])
     {
         if (!$security = validateSecurity('inventory', 'inv_mgr', 1)) { return; }
-        $sku   = clean('sku', 'text',   'get');
         $rID   = clean('rID', 'integer','get');
+        $sku   = clean('sku', 'text',   'get');
+        $cID   = clean('cID', 'text',   'get');
         if     ($rID) { $inv = dbGetRow(BIZUNO_DB_PREFIX."inventory", "id=$rID"); }
         elseif ($sku) { $inv = dbGetRow(BIZUNO_DB_PREFIX."inventory", "sku='$sku'"); }
         else   { return msgAdd("Bad SKU sent!"); }
         $cost  = clean('itemCost', ['format'=>'float','default'=>$inv['item_cost']], 'get');
         $full  = clean('fullPrice',['format'=>'float','default'=>$inv['full_price']],'get');
         $prices= [];
-        $this->quote($prices, $cost, $full);
-        if (empty($prices['price'])) { $prices['price'] = $full; }
-        $rows[]= '<span style="background-color:#6293BB;">'.lang('general')."</span>";
-        $rows[]= '<span style="float:right">'.viewFormat($prices['price'], 'currency').'</span><span>'.lang('price')."</span>";
-        $rows[]= '<span style="float:right">'.viewFormat($full, 'currency').'</span><span>'.lang('inventory_full_price')."</span>";
+        $this->quote($prices, $cost, $full, $sku, $cID);
+        if (empty($prices['content']['price'])) { $prices['content']['price'] = $full; } // no price sheets available
+        $rows[]= ['group'=>lang('general'),'text'=>"<div style='float:right'>".viewFormat($prices['content']['price'], 'currency').'</div><div>'.lang('price')."</div>"];
+        $rows[]= ['group'=>lang('general'),'text'=>"<div style='float:right'>".viewFormat($full, 'currency').'</div><div>'.lang('inventory_full_price')."</div>"];
         if (validateSecurity('phreebooks', 'j6_mgr', 1, false)) {
-            $rows[] = '<span style="float:right">'.viewFormat($cost, 'currency').'</span><span>'.lang('inventory_item_cost')."</span>";
+            $rows[] = ['group'=>lang('general'),'text'=>"<div style='float:right'>".viewFormat($cost, 'currency').'</div><div>'.lang('inventory_item_cost')."</div>"];
         }
-        if (!empty($prices['sheets'])) { foreach ($prices['sheets'] as $level) {
-            $rows[] = '<span style="background-color:#6293BB;">'.$level['title']."</span>";
-            $rows[] = '<span style="float:right;background-color:#6293BB;">'.lang('price').'</span><span style="background-color:#6293BB;>'.lang('qty')."</span>";
+        if (!empty($prices['content']['sheets'])) { foreach ($prices['content']['sheets'] as $level) {
+            $rows[] = ['group'=>$level['title'],'text'=>"<div style='float:right'>".lang('price').'</div><div>'.lang('qty')."</div>"];
             foreach ($level['levels'] as $entry) {
-                $rows[] = '<span style="float:right;background-color:#6293BB;">'.viewFormat($entry['price'], 'currency').'</span><span style="background-color:#6293BB;>'.$entry['qty']."</span>";
+                $rows[] = ['group'=>$level['title'],'text'=>"<div style='float:right'>".viewFormat($entry['price'], 'currency').'</div><div>'.(float)$entry['qty']."</div>"];
             }
         } }
-        $layout  = array_merge_recursive($layout, ['type'=>'popup', 'title'=>lang('inventory_prices', $this->type), 'attr'=>['id'=>'winPrices','width'=>275,'height'=>600],
-            'divs' => ['winStatus'=>['order'=>50,'type'=>'list','key'=>'prices']],
-            'lists'=> ['prices'   =>$rows]]);
+        $fields['theList'] = ['options'=>['groupField'=>"'group'",'data'=>"pricesData"],'classes'=>['easyui-datalist'],'attr'=>['type'=>'span']];
+        $layout = array_merge_recursive($layout, ['type'=>'popup', 'title'=>lang('inventory_prices', $this->type), 'attr'=>['id'=>'winPrices','width'=>275,'height'=>600],
+            'divs'  => ['winStatus'=>['order'=>50,'type'=>'fields','fields'=>$fields]],
+            'jsHead'=> ['init'=>"var pricesData = ".json_encode($rows).";"]]);
     }
+
     /**
      * Retrieves the best price for a given customer/sku using available price sheets
      * @param array $layout - structure coming in
@@ -371,15 +372,33 @@ class inventoryPrices
             }
         }
         if (!isset($prices['price'])) { $prices['price'] = $values['cType']=='v' ? $values['iCost'] : $values['iList']; }
-        // put the default price sheet first
-        if (isset($prices['sheets']) && is_array($prices['sheets'])) {
-            foreach ($prices['sheets'] as $key => $sheet) {
-                if (isset($sheet['default']) && $sheet['default']) { // relocate the default to the first in the array
-                    unset($prices['sheets'][$key]);
-                    array_unshift($prices['sheets'], $sheet);
-                }
-            }
+        $this->setDefaultSheet($prices, $values); // need to set default price saheet
+    }
+
+    /**
+     * Check which sheet to =set as default based on priority, contact, sku, quantity
+     * @param array $prices - working pricing structure
+     * @param array $values - settings for the quote request
+     * @return type
+     */
+    private function setDefaultSheet(&$prices, $values)
+    {
+        if (empty($prices['sheets'])) { return; }
+        $cSheet = $iSheet = $qSheet = 0;
+        foreach ($prices['sheets'] as $key => $sheet) {
+            if     ($values['cSheet']==$key)                                 { $cSheet = $key; }
+            elseif (in_array($key, [$values['iSheetc'],$values['iSheetv']])) { $iSheet = $key; }
+            elseif (!empty($sheet['default']))                               { $qSheet = $key; }
+            $prices['sheets'][$key]['default'] = 0; // clear it no matter what
         }
+        $idx = $cSheet ? $cSheet : ($iSheet ? $iSheet : ($qSheet ? $qSheet : 0));
+        msgDebug("\nfinsihed sorting and cSheet = $cSheet, iSheet = $iSheet, qSheet = $qSheet and winner is: $idx");
+        if ($idx) {
+            $prices['sheets'][$idx]['default'] = 1; // set default
+            $sheet = $prices['sheets'][$idx];
+            unset($prices['sheets'][$idx]);
+            array_unshift($prices['sheets'], $sheet); // reset default to top of array which forces a re-key
+        } else { $prices['sheets'] = array_values($prices['sheets']); }   // re-key array as is
     }
 
     /**
