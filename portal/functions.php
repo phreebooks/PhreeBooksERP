@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-15
+ * @version    3.x Last Update: 2019-12-31
  * @filesource /portal/functions.php
  */
 
@@ -157,9 +157,9 @@ function portalCurl($url, $data='', $type='get', $opts=[]) {
         curl_setopt($ch, CURLOPT_POSTFIELDS, is_array($data) ? http_build_query($data) : $data);
     }
     // for debugging cURL issues, uncomment below
-//      $fp = fopen($this->myFolder."cURL_trace.txt", 'w');
-//      curl_setopt($ch, CURLOPT_VERBOSE, true);
-//      curl_setopt($ch, CURLOPT_STDERR, $fp);
+//$fp = fopen(BIZUNO_DATA."cURL_trace.txt", 'w');
+//curl_setopt($ch, CURLOPT_VERBOSE, true);
+//curl_setopt($ch, CURLOPT_STDERR, $fp);
     $response = curl_exec($ch);
     if (curl_errno($ch)) {
         msgDebug('cURL Error # '.curl_errno($ch).'. '.curl_error($ch));

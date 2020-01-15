@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-09
+ * @version    3.x Last Update: 2020-01-09
  * @filesource /lib/controller/module/inventory/tools.php
  */
 
@@ -318,7 +318,7 @@ class inventoryTools
         $html  = "<p>"."Closing the fiscal year for the Inventory module consist of deleting inventory items that are no longer referenced in the general journal during or before the fiscal year being closed. "
                 . "To prevent the these inventory items from being removed, check the box below."."</p>";
         $html .= html5('inventory_keep', ['label' => 'Do not delete inventory items that are not referenced during or before this closing fiscal year', 'position'=>'after','attr'=>['type'=>'checkbox','value'=>'1']]);
-        $layout['tabs']['tabFyClose']['divs'][$this->lang['title']] = ['order'=>50,'label'=>$this->lang['title'],'type'=>'html','html'=>$html];
+        $layout['tabs']['tabFyClose']['divs'][$this->lang['title']] = ['order'=>55,'label'=>$this->lang['title'],'type'=>'html','html'=>$html];
     }
 
     /**

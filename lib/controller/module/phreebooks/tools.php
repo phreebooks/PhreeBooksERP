@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    3.x Last Update: 2020-01-09
  * @filesource /lib/controller/module/phreebooks/tools.php
  */
 
@@ -158,19 +158,16 @@ class phreebooksTools
     {
         if (!$security = validateSecurity('bizuno', 'admin', 4)) { return; }
         $title = getModuleCache('phreebooks', 'properties', 'title');
-        $fy = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", 'fiscal_year', '', false);
-        $this->lang['fy_del_instr'] = sprintf($this->lang['fy_del_instr'], $fy);
-        $layout = array_replace_recursive($layout, ['type'=>'divHTML',
-            'divs' => ['fyClose'=>['order'=>10,'type'=>'divs','attr'=>['id'=>"divCloseFY"],'divs'=>[
+        $fy    = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", 'fiscal_year', '', false);
+        $layout= array_replace_recursive($layout, ['type'=>'divHTML',
+            'divs'    => ['fyClose'=>['order'=>10,'type'=>'divs','attr'=>['id'=>"divCloseFY"],'divs'=>[
                 'tbClose'=> ['order'=>10,'type'=>'toolbar','key' =>'tbFyClose'],
-                'head'   => ['order'=>20,'type'=>'html',   'html'=>"<p>".$this->lang['fy_del_instr']."</p>"],
+                'head'   => ['order'=>20,'type'=>'html',   'html'=>"<p>".sprintf($this->lang['fy_del_instr'], $fy)."</p>"],
                 'body'   => ['order'=>50,'type'=>'tabs',   'key' =>'tabFyClose'],
             ]]],
             'toolbars'=> ['tbFyClose' =>['icons'=>['start'=>['order'=>10,'title'=>lang('Start'),'icon'=>'next','type'=>'menu','events'=>['onClick'=>"divSubmit('phreebooks/tools/fyClose', 'divCloseFY');"]]]]],
-            'tabs'    => ['tabFyClose'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]],'divs'=>[
-                'phreebooks' => ['order'=>50,'label'=>$title,'type'=>'html','html'=>$this->getViewFyClose()],
-            ]],
-            'lang'    => $this->lang]);
+            'tabs'    => ['tabFyClose'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200],'divs'=>[
+                'phreebooks' => ['order'=>10,'label'=>$title,'type'=>'html','html'=>$this->getViewFyClose()]]]]]);
     }
 
     private function getViewFyClose()
@@ -203,7 +200,8 @@ within each module tab for details on what is performed.</p>
 Other tools are also run to removed orphaned transactions, attachments and other general maintenance activities.
 Most of these are available in the Journal Tools tab in the PhreeBooks module settings.</p>';
         $html .= "<p>"."To prevent the pre-flight test from halting the close process, check the box below."."</p>";
-        $html .= html5('phreebooks_skip', ['label'=>'Do not perform the pre-flight check, I understand that this may affect my financial statements and inventory balances', 'position'=>'after','attr'=>['type'=>'checkbox','value'=>'1']]);
+        $html .= html5('phreebooks_skip', ['label'=>'Do not perform the pre-flight check, I understand that this may affect my financial statements and inventory balances', 'position'=>'after','attr'=>['type'=>'checkbox','value'=>1]]);
+        return $html;
     }
 
     /**
@@ -215,6 +213,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
      */
     public function fyClose(&$layout=[])
     {
+        global $io;
         if (!$security = validateSecurity('bizuno', 'admin', 4)) { return; }
         $fyInfo    = getPeriodInfo(1);
         $minPeriod = $fyInfo['period_min'];
@@ -231,10 +230,8 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         $cron['taskPost'][]  = ['mID'=>$this->moduleID, 'method'=>'fYClosePost'];
         $msg = "Log file for closing fiscal year {$fyInfo['fiscal_year']}. Bizuno release ".MODULE_BIZUNO_VERSION.", generated ".date('Y-m-d H:i:s');
         setUserCache('cron', 'fyClose', $cron);
-        $io = new \bizuno\io();
         $io->fileWrite("$msg\n\n", "backups/fy_{$cron['fy']}_close_log.txt", false, false, true);
         $layout = array_replace_recursive($layout, ['content' => ['action'=>'eval', 'actionData'=>"cronInit('fyClose', 'phreebooks/tools/fyCloseNext');"]]);
-//      msgDebugWrite('fyClose.txt', false); // start a new trace file [false] erases the old file
     }
 
     /**
@@ -244,10 +241,13 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
      */
     public function fyCloseNext(&$layout=[])
     {
+        global $io;
         if (!$security = validateSecurity('bizuno', 'admin', 4)) { return; }
         set_time_limit(1800); // 30 minutes
         $finished  = false;
         $cron = getUserCache('cron', 'fyClose');
+        msgDebug("\ncron array now looks like: ".print_r($cron, true));
+        if (empty($cron)) { return msgAdd("Oh Snap! It appears that the cron session variable was erased. The process was interrupted without completing!"); }
         $numTasks  = sizeof($cron['taskPre']);
         $numTasks += sizeof($cron['taskClose']);
         $numTasks += sizeof($cron['taskPost']);
@@ -255,12 +255,12 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         elseif (sizeof($cron['taskClose'])){ $taskID = 'taskClose'; }
         elseif (sizeof($cron['taskPost'])) { $taskID = 'taskPost'; }
         // load the module/method and execute method
-        $task = array_shift($cron[$taskID]);
+        $task  = array_shift($cron[$taskID]);
         if (!isset($task['settings'])) { $task['settings'] = []; }
         if (!isset($task['page']))     { $task['page']     = 'tools'; }
         $admin = $task['mID'].ucfirst($task['page']);
         $method= isset($task['method']) ? $task['method'] : 'fyCloseNext';
-        $fqcn = "\\bizuno\\$admin";
+        $fqcn  = "\\bizuno\\$admin";
         bizAutoLoad(getModuleCache($task['mID'], 'properties', 'path')."/{$task['page']}.php", $fqcn);
         msgDebug("\n********************* Starting taskID $taskID, admin $admin and method $method and task details: ".print_r($task, true));
         unset($cron['msg']); // clear the message queue
@@ -276,25 +276,26 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
             $cron['cnt']++;
             $cron['curMod']= $task['mID'];
         }
-        if (!sizeof($cron['taskPost'])) { $finished = true; }
+        if (empty($cron['taskPost'])) { $finished = true; }
         if ($finished) {
-            msgDebug("\n************** Finsihed all tasks, sending final message and changing heading.");
+            msgDebug("\n************** Finished all tasks, sending final message and changing heading.");
             msgLog("PhreeBooks Tools - Close Fiscal Year {$cron['fy']}");
-            $msg  = "The fiscal year close is complete!<br />The log file can be found in the Tools -> Business Backup file list.<br />Please sign off and back in to refresh your cache.<br />";
+            $msg  = "The fiscal year close is complete!<br />The log file can be found in the Tools -> Business Backup file list.<br />";
             $cron['msg'][] = $msg;
-            $msg .= '<p style="text-align:center">'.html5('', ['attr'=>['type'=>'button', 'value'=>lang('logout')], 'events'=>['onClick'=>"jsonAction('bizuno/portal/logout');"]])."</p>";
+            $msg .= '<p style="text-align:center"><button style="height:25px;width:100px" onClick="location.reload();">'.lang('finish').'</button></p>';
             $data = ['content'=>['percent'=>100,'msg'=>$msg,'baseID'=>'fyClose','urlID'=>'phreebooks/tools/fyCloseNext']];
         } else { // return to update progress bar and start next step
             $percent = min(99, floor(100*$cron['cnt']/$cron['total'])); // don't allow 100% of ajax won't trigger next step
-            $msg = "Processing step {$cron['cnt']} of {$cron['total']}<br />".$msg;
-            $cron['msg'][] = "Console Message for method $method: $msg";
+            $msg  = "Processing step {$cron['cnt']} of {$cron['total']}<br />$msg";
+            $cron['msg'][] = "Console Message for method $method: ".str_replace('<br />', "\n", $msg);
             $data = ['content'=>['percent'=>$percent,'msg'=>$msg,'baseID'=>'fyClose','urlID'=>'phreebooks/tools/fyCloseNext']];
         }
-        $io = new \bizuno\io();
         $io->fileWrite("\n".implode("\n", $cron['msg']), "backups/fy_{$cron['fy']}_close_log.txt", false, true, false);
-        if ($finished) { clearUserCache('cron', 'fyClose'); } else { setUserCache('cron', 'fyClose', $cron); }
-//      msgDebugWrite('fyClose.txt', true);
+        if ($finished) { clearUserCache('cron', 'fyClose'); }
+        else           { setUserCache('cron', 'fyClose', $cron); }
         $layout = array_replace_recursive($layout, $data);
+        // uncomment to create running debug trace file, can get quite large!
+//      msgDebugWrite('fyClose.txt', true, true); // first true adds to existing file, second true forces the file write without msgTrap
     }
 
     public function fYCloseStart($settings=[], &$cron=[])

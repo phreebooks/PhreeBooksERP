@@ -15,9 +15,9 @@
  *
  * @name       Bizuno
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-12
+ * @version    3.x Last Update: 2019-12-30
  * @filesource lib/controller/functions.php
  */
 
@@ -60,7 +60,7 @@ function compose($module, $page, $method, &$layout=[])
 {
     $processes = mergeHooks($module, $page, $method);
     foreach ($processes as $modID => $modProps) {
-//      msgAdd("modID = $modID AND modProps = ".print_r($modProps, true));
+        if (empty($modProps['page'])) { $modProps['page'] = 'admin'; }
         $fqdn = isset($modProps['class']) ? "\\bizuno\\".$modProps['class'] : "\\bizuno\\".$modID.ucfirst($modProps['page']);
         $controller = "{$modProps['path']}{$modProps['page']}.php";
         if (!file_exists($controller)) {

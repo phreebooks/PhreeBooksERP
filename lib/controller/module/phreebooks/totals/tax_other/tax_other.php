@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-06
+ * @version    3.x Last Update: 2020-01-07
  * @filesource /lib/controller/module/phreebooks/totals/tax_other/tax_other.php
  */
 
@@ -101,7 +101,7 @@ class tax_other
     newBalance += salesTax;
     var curISO    = jq('#currency').val() ? jq('#currency').val() : bizDefaults.currency.defaultCur;
     var decLen= parseInt(bizDefaults.currency.currencies[curISO].dec_len);
-    return newBalance.toFixed(decLen);
+    return parseFloat(newBalance.toFixed(decLen));
 }";
     }
 }

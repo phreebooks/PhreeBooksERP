@@ -15,7 +15,7 @@ Bizuno Accounting, by PhreeSoft, Inc., is a full featured double-entry accountin
 * Over 40 standard reports and PhreeForm report/form generator with user level lockout security
 * Multi-language at the user level
 * Full security control at the user/role level to access
-* Independent, configurable dashboard with over 20 choices at each main menu
+* Independent, configurable dashboard with over 40 choices at each main menu
 * Extensible with available PhreeSoft modules, extensions and tools for even more power
 * Interfaces available from PhreeSoft to many popular shopping cart, including WooCommerce
 * User defined themes, icon sets and colors
@@ -26,7 +26,7 @@ After uploading the files to your server, navigate to your root url and follow t
 
 = Minimum Requirements =
 
-* PHP   version 5.4 or greater (PHP 5.6 or greater is recommended, tested with PHP 7.2)
+* PHP   version 5.4 or greater (PHP 5.6 or greater is recommended, tested with PHP 7.4)
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended, tested with MySQL 5.6 & 5.7)
 
 1. Upload the file to your web site directory. PhreeBooks 5 can be installed in a subdirectory within your web site root directory.
@@ -47,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.3.3.4 =
+2020-01-15 - Incorporate Bizuno Library 3.3.4. Roll copyright year. New PhreeForm processing. Extension bugs and minor trunk bugs.
 = 5.3.3.3 =
 2019-12-26 - Incorporate Bizuno Library 3.3.3. Fixes bug retrieving pricing from price lists.
 = 5.3.3.2 =

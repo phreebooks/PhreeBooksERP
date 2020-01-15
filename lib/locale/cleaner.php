@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-31
+ * @version    3.x Last Update: 2020-01-06
  * @filesource /locale/cleaner.php
  */
 
@@ -488,6 +488,26 @@ function localeCalculateDate($start_date, $day_offset=0, $month_offset=0, $year_
         msgAdd(sprintf(lang('err_calendar_format'), $start_date, getModuleCache('bizuno', 'settings', 'locale', 'date_short')), 'caution');
         return date('Y-m-d');
     }
+}
+
+/**
+ * Generates a keyed list of dates
+ * @param string $incAll [default: true] - Add the 'All' choice at the beginning
+ * @param boolean $incRecent [default: false] - true to include the recent choices, last 30, 60 90, etc.
+ * @return array - formatted result array to be used for HTML5 input type select render function
+ */
+function localeDates($incRecent=false, $incLast=false, $incCurrent=false, $incAll=false, $incPeriods=false)
+{
+    $output = ['l'=>lang('dates_this_period')];
+    if ($incRecent)  { $output += ['t'=>lang('last_30_days'),     'v'=>lang('last_60_days'),   'w'=>lang('last_90_days')]; }
+    if ($incLast)    { $output += ['s'=>lang('dates_last_period'),'r'=>lang('dates_lqtr'),     'm'=>lang('dates_lfy'),  'n'=>lang('dates_lfytd')]; }
+    if ($incCurrent) { $output += ['c'=>lang('today'),            'd'=>lang('dates_this_week'),'f'=>lang('dates_month'),'h'=>lang('dates_quarter'), 'j'=>lang('dates_this_year')]; }
+    if ($incAll)     { $output += ['a'=>lang('all')]; }
+    if ($incPeriods) {
+        $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_periods", '', 'period DESC');
+        foreach ($result as $row) { $output[$row['period']] = lang('period')." {$row['period']} : ".viewDate($row['start_date'])." - ".viewDate($row['end_date']); }
+    }
+    return $output;
 }
 
 /**

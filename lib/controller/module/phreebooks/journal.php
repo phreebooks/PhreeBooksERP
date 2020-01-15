@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-04
+ * @version    3.x Last Update: 2020-01-14
  * @filesource /lib/controller/module/phreebooks/journal.php
  */
 
@@ -331,19 +331,19 @@ class journal
             $output['main'] = mapContactToJournal($cID, '_b');
         } else { return $output; }
         // pull contact info and open invoices
-        $jID    = $type=='v' ? '6,7' : '12,13';
+        $jID     = $type=='v' ? '6,7' : '12,13';
         if ($type=='v' && validateSecurity('phreebooks', 'j2_mgr', 1)) { $jID .= ',2'; }
-        $today  = date('Y-m-d');
-        $criteria = "contact_id_b='$cID' AND journal_id IN ($jID) AND closed='0'";
-        $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $criteria, "post_date");
+        $today   = date('Y-m-d');
+        $criteria= "contact_id_b='$cID' AND journal_id IN ($jID) AND closed='0'";
+        $result  = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $criteria, "post_date");
         msgDebug("\nFound number of open invoices = ".sizeof($result));
         foreach ($result as $row) {
             if (in_array($row['journal_id'], [2])) { glFindAPacct($row); }
             if (in_array($row['journal_id'], [7,13])) { $row['total_amount'] = -$row['total_amount']; } // added jID=13 for cash receipts
             $row['total_amount'] += getPaymentInfo($row['id'], $row['journal_id']);
             if (in_array(JOURNAL_ID, [17,22])) { $row['total_amount'] = -$row['total_amount']; } // need to negate for reverse cash flow
-            $dates= localeDueDate($row['post_date'], $row['terms']); //), $type);
-            $discount = $today <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
+            $dates   = localeDueDate($row['post_date'], $row['terms']); //), $type);
+            $discount= $today <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
             $output['items'][] = [
                 'idx'         => $itemIdx,
                 'id'          => 0,
@@ -359,7 +359,7 @@ class journal
                 'amount'      => roundAmount($row['total_amount']),
                 'gl_account'  => $row['gl_acct_id'],
                 'post_date'   => $row['post_date'],
-                'date_1'      => !empty($row['terminal_date']) ? $row['terminal_date'] : $dates['net_date'], // priority to posted due date
+                'date_1'      => !empty($row['terminal_date']) && $type=='v' ? $row['terminal_date'] : $dates['net_date'], // priority to posted due date
                 'discount'    => $discount,
                 'total'       => roundAmount($row['total_amount']) - $discount,
                 'checked'     => in_array($row['id'], $preChecked) ? true : false];
@@ -379,6 +379,7 @@ class journal
         $itemIdx  = 0;
         $post_date= localeCalculateDate(date('Y-m-d'), 1);
         $jID      = '6,7';
+        $today    = date('Y-m-d');
         if (validateSecurity('phreebooks', 'j2_mgr', 1)) { $jID .= ',2'; }
         $criteria = "journal_id IN ($jID) AND closed='0' AND post_date<'$post_date' AND contact_id_b>0";
         $result   = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $criteria, "post_date");
@@ -388,7 +389,7 @@ class journal
             if (in_array($row['journal_id'], [7,13])) { $row['total_amount'] = -$row['total_amount']; } // added jID=13 for cash receipts
             $paid    = getPaymentInfo($row['id'], $row['journal_id']);
             $dates   = localeDueDate($row['post_date'], $row['terms']); //, 'v');
-            $discount= $row['post_date'] <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
+            $discount= $today <= $dates['early_date'] ? roundAmount($dates['discount'] * $row['total_amount']) : 0;
             $output['items'][] = [
                 'idx'         => $itemIdx,
                 'id'          => 0,

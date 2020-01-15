@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-23
+ * @version    3.x Last Update: 2020-01-06
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -896,7 +896,6 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         $sqlPeriod  = $dateRange['sql']; // BIZUNO_DB_PREFIX."journal_main.period={$this->defaults['period']}";
         $formID     = explode(':', getDefaultFormID($this->journalID));
         $formGroup  = $formID[0].':jjrnlTBD';
-//      $formGroup  = $this->journalID==18 ? 'cust:j19' : $formID[0].':jjrnlTBD'; // deprecated to allow different forms for cash receipts and POS sales
         $jHidden    = true;
         $jID_values = [];
         $valid_jIDs = [$this->journalID];
@@ -988,7 +987,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                     'help'      =>['order'=>99,'icon'=>'help',   'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
                 'filters' => [
                     'period' => ['order'=>10,'break'=>true,'options'=>['width'=>300],'sql'=>$sqlPeriod,
-                        'label'=>lang('period'), 'values'=>dbPeriodDropDown(true, true),'attr'=>['type'=>'select','value'=>$this->defaults['period']]],
+                        'label'=>lang('period'), 'values'=>viewKeyDropdown(localeDates(true, true, true, true, true)),'attr'=>['type'=>'select','value'=>$this->defaults['period']]],
                     "jID"    => ['order'=>20,'break'=>true,'sql'=>$jrnl_sql, 'hidden'=>$jHidden,
                         'label'=>lang('journal_main_journal_id'), 'values'=>$jID_values,'attr'=>['type'=>'select','value'=>$this->defaults['jID']]],
                     "status" => ['order'=>30,'break'=>true,'sql'=>$jrnl_status,'hidden'=>$jHidden,

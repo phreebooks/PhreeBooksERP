@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-24
+ * @version    3.x Last Update: 2019-12-30
  * @filesource /lib/controller/module/bizuno/dashboards/reminder/reminder.php
  */
 
@@ -68,19 +68,13 @@ class reminder
      */
     public function remove($menu_id='')
     {
-        $onlyDash = $srcExist = false;
-        $dashboards = dbGetMulti(BIZUNO_DB_PREFIX."users_profiles", "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='reminder'");
-        msgDebug("\nNumber of dashboards = ".sizeof($dashboards));
+        $onlyDash  = false;
+        $dashboards= dbGetMulti(BIZUNO_DB_PREFIX."users_profiles", "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code'");
         if (sizeof($dashboards) == 1) { $onlyDash = true; }
-        $oneDash = array_shift($dashboards);
-        $settings= clean($oneDash['settings'], 'json');
-        msgDebug("\nSettings = ".sizeof($dashboards));
-        if ($onlyDash && (!isset($settings['source']) || sizeof($settings['source']) > 0)) { $srcExist = true; }
-        if (!$onlyDash && !$srcExist) {
-            dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."users_profiles"." WHERE user_id=".getUserCache('profile', 'admin_id', false, 0)." AND menu_id='$menu_id' AND dashboard_id='$this->code'");
-        } else {
-            msgAdd($this->lang['err_dash_reminder_delete']);
-        }
+        $oneDash   = array_shift($dashboards);
+        $settings  = clean($oneDash['settings'], 'json');
+        if ($onlyDash && !empty($settings['source'])) { return msgAdd($this->lang['err_dash_reminder_delete']); }
+        dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."users_profiles"." WHERE user_id=".getUserCache('profile', 'admin_id', false, 0)." AND menu_id='$menu_id' AND dashboard_id='$this->code'");
     }
 
     /**

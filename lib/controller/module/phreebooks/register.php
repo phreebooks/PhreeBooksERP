@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2020-01-06
  * @filesource /lib/controller/module/phreebooks/register.php
  */
 
@@ -89,7 +89,7 @@ class phreebooksRegister
         return ['id' => $name,
             'attr'   => ['toolbar'=>"#{$name}Toolbar",'url'=>BIZUNO_AJAX."&p=phreebooks/register/managerRows"],
             'source' => ['filters'=>[
-                'period'=> ['order'=>10,'options'=>['width'=>300],'label'=>lang('period'),'break'=>true,'values'=>dbPeriodDropDown(false),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'fy', 'period')]],
+                'period'=> ['order'=>10,'options'=>['width'=>300],'label'=>lang('period'),'break'=>true,'values'=>viewKeyDropdown(localeDates(false, false, false, false, true)),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'fy', 'period')]],
                 'glAcct'=> ['order'=>20,'options'=>['width'=>350],'label'=>lang('gl_account'),'values'=>dbGLDropDown(false, ['0']),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash')]],
                 'help'  => ['order'=>99,'icon'=>'help', 'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]],
             'columns'=> [

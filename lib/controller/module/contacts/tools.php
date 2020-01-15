@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    3.x Last Update: 2020-01-09
  * @filesource /lib/controller/module/contacts/tools.php
  */
 
@@ -125,7 +125,7 @@ class contactsTools
                 . "For customers, only active records will be removed. For vendors, only inacitve records will be removed. "
                 . "Address books entries for deleted contacts will be removed, contact log entries for ALL contacts will be removed. Expired stored credit cards for all periods will be removed."
                 . "To prevent the these contact records from being removed, check the box below."."</p>";
-        $html .= html5('contacts_keep', ['label' => 'Do not delete contact records that have no journal reference during or before this closing fiscal year', 'position'=>'after','attr'=>['type'=>'checkbox','value'=>'1']]);
+        $html .= html5('contacts_keep', ['label' => 'Do not delete contact records that have no journal reference during or before this closing fiscal year', 'position'=>'after','attr'=>['type'=>'checkbox','value'=>1]]);
         $layout['tabs']['tabFyClose']['divs'][$this->lang['title']] = ['order'=>50,'label'=>$this->lang['title'],'type'=>'html','html'=>$html];
     }
 

@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2020-01-10
  * @filesource /local/en_US/language.php
  */
 
@@ -542,7 +542,7 @@ $langCore = [
     'quarter_neg4' => 'Quarter (-4)',
     'quarter_neg5' => 'Quarter (-5)',
     // Inventory
-    'inventory_assy_cost'    => 'Current Assembly Cost',
+    'inventory_assy_cost'    => 'Assembly Cost',
     'inventory_where_used'   => 'Where Used',
     'inventory_current_codes'=> 'Current Codes',
     'direct_entry' => 'Direct Entry',
@@ -623,6 +623,8 @@ $langCore = [
     'ship_bill_to' => 'Bill Charges To',
     'ship_bill_acct_num' => 'Payor Account Number',
     // Date ranges
+    'dates_this_period' => 'Current Period',
+    'dates_last_period' => 'Last Period',
     'dates_daily' => 'Daily',
     'dates_this_week' => 'This Week',
     'dates_wtd' => 'Week To Date',
@@ -641,7 +643,6 @@ $langCore = [
     'dates_ytd' => 'Year To Date',
     'dates_lfy' => 'Last Fiscal Year',
     'dates_lfytd' => 'Last FY To Date',
-    'dates_this_period' => 'Current Period',
     'month_01' => 'Jan',
     'month_02' => 'Feb',
     'month_03' => 'Mar',

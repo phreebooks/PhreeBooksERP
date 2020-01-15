@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-01-22
+ * @version    3.x Last Update: 2020-01-06
  * @filesource /lib/controller/module/phreebooks/dashboards/summary_6_12/summary_6_12.php
  */
 
@@ -33,11 +33,9 @@ class summary_6_12
     function __construct($settings=[])
     {
         $this->security= getUserCache('security', 'j2_mgr', false, 0);
-        $defaults      = ['users'=>'-1','roles'=>'-1','range'=>'l'];
+        $defaults      = ['users'=>-1,'roles'=>-1,'range'=>'l'];
         $this->settings= array_replace_recursive($defaults, $settings);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
-        $this->choices = ['l'=>lang('dates_this_period'),'x'=>'Last Period','i'=>lang('dates_qtd'),'k'=>lang('dates_ytd')];
-//        $this->dates   = array_merge(viewKeyDropdown($this->choices), dbPeriodDropDown(false));
     }
 
     public function settingsStructure()
@@ -45,9 +43,12 @@ class summary_6_12
         return [
             'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']],
-            'range' => ['label'=>lang('range'), 'position'=>'after','values'=>viewKeyDropdown($this->choices),'attr'=>['type'=>'select','value'=>$this->settings['range']]]];
+            'range' => ['label'=>lang('range'), 'position'=>'after','values'=>viewKeyDropdown(localeDates(true, true, true, false, true)),'attr'=>['type'=>'select','value'=>$this->settings['range']]]];
     }
 
+    /**
+     *
+     */
     public function save()
     {
         $menu_id = clean('menuID', 'text', 'get');
@@ -58,11 +59,13 @@ class summary_6_12
         dbWrite(BIZUNO_DB_PREFIX."users_profiles", ['settings'=>json_encode($this->settings)], 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code' AND menu_id='$menu_id'");
     }
 
-    public function render()
+    /**
+     *
+     * @return type
+     */
+    public function render(&$layout=[])
     {
         $total_v = $total_c = 0;
-//        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/functions.php", 'phreebooksProcess', 'function');
-        $btnSave = ['attr'=>['type'=>'button','value'=>lang('save')],    'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]];
         $iconExp = ['attr'=>['type'=>'button','value'=>lang('download')],'events'=>['onClick'=>"jq('#sum_6_12').submit();"]];
         $settings= $this->settingsStructure();
         $data    = $this->dataSales($this->settings['range']);
@@ -87,32 +90,27 @@ function chart{$this->code}() {
 }
 google.charts.load('current', {'packages':['table']});
 google.charts.setOnLoadCallback(chart{$this->code});\n";
-        $html  = '<div>';
-        $html .= '  <div id="'.$this->code.'_attr" style="display:none"><form id="'.$this->code.'Form" action="">';
-        $html .= '    <div style="white-space:nowrap">'.html5($this->code.'range',$settings['range']).'</div>';
-        $html .= '    <div style="text-align:right;">' .html5($this->code.'_btn', $btnSave).'</div></form></div>';
-        $html .= '  <div style="width:100%" id="'.$this->code.'_chart"></div>';
-        $html .= '  <div style="text-align:right"><form id="sum_6_12" action="'.$action.'">'.html5('', $iconExp).'</form></div>';
-        $html .= "</div>";
-        $html .= htmlJS($js);
-        return $html;
+        $layout = array_merge_recursive($layout, [
+            'divs'  => [
+                'admin' =>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'range',$this->code.'_btn']]]],
+                'body'  =>['order'=>50,'type'=>'html','html'=>'<div style="width:100%" id="'.$this->code.'_chart"></div>'],
+                'export'=>['order'=>95,'type'=>'html','html'=>'<form id="sum_6_12" action="'.$action.'">'.html5('', $iconExp).'</form>']],
+            'fields'=> [
+                $this->code.'range'=> array_merge($settings['range'],['order'=>10,'break'=>true]),
+                $this->code.'_btn' => ['order'=>90,'attr'=>['type'=>'button','value'=>lang('save')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
+            'jsHead'=> ['init'=>$js]]);
     }
 
+    /**
+     *
+     * @param type $range
+     * @return type
+     */
     public function dataSales($range='l')
     {
         msgDebug("\nEntering dataSales range = $range");
-        if ($range == 'x') {
-            $lmFirst = date("Y-m-d", strtotime("first day of previous month"));
-            $lmLast  = date("Y-m-d", strtotime("first day of this month"));
-            $dates = ['sql' => "post_date>='$lmFirst' AND post_date<'$lmLast'",
-                'start_date'=> $lmFirst,
-                'end_date'  => $lmLast];
-        } else {
-            $dates  = dbSqlDates($range);
-        }
-        // break into week/month chunks with week ending/month ending, create array with values = 0
+        $dates  = dbSqlDates($range);
         $arrIncs= $this->createDateRange($dates['start_date'], $dates['end_date']);
-        // get just the dates to compare
         $incKeys= array_keys($arrIncs);
         $crit   = $dates['sql']." AND journal_id IN (12,13)";
         $this->setData($arrIncs, $incKeys, 'c', $crit);
@@ -122,6 +120,13 @@ google.charts.setOnLoadCallback(chart{$this->code});\n";
         return $arrIncs;
     }
 
+    /**
+     *
+     * @param type $startDate
+     * @param type $endDate
+     * @param type $inc
+     * @return int
+     */
     private function createDateRange($startDate, $endDate, $inc='w')
     {
         msgDebug("\nEntering createDateRange, start = $startDate, end = $endDate");
@@ -134,6 +139,13 @@ google.charts.setOnLoadCallback(chart{$this->code});\n";
         return $range;
     }
 
+    /**
+     *
+     * @param type $arrIncs
+     * @param type $incKeys
+     * @param type $type
+     * @param type $crit
+     */
     private function setData(&$arrIncs, $incKeys, $type, $crit)
     {
         $result  = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $crit, 'post_date', ['journal_id','post_date','total_amount']);

@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-20
+ * @version    3.x Last Update: 2020-01-07
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -482,7 +482,7 @@ function periodAutoUpdate($verbose=true)
     $period = calculatePeriod(date('Y-m-d'), false);
     if ($period == getModuleCache('phreebooks', 'fy', 'period')) { return true; } // we're in the current period
     if (!$period) { // we're outside of the defined fiscal years
-        if ($verbose) { msgAdd(sprintf(lang('err_gl_post_date_invalid'), $period), 'trap'); }
+        if ($verbose) { msgAdd(sprintf(lang('err_gl_post_date_invalid'), $period)); } // removed 'trap' as auto fiscal year creates debug files everywhwere
         $tmpSec = getUserCache('security', 'admin', false, 0);
         setUserCache('security', 'admin', 3);
         bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/tools.php", 'phreebooksTools');

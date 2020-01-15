@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft Inc.
+ * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-24
+ * @version    3.x Last Update: 2020-01-10
  * @filesource /lib/model/db.php
  */
 
@@ -835,11 +835,12 @@ function dbGetContact($request, $suffix='')
  */
 function dbGetInvAssyCost($rID=0)
 {
-    $items= dbGetMulti(BIZUNO_DB_PREFIX.'inventory_assy_list', "ref_id=$rID");
+    $iID  = intval($rID);
+    $items= dbGetMulti(BIZUNO_DB_PREFIX.'inventory_assy_list', "ref_id=$iID");
     $cost = 0;
     foreach ($items as $row) {
         $unit = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'item_cost', "sku='{$row['sku']}'");
-        $cost += $row['qty'] * $unit;
+        $cost+= $row['qty'] * $unit;
     }
     return $cost;
 }
@@ -887,6 +888,7 @@ function dbFiscalDropDown()
 }
 
 /**
+ * @todo DEPRECATED - Delete after R3.3.4
  * Generates a drop down list of the accounting periods in the system
  * @param string $incAll [default: true] - Add the 'All' choice at the beginning
  * @param boolean $incRecent [default: false] - true to include the recent choices, last 30, 60 90, etc.
@@ -909,11 +911,11 @@ function dbPeriodDropDown($incAll=true, $incRecent=false)
 
 /**
  * Generates a drop down list of GL Accounts
- * @param string $inc_sel = include Please Select at beginning of drop down
+ * @param string $inc_sel - include Please Select at beginning of drop down
  * @param array $limits - GL account types to restrict list to
  * @return array - formatted result array to be used for HTML5 input type select render function
  */
-function dbGLDropDown($inc_sel=true, $limits=array())
+function dbGLDropDown($inc_sel=true, $limits=[])
 {
     $output = [];
     if ($inc_sel) { $output[] = ['id'=>'0', 'text'=>lang('select')]; }
@@ -1062,25 +1064,54 @@ function dbSqlDates($dateType='a', $df=false) {
             }
             $sql  = "$df>='$dbeg' AND $df<'$dend'";
             break;
+        case 'o': // Reseverd for later
+            break;
+        case 'p': // Reseverd for later
+            break;
+        case 'q': // Reseverd for later
+            break;
+        case 'r': // Last Quarter
+            $QtrStrt = (getModuleCache('phreebooks', 'fy', 'period') - ((getModuleCache('phreebooks', 'fy', 'period') - 1) % 3) - 3);
+            $temp = dbGetFiscalDates($QtrStrt);
+            $dbeg = $temp['start_date'];
+            $temp = dbGetFiscalDates($QtrStrt + 2);
+            $dend = localeCalculateDate($temp['end_date'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('date_range').' '.lang('from').' '.viewDate($dbeg).' '.lang('to').' '.viewDate($temp['end_date']).'; ';
+            break;
+        case 's': // Last Period
+            $lPer = getModuleCache('phreebooks', 'fy', 'period') - 1;
+            $temp = dbGetFiscalDates($lPer);
+            $dbeg = $temp['start_date'];
+            $dend = localeCalculateDate($temp['end_date'], 1);
+            $sql  = "$df>='$dbeg' AND $df<'$dend'";
+            $desc = lang('period')." $lPer (".viewDate($dbeg).' '.lang('to').' '.viewDate($temp['end_date']).'); ';
+            break;
         case 't': // Last 30 days
             $dbeg = localeCalculateDate($dates['Today'], -30);
             $dend = localeCalculateDate($dates['Today'], 1);
             $sql  = "$df>='$dbeg' AND $df<'$dend'";
-            $desc = lang('last_30');
+            $desc = lang('last_30_days');
+            break;
+        case 'u': // Reseverd for later
             break;
         case 'v': // last 60 days
             $dbeg = localeCalculateDate($dates['Today'], -60);
             $dend = localeCalculateDate($dates['Today'], 1);
             $sql  = "$df>='$dbeg' AND $df<'$dend'";
-            $desc = lang('last_60');
+            $desc = lang('last_60_days');
             break;
         case 'w': // Last 90 days
             $dbeg = localeCalculateDate($dates['Today'], -90);
             $dend = localeCalculateDate($dates['Today'], 1);
             $sql  = "$df>='$dbeg' AND $df<'$dend'";
-            $desc = lang('last_90');
+            $desc = lang('last_90_days');
             break;
-        default: // date by period
+        case 'x': // Reseverd for later
+            break;
+        case 'y': // Reseverd for later
+            break;
+        default: // date by period (integer)
         case "z":
             if (!intval($DateArray[0])) { $DateArray[0] = getModuleCache('phreebooks', 'fy', 'period'); }
             $temp = dbGetFiscalDates($DateArray[0]);

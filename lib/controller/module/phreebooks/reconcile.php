@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-21
+ * @version    3.x Last Update: 2020-01-06
  * @filesource /lib/controller/module/phreebooks/reconcile.php
  */
 
@@ -241,7 +241,7 @@ class phreebooksReconcile
                 'onUncheckAll' => "function(rows)     { for (var i=0; i<rows.length; i++) { reconUncheck(rows[i]); } reconTotal(); }"],
             'source' => [
                 'filters'=> [
-                    'period'=> ['order'=>10,'options'=>['width'=>300],'label'=>lang('period'),'break'=>true,'values'=>dbPeriodDropDown(false),'attr'=>['type'=>'select','value'=>$this->defaults['period']]],
+                    'period'=> ['order'=>10,'options'=>['width'=>300],'label'=>lang('period'),'break'=>true,'values'=>viewKeyDropdown(localeDates(false, false, false, false, true)),'attr'=>['type'=>'select','value'=>$this->defaults['period']]],
                     'glAcct'=> ['order'=>20,'options'=>['width'=>350],'label'=>pullTableLabel('journal_main', 'gl_acct_id'),'values'=>dbGLDropDown(false,['0']), 'attr'=>['type'=>'select','value'=>$this->defaults['glAcct']]]],
                 'fields' => ['stmt_balance'=>['order'=>50,'label'=>lang('statement_balance'),'attr'=>['type'=>'currency','value'=>$stmt_balance]]]],
             'columns'=> [

@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft Inc.
+ * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-04
+ * @version    3.x Last Update: 2019-12-30
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -102,12 +102,14 @@ $lang = [
     'err_install_module_exists' => 'Module %s is already installed! The installation was skipped.',
     'err_role_undefined' => 'The role is a required field! Please select a role for this user.',
     'err_delete_user' => 'You cannot delete the user account that you are logged in as!',
+    'err_delete_role' => 'This role cannot be deleted, the following users are assigned to this role: %s',
     'err_encryption_not_set' => 'The encryption key has not been set! To set a key, go to My Company -> Settings -> Bizuno tab -> Bizuno Settings -> Tools tab.',
     // General
     'table_stats' => 'Table Statistics',
     'dashboard_columns' => 'Dashboard Columns',
     'icon_set' => 'Icon Set',
     'store_id_lbl' => 'Home Store',
+    'restrict_access' => 'Restrict Access',
     'restrict_store_lbl' => 'Restrict to Store',
     'restrict_user_lbl' => 'Limit Views',
     'store_id_tip' => 'Sets the home store in multiple store businesses. Used for reports and listings for store stock levels, contacts, etc.',

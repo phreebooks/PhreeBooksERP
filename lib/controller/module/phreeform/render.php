@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2020-01-06
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -157,7 +157,7 @@ class phreeformRender
             $output .= '    <tr class="panel-header"><th colspan="2">&nbsp;</th><th>'.lang('from')."</th><th>".lang('to')."</th></tr>\n";
             if ($viewData['report']->datelist != '') {
                 if ($viewData['report']->datelist == 'z') { // special case for period pull-down
-                    $output .= '<tr><td colspan="4">'.html5('period', ['label'=>lang('period'),'values'=>dbPeriodDropDown(),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'fy', 'period')]])."</td></tr>\n";
+                    $output .= '<tr><td colspan="4">'.html5('period', ['label'=>lang('period'),'values'=>viewKeyDropdown(localeDates(false, false, false, false, true)),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'fy', 'period')]])."</td></tr>\n";
                 } elseif ($viewData['report']->datelist != 'a') {
                     $dateArray = explode(':', $viewData['report']->datedefault);
                     $output .= "<tr>\n";

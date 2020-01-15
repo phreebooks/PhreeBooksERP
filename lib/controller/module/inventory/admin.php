@@ -15,9 +15,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2019, PhreeSoft, Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-09
+ * @version    3.x Last Update: 2020-01-10
  * @filesource /lib/controller/module/inventory/admin.php
  */
 
@@ -50,17 +50,18 @@ class inventoryAdmin
                 'inventory'=> ['order'=>30,   'label'=>lang('inventory'),'group'=>'inv','icon'=>'inventory','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=inventory');"],'child'=>[
                     'inv_mgr' => ['order'=>20,'label'=>lang('gl_acct_type_4_mgr'), 'icon'=>'inventory','events'=>['onClick'=>"hrefClick('inventory/main/manager');"]],
                     'rpt_inv' => ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc',  'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=inv');"]]]],
-                'customers' => ['child'=>[
+                'customers'=> ['child'=>[
                     'prices_c'=> ['order'=>70,'label'=>lang('contacts_type_c_prc'),'icon'=>'price',    'events'=>['onClick'=>"hrefClick('inventory/prices/manager&type=c');"]]]],
-                'vendors' => ['child'=>[
+                'vendors'  => ['child'=>[
                     'prices_v'=> ['order'=>70,'label'=>lang('contacts_type_v_prc'),'icon'=>'price',    'events'=>['onClick'=>"hrefClick('inventory/prices/manager&type=v');"]]]]]],
             'hooks' => ['phreebooks'=>['tools'=>[
                 'fyCloseHome'=>['page'=>'tools', 'class'=>'inventoryTools', 'order'=>50],
                 'fyClose'    =>['page'=>'tools', 'class'=>'inventoryTools', 'order'=>50]]]]];
         $this->phreeformProcessing = [
             'image_sku'=> ['text'=>lang('image')." (".lang('sku').")"],
-            'inv_sku'  => ['text'=>lang('sku')],
             'inv_image'=> ['text'=>lang('image')." (".lang('id').")"],
+            'inv_sku'  => ['text'=>lang('sku')],
+            'inv_assy' => ['text'=>lang('inventory_assy_cost'." (".lang('id').")")],
             'inv_j06'  => ['text'=>lang('inventory_description_purchase')." (".lang('sku').")"],
             'inv_j12'  => ['text'=>lang('inventory_description_sales')." (".lang('sku').")"],
             'inv_mv0'  => ['text'=>lang('current_sales')    .' (sku)'],
