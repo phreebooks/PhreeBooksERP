@@ -17,14 +17,12 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-23
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /EXTENSION_PATH/extShipping/dashboards/unprinted_orders/unprinted_orders.php
  *
  */
 
 namespace bizuno;
-
-define('DASHBOARD_UNPRINTED_ORDERS_VERSION','3.2');
 
 class unprinted_orders
 {
@@ -69,9 +67,11 @@ class unprinted_orders
             $row .= '<span style="float:right">'.html5('', ['icon'=>'email','events'=>['onClick'=>"winOpen('phreeformOpen', 'phreeform/render/open&group=cust:j12&date=a&xfld=journal_main.id&xcr=equal&xmin={$entry['id']}');"]])."</span>";
             $rows[]= $row;
         } }
+        $filter = ucfirst(lang('filter')).": ".ucfirst(lang('sort'))." ".strtoupper($this->settings['order']).(!empty($this->settings['num_rows']) ? " ({$this->settings['num_rows']});" : '');
         $layout = array_merge_recursive($layout, [
             'divs'  => [
                 'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'num_rows', $this->code.'order', $this->code.'_btn']]]],
+                'head' =>['order'=>40,'type'=>'html','html'=>$filter],
                 'body' =>['order'=>50,'type'=>'list','key'=>$this->code]],
             'fields'=> [
                 $this->code.'num_rows'=> array_merge($struc['num_rows'],['order'=>10,'break'=>true]),

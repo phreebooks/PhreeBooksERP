@@ -47,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.3.3.5 =
+2020-02-01 - Incorporate Bizuno Library 3.3.5. Minor bug fixes.
 = 5.3.3.4 =
 2020-01-15 - Incorporate Bizuno Library 3.3.4. Roll copyright year. New PhreeForm processing. Extension bugs and minor trunk bugs.
 = 5.3.3.3 =

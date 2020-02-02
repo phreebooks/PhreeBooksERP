@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-02
+ * @version    3.x Last Update: 2020-01-31
  * @filesource /lib/model/registry.php
  */
 
@@ -179,6 +179,7 @@ final class bizRegistry
         msgDebug("\ninitUser with email = $usrEmail biz_id = $bizID");
         $lang = $bizunoUser['profile']['language']; // preserve the language selection
         if (!$row = dbGetRow(BIZUNO_DB_PREFIX.'users', "email='$usrEmail'", true, false)) { return; }
+        if (isset($row['password'])) { $row['password'] = '****'; }
         msgDebug("\nRead original row from users table: ".print_r($row, true));
         $settings = json_decode($row['settings'], true);
         if (!isset($settings['profile'])) { $settings['profile'] = []; }

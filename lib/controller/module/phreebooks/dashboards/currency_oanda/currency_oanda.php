@@ -17,13 +17,11 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-06-20
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /lib/controller/module/phreebooks/dashboards/currency_oanda/currency_oanda.php
  */
 
 namespace bizuno;
-
-define('DASHBOARD_CURRENCY_OANDA_VERSION','2.0');
 
 class currency_oanda
 {

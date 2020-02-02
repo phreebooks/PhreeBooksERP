@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-22
+ * @version    3.x Last Update: 2020-01-27
  * @filesource /lib/controller/module/phreebooks/journals/j14.php
  */
 
@@ -103,9 +103,9 @@ class j14 extends jCommon
         $data['fields']['description']['order']= 45;
         $data['fields']['description']['options']['width'] = 300;
         $data['divs']['divDetail']   = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'props'  => ['order'=>40,'type'=>'fields',  'classes'=>['blockView'],'attr'=>  ['id'=>'pbProps'], 'keys'=>$fldKeys],
-            'dgItems'=> ['order'=>50,'type'=>'datagrid','classes'=>['blockView'],'styles'=>['width'=>'600px'],'key' =>'item'],
-            'totals' => ['order'=>60,'type'=>'totals',  'classes'=>['blockView'],'attr'=>  ['id'=>'pbTotals'],'content'=>$data['totals']]]];
+            'props'  => ['order'=>40,'type'=>'fields',  'classes'=>['blockView'],'attr'  =>['id'=>'pbProps'], 'keys'   =>$fldKeys],
+            'dgItems'=> ['order'=>50,'type'=>'datagrid','classes'=>['blockView'],'styles'=>['width'=>'600px'],'key'    =>'item'],
+            'totals' => ['order'=>60,'type'=>'totals',  'classes'=>['blockView'],'attr'  =>['id'=>'pbTotals'],'content'=>$data['totals']]]];
         $data['jsHead']['preSubmit'] = "function preSubmit() {
     if (sku = '') return false;
     var item = {sku:jq('#sku').val(),qty:jq('#qty').val(),description:jq('#description').val(),total:0,gl_account:jq('#gl_account').val()};
@@ -259,9 +259,9 @@ class j14 extends jCommon
     }
 
     /**
-     * Creates the datagrid structure for inventory assembly line items
+     * Creates the grid structure for inventory assembly line items
      * @param string $name - DOM field name
-     * @return array - datagrid structure
+     * @return array - grid structure
      */
     private function dgAssy($name)
     {

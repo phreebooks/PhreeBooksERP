@@ -17,13 +17,11 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /lib/controller/module/bizuno/dashboards/lp_search/lp_search.php
  */
 
 namespace bizuno;
-
-define('DASHBOARD_LP_SEARCH_VERSION','1.0');
 
 class lp_search
 {

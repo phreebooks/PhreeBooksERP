@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-30
+ * @version    3.x Last Update: 2020-01-27
  * @filesource /lib/controller/module/bizuno/roles.php
  */
 
@@ -93,7 +93,7 @@ class bizunoRoles
      */
     public function edit(&$layout=[])
     {
-        if (!$security = validateSecurity('bizuno', 'roles', 3)) { return; }
+        if (!$security = validateSecurity('bizuno', 'roles', 1)) { return; }
         $rID      = clean('rID', 'integer', 'get');
         $fields   = ['id','title','inactive','selFill','restrict'];
         $dbData   = $rID ? dbGetRow(BIZUNO_DB_PREFIX.'roles', "id='$rID'") : [];
@@ -167,14 +167,14 @@ class bizunoRoles
      */
     public function copy(&$layout=[])
     {
-        if (!$security = validateSecurity('bizuno', 'roles', 2)) { return; }
-        $rID   = clean('rID', 'integer','get');
-        $title = clean('data','text',   'get');
+        $rID  = clean('rID', 'integer','get');
+        if (!$security = validateSecurity('bizuno', 'roles', $rID?3:2)) { return; }
+        $title= clean('data','text',   'get');
         if (!$rID || !$title) { return msgAdd(lang('err_copy_name_prompt')); }
         $role = dbGetRow(BIZUNO_DB_PREFIX."roles", "id=$rID");
         unset($role['id']);
         $role['title'] = $title;
-        $nID = $_GET['rID'] = dbWrite(BIZUNO_DB_PREFIX."roles", $role);
+        $nID  = $_GET['rID'] = dbWrite(BIZUNO_DB_PREFIX."roles", $role);
         if ($nID) { msgLog(lang('roles')."-".lang('copy')." $title ($rID => $nID)"); }
         $data = ['content'=>['action'=>'eval','actionData'=>"jq('#dgRoles').datagrid('reload'); accordionEdit('accRoles','dgRoles','divRolesDetail','".jsLang('details')."', 'bizuno/roles/edit',$nID);"]];
         $layout = array_replace_recursive($layout, $data);
@@ -299,7 +299,7 @@ class bizunoRoles
                     'actions'=> [
                         'edit'  => ['order'=>20,'icon'=>'edit',
                             'events'=> ['onClick'=>"accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', idTBD);"]],
-                        'copy'  => ['order'=>40,'icon'=>'copy',
+                        'copy'  => ['order'=>40,'icon'=>'copy', 'hidden'=>$security>1?false:true,
                             'events'=> ['onClick'=>"var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/roles/copy', idTBD, title);"]],
                         'delete'=> ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,
                             'events'=> ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/roles/delete', idTBD);"]]]],

@@ -17,13 +17,11 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-10-10
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /lib/controller/module/bizuno/dashboards/todays_audit/todays_audit.php
  */
 
 namespace bizuno;
-
-define('DASHBOARD_TODAYS_AUDIT_VERSION','3.1');
 
 class todays_audit
 {
@@ -32,7 +30,7 @@ class todays_audit
     public  $code     = 'todays_audit';
     public  $category = 'general';
     private $titles   = [];
-    
+
     function __construct($settings)
     {
         $this->security= getUserCache('security', 'profile', 0);
@@ -99,7 +97,7 @@ class todays_audit
         $settings['trim']    = clean($this->code.'trim', 'integer','post');
         dbWrite(BIZUNO_DB_PREFIX."users_profiles", ['settings'=>json_encode($settings)], 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code' AND menu_id='$menu_id'");
     }
-    
+
     private function getTitle($id) {
         if (!$id) { return $id; }
         if (isset($this->titles[$id])) { return $this->titles[$id]; }

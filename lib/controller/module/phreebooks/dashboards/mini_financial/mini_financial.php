@@ -17,13 +17,11 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /lib/controller/module/phreebooks/dashboards/mini_financial/mini_financial.php
  */
 
 namespace bizuno;
-
-define('DASHBOARD_MINI_FINANCIAL_VERSION','1.0');
 
 class mini_financial
 {
@@ -34,7 +32,7 @@ class mini_financial
     private $bal_tot_2     = 0;
     private $bal_tot_3     = 0;
     private $bal_sheet_data= [];
-    
+
     function __construct($settings=[])
     {
         $this->security= getUserCache('security', 'j2_mgr', 0);
@@ -64,7 +62,7 @@ class mini_financial
         $html .= $this->add_bal_sheet_data($cash, false, $period);
         $html .= '<tr><td>&nbsp;&nbsp;' . htmlspecialchars($this->lang['current_assets']) . '</td>';
         $html .= '<td align="right">' . $this->ProcessData($this->bal_tot_2) . '</td></tr>';
-        
+
         $this->bal_tot_2 = 0;
         $assets = [8, 10, 12];
         $this->add_bal_sheet_data($assets, false, $period);
@@ -113,7 +111,7 @@ class mini_financial
     {
         $contents = '';
         foreach($the_list as $account_type) {
-            $sql = "SELECT beginning_balance + debit_amount - credit_amount AS balance 
+            $sql = "SELECT beginning_balance + debit_amount - credit_amount AS balance
                     FROM ".BIZUNO_DB_PREFIX."journal_history WHERE period = $period AND gl_type=$account_type";
             if (!$stmt = dbGetResult($sql)) { return; }
             $result = $stmt->fetchAll(\PDO::FETCH_ASSOC);
@@ -166,12 +164,12 @@ class mini_financial
     function add_income_stmt_data($type, $first_period, $period, $negate = false)
     {
         $account_array = [];
-        $sql = "SELECT id, gl_account, debit_amount - credit_amount AS balance   
+        $sql = "SELECT id, gl_account, debit_amount - credit_amount AS balance
             FROM ".BIZUNO_DB_PREFIX."journal_history WHERE period=$period AND gl_type=$type ORDER BY gl_account";
         if (!$stmt = dbGetResult($sql)) { return; }
         $cur_period = $stmt->fetch(\PDO::FETCH_ASSOC);
 
-        $sql = "SELECT (SUM(debit_amount) - SUM(credit_amount)) AS balance  
+        $sql = "SELECT (SUM(debit_amount) - SUM(credit_amount)) AS balance
             FROM ".BIZUNO_DB_PREFIX."journal_history WHERE period>=$first_period AND period<=$period AND gl_type=$type GROUP BY gl_account ORDER BY gl_account";
         if (!$stmt = dbGetResult($sql)) { return; }
         $ytd_period = $stmt->fetchAll(\PDO::FETCH_ASSOC);

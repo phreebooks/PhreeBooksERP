@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-19
+ * @version    3.x Last Update: 2020-01-21
  * @filesource lib/view/theme/default/icons-default.php
  */
 
@@ -107,6 +107,7 @@ $icons = [
     'print'      => ['dir'=>'default','path'=>'printer.png'],
     'profile'    => ['dir'=>'default','path'=>'preferences-desktop-locale.png'],
     'purchase'   => ['dir'=>'default','path'=>'package-x-generic.png'],
+    'quality'    => ['dir'=>'default','path'=>'quality.png'],
     'quote'      => ['dir'=>'default','path'=>'internet-group-chat.png'],
     'refresh'    => ['dir'=>'default','path'=>'view-refresh.png'],
     'report'     => ['dir'=>'default','path'=>'x-office-document.png'],

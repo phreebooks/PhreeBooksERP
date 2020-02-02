@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-06
+ * @version    3.x Last Update: 2020-01-21
  * @filesource /locale/cleaner.php
  */
 
@@ -575,10 +575,13 @@ function localePeriodicDate($dateStart, $freq='m')
     switch ($freq) {
         case 'd': $offD = 1; $offM = 0; $offY = 0; break;
         case 'w': $offD = 7; $offM = 0; $offY = 0; break;
+        case 'b': $offD =14; $offM = 0; $offY = 0; break;
         default:
         case 'm': $offD = 0; $offM = 1; $offY = 0; break;
         case 'q': $offD = 0; $offM = 3; $offY = 0; break;
         case 'y': $offD = 0; $offM = 0; $offY = 1; break;
+        case '3': $offD = 0; $offM = 0; $offY = 3; break;
+        case 'z': $offD = 0; $offM = 0; $offY =10; break;
     }
     return localeCalculateDate($dateStart, $offD, $offM, $offY);
 }

@@ -17,13 +17,11 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-09
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /lib/controller/module/bizuno/dashboards/google_calendar/google_calendar.php
  */
 
 namespace bizuno;
-
-define('DASHBOARD_GOOGLE_CALENDAR_VERSION','3.2.1');
 
 class google_calendar
 {

@@ -903,7 +903,7 @@ class phreeformRender
             if (!empty($report->fieldlist[$i]->visible)) {
                 $display[] = prefixTables($report->fieldlist[$i]->fieldname) . " AS c" . $index;
                 $index++;
-            } else {
+            } elseif (!empty($report->fieldlist[$i]->fieldname)) {
                 $hidden[] = prefixTables($report->fieldlist[$i]->fieldname);
             }
         }

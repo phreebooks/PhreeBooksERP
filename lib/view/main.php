@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-19
+ * @version    3.x Last Update: 2020-01-16
  * @filesource /view/main.php
  */
 
@@ -580,7 +580,6 @@ function viewCurrency($value, $format='currency')
     if ($format=='curNull0' && (real)$value == 0) { return ''; }
     if (!is_numeric($value)) { return $value; }
     $isoDef = getDefaultCurrency();
-    msgDebug("\nRead default currency = $isoDef and Pre-set currencies = ".print_r($currencies, true));
     $iso    = !empty($currencies->iso)  ? $currencies->iso  : $isoDef;
     $isoVals= getModuleCache('phreebooks', 'currency', 'iso', $iso);
     $rate   = !empty($currencies->rate) ? $currencies->rate : ($iso==$isoDef ? 1 : $isoVals['value']);
@@ -589,7 +588,7 @@ function viewCurrency($value, $format='currency')
     if ($newNum == '-'.$zero)       { $newNum  = $zero; }
     if (!empty($isoVals['prefix'])) { $newNum  = $isoVals['prefix'].' '.$newNum; }
     if (!empty($isoVals['suffix'])) { $newNum .= ' '.$isoVals['suffix']; }
-    msgDebug("\nviewCurrency started with value = $value and ended with value $newNum");
+    msgDebug("\nviewCurrency default: $isoDef, used: $iso, rate: $rate, starting value = $value, ending value $newNum");
     return $newNum;
 }
 

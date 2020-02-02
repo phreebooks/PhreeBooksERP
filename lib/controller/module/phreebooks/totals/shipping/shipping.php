@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-31
+ * @version    3.x Last Update: 2020-01-31
  * @filesource /lib/controller/module/phreebooks/totals/shipping/shipping.php
  */
 
@@ -96,7 +96,7 @@ class shipping
             'totals_shipping_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
             'totals_shipping_bill_type'=> ['label'=>$this->lang['ship_bill_to'], 'values'=>viewKeyDropdown($billingTypes),'attr'=>['type'=>'select']],
             'totals_shipping_bill_acct'=> ['label'=>$this->lang['ship_bill_acct_num'],'events'=>['onChange'=>"bizSelSet('totals_shipping_bill_type', '3rdparty');"]],
-            'totals_shipping_resi'=> ['label'=>lang('residential_address'),'attr'=>['type'=>'checkbox', 'value'=>'1']],
+            'totals_shipping_resi'=> ['label'=>lang('residential_address'),'attr'=>['type'=>'checkbox', 'value'=>1]],
             'totals_shipping_opt' => ['icon'=>'settings','size'=>'small','events'=> ['onClick'=>"jq('#totals_shipping_div').toggle('slow');"]],
             'method_code' => ['options'=>['width'=>300], 'values'=>$choices, 'attr'=>['type'=>'select']],
             'totals_shipping_est' =>['attr'=>['type'=>'button','value'=>lang('rate_quote')],'events'=>['onClick'=>"shippingEstimate(".JOURNAL_ID.");"]],

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-18
+ * @version    3.x Last Update: 2020-01-27
  * @filesource /lib/controller/module/phreebooks/journals/j02.php
  */
 
@@ -67,10 +67,10 @@ class j02 extends jCommon
         $data['jsHead']['pbChart']     = "var pbChart = bizDefaults.glAccounts.rows;"; // show all accounts from the gl chart, including inactive
         $data['datagrid']['item']      = $this->dgLedger('dgJournalItem');
         $data['divs']['divDetail']     = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
+            'billAD' => ['order'=>20,'label'=>lang('bill_to'),'type'=>'address','classes'=>['blockView'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
                 'settings'=>['type'=>'ceiv','suffix'=>'_b','search'=>true,'required'=>false,'store'=>false]],
-            'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
-            'totals' => ['order'=>50,'type'=>'totals','classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
+            'props'  => ['order'=>40,'label'=>lang('details'),'type'=>'fields', 'classes'=>['blockView'],'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
+            'totals' => ['order'=>50,'label'=>lang('totals'), 'type'=>'totals', 'classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
         $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
         unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);

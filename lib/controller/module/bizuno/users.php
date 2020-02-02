@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2020-01-27
  * @filesource lib/controller/module/bizuno/users.php
  */
 
@@ -90,7 +90,7 @@ class bizunoUsers
     public function edit(&$layout)
     {
         $rID = clean('rID', 'integer', 'get');
-        if (!$security = validateSecurity('bizuno', 'users', $rID?3:2)) { return; }
+        if (!$security = validateSecurity('bizuno', 'users', 1)) { return; }
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX."users");
         $dbData    = $rID ? dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id='$rID'") : ['settings'=>''];
         $mySettings= json_decode($dbData['settings'], true);
@@ -174,15 +174,15 @@ class bizunoUsers
 
     /**
      * This method saves the users data and updates the portal if required.
-     * @return Post save action, refresh datagrid, clear form
+     * @return Post save action, refresh grid, clear form
      */
     public function save(&$layout=[])
     {
         global $io;
-        $rID  = clean('admin_id','integer','post');
-        $email= clean('email',   'email',  'post');
+        $rID   = clean('admin_id','integer','post');
         if (!$security = validateSecurity('bizuno', 'users', $rID?3:2)) { return; }
-        $values = requestData(dbLoadStructure(BIZUNO_DB_PREFIX."users"));
+        $email = clean('email',   'email',  'post');
+        $values= requestData(dbLoadStructure(BIZUNO_DB_PREFIX."users"));
         if (!$rID) {
             $dup = dbGetValue(BIZUNO_DB_PREFIX."users", 'admin_id', "email='".addslashes($email)."' AND admin_id<>$rID");
             if ($dup) { return msgAdd(lang('error_duplicate_id')); }
@@ -250,13 +250,14 @@ class bizunoUsers
      */
     public function copy(&$layout=[])
     {
+        $rID  = clean('rID',  'integer', 'get');
+        if (!$security = validateSecurity('bizuno', 'users', $rID?3:2)) { return; }
         $this->security = getUserCache('security');
-        $rID   = clean('rID',  'integer', 'get');
-        $email = clean('data', 'email', 'get');
+        $email= clean('data', 'email', 'get');
         if (!$rID || !$email) { return msgAdd(lang('err_copy_name_prompt')); }
         $user = dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id='$rID'");
         // copy user at the portal
-        $pData = portalRead('users', "biz_user='{$user['email']}'");
+        $pData= portalRead('users', "biz_user='{$user['email']}'");
         unset($pData['id']);
         unset($pData['date_updated']);
         $pData['date_created']= date('Y-m-d H:i:s');
@@ -264,7 +265,7 @@ class bizunoUsers
         portalWrite('users', $pData);
         unset($user['admin_id']);
         $user['email'] = $email;
-        $nID = $_GET['rID'] = dbWrite(BIZUNO_DB_PREFIX."users", $user);
+        $nID  = $_GET['rID'] = dbWrite(BIZUNO_DB_PREFIX."users", $user);
         if ($nID) { msgLog(lang('table')." users-".lang('copy').": $email ($rID => $nID)"); }
         $data = ['content'=>['action'=>'eval','actionData'=>"jq('#dgUsers').datagrid('reload'); accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".jsLang('details')."', 'bizuno/users/edit', $nID);"]];
         $layout = array_replace_recursive($layout, $data);
@@ -277,14 +278,15 @@ class bizunoUsers
      */
     public function delete(&$layout=[])
     {
+        if (!$security = validateSecurity('bizuno', 'users', 4)) { return; }
+        $rID  = clean('rID', 'integer', 'get');
         $this->security = getUserCache('security');
-        $rID = clean('rID', 'integer', 'get');
         if (!$rID) { return msgAdd(lang('err_copy_name_prompt')); }
         if (getUserCache('profile', 'admin_id', false, 0) == $rID) { return msgAdd($this->lang['err_delete_user']); }
-        $email = dbGetValue(BIZUNO_DB_PREFIX."users", 'email', "admin_id='$rID'");
-        $data = ['content' => ['action'=>'eval', 'actionData'=>"jq('#dgUsers').datagrid('reload');"],
-            'dbAction' => [BIZUNO_DB_PREFIX."users"         => "DELETE FROM ".BIZUNO_DB_PREFIX."users WHERE admin_id='$rID'",
-                           BIZUNO_DB_PREFIX."users_profiles"=> "DELETE FROM ".BIZUNO_DB_PREFIX."users_profiles WHERE user_id='$rID'"]];
+        $email= dbGetValue(BIZUNO_DB_PREFIX."users", 'email', "admin_id='$rID'");
+        $data = ['content'=> ['action'=>'eval', 'actionData'   =>"jq('#dgUsers').datagrid('reload');"],
+            'dbAction'    => [BIZUNO_DB_PREFIX."users"         => "DELETE FROM ".BIZUNO_DB_PREFIX."users WHERE admin_id='$rID'",
+                              BIZUNO_DB_PREFIX."users_profiles"=> "DELETE FROM ".BIZUNO_DB_PREFIX."users_profiles WHERE user_id='$rID'"]];
         portalDelete($email);
         $io = new \bizuno\io();
         $io->fileDelete(getModuleCache('bizuno', 'properties', 'usersAttachPath')."rID_{$rID}_*");
@@ -321,9 +323,9 @@ class bizunoUsers
                     'users' => ['table'=>BIZUNO_DB_PREFIX."users", 'join'=>'',    'links'=>''],
                     'roles' => ['table'=>BIZUNO_DB_PREFIX."roles", 'join'=>'join','links'=>BIZUNO_DB_PREFIX."roles.id=".BIZUNO_DB_PREFIX."users.role_id"]],
                 'actions' => [
-                    'newUser'  => ['order'=>10, 'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', 0);"]],
-                    'clrSearch'=> ['order'=>50, 'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]],
-                    'help'     => ['order'=>99,'icon'=>'help','label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
+                    'newUser'  => ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', 0);"]],
+                    'clrSearch'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]],
+                    'help'     => ['order'=>99,'icon'=>'help', 'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
                 'search' => [BIZUNO_DB_PREFIX."users.email", BIZUNO_DB_PREFIX."roles".'.title'],
                 'sort'   => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],
                 'filters'=> [
@@ -334,8 +336,10 @@ class bizunoUsers
                 'inactive'=> ['order'=>0, 'field'=>BIZUNO_DB_PREFIX."users.inactive",'attr'=>['hidden'=>true]],
                 'action'  => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
                     'actions'=> [
-                        'edit'  => ['order'=>20,'icon'=>'edit', 'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', idTBD);"]],
-                        'copy'  => ['order'=>40,'icon'=>'copy', 'events'=>['onClick'=>"var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/users/copy', idTBD, title);"]],
+                        'edit'  => ['order'=>20,'icon'=>'edit',
+                            'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', idTBD);"]],
+                        'copy'  => ['order'=>40,'icon'=>'copy', 'hidden'=>$security>1?false:true,
+                            'events'=>['onClick'=>"var title=prompt('".lang('msg_copy_name_prompt')."'); jsonAction('bizuno/users/copy', idTBD, title);"]],
                         'delete'=> ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,
                             'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/users/delete', idTBD);"]]]],
                 'email'   => ['order'=>10, 'field' => BIZUNO_DB_PREFIX."users.email", 'label'=>pullTableLabel(BIZUNO_DB_PREFIX."users", 'email'),

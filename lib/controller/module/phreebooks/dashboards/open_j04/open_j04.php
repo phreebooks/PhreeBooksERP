@@ -17,13 +17,11 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-24
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /lib/controller/module/phreebooks/dashboards/open_j04/open_j04.php
  */
 
 namespace bizuno;
-
-define('DASHBOARD_OPEN_J04_VERSION','3.2');
 
 class open_j04
 {
@@ -85,10 +83,12 @@ class open_j04
             $currencies->rate = 1;
             $rows[] = '<div style="float:right"><b>'.viewFormat($total, 'currency').'</b></div><div style="float:left"><b>'.lang('total')."</b></div>";
         }
+        $filter = ucfirst(lang('filter')).": ".ucfirst(lang('sort'))." ".strtoupper($this->settings['order']).(!empty($this->settings['num_rows']) ? " ({$this->settings['num_rows']});" : '');
         $layout = array_merge_recursive($layout, [
             'divs'  => [
                 'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'num_rows', $this->code.'order', $this->code.'limit', $this->code.'_btn']]]],
-                'body' =>['order'=>50,'type'=>'list','key'=>$this->code]],
+                'head' =>['order'=>40,'type'=>'html','html'=>$filter],
+                'body' =>['order'=>50,'type'=>'list','key' =>$this->code]],
             'fields'=> [
                 $this->code.'num_rows'=> array_merge($struc['num_rows'],['order'=>10,'break'=>true]),
                 $this->code.'order'   => array_merge($struc['order'],   ['order'=>20,'break'=>true]),

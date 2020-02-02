@@ -17,13 +17,11 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-05
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /lib/controller/module/phreebooks/dashboards/current_ap_ar/current_ap_ar.php
  */
 
 namespace bizuno;
-
-define('DASHBOARD_CURRENT_AP_AR_VERSION','1.0');
 
 class current_ap_ar
 {
@@ -31,7 +29,7 @@ class current_ap_ar
     public $methodDir= 'dashboards';
     public $code     = 'current_ap_ar';
     public $category = 'general_ledger';
-    
+
     public function __construct()
     {
         $this->security      = getUserCache('security', 'j2_mgr', 0);
@@ -41,7 +39,7 @@ class current_ap_ar
         $this->bal_sheet_data= [];
         $this->settings      = [];
     }
-    
+
     function render()
     {
         $period = getModuleCache('phreebooks', 'fy', 'period');

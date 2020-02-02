@@ -15,15 +15,13 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2020, PhreeSoft
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-03-22, Inc.
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /lib/controller/module/phreebooks/dashboards/income_stmt/income_stmt.php
  */
 
 namespace bizuno;
-
-define('DASHBOARD_INCOME_STMT_VERSION','3.1');
 
 class income_stmt
 {
@@ -36,7 +34,7 @@ class income_stmt
     function __construct($settings=[])
     {
         $this->security= getUserCache('security', 'j2_mgr', false, 0);
-        $defaults      = ['users'=>'-1','roles'=>'-1'];
+        $defaults      = ['users'=>-1,'roles'=>-1];
         $this->settings= array_replace_recursive($defaults, $settings);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
     }

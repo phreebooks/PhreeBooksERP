@@ -17,13 +17,11 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-24
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /controller/module/phreeform/dashboards/favorite_reports/favorite_reports.php
  */
 
 namespace bizuno;
-
-define('DASHBOARD_FAVORITE_REPORTS_VERSION','3.2');
 
 bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformSecurity', 'function');
 

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-18
+ * @version    3.x Last Update: 2020-01-27
  * @filesource /lib/controller/module/phreebooks/journals/j06.php
  */
 
@@ -141,12 +141,12 @@ class j06 extends jCommon
         unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
         $data['fields']['purch_order_id']['attr']['readonly'] = 'readonly';
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'billAD' => ['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
-                'settings'=>['type'=>'v','suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false,'cols'=>false]],
-            'shipAD' => ['order'=>30,'type'=>'address','label'=>lang('ship_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_s'],'fields'=>$fldAddr,
+            'billAD' => ['order'=>20,'label'=>lang('bill_to'),'type'=>'address','classes'=>['blockView'], 'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
+                'settings'=>['type'=>'v','suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both', 'required'=>true,'store'=>false,'cols'=>false]],
+            'shipAD' => ['order'=>30,'label'=>lang('ship_to'),'type'=>'address','classes'=>['blockView'], 'attr'=>['id'=>'address_s'],'fields'=>$fldAddr,
                 'settings'=>['type'=>'v','suffix'=>'_s','search'=>true,'update'=>true,'validate'=>true,'drop'=>true,'cols'=>false]],
-            'props'  => ['order'=>40,'type'=>'fields','classes'=>['blockView'],'attr'=>['id'=>'pbProps'],'keys'=>$fldKeys],
-            'totals' => ['order'=>50,'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
+            'props'  => ['order'=>40,'label'=>lang('details'),'type'=>'fields', 'classes'=>['blockView'], 'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
+            'totals' => ['order'=>50,'label'=>lang('totals'), 'type'=>'totals', 'classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
         $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
         $data['divs']['other']  = ['order'=>70,'type'=>'html',    'html'=>'<div id="shippingEst"></div><div id="shippingVal"></div>'];
     }

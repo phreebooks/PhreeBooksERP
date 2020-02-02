@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-01
+ * @version    3.x Last Update: 2020-01-31
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
@@ -221,21 +221,20 @@ class bizunoApi
     }
 
     /**
-     * check item total to order total, any difference should be made into a discount record
-     * @param array $order - order as received through the API
+     * Check item total to order total, any difference should be made into a discount record
      */
-    private function setJournalDiscount($order=[])
+    private function setJournalDiscount()
     {
-        $balanceCheck = $this->main['total_amount'] - $this->itemTotal;
+        $balanceCheck = $this->itemTotal - $this->main['total_amount'];
         if ($balanceCheck == 0) { return; }
         $this->items[] = [
-            'qty'          => 1,
-            'sku'          => '',
-            'description'  => "title:".lang('discount'),
-            'gl_type'      => 'dsc',
-            'credit_amount'=> $balanceCheck,
-            'gl_account'   => getModuleCache('bizuno','settings','bizuno_api','gl_discount'),
-            'post_date'    => $this->main['post_date']];
+            'qty'         => 1,
+            'sku'         => '',
+            'description' => "title:".lang('discount'),
+            'gl_type'     => 'dsc',
+            'debit_amount'=> $balanceCheck,
+            'gl_account'  => getModuleCache('bizuno','settings','bizuno_api','gl_discount'),
+            'post_date'   => $this->main['post_date']];
     }
 
     /**

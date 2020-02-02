@@ -17,9 +17,9 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2017-08-28
+ * @version    3.x Last Update: 2020-01-17
  * @filesource /lib/controller/module/phreebooks/dashboards/profit_loss/profit_loss.php
- * 
+ *
  */
 
 namespace bizuno;
@@ -31,11 +31,11 @@ class profit_loss
     public $code     = 'profit_loss';
     public $category = 'general_ledger';
     public $noSettings= true;
-    
+
     function __construct($settings)
     {
         $this->security= getUserCache('security', 'j2_mgr', false, 0);
-        $defaults      = ['users'=>'-1','roles'=>'-1'];
+        $defaults      = ['users'=>-1,'roles'=>-1];
         $this->settings= array_replace_recursive($defaults, $settings);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
     }

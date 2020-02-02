@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-15
+ * @version    3.x Last Update: 2020-01-21
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -341,7 +341,7 @@ function preSubmit() {
         if (!$sku) { return msgAdd("Bad sku passed!"); }
         $_GET['rID'] = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'id', "sku='$sku'");
         compose('inventory', 'main', 'edit', $layout);
-        unset($layout['tabs']['tabInventory']['divs']['general']['divs']['getAttach']);
+        unset($layout['tabs']['tabInventory']['divs']['general']['divs']['attach']);
         unset($layout['divs']['toolbar']);
         unset($layout['divs']['formBOF']);
         unset($layout['divs']['formEOF']);

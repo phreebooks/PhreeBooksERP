@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-31
+ * @version    3.x Last Update: 2020-01-31
  * @filesource /portal/functions.php
  */
 
@@ -67,7 +67,7 @@ function biz_validate_user_creds($user='', $pass='', $type='email', $verbose=tru
 {
     $email= $type=='id' ? dbGetValue(BIZUNO_DB_PREFIX.'users', 'email', "admin_id=$user") : $user;
     $row  = dbGetRow(BIZUNO_DB_PREFIX.'users', "email='$email'"); // make sure they have an account
-    msgDebug("\nemail = $email, pass = $pass, and row = ".print_r($row, true));
+    msgDebug("\nIn biz_validate_user_creds with email = $email and row found: ".(!empty($row) ? 'true' : 'false'));
     if ($row) {
         require_once(BIZUNO_ROOT.'portal/class-phpass.php');
         $wp_hasher = new \PasswordHash(8, true);

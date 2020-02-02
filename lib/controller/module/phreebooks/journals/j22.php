@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-18
+ * @version    3.x Last Update: 2020-01-27
  * @filesource /lib/controller/module/phreebooks/journals/j22.php
  */
 
@@ -80,10 +80,10 @@ class j22 extends jCommon
             }
             unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
             $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-                'billAD'  => ['order'=>20,'type'=>'address','classes'=>['blockView'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
-                    'label'=>lang('pay_to'),'settings'=>['suffix'=>'_b','clear'=>false,'props'=>false,'required'=>true,'store'=>false,'cols'=>false]],
-                'props'   => ['order'=>40,'type'=>'fields', 'label'=>lang('details'),'classes'=>['blockView'],'attr'=>['id'=>'pbProps'], 'keys'=>$fldKeys],
-                'totals'  => ['order'=>50,'type'=>'totals', 'label'=>lang('totals'), 'classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
+                'billAD'  => ['order'=>20,'label'=>lang('pay_to'), 'type'=>'address','classes'=>['blockView'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
+                    'settings'=>['suffix'=>'_b','clear'=>false,'props'=>false,'required'=>true,'store'=>false,'cols'=>false]],
+                'props'   => ['order'=>40,'label'=>lang('details'),'type'=>'fields', 'classes'=>['blockView'],'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
+                'totals'  => ['order'=>50,'label'=>lang('totals'), 'type'=>'totals', 'classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
             $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
             $data['jsHead']['preSubmit'] = "function preSubmit() {
     var items = new Array();
