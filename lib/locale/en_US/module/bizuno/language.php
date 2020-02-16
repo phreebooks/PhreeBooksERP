@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-30
+ * @version    3.x Last Update: 2020-02-13
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -129,7 +129,7 @@ $lang = [
     'wrong_email' => 'Could not find e-mail address for your user.',
     'request_pass'=> 'Your password reset request has been sent to your email address!',
     'email_sub_request' => 'Lost Password Reset',
-    'email_request_pass' => 'Dear %s,<br> We have received a request to reset your password please go to <a href="%s">%s</a> and type in the reset code.<br>If you have not sent this request ignore this e-mail.<br>Your reset code: %s',
+    'email_request_pass' => 'Dear %s,<br /><br /> We have received a request to reset your password please go to <a href="%s">%s</a> and type in the reset code.<br /><br />If you have not sent this request ignore this e-mail.<br /><br />Your reset code: %s',
     'pass_does_not_match' => 'The passwords do not match.',
     'plz_fill' => 'Please fill out the entire form.',
     'wrong_code_time' => "This is the wrong code or time expired.",

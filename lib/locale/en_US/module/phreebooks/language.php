@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-18
+ * @version    3.x Last Update: 2020-02-12
  * @filesource /locale/en_US/module/phreebooks/language.php
  */
 
@@ -204,6 +204,12 @@ $lang = [
     'tax_bulk_dest' => 'Select the tax rate to be applied:',
     'tax_subject' => 'To be applied to what subject:',
     'tax_bulk_success' => 'Finished, the total number of rates changed was: %s',
+    'chart_save_01' => 'The GL Account field cannot be blank!',
+    'chart_save_02' => 'The description field cannot be blank!',
+    'chart_save_03' => 'The GL Account value provided is already being used in your books, please enter a new one!',
+    'chart_save_04' => 'There is already a Retained Earnings type GL Account in your Chart of Accounts. Only the existing Retained Earnings account can be edited, no new accounts can be added of this type.',
+    'chart_save_05' => 'The account cannot be used as a heading if there are journal entries posted against it!',
+    'chart_save_06' => 'GL Account %s is set as a heading account but the account is not specified as a heading. Please edit the heading gl account and set as heading first.',
     // Install notes
     'note_phreebooks_install_1' => 'PRIORITY HIGH: Change or import chart of accounts from default settings (Account (Login Name) -> Settings -> Bizuno Tab -> PhreeBooks (Settings) -> Chart of Accounts tab)',
     'note_phreebooks_install_2' => 'PRIORITY MEDIUM: Enter business information (Account (Login Name) -> Settings -> Bizuno Tab -> Bizuno ERP Settings icon -> Settings tab -> My Business accordion',

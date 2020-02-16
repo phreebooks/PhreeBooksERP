@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2020-02-13
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -36,7 +36,7 @@ class bizunoAdmin
             'url'            => BIZUNO_URL."controller/module/$this->moduleID/",
             'version'        => MODULE_BIZUNO_VERSION,
             'category'       => 'bizuno',
-            'required'       => '1',
+            'required'       => true,
             'usersAttachPath'=> 'data/bizuno/users/uploads',
             'quickBar'       => ['styles'=>['float'=>'right','padding'=>'1px'],'child'=>[
                 'sysMsg'     => ['order'=>20,'label'=>lang('messages'),'icon'=>'email','classes'=>['msgCount'],'required'=>true,'hideLabel'=>true,'attr'=>['id'=>'sysMsg'],'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
@@ -150,7 +150,6 @@ class bizunoAdmin
             ['id'=>'dmY',  'text'=>'ddmmyyyy'],
             ['id'=>'Ymd',  'text'=>'yyyymmdd'],
             ['id'=>'Y-m-d','text'=>'yyyy-mm-dd']];
-        $ISO_country = getModuleCache('bizuno', 'settings', 'company', 'country', 'USA');
         $data  = [
             'general' => ['order'=>10,'label'=>lang('general'),'fields'=>[
                 'password_min'    => ['options'=>['min'=> 8],           'attr'=>['type'=>'integer','value'=> 8]],
@@ -460,8 +459,9 @@ class bizunoAdmin
     public function installBizuno(&$layout=[])
     {
         global $bizunoUser, $io;
-        bizAutoLoad(BIZUNO_LIB ."controller/module/bizuno/settings.php", 'bizunoSettings');
-        bizAutoLoad(BIZUNO_LIB ."controller/module/phreebooks/admin.php", 'phreebooksAdmin');
+        bizAutoLoad(BIZUNO_LIB ."controller/module/bizuno/settings.php",   'bizunoSettings');
+        bizAutoLoad(BIZUNO_LIB ."controller/module/phreebooks/admin.php",  'phreebooksAdmin');
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/currency.php",'phreebooksCurrency');
         bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
         bizAutoLoad(BIZUNO_LIB ."model/registry.php", 'bizRegistry');
         ini_set('memory_limit','1024M'); // temporary
@@ -474,6 +474,8 @@ class bizunoAdmin
         setUserCache('profile', 'language', clean('biz_lang', 'text',   'post'));
         setUserCache('profile', 'chart',    clean('biz_chart','text',   'post'));
         setUserCache('profile', 'first_fy', clean('biz_fy',   'integer','post'));
+        $curISO = clean('biz_currency', 'text', 'post');
+        setModuleCache('phreebooks', 'currency', 'defISO', $curISO); // temp set currency for table loading and PhreeBooks intialization
         // error check title
         if (strlen(getUserCache('profile', 'biz_title')) < 3) { return msgAdd('Your business name needs to be from 3 to 15 characters!'); }
         // Here we go, ready to install
@@ -489,7 +491,7 @@ class bizunoAdmin
         dbWrite(BIZUNO_DB_PREFIX."current_status", ['id'=>1]);
         // Load PhreeBooks defaults
         $pbAdmin = new phreebooksAdmin();
-        $pbAdmin->installFirst();// load the chart, currency and initialize
+        $pbAdmin->installFirst(); // load the chart and initialize PhreeBooks stuff
         // now Modules
         setUserCache('security', 'admin', 4);
         msgDebug("\nModule list to install = ".print_r($guest->getModuleList(true), true));
@@ -502,23 +504,18 @@ class bizunoAdmin
         $userData = ['email'=>$usrEmail, 'title'=>'Admin', 'role_id'=>$role_id, 'settings'=>json_encode($bizunoUser)];
         dbWrite(BIZUNO_DB_PREFIX."users", $userData);
         $bAdmin->adminFillSecurity($role_id, 4);
-        // create some starting dashboards
-        $dashData1 = ['user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno','dashboard_id'=>'my_to_do', 'column_id'=>0,'row_id'=>0,'settings'=>json_encode($bAdmin->notes)];
-        dbWrite(BIZUNO_DB_PREFIX."users_profiles", $dashData1);
-        $dashData2 = ['user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno','dashboard_id'=>'daily_tip','column_id'=>1,'row_id'=>1];
-        dbWrite(BIZUNO_DB_PREFIX."users_profiles", $dashData2);
-        $dashData3 = ['user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno','dashboard_id'=>'ps_news',  'column_id'=>2,'row_id'=>2];
-        dbWrite(BIZUNO_DB_PREFIX."users_profiles", $dashData3);
+        $this->initDashboards($admin_id, $bAdmin->notes); // create some starting dashboards
         if (method_exists($guest, 'installBizuno')) { $guest->installBizuno(); } // hook for after db set up for portal
-        // build the registry
+        // build the registry, i.e. set the module cache
+        $cur     = new phreebooksCurrency();
         $registry= new bizRegistry();
         $registry->initRegistry(getUserCache('profile', 'email'), getUserCache('profile', 'biz_id'));
-        setModuleCache('phreebooks', 'currency', 'defISO', clean('biz_currency', 'text', 'post'));
+        setModuleCache('phreebooks', 'currency', false, ['defISO'=>$curISO, 'iso'=>[$curISO =>$cur->currencySettings($curISO)]]);
         $company = getModuleCache('bizuno', 'settings', 'company'); // set the business title and id
         $company['id'] = $company['primary_name'] = getUserCache('profile', 'biz_title');
         setModuleCache('bizuno', 'settings', 'company', $company);
         $locale  = getModuleCache('bizuno', 'settings', 'locale');// set the timezone
-        $locale['timezone']    = clean('biz_timezone', 'text', 'post');
+        $locale['timezone'] = clean('biz_timezone', 'text', 'post');
         setModuleCache('bizuno', 'settings', 'locale', $locale);
         portalWrite('business', ['title'=>$company['id'],'currency'=>getDefaultCurrency(),'time_zone'=>$locale['timezone'],'date_last_visit'=>date('Y-m-d h:i:s')], 'update', "id='".getUserCache('profile', 'biz_id')."'");
         msgLog(lang('user_login')." ".getUserCache('profile', 'email'));
@@ -526,8 +523,26 @@ class bizunoAdmin
         $layout = ['content'=>['action'=>'eval','actionData'=>"loadSessionStorage();"]];
     }
 
+    private function initDashboards($admin_id=1, $my_to_do=[])
+    {
+        $dashData1 = ['user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno','dashboard_id'=>'my_to_do', 'column_id'=>0,'row_id'=>0,'settings'=>json_encode(['data'=>$my_to_do])];
+        dbWrite(BIZUNO_DB_PREFIX."users_profiles", $dashData1);
+        // Add more dashboards for users
+        // new dashboard quick_Start
+        // populate Launchpad and add to column 2
+        // add audit_log
+        // add todays_invoices
+        // add todays_purchases
+        // add favorite reports
+        // add company links with link to biz-school
+        $dashData2 = ['user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno','dashboard_id'=>'daily_tip','column_id'=>1,'row_id'=>1];
+        dbWrite(BIZUNO_DB_PREFIX."users_profiles", $dashData2);
+        $dashData3 = ['user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno','dashboard_id'=>'ps_news',  'column_id'=>2,'row_id'=>2];
+        dbWrite(BIZUNO_DB_PREFIX."users_profiles", $dashData3);
+    }
+
     /**
-     * Secures the root folder with dist.htaccess, and BIZUNO_DATA folder with access to images only
+     * Secures the root folder with .htaccess, and BIZUNO_DATA folder with access to images only
      */
     public function secureMyFiles()
     {

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-09
+ * @version    3.x Last Update: 2020-02-12
  * @filesource /lib/controller/module/phreebooks/tools.php
  */
 
@@ -545,7 +545,8 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         $endFY = $curPerFY <> $nextPerFY ? true : false;
         if ($nextPerFY) { foreach ($nextHistory as $row) {
             $fixBB = false;
-            if (!isset($mains[$row['gl_account']])) { $mains[$row['gl_account']] = ['debit'=>0, 'credit'=>0]; }
+            if (!isset($mains[$row['gl_account']]))  { $mains[$row['gl_account']]  = ['debit'=>0, 'credit'=>0]; }
+            if (!isset($history[$row['gl_account']])){ $history[$row['gl_account']]= ['debit'=>0, 'credit'=>0, 'begbal'=>0, 'nextBB'=>0]; }
             $actualBal = $history[$row['gl_account']]['begbal'] + $mains[$row['gl_account']]['debit'] - $mains[$row['gl_account']]['credit'];
             if ($row['gl_account'] == $re_acct) { $historyRE = $row['beginning_balance']; }
             msgDebug("\nPeriod $period, glAcct={$row['gl_account']}, history bb={$history[$row['gl_account']]['begbal']}, debit={$history[$row['gl_account']]['debit']}, credit={$history[$row['gl_account']]['credit']}, nextbb={$history[$row['gl_account']]['nextBB']} - historyNextBB={$row['beginning_balance']} - mains: debit={$mains[$row['gl_account']]['debit']}, credit={$mains[$row['gl_account']]['credit']}, ");

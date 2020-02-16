@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2020-02-04
  * @filesource /lib/controller/module/bizuno/backup.php
  */
 
@@ -86,7 +86,7 @@ class bizunoBackup
     public function mgrRows(&$layout=[])
     {
         global $io;
-        $rows   = $io->fileReadGlob($this->dirBackup, $io->getValidExt('zip'));
+        $rows   = $io->fileReadGlob($this->dirBackup, $io->getValidExt('backup'));
         $totRows= sizeof($rows);
         $rowNum = clean('rows',['format'=>'integer','default'=>10],'post');
         $pageNum= clean('page',['format'=>'integer','default'=>1], 'post');

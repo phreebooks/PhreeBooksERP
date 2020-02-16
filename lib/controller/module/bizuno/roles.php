@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-27
+ * @version    3.x Last Update: 2020-02-12
  * @filesource /lib/controller/module/bizuno/roles.php
  */
 
@@ -96,7 +96,7 @@ class bizunoRoles
         if (!$security = validateSecurity('bizuno', 'roles', 1)) { return; }
         $rID      = clean('rID', 'integer', 'get');
         $fields   = ['id','title','inactive','selFill','restrict'];
-        $dbData   = $rID ? dbGetRow(BIZUNO_DB_PREFIX.'roles', "id='$rID'") : [];
+        $dbData   = $rID ? dbGetRow(BIZUNO_DB_PREFIX.'roles', "id='$rID'") : ['settings'=>[]];
         $structure= dbLoadStructure(BIZUNO_DB_PREFIX.'roles');
         $structure['selFill'] = ['order'=>60,'label'=>$this->lang['desc_security_fill'],'break'=>true,'values'=>$this->securityChoices,'events'=>['onChange'=>"autoFill();"],'attr'=>['type'=>'select']];
         $structure['restrict']= ['order'=>70,'label'=>$this->lang['restrict_access'],'tip'=>$this->lang['roles_restrict'],'break'=>true,'attr'=>['type'=>'checkbox','checked'=>!empty($dbData['settings']['restrict']) ? 1 : 0]];

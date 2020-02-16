@@ -47,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.3.4.0 =
+2020-02-16 - Incorporate Bizuno Library 3.4.0. Fix for install with non-USD selected. Minor bugs and operational changes
 = 5.3.3.5 =
 2020-02-01 - Incorporate Bizuno Library 3.3.5. Minor bug fixes.
 = 5.3.3.4 =

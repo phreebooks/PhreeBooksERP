@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-30
+ * @version    3.x Last Update: 2020-02-14
  * @filesource lib/controller/functions.php
  */
 
@@ -310,9 +310,16 @@ function getModuleCache($module, $group='settings', $lvl1=false, $lvl2=false, $d
     if       (!$lvl1 && !$lvl2) { // it's a group, should always be an array
         return isset($bizunoMod[$module][$group]) ? $bizunoMod[$module][$group] : ($default ? $default : []);
     } elseif ( $lvl1 && !$lvl2) { // could be array or scalar, assume scalar for default
+        if (isset($bizunoMod[$module][$group][$lvl1])) { return $bizunoMod[$module][$group][$lvl1]; }
+        if (isset($bizunoMod[$module][$group]) && array_key_exists($lvl1, $bizunoMod[$module][$group])) {
+            return $bizunoMod[$module][$group][$lvl1]; // check for index with null
+        }
         return isset($bizunoMod[$module][$group][$lvl1]) ? $bizunoMod[$module][$group][$lvl1] : $default;
     } elseif ( $lvl1 &&  $lvl2) { // lvl1 is an array
-        return isset($bizunoMod[$module][$group][$lvl1][$lvl2]) ? $bizunoMod[$module][$group][$lvl1][$lvl2] : $default;
+        if (isset($bizunoMod[$module][$group][$lvl1][$lvl2])) { return $bizunoMod[$module][$group][$lvl1][$lvl2]; }
+        if (isset($bizunoMod[$module][$group][$lvl1]) && array_key_exists($lvl2, $bizunoMod[$module][$group][$lvl1])) {
+            return $bizunoMod[$module][$group][$lvl1][$lvl2]; // check for index with null
+        }
     }
     return $default; // bad index request
 }

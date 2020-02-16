@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-27
+ * @version    3.x Last Update: 2020-02-13
  * @filesource lib/controller/module/bizuno/users.php
  */
 
@@ -104,12 +104,16 @@ class bizunoUsers
         $name  = $cID ? dbGetValue(BIZUNO_DB_PREFIX."address_book", 'primary_name', "ref_id=$cID AND type='m'") : '';
         $title = lang('bizuno_users').' - '.($rID ? $dbData['email'] : lang('new'));
         $fields= $this->getViewUsers($structure, $settings);
+/* Commented out as this can be a security issue,
+ * New users will be issued an access code and be directed to lost password login screen inteh welcome email,
+ * Current users can change their password in Profile page
         if (validateSecurity('bizuno', 'users', 3)) {
             $fields['password_new']    = ['order'=>55,'break'=>true,'label'=>lang('password_new'),    'attr'=>['type'=>'password']];
             $fields['password_confirm']= ['order'=>60,'break'=>true,'label'=>lang('password_confirm'),'attr'=>['type'=>'password']];
             $keys[] = 'password_new';
             $keys[] = 'password_confirm';
         }
+*/
         $data = ['type'=>'divHTML',
             'divs'    => ['detail'=>['order'=>50,'type'=>'divs','divs'=>[
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbUsers'],
@@ -201,7 +205,7 @@ class bizunoUsers
         $settings['profile']['store_id']      = clean('store_id','integer','post'); // home store for granularity
         $settings['profile']['restrict_store']= clean('restrict_store','integer','post'); // restrict to store
         $settings['profile']['restrict_user'] = clean('restrict_user', 'integer','post'); // restrict user
-//        $settings['profile']['mail_enable']   = clean('mail_enable','boolean','post');
+//      $settings['profile']['mail_enable']   = clean('mail_enable','boolean','post');
         $settings['profile']['smtp_enable']   = clean('smtp_enable','boolean','post');
         $settings['profile']['smtp_host']     = clean('smtp_host',  'url',    'post');
         $settings['profile']['smtp_port']     = clean('smtp_port',  'integer','post');
@@ -215,7 +219,7 @@ class bizunoUsers
         $role = dbGetRow(BIZUNO_DB_PREFIX."roles", "id={$values['role_id']}");
         msgDebug("\nRead role = ".print_r($role, true));
         $role['settings'] = json_decode($role['settings'], true);
-        if (!$values['inactive'] && (!isset($role['settings']['restrict']) || !$role['settings']['restrict'])) {
+        if (!$values['inactive'] && empty($role['settings']['restrict'])) {
             msgDebug("\nGoing to save user on portal.");
             $portal = new guest();
             $portal->portalSaveUser($values['email'], $values['title'], $rID?false:true);
@@ -225,6 +229,7 @@ class bizunoUsers
             portalDelete($email); // disable access through the portal
         }
         if (!$rID) { $rID = $_POST['admin_id'] = $newID; }
+/* Passwords cannot be changed here
         $pw_new = clean('password_new',    'password','post');
         $pw_eql = clean('password_confirm','password','post');
         if (strlen($pw_new) > 0) { // check, see if reset password
@@ -233,6 +238,7 @@ class bizunoUsers
             $pw_enc = $guest->passwordReset($pw_new, $pw_eql);
             if ($pw_enc) { portalWrite('users', ['biz_pass' => $pw_enc], 'update', "biz_user='$email'"); }
         }
+*/
         msgDebug("\nrID = $rID and session admin_id = ".getUserCache('profile', 'admin_id', false, 0)."");
         if ($io->uploadSave('file_attach', getModuleCache('bizuno', 'properties', 'usersAttachPath')."rID_{$rID}_")) {
             dbWrite(BIZUNO_DB_PREFIX.'users', ['attach'=>'1'], 'update', "id=$rID");

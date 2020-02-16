@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-10
+ * @version    3.x Last Update: 2020-02-12
  * @filesource /lib/controller/module/phreebooks/chart.php
  */
 
@@ -161,30 +161,18 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         $previous= clean('gl_previous', 'text', 'post'); // TBD
         $desc    = clean('gl_desc', 'text', 'post'); // asdf
         $type    = clean('gl_type', 'integer', 'post'); // 8
-//      $cur     = clean('gl_cur', 'text', 'post'); // USD
         $heading = clean('gl_header', 'boolean', 'post'); // on
         $parent  = clean('gl_parent', 'text', 'post'); // 1150
         $isEdit  = $previous ? true : false;
-        if (!$acct && !$isEdit) { return msgAdd("The GL Account field cannot be blank!"); }
-        if (!$desc) { return msgAdd("The description field cannot be blank!"); }
-        If (!$acct && $previous) { $acct = $previous; } // not an account # change, set it to what it was
+        if (!$acct && !$isEdit)     { return msgAdd($this->lang['chart_save_01']); }
+        if (!$desc)                 { return msgAdd($this->lang['chart_save_02']); }
+        If (!$acct && $previous)    { $acct = $previous; } // not an account # change, set it to what it was
         $glAccounts = getModuleCache('phreebooks', 'chart', 'accounts');
-        // check for dups if insert
         $used = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "gl_account='$acct'");
-        if ($used && !$isEdit) { return msgAdd("The GL Account value provided is already being used in your books, please enter a new one!"); }
-        if ($type == 44 && !$isEdit) { foreach ($glAccounts as $row) {
-            if ($row['type'] == 44) { return msgAdd("There is already a Retained Earnings type GL Account in your Chart of Accounts. Only the existing Retained Earnings account can be edited, no new accounts can be added of this type."); }
-        } }
-        if ($used && $heading) { return msgAdd("The account cannot be used as a heading if there are journal entries posted against it!"); }
-        if ($parent && empty($glAccounts[$parent]['heading'])) {
-//          msgAdd("parent record = ".print_r($glAccounts[$parent], true));
-            return msgAdd(sprintf("GL Account %s is set as a heading account but the account is not specified as a heading. Please edit the heading gl account and set as heading first.", $parent));
-        }
-        // make sure type has not changed if edit
-        if ($isEdit && $used && $glAccounts[$previous]['type'] <> $type) {
-            return msgAdd("When editing an account that has gl entries posted against it, the account type cannot be changed!");
-        }
-        // passed all tests, key sort by gl account
+        if ($used && !$isEdit)      { return msgAdd($this->lang['chart_save_03']); }
+        if ($type == 44 && !$isEdit){ foreach ($glAccounts as $row) { if ($row['type'] == 44) { return msgAdd($this->lang['chart_save_04']); } } }
+        if ($used && $heading)      { return msgAdd($this->lang['chart_save_05']); }
+        if ($parent && empty($glAccounts[$parent]['heading'])) { return msgAdd(sprintf($this->lang['chart_save_06'], $parent)); }
         $glAccounts["$acct"] = ['id'=>"$acct", 'title'=>$desc, 'type'=>$type, 'cur'=>getDefaultCurrency()];
         $glAccounts["$acct"]['inactive']= $inactive? '1' : '0';
         $glAccounts["$acct"]['heading'] = $heading ? '1' : '0';
@@ -198,6 +186,8 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
             dbWrite(BIZUNO_DB_PREFIX."journal_item",   ['gl_account'=>$acct], 'update', "gl_account='$previous'");
             dbWrite(BIZUNO_DB_PREFIX."journal_main",   ['gl_acct_id'=>$acct], 'update', "gl_acct_id='$previous'");
             unset($glAccounts[$previous]);
+        } elseif ($isEdit && $glAccounts[$previous]['type'] <> $type) {
+            dbWrite(BIZUNO_DB_PREFIX."journal_history",['gl_type'=>$type],    'update', "gl_account='$previous'");
         }
         ksort($glAccounts, SORT_STRING);
         setModuleCache('phreebooks', 'chart', 'accounts', $glAccounts);

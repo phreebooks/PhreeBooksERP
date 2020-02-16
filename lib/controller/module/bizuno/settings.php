@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2020-02-10
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -129,7 +129,7 @@ class bizunoSettings
         $modList = $guest->getModuleList();
         foreach ($modList as $module => $path) {
             $fqcn = "\\bizuno\\{$module}Admin";
-            bizAutoLoad("{$path}admin.php", $fqcn);
+            if (!bizAutoLoad("{$path}admin.php", $fqcn)) { continue; } // happens when an extension is removed from the file system manually
             $admin= new $fqcn();
             $cat  = !empty($admin->structure['category']) ? $admin->structure['category'] : 'misc';
             $output[$cat][$module] = [

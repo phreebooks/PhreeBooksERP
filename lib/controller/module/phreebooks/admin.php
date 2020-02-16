@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-20
+ * @version    3.x Last Update: 2020-02-13
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -411,20 +411,15 @@ class phreebooksAdmin {
      */
     public function installFirst()
     {
-        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/currency.php", 'phreebooksCurrency');
         bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/chart.php", 'phreebooksChart');
-        $cur = new phreebooksCurrency();
         $coa = new phreebooksChart();
         msgDebug("\n  Loading chart of accounts");
         $coa->chartInstall(BIZUNO_LIB.getUserCache('profile', 'chart'));
-        // set the currencies (should only be one at this time)
-        $iso = getDefaultCurrency();
-        setModuleCache('phreebooks', 'currency', false, ['default' => $iso, 'iso' => [$iso => $cur->currencySettings($iso)]]);
         msgDebug("\n  Building fiscal year.");
-        $current_year = date('Y');
-        $start_year = getUserCache('profile', 'first_fy');
-        $start_period = 1;
-        $runaway = 0;
+        $current_year= date('Y');
+        $start_year  = getUserCache('profile', 'first_fy');
+        $start_period= 1;
+        $runaway     = 0;
         while ($start_year <= $current_year) {
             setNewFiscalYear($start_year, $start_period, "$start_year-01-01");
             $start_year++;
@@ -446,7 +441,7 @@ class phreebooksAdmin {
      * @param array $layout - structure coming in
      * @return modified $layout
      */
-    public function install(&$layout = [])
+    public function install(&$layout=[])
     {
         $bAdmin = new bizunoSettings();
         foreach ($this->totalMethods as $method) {
@@ -459,7 +454,7 @@ class phreebooksAdmin {
      * @param array $layout - structure coming in
      * @return modified $layout
      */
-    public function loadBrowserSession(&$layout = []) {
+    public function loadBrowserSession(&$layout=[]) {
         $accts = []; // load gl Accounts
         $chart = getModuleCache('phreebooks', 'chart', 'accounts');
         if (is_array($chart)) { foreach ($chart as $row) {
@@ -496,7 +491,7 @@ class phreebooksAdmin {
      * @param array $layout - structure coming in
      * @return modified $layout
      */
-    public function rolesEdit(&$layout) {
+    public function rolesEdit(&$layout=[]) {
         $rID = clean('rID', 'integer', 'get');
         $settings = json_decode(dbGetValue(BIZUNO_DB_PREFIX . "roles", 'settings', "id=$rID"), true);
         $enableSales = isset($settings['bizuno']['roles']['sales']) && $settings['bizuno']['roles']['sales'] ? true : false;
@@ -536,7 +531,7 @@ class phreebooksAdmin {
      * @param array $layout - structure coming in
      * @return modified $layout
      */
-    public function usersEdit(&$layout) {
+    public function usersEdit(&$layout=[]) {
         $keys = ['restrict_period', 'cash_acct', 'ar_acct', 'ap_acct'];
         $settings = $layout['settings'];
         if (empty($settings['cash_acct'])){ $settings['cash_acct']= getModuleCache('phreebooks', 'settings', 'customers','gl_cash'); }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2020-02-14
  * @filesource /view/easyUI/html5.php
  */
 
@@ -467,7 +467,8 @@ final class html5 {
             if ($orient == 'h' && !empty($submenu['child'])) { $options['menu'] = "'#sub_{$subid}'"; }
             if (!empty($submenu['disabled'])) { $options['disabled'] = 'true'; }
             $label = !empty($submenu['label']) ? $submenu['label'] : lang($subid);
-            $submenu['attr']['title'] = !empty($submenu['tip']) ? $submenu['tip'] : $label;
+            // The following line is commmented out as the tooltips from Edge browser cause user issues forcing drop down menus to disappear as you cross the tip
+//          $submenu['attr']['title'] = !empty($submenu['tip']) ? $submenu['tip'] : $label;
             $submenu['options'] = $options;
             if ($orient == 'h') {
                 if (isset($submenu['child'])) { $subQueue[] = ['id' => "sub_{$subid}", 'menu' => $submenu['child']]; }
@@ -1834,9 +1835,9 @@ jq('#addressSel{$attr['suffix']}').combogrid({width:150, panelWidth:750, idField
     }
 }
 
-/** *************************** Datagrid Editors ***************** */
+/** *************************** Grid Editors ***************** */
 /**
- * Creates the datagrid editor for a currency numberbox
+ * Creates the grid editor for a currency number box
  * @param string $onChange - JavaScript to run on change event
  * @param boolean $precision - set to true for number precision; false for currency precision
  * @return string - grid editor JSON
@@ -1853,7 +1854,7 @@ function dgEditCurrency($onChange='', $precision=false) {
 }
 
 /**
- * This function builds the combo box editor HTML for a datagrid to view GL Accounts
+ * This function builds the combo box editor HTML for a grid to view GL Accounts
  * @param string $onClick - JavaScript to run on click event
  * @return string set for the editor structure
  */
@@ -1865,12 +1866,12 @@ columns:    [[{field:'id',title:'".jsLang('gl_account')."',width:80},{field:'tit
 }
 
 /**
- * Creates the datagrid editor for a numberbox
+ * Creates the grid editor for a number box
  * @param string $onChange - JavaScript to run on change event
  * @return string set for the editor structure
  */
 function dgEditNumber($onChange='') {
-    $prec  = getModuleCache('bizuno','settings','locale','number_precision','2');
+    $prec  = getModuleCache('bizuno','settings','locale','number_precision',2);
     $tsnd  = str_replace("'", "\\'", getModuleCache('bizuno','settings','locale','number_thousand',','));
     $dec   = str_replace("'", "\\'", getModuleCache('bizuno','settings','locale','number_decimal', '.'));
     $prefix= getModuleCache('bizuno','settings','locale','number_prefix', '');

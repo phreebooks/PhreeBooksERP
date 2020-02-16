@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-30
+ * @version    3.x Last Update: 2020-02-13
  * @filesource /lib/controller/module/phreebooks/currency.php
  */
 
@@ -211,7 +211,7 @@ class phreebooksCurrency
                     'suffix' => isset($value->Currency->Suffix)        ? $value->Currency->Suffix        : '',
                     'dec_pt' => isset($value->Currency->Decimal)       ? $value->Currency->Decimal       : '.',
                     'sep'    => isset($value->Currency->Thousand)      ? $value->Currency->Thousand      : ',',
-                    'dec_len'=> isset($value->Currency->Precision)     ? $value->Currency->Precision     : '2',
+                    'dec_len'=> isset($value->Currency->Precision)     ? $value->Currency->Precision     : 2,
                     'pfxneg' => isset($value->Currency->PrefixNegative)? $value->Currency->PrefixNegative: '-',
                     'sfxneg' => isset($value->Currency->SuffixNegative)? $value->Currency->SuffixNegative: '',
                     'value'  => 1];
