@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-14
+ * @version    3.x Last Update: 2020-03-16
  * @filesource lib/controller/functions.php
  */
 
@@ -556,12 +556,12 @@ function auto_version($file)
  */
 function randomValue($length = 12)
 {
-    $chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
-    $chars_length = (strlen($chars) - 1);
-    $string = $chars{rand(0, $chars_length)};
-    for ($i = 1; $i < $length; $i = strlen($string)) {
-        $r = $chars{rand(0, $chars_length)};
-        if ($r != $string{$i - 1}) { $string .=  $r; }
+    $chars  = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+    $numChar= strlen($chars) - 1;
+    $string = '';
+    for ($i = 0; $i < $length; $i++) {
+        $random = rand(0, $numChar);
+        $string.= substr($chars, $random, 1);
     }
     return $string;
 }

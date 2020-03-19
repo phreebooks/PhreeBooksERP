@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-10
+ * @version    3.x Last Update: 2020-02-19
  * @filesource /lib/model/db.php
  */
 
@@ -180,11 +180,11 @@ class db extends \PDO
                 'default'=> $row['Default'], //'',
                 'extra'  => $row['Extra'], //auto_increment,
                 'tag'    => $prefix.(isset($comment['tag'])?$comment['tag']:$row['Field']).$suffix,
-                'tab'    => isset($comment['tab'])   ? $comment['tab']   : 0,
-                'group'  => isset($comment['group']) ? $comment['group'] : '',
-                'col'    => isset($comment['col'])   ? $comment['col'] : 1,
-                'order'  => isset($comment['order']) ? $comment['order'] : $order,
-                'label'  => isset($comment['label']) ? $comment['label'] : pullTableLabel($table, $row['Field'], $suffix),
+                'tab'    => isset($comment['tab'])  ? $comment['tab']  : 0,
+                'group'  => isset($comment['group'])? $comment['group']: '',
+                'col'    => isset($comment['col'])  ? $comment['col']  : 1,
+                'order'  => isset($comment['order'])? $comment['order']: $order,
+                'label'  => isset($comment['label'])? $comment['label']: pullTableLabel($table, $row['Field'], $suffix),
                 'attr'   => $this->buildAttr($row, $comment)];
             $output[$row['Field']]['format'] = isset($comment['format']) ? $comment['format'] : $output[$row['Field']]['attr']['type']; // db data type
             if (in_array(substr($row['Type'], 0, 4), ["ENUM", "enum"])) {
@@ -203,7 +203,7 @@ class db extends \PDO
     /**
      * Builds the attributes to best guess the HTML structure, primarily used to build HTML input tags
      * @param array $fields - Contains the indexed field settings
-     * @param array $comment - contains the working COMMENT array to build the attributes, stuff not contained in the badic mysql table information
+     * @param array $comment - contains the working COMMENT array to build the attributes, stuff not contained in the basic mySQL table information
      * @return array $output - becomes the 'attr' index of the database field
      */
     private function buildAttr($fields, $comment)
@@ -233,8 +233,7 @@ class db extends \PDO
                 $result['type']      = 'text';
                 $result['size']      = min($this->max_input_size, trim(substr($type, strpos($type,'(')+1, strpos($type,')')-strpos($type,'(')-1)));
                 $result['maxlength'] = trim(substr($type, strpos($type,'(')+1, strpos($type,')')-strpos($type,'(')-1));
-                if ($result['maxlength'] > 128) { $result['type'] = 'textarea'; }
-                break;
+                if ($result['maxlength'] > 128) { $result['type'] = 'textarea'; } break;
             case 'blob':
             case 'text':
             case 'mediumblob':
@@ -242,8 +241,7 @@ class db extends \PDO
             case 'longblob':
             case 'longtext':
                 $result['type']      = 'textarea';
-                $result['maxlength'] = '65535';
-                break;
+                $result['maxlength'] = '65535'; break;
             default:
         }
         if (isset($comment['type'])) { $result['type'] = $comment['type']; } // reset type if specified, messes up dropdowns
@@ -430,7 +428,8 @@ function dbDump($filename='bizuno_backup', $dirWrite='', $dbTable='')
     $dbFile = $filename.".sql.gz";
     if (!$dbTable && BIZUNO_DB_PREFIX <> '') { // fetch table list (will be entire db if no prefix)
         if (!$stmt= dbGetResult("SHOW TABLES FROM $dbName LIKE '".BIZUNO_DB_PREFIX."%'")) { return; }
-        if ( $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC)) { foreach ($rows as $row) { $dbTable .= array_shift($row).' '; } }
+        $rows = $stmt->fetchAll(\PDO::FETCH_ASSOC);
+        if ($rows) { foreach ($rows as $row) { $dbTable .= array_shift($row).' '; } }
     }
     if (!$io->validatePath($dirWrite.$dbFile, true)) { return; }
     $cmd    = "mysqldump --opt -h $dbHost -u $dbUser -p$dbPass $dbName $dbTable | gzip > $dbPath$dbFile";
@@ -835,12 +834,16 @@ function dbGetContact($request, $suffix='')
  */
 function dbGetInvAssyCost($rID=0)
 {
+    $cost = 0;
+    if (empty($rID)) { return $cost; }
     $iID  = intval($rID);
     $items= dbGetMulti(BIZUNO_DB_PREFIX.'inventory_assy_list', "ref_id=$iID");
-    $cost = 0;
+    if (empty($items)) { $items[] = ['qty'=>1, 'sku'=>dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'sku', "id=$iID")]; } // for non-assemblies
     foreach ($items as $row) {
-        $unit = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'item_cost', "sku='{$row['sku']}'");
-        $cost+= $row['qty'] * $unit;
+        if (empty($GLOBALS['inventory'][$row['sku']]['unit_cost'])) {
+            $GLOBALS['inventory'][$row['sku']]['unit_cost'] = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'item_cost', "sku='{$row['sku']}'");
+        }
+        $cost+= $row['qty'] * $GLOBALS['inventory'][$row['sku']]['unit_cost'];
     }
     return $cost;
 }

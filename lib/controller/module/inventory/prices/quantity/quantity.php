@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-19
+ * @version    3.x Last Update: 2020-02-21
  * @filesource /lib/controller/module/inventory/prices/quantity.php
  */
 
@@ -160,6 +160,8 @@ function preSubmitPrices() {
                 if (!isset($prices['price'])) { $prices['price'] = $levels['price']; }
             } elseif (!empty($settings['default'])) {
                 $default_price = $levels['price'];
+            } elseif (!isset($prices['price'])) { // addresses bug when purchase and qty price sheet only return sell price
+                $prices['price'] = $levels['price'];
             }
             if (!empty($settings['default']) && empty($prices['regular_price'])) {
                 $prices['regular_price'] = $levels['price'];
@@ -173,6 +175,6 @@ function preSubmitPrices() {
         }
         if (!isset($prices['price']) && $default_price) { $prices['price'] = $default_price; }   // set default if defined
         if (!isset($prices['price']))                   { $prices['price'] = $values['iList']; } // still no price, use full price
-//      msgDebug("\nLeaving $this->code with price = ".(isset($prices['price']) ? $prices['price'] : 'undefined'));
+        msgDebug("\nLeaving $this->code with price = ".(isset($prices['price']) ? $prices['price'] : 'undefined'));
     }
 }

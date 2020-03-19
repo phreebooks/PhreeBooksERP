@@ -360,7 +360,7 @@ function preSubmit() {
     public function save(&$layout=[], $makeTransaction=true)
     {
         $type   = clean('inventory_type', ['format'=>'text','default'=>'si'], 'post');
-        $values = requestData(dbLoadStructure(BIZUNO_DB_PREFIX."inventory"));
+        $values = requestData(dbLoadStructure(BIZUNO_DB_PREFIX.'inventory'));
         $values['image_with_path'] = clean('image_with_path', 'path_rel', 'post');
         if (!$security = validateSecurity('inventory', 'inv_mgr', isset($values['id']) && $values['id']?3:2)) { return; }
         $rID = isset($values['id']) && $values['id'] ? $values['id'] : 0;

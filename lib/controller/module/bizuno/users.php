@@ -87,12 +87,13 @@ class bizunoUsers
      * @param array $layout - structure coming in
      * @return modified structure
      */
-    public function edit(&$layout)
+    public function edit(&$layout=[])
     {
         $rID = clean('rID', 'integer', 'get');
         if (!$security = validateSecurity('bizuno', 'users', 1)) { return; }
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX."users");
-        $dbData    = $rID ? dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id='$rID'") : ['settings'=>''];
+        if ($rID) { $dbData = dbGetRow(BIZUNO_DB_PREFIX."users", "admin_id='$rID'"); }
+        else      { $dbData = ['settings'=>json_encode(['profile'=>['store_id'=>getUserCache('profile', 'store_id', false, 0)]])]; } // new user
         $mySettings= json_decode($dbData['settings'], true);
         $settings  = isset($mySettings['profile']) ? $mySettings['profile'] : [];
         msgDebug("\nSettings decoded is: ".print_r($settings, true));
@@ -105,7 +106,7 @@ class bizunoUsers
         $title = lang('bizuno_users').' - '.($rID ? $dbData['email'] : lang('new'));
         $fields= $this->getViewUsers($structure, $settings);
 /* Commented out as this can be a security issue,
- * New users will be issued an access code and be directed to lost password login screen inteh welcome email,
+ * New users will be issued an access code and be directed to lost password login screen in the welcome email,
  * Current users can change their password in Profile page
         if (validateSecurity('bizuno', 'users', 3)) {
             $fields['password_new']    = ['order'=>55,'break'=>true,'label'=>lang('password_new'),    'attr'=>['type'=>'password']];
@@ -160,9 +161,9 @@ class bizunoUsers
             'title'         => array_merge($fields['title'],   ['order'=>25,'break'=>true]),
             'role_id'       => array_merge($fields['role_id'], ['order'=>30,'break'=>true,'values'=>listRoles(true, false, false)]),
             'contact_id'    => ['order'=>35,'break'=>true,'label'=>lang('contacts_rep_id_i'),'defaults'=>$defs,'attr'=>['type'=>'contact','value'=>$fields['contact_id']['attr']['value']]],
-            'store_id'      => ['order'=>40,'break'=>true,'label'=>$this->lang['store_id_lbl'],      'tip'=>$this->lang['store_id_tip'],'values'=>getModuleCache('bizuno', 'stores'),'attr'=>['type'=>'select','value'=>isset($settings['store_id'])?$settings['store_id']:'0']],
-            'restrict_store'=> ['order'=>45,'break'=>true,'label'=>$this->lang['restrict_store_lbl'],'tip'=>$this->lang['restrict_store_tip'],'values'=>$stores, 'attr'=>['type'=>'select','value'=>isset($settings['restrict_store'])?$settings['restrict_store']:'-1']],
-            'restrict_user' => ['order'=>50,'break'=>true,'label'=>$this->lang['restrict_user_lbl'], 'tip'=>$this->lang['restrict_user_tip'], 'attr'=>['type'=>'selNoYes','value'=>isset($settings['restrict_user'])?$settings['restrict_user']:'0']],
+            'store_id'      => ['order'=>40,'break'=>true,'label'=>$this->lang['store_id_lbl'],      'tip'=>$this->lang['store_id_tip'],'values'=>getModuleCache('bizuno', 'stores'),'attr'=>['type'=>'select','value'=>isset($settings['store_id'])?$settings['store_id']:0]],
+            'restrict_store'=> ['order'=>45,'break'=>true,'label'=>$this->lang['restrict_store_lbl'],'tip'=>$this->lang['restrict_store_tip'],'values'=>$stores, 'attr'=>['type'=>'select','value'=>isset($settings['restrict_store'])?$settings['restrict_store']:-1]],
+            'restrict_user' => ['order'=>50,'break'=>true,'label'=>$this->lang['restrict_user_lbl'], 'tip'=>$this->lang['restrict_user_tip'], 'attr'=>['type'=>'selNoYes','value'=>isset($settings['restrict_user'])?$settings['restrict_user']:0]],
             'icons'         => ['order'=>65,'break'=>true,'label'=>$this->lang['icon_set'],'values'=>getIcons(), 'attr'=>['type'=>'select','value'=>isset($settings['icons'])?$settings['icons']:'default']],
             'theme'         => ['order'=>70,'break'=>true,'label'=>lang('theme'),          'values'=>getThemes(),'attr'=>['type'=>'select','value'=>isset($settings['theme'])?$settings['theme']:'default']],
             'menu'          => ['order'=>75,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$posi,      'attr'=>['type'=>'select','value'=>isset($settings['menu']) ?$settings['menu'] :'left']],

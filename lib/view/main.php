@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-16
+ * @version    3.x Last Update: 2020-03-16
  * @filesource /view/main.php
  */
 
@@ -198,11 +198,11 @@ function viewFormat($value, $format = '')
         case 'json':      return json_decode($value, true);
         case 'neg':       return -$value;
         case 'n2wrd':     return viewNumToWords($value);
-        case 'null0':     return (round((real)$value, 4) == 0) ? '' : $value;
+        case 'null0':     return (round((float)$value, 4) == 0) ? '' : $value;
         case 'number':    return number_format((float)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'), getModuleCache('bizuno', 'settings', 'locale', 'number_decimal'), getModuleCache('bizuno', 'settings', 'locale', 'number_thousand'));
         case 'percent':   return floatval($value) ? number_format($value * 100, 1)." %" : '';
         case 'printed':   return $value ? '' : lang('duplicate');
-        case 'precise':   $output = number_format((real)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'));
+        case 'precise':   $output = number_format((float)$value, getModuleCache('bizuno', 'settings', 'locale', 'number_precision'));
             $zero = number_format(0, getModuleCache('bizuno', 'settings', 'locale', 'number_precision')); // to handle -0.00
             return ($output == '-'.$zero) ? $zero : $output;
         case 'rep_id':      $result = dbGetValue(BIZUNO_DB_PREFIX."users", 'title', "admin_id='$value'");
@@ -577,7 +577,7 @@ function viewTerms($terms_encoded='', $short=true, $type='c', $inc_limit=false)
 function viewCurrency($value, $format='currency')
 {
     global $currencies;
-    if ($format=='curNull0' && (real)$value == 0) { return ''; }
+    if ($format=='curNull0' && (float)$value == 0) { return ''; }
     if (!is_numeric($value)) { return $value; }
     $isoDef = getDefaultCurrency();
     $iso    = !empty($currencies->iso)  ? $currencies->iso  : $isoDef;

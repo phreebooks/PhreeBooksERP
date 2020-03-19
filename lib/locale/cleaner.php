@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-21
+ * @version    3.x Last Update: 2020-02-19
  * @filesource /locale/cleaner.php
  */
 
@@ -601,6 +601,7 @@ function requestData($structure, $suffix='', $voidLabels=false)
         if ($voidLabels && isset($request[$field.$suffix])) {
             if ($request[$field.$suffix] == pullTableLabel($content['table'], $field, '', $suffix)) { $request[$field.$suffix] = ''; }
         }
+        if (in_array($content['format'], ['currency'])) { $content['format'] = 'float'; } // special case for number boxes with special format options
         if (isset($request[$field.$suffix])) {
             $output[$field] = clean($field.$suffix, $content, 'post');
         } elseif (isset($request[$content['tag'].$suffix])) {
@@ -609,15 +610,15 @@ function requestData($structure, $suffix='', $voidLabels=false)
             $output[$field] = '0';
         }
     }
-    //msgDebug("\nReturning suffix = $suffix and output: ".print_r($output, true));
+    msgDebug("\nReturning suffix = $suffix and output: ".print_r($output, true));
     return $output;
 }
 
 /**
- * This function maps the json decoded datagrid response values to an array
+ * This function maps the JSON decoded grid response values to an array
  * @param array $request - typically the post variables
  * @param unknown $structure - table structure
- * @param unknown $override - override map from datagrid to db table
+ * @param unknown $override - override map from grid to db table
  * @return array - cleaned array of fields mapped from form to db table
  */
 function requestDataGrid($request, $structure, $override=[])

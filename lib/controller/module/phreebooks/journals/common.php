@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2020-03-06
  * @filesource /lib/controller/module/phreebooks/journals/common.php
  */
 
@@ -226,25 +226,38 @@ class jCommon
         $output = [];
         if (!$this->main['id']) { return $output; }
         for ($i = 0; $i < count($this->items); $i++) {
-            if (!isset($this->items[$i]['sku']) || !$this->items[$i]['sku']) { continue; }
+            if (empty($this->items[$i]['sku'])) { continue; }
             // check to see if any future postings relied on this record, queue to re-post if so.
-            $id = dbGetValue(BIZUNO_DB_PREFIX."inventory_history", 'id', "ref_id={$this->main['id']} AND sku='{$this->items[$i]['sku']}'");
-            if (!$id) { continue; }
-            $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_cogs_usage", "inventory_history_id=$id");
-            foreach ($result as $row) {
-                if ($row['journal_main_id'] <> $this->main['id']) {
-                    msgDebug("\n    getRepostInv is queing for cogs usage id = " . $row['journal_main_id']);
-                    $mainRow = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['post_date', 'journal_id'], "id=".$row['journal_main_id']);
-                    $idx = padRef($mainRow['post_date'], $row['journal_main_id'], $mainRow['journal_id']);
-                    $output[$idx] = $row['journal_main_id'];
-                }
-            }
+            // It is possible to have more than one if same item appears on the same entry multiple times.
+            $mIDs = dbGetMulti(BIZUNO_DB_PREFIX."inventory_history", "ref_id={$this->main['id']} AND sku='{$this->items[$i]['sku']}'", '', ['id']);
+            msgDebug("\nRead from inventory_history table and returned with rows = ".print_r($mIDs, true));
+            foreach ($mIDs as $mID) { $this->getRepostInvHist($output, $mID['id']); }
         }
         return $output;
     }
 
     /**
-     * Gathers repost id's from the cost of goods owed table to report now that stock is here.
+     * Gathers the re-post IDs from a given inventory_history record
+     * @param array $output - array of journal_main records to re-post
+     * @param integer $id - journal_main record ID
+     */
+    private function getRepostInvHist(&$output, $id=0)
+    {
+        msgDebug("\nEntering getRepostInvHist with inventory_history id = $id");
+        if (empty($id)) { return; }
+        $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_cogs_usage", "inventory_history_id=$id");
+        foreach ($result as $row) {
+            if ($row['journal_main_id'] <> $this->main['id']) {
+                msgDebug("\n    getRepostInvHist is queing for cogs usage id = " . $row['journal_main_id']);
+                $mainRow = dbGetValue(BIZUNO_DB_PREFIX."journal_main", ['post_date', 'journal_id'], "id=".$row['journal_main_id']);
+                $idx = padRef($mainRow['post_date'], $row['journal_main_id'], $mainRow['journal_id']);
+                $output[$idx] = $row['journal_main_id'];
+            }
+        }
+    }
+
+    /**
+     * Gathers re-post id's from the cost of goods owed table to report now that stock is here.
      * @return type
      */
     protected function getRepostInvCOG()
@@ -990,9 +1003,9 @@ class jCommon
         $data = ['id'=> $name, 'type'=>'edatagrid',
             'attr'   => ['toolbar'=>"#{$name}Toolbar", 'rownumbers'=>true, 'idField'=>'id', 'singleSelect'=>true, 'fitColumns'=>true],
             'events' => ['data'=> "datagridData",
-                'onLoadSuccess'=> "function(row) { totalUpdate('dgOrders LoadSuccess'); }",
+                'onLoadSuccess'=> "function(row)      { totalUpdate('dgOrders LoadSuccess'); }",
                 'onClickRow'   => "function(rowIndex, row) { curIndex = rowIndex; }",
-                'onBeforeEdit' => "function(rowIndex) { var edtURL=jq(this).edatagrid('getColumnOption','sku'); edtURL.editor.options.url='".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&bID='+jq('#store_id').val(); }",
+                'onBeforeEdit' => "function(rowIndex) { curIndex = rowIndex; var edtURL=jq(this).edatagrid('getColumnOption','sku'); edtURL.editor.options.url='".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&bID='+jq('#store_id').val(); }",
                 'onBeginEdit'  => "function(rowIndex) { ordersEditing(rowIndex); }",
                 'onDestroy'    => "function(rowIndex) { totalUpdate('dgOrders onDestroy'); curIndex = undefined; }",
                 'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
