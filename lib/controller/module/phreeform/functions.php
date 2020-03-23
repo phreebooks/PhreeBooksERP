@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-23
+ * @version    3.x Last Update: 2020-03-18
  * @filesource /controller/module/phreeform/functions.php
  */
 
@@ -633,12 +633,12 @@ function ReplaceNonAllowedCharacters($string)
 }
 
 /**
- * Creates a list of page types for a report/form, supported by TCPDF
+ * Creates a list of page types for a report/form, supported by PDF
  * @param array $lang - language translations for textual titles
  * @return array - list of page sizes
  */
 function phreeformPages($lang)
-{ // TBD make the key just the TCPDF supported paper sizes, pull dimensions from array
+{ // TBD make the key just the PDF supported paper sizes, pull dimensions from array
     return [
         ['id'=>'LETTER:216:279', 'text'=>$lang['paper_letter']],
         ['id'=>'LEGAL:216:357',  'text'=>$lang['paper_legal']],
@@ -669,14 +669,15 @@ function phreeformOrientation($lang)
 }
 
 /**
- * Generates the list of TCPDF fonts available, typically from the default installation
+ * Generates the list of PDF fonts available, typically from the default installation
  * @param boolean $show_default - [default true] set to false to include the null select option at the beginning
  * @return array - ready to render in select DOM element
  */
 function phreeformFonts($show_default=true)
 {
-    $choices = glob(BIZUNO_3P_TCPDF."fonts/*.php");
-    $output = $show_default ? [['id'=>'default', 'text'=>lang('default')]] : [];
+//  $choices = defined('BIZUNO_3P_TCPDF') ? glob(BIZUNO_3P_TCPDF."fonts/*.php") : glob(BIZUNO_3P_PDF."font/*.php");
+    $choices = glob(BIZUNO_3P_PDF."font/*.php");
+    $output  = $show_default ? [['id'=>'default', 'text'=>lang('default')]] : [];
     foreach ($choices as $choice) {
         $name = false;
         include($choice); // will set $name if it's a valid file
@@ -743,42 +744,43 @@ function phreeformCompany()
 }
 
 /**
- * Generates the list of bar code types supported by TCPDF used in the fields of a form
+ * Generates the list of bar code types supported by PDF used in the fields of a form
  * @return array - ready to render
  */
 function phreeformBarCodes()
 {
     return [
         ['id'=>'C39',     'text'=>'CODE 39 - ANSI MH10.8M-1983 - USD-3 - 3 of 9.'],
-        ['id'=>'C39+',    'text'=>'CODE 39 with checksum'],
+//        ['id'=>'C39+',    'text'=>'CODE 39 with checksum'],
         ['id'=>'C39E',    'text'=>'CODE 39 EXTENDED'],
-        ['id'=>'C39E+',   'text'=>'CODE 39 EXTENDED + CHECKSUM'],
-        ['id'=>'C93',     'text'=>'CODE 93 - USS-93'],
-        ['id'=>'S25',     'text'=>'Standard 2 of 5'],
-        ['id'=>'S25+',    'text'=>'Standard 2 of 5 + CHECKSUM'],
+//        ['id'=>'C39E+',   'text'=>'CODE 39 EXTENDED + CHECKSUM'],
+//        ['id'=>'C93',     'text'=>'CODE 93 - USS-93'],
+//        ['id'=>'S25',     'text'=>'Standard 2 of 5'],
+//        ['id'=>'S25+',    'text'=>'Standard 2 of 5 + CHECKSUM'],
         ['id'=>'I25',     'text'=>'Interleaved 2 of 5'],
-        ['id'=>'I25+',    'text'=>'Interleaved 2 of 5 + CHECKSUM'],
+//        ['id'=>'I25+',    'text'=>'Interleaved 2 of 5 + CHECKSUM'],
         ['id'=>'C128',    'text'=>'CODE 128'],
-        ['id'=>'C128A',   'text'=>'CODE 128 A'],
-        ['id'=>'C128B',   'text'=>'CODE 128 B'],
-        ['id'=>'C128C',   'text'=>'CODE 128 C'],
-        ['id'=>'EAN2',    'text'=>'2-Digits UPC-Based Extention'],
-        ['id'=>'EAN5',    'text'=>'5-Digits UPC-Based Extention'],
-        ['id'=>'EAN8',    'text'=>'EAN 8'],
+//        ['id'=>'C128A',   'text'=>'CODE 128 A'],
+//        ['id'=>'C128B',   'text'=>'CODE 128 B'],
+//        ['id'=>'C128C',   'text'=>'CODE 128 C'],
+//        ['id'=>'EAN2',    'text'=>'2-Digits UPC-Based Extention'],
+//        ['id'=>'EAN5',    'text'=>'5-Digits UPC-Based Extention'],
+//        ['id'=>'EAN8',    'text'=>'EAN 8'],
         ['id'=>'EAN13',   'text'=>'EAN 13'],
         ['id'=>'UPCA',    'text'=>'UPC-A'],
-        ['id'=>'UPCE',    'text'=>'UPC-E'],
-        ['id'=>'MSI',     'text'=>'MSI (Variation of Plessey code)'],
-        ['id'=>'MSI+',    'text'=>'MSI + CHECKSUM (modulo 11)'],
+//        ['id'=>'UPCE',    'text'=>'UPC-E'],
+//        ['id'=>'MSI',     'text'=>'MSI (Variation of Plessey code)'],
+//        ['id'=>'MSI+',    'text'=>'MSI + CHECKSUM (modulo 11)'],
         ['id'=>'POSTNET', 'text'=>'POSTNET'],
-        ['id'=>'PLANET',  'text'=>'PLANET'],
-        ['id'=>'RMS4CC',  'text'=>'RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)'],
-        ['id'=>'KIX',     'text'=>'KIX (Klant index - Customer index)'],
-        ['id'=>'IMB',     'text'=>'Intelligent Mail Barcode - Onecode - USPS-B-3200'],
+//        ['id'=>'PLANET',  'text'=>'PLANET'],
+//        ['id'=>'RMS4CC',  'text'=>'RMS4CC (Royal Mail 4-state Customer Code) - CBC (Customer Bar Code)'],
+//        ['id'=>'KIX',     'text'=>'KIX (Klant index - Customer index)'],
+//        ['id'=>'IMB',     'text'=>'Intelligent Mail Barcode - Onecode - USPS-B-3200'],
         ['id'=>'CODABAR', 'text'=>'CODABAR'],
-        ['id'=>'CODE11',  'text'=>'CODE 11'],
-        ['id'=>'PHARMA',  'text'=>'PHARMACODE'],
-        ['id'=>'PHARMA2T','text'=>'PHARMACODE TWO-TRACKS']];
+//        ['id'=>'CODE11',  'text'=>'CODE 11'],
+//        ['id'=>'PHARMA',  'text'=>'PHARMACODE'],
+//        ['id'=>'PHARMA2T','text'=>'PHARMACODE TWO-TRACKS'],
+        ];
 }
 
 /**

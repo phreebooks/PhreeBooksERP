@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-13
+ * @version    3.x Last Update: 2020-03-22
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -459,11 +459,11 @@ class bizunoAdmin
     public function installBizuno(&$layout=[])
     {
         global $bizunoUser, $io;
-        bizAutoLoad(BIZUNO_LIB ."controller/module/bizuno/settings.php",   'bizunoSettings');
-        bizAutoLoad(BIZUNO_LIB ."controller/module/phreebooks/admin.php",  'phreebooksAdmin');
-        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/currency.php",'phreebooksCurrency');
-        bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
-        bizAutoLoad(BIZUNO_LIB ."model/registry.php", 'bizRegistry');
+        bizAutoLoad(BIZUNO_LIB ."controller/module/bizuno/settings.php",    'bizunoSettings');
+        bizAutoLoad(BIZUNO_LIB ."controller/module/phreebooks/admin.php",   'phreebooksAdmin');
+        bizAutoLoad(BIZUNO_LIB ."controller/module/phreebooks/currency.php",'phreebooksCurrency');
+        bizAutoLoad(BIZUNO_ROOT."portal/guest.php",                         'guest');
+        bizAutoLoad(BIZUNO_LIB ."model/registry.php",                       'bizRegistry');
         ini_set('memory_limit','1024M'); // temporary
         $guest = new guest();
         if (method_exists($guest, 'installBizunoPre')) { if (!$guest->installBizunoPre()) { return; } } // pre-install for portal
@@ -514,7 +514,7 @@ class bizunoAdmin
         $company = getModuleCache('bizuno', 'settings', 'company'); // set the business title and id
         $company['id'] = $company['primary_name'] = getUserCache('profile', 'biz_title');
         setModuleCache('bizuno', 'settings', 'company', $company);
-        $locale  = getModuleCache('bizuno', 'settings', 'locale');// set the timezone
+        $locale  = getModuleCache('bizuno', 'settings', 'locale'); // set the timezone
         $locale['timezone'] = clean('biz_timezone', 'text', 'post');
         setModuleCache('bizuno', 'settings', 'locale', $locale);
         portalWrite('business', ['title'=>$company['id'],'currency'=>getDefaultCurrency(),'time_zone'=>$locale['timezone'],'date_last_visit'=>date('Y-m-d h:i:s')], 'update', "id='".getUserCache('profile', 'biz_id')."'");
@@ -523,22 +523,25 @@ class bizunoAdmin
         $layout = ['content'=>['action'=>'eval','actionData'=>"loadSessionStorage();"]];
     }
 
+    /**
+     * Populates the home page dashboard for the admin
+     * @param integer $admin_id - current install user database record id
+     * @param array $my_to_do - list of action items that is generated during the install
+     */
     private function initDashboards($admin_id=1, $my_to_do=[])
     {
-        $dashData1 = ['user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno','dashboard_id'=>'my_to_do', 'column_id'=>0,'row_id'=>0,'settings'=>json_encode(['data'=>$my_to_do])];
-        dbWrite(BIZUNO_DB_PREFIX."users_profiles", $dashData1);
-        // Add more dashboards for users
-        // new dashboard quick_Start
-        // populate Launchpad and add to column 2
-        // add audit_log
-        // add todays_invoices
-        // add todays_purchases
-        // add favorite reports
-        // add company links with link to biz-school
-        $dashData2 = ['user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno','dashboard_id'=>'daily_tip','column_id'=>1,'row_id'=>1];
-        dbWrite(BIZUNO_DB_PREFIX."users_profiles", $dashData2);
-        $dashData3 = ['user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno','dashboard_id'=>'ps_news',  'column_id'=>2,'row_id'=>2];
-        dbWrite(BIZUNO_DB_PREFIX."users_profiles", $dashData3);
+        $setCLink = ['data'=>['PhreeSoft Biz School'=>'https://www.phreesoft.com/biz-school/']]; // company links presets
+        $setLnch  = ['inv_mgr','mgr_c','mgr_v','j6_mgr', 'j12_mgr', 'admin']; // launchpad link presets
+        $panels[] = ['column_id'=>0,'row_id'=>0,'dashboard_id'=>'quick_start',     'user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno'];
+        $panels[] = ['column_id'=>0,'row_id'=>1,'dashboard_id'=>'todays_j12',      'user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'phreebooks','settings'=>json_encode([])];
+        $panels[] = ['column_id'=>0,'row_id'=>2,'dashboard_id'=>'todays_j06',      'user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'phreebooks','settings'=>json_encode([])];
+        $panels[] = ['column_id'=>1,'row_id'=>0,'dashboard_id'=>'my_to_do',        'user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno',    'settings'=>json_encode(['data'=>$my_to_do])];
+        $panels[] = ['column_id'=>1,'row_id'=>1,'dashboard_id'=>'favorite_reports','user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'phreeform', 'settings'=>json_encode(['data'=>[]])];
+        $panels[] = ['column_id'=>1,'row_id'=>2,'dashboard_id'=>'daily_tip',       'user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno'];
+        $panels[] = ['column_id'=>2,'row_id'=>0,'dashboard_id'=>'launchpad',       'user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno',    'settings'=>json_encode($setLnch)];
+        $panels[] = ['column_id'=>2,'row_id'=>1,'dashboard_id'=>'company_links',   'user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno',    'settings'=>json_encode($setCLink)];
+        $panels[] = ['column_id'=>2,'row_id'=>2,'dashboard_id'=>'todays_audit',    'user_id'=>$admin_id,'menu_id'=>'home','module_id'=>'bizuno',    'settings'=>json_encode([])];
+        foreach ($panels as $panel) { dbWrite(BIZUNO_DB_PREFIX."users_profiles", $panel); }
     }
 
     /**

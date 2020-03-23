@@ -47,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.3.4.2 =
+2020-03-22 - Incorporate Bizuno Library 3.4.2. Fix bug entering new orders with subtotal, change from TCPDF to FPDF for reports/forms. New install dashboards.
 = 5.3.4.1 =
 2020-03-17 - Incorporate Bizuno Library 3.4.1. Fix for large non-USD formatting. Minor bugs and operational changes.
 = 5.3.4.0 =

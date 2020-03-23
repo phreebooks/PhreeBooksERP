@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-13
+ * @version    3.x Last Update: 2020-03-18
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -456,12 +456,15 @@ class phreebooksAdmin {
      */
     public function loadBrowserSession(&$layout=[]) {
         $accts = []; // load gl Accounts
+        $curISO= getDefaultCurrency();
         $chart = getModuleCache('phreebooks', 'chart', 'accounts');
+        $defs  = getModuleCache('phreebooks', 'chart', 'defaults');
         if (is_array($chart)) { foreach ($chart as $row) {
-            $row['asset']= in_array($row['type'], $this->assets) ? 1 : 0;
-            $row['type'] = viewFormat($row['type'], 'glType');
+            $row['default']= !empty($defs[$curISO][$row['type']]) && $row['id']==$defs[$curISO][$row['type']] ? 1 : 0;
+            $row['asset']  = in_array($row['type'], $this->assets) ? 1 : 0;
+            $row['type']   = viewFormat($row['type'], 'glType');
             if (empty($row['inactive'])) { $row['inactive'] = '0'; } // for some cases this is not set
-            $accts[]     = $row; // need to remove keys
+            $accts[]       = $row; // need to remove keys
         } }
         $layout['content']['dictionary']    = array_merge($layout['content']['dictionary'], $this->getBrowserLang());
         $layout['content']['glAccounts']    = ['total'=>sizeof($accts),  'rows'=>$accts];

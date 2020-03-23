@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-10-23
+ * @version    3.x Last Update: 2020-03-18
  * @filesource /controller/module/phreeform/renderHTML.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_3P_TCPDF."config/bizuno_config.php");
+//require_once(BIZUNO_3P_TCPDF."config/bizuno_config.php");
 
 class HTML
 {

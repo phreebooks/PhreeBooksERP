@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    3.x Last Update: 2020-03-19
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -225,9 +225,9 @@ class contactsMain
                 'history' => ['order'=>30,'label'=>lang('history'), 'hidden'=>$rID?false:true,'type'=>'html', 'html'=>'',
                     'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/history&rID=$rID'"]],
                 'bill_add'=> ['order'=>40,'label'=>lang('address_book_type_b'), 'type'=>'html', 'html'=>'',
-                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/getTabAddress&type=b&rID=$rID'"]],
+                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/getTabAddress&type=$this->type&aType=b&rID=$rID'"]],
                 'ship_add'=> ['order'=>50,'label'=>lang('address_book_type_s'), 'type'=>'html', 'html'=>'',
-                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/getTabAddress&type=s&rID=$rID'"]],
+                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/getTabAddress&type=$this->type&aType=s&rID=$rID'"]],
                 'notes'   => ['order'=>70,'label'=>lang('notes'),'html'=>'',
                     'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/getTabNotes&rID=$rID'"]]]]],
             'forms'    => ['frmContact'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=contacts/main/save&type=$this->type"]]],
@@ -996,7 +996,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     {
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
         $rID  = clean('rID', 'integer','get');
-        $type = clean('type','char',   'get');
+        $type = clean('aType','char',   'get');
         $cType= dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID");
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX."address_book",$type);
         $data = ['type'=>'divHTML',

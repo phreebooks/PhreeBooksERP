@@ -17,16 +17,17 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-20
+ * @version    3.x Last Update: 2020-03-22
  * @filesource /controller/module/phreeform/renderForm.php
  */
 
 namespace bizuno;
 
-require_once(BIZUNO_3P_TCPDF."config/bizuno_config.php");
-require_once(BIZUNO_3P_TCPDF."tcpdf.php");
+//require_once(BIZUNO_3P_TCPDF."config/bizuno_config.php");
+//require_once(BIZUNO_3P_TCPDF."tcpdf.php");
+require_once(BIZUNO_3P_PDF."fpdf.php");
 
-class PDF extends \TCPDF
+class PDF extends \FPDF
 {
     public $moduleID  = 'phreeform';
     var $defaultSize  = "10";
@@ -46,15 +47,15 @@ class PDF extends \TCPDF
         $this->defaultFont = getModuleCache('phreeform','settings','general','default_font','helvetica');
         $PaperSize = explode(':', $report->page->size);
         parent::__construct($report->page->orientation, 'mm', strtoupper($PaperSize[0]), true, 'UTF-8', false);
-        $this->SetCellPadding(0);
+//        $this->SetCellPadding(0);
         if ($report->page->orientation == 'P') { // Portrait - calculate max page height
             $this->pageY = $PaperSize[2] - $report->page->margin->bottom;
         } else { // Landscape
             $this->pageY = $PaperSize[1] - $report->page->margin->bottom;
         }
-        $this->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
+//        $this->SetMargins(PDF_MARGIN_LEFT, PDF_MARGIN_TOP, PDF_MARGIN_RIGHT);
         $this->SetMargins($report->page->margin->left, $report->page->margin->top, $report->page->margin->right);
-        $this->SetCellPaddings(1, 0, 1); // added to move text away from border in forms
+//        $this->SetCellPaddings(1, 0, 1); // added to move text away from border in forms
         $this->SetAutoPageBreak(0, $report->page->margin->bottom);
         $this->SetFont($this->defaultFont);
         $this->SetDrawColor(128, 0, 0);
@@ -181,9 +182,10 @@ class PDF extends \TCPDF
      * @param char $orientation - page orientation
      * @param string $format - page size
      */
-    public function _beginpage($orientation='', $format='')
+//    public function _beginpage($orientation='', $format='')
+    public function _beginpage($orientation='', $size='', $format='')
     {
-        parent::_beginpage($orientation, $format);
+        parent::_beginpage($orientation, $size, $format);
         if ($this->NewPageGroup) { // start a new group
             $n = sizeof((array)$this->PageGroups)+1;
             $alias = "{nb$n}";
@@ -196,7 +198,7 @@ class PDF extends \TCPDF
     }
 
     /**
-     * Wrapper for the TCPDF method with the same name
+     * Wrapper for the PDF method with the same name
      */
     function _putpages() {
         $nb = $this->page;
@@ -349,8 +351,14 @@ class PDF extends \TCPDF
         }
         if (isset($Params->settings->processing)) { $data = viewProcess($data, $Params->settings->processing); }
         if (isset($Params->settings->formatting)) { $data = viewFormat ($data, $Params->settings->formatting); }
-        $data1 = clean($data, 'alpha_num'); // need to remove all special characters
-        $this->write1DBarcode($data1, $Params->settings->barcode, $Params->abscissa, $Params->ordinate, $Params->width, $Params->height, 0.4, $style, 'N');
+        $code = clean($data, 'alpha_num'); // need to remove all special characters
+        $type = $Params->settings->barcode;
+        if (file_exists(BIZUNO_3P_PDF."barcodes/$type.php")) {
+            require_once(BIZUNO_3P_PDF."barcodes/$type.php");
+            $bc = new $type();
+            $bc->Barcode($this, $code, $Params->abscissa, $Params->ordinate, $Params->width, $Params->height, $baseline=0.5);
+        }
+//      $this->write1DBarcode($data1, $Params->settings->barcode, $Params->abscissa, $Params->ordinate, $Params->width, $Params->height, 0.4, $style, 'N');
     }
 
     /**
@@ -383,7 +391,10 @@ class PDF extends \TCPDF
             else { $TextField = $this->GroupPageNo().' '.lang('of').' '.$this->PageGroupAlias(); } // fix for multi-page multi-group forms
         if (isset($Params->settings->processing)) { $TextField = viewProcess($TextField, $Params->settings->processing); }
         if (isset($Params->settings->formatting)) { $TextField = viewFormat ($TextField, $Params->settings->formatting); }
-        if ($TextField) { $this->MultiCell($Params->width, $Params->height, $TextField, $Border, $Params->settings->align, $Fill); }
+        if ($TextField) {
+            $txt = iconv('UTF-8', 'windows-1252', $TextField); // FPDF needs to convert to UTF-8
+            $this->MultiCell($Params->width, $Params->height, $txt, $Border, $Params->settings->align, $Fill);
+        }
     }
 
     /**
@@ -485,7 +496,9 @@ class PDF extends \TCPDF
                 $this->FormImgLink($props, $value);
                 $maxImgHt = $width * 3 / 4;
             } else {
-                $this->MultiCell($Params->settings->boxfield[$key]->width, $CellHeight, $value, 0, $align, $fillReq?true:false);
+                msgDebug("\nTABLE Writing value = $txt");
+                $txt = iconv('UTF-8', 'windows-1252', $value); // FPDF needs to convert to UTF-8
+                $this->MultiCell($Params->settings->boxfield[$key]->width, $CellHeight, $txt, 0, $align, $fillReq?true:false);
             }
             if ($this->GetY() > $maxY) { $maxY = $this->GetY(); }
             $NextXPos += $Params->settings->boxfield[$key]->width;

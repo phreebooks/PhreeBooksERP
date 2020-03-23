@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-21
+ * @version    3.x Last Update: 2020-03-19
  * @filesource /lib/controller/module/inventory/prices/quantity.php
  */
 
@@ -142,7 +142,7 @@ function preSubmitPrices() {
     }
 
     /**
-     * This function determines the price for a given sku and returns the entries for prices drop down
+     * This function determines the price for a given SKU and returns the entries for prices drop down
      * @param array &$prices - current pricing array to be added to
      * @param array $values - details needed to calculate proper price
      * @return array $prices by reference
@@ -150,7 +150,6 @@ function preSubmitPrices() {
     public function priceQuote(&$prices, $values)
     {
         $sheets = dbGetMulti(BIZUNO_DB_PREFIX."inventory_prices", "method='$this->code' AND contact_type='{$values['cType']}'");
-        if (!$sheets) { return; }
         $default_price = 0;
         foreach ($sheets as $row) {
             $settings = json_decode($row['settings'], true);
@@ -160,8 +159,8 @@ function preSubmitPrices() {
                 if (!isset($prices['price'])) { $prices['price'] = $levels['price']; }
             } elseif (!empty($settings['default'])) {
                 $default_price = $levels['price'];
-            } elseif (!isset($prices['price'])) { // addresses bug when purchase and qty price sheet only return sell price
-                $prices['price'] = $levels['price'];
+//          } elseif (!isset($prices['price'])) { // @todo SHOULD NOT NEED ANYMORE - addresses bug when purchase and qty price sheet only return sell price
+//                $prices['price'] = $levels['price'];
             }
             if (!empty($settings['default']) && empty($prices['regular_price'])) {
                 $prices['regular_price'] = $levels['price'];
@@ -174,7 +173,6 @@ function preSubmitPrices() {
             }
         }
         if (!isset($prices['price']) && $default_price) { $prices['price'] = $default_price; }   // set default if defined
-        if (!isset($prices['price']))                   { $prices['price'] = $values['iList']; } // still no price, use full price
         msgDebug("\nLeaving $this->code with price = ".(isset($prices['price']) ? $prices['price'] : 'undefined'));
     }
 }

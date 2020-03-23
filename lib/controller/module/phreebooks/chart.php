@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-12
+ * @version    3.x Last Update: 2020-03-18
  * @filesource /lib/controller/module/phreebooks/chart.php
  */
 
@@ -52,7 +52,7 @@ function chartRefresh() {
             'divs'     => ['gl'=>['order'=>50,'type'=>'accordion','key'=>"accGL"]],
             'accordion'=> ['accGL'=>['divs'=>[
                 'divGLManager'=> ['order'=>30,'label'=>lang('phreebooks_chart_of_accts'),'type'=>'divs','divs'=>[
-                    'selCOA'  => ['order'=>10,'label'=>$this->lang['coa_import_title'],'type'=>'divs','divs'=>[
+                    'selCOA'  => ['order'=>10,'label'=>$this->lang['coa_import_title'],  'type'=>'divs','divs'=>[
                         'desc'   => ['order'=>10,'type'=>'html',  'html'  =>"<p>".$this->lang['coa_import_desc']."</p>"],
                         'formBOF'=> ['order'=>15,'type'=>'form',  'key'   =>'frmGlUpload'],
                         'body'   => ['order'=>50,'type'=>'fields','fields'=>$this->getViewMgr($coa_blocked)],
@@ -132,12 +132,13 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
 //          'gl_cur'     => ['order'=>50,'col'=>1,'break'=>true,'label'=>lang('currency'),  'attr'=>['type'=>'selCurrency','value'=>isset($val['cur']) ?$val['cur'] :'']],
             'gl_account' => ['order'=>10,'col'=>$rID?2:1,'break'=>true,'label'=>$this->lang['new_gl_account']],
             'gl_header'  => ['order'=>20,'col'=>2,'break'=>true,'label'=>lang('heading'),'attr'=>['type'=>'checkbox','checked'=>!empty($val['heading'])?true:false]],
-            'gl_parent'  => ['order'=>30,'col'=>2,'break'=>true,'label'=>$this->lang['primary_gl_acct'],'heading'=>true,'attr'=>['type'=>'ledger','value'=>isset($val['parent'])?$val['parent']:'']]];
+            'gl_parent'  => ['order'=>30,'col'=>2,'break'=>true,'label'=>$this->lang['primary_gl_acct'],'heading'=>true,'attr'=>['type'=>'ledger','value'=>isset($val['parent'])?$val['parent']:'']],
+            'gl_default' => ['order'=>40,'col'=>2,'break'=>true,'label'=>lang('default'),   'attr'=>['type'=>'checkbox','checked'=>!empty($val['default'])?true:false]]];
         $data = ['type'=>'divHTML',
             'divs'    => [
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbGL'],
                 'formBOF'=> ['order'=>15,'type'=>'form',   'key' =>'frmGLEdit'],
-                'body'   => ['order'=>50,'type'=>'fields', 'keys'=>['gl_previous','gl_inactive','gl_account','gl_desc','gl_type','gl_header','gl_parent']], // removed 'gl_cur'
+                'body'   => ['order'=>50,'type'=>'fields', 'keys'=>array_keys($fields)],
                 'formEOF'=> ['order'=>95,'type'=>'html',   'html'=>"</form>"]],
             'toolbars'=> ['tbGL'=>['icons'=>[
                 "glSave"=> ['order'=>10,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"jq('#frmGLEdit').submit();"]],
@@ -156,13 +157,13 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
     public function save(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'admin', 3)) { return; }
-        $acct    = clean('gl_account', 'text', 'post'); // 1234
-        $inactive= clean('gl_inactive', 'boolean', 'post') ? true : false; // on
-        $previous= clean('gl_previous', 'text', 'post'); // TBD
-        $desc    = clean('gl_desc', 'text', 'post'); // asdf
-        $type    = clean('gl_type', 'integer', 'post'); // 8
-        $heading = clean('gl_header', 'boolean', 'post'); // on
-        $parent  = clean('gl_parent', 'text', 'post'); // 1150
+        $acct    = clean('gl_account', 'text',   'post'); // 1234
+        $inactive= clean('gl_inactive','boolean','post') ? true : false; // on
+        $previous= clean('gl_previous','text',   'post'); // TBD
+        $desc    = clean('gl_desc',    'text',   'post'); // asdf
+        $type    = clean('gl_type',    'integer','post'); // 8
+        $heading = clean('gl_header',  'boolean','post'); // on
+        $parent  = clean('gl_parent',  'text',   'post'); // 1150
         $isEdit  = $previous ? true : false;
         if (!$acct && !$isEdit)     { return msgAdd($this->lang['chart_save_01']); }
         if (!$desc)                 { return msgAdd($this->lang['chart_save_02']); }
@@ -308,11 +309,13 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         return ['id'   => $name,
             'attr'     => ['toolbar'=>"#{$name}Bar",'idField'=>'id','remoteFilter'=>false,'remoteSort'=>false,],
             'events'   => [//'data'=> "dgChartData",
-                'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accGL', 'dgChart', 'divGLDetail', '".lang('details')."', 'phreebooks/chart/edit', rowData.id); }"],
+                'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accGL', 'dgChart', 'divGLDetail', '".lang('details')."', 'phreebooks/chart/edit', rowData.id); }",
+                'rowStyler'    => "function(index, row) { if (row.default=='1') { return {class:'row-default'}; }}"],
             'source'   => ['actions'=>['newGL'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"accordionEdit('accGL', 'dgChart', 'divGLDetail', '".jsLang('details')."', 'phreebooks/chart/edit', 0);"]]]],
             'footnotes'=> ['codes'=>lang('color_codes').': <span class="row-inactive">'.lang('inactive').'</span>'],
             'columns'  => [
                 'inactive'=> ['order'=> 0,'attr'=>['hidden'=>true]],
+                'default' => ['order'=> 0,'attr'=>['hidden'=>true]],
                 'action'  => ['order'=> 1,'label'=>lang('action'),'events'=>['formatter'=>$name.'Formatter'],
                     'actions'    => ['glEdit' => ['order'=>30,'icon'=>'edit','events'=>['onClick'=>"accordionEdit('accGL', 'dgChart', 'divGLDetail', '".jsLang('details')."', 'phreebooks/chart/edit', idTBD);"]],
                         'glTrash'=> ['order'=>90,'icon'=>'trash','size'=>'small','hidden'=> $security>3?false:true,
@@ -336,14 +339,10 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
      */
     private function checkDefault($acct, $type, $currency=false)
     {
+        $default = clean('gl_default', 'boolean','post') ? true : false;
         if (empty($currency)) { $currency = getDefaultCurrency(); }
         $glDefaults = getModuleCache('phreebooks', 'chart', 'defaults');
-        $glAccounts = getModuleCache('phreebooks', 'chart', 'accounts');
-        if (empty($glDefaults[$currency][$type])) { // for some reason the default account has been cleared
-            $glDefaults[$currency][$type] = $acct;
-            setModuleCache('phreebooks', 'chart', 'defaults', $glDefaults);
-        }
-        if (empty($glAccounts["$acct"])) { // the default no longer exists, use this one
+        if ($default || empty($glDefaults[$currency][$type])) { // user set as default OR for some reason the default account has been cleared
             $glDefaults[$currency][$type] = $acct;
             setModuleCache('phreebooks', 'chart', 'defaults', $glDefaults);
         }

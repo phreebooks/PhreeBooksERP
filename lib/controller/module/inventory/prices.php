@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-21
+ * @version    3.x Last Update: 2020-03-19
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -267,7 +267,6 @@ class inventoryPrices
         $full  = clean('fullPrice',['format'=>'float','default'=>$inv['full_price']],'get');
         $prices= [];
         $this->quote($prices, $cost, $full, $sku, $cID);
-        if (empty($prices['content']['price'])) { $prices['content']['price'] = $full; } // no price sheets available
         $rows[]= ['group'=>lang('general'),'text'=>"<div style='float:right'>".viewFormat($prices['content']['price'], 'currency').'</div><div>'.lang('price')."</div>"];
         $rows[]= ['group'=>lang('general'),'text'=>"<div style='float:right'>".viewFormat($full, 'currency').'</div><div>'.lang('inventory_full_price')."</div>"];
         if (validateSecurity('phreebooks', 'j6_mgr', 1, false)) {
@@ -327,7 +326,7 @@ class inventoryPrices
         msgDebug("\nFinding pricing with qty = $qty and values = ".print_r($this->values, true));
         $this->prices = [];
         $this->pricesLevels($this->prices, $this->values);
-//      msgDebug("\nPrice return array = ".print_r($this->prices, true));
+      msgDebug("\nPrice return array = ".print_r($this->prices, true));
         $layout = array_replace_recursive($layout, ['source'=>$this->values, 'content'=>$this->prices]);
     }
 
@@ -377,7 +376,7 @@ class inventoryPrices
     }
 
     /**
-     * Check which sheet to =set as default based on priority, contact, sku, quantity
+     * Check which sheet to set as default based on priority, contact, sku, quantity
      * @param array $prices - working pricing structure
      * @param array $values - settings for the quote request
      * @return type

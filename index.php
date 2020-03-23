@@ -17,14 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-17
+ * @version    3.x Last Update: 2020-03-22
  * @filesource /index.php
  */
 
 namespace bizuno;
 
-define('MODULE_BIZUNO_VERSION','3.4.1');
-define('PHREEBOOKS_VERSION', '5.3.4.1'); // Version format 5.x.y.z (x.y.z is Bizuno version)
+define('MODULE_BIZUNO_VERSION','3.4.2');
+define('PHREEBOOKS_VERSION', '5.3.4.2'); // Version format 5.x.y.z (x.y.z is Bizuno version)
 
 ini_set('display_errors', true);
 //error_reporting(E_ALL);
@@ -66,7 +66,8 @@ define('PORTAL_DB_PREFIX', BIZUNO_DB_PREFIX); // Portal table prefix
 $GLOBALS['dbBizuno'] = $GLOBALS['dbPortal'] = ['type'=>'mysql','host'=>BIZUNO_DB_HOST,'name'=>BIZUNO_DB_NAME,'user'=>BIZUNO_DB_USER,'pass'=>BIZUNO_DB_PASS,'prefix'=>BIZUNO_DB_PREFIX];
 // Third Party Apps
 define('BIZUNO_3P_QZ_TRAY',BIZUNO_EXT ."extShipping/qz-tray/");
-define('BIZUNO_3P_TCPDF',  BIZUNO_ROOT.'apps/TCPDF/');
+//define('BIZUNO_3P_TCPDF',BIZUNO_ROOT.'apps/TCPDF/');
+define('BIZUNO_3P_PDF',    BIZUNO_ROOT.'apps/FPDF/');
 
 define('BIZUNO_DEBUG', false);
 

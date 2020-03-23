@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-16
+ * @version    3.x Last Update: 2020-03-23
  * @filesource lib/controller/functions.php
  */
 
@@ -29,7 +29,7 @@ if (!defined('BIZUNO_LOCALE')) { define('BIZUNO_LOCALE', BIZUNO_ROOT.'locale/');
 /**
  * Should eventually replace all calls to msgDebugWrite but need way to set file name first.
  */
-//function bizShutdown() { msgTrap(); msgDebugWrite(); }
+//function bizShutdown() { msgTrap (); msgDebugWrite(); }
 //register_shutdown_function("\\bizuno\\bizShutdown");
 
 /**
@@ -146,7 +146,7 @@ function myErrorHandler($errno, $errstr, $errfile, $errline)
 function myExceptionHandler($e)
 {
     global $msgStack;
-    msgTrap();
+    msgTrap ();
     msgDebug("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
     msgAdd("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
     msgDebugWrite();
