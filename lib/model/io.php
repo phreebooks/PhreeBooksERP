@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-17
+ * @version    3.x Last Update: 2020-03-26
  * @filesource /lib/model/io.php
  */
 
@@ -214,10 +214,14 @@ final class io
         if (strlen($data) < 1) { return; }
         if (!$append && $replace && file_exists($this->myFolder.$fn)) { $this->fileDelete($fn); }
         if (!$this->validatePath($fn, true)) { return $verbose ? msgAdd('Cannot write file, invalid path!') : false; }
-        if (!$handle = @fopen($this->myFolder.$fn, $append?'a':'w')) {
+//        header("Content-Type:text/html; charset=utf-8"); // make it UTF-8
+        if (!$handle = @fopen($this->myFolder.$fn, $append?'a':'wb')) {
+            flush();
             return $verbose ? msgAdd(sprintf(lang('err_io_file_open'), $fn)) : false;
         }
+//        if (false === @fwrite($handle, "\xEF\xBB\xBF".$data)) {
         if (false === @fwrite($handle, $data)) {
+            flush();
             return $verbose ? msgAdd(sprintf(lang('err_io_file_write'), $fn)) : false;
         }
         fclose($handle);
@@ -382,7 +386,6 @@ final class io
         $fp = fopen(BIZUNO_DATA.$local_file, 'r');
         if (!ftp_fput ($con, $remote_file, $fp, FTP_ASCII)) {
             return msgAdd("There was a problem while uploading $local_file through ftp to the remote server!");
-            $success = false;
         }
         ftp_close($con);
         fclose($fp);

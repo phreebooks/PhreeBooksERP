@@ -17,13 +17,15 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-18
+ * @version    3.x Last Update: 2020-01-06
  * @filesource /controller/module/phreeform/render.php
  */
 
 namespace bizuno;
 
 bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/functions.php", 'phreeformImport', 'function');
+require_once(BIZUNO_3P_PDF."config/bizuno_config.php");
+require_once(BIZUNO_3P_PDF."tcpdf.php");
 
 class phreeformRender
 {
@@ -462,7 +464,7 @@ class phreeformRender
 
     /**
      * Builds the database SQL statement, executes it and merges result with the report structure
-     * @global object $report - Report structure after merge ready for PDF render
+     * @global object $report - Report structure after merge ready for TCPDF render
      * @param object $report - Report structure void of result data, typically the raw report from the db
      * @param char $delivery_method - what to do with the result, D - download, S - serial
      * @return type
@@ -546,7 +548,7 @@ class phreeformRender
     }
 
     /**
-     * For forms only - PDF style using PDF
+     * For forms only - PDF style using TCPDF
      * @global object $report - report structure after database has been run and data has been added
      * @global array $currencies - will be extracted from the data to determine ISO code for formatting
      * @param object $report - report with modified data
@@ -669,7 +671,7 @@ class phreeformRender
                 $pdf->FormTable($StoredTable);
             }
             foreach ($report->fieldlist as $key => $field) {
-                // Set the totals (need to be on last printed page) - Handled in the Footer function in PDF
+                // Set the totals (need to be on last printed page) - Handled in the Footer function in TCPDF
                 if ($field->type == 'Ttl') {
                     if (!isset($field->settings->boxfield)) { return msgAdd($this->lang['err_pf_field_empty'].' '.$field->title); }
                     $report->fieldlist[$key]->settings->processing = isset($field->settings->processing) ? $field->settings->processing : '';
@@ -1136,7 +1138,7 @@ class phreeformRender
     private function getToAddress(&$output, $report)
     {
         if (!in_array($report->xfilterlist->fieldname, ['journal_main.id','contacts.id']) || $report->xfilterlist->default <> 'equal') { return; }
-        $mID = $report->xfilterlist->min;
+        $mID  = $report->xfilterlist->min;
         switch ($report->xfilterlist->fieldname) {
             default:
             case 'journal_main.id':
@@ -1153,7 +1155,8 @@ class phreeformRender
         }
         $xKeys= $xVals = [];
         foreach ($data as $key => $val) { $xKeys[] = "%$key%"; $xVals[] = $val; }
-        $sParts = !empty($report->filenamefield) ? explode('.', $report->filenamefield) : ['',''];
+        $sParts = !empty($report->filenamefield) ? explode('.', $report->filenamefield) : false;
+        if (empty($sParts[1])) { $sParts[1] = ''; }
         $title  = !empty($report->filenameprefix)? $report->filenameprefix: '';
         $title .= !empty($data[$sParts[1]])      ? $data[$sParts[1]]      : $report->title;
         $output['msgSubject']= sprintf($this->lang['phreeform_email_subject'], $title, getModuleCache('bizuno', 'settings', 'company', 'primary_name'));

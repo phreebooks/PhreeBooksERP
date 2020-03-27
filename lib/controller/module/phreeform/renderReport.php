@@ -1,6 +1,6 @@
 <?php
 /*
- * Renders a report in PDF format using the PDF application
+ * Renders a report in PDF format using the TCPDF application
  *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -17,17 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-22
+ * @version    3.x Last Update: 2019-01-14
  * @filesource /controller/module/phreeform/renderReport.php
  */
 
 namespace bizuno;
 
-//require_once(BIZUNO_3P_TCPDF."config/bizuno_config.php");
-//require_once(BIZUNO_3P_TCPDF."tcpdf.php");
-require_once(BIZUNO_3P_PDF."fpdf.php");
-
-class PDF extends \FPDF
+class PDF extends \TCPDF
 {
     public $moduleID = 'phreeform';
     var $y0; // current y position
@@ -41,7 +37,7 @@ class PDF extends \FPDF
         $this->defaultFont= getModuleCache('phreeform','settings','general','default_font','helvetica');
         $PaperSize        = explode(':', $report->page->size);
         parent::__construct($report->page->orientation, 'mm', strtoupper($PaperSize[0]), true, 'UTF-8', false);
-//        $this->SetCellPadding(0);
+        $this->SetCellPadding(0);
         $this->fontHeading= $report->heading->font== 'default' ? $this->defaultFont : $report->heading->font;
         $this->fontTitle1 = $report->title1->font == 'default' ? $this->defaultFont : $report->title1->font;
         $this->fontTitle2 = $report->title2->font == 'default' ? $this->defaultFont : $report->title2->font;
@@ -72,7 +68,6 @@ class PDF extends \FPDF
                 $this->align[]    = $value->align;
             }
         }
-        $this->AliasNbPages();
         $this->SetMargins($report->page->margin->left, $report->page->margin->top, $report->page->margin->right);
         $this->SetAutoPageBreak(0, $report->page->margin->bottom);
         $this->SetFont($this->fontHeading);
@@ -165,13 +160,12 @@ class PDF extends \FPDF
         $this->SetY(-12); //Position at 1.5 cm from bottom
         $this->SetFont($this->fontData, '', '8');
         $this->SetTextColor(0);
-//        $total_pages = \TCPDF::getAliasNbPages();
-//        $this->Cell(0, 10, lang('page').' '.$this->PageNo().' / '.$total_pages, 0, 0, 'C');
-        $this->Cell(0, 10, lang('page').' '.$this->PageNo().' / {nb}', 0, 0, 'C');
-    } //
+        $total_pages = \TCPDF::getAliasNbPages();
+        $this->Cell(0, 10, lang('page').' '.$this->PageNo().' / '.$total_pages, 0, 0, 'C');
+    }
 
     /**
-     * Generates and draws the report table to the PDF structure
+     * Generates and draws the report table to the TCPDF structure
      * @global object $report - Report structure
      * @param arary $Data - data to place in the report
      * @return null - Page data is added to the PDF file on the fly
@@ -258,9 +252,8 @@ class PDF extends \FPDF
                         $this->SetX($CellXPos[$col-1]);
                         $this->SetY($LastY);
                         // truncate data if necessary
-                        if ($trunc) { $value = $this->TruncData($value, $CellXPos[$col] - $CellXPos[$col-1]); }
-                        $txt = iconv('UTF-8', 'windows-1252', $value); // FPDF needs to convert to UTF-8
-                        $this->MultiCell($CellXPos[$col] - $CellXPos[$col-1], $CellHeight, $txt, 0, $this->align[$key]);
+                        if ($trunc) $value = $this->TruncData($value, $CellXPos[$col] - $CellXPos[$col-1]);
+                        $this->MultiCell($CellXPos[$col] - $CellXPos[$col-1], $CellHeight, $value, 0, $this->align[$key]);
                         if ($this->ColBreak[$key]) {
                             $col++;
                             $LastY = $this->y0;
