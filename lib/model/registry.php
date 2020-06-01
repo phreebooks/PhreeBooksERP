@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-31
+ * @version    4.x Last Update: 2020-05-05
  * @filesource /lib/model/registry.php
  */
 
@@ -79,6 +79,7 @@ final class bizRegistry
         if ($lang == 'en_US') { return $langCache; } // just english, we're done
         if (file_exists(BIZUNO_LOCALE."$lang/language.php")) {
             require(BIZUNO_LOCALE."$lang/language.php");  // pulls locale overlay
+            $langCore = array_merge($langCache, $langCore); // overlay ISO lang on top of working cache file
             include(BIZUNO_LIB   ."locale/en_US/langByRef.php"); // lang by reference (reset after loading translation)
             $otherLang = array_merge($langCore, $langByRef);
         } else { $otherLang = []; }

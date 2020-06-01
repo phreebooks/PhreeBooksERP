@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-15
+ * @version    4.x Last Update: 2020-05-12
  * @filesource /lib/controller/module/payment/main.php
  */
 
@@ -39,10 +39,16 @@ class paymentMain
      */
     public function render(&$layout=[])
     {
-        $jID  = clean('jID',  'integer','get');
-        $type = clean('type', 'char',   'get');
+        $jID   = clean('jID',  'integer','get');
+        $type  = clean('type', 'char',   'get');
         if (!$type) { $type = in_array($jID, [17, 20, 21]) ? 'v' : 'c'; }
-        $layout = array_replace_recursive($layout,['fields'=>['selMethod'=>['values'=>viewMethods('payment'),'events'=>['onChange'=>'selPayment(newVal);'],'attr'=>['type'=>'select']]]]);
+        $values= $temp = viewMethods('payment');
+        if (empty($layout['fields']['method_code']['attr']['value'])) {
+            $def = array_shift($temp);
+            $layout['fields']['method_code']['attr']['value'] = $def['id'];
+        }
+        $layout['fields']['selMethod'] = ['values'=>$values,'events'=>['onChange'=>'selPayment(newVal);'],
+            'attr'=>['type'=>'select','value'=>$layout['fields']['method_code']['attr']['value']]];
     }
 
     /**
@@ -53,38 +59,13 @@ class paymentMain
     public function manager(&$layout=[])
     {
         if (!$security = validateSecurity('contacts', 'mgr_c', 2)) { return; }
-        $rID = clean('rID', 'integer', 'get');
-        $js  = "function paymentNew() {\n  jq('#payment_id').val('');
-  bizTextSet('payment_name','');\n  bizTextSet('payment_num','');\n  bizSelSet('payment_mon','".date('m')."');
-  bizSelSet('payment_year','".date('Y')."');\n  bizTextSet('payment_cvv','');\n}\n";
+        $rID  = clean('rID', 'integer', 'get');
         $data = ['type'=>'divHTML',
-            'toolbars'=> ['tbPayment'=>['icons'=>[
-                    'pmtNew' => ['order'=>10,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"paymentNew();"]],
-                    'pmtSave'=> ['order'=>20,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"divSubmit('payment/main/save&rID=$rID', 'frmPayment');"]]]]],
-            'divs'    => [
-                'dgPayment'=> ['order'=>10,'type'=>'datagrid','key'=>'dgPayment'],
-                'body'     => ['order'=>20,'label'=>lang('payment_new'),'type'=>'divs','divs'=>[
-                    'formBOF'  => ['order'=>10, 'type'=>'html','html'=>'<div id="frmPayment" style="width:50%">'],
-                    'tbPayment'=> ['order'=>15,'type'=>'toolbar','key'=>'tbPayment'],
-                    'body'     => ['order'=>50,'type'=>'fields','label'=>lang('general'),'fields'=>$this->getViewMgr()],
-                    'formEOF'  => ['order'=>85, 'type'=>'html','html'=>'</div>']]]],
-            'jsHead'  => ['manager'=>$js],
-            'datagrid'=> ['dgPayment'=> $this->dgPayment('dgPayment', $rID, $security)]];
+            'divs' => ['manager'=>['order'=>50,'type'=>'accordion','id'=>'accPayment','divs'=>[
+                'divPmtMgr'   =>['order'=>30,'type'=>'datagrid','label'=>lang('payment_stored_cards'),'key' =>'dgPayment'],
+                'divPmtDetail'=>['order'=>70,'type'=>'html',    'label'=>lang('details'),             'html'=>'&nbsp;']]]],
+            'datagrid'=>['dgPayment'=>$this->dgPayment('dgPayment', $rID, $security)]];
         $layout = array_replace_recursive($layout, $data);
-    }
-
-    private function getViewMgr()
-    {
-        if (empty(getUserCache('profile', 'admin_encrypt'))) { return lang('err_encrypt_key_missing'); }
-        $cc_exp= pullExpDates();
-        $output = [
-            'payment_id'  => ['order'=>10,'attr'=>['type'=>'hidden']], // hidden
-            'payment_name'=> ['order'=>20,'break'=>true,'options'=>['width'=>200],'label'=>lang('payment_name')],
-            'payment_num' => ['order'=>30,'break'=>true,'options'=>['width'=>200],'label'=>lang('payment_number')],
-            'payment_mon' => ['order'=>40,'label'=>lang('payment_expiration'),'options'=>['width'=>150],'values'=>$cc_exp['months'],'attr'=>['type'=>'select','value'=>date('m')]],
-            'payment_year'=> ['order'=>50,'break'=>true,'options'=>['width'=>80],'values'=>$cc_exp['years'],'attr'=>['type'=>'select','value'=>date('Y')]],
-            'payment_cvv' => ['order'=>60,'options'=>['width'=>60],'label'=>lang('payment_cvv'),'attr'=>['type'=>'text','size'=>'4']]];
-        return $output;
     }
 
     /**
@@ -95,9 +76,9 @@ class paymentMain
     public function managerRows(&$layout=[])
     {
         if (!$security = validateSecurity('contacts', 'mgr_c', 1)) { return; }
-        $rID = clean('rID', 'integer', 'get');
-        $structure = $this->dgPayment('dgPayment', $rID, $security);
-        $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'dgPayment','datagrid'=>['dgPayment'=>$structure]]);
+        $rID   = clean('rID', 'integer', 'get');
+        $struc = $this->dgPayment('dgPayment', $rID, $security);
+        $layout= array_replace_recursive($layout, ['type'=>'datagrid','key'=>'dgPayment','datagrid'=>['dgPayment'=>$struc]]);
     }
 
     /**
@@ -108,20 +89,39 @@ class paymentMain
     public function edit(&$layout=[])
     {
         if (!$security = validateSecurity('contacts', 'mgr_c', 3)) { return; }
-        $rID = clean('rID', 'integer', 'get');
-        if (!$rID) { return msgAdd('The record was not found!'); }
+        if (empty(getUserCache('profile', 'admin_encrypt'))) { return lang('err_encrypt_key_missing'); }
+        $rID    = clean('rID', 'integer', 'get');
+        $cID    = clean('cID', 'integer', 'get');
+        $values = [];
+        if ($rID) { // edit
+            bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
+            $encrypt= new encryption();
+            if (!$encrypt->decryptCC($rID, $values)) { return false; } // update $values with stored data
+        }
+        if (empty($values)) { $values = ['name'=>'','number'=>'','month'=>date('m'),'year'=>date('Y'),'cvv'=>'']; }
+        $cc_exp = pullExpDates();
+        $fields = [
+            'payment_id'  => ['order'=>10,'attr' =>['type'=>'hidden','value'=>$rID]], // hidden
+            'payment_name'=> ['order'=>20,'label'=>lang('payment_name'),      'options'=>['width'=>200],'attr'=>['value'=>$values['name']]],
+            'payment_num' => ['order'=>30,'label'=>lang('payment_number'),    'options'=>['width'=>200],'attr'=>['value'=>$values['number']]],
+            'payment_mon' => ['order'=>40,'label'=>lang('payment_expiration'),'options'=>['width'=>150],'break'=>false,'values'=>$cc_exp['months'],'attr'=>['type'=>'select','value'=>$values['month']]],
+            'payment_year'=> ['order'=>50,'options'=>['width'=> 80],'values'=>$cc_exp['years'],'attr'=>['type'=>'select','value'=>$values['year']]],
+            'payment_cvv' => ['order'=>60,'label'=>lang('payment_cvv'),       'options'=>['width'=> 60],'attr'=>['size'=>'4','value'=>$values['cvv']]]];
+        $data = ['type'=>'divHTML',
+            'toolbars'=> [
+                'tbPayment'=> ['icons' => [
+                    'savePmt'=> ['order'=>10,'icon'=>'save', 'label'=>lang('save'), 'hidden'=>$security >1?false:true,'events'=>['onClick'=>"divSubmit('payment/main/save&rID=$cID', 'divPayment');"]],
+                    'newPmt' => ['order'=>20,'icon'=>'new',  'label'=>lang('new'),  'hidden'=>$security >1?false:true,'events'=>['onClick'=>"accordionEdit('accPayment', 'dgPayment', 'divPmtDetail', '".lang('details')."', 'payment/main/edit&cID=$cID', 0);"]],
+                    'delPmt' => ['order'=>80,'icon'=>'trash','label'=>lang('trash'),'hidden'=>$rID && $security>3?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('payment/main/delete', $rID, 'edit');"]]]]],
+            'divs'    => [
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbPayment'],
+                'body'   => ['order'=>50,'type'=>'divs','attr'=>['id'=>'divPayment'],'classes'=>['areaView'],'divs'=>[
+                    'ccInfo' => ['order'=>30,'type'=>'panel','key'=>'ccInfo','classes'=>['block33']]]]],
+            'panels'  => [
+                'ccInfo' => ['label'=>lang('card_info'), 'type'=>'fields', 'keys'=>array_keys($fields)]],
+            'fields'  => $fields];
         msgLog(lang('payment')." ".lang('edit')." ($rID)");
-        bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
-        $encrypt= new encryption();
-        $fields = [];
-        if (!$encrypt->decryptCC($rID, $fields)) { return false; } // update $fields with stored data
-        $respTasks = "jq('#payment_id').val('".$rID."');"
-            ."bizTextSet('payment_name', '".$fields['name']  ."');"
-            ."bizTextSet('payment_num', '" .$fields['number']."');"
-            ."bizSelSet ('payment_mon', '" .$fields['month'] ."');"
-            ."bizSelSet ('payment_year', '".$fields['year']  ."');"
-            ."bizTextSet('payment_cvv', '" .$fields['cvv']   ."');";
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 'actionData'=>$respTasks]]);
+        $layout = array_replace_recursive($layout, $data);
     }
 
     /**
@@ -131,22 +131,26 @@ class paymentMain
      */
     public function save(&$layout=[])
     {
-        $rID  = clean('rID',         'integer','get');
-        $pID  = clean('payment_id',  'integer','post');
-        $name = clean('payment_name','text',   'post');
-        $nmbr = clean('payment_num', 'numeric','post');
+        $rID    = clean('rID',         'integer','get'); // contact ID
+        $pID    = clean('payment_id',  'integer','post');
+        $name   = clean('payment_name','text',   'post');
+        $nmbr   = clean('payment_num', 'numeric','post');
         if (!$security = validateSecurity('contacts', 'mgr_c', 2)) { return; }
-        if (!$rID || !$name || !$nmbr) { return msgAdd('Please make sure all fields are filled out!');; } // allow for save contact if no payment data
+        if (!$rID || !$name || !$nmbr) { return msgAdd('Please make sure all fields are filled out!'); } // allow for save contact if no payment data
         $fields = ['id'=>$pID, 'name'=>$name, 'module'=>'contacts', 'ref_1'=>$rID,
             'number'=>str_replace(' ', '', $nmbr),            'month'=>clean('payment_mon', 'integer','post'),
             'year'  =>clean('payment_year','integer','post'), 'cvv'  =>clean('payment_cvv', 'integer','post')]; // record in contacts table
         msgDebug("\nWorking with payment fields: ".print_r($fields, true));
         bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
-        $encrypt = new encryption();
-        $encrypt->encryptCC($fields);
-        msgAdd(lang('msg_record_saved'), 'success');
-        msgLog(lang('payment')." ".lang('save')." (rID=$rID and pID=$pID)");
-        $data = ['content' =>['action'=>'eval', 'actionData'=>"paymentNew(); jq('#dgPayment').datagrid('reload');"]];
+        $encrypt= new encryption();
+        $hint   = $encrypt->encryptCC($fields);
+        $action = '';
+        if (!empty($hint)) {
+            msgAdd(lang('msg_record_saved'), 'success');
+            msgLog(lang('payment')." ".lang('save')." (rID=$rID and pID=$pID)");
+            $action =  "jq('#accPayment').accordion('select', 0); bizGridReload('dgPayment'); jq('#divPmtDetail').html('&nbsp;');";
+        }
+        $data   = ['content' =>['action'=>'eval', 'actionData'=>$action]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -158,20 +162,20 @@ class paymentMain
     public function delete(&$layout=[])
     {
         if (!$security = validateSecurity('contacts', 'mgr_c', 4)) { return; }
-        $rID = clean('rID', 'integer', 'get');
+        $rID   = clean('rID', 'integer', 'get'); // payment ID
         if (!$rID) { return msgAdd('The record was not deleted, the proper id was not passed!'); }
         msgLog(lang('payment')." ".lang('delete')." ($rID)");
-        $data = ['content' =>['action'=>'eval', 'actionData'=>"jq('#dgPayment').datagrid('reload');"],
+        $data  = ['content' =>['action'=>'eval','actionData'=>"jq('#accPayment').accordion('select', 0); bizGridReload('dgPayment'); jq('#divPmtDetail').html('&nbsp;');"],
                  'dbAction'=>[BIZUNO_DB_PREFIX."data_security" => "DELETE FROM ".BIZUNO_DB_PREFIX."data_security WHERE id=$rID"]];
-        $layout = array_replace_recursive($layout, $data);
+        $layout= array_replace_recursive($layout, $data);
     }
 
     /**
-     * Datagrid structure for the payments stored for a specific customer
+     * Grid structure for the payments stored for a specific customer
      * @param string $name - DOM field name
      * @param integer $rID - Contact database record id
      * @param integer $security - users security
-     * @return structure for payment datagrid
+     * @return structure for payment grid
      */
     private function dgPayment($name, $rID=0, $security=0)
     {
@@ -180,9 +184,14 @@ class paymentMain
         $sort = clean('sort', ['format'=>'text',   'default'=>'exp_date'],'post');
         $order= clean('order',['format'=>'text',   'default'=>''],        'post');
         $data = ['id'=>$name, 'rows'=>$rows, 'page'=>$page,
-            'attr'   =>['idField'=>'id', 'url'=>BIZUNO_AJAX."&p=payment/main/managerRows&rID=$rID"],
+            'attr'   =>['idField'=>'id', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&p=payment/main/managerRows&rID=$rID"],
+            'events' => [
+                'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accPayment', '$name', 'divPmtDetail', '".jsLang('details')."', 'payment/main/edit&cID=$rID', rowData.id); }"],
             'source' => [
                 'tables' => ['data_security'=>['table'=>BIZUNO_DB_PREFIX."data_security"]],
+                'actions' => [
+                    'newPayment'=>['order'=>10,'icon'=>'new', 'events'=>['onClick'=>"accordionEdit('accPayment', '$name', 'divPmtDetail', '".lang('details')."', 'payment/main/edit&cID=$rID', 0, '');"]],
+                    'help'      =>['order'=>99,'icon'=>'help','label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>'']],
                 'filters'=> [
                     'module'=>['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."data_security.module='contacts'"],
                     'rID'   =>['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."data_security.ref_1=$rID"]],
@@ -192,7 +201,7 @@ class paymentMain
                 'action'   => ['order'=>1,'label'=>'','events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> [
                         'pmtEdit' => ['order'=>20,'icon'=>'edit', 'label'=>lang('edit'),  'hidden'=>$security>2?false:true,
-                            'events'=>['onClick'=>"jsonAction('payment/main/edit', idTBD);"]],
+                            'events'=>['onClick'=>"jsonAction('payment/main/edit&cID=$rID', idTBD);"]],
                         'pmtTrash'=> ['order'=>50,'icon'=>'trash','label'=>lang('delete'),'hidden'=>$security>3?false:true,
                             'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('payment/main/delete', idTBD);"]]]],
                 'enc_value'=> ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."data_security.enc_value",'format'=>'encryptName',
@@ -256,7 +265,7 @@ class paymentMain
         if (!empty($fields['code'])) { $desc['code'] = $fields['code']; }
         $output = [];
         foreach ($desc as $key => $value) { $output[] = "$key:$value"; }
-        $fields = ['description'=>implode(';', $output), 'trans_code'=>$result['txID']];
+        $fields = ['description'=>implode(';', $output), 'trans_code'=>!empty($result['txID']) ? $result['txID'] : ''];
         dbWrite(BIZUNO_DB_PREFIX."journal_item", $fields, 'update', "id={$iID['id']}");
         return $result;
     }

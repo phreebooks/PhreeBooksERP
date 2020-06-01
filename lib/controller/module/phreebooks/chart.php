@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-18
+ * @version    4.x Last Update: 2020-05-27
  * @filesource /lib/controller/module/phreebooks/chart.php
  */
 
@@ -43,6 +43,14 @@ class phreebooksChart
     {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
         $coa_blocked = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'id') ? true : false;
+        $charts = [];
+        $fields = [
+            'sel_coa'     => ['values'=>$charts,'attr'=>['type'=>'select','size'=>10]],
+            'file_coa'    => ['label'=>$this->lang['coa_upload_file'], 'attr'=>['type'=>'file']],
+            'btn_coa_pre' => ['icon'=>'preview','size'=>'large','events'=>['onClick'=>"winOpen('popupGL', 'phreebooks/chart/preview&chart='+bizSelGet('sel_coa'), 800, 600);"]],
+            'btn_coa_imp' => ['icon'=>'import', 'size'=>'large','events'=>['onClick'=>"if (confirm('".$this->lang['msg_gl_replace_confirm']."')) jsonAction('phreebooks/chart/import', 0, bizSelGet('sel_coa'));"]],
+            'btn_coa_upl' => ['attr'=>['type'=>'button', 'value'=>$this->lang['btn_coa_upload']], 'events'=>['onClick'=>"if (confirm('".$this->lang['msg_gl_replace_confirm']."')) jq('#frmGlUpload').submit();"]]];
+        if (!$coa_blocked) { $fields['sel_coa']['values'] = localeLoadCharts(); }
         $jsHead = "var dgChartData = jq.extend(true, {}, bizDefaults.glAccounts);
 function chartRefresh() {
     jq('#accGL').accordion('select', 0);
@@ -53,39 +61,25 @@ function chartRefresh() {
             'accordion'=> ['accGL'=>['divs'=>[
                 'divGLManager'=> ['order'=>30,'label'=>lang('phreebooks_chart_of_accts'),'type'=>'divs','divs'=>[
                     'selCOA'  => ['order'=>10,'label'=>$this->lang['coa_import_title'],  'type'=>'divs','divs'=>[
-                        'desc'   => ['order'=>10,'type'=>'html',  'html'  =>"<p>".$this->lang['coa_import_desc']."</p>"],
-                        'formBOF'=> ['order'=>15,'type'=>'form',  'key'   =>'frmGlUpload'],
-                        'body'   => ['order'=>50,'type'=>'fields','fields'=>$this->getViewMgr($coa_blocked)],
-                        'formEOF'=> ['order'=>95,'type'=>'html',  'html'  =>"</form>"]]],
-                    'dgChart' => ['order'=>50,'type'=>'datagrid', 'key'   =>'dgChart']]],
+                        'desc'   => ['order'=>10,'type'=>'html',  'html'=>"<p>".$this->lang['coa_import_desc']."</p>"],
+                        'formBOF'=> ['order'=>15,'type'=>'form',  'key' =>'frmGlUpload'],
+                        'body'   => ['order'=>50,'type'=>'fields','keys'=>array_keys($fields)],
+                        'formEOF'=> ['order'=>95,'type'=>'html',  'html'=>"</form>"]]],
+                    'dgChart' => ['order'=>50,'type'=>'datagrid', 'key' =>'dgChart']]],
                 'divGLDetail' => ['order'=>70,'label'=>lang('details'),'type'=>'html','html'=>'']]]],
             'forms'    => ['frmGlUpload'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/chart/upload"]]],
             'datagrid' => ['dgChart'=>$this->dgChart('dgChart', $security)],
+            'fields'   => $fields,
             'jsHead'   => ['chart' => $jsHead], // clone object
             'jsReady'  => ['init'=>"jq('#dgChart').datagrid({data:dgChartData}).datagrid('clientPaging');", 'selCOA'=> !$coa_blocked ? "ajaxForm('frmGlUpload');" : '']];
         if ($coa_blocked) {
-            $data['accordion']['accGL']['divs']['divGLManager']['divs']['selCOA'] = ['order'=>10,'label'=>$this->lang['coa_import_title'],'type'=>'html',
-                'html'=>"<fieldset><legend>".$this->lang['coa_import_title']."</legend><p>".$this->lang['coa_import_blocked']."</p></fieldset>\n"];
+            $data['accordion']['accGL']['divs']['divGLManager']['divs']['selCOA'] = ['order'=>10,'type'=>'html','html'=>"<p>".$this->lang['coa_import_blocked']."</p>"];
         }
         $layout = array_replace_recursive($layout, $data);
     }
 
     private function getViewMgr($coa_blocked)
     {
-        $charts = [];
-        $sel_coa     = ['values'=>$charts,'attr'=>['type'=>'select','size'=>10]];
-        $file_coa    = ['label'=>$this->lang['coa_upload_file'], 'attr'=>['type'=>'file']];
-        $btn_coa_pre = ['icon'=>'preview','size'=>'large', 'events'=>['onClick'=>"winOpen('popupGL', 'phreebooks/chart/preview&chart='+jq('#sel_coa').val(), 800, 600);"]];
-        $btn_coa_imp = ['icon'=>'import', 'size'=>'large', 'events'=>['onClick'=>"if (confirm('".$this->lang['msg_gl_replace_confirm']."')) jsonAction('phreebooks/chart/import', 0, jq('#sel_coa').val());"]];
-        $btn_coa_upl = ['attr'=>['type'=>'button', 'value'=>$this->lang['btn_coa_upload']], 'events'=>['onClick'=>"if (confirm('".$this->lang['msg_gl_replace_confirm']."')) jq('#frmGlUpload').submit();"]];
-        // Check if import chart is available
-        $output = [
-            'sel_coa'    => array_merge($sel_coa,    ['col'=>1,'break'=>true]),
-            'btn_coa_pre'=> array_merge($btn_coa_pre,['col'=>1]),
-            'btn_coa_imp'=> array_merge($btn_coa_imp,['col'=>1,'break'=>true]),
-            'file_coa'   => array_merge($file_coa,   ['col'=>1]),
-            'btn_coa_upl'=> array_merge($btn_coa_upl,['col'=>1,'break'=>true])];
-        if (!$coa_blocked) { $output['sel_coa']['values'] = localeLoadCharts(); }
         return $output;
     }
 
@@ -307,7 +301,7 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
     private function dgChart($name, $security=0)
     {
         return ['id'   => $name,
-            'attr'     => ['toolbar'=>"#{$name}Bar",'idField'=>'id','remoteFilter'=>false,'remoteSort'=>false,],
+            'attr'     => ['toolbar'=>"#{$name}Bar",'idField'=>'id','remoteFilter'=>false,'remoteSort'=>false],
             'events'   => [//'data'=> "dgChartData",
                 'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accGL', 'dgChart', 'divGLDetail', '".lang('details')."', 'phreebooks/chart/edit', rowData.id); }",
                 'rowStyler'    => "function(index, row) { if (row.default=='1') { return {class:'row-default'}; }}"],

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-27
+ * @version    4.x Last Update: 2020-04-05
  * @filesource /lib/controller/module/bizuno/fields.php
  */
 
@@ -436,7 +436,7 @@ class bizunoFields
         dbGetResult($sql);
         msgAdd(lang('extra_fields')." (".($old_field?lang('update'):lang('add')).") ".lang('msg_database_write'), 'success');
         msgLog(lang('extra_fields')." (".($old_field?lang('update'):lang('add')).") $table.$new_field");
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accFields').accordion('select', 0); jq('#dgFields').datagrid('reload'); jq('#detail').html('&nbsp;');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accFields').accordion('select', 0); bizGridReload('dgFields'); jq('#detail').html('&nbsp;');"]]);
     }
 
     /**
@@ -452,18 +452,18 @@ class bizunoFields
         if (!$table || !$field) { return msgAdd("Table and/of field information missing!"); }
         if ($field) {
             msgLog(lang('extra_tabs')." (".lang('delete').") $table.$field");
-            $layout = array_replace_recursive($layout, ['content' => ['action'=>'eval','actionData'=>"jq('#dgFields').datagrid('reload');"],
+            $layout = array_replace_recursive($layout, ['content' => ['action'=>'eval','actionData'=>"bizGridReload('dgFields');"],
                 'dbAction'=> [BIZUNO_DB_PREFIX.'TBD' => "ALTER TABLE `".BIZUNO_DB_PREFIX."$table` DROP COLUMN `$field`"]]);
         }
     }
 
     /**
-     * Datagrid structure for listing and retrieving custom fields
-     * @param string $name - datagrid name
+     * Grid structure for listing and retrieving custom fields
+     * @param string $name - grid name
      * @param string $module - module name
      * @param string $table - database table name to add/delete fields
      * @param integer $security - user security settings
-     * @return array - structure of datagrid
+     * @return array - structure of grid
      */
     private function dgFields($name, $module, $table, $security=0)
     {

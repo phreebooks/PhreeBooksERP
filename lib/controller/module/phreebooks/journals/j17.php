@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-27
+ * @version    4.x Last Update: 2020-04-15
  * @filesource /lib/controller/module/phreebooks/journals/j17.php
  */
 
@@ -56,7 +56,6 @@ class j17 extends jCommon
             'purch_order_id','invoice_num','waiting','closed','terms_text','post_date','rep_id','currency','currency_rate'];
         $fldAddr = ['contact_id','address_id','primary_name','contact','address1','address2','city','state','postal_code','country','telephone1','email'];
         $data['fields']['currency']['callback'] = 'totalsCurrency';
-        unset($data['divs']['divAttach']);
         $data['payments'] = getModuleCache('payment', 'methods');
         if (!empty($data['bulk']) || !empty($data['fields']['contact_id_b']['attr']['value'])) {
             $data['fields']['purch_order_id']['attr']['type']= 'hidden';
@@ -84,14 +83,19 @@ class j17 extends jCommon
             } else {
                 $data['fields']['closed']= ['attr'=>  ['type'=>'hidden', 'value'=>'0']];
             }
-            $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-                'billAD'  => ['order'=>20,'label'=>lang('bill_to'),'type'=>'address','classes'=>['blockView'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
-                    'settings'=>['suffix'=>'_b','clear'=>false,'props'=>false,'required'=>true,'store'=>false,'cols'=>false]],
-                'props'   => ['order'=>40,'label'=>lang('details'),'type'=>'fields', 'classes'=>['blockView'],'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
-                'totals'  => ['order'=>50,'label'=>lang('totals'), 'type'=>'totals', 'classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']],
-                'payments'=> ['order'=>60,'label'=>lang('bill_to'),'type'=>'payment','classes'=>['blockView'],'settings'=>['items'=>$this->items]]]];
-            $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
-            $data['jsHead']['preSubmit'] = "function preSubmit() {
+            $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs',   'classes'=>['areaView'],'divs'=>[
+                'billAD'  => ['order'=>10,'type'=>'panel','key'=>'billAD',  'classes'=>['blockView']],
+                'props'   => ['order'=>20,'type'=>'panel','key'=>'props',   'classes'=>['block25']],
+                'totals'  => ['order'=>30,'type'=>'panel','key'=>'totals',  'classes'=>['blockViewR']],
+                'payments'=> ['order'=>40,'type'=>'panel','key'=>'payments','classes'=>['blockView']],
+                'dgItems' => ['order'=>50,'type'=>'panel','key'=>'dgItems', 'classes'=>['block99']]]];
+            $data['panels']['billAD']  = ['label'=>lang('bill_to'),'type'=>'address','attr'    =>['id'=>'address_b'],'fields'=>$fldAddr,
+                'settings'=>['suffix'=>'_b','clear'=>false,'props'=>false,'required'=>true,'store'=>false,'cols'=>false]];
+            $data['panels']['props']   = ['label'=>lang('details'),'type'=>'fields', 'keys'    =>$fldKeys];
+            $data['panels']['totals']  = ['label'=>lang('totals'), 'type'=>'totals', 'content' =>$data['totals']];
+            $data['panels']['payments']= ['label'=>lang('bill_to'),'type'=>'payment','settings'=>['items'=>$this->items]];
+            $data['panels']['dgItems'] = ['type'=>'datagrid','key'=>'item'];
+            $data['jsHead']['preSubmit']= "function preSubmit() {
     var items = new Array();
     var dgData = jq('#dgJournalItem').datagrid('getData');
     for (var i=0; i<dgData.rows.length; i++) if (dgData.rows[i]['checked']) items.push(dgData.rows[i]);

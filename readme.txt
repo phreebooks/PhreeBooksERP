@@ -47,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.4.0.1 =
+2020-06-01 - Incorporate Bizuno Library 4.0.1. Blocks view structure for easier mobile viewing.
 = 5.3.4.4 =
 2020-03-27 - Incorporate Bizuno Library 3.4.4. Regressed back to TCPDF (no longer supported) until a better solution can be found. FPDF does not have the features.
 = 5.3.4.2 =

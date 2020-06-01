@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-05
+ * @version    4.x Last Update: 2019-09-05
  * @filesource /controller/module/phreeform/design.php
  */
 
@@ -373,8 +373,8 @@ function pfTableUpdate() {
             'breakfield'    => ['break'=>true,'label'=>lang('phreeform_field_break'),'attr'=>['maxlength'=>64]],
             'users'         => ['break'=>true,'label'=>lang('users'),'options'=>['multiple'=>'true'],'values'=>listUsers(),'attr'=>['type'=>'select','name'=>'users[]']],
             'roles'         => ['break'=>true,'label'=>lang('roles'),'options'=>['multiple'=>'true'],'values'=>listRoles(),'attr'=>['type'=>'select','name'=>'roles[]']],
-            'pagesize'      => ['break'=>true,'label'=>$this->lang['phreeform_paper_size'],   'options'=>['width'=>150],'values'=>phreeformPages($this->lang),      'attr'=>['type'=>'select',  'value'=>(isset($report->page->size)          ?$report->page->size           :'LETTER:216:279')]],
-            'pageorient'    => ['break'=>true,'label'=>$this->lang['phreeform_orientation'],  'options'=>['width'=>100],'values'=>phreeformOrientation($this->lang),'attr'=>['type'=>'select',  'value'=>(isset($report->page->orientation)   ?$report->page->orientation    :'P')]],
+            'pagesize'      => ['break'=>true,'label'=>$this->lang['phreeform_paper_size'],   'options'=>['width'=>150],'values'=>phreeformPages($this->lang),      'attr'=>['type'=>'select',  'value'=>(isset($report->page->size)          ?$report->page->size       :'LETTER:216:279')]],
+            'pageorient'    => ['break'=>true,'label'=>$this->lang['phreeform_orientation'],  'options'=>['width'=>100],'values'=>phreeformOrientation($this->lang),'attr'=>['type'=>'select',  'value'=>(isset($report->page->orientation)   ?$report->page->orientation:'P')]],
             'margintop'     => ['label'=>$this->lang['phreeform_margin_top'],   'options'=>['width'=>50],'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->top)   ?$report->page->margin->top    :'8')]],
             'marginbottom'  => ['label'=>$this->lang['phreeform_margin_bottom'],'options'=>['width'=>50],'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->bottom)?$report->page->margin->bottom :'8')]],
             'marginleft'    => ['label'=>$this->lang['phreeform_margin_left'],  'options'=>['width'=>50],'styles'=>['text-align'=>'right'],'attr'=>['size'=>'4','maxlength'=>'3','value'=>(isset($report->page->margin->left)  ?$report->page->margin->left   :'8')]],

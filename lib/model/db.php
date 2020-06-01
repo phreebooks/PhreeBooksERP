@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-19
+ * @version    4.x Last Update: 2020-05-05
  * @filesource /lib/model/db.php
  */
 
@@ -108,7 +108,9 @@ class db extends \PDO
         msgDebug("\nFinished executing action $action for SQL (in $query_time ms): $sql returning result: $msgResult");
         if ($error) {
             msgDebug("\nSQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true), 'trap');
-            if ($verbose) { msgAdd("SQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true)); }
+            if ($verbose || 'phreesoft' <> BIZUNO_HOST) {
+                msgAdd("SQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true));
+            }
         }
         return $output;
     }
@@ -357,7 +359,9 @@ function dbWriteCache($usrEmail=false, $lang=false)
     // save the users new cache
     if (isset($GLOBALS['updateUserCache']) && $GLOBALS['updateUserCache']) {
         msgDebug("\nWriting user table");
-        dbWrite(BIZUNO_DB_PREFIX.'users', ['settings'=>json_encode($bizunoUser),'cache_date'=>date('Y-m-d H:i:s')], 'update', "email='$usrEmail'");
+        unset($bizunoUser['profile']['cache_date']); // clean up some unneeded fields
+        $data = ['settings'=>json_encode($bizunoUser), 'cache_date'=>!empty($GLOBALS['dbClearCache']) ? 'null' : date('Y-m-d H:i:s')];
+        dbWrite(BIZUNO_DB_PREFIX.'users', $data, 'update', "email='$usrEmail'");
         unset($GLOBALS['updateUserCache']);
     }
     if (isset($GLOBALS['updateModuleCache'])) {
@@ -391,10 +395,9 @@ function dbWriteLang($lang=[], $iso='')
  * Clears the users cache by making it 'expired' for an individual user (if passed) or all users if not
  * @param string $email - users email address
  */
-function dbClearCache($email='')
+function dbClearCache()
 {
-    $crit = $email ? "email='$email'" : '';
-    dbWrite(BIZUNO_DB_PREFIX.'users', ['cache_date'=>'null'], 'update', $crit);
+    $GLOBALS['dbClearCache'] = true;
 }
 
 /**

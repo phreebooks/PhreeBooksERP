@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    4.x Last Update: 2020-04-13
  * @filesource /lib/controller/module/bizuno/tools.php
  */
 
@@ -176,7 +176,6 @@ class bizunoTools {
         $data = ['title'=> $title,
             'toolbars' =>['tbImpExp'=>['icons'=>['help'=>['order'=>99,'icon'=>'help','label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>'importing-exporting']]]],
             'divs' => [
-                'submenu'=> ['order'=>10,'type'=>'html',   'html'=>viewSubMenu('tools')],
                 'toolbar'=> ['order'=>20,'type'=>'toolbar','key' =>'tbImpExp'],
                 'heading'=> ['order'=>30,'type'=>'html',   'html'=>"<h1>$title</h1>\n"],
                 'biz_io' => ['order'=>60,'type'=>'tabs',   'key' =>'tabImpExp']],

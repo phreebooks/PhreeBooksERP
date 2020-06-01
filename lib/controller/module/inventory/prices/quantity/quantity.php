@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-19
+ * @version    4.x Last Update: 2020-05-27
  * @filesource /lib/controller/module/inventory/prices/quantity.php
  */
 
@@ -56,6 +56,14 @@ class quantity extends inventoryPrices
     {
         $prices = isset($settings['attr']) ? $settings['attr'] : '';
         $layout['values']['prices'] = $this->getPrices($prices);
+        $defAttr= ['break'=>true,'label'=>lang('default'),'attr'=>['type'=>'selNoYes']];
+        if (!empty($settings['default'])) { $defAttr['attr']['checked'] = true; }
+        $layout['fields']['id'      .$this->code] = $layout['fields']['id']; // hidden
+        $layout['fields']['item'    .$this->code] = ['attr'=>['type'=>'hidden']];
+        $layout['fields']['title'   .$this->code] = ['order'=>10,'label'=>lang('title'),'break'=>true,'attr'=>['value'=>$settings['title']]];
+        $layout['fields']['default' .$this->code] = $defAttr;
+        $layout['fields']['currency'.$this->code] = array_merge($layout['fields']['currency'],['order'=>70,'break'=>true]);
+        $keys = ['id'.$this->code,'item'.$this->code,'contact_id'.$this->code,'inventory_id'.$this->code,'ref_id'.$this->code,'currency'.$this->code];
         $jsHead = "
 var dgPricesSetData = ".json_encode($layout['values']['prices']).";
 var qtySource = "      .json_encode(viewKeyDropdown($layout['values']['qtySource'])).";
@@ -69,24 +77,12 @@ function preSubmitPrices() {
     return true;
 }";
         $layout['divs']['divPrices'] = ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
-            'byCBody' => ['order'=>20,'type'=>'fields','label'=>$this->lang['title'],'fields'=>$this->getView($layout['fields'], $settings)],
+            'byCBody' => ['order'=>20,'type'=>'fields','label'=>$this->lang['title'],'keys'=>$keys],
             'byCdg'   => ['order'=>50,'type'=>'datagrid','key'=>'dgPricesSet']]];
         $layout['jsHead'][$this->code] = $jsHead;
         $layout['datagrid']['dgPricesSet'] = $this->dgQuantity('dgPricesSet');
         $layout['datagrid']['dgPricesSet']['columns']['price']['attr']['hidden']  = false;
         $layout['datagrid']['dgPricesSet']['columns']['margin']['attr']['hidden'] = false;
-    }
-
-    private function getView($structure, $settings)
-    {
-        $defAttr= ['break'=>true,'label'=>lang('default'),'attr'=>['type'=>'selNoYes']];
-        if (!empty($settings['default'])) { $defAttr['attr']['checked'] = true; }
-        return [
-            'id'      .$this->code => $structure['id'], // hidden
-            'item'    .$this->code => ['attr'=>['type'=>'hidden']],
-            'title'   .$this->code => ['order'=>10,'label'=>lang('title'),'break'=>true,'attr'=>['value'=>$settings['title']]],
-            'default' .$this->code => $defAttr,
-            'currency'.$this->code => array_merge($structure['currency'],['order'=>70,'break'=>true])];
     }
 
     /**

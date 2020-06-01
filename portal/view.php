@@ -94,19 +94,24 @@ class portalView
         $bizSearch= '<div style="text-align:center;padding-top:5px"><input class="easyui-searchbox" data-options="prompt:\''.lang('search').'\'" style="width:300px;text-align:center"></div>';
         if ($region == 'left') { $bizSearch= str_replace('padding-top:5px', 'padding-top:15px', $bizSearch); }
         if (!biz_validate_user()) { $bizSearch = ''; }
-        $divHome   = '<div style="float:left;cursor:pointer">'.html5('imgFooter', $htmlLogo).'</div>';
-        $footer    = '<div style="font-size:9px;float:right">'.$company."</div>\n";
-        $data = ['type'=>'page', 'divs'=>[
+        $divHome  = '<div style="float:left;cursor:pointer">'.html5('imgFooter', $htmlLogo).'</div>';
+        $footer   = '<div style="font-size:9px;float:right">'.$company."</div>\n";
+        $data     = ['type'=>'page', 'divs'=>[
             'qlinks'  => ['order'=> 1,'type'=>'menu','region'=>'top','size'=>'large','classes'=>['menuHide'],'styles'=>['float'=>'right','display'=>'none'],'data'=>getUserCache('quickBar')],
             'imgHome' => ['order'=> 2,'type'=>'html','region'=>'top','html'=>$divHome],
 //          'bizsrch' => ['order'=>50,'type'=>'html','region'=>'top','html'=>$bizSearch],
             'menu'    => ['order'=> 5,'type'=>'menu','region'=>$region,'classes'=>['menuHide'],'styles'=>['display'=>'none'],'data'=>getUserCache('menuBar'),'attr'=>['id'=>'rootMenu']],
             'footer'  => ['order'=>99,'type'=>'divs','region'=>'bottom','id'=>'bizFooter','divs'=>[
-                'sTag' => ['order'=> 1,'type'=>'html','html'=>"<!-- Footer -->\n<footer>"],
-                'stats'=> ['order'=>50,'type'=>'html','html'=>$footer],
-                'eTag' => ['order'=>99,'type'=>'html','html'=>"</footer>"]]]],
+                'sTag'  => ['order'=> 1,'type'=>'html','html'=>"<!-- Footer -->\n<footer>"],
+                'stats' => ['order'=>50,'type'=>'html','html'=>$footer],
+                'eTag'  => ['order'=>99,'type'=>'html','html'=>"</footer>"]]]],
             'jsReady' => ['initPage'=>"jq('.menuHide').css('display', 'inline-block'); bizMenuResize();"],
             'jsResize'=>['rootMenu'=>" bizMenuResize();"]];
+        $menuID  = clean('menuID', 'cmd', 'get');
+        if (!empty($menuID) && $menuID<>'home') {
+            $height = !empty($menuID) && $menuID<>'home' ? 96 : 32;
+            $data['divs']['subMenu'] = ['order'=> 6,'type'=>'menu','region'=>'top','height'=>$height,'classes'=>['menuHide'],'styles'=>['display'=>'none','clear'=>'both'],'data'=>viewSubMenu(),'attr'=>['id'=>'bizSubMenu']];
+        }
         if (defined('BIZUNO_MY_FOOTER')) {
             $data['divs']['footer']['divs']['myFooter'] = ['order'=>10, 'type'=>'html', 'html'=>BIZUNO_MY_FOOTER];
         }

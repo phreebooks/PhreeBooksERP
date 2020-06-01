@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    4.x Last Update: 2020-04-13
  * @filesource /lib/controller/module/phreebooks/budget.php
  */
 
@@ -44,7 +44,6 @@ class phreebooksBudget
         $data   = [
             'title'=> $title,
             'divs'     => [
-                'submenu'  => ['order'=>10,'type'=>'html', 'html'=>viewSubMenu('ledger')],
                 'heading'  => ['order'=>20,'type'=>'html', 'html'=>"<h1>$title</h1>"],
                 'fsethead' => ['order'=>38,'type'=>'html', 'html'=>"<fieldset><legend>".lang('wizard')."</legend>"],
                 'formBOF'  => ['order'=>39,'type'=>'form', 'key' =>'frmWizard'],
@@ -263,7 +262,7 @@ function budgetDistribute() {
         msgLog(lang('phreebooks_budget').' - '.lang('wizard')." (Source FY:$srcFY TO $destFY)");
         msgAdd("Wizard successful!", 'success');
         // reload datagrid
-        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"jq('#dgBudget').datagrid('reload');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"bizGridReload('dgBudget');"]]);
     }
 
     /**

@@ -14,9 +14,9 @@
  *
  * @name       Bizuno ERP
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
- * @copyright  2008-2020, PhreeSoft Inc.
+ * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-18
+ * @version    4.x Last Update: 2020-04-18
  * @filesource /view/theme/default/stylesheet.css
  */
 
@@ -38,13 +38,15 @@ th                       { text-align:center; font-weight:bold;}
 body.loading             { overflow: hidden; }
 body.loading .modal      { display:block; }
 .areaView                { display:block; width:100%; position:relative; }
-.block25                 { width:25%; display:inline-block; position:relative; vertical-align:top; min-width:200px; min-height:550px; margin:3px; }
-.block33                 { width:32%; display:inline-block; position:relative; vertical-align:top; min-width:400px; min-height:550px; margin:3px; }
-.block50                 { width:49%; display:inline-block; position:relative; vertical-align:top; min-width:600px; min-height:550px; margin:3px; }
-.block66                 { width:66%; display:inline-block; position:relative; vertical-align:top; min-width:800px; min-height:550px; margin:3px; }
-
-.blockView               { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; } /* border:solid 1px red; */
-.blockViewR              { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; text-align:right; } /* border:solid 1px red; */
+.block20                 { width:19%; display:inline-block; position:relative; vertical-align:top; min-width:200px; min-height:50px; margin:3px; }
+.block25                 { width:24%; display:inline-block; position:relative; vertical-align:top; min-width:250px; min-height:50px; margin:3px; }
+.block33                 { width:32%; display:inline-block; position:relative; vertical-align:top; min-width:333px; min-height:50px; margin:3px; }
+.block50                 { width:49%; display:inline-block; position:relative; vertical-align:top; min-width:500px; min-height:50px; margin:3px; }
+.block66                 { width:65%; display:inline-block; position:relative; vertical-align:top; min-width:666px; min-height:50px; margin:3px; }
+.block75                 { width:74%; display:inline-block; position:relative; vertical-align:top; min-width:750px; min-height:50px; margin:3px; }
+.block99                 { width:99%; display:inline-block; position:relative; vertical-align:top; min-width:999px; min-height:50px; margin:3px; }
+.blockView               { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; }
+.blockViewR              { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; text-align:right; }
 .menuHide                { display:none; }
 .fldLabel                { }
 .journal-waiting         { background-color:#FFFF00; }
@@ -55,6 +57,7 @@ body.loading .modal      { display:block; }
 #list .list-image        { width:32px; height:32px; border:0; margin-right:5px; float:left;}
 #list .list-header       { font-size:16px; font-weight:bold;}
 #list .list-content      { text-overflow:ellipsis; overflow:hidden;}
+.dashHover:hover .dashAction { display:block; }
 /* drag-drop for journal totals */
 .jrnlLeft                { width:250px; float:left; }
 .jrnlLeft table          { background:#E0ECFF; }

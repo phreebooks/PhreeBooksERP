@@ -18,7 +18,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-25
+ * @version    4.x Last Update: 2020-05-05
  * @filesource /local/en_US/locale.php
  */
 
@@ -47,7 +47,6 @@ $langByRef = [
     'journal_main_purch_order_id_9' => $langCore['journal_main_invoice_num_4'],
     'journal_main_purch_order_id_10' => $langCore['journal_main_invoice_num_4'],
     'journal_main_store_id' => $langCore['contacts_store_id'],
-
     'journal_main_primary_name_b' => sprintf($langCore['tbd_bill'], $langCore['address_book_primary_name']),
     'journal_main_contact_b' => sprintf($langCore['tbd_bill'], $langCore['address_book_contact']),
     'journal_main_address1_b' => sprintf($langCore['tbd_bill'], $langCore['address_book_address1']),
@@ -68,23 +67,9 @@ $langByRef = [
     'journal_main_country_s' => sprintf($langCore['tbd_ship'], $langCore['address_book_country']),
     'journal_main_telephone1_s' => sprintf($langCore['tbd_ship'], $langCore['telephone']),
     'journal_main_email_s' => sprintf($langCore['tbd_ship'], $langCore['email']),
-
     'journal_main_tax_rate_id_c' => $langCore['sales_tax'],
     'journal_main_tax_rate_id_v' => $langCore['purchase_tax'],
     'journal_main_terminal_date_9' => $langCore['journal_main_terminal_date_3'],
     'journal_main_terminal_date_10' => $langCore['ship_date'],
     'journal_main_terminal_date_12' => $langCore['ship_date'],
-    // All these below can be deleted
-    'next_cust_id_num' => $langCore['customers'].' - '.$langCore['contacts_short_name_c'],
-    'next_vend_id_num' => $langCore['vendors'].' - '.$langCore['contacts_short_name_v'],
-    'next_ref_j2'  => $langCore['general_ledger'].' - '.$langCore['journal_main_journal_id_2'].': '.$langCore['journal_main_invoice_num_2'],
-    'next_ref_j3'  => $langCore['vendors'].' - '.$langCore['journal_main_journal_id_3'].': '.$langCore['journal_main_invoice_num_3'],
-    'next_ref_j4'  => $langCore['vendors'].' - '.$langCore['journal_main_journal_id_4'].': '.$langCore['journal_main_invoice_num_4'],
-    'next_ref_j7'  => $langCore['vendors'].' - '.$langCore['journal_main_journal_id_7'].': '.$langCore['journal_main_invoice_num_7'],
-    'next_ref_j9'  => $langCore['customers'].' - '.$langCore['journal_main_journal_id_9'].': '.$langCore['journal_main_invoice_num_9'],
-    'next_ref_j10' => $langCore['customers'].' - '.$langCore['journal_main_journal_id_10'].': '.$langCore['journal_main_invoice_num_10'],
-    'next_ref_j12' => $langCore['customers'].' - '.$langCore['journal_main_journal_id_12'].': '.$langCore['journal_main_invoice_num_6'],
-    'next_ref_j13' => $langCore['customers'].' - '.$langCore['journal_main_journal_id_13'].': '.$langCore['journal_main_invoice_num_13'],
-    'next_ref_j18' => $langCore['banking'].' - '.$langCore['journal_main_journal_id_18'].': '.$langCore['journal_main_invoice_num_20'],
-    'next_ref_j20' => $langCore['banking'].' - '.$langCore['journal_main_journal_id_20'].': '.$langCore['journal_main_invoice_num_20'],
     ];

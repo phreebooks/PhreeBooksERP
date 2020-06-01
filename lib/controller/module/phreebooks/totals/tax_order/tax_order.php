@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-05-21
+ * @version    4.x Last Update: 2020-05-11
  * @filesource /controller/module/phreebooks/totals/tax_order/tax_order.php
  */
 
@@ -74,8 +74,8 @@ class tax_order
                 'gl_type'      => $this->settings['gl_type'],
                 'qty'          => '1',
                 'description'  => implode(' : ', $value['text']),
-                'debit_amount' => in_array(JOURNAL_ID, [3,4, 6,13,20,21,22])       ? $value['amount'] : 0,
-                'credit_amount'=> in_array(JOURNAL_ID, [7,9,10,12,14,16,17,18,19]) ? $value['amount'] : 0,
+                'debit_amount' => in_array($main['journal_id'], [3,4, 6,13,20,21,22])       ? $value['amount'] : 0,
+                'credit_amount'=> in_array($main['journal_id'], [7,9,10,12,14,16,17,18,19]) ? $value['amount'] : 0,
                 'gl_account'   => $glAcct,
                 'post_date'    => $main['post_date']];
             $totalTax += $value['amount'];

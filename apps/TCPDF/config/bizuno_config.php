@@ -58,7 +58,8 @@ if (!defined('K_PATH_URL')) { define ('K_PATH_URL', BIZUNO_3P_PDF); }
  * Path for PDF fonts.
  * By default it is automatically set but you can also set it as a fixed string to improve performances.
  */
-if (!defined('K_PATH_FONTS')) { define ('K_PATH_FONTS', K_PATH_MAIN.'fonts/'); }
+if (!defined('K_PATH_FONTS'))  { define ('K_PATH_FONTS',  K_PATH_MAIN.'fonts/'); }
+if (!defined('K_PATH_XFONTS')) { define ('K_PATH_XFONTS', BIZUNO_FONTS.'TCPDF/fonts/'); }
 
 /**
  * Default images directory.

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-05-28
  * @filesource /controller/module/phreeform/dashboards/favorite_reports/favorite_reports.php
  */
 
@@ -51,10 +51,10 @@ class favorite_reports
         foreach ($result as $row) { if (phreeformSecurity($row['security'])) { $data_array[] = ['id'=>$row['id'], 'text'=>$row['title']]; } }
         if ( empty($this->settings['data'])) { $rows[] = "<span>".lang('no_results')."</span>"; }
         else { foreach ($this->settings['data'] as $id => $title) {
-                $mime = dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'mime_type', "id=$id");
-                $row  = '<span style="float:left">' .html5('', ['icon'=>viewMimeIcon($mime),'events'=>['onClick'=>"winOpen('phreeform', 'phreeform/render/open&rID=$id');"]]).viewText($title).'</span>';
-                $row .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $id);"]]).'</span>';
-                $rows[]= $row;
+            $mime   = dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'mime_type', "id=$id");
+            $content= html5('', ['icon'=>viewMimeIcon($mime),'events'=>['onClick'=>"winOpen('phreeform', 'phreeform/render/open&rID=$id');"]]).viewText($title);
+            $trash  = html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $id);"]]);
+            $rows[] = viewDashList($content, $trash);
         } }
         $layout = array_merge_recursive($layout, [
             'divs'  => [

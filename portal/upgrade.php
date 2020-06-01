@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2019-12-20
+ * @version    3.x Last Update: 2020-04-22
  * @filesource /portal/upgrade.php
  */
 
@@ -211,6 +211,17 @@ function bizunoUpgrade($dbVersion='1.0')
             $parent = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv' AND mime_type='dir'");
             dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_14','group_id'=>'inv:j14','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
             dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_16','group_id'=>'inv:j16','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
+        }
+    }
+    if (version_compare($dbVersion, '3.4.5') < 0) { // add additional emails to the address book
+        if (!dbFieldExists(BIZUNO_DB_PREFIX.'address_book', 'email2')) {
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."address_book` ADD `email2` VARCHAR(64) NULL DEFAULT '' COMMENT 'tag:Email2;order:40' AFTER `telephone2`");
+        }
+        if (!dbFieldExists(BIZUNO_DB_PREFIX.'address_book', 'email3')) {
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."address_book` ADD `email3` VARCHAR(64) NULL DEFAULT '' COMMENT 'tag:Email3;order:60' AFTER `telephone3`");
+        }
+        if (!dbFieldExists(BIZUNO_DB_PREFIX.'address_book', 'email4')) {
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."address_book` ADD `email4` VARCHAR(64) NULL DEFAULT '' COMMENT 'tag:Email4;order:80' AFTER `telephone4`");
         }
     }
 

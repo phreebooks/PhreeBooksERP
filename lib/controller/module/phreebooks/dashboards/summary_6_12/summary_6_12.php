@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-04-07
  * @filesource /lib/controller/module/phreebooks/dashboards/summary_6_12/summary_6_12.php
  */
 
@@ -82,7 +82,7 @@ google.charts.setOnLoadCallback(chart{$this->code});\n";
         $layout = array_merge_recursive($layout, [
             'divs'  => [
                 'admin' =>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'range',$this->code.'_btn']]]],
-                'head'  =>['order'=>40,'type'=>'html','html'=>$filter],
+                'head'  =>['order'=>40,'type'=>'html','html'=>$filter,'hidden'=>getModuleCache('bizuno','settings','general','hide_filters',0)],
                 'body'  =>['order'=>50,'type'=>'html','html'=>'<div style="width:100%" id="'.$this->code.'_chart"></div>'],
                 'export'=>['order'=>95,'type'=>'html','html'=>'<form id="sum_6_12" action="'.$action.'">'.html5('', $iconExp).'</form>']],
             'fields'=> [

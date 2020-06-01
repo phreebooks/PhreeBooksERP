@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-06
+ * @version    4.x Last Update: 2020-04-13
  * @filesource /lib/controller/module/phreebooks/reconcile.php
  */
 
@@ -42,12 +42,10 @@ class phreebooksReconcile
                 'help'=> ['order'=>99,'icon'=>'help', 'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
             'datagrid'=> ['manager'=>$this->tgReconcile('tgReconcile')],
             'divs'    => [
-                'submenu'=> ['order'=>10,'type'=>'html',    'html'=>viewSubMenu('banking')],
                 'toolbar'=> ['order'=>20,'type'=>'toolbar', 'key' =>'tbRecon'],
                 'formBOF'=> ['order'=>40,'type'=>'html',    'html'=>$htmlHead],
                 'dgRecon'=> ['order'=>60,'type'=>'datagrid','key' =>'manager','label'=>lang('phreebooks_recon')],
                 'formEOF'=> ['order'=>90,'type'=>'html',    'html'=>'</form>']],
-//            'jsHead'  => ['init'=>"jq.cachedScript('".BIZUNO_URL."controller/module/phreebooks/phreebooks.js?ver=".MODULE_BIZUNO_VERSION."');"],
             'jsBody'  => ['preSubmit'=>"function preSubmit() {
     var items = jq('#tgReconcile').treegrid('getData');
     var rowsChk = [];

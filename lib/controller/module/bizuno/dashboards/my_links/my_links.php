@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-05-28
  * @filesource /lib/controller/module/bizuno/dashboards/my_links/my_links.php
  *
  */
@@ -42,8 +42,8 @@ class my_links
     public function settingsStructure()
     {
         return [
-            'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
-            'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']]];
+            'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
+            'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']]];
     }
 
     public function render(&$layout=[])
@@ -51,9 +51,8 @@ class my_links
         $index = 1;
         if (empty($this->settings['data'])) { $rows[] = '<li><span>'.lang('no_results')."</span></li>"; }
         else { foreach ($this->settings['data'] as $title => $hyperlink) {
-            $html  = '<span style="float:left">'.viewFavicon($hyperlink, $title, true)." $title</span>";
-            $html .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]).'</span>';
-            $rows[]= $html;
+            $trash  = html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $index);"]]);
+            $rows[] = viewDashList(viewFavicon($hyperlink, $title, true)." $title", $trash);
             $index++;
         } }
         $layout = array_merge_recursive($layout, [

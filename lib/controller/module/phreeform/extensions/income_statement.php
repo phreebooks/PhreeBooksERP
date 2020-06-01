@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-01
+ * @version    4.x Last Update: 2020-05-12
  * @filesource /controller/module/phreeform/extensions/income_statement.php
  */
 
@@ -174,12 +174,12 @@ class income_statement
             $allZero = true;
             $sqlIdx  = 0;
             foreach ($report->fieldlist as $field) {
-                    if (isset($field->visible) && $field->visible) {
-                    $value = isset($field->processing) ? viewProcess($gl_acct, $field->processing) : $gl_acct;
-                    $rowData[] = isset($field->formatting) ? viewFormat($value, $field->formatting) : $value;
+                if (isset($field->visible) && $field->visible) {
+                    $value    = isset($field->processing) ? viewProcess($gl_acct, $field->processing): $gl_acct;
+                    $rowData[]= isset($field->formatting) ? viewFormat($value, $field->formatting)   : $value;
                     if (isset($field->total) && $field->total) {
                         if (!isset($this->totals[$sqlIdx])) { $this->totals[$sqlIdx] = 0; }
-                        $this->totals[$sqlIdx] += $value;
+                        $this->totals[$sqlIdx] += floatval($value);
                         if (round($value, 3) != 0) { $allZero = false; }
                     }
                     $sqlIdx++;

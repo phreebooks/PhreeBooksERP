@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-09
+ * @version    4.x Last Update: 2020-05-28
  * @filesource /lib/controller/module/phreebooks/dashboards/chart_j12/chart_j12.php
  *
  */
@@ -66,7 +66,7 @@ class chart_j12
         $layout = array_merge_recursive($layout, [
             'divs'  => [
                 'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'range',$this->code.'_btn']]]],
-                'head' =>['order'=>40,'type'=>'html','html'=>$filter],
+                'head' =>['order'=>40,'type'=>'html','html'=>$filter,'hidden'=>getModuleCache('bizuno','settings','general','hide_filters',0)],
                 'body' =>['order'=>50,'type'=>'html','html'=>'<div style="width:100%" id="'.$this->code.'_chart"></div>']],
             'fields'=> [
                 $this->code.'range'=> array_merge($flds['range'],['order'=>10,'break'=>true]),

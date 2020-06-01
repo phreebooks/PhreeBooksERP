@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-12
+ * @version    4.x Last Update: 2020-02-12
  * @filesource /lib/controller/module/phreebooks/tools.php
  */
 
@@ -694,7 +694,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         $stmt = dbGetResult("SELECT m.id FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
             WHERE m.journal_id IN (6,14,15,16) AND i.qty>0 AND i.sku='$sku' ORDER BY m.post_date DESC LIMIT 1");
         $result = $stmt->fetch(\PDO::FETCH_ASSOC);
-        if ($result['id']) { $this->glRepost($result['id']); }
+        if (!empty($result['id'])) { $this->glRepost($result['id']); }
         $cron['cnt']++;
         if (sizeof($cron['rows']) == 0) {
             msgLog("PhreeBooks Tools (prune COGS owed) - ({$cron['total']} records)");

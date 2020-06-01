@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-04-22
  * @filesource /lib/controller/module/phreebooks/dashboards/currency_xe/currency_xe.php
  */
 
@@ -46,7 +46,7 @@ class currency_xe
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']]];
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
         $defISO= getDefaultCurrency();
         $ISOs  = getModuleCache('phreebooks', 'currency', 'iso', false, []);
@@ -55,7 +55,6 @@ class currency_xe
             if ($defISO == $code) { continue; }
             $cVals[$code] = $iso['title'];
         }
-//      $cVals = ['EUR'=>'Euro', 'ZAR'=>'South Africa Rand'];
         $lang  = substr(getUserCache('profile', 'language', false, 'en_US'), 0, 2);
         $size  = 'compact'; // choices are 'compact' (320 x 300), other option is 'normal' (560 x 310)
         $html  = '<div><div id="xecurrencywidget"></div>
@@ -63,17 +62,23 @@ class currency_xe
 <script src="https://www.xe.com/syndication/currencyconverterwidget.js"></script>
 </div>';
         if (sizeof($cVals)) {
-            $xRate = ['attr'=>['value'=>'']];
-            $xSel  = ['values'=>viewKeyDropdown($cVals), 'attr'=>['type'=>'select']];
-            $btnUpd= ['attr'=>['type'=>'button','value'=>lang('update')],'events'=>['onClick'=>"jq('#xeForm').submit();"]];
-            $js    = "ajaxForm('xeForm');\n";
-            $html .= '<form id="xeForm" action="'.BIZUNO_AJAX."&p=phreebooks/currency/setExcRate".'">';
-            $html .= "<p>".$this->lang['update_desc']."</p>";
-            $html .= "<p>1 $defISO = ".html5('excRate', $xRate).' '.html5('excISO', $xSel).'<br />'.html5('', $btnUpd).'</p></div>';
-            $html .= htmlJS($js);
+            $data = [
+                'divs'  => ['body'=>['attr'=>['id'=>'oanda_ecc'],'type'=>'divs','divs'=>[
+                    'oanda'  =>['order'=>10,'type'=>'html',  'html'=>$html],
+                    'desc'   =>['order'=>20,'type'=>'html',  'html'=>"<br />{$this->lang['update_desc']}<br />"],
+                    'formBOF'=>['order'=>40,'type'=>'form',  'key' =>'xeForm'],
+                    'body'   =>['order'=>50,'type'=>'fields','keys'=>['defCur','excRate','excISO','btnUpd']],
+                    'formEOF'=>['order'=>90,'type'=>'html',  'html'=>"</form>"]]]],
+                'fields'=> [
+                    'defCur' => ['order'=>10,'break'=>false,'html'=>"1 $defISO = ",'attr'=>['type'=>'raw']],
+                    'excRate'=> ['order'=>20,'break'=>false,'options'=>['width'=>100],'attr'=>['value'=>'']],
+                    'excISO' => ['order'=>30,'values'=>viewKeyDropdown($cVals), 'attr'=>['type'=>'select']],
+                    'btnUpd' => ['order'=>40,'attr'=>['type'=>'button','value'=>lang('update')],'events'=>['onClick'=>"jq('#xeForm').submit();"]]],
+                'forms' => ['xeForm'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/setExcRate"]]],
+                'jsReady'=>['init'=>"ajaxForm('xeForm');"]];
         } else {
-            $html .= '<br />'.$this->lang['no_multi_langs'];
+            $data = ['divs'=>['body'=>['order'=>50,'type'=>'html','html'=>'<br />'.$this->lang['no_multi_langs']]]];
         }
-        return $html;
+        $layout = array_merge_recursive($layout, $data);
     }
 }

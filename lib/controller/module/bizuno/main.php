@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-18
+ * @version    4.x Last Update: 2020-04-22
  * @filesource /lib/controller/module/bizuno/main.php
  */
 
@@ -44,8 +44,9 @@ class bizunoMain
         $data  = ['title'=>"$title - ".getModuleCache('bizuno', 'properties', 'title'),
             'jsHead'=>['menu_id'=>"var menuID='$menuID';"]];
         if ($GLOBALS['myDevice'] != 'mobile' && $mIDdef <> 'portal') {
-            $linkDash = ['attr'=>['type'=>'a','value'=>$this->lang['msg_add_dashboards'],'href'=>BIZUNO_HOME.'&p=bizuno/dashboard/manager&menuID='.$menuID]];
-            $data['divs']['tbDash'] = ['order'=>10,'classes'=>['datagrid-toolbar'],'styles'=>['min-height'=>'32px'],'attr'=>['id'=>'tbDash'],'type'=>'html','html'=>html5('', $linkDash)];
+            $data['divs']['qlinks']['data']['child']['addDash'] = ['order'=>1,'label'=>lang('add_dashboards'),'icon'=>'winNew','required'=>true,'hideLabel'=>true,'events'=>['onClick'=>"hrefClick('bizuno/dashboard/manager&menuID=$menuID');"]];
+//            $linkDash = ['attr'=>['type'=>'a','value'=>lang('add_dashboards'),'href'=>BIZUNO_HOME.'&p=bizuno/dashboard/manager&menuID='.$menuID]];
+//            $data['divs']['qlinks']['data']['child']['addDash'] = ['order'=>10,'classes'=>['datagrid-toolbar'],'styles'=>['min-height'=>'32px'],'attr'=>['id'=>'tbDash'],'type'=>'html','html'=>html5('', $linkDash)];
         }
         if ($GLOBALS['myDevice'] != 'mobile' || $mIDdef == 'portal') { // text and link to add dashboards divs
             $this->setDashJS($data);
@@ -65,8 +66,8 @@ class bizunoMain
         $menuID= clean('menuID', ['format'=>'text','default'=>'home'], 'get');
         $data['jsHead']['menu_id'] = "var menuID='$menuID';";
         if ($GLOBALS['myDevice'] != 'mobile') { // text and link to add dashboards
-            $linkDash = ['attr'=>['type'=>'a','value'=>$this->lang['msg_add_dashboards'],'href'=>BIZUNO_HOME.'&p=bizuno/dashboard/manager&menuID='.$menuID]];
-            $data['divs']['tbDash'] = ['order'=>10,'classes'=>['datagrid-toolbar'],'styles'=>['min-height'=>'32px'],'attr'=>['id'=>'tbDash'],'type'=>'html','html'=>html5('', $linkDash)];
+            $linkDash = ['attr'=>['type'=>'a','value'=>lang('add_dashboards'),'href'=>BIZUNO_HOME.'&p=bizuno/dashboard/manager&menuID='.$menuID]];
+//            $data['divs']['tbDash'] = ['order'=>10,'classes'=>['datagrid-toolbar'],'styles'=>['min-height'=>'32px'],'attr'=>['id'=>'tbDash'],'type'=>'html','html'=>html5('', $linkDash)];
         }
         $cols = getColumns();
         $width = round(100/$cols, 0);
@@ -167,11 +168,13 @@ $(function() {
         $html   = lang('msg_enter_encrypt_key').'<br />'.html5('pwEncrypt', $inpEncr).html5('', $icnSave);
         $js     = "jq('#winEncrypt').keypress(function(event) {
     var keycode = (event.keyCode ? event.keyCode : event.which);
-    if (keycode=='13') jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());
+    if (keycode==13) jsonAction('bizuno/main/encryptionSet', 0, jq('#pwEncrypt').val());
 });
-document.ready(bizFocus('pwEncrypt');";
-        $html .= htmlJS($js);
-        $layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['divEncrypt'=>['order'=>50,'type'=>'html','html'=>$html]]]);
+bizFocus('pwEncrypt');";
+        $data = ['type'=>'divHTML',
+            'divs'   => ['divEncrypt'=>['order'=>50,'type'=>'html','html'=>$html]],
+            'jsReady'=> ['init'=>$js]];
+        $layout = array_replace_recursive($layout, $data);
     }
 
     /**

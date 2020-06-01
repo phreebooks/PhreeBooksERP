@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-19
+ * @version    4.x Last Update: 2020-05-27
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -29,8 +29,7 @@ class inventoryPrices
 
     function __construct()
     {
-        $this->lang = getLang($this->moduleID);
-        // set some defaults
+        $this->lang     = getLang($this->moduleID);
         $this->type     = clean('type', ['format'=>'char', 'default'=>'c'], 'get');
         $this->helpIndex= $this->type=='v' ? "vendor-prices" : "customer-prices";
         $this->qtySource= ['1'=>lang('direct_entry'), '2'=>lang('inventory_item_cost'), '3'=>lang('inventory_full_price'), '4'=>lang('price_level_1')];
@@ -51,12 +50,8 @@ class inventoryPrices
         $iID  = clean('iID','integer',  'get');
         $mod  = clean('mod','text',     'get');
         $title= sprintf(lang('tbd_prices'), lang('contacts_type_'.$this->type));
-        if     (!$mod && $this->type == 'c') { $submenu=viewSubMenu('customers'); }
-        elseif (!$mod && $this->type == 'v') { $submenu=viewSubMenu('vendors'); }
-        else   { $submenu = ''; }
         $data = ['type'=>'page','title'=>$title,
             'divs'     => [
-                'submenu'=> ['order'=>10,'type'=>'html','html'=>$submenu],
                 'prices' => ['order'=>50,'type'=>'accordion','key'=>'accPrices']],
             'accordion'=> ['accPrices'=>['divs'=>[
                 'divPricesMgr' =>['order'=>30,'label'=>$title,'type'=>'datagrid','key'=>'dgPricesMgr'],
@@ -126,7 +121,7 @@ class inventoryPrices
             }
             $html  = '<p>'.lang('desc_new_price_sheets')."</p>";
             $html .= html5('methodID',['values'=>$meths,'attr'=>['type'=>'select']]);
-            $html .= html5('iconGO',  ['icon'=>'next','events'=>['onClick'=>"accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$this->type&mod=$mod&mID='+jq('#methodID').val(),0); bizWindowClose('winNewPrice');"]]);
+            $html .= html5('iconGO',  ['icon'=>'next','events'=>['onClick'=>"accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$this->type&mod=$mod&mID='+bizSelGet('methodID'),0); bizWindowClose('winNewPrice');"]]);
         }
         $layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['winNewPrice'=>['order'=>50,'type'=>'html','html'=>$html]]]);
     }
@@ -151,11 +146,6 @@ class inventoryPrices
             $settings= ['attr'=>'', 'title'=>''];
         }
         $row['currency'] = getDefaultCurrency(); // force currency to be the users default
-        // @TODO - remove AFTER 2019-06-01
-        $structure['contact_id']['attr']['type']  = 'hidden';
-        $structure['inventory_id']['attr']['type']= 'hidden';
-        $structure['currency']['attr']['type']    = 'hidden';
-
         unset($structure['settings']);
         $structure['contact_id']['label']   = lang('contacts_short_name');
         $structure['inventory_id']['label'] = lang('sku');
@@ -196,7 +186,7 @@ class inventoryPrices
         $priceSet = getModuleCache('inventory','prices',$mID,'settings');
         $meth = new $fqcn($priceSet);
         if ($meth->priceSave()) { msgAdd(lang('msg_record_saved'), 'success'); }
-        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"jq('#accPrices').accordion('select', 0); jq('#dgPricesMgr').datagrid('reload'); jq('#divPricesSet').html('&nbsp;');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"jq('#accPrices').accordion('select', 0); bizGridReload('dgPricesMgr'); jq('#divPricesSet').html('&nbsp;');"]]);
     }
 
     /**
@@ -245,7 +235,7 @@ class inventoryPrices
         $settings = json_decode($result['settings'], true);
         msgLog(lang('prices').' '.lang('delete')." - Title: ".(isset($settings['title']) ? $settings['title'] : '-')." (iID=".$result['inventory_id']."; cID=".$result['contact_id']."; rID=$rID)");
         $layout = array_replace_recursive($layout, [
-            'content' => ['action'=>'eval','actionData'=>"jq('#accPrices').accordion('select', 0); jq('#dgPricesMgr').datagrid('reload'); jq('#divPricesSet').html('&nbsp;');"],
+            'content' => ['action'=>'eval','actionData'=>"jq('#accPrices').accordion('select', 0); bizGridReload('dgPricesMgr'); jq('#divPricesSet').html('&nbsp;');"],
             'dbAction'=> ["inventory_prices"=>"DELETE FROM ".BIZUNO_DB_PREFIX."inventory_prices WHERE id=$rID OR ref_id=$rID"]]);
     }
 
@@ -278,14 +268,15 @@ class inventoryPrices
                 $rows[] = ['group'=>$level['title'],'text'=>"<div style='float:right'>".viewFormat($entry['price'], 'currency').'</div><div>'.(float)$entry['qty']."</div>"];
             }
         } }
-        $fields['theList'] = ['options'=>['groupField'=>"'group'",'data'=>"pricesData"],'classes'=>['easyui-datalist'],'attr'=>['type'=>'span']];
-        $layout = array_merge_recursive($layout, ['type'=>'popup', 'title'=>lang('inventory_prices', $this->type), 'attr'=>['id'=>'winPrices','width'=>275,'height'=>600],
-            'divs'  => ['winStatus'=>['order'=>50,'type'=>'fields','fields'=>$fields]],
-            'jsHead'=> ['init'=>"var pricesData = ".json_encode($rows).";"]]);
+        $data = ['type'=>'popup', 'title'=>lang('inventory_prices', $this->type), 'attr'=>['id'=>'winPrices','width'=>300,'height'=>700],
+            'divs'  => ['winStatus'=>['order'=>50,'options'=>['groupField'=>"'group'",'data'=>"pricesData"],'type'=>'list','key' =>'lstPrices']],
+            'lists' => ['lstPrices'=>[]], // handled as JavaScript data
+            'jsHead'=> ['init'=>"var pricesData = ".json_encode($rows).";"]];
+        $layout = array_merge_recursive($layout, $data);
     }
 
     /**
-     * Retrieves the best price for a given customer/sku using available price sheets
+     * Retrieves the best price for a given customer/SKU using available price sheets
      * @param array $layout - structure coming in
      * @return array - modified $layout
      */
@@ -295,7 +286,7 @@ class inventoryPrices
         $pSec = $this->type=='v' ? validateSecurity('phreebooks', 'j6_mgr', 1, false) : validateSecurity('phreebooks', 'j12_mgr', 1, false);
         if (!$security = max($iSec, $pSec)) { return msgAdd(lang('err_no_permission')." [".'prices_'.$this->type." OR jX_mgr]"); }
         if (empty($cID)) { $cID = clean('cID', 'integer','get'); } // contact record ID
-        if (empty($sku)) { $sku = clean('sku', 'text',   'get'); }// inventory SKU
+        if (empty($sku)) { $sku = clean('sku', 'text',   'get'); } // inventory SKU
         $iID = clean('rID', 'integer','get'); // inventory record ID
         $UPC = clean('upc', 'text',   'get'); // inventory UPC Code
         $qty = clean('qty', ['format'=>'float', 'default'=>1], 'get'); // quantity purchased, assume 1

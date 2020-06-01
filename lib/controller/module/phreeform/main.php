@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-24
+ * @version    4.x Last Update: 2020-04-15
  * @filesource /controller/module/phreeform/main.php
  */
 
@@ -52,32 +52,32 @@ class phreeformMain
         $divSrch= html5('', ['options'=>['mode'=>"'remote'",'url'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/search'",'editable'=>'true','idField'=>"'id'",'textField'=>"'text'",'width'=>250,'panelWidth'=>400,
             'onClick'=>"function (row) { jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+row.id); }"],'attr'=>['type'=>'select']]);
         $data   = ['title'=> lang('reports'),
-            'divs'     => ['title'=> ['order'=>10,'type'=>'html',     'html'=>"<h1>{$this->lang['title']}</h1>"],
+            'divs'   => [
                 'toolbar'  => ['order'=>10,'type'=>'toolbar','key' =>'tbPhreeForm'],
-                'body'    => ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'docBody'],'divs'=>[
-                    'accDoc' => ['order'=>20,'type'=>'divs','styles'=>['height'=>'100%'],'classes'=>['block33'],'attr'=>['id'=>'divAcc'],'divs'=>[
-                        'accMgr'=> ['order'=>20,'type'=>'accordion','key' =>'accDocs']]],
-                    'myDocs' => ['order'=>50,'type'=>'divs','classes'=>['block33'],'attr'=>['id'=>'myDocs'],'divs'=>[
-                        'search'=> ['order'=>10,'type'=>'panel','key'=>'docSearch'],
-                        'panel' => ['order'=>30,'type'=>'panel','key'=>'docBookMk']]],
-                    'newDocs'=> ['order'=>70,'type'=>'divs','classes'=>['block33'],'attr'=>['id'=>'newDocs'],'divs'=>[
-                        'panel' => ['order'=>30,'type'=>'panel','key'=>'docRecent']]]]]],
+                'body'     => ['order'=>50,'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'tree'   => ['order'=>20,'type'=>'panel','key'=>'accDoc','classes'=>['block33']],
+                    'search' => ['order'=>40,'type'=>'panel','key'=>'myDocs','classes'=>['block33']],
+                    'history'=> ['order'=>60,'type'=>'panel','key'=>'myHist','classes'=>['block33']]]]],
             'toolbars' => ['tbPhreeForm'=>['icons'=>[
                 'mimeRpt' => ['order'=>30,'icon'=>'mimeTxt','hidden'=>($this->security>1)?false:true,'events'=>['onClick'=>"hrefClick('$this->moduleID/design/edit&type=rpt', 0);"],
                     'label'=>$this->lang['new_report']],
                 'mimeFrm' => ['order'=>40,'icon'=>'mimeDoc','hidden'=>($this->security>1)?false:true,'events'=>['onClick'=>"hrefClick('$this->moduleID/design/edit&type=frm', 0);"],
                     'label'=>$this->lang['new_form']],
                 'import'  => ['order'=>90,'hidden'=>($this->security>1)?false:true, 'events'=>['onClick'=>"hrefClick('phreeform/io/manager');"]]]]],
+            'panels' => [
+                'accDoc'   => ['type'=>'accordion','key' =>'accDocs','options'=>['height'=>640]],
+                'myDocs'   => ['type'=>'divs','divs'=>[
+                    'search'=> ['type'=>'panel','key'=>'docSearch'],
+                    'panel' => ['type'=>'panel','key'=>'docBookMk']]],
+                'docSearch'=> ['label'=>lang('search'),               'type'=>'html','html'=>$divSrch],
+                'docBookMk'=> ['label'=>$this->lang['my_favorites'],  'type'=>'html','options'=>['collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/favorites'"],'html'=>'&nbsp;'],
+                'myHist'   => ['label'=>$this->lang['recent_reports'],'type'=>'html','options'=>['collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/recent'"],   'html'=>'&nbsp;']],
             'accordion'=> ['accDocs'=>['styles'=>['height'=>'100%'],'divs'=>[ // 'attr'=>['halign'=>'left'], crashes older versions of Chrome and Safari
                 'divTree'  => ['order'=>10,'label'=>$this->lang['my_reports'],'type'=>'divs','styles'=>['overflow'=>'auto','padding'=>'10px'], // 'attr'=>['titleDirection'=>'up'],
                     'divs'=>[
                         'toolbar'=> ['order'=>10,'type'=>'fields','keys'=>['expand','collapse']],
                         'tree'   => ['order'=>50,'type'=>'tree',  'key' =>'treePhreeform']]],
                 'divDetail'=> ['order'=>30,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;']]]], // 'attr'=>['titleDirection'=>'up'],
-            'panels'   => [
-                'docSearch' => ['styles'=>['text-align'=>'center'],'options'=>['title'=>"'".jsLang('search')."'"],'html'=>$divSrch],
-                'docBookMk' => ['options'=>['title'=>"'".$this->lang['my_favorites']."'",  'collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/favorites'"],'html'=>'&nbsp;'],
-                'docRecent' => ['options'=>['title'=>"'".$this->lang['recent_reports']."'",'collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/recent'"],   'html'=>'&nbsp;']],
             'tree'     => ['treePhreeform'=>['attr'=>['type'=>'tree','url'=>BIZUNO_AJAX."&p=phreeform/main/managerTree"],'events'=>[
                 'onClick'  => "function(node) { if (typeof node.id != 'undefined') {
     if (jq('#treePhreeform').tree('isLeaf', node.target)) { jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+node.id); }
@@ -94,7 +94,7 @@ jq('#treePhreeform').tree('expand', node.target); }";
     }
 
     /**
-     * Gets the available forms/reports from a JSON call in the database and returns to populate the treegrid
+     * Gets the available forms/reports from a JSON call in the database and returns to populate the tree grid
      * @param array $layout - Structure coming in
      * @return array - Modified $layout
      */
@@ -179,7 +179,7 @@ jq('#treePhreeform').tree('expand', node.target); }";
         $sql_data = ['title'=>$title, 'doc_data'=>$docData, 'last_update'=>date('Y-m-d')];
         dbWrite(BIZUNO_DB_PREFIX."phreeform", $sql_data, 'update', "id='$rID'");
         msgLog(lang('phreeform_manager').'-'.lang('rename')." $title ($rID)");
-        $data  = ['content'=>['action'=>'eval','actionData'=>"jq('#treePhreeform').tree('reload'); jq('#docBookMk').panel('refresh'); jq('#docRecent').panel('refresh'); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID=$rID');"]];
+        $data  = ['content'=>['action'=>'eval','actionData'=>"bizTreeReload('treePhreeform'); jq('#docBookMk').panel('refresh'); jq('#docRecent').panel('refresh'); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID=$rID');"]];
         $layout= array_replace_recursive($layout, $data);
     }
 
@@ -207,7 +207,7 @@ jq('#treePhreeform').tree('expand', node.target); }";
             msgLog(lang('phreeform_manager').'-'.lang('copy')." - $title ($rID=>$newID)");
             $_GET['rID'] = $newID;
         }
-        $data  = ['content'=>['action'=>'eval','actionData'=>"jq('#treePhreeform').tree('reload'); jq('#docBookMk').panel('refresh'); jq('#docRecent').panel('refresh'); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID=$newID');"]];
+        $data  = ['content'=>['action'=>'eval','actionData'=>"bizTreeReload('treePhreeform'); jq('#docBookMk').panel('refresh'); jq('#docRecent').panel('refresh'); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID=$newID');"]];
         $layout= array_replace_recursive($layout, $data);
     }
 
@@ -223,7 +223,7 @@ jq('#treePhreeform').tree('expand', node.target); }";
         if (!$rID) { return msgAdd('The report was not deleted, the proper id was not passed!'); }
         $title = dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'title', "id='$rID'");
         msgLog(lang('phreeform_manager').'-'.lang('delete')." - $title ($rID)");
-        $data  = ['content'=>['action'=>'eval','actionData'=>"jq('#accDocs').accordion('select', 0); jq('#treePhreeform').tree('reload'); jq('#docBookMk').panel('refresh'); jq('#docRecent').panel('refresh');"],
+        $data  = ['content'=>['action'=>'eval','actionData'=>"jq('#accDocs').accordion('select', 0); bizTreeReload('treePhreeform'); jq('#docBookMk').panel('refresh'); jq('#docRecent').panel('refresh');"],
             'dbAction' => [BIZUNO_DB_PREFIX."phreeform" => "DELETE FROM ".BIZUNO_DB_PREFIX."phreeform WHERE id=$rID"]];
         $layout= array_replace_recursive($layout, $data);
     }

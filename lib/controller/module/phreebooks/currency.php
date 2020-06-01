@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-13
+ * @version    4.x Last Update: 2020-04-30
  * @filesource /lib/controller/module/phreebooks/currency.php
  */
 
@@ -80,16 +80,29 @@ class phreebooksCurrency
         if (!$iso) { return; }
         $values = getModuleCache('phreebooks', 'currency', 'iso', $iso, $this->currencySettings($iso));
         if ($iso == getDefaultCurrency()) { $values['value'] = 1; }
+        $fields = [
+            'title'  => ['order'=>1,'label'=>lang('title'),            'attr'=>['value'=>$values['title']]],
+            'code'   => ['order'=>1,'label'=>lang('code'),             'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']],
+            'is_def' => ['order'=>1,'label'=>lang('default'),          'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getDefaultCurrency()==$iso?true:false]],
+            'xrate'  => ['order'=>1,'label'=>lang('exc_rate'),         'attr'=>['value'=>$values['value']]],
+            'dec_len'=> ['order'=>2,'label'=>$this->lang['dec_length'],'attr'=>['value'=>$values['dec_len']]],
+            'dec_pt' => ['order'=>2,'label'=>$this->lang['dec_point'], 'attr'=>['value'=>$values['dec_pt']]],
+            'sep'    => ['order'=>2,'label'=>lang('separator'),        'attr'=>['value'=>$values['sep']]],
+            'prefix' => ['order'=>3,'label'=>lang('prefix'),           'attr'=>['value'=>$values['prefix']]],
+            'suffix' => ['order'=>3,'label'=>lang('suffix'),           'attr'=>['value'=>$values['suffix']]],
+            'pfxneg' => ['order'=>3,'label'=>$this->lang['neg_prefix'],'attr'=>['value'=>isset($values['pfxneg']) ? $values['pfxneg'] : '-']],
+            'sfxneg' => ['order'=>3,'label'=>$this->lang['neg_suffix'],'attr'=>['value'=>isset($values['sfxneg']) ? $values['sfxneg'] : '']]];
         $data = ['type'=>'divHTML',
             'divs'     => [
-                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbCurrency'],
-                'formBOF'=> ['order'=>15,'type'=>'form',   'key'=>'frmCurrency'],
-                'body'   => ['order'=>50,'type'=>'fields', 'fields'=>$this->getViewCurrency($values, $iso)],
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbCurrency'],
+                'formBOF'=> ['order'=>15,'type'=>'form',   'key' =>'frmCurrency'],
+                'body'   => ['order'=>50,'type'=>'fields', 'keys'=>array_keys($fields)],
                 'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"]],
             'toolbars' => ['tbCurrency'=>  ['icons' => [
                 "currencySave" => ['order'=>10,'icon'=>'save','label'=>lang('save'),
                     'events'=>  ['onClick'=>"jq('body').addClass('loading'); jq('#frmCurrency').submit();"]]]]],
             'forms'    => ['frmCurrency'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/save"]]],
+            'fields'   => $fields,
             'jsReady'  => ['jsReady'=>"ajaxForm('frmCurrency');"]];
         $layout = array_replace_recursive($layout, $data);
     }
@@ -102,18 +115,6 @@ class phreebooksCurrency
      */
     private function getViewCurrency($values, $iso)
     {
-        return [
-        'title'  => ['col'=>1,'break'=>true,'label'=>lang('title'),            'attr'=>['value'=>$values['title']]],
-        'code'   => ['col'=>1,'break'=>true,'label'=>lang('code'),             'attr'=>['value'=>$values['code'], 'readonly'=>'readonly']],
-        'is_def' => ['col'=>1,'break'=>true,'label'=>lang('default'),          'attr'=>['type'=>'checkbox', 'value'=>'1', 'checked'=>getDefaultCurrency()==$iso?true:false]],
-        'xrate'  => ['col'=>1,'break'=>true,'label'=>lang('exc_rate'),         'attr'=>['value'=>$values['value']]],
-        'dec_len'=> ['col'=>2,'break'=>true,'label'=>$this->lang['dec_length'],'attr'=>['value'=>$values['dec_len']]],
-        'dec_pt' => ['col'=>2,'break'=>true,'label'=>$this->lang['dec_point'], 'attr'=>['value'=>$values['dec_pt']]],
-        'sep'    => ['col'=>2,'break'=>true,'label'=>lang('separator'),        'attr'=>['value'=>$values['sep']]],
-        'prefix' => ['col'=>3,'break'=>true,'label'=>lang('prefix'),           'attr'=>['value'=>$values['prefix']]],
-        'suffix' => ['col'=>3,'break'=>true,'label'=>lang('suffix'),           'attr'=>['value'=>$values['suffix']]],
-        'pfxneg' => ['col'=>3,'break'=>true,'label'=>$this->lang['neg_prefix'],'attr'=>['value'=>isset($values['pfxneg']) ? $values['pfxneg'] : '-']],
-        'sfxneg' => ['col'=>3,'break'=>true,'label'=>$this->lang['neg_suffix'],'attr'=>['value'=>isset($values['sfxneg']) ? $values['sfxneg'] : '']]];
     }
 
     /**

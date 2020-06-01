@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-20
+ * @version    3.x Last Update: 2020-04-01
  * @filesource /bizunoCSS.php
  */
 
@@ -44,7 +44,7 @@ define('BIZUNO_EXT',       BIZUNO_ROOT.'ext/'); // file system path to Bizuno Ex
 define('BIZUNO_CUSTOM',    BIZUNO_ROOT.'myExt/'); // file system path to Bizuno custom extensions
 define('BIZUNO_DATA',      BIZUNO_ROOT.'myFiles/'); // myFolder
 define('BIZUNO_ICONS',     BIZUNO_ROOT.'icons/'); // file system path to extra icon sets
-define('BIZUNO_THEMES',    BIZUNO_ROOT.'themes/'); // file system path to extra themes
+define('BIZUNO_THEMES',    BIZUNO_ROOT.'extThemes/'); // file system path to extra themes
 
 require_once(BIZUNO_LIB."controller/functions.php");
 require_once(BIZUNO_LIB."locale/cleaner.php");

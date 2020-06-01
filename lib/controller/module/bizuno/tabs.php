@@ -1,7 +1,7 @@
 <?php
 /*
  * Method to handle custom tabs for the tables that allow them
- * 
+ *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
  * that is bundled with this package in the file LICENSE.TXT.
@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-02-13
+ * @version    4.x Last Update: 2020-04-22
  * @filesource /lib/controller/module/bizuno/tabs.php
  */
 
@@ -31,7 +31,7 @@ class bizunoTabs
     {
         $this->lang = getLang($this->moduleID);
     }
-    
+
     /**
      * manager to handle tab - main entry point
      * @param array $layout - structure coming in
@@ -141,16 +141,19 @@ class bizunoTabs
             } } }
         } }
         $values = [];
-        foreach ($output as $props) { 
-            $values[] = ['id'=>"{$props['id']}.{$props['table']}", 'text'=>"{$props['title']}/{$props['table']}"];
-        }
-        $html  = '<p>'.$this->lang['new_tab_desc']."</p>";
-        $html .= html5('frmNewTab',['attr' => ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/tabs/edit&bizAction=save"]]);
-        $html .= html5('code',     ['values'=>$values, 'attr'=>  ['type'=>'select']]);
-        $html .= html5('iconGO',   ['icon'=>'next', 'events'=>  ['onClick'=>"jq('#frmNewTab').submit();"]]);
-        $html .= '</form>';
-        $html .= htmlJS("ajaxForm('frmNewTab');");
-        $layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['divNewTab'=>['order'=>50,'type'=>'html','html'=>$html]]]);
+        foreach ($output as $props) { $values[] = ['id'=>"{$props['id']}.{$props['table']}", 'text'=>"{$props['title']}/{$props['table']}"]; }
+        $data = ['type'=>'divHTML',
+            'divs'   =>[
+                'formBOF'=> ['order'=>10,'type'=>'form',  'key' =>'addTab'],
+                'head'   => ['order'=>20,'type'=>'html',  'html'=>"<p>{$this->lang['new_tab_desc']}</p>"],
+                'body'   => ['order'=>50,'type'=>'fields','keys'=>['code','iconGO']],
+                'formEOF'=> ['order'=>90,'type'=>'html',  'html'=>"</form>"]],
+            'forms'  => ['addTab'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/tabs/edit&bizAction=save"]]],
+            'fields' => [
+                'code'  => ['order'=>10,'break'=>false,'values'=>$values,'attr'=>['type'=>'select']],
+                'iconGO'=> ['order'=>20,'icon'=>'next',   'events'=>['onClick'=>"jq('#frmNewTab').submit();"]]],
+            'jsReady'=>['init'=>"ajaxForm('frmNewTab');"]];
+        $layout = array_replace_recursive($layout, $data);
     }
 
     /**
@@ -219,7 +222,7 @@ class bizunoTabs
         }
         msgAdd(lang('tab').": $title - ".lang('msg_settings_saved'), 'success');
         msgLog(lang('tab').": $title (Module:$mID, Table:$tID) - ".($id?lang('update'):lang('add')));
-        $data = ['content'=>  ['action'=>'eval','actionData'=>"jq('#accTabs').accordion('select', 0); jq('#dgTabs').datagrid('reload'); jq('#divTabsDetail').html('&nbsp;');"]];
+        $data = ['content'=>  ['action'=>'eval','actionData'=>"jq('#accTabs').accordion('select', 0); bizGridReload('dgTabs'); jq('#divTabsDetail').html('&nbsp;');"]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -254,7 +257,7 @@ class bizunoTabs
         unset($tabs[$rID]);
         setModuleCache($mID, 'tabs', false, $tabs);
         msgLog(lang('tab').": $title (Module:$mID) - ".lang('delete'));
-        $data = ['content'=>  ['action'=>'eval','actionData'=>"jq('#dgTabs').datagrid('reload');"]];
+        $data = ['content'=>  ['action'=>'eval','actionData'=>"bizGridReload('dgTabs');"]];
         $layout = array_replace_recursive($layout, $data);
     }
 }

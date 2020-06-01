@@ -17,13 +17,13 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-13
+ * @version    4.x Last Update: 2020-04-21
  * @filesource lib/controller/module/bizuno/users.php
  */
 
 namespace bizuno;
 
-bizAutoLoad(BIZUNO_LIB."controller/module/bizuno/functions.php", 'getIcons', 'function');
+bizAutoLoad(BIZUNO_LIB ."controller/module/bizuno/functions.php", 'getIcons', 'function');
 bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
 
 class bizunoUsers
@@ -99,22 +99,19 @@ class bizunoUsers
         msgDebug("\nSettings decoded is: ".print_r($settings, true));
         unset($dbData['settings']);
         dbStructureFill($structure, $dbData);
-        $keys  = ['admin_id','email','inactive','title','role_id','contact_id','store_id','restrict_store','restrict_user','icons','theme','menu','cols'];
-        $eKeys = ['smtp_enable', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass'];
-        $cID   = !empty($structure['contact_id']['attr']['value']) ? (int)$structure['contact_id']['attr']['value'] : 0;
-        $name  = $cID ? dbGetValue(BIZUNO_DB_PREFIX."address_book", 'primary_name', "ref_id=$cID AND type='m'") : '';
-        $title = lang('bizuno_users').' - '.($rID ? $dbData['email'] : lang('new'));
-        $fields= $this->getViewUsers($structure, $settings);
-/* Commented out as this can be a security issue,
- * New users will be issued an access code and be directed to lost password login screen in the welcome email,
- * Current users can change their password in Profile page
+        $fldAcct   = ['admin_id','email','inactive','title','role_id','contact_id','store_id'];
+        $fldProp   = ['restrict_store','restrict_user','icons','theme','menu','cols'];
+        $eKeys     = ['smtp_enable', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass'];
+        $cID       = !empty($structure['contact_id']['attr']['value']) ? (int)$structure['contact_id']['attr']['value'] : 0;
+        $name      = $cID ? dbGetValue(BIZUNO_DB_PREFIX."address_book", 'primary_name', "ref_id=$cID AND type='m'") : '';
+        $title     = lang('bizuno_users').' - '.($rID ? $dbData['email'] : lang('new'));
+        $fields    = $this->getViewUsers($structure, $settings);
         if (validateSecurity('bizuno', 'users', 3)) {
             $fields['password_new']    = ['order'=>55,'break'=>true,'label'=>lang('password_new'),    'attr'=>['type'=>'password']];
             $fields['password_confirm']= ['order'=>60,'break'=>true,'label'=>lang('password_confirm'),'attr'=>['type'=>'password']];
-            $keys[] = 'password_new';
-            $keys[] = 'password_confirm';
+            $fldAcct[] = 'password_new';
+            $fldAcct[] = 'password_confirm';
         }
-*/
         $data = ['type'=>'divHTML',
             'divs'    => ['detail'=>['order'=>50,'type'=>'divs','divs'=>[
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbUsers'],
@@ -127,11 +124,17 @@ class bizunoUsers
                 'new' => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".jsLang('details')."', 'bizuno/users/edit', 0);"]],
                 'help'=> ['order'=>99,'icon'=>'help','label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
             'tabs'=> ['tabUsers'=>['divs'=>[
-                'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
-                    'body'  => ['order'=>30,'type'=>'fields','keys'=>$keys],
-                    'attach'=> ['order'=>80,'type'=>'attach','defaults'=>['path'=>getModuleCache('bizuno', 'properties', 'usersAttachPath'),'prefix'=>$rID.'-']]]],
-                'email'  => ['order'=>40,'label'=>lang('email'),'type'=>'divs','divs'=>[
-                    'body'  => ['order'=>30,'type'=>'fields','keys'=>$eKeys]]]]]],
+                'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'genAcct' => ['order'=>10,'type'=>'panel','key'=>'genAcct','classes'=>['block33']],
+                    'genProp' => ['order'=>40,'type'=>'panel','key'=>'genProp','classes'=>['block33']],
+                    'genAtch' => ['order'=>80,'type'=>'panel','key'=>'genAtch','classes'=>['block66']]]],
+                'email'  => ['order'=>40,'label'=>lang('email'),'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'pnlEmail'=> ['order'=>40,'type'=>'panel','key'=>'pnlEmail','classes'=>['block50']]]]]]],
+            'panels' => [
+                'genAcct' => ['label'=>lang('account'),   'type'=>'fields','keys'=>$fldAcct],
+                'genProp' => ['label'=>lang('properties'),'type'=>'fields','keys'=>$fldProp],
+                'genAtch' => ['type'=>'attach','defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>"rID_{$rID}_"]],
+                'pnlEmail'=> ['label'=>lang('settings'),  'type'=>'fields','keys'=>$eKeys]],
             'forms'   => ['frmUsers'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/users/save"]]],
             'fields'  => $fields,
             'text'    => ['pw_title' => $rID?lang('password_lost'):lang('password')],
@@ -206,7 +209,6 @@ class bizunoUsers
         $settings['profile']['store_id']      = clean('store_id','integer','post'); // home store for granularity
         $settings['profile']['restrict_store']= clean('restrict_store','integer','post'); // restrict to store
         $settings['profile']['restrict_user'] = clean('restrict_user', 'integer','post'); // restrict user
-//      $settings['profile']['mail_enable']   = clean('mail_enable','boolean','post');
         $settings['profile']['smtp_enable']   = clean('smtp_enable','boolean','post');
         $settings['profile']['smtp_host']     = clean('smtp_host',  'url',    'post');
         $settings['profile']['smtp_port']     = clean('smtp_port',  'integer','post');
@@ -222,31 +224,28 @@ class bizunoUsers
         $role['settings'] = json_decode($role['settings'], true);
         if (!$values['inactive'] && empty($role['settings']['restrict'])) {
             msgDebug("\nGoing to save user on portal.");
+            $pw_new = clean('password_new',    'password','post');
+            $pw_eql = clean('password_confirm','password','post');
+            if (strlen($pw_new) > 0) { // check, see if reset password
+                $guest  = new guest();
+                $pw_enc = $guest->passwordReset($pw_new, $pw_eql);
+                if ($pw_enc) { $values['biz_pass'] = $pw_enc; }
+            }
             $portal = new guest();
-            $portal->portalSaveUser($values['email'], $values['title'], $rID?false:true);
+            $portal->portalSaveUser($values, $rID?false:true);
             if ($oldEmail <> $values['email']) { portalDelete($oldEmail); }
         } elseif ($values['inactive']) {
             msgAdd("\nThis users account will be denied access through the portal.", 'caution');
             portalDelete($email); // disable access through the portal
         }
         if (!$rID) { $rID = $_POST['admin_id'] = $newID; }
-/* Passwords cannot be changed here
-        $pw_new = clean('password_new',    'password','post');
-        $pw_eql = clean('password_confirm','password','post');
-        if (strlen($pw_new) > 0) { // check, see if reset password
-            bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
-            $guest  = new guest();
-            $pw_enc = $guest->passwordReset($pw_new, $pw_eql);
-            if ($pw_enc) { portalWrite('users', ['biz_pass' => $pw_enc], 'update', "biz_user='$email'"); }
-        }
-*/
-        msgDebug("\nrID = $rID and session admin_id = ".getUserCache('profile', 'admin_id', false, 0)."");
+        msgDebug("\nrID = $rID and session admin_id = ".getUserCache('profile', 'admin_id', false, 0));
         if ($io->uploadSave('file_attach', getModuleCache('bizuno', 'properties', 'usersAttachPath')."rID_{$rID}_")) {
             dbWrite(BIZUNO_DB_PREFIX.'users', ['attach'=>'1'], 'update', "id=$rID");
         }
         msgLog(lang('table')." users - ".lang('save')." {$values['email']} ($rID)");
         msgAdd(lang('msg_database_write'), 'success');
-        $data = ['content'=>  ['action'=>'eval','actionData'=>"jq('#accUsers').accordion('select',0); jq('#dgUsers').datagrid('reload');"]];
+        $data = ['content'=>  ['action'=>'eval','actionData'=>"jq('#accUsers').accordion('select',0); bizGridReload('dgUsers');"]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -274,7 +273,7 @@ class bizunoUsers
         $user['email'] = $email;
         $nID  = $_GET['rID'] = dbWrite(BIZUNO_DB_PREFIX."users", $user);
         if ($nID) { msgLog(lang('table')." users-".lang('copy').": $email ($rID => $nID)"); }
-        $data = ['content'=>['action'=>'eval','actionData'=>"jq('#dgUsers').datagrid('reload'); accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".jsLang('details')."', 'bizuno/users/edit', $nID);"]];
+        $data = ['content'=>['action'=>'eval','actionData'=>"bizGridReload('dgUsers'); accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".jsLang('details')."', 'bizuno/users/edit', $nID);"]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -291,7 +290,7 @@ class bizunoUsers
         if (!$rID) { return msgAdd(lang('err_copy_name_prompt')); }
         if (getUserCache('profile', 'admin_id', false, 0) == $rID) { return msgAdd($this->lang['err_delete_user']); }
         $email= dbGetValue(BIZUNO_DB_PREFIX."users", 'email', "admin_id='$rID'");
-        $data = ['content'=> ['action'=>'eval', 'actionData'   =>"jq('#dgUsers').datagrid('reload');"],
+        $data = ['content'=> ['action'=>'eval', 'actionData'   =>"bizGridReload('dgUsers');"],
             'dbAction'    => [BIZUNO_DB_PREFIX."users"         => "DELETE FROM ".BIZUNO_DB_PREFIX."users WHERE admin_id='$rID'",
                               BIZUNO_DB_PREFIX."users_profiles"=> "DELETE FROM ".BIZUNO_DB_PREFIX."users_profiles WHERE user_id='$rID'"]];
         portalDelete($email);

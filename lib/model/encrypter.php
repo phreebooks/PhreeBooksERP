@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-08-24
+ * @version    4.x Last Update: 2020-05-12
  * @filesource /lib/model/encrypter.php
  */
 
@@ -149,8 +149,7 @@ final class encryption {
                 'ref_1'    => isset($fields['ref_1']) ? $fields['ref_1'] : '',
                 'hint'     => $hint,
                 'enc_value'=> $encoded,
-                'exp_date' => $exp_date,
-                ];
+                'exp_date' => $exp_date];
             $id = isset($fields['id']) ? $fields['id'] : 0;
             dbWrite(BIZUNO_DB_PREFIX.'data_security', $sqlData, $id?'update':'insert', "id=$id");
         }
@@ -170,11 +169,12 @@ final class encryption {
         if (!$cc_value) { return; }
         $enc_value= $this->decrypt(getUserCache('profile', 'admin_encrypt'), $cc_value['enc_value']);
         $values   = explode(':', $enc_value);
+        $trim     = isset($values['1']) && substr($values['1'], 0, 2)=='37' ? -4 : -3;
         $fields['name']  = isset($values[0]) ? $values[0] : '';
         $fields['number']= isset($values[1]) ? $values[1] : '';
         $fields['month'] = isset($values[2]) ? substr('0'.$values[2], -2) : '';
         $fields['year']  = isset($values[3]) ? $values[3] : '';
-        $fields['cvv']   = isset($values[4]) ? substr("0000".$values[4], -4)  : '';
+        $fields['cvv']   = isset($values[4]) ? substr("0000".$values[4], $trim)  : '';
         $fields['hint']  = $cc_value['hint'];
         return true;
     }

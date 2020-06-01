@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-10
+ * @version    4.x Last Update: 2020-05-14
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -78,7 +78,7 @@ class bizunoSettings
                     if ('bizuno'<>$cat && $settings['paid'] && BIZUNO_HOST<>'phreesoft' && version_compare($settings['version'], $props['version']) > 0) {
                         $modStatus .= html5("download_$module_id", ['icon'=>'download','events'=>['onClick'=>"jsonAction('bizuno/settings/loadExtension', 0, '$module_id');"]]);
                     }
-                    if (!empty($settings['settings']) || $hasDashboards || !empty($props['dirMethods'])) { // check to see if the module has admin settings
+                    if ($settings['settings'] || $hasDashboards || !empty($props['dirMethods'])) { // check to see if the module has admin settings
                         $modStatus .= html5("prop_$module_id", ['icon'=>'settings','events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=$module_id/admin/adminHome'"]]);
                     }
                     if ($security == 5 && !$required) {
@@ -123,7 +123,7 @@ class bizunoSettings
      */
     private function getLocal()
     {
-        $output = [];
+        $output  = [];
         bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
         $guest   = new guest();
         $modList = $guest->getModuleList();
@@ -140,7 +140,7 @@ class bizunoSettings
                 'loaded'     => true,
                 'devStatus'  => !empty($admin->devStatus) ? $admin->devStatus : false,
                 'active'     => getModuleCache($module, 'properties', 'status'),
-                'settings'   => !empty($admin->settings) && is_array($admin->settings) ? true : false];
+                'settings'   => !empty($admin->settings) ? true : false];
             if (strpos($path, BIZUNO_CUSTOM."$module/")===0) {
                 $output[$cat][$module] = array_merge($output[$cat][$module], ['paid'=>true,'version'=>-1]);
             }
@@ -256,7 +256,7 @@ class bizunoSettings
             msgDebug("\nInstalled module: $module");
             if (isset($msgStack->error['error']) && sizeof($msgStack->error['error']) > 0) { return; }
         }
-        dbClearCache(getUserCache('profile','email'));
+        dbClearCache();
         $cat    = getModuleCache($module, 'properties', 'category', false, 'bizuno');
         $layout = array_replace_recursive($layout, ['content'=>['rID'=>$module,'action'=>'href','link'=>BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]]);
     }
@@ -364,6 +364,7 @@ class bizunoSettings
         $objMethod = new $fqcn($methSet);
         msgDebug('received raw data = '.print_r(file_get_contents("php://input"), true));
         $structure = method_exists($objMethod, 'settingsStructure') ? $objMethod->settingsStructure() : [];
+        $settings = [];
         foreach ($structure as $key => $values) {
             if (isset($values['attr']['multiple'])) {
                 $settings[$key] = implode(':', clean($method.'_'.$key, 'array', 'post'));
@@ -579,7 +580,7 @@ class bizunoSettings
     public function statusSave()
     {
         if (!$security = validateSecurity('bizuno', 'admin', 3)) { return; }
-        $structure = dbLoadStructure(BIZUNO_DB_PREFIX."current_status");
+        $structure = dbLoadStructure(BIZUNO_DB_PREFIX."current_status", '', 'stat_');
         $values = requestData($structure);
         dbWrite(BIZUNO_DB_PREFIX."current_status", $values, 'update');
         msgAdd(lang('msg_settings_saved'), 'success');

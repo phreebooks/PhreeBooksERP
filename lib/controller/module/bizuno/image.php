@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    4.x Last Update: 2020-04-23
  * @filesource /lib/controller/module/bizuno/image.php
  */
 
@@ -56,6 +56,7 @@ class bizunoImage
                 } else { return msgAdd("Folder name is required!"); }
             }
         }
+        $title = jsLang('image_manager').": $path/";
         $frmImgFields = html5('imgTarget', ['attr'=>['type'=>'hidden','value'=>$target]]);
         $frmImgFields.= html5('imgAction', ['attr'=>['type'=>'hidden','value'=>'']]);
         $frmImgFields.= html5('imgMgrPath',['attr'=>['type'=>'hidden','value'=>$path]]);
@@ -77,7 +78,9 @@ class bizunoImage
                 'imgSrchGo' => ['order'=>60,'icon'=>'search', 'label'=>lang('go'),     'events'=>['onClick'=>"imgAction('search');"]],
                 'imgFile'   => ['order'=>70,'type'=>'field',  'attr'=>['type'=>'file']],
                 'imgUpload' => ['order'=>80,'icon'=>'import', 'label'=>lang('upload'), 'events'=>['onClick'=>"imgAction('upload');"]],
-                'help'      => ['order'=>99,'icon'=>'help',   'label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]]];
+                'help'      => ['order'=>99,'icon'=>'help',   'label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
+            'jsHead'  => ['init'=>$this->managerJS()],
+            'jsReady' => ['init'=>"jq('#winImgMgr').window({'title':'".addslashes($title)."'});"]];
         if (in_array($action, ['parent','refresh','search'])) { $data['type'] = 'divHTML'; } // just the window contents
         $layout = array_replace_recursive($layout, $data);
     }
@@ -119,9 +122,16 @@ class bizunoImage
             $output .= '</div><div>'.html5($fn, ['events'=>['onClick'=>"imgClickImg('$fn".($isDir?"/":'')."');"],'attr'=>['type'=>'img','height'=>125,'width'=>125,'src'=>$src]])."</div>";
             $output .= '<div>'.$fn.'</div></div>';
         }
-        $title = jsLang('image_manager').': '.$path. '/';
-        $js = "
-function imgAction(action) { jq('#imgAction').val(action); imgRefresh(); }
+        return $output;
+    }
+
+    /**
+     *
+     * @return type
+     */
+    private function managerJS()
+    {
+        return "function imgAction(action) { jq('#imgAction').val(action); imgRefresh(); }
 function imgClickImg(strImage) {
     var lastChar = strImage.substr(strImage.length - 1);
     if (lastChar == '/') {
@@ -162,10 +172,7 @@ function imgRefresh() {
     } else {
         jq('#winImgMgr').window('refresh', shref+action);
     }
-}
-jq('#winImgMgr').window({'title':'".addslashes($title)."'});";
-        $output .= htmlJS($js);
-        return $output;
+}";
     }
 
     /**

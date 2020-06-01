@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-04-23
  * @filesource /lib/controller/module/phreebooks/dashboards/new_cust/new_cust.php
  */
 
@@ -47,7 +47,7 @@ class new_cust
             'reps'  => ['label'=>lang('just_reps'),'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['reps']]]];
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
         $js = "function chart{$this->code}() {
     var data = new google.visualization.DataTable();
@@ -64,7 +64,9 @@ class new_cust
 }
 google.charts.load('current', {'packages':['table']});
 google.charts.setOnLoadCallback(chart{$this->code});\n";
-        return '<div style="width:100%;text-align:center" id="'.$this->code.'_chart"></div>'.htmlJS($js);
+        $layout = array_merge_recursive($layout, [
+            'divs'  => ['body'=>['order'=>50,'type'=>'html','html'=>'<div style="width:100%" id="'.$this->code.'_chart"></div>']],
+            'jsHead'=> ['init'=>$js]]);
     }
 
     private function getTotals($range='c')

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-06
+ * @version    4.x Last Update: 2020-04-27
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -98,10 +98,10 @@ class phreeformRender
             'forms'   => ['frmPhreeform'=>['classes'=>['fileDownloadForm'],'attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=phreeform/render/render".$extras]]],
             'fields'  => [
                 'id'        => ['attr'=>['type'=>'hidden','value'=>$rID]],
-                'msgFrom'   => ['break'=>true,'label'=>lang('from'),    'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsFrom'],'attr'=>['type'=>'select','value'=>$emailData['defFrom']]],
-                'msgTo'     => ['break'=>true,'label'=>lang('to'),      'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>$emailData['defTo']]],
-                'msgCC1'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>$emailData['defCC']]],
-                'msgCC2'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>'']],
+                'msgFrom'   => ['break'=>true,'label'=>lang('from'),    'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>array_values($emailData['valsFrom']),'attr'=>['type'=>'select','value'=>$emailData['defFrom']]],
+                'msgTo'     => ['break'=>true,'label'=>lang('to'),      'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>array_values($emailData['valsTo']),  'attr'=>['type'=>'select','value'=>$emailData['defTo']]],
+                'msgCC1'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>array_values($emailData['valsTo']),  'attr'=>['type'=>'select','value'=>$emailData['defCC']]],
+                'msgCC2'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>array_values($emailData['valsTo']),  'attr'=>['type'=>'select','value'=>'']],
                 'msgSubject'=> ['break'=>true,'label'=>lang('email_subject'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>600],'attr'=>['size'=>40,'value'=>$emailData['msgSubject']]],
                 'msgBody'   => ['break'=>true,'label'=>lang('email_body'),'lblStyle'=>['min-width'=>'60px'],'attr' =>['type'=>'textarea','value'=>$emailData['msgBody'],'cols'=>'80','rows'=>'10']],
                 'reports'   => $reports],

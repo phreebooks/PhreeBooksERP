@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-16
+ * @version    4.x Last Update: 2020-04-23
  * @filesource /view/main.php
  */
 
@@ -143,7 +143,9 @@ final class view extends portalView
         $jsBody  = array_merge($this->output['jsBody'],  $data['jsBody'],  $html5->jsBody);
         $jsReady = array_merge($this->output['jsReady'], $data['jsReady'], $html5->jsReady);
         $jsResize= array_merge($this->output['jsResize'],$data['jsResize'],$html5->jsResize);
-        if (sizeof($jsResize)) { $jsReady['reSize'] = "var windowWidth = jq(window).width();\njq(window).resize(function() { if (jq(window).width() != windowWidth) { windowWidth = jq(window).width(); ".implode(" ", $jsResize)." } });"; }
+        if (sizeof($jsResize)) { $jsHead['reSize'] = "var windowWidth = jq(window).width();
+function resizeEverything() { ".implode(" ", $jsResize)." }
+jq(window).resize(function() { if (jq(window).width() != windowWidth) { windowWidth = jq(window).width(); resizeEverything(); } });"; }
         if ($addMsg) { $jsReady['msgStack'] = $html5->addMsgStack(); }
         // Render the output
         if (sizeof($jsHead)) { // first
@@ -162,7 +164,7 @@ final class view extends portalView
  * Formats a system value to the locale view format
  * @global array $currencies
  * @param mixed $value - value to be formatted
- * @param string $format - Specifies the formatting ot apply
+ * @param string $format - Specifies the formatting to apply
  * @return string
  */
 function viewFormat($value, $format = '')
@@ -254,6 +256,16 @@ function viewFormat($value, $format = '')
         return getModuleCache($tmp[1], $tmp[2], $value, false, $value);
     }
     return $value;
+}
+
+/**
+ *
+ * @param type $content
+ * @param type $action
+ */
+function viewDashList($content='', $action='')
+{
+    return '<div class="dashHover"><span style="width:100%;float:left">'.$content.'<span style="float:right" class="menuHide dashAction">'.$action.'</span></span></div>';
 }
 
 /**
@@ -411,6 +423,26 @@ function viewScreenSize()
     $size = 'large';
     return $size;
 }
+
+/**
+ * Generates a value if at a sub menu dashboard page.
+ * @param string $menuID - Derives from menuID get variable
+ * @return array structure of menu
+ */
+function viewSubMenu($menuID=false) {
+    if (!$menuID) { $menuID = clean('menuID', 'cmd', 'get'); }
+    if (empty($menuID) || $menuID=='home') { return; } // only show submenu when viewing a dashboard
+    if ($menuID == 'settings') { // special case for settings in the quickbar
+        $menu = getUserCache('quickBar');
+        $prop = $menu['child']['home'];
+    } else {
+        $menu = getUserCache('menuBar');
+        if (!isset($menu['child'][$menuID])) { return ''; }
+        $prop = $menu['child'][$menuID];
+    }
+    return $prop;
+}
+
 /**
  * Takes a text string and truncates it to a given length, if the string is longer will append ... to the truncated string
  * @param string $text - Text to test/truncate
@@ -739,7 +771,9 @@ function viewMain()
  */
 function adminStructure($module, $structure=[], $lang=[])
 {
-    $title= getModuleCache($module, 'properties', 'title').' - '.lang('settings');
+    $props= getModuleCache($module, 'properties');
+    msgDebug("\nmodule $module properties = ".print_r($props, true));
+    $title= $props['title'].' - '.lang('settings');
     $data = ['title'=>$title, 'statsModule'=>$module, 'security'=>getUserCache('security', 'admin', false, 0),
         'divs'    => [
             'heading'=> ['order'=>30,'type'=>'html','html'=>html5('',['icon'=>'back','events'=>['onClick'=>"hrefClick('bizuno/settings/manager');"]])."<h1>$title</h1>"],
@@ -754,7 +788,22 @@ function adminStructure($module, $structure=[], $lang=[])
         'jsReady'=>['init'=>"ajaxForm('frmAdmin');"]];
     if (!empty($structure)) { adminSettings($data, $structure, $lang); }
     else                    { unset($data['tabs']['tabAdmin']['divs']['settings'], $data['jsReady']['init']); }
+    $methDirs = ['dashboards'];
+    if     (isset($props['dirMethods']) && is_array($props['dirMethods'])) { $methDirs = array_merge($methDirs, $props['dirMethods']); }
+    elseif (!empty($props['dirMethods']))  { $methDirs[] = $props['dirMethods']; }
+    $order = 70;
+    foreach ($methDirs as $folder) { // keys = 'dashboards','totals','carriers', etc.
+        $methProps = getModuleCache($module, $folder);
+        if (empty($methProps)) { continue; }
+        msgDebug("\nReady to process folder $folder and props = ".print_r($methProps, true));
+        $html = adminMethods($module, $methProps, $folder);
+        $data['tabs']['tabAdmin']['divs']['tab'.$folder] = ['order'=>$order,'label'=>lang($folder),'type'=>'html','html'=>$html['body']];
+        $data['jsReady']["js{$module}_{$folder}"] = $html['jsBody'];
+        $order++;
+    }
     return array_replace_recursive(viewMain(), $data);
+
+
 }
 
 function adminSettings(&$data, $structure, $lang)
@@ -780,7 +829,71 @@ function adminSettings(&$data, $structure, $lang)
 }
 
 /**
- * Builds the HTML for custom tabs, sorts, generates fieldset and input HTML
+ * Generates the view for modules methods including any dashboards
+ * @param string $module - module or extension id
+ * @param array $props - module properties from cache
+ * @param string $key - id of the folder to build view
+ * @return array - HTML code for the structure
+ */
+function adminMethods($module, $props, $key)
+{
+    $security = validateSecurity('bizuno', 'admin', 1);
+    $fields = [
+        'btnMethodAdd' => ['attr'=>['type'=>'button','value'=>lang('install')],'hidden'=>$security>1?false:true],
+        'btnMethodDel' => ['attr'=>['type'=>'button','value'=>lang('remove')], 'hidden'=>$security>4?false:true],
+        'btnMethodProp'=> ['icon'=>'settings'],
+        'settingSave'  => ['icon'=>'save']];
+    $output = ['body'=>'', 'jsBody'=>''];
+    $output['body'] .= '<table style="border-collapse:collapse;width:100%">'."\n".' <thead class="panel-header">'."\n";
+    $title = $key == 'dashboards' ? lang('dashboard') : lang('method');
+    $output['body'] .= "  <tr><th>&nbsp;</th><th>$title</th><th>".lang('description')."</th><th>".lang('action')."</th></tr>\n </thead>\n <tbody>\n";
+    foreach ($props as $method => $settings) {
+        $fqcn = "\\bizuno\\$method";
+        bizAutoLoad("{$settings['path']}$method.php", $fqcn);
+        if (empty($settings['settings'])) { $settings['settings'] = []; }
+        $clsMeth = new $fqcn($settings['settings']);
+        if (isset($clsMeth->hidden) && $clsMeth->hidden) { continue; }
+        $output['body'] .= "  <tr>\n";
+        $output['body'] .= '    <td valign="top">'.htmlFindImage($settings, "32")."</td>\n";
+        $output['body'] .= '    <td valign="top" '.($settings['status'] ? ' style="background-color:lightgreen"' : '').">".$settings['title'].'</td>';
+        $output['body'] .= "    <td><div>".$settings['description'];
+        if ($key <> 'dashboards' && !$settings['status'] && $security > 1) {
+            $output['body'] .= "</div></td>\n";
+            $fields['btnMethodAdd']['events']['onClick'] = "jsonAction('bizuno/settings/methodInstall&module=$module&path=$key&method=$method');";
+            $output['body'] .= '    <td valign="top" style="text-align:right;">'.html5('install_'.$method, $fields['btnMethodAdd'])."</td>\n";
+        } else {
+            $output['body'] .= "</div>";
+            $output['body'] .= '<div id="divMethod_'.$method.'" style="display:none;" class="layout-expand-over">';
+            $output['body'] .= html5("frmMethod_$method", ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/methodSettingsSave&module=$module&type=$key&method=$method"]]);
+            $structure = method_exists($clsMeth, 'settingsStructure') ? $clsMeth->settingsStructure() : [];
+            foreach ($structure as $setting => $values) {
+                $mult = isset($values['attr']['multiple']) ? '[]' : '';
+                if (isset($values['attr']['multiple'])) { $values['attr']['value'] = explode(':', $values['attr']['value']); }
+                $output['body'] .= html5($method.'_'.$setting.$mult, $values)."<br />\n";
+            }
+            $fields['settingSave']['events']['onClick'] = "jq('#frmMethod_".$method."').submit();";
+            $output['body']  .= '<div style="text-align:right">'.html5('imgMethod_'.$method, $fields['settingSave']).'</div>';
+            $output['body']  .= "</form></div>";
+            $output['jsBody'].= " ajaxForm('frmMethod_$method');";
+            $output['body']  .= "</td>\n";
+            $output['body']  .= '<td valign="top" nowrap="nowrap" style="text-align:right;">' . "\n";
+            $fields['btnMethodDel']['events']['onClick'] = "if (confirm('".lang('msg_method_delete_confirm')."')) jsonAction('bizuno/settings/methodRemove&module=$module&type=$key&method=$method');";
+            if ($security>4 && $key<>'dashboards' && empty($clsMeth->required)) {
+                $output['body'] .= html5('remove_'.$method, $fields['btnMethodDel']) . "\n";
+            }
+            $fields['btnMethodProp']['events']['onClick'] = "jq('#divMethod_{$method}').toggle('slow');";
+            $output['body'] .= html5('prop_'.$method, $fields['btnMethodProp'])."\n";
+            $output['body'] .= "</td>\n";
+        }
+        $output['body'] .= "  </tr>\n";
+        $output['body'] .= '<tr><td colspan="5"><hr /></td></tr>'."\n";
+    }
+    $output['body'] .= " </tbody>\n</table>\n";
+    return $output;
+}
+
+/**
+ * Builds the HTML for custom tabs, sorts, generates structure
  * @param array $data - Current working layout to modify
  * @param array $structure - Current structure to process data
  * @param string $module - Module ID
@@ -789,55 +902,46 @@ function adminSettings(&$data, $structure, $lang)
  */
 function customTabs(&$data, $module, $tabID)
 {
-    $structure = $data['fields'];
-    // @todo Use sortOrder function
-    $temp = []; // sort the fields
-    foreach ($structure as $key => $value) { $temp[$key] = isset($value['order']) ? $value['order'] : 50; }
-    array_multisort($temp, SORT_ASC, $structure);
     $tabs = getModuleCache($module, 'tabs');
     if (empty($tabs)) { return; }
-    foreach ($structure as $key => $field) { // pull out the groups
+    $data['fields'] = sortOrder($data['fields']);
+    foreach ($data['fields'] as $key => $field) { // gather by groups
         if (isset($field['tab']) && $field['tab'] > 0) { $tabs[$field['tab']]['groups'][$field['group']]['fields'][$key] = $field; }
     }
     foreach ($tabs as $tID => $tab) {
         if (!isset($tab['groups'])) { continue; }
         if (!isset($tab['title'])) { $tab['title'] = 'Untitled'; }
         if (!isset($tab['group'])) { $tab['group'] = $tab['title']; }
-        $temp = [];
-        foreach ($tab['groups'] as $key => $value) { $temp[$key] = isset($value['order']) ? $value['order'] : 50; }
-        array_multisort($temp, SORT_ASC, $tab['groups']);
-        $html = '';
-        foreach ($tab['groups'] as $gID =>$group) {
-            if (isset($group['fields']) && sizeof($group['fields']) > 0) {
-                $html .= "  <fieldset>";
-                $title = isset($group['title']) ? $group['title'] : $gID;
-                if ($title) { $html .= "<legend>$title</legend>\n"; }
-                foreach ($group['fields'] as $fID => $field) {
-                    $structure[$fID]['position'] = 'after'; // put the labels after
-                    switch($field['attr']['type']) {
-                        case 'radio':
-                            $cur = isset($structure[$fID]['attr']['value']) ? $structure[$fID]['attr']['value'] : '';
-                            foreach ($field['opts'] as $elem) {
-                                $structure[$fID]['attr']['value'] = $elem['id'];
-                                $structure[$fID]['attr']['checked'] = $cur == $elem['id'] ? true : false;
-                                $structure[$fID]['label'] = $elem['text'];
-                                $html .= "    ".html5($fID, $structure[$fID])."<br />\n";
-                            }
-                            break;
-                        case 'select': $structure[$fID]['values'] = $field['opts']; // set the choices and render
-                        default:       $html .= "    ".html5($fID, $structure[$fID])."<br />\n";
-                    }
+        $groups = sortOrder($tab['groups']);
+        $data['tabs'][$tabID]['divs']["tab_$tID"] = ['order'=>isset($tab['sort_order']) ? $tab['sort_order'] : 50,'label'=>$tab['title'],'type'=>'divs','classes'=>['areaView']];
+        foreach ($groups as $gID =>$group) {
+            if (empty($group['fields'])) { continue; }
+            $keys = [];
+            $title = isset($group['title']) ? $group['title'] : $gID;
+            foreach ($group['fields'] as $fID => $field) {
+                $keys[] = $fID;
+                switch($field['attr']['type']) {
+                    case 'radio':
+                        $cur = isset($data['fields'][$fID]['attr']['value']) ? $data['fields'][$fID]['attr']['value'] : '';
+                        foreach ($field['opts'] as $elem) {
+                            $data['fields'][$fID]['attr']['value'] = $elem['id'];
+                            $data['fields'][$fID]['attr']['checked'] = $cur == $elem['id'] ? true : false;
+                            $data['fields'][$fID]['label'] = $elem['text'];
+                        }
+                        break;
+                    case 'select': $data['fields'][$fID]['values'] = $field['opts']; // set the choices and render
+                    default:
                 }
-                $html .= "  </fieldset>\n";
             }
+            $data['tabs'][$tabID]['divs']["tab_$tID"]['divs']["{$tID}_{$gID}"] = ['order'=>10,'type'=>'panel','classes'=>['block33'],'key'=>"tab_{$tID}_{$gID}"];
+            $data['panels']["tab_{$tID}_{$gID}"] = ['label'=>$title,'type'=>'fields','keys'=>$keys];
         }
-        $data['tabs'][$tabID]['divs']["tab_".$tID] = ['type'=>'html', 'order'=>isset($tab['sort_order']) ? $tab['sort_order'] : 50, 'label'=>$tab['title'], 'html'=>$html];
     }
-    $data['fields'] = $structure;
+    msgDebug("\nstructure = ".print_r($data, true));
 }
 
 /**
- * This function builds an html element based on the properties passed, element of type INPUT is the default if not specified
+ * This function builds an HTML element based on the properties passed, element of type INPUT is the default if not specified
  * @param string $id - becomes the DOM id and name of the element
  * @param array $prop - structure of the HTML element
  * @return string $output - HTML5 compatible element
@@ -848,14 +952,8 @@ function html5($id='', $prop=[])
     return $html5->render($id, $prop);
 }
 
-function htmlJS($js='')
-{
-    if (!$js) { return ''; }
-    return '<script type="text/javascript">'."\n$js\n</script>\n";
-}
-
 /**
- * Searches a given directory for a filename match and generates html if found
+ * Searches a given directory for a filename match and generates HTML if found
  * @param string $path - path from the users root to search
  * @param string $filename - File name to search for
  * @param integer $height - Height of the image, width is auto-sized by the browser
@@ -930,119 +1028,6 @@ function dgHtmlTaxData($id, $field, $type='c', $xClicks='')
 }
 
 /**
- * This function builds the HTML output render a jQuery easyUI accordion feature
- * @param string $output - running string of them HTML output to be add to
- * @param array $prop - complete data array containing structure of entire page, only JavaScript part is used to force load from JavaScript data
- * @param string $id - accordion DOM ID
- * @param array $settings - the structure of the accordions (i.e. div structure for each accordion)
- */
-function htmlAccordion(&$output, $prop, $idx=false)
-{
-    global $html5;
-    if ($idx) { // legacy to old style
-        $prop = array_merge($prop['accordion'][$idx], ['id'=>$idx]);
-    }
-    $html5->layoutAccordion($output, $prop);
-}
-
-function htmlAddress(&$output, $prop)
-{
-    global $html5;
-    $html5->layoutAddress($output, $prop);
-}
-
-/**
- * This function builds the HTML (and JavaScript) content to render a jQuery easyUI grid
- * @param array $output - running HTML string to render the page
- * @param string $prop - The structure source data to pull from
- * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI grid appended to $output
- */
-function htmlDatagrid(&$output, $prop, $idx=false)
-{
-    global $html5;
-    $html5->layoutDatagrid($output, $prop, $idx);
-}
-
-/**
- * This function takes the menu structure and builds the easyUI HTML markup
- * @param string $output - The running html output
- * @param array $data - The current working structure to render
- * @return string - HTML formatted EasyUI menu appended to $output
- */
-function htmlMenu(&$output)
-{
-    global $html5;
-    $html5->menu($output);
-}
-
-/**
- * This function generates the tables pulled from the current structure, position: $data['tables'][$idx]
- * @param array $output - running HTML string to render the page
- * @param string $prop - The structure source data to pull from
- * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI tables appended to $output
- */
-function htmlTables(&$output, $prop, $idx=false)
-{
-    global $html5;
-    if ($idx) {  // legacy to old style
-        $prop = $prop['tables'][$idx];
-        $prop['attr']['id'] = $idx;
-    }
-    $html5->layoutTable($output, $prop);
-}
-
-/**
- * This function generates the tabs pulled from the current structure, position: $data['tabs'][$idx]
- * @param array $output - running HTML string to render the page
- * @param string $prop - The structure source data to pull from
- * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI tabs appended to $output
- */
-function htmlTabs(&$output, $prop, $idx=false)
-{
-    global $html5;
-    if ($idx) {  // legacy to old style
-        $prop = array_merge($prop['tabs'][$idx], ['id'=>$idx]);
-    }
-    $html5->layoutTab($output, $prop);
-}
-
-/**
- * This function generates a html toolbar pulled from the current structure
- * @param array $output - running HTML string to render the page
- * @param string $prop - The structure source data to pull from
- * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI toolbar appended to $output
- */
-function htmlToolbar(&$output, $prop, $idx=false)
-{
-    global $html5;
-    if ($idx) { // legacy to old style
-        if (empty($prop['toolbars'][$idx])) { return; }
-        $prop = array_merge($prop['toolbars'][$idx], ['id'=>$idx]);
-    }
-    $html5->layoutToolbar($output, $prop);
-}
-
-/**
- * This functions builds the HTML for a jQuery easyUI tree
- * @param array $output - running HTML string to render the page
- * @param string $prop - The structure source data to pull from
- * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI tree appended to $output
- */
-function htmlTree(&$output, $prop, $idx=false)
-{
-    global $html5;
-    if ($idx) {  // legacy to old style
-        $prop = array_merge($prop['tree'][$idx], ['id'=>$idx]);
-    }
-    return $html5->layoutTree($output, $prop);
-}
-
-/**
  * This function formats database data into a JavaScript array
  * @param array $dbData - raw data from database of rows matching given criteria
  * @param string $name - JavaScript variable name linked to the datagrid to populate with data
@@ -1075,6 +1060,5 @@ function formatDatagrid($dbData, $name, $structure=[], $override=[])
             $rows[] = $temp;
         }
     }
-//    msgDebug("\n Added datagrid data rows: ".print_r($rows, true));
     return "var $name = ".json_encode(['total'=>sizeof($rows), 'rows'=>$rows]).";\n";
 }

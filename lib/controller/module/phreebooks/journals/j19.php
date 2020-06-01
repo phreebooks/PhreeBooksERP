@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-19
+ * @version    4.x Last Update: 2019-11-19
  * @filesource /lib/controller/module/phreebooks/journals/j19.php
  */
 
@@ -64,7 +64,7 @@ class j19 extends jCommon
             'mainItem'=> ['region'=>'center','order'=>50,'type'=>'datagrid','key'=>'item'],
             'mainFlds'=> ['region'=>'right', 'order'=> 1,'width' =>400,'type'=>'fields',   'keys'=>$fldKeys],
             'mainAddr'=> ['region'=>'right', 'order'=>20,'width' =>400,'type'=>'accordion','key' =>'accBizPOS'],
-            'mainTtl' => ['region'=>'right', 'order'=>50,'width' =>400,'type'=>'totals',   'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']],
+            'mainTtl' => ['region'=>'right', 'order'=>50,'width' =>400,'type'=>'totals',   'content'=>$data['totals']],
             'mainPmnt'=> ['region'=>'right', 'order'=>80,'width' =>400,'type'=>'datagrid', 'key' =>'payment']];
         $data['toolbars']= ['tbBizPos'=>['icons'=>[
             'back'  => ['order'=>10,'events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome');"]],

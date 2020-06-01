@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-27
+ * @version    4.x Last Update: 2020-04-15
  * @filesource /lib/controller/module/phreebooks/journals/j14.php
  */
 
@@ -52,7 +52,7 @@ class j14 extends jCommon
     jq('#gl_acct_id').val(data.gl_inv);
     bizNumSet('qty_stock', data.qty_stock);
     jq('#dgJournalItem').datagrid({ url:'".BIZUNO_AJAX."&p=inventory/main/managerBOMList&rID='+data.id });
-    jq('#dgJournalItem').datagrid('reload');
+    bizGridReload('dgJournalItem');
     bizNumSet('qty', 1);";
         $structure['qty_stock']    = ['order'=>80,'break'=>true,'options'=>['width'=>100],'label'=>pullTableLabel('inventory', 'qty_stock'),'attr'=>['type'=>'float','readonly'=>'readonly']];
         $structure['balance']      = ['order'=>90,'break'=>true,'options'=>['width'=>100],'label'=>lang('balance'),'attr'=>['type'=>'float', 'readonly'=>'readonly']];
@@ -102,13 +102,18 @@ class j14 extends jCommon
         $data['fields']['gl_acct_id']['attr']['type'] = 'hidden';
         $data['fields']['description']['order']= 45;
         $data['fields']['description']['options']['width'] = 300;
-        $data['divs']['divDetail']   = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'props'  => ['order'=>40,'type'=>'fields',  'classes'=>['blockView'],'attr'  =>['id'=>'pbProps'], 'keys'   =>$fldKeys],
-            'dgItems'=> ['order'=>50,'type'=>'datagrid','classes'=>['blockView'],'styles'=>['width'=>'600px'],'key'    =>'item'],
-            'totals' => ['order'=>60,'type'=>'totals',  'classes'=>['blockView'],'attr'  =>['id'=>'pbTotals'],'content'=>$data['totals']]]];
+        $data['divs']['divDetail']   = ['order'=>50,'type'=>'divs',   'classes'=>['areaView'],'divs'=>[
+            'props'  => ['order'=>20,'type'=>'panel','key'=>'props',  'classes'=>['block50']],
+            'dgItems'=> ['order'=>30,'type'=>'panel','key'=>'dgItems','classes'=>['block50']],
+            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['blockViewR']],
+            'divAtch'=> ['order'=>90,'type'=>'panel','key'=>'divAtch','classes'=>['block50']]]];
+
+        $data['panels']['props']  = ['label'=>lang('details'),'type'=>'fields',  'keys'   =>$fldKeys];
+        $data['panels']['dgItems']= ['type'=>'datagrid','key'    =>'item'];
+        $data['panels']['totals'] = ['type'=>'totals',  'content'=>$data['totals']];
         $data['jsHead']['preSubmit'] = "function preSubmit() {
-    if (sku = '') return false;
-    var item = {sku:jq('#sku').val(),qty:jq('#qty').val(),description:jq('#description').val(),total:0,gl_account:jq('#gl_account').val()};
+    if (sku == '') return false;
+    var item  = {sku:jq('#sku').val(),qty:jq('#qty').val(),description:jq('#description').val(),total:0,gl_account:jq('#gl_account').val()};
     var items = {total:1,rows:[item]};
     var serializedItems = JSON.stringify(items);
     jq('#item_array').val(serializedItems);

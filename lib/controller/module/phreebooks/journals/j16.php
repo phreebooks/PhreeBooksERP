@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-27
+ * @version    4.x Last Update: 2020-05-20
  * @filesource /lib/controller/module/phreebooks/journals/j16.php
  */
 
@@ -68,16 +68,18 @@ class j16 extends jCommon
         $fldKeys = ['id','journal_id','recur_id','recur_frequency','item_array','store_id','invoice_num','post_date'];
         $data['jsHead']['datagridData'] = $this->dgDataItem;
         $data['datagrid']['item'] = $this->dgAdjust('dgJournalItem');
-        unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
-        unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
-        unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
-        unset($data['jsReady']['focus']);
+        unset($data['toolbars']['tbPhreeBooks']['icons']['print'],  $data['toolbars']['tbPhreeBooks']['icons']['recur']);
+        unset($data['toolbars']['tbPhreeBooks']['icons']['payment'],$data['jsReady']['focus']);
         $isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? '1' : '0';
         $data['fields']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
-        $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'props' => ['order'=>40,'label'=>lang('details'),'type'=>'fields','classes'=>['blockView'], 'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
-            'totals'=> ['order'=>50,'label'=>lang('totals'), 'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
-        $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
+        $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'divs'=>[
+            'props'  => ['order'=>30,'type'=>'panel','key'=>'props', 'classes'=>['block33']],
+            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['blockViewR']],
+            'dgItems'=> ['order'=>50,'type'=>'panel','key'=>'dgItems','classes'=>['block99']],
+            'divAtch'=> ['order'=>90,'type'=>'panel','key'=>'divAtch','classes'=>['block50']]]];
+        $data['panels']['props']  = ['label'=>lang('details'),'type'=>'fields','keys'   =>$fldKeys];
+        $data['panels']['totals'] = ['label'=>lang('totals'), 'type'=>'totals','content'=>$data['totals']];
+        $data['panels']['dgItems']= ['type'=>'datagrid','key'    =>'item'];
     }
 
 /*******************************************************************************************************************/
@@ -213,9 +215,9 @@ class j16 extends jCommon
     }
 
     /**
-     * Creates the datagrid structure for inventory adjustments line items
+     * Creates the grid structure for inventory adjustments line items
      * @param string $name - DOM field name
-     * @return array - datagrid structure
+     * @return array - grid structure
      */
     private function dgAdjust($name)
     {
@@ -236,12 +238,13 @@ class j16 extends jCommon
                 'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
             'source' => ['actions'=>['newItem'=>['order'=>10,'icon'=>'add','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
             'columns'=> [
-                'id'         => ['order'=>0, 'attr'=>['hidden'=>true]],
-                'gl_account' => ['order'=>0, 'attr'=>['hidden'=>true]],
-                'unit_cost'  => ['order'=>0, 'attr'=>['hidden'=>true]],
-                'action'     => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'id'         => ['order'=>1, 'attr'=>['hidden'=>true]],
+                'gl_account' => ['order'=>1, 'attr'=>['hidden'=>true]],
+                'unit_cost'  => ['order'=>1, 'attr'=>['hidden'=>true]],
+                'action'     => ['order'=>0, 'label'=>lang('action'),'attr'=>['width'=>60],
+                    'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> ['trash'=>['order'=>20,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
-                'sku'        => ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true,'align'=>'center'],
+                'sku'        => ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'center'],
                     'events' => ['editor'=>"{type:'combogrid',options:{ width:150, panelWidth:540, delay:500, idField:'sku', textField:'sku', mode:'remote',
     url:        '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID=$store_id',
     onClickRow: function (idx, data) { adjFill(data); },

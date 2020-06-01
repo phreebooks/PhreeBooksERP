@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-31
+ * @version    4.x Last Update: 2020-03-30
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
@@ -61,7 +61,7 @@ class bizunoApi
      * @param integer $jID [default 0] - used to preset the journal being written to
      * @return array modified $layout structure
      */
-    protected function apiJournalEntry(&$layout, $order=[], $jID=0)
+    protected function apiJournalEntry(&$layout, $order=[], $forceJrnl=0)
     {
         msgDebug("\nWorking with submitted order = ".print_r($order, true));
         if (!dbConnected()) { return msgAdd('There was an issue connecting to your account! Please check your credentials.'); }
@@ -78,6 +78,7 @@ class bizunoApi
         $this->setJournalDiscount($order); // must be last, also does unbalance correction for discrepancies between order total and item total
         $this->setJournalTotal($order);
         // determine what journal to post to
+        $jID = !empty($forceJrnl) ? $forceJrnl : getModuleCache('bizuno','settings','bizuno_api','auto_detect');
         switch ($jID) {
             case 10: $jID = 10; break; // Sales Order
             case 12: $jID = 12; break; // Sale

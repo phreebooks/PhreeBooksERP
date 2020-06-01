@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-26
+ * @version    4.x Last Update: 2020-04-27
  * @filesource /lib/model/io.php
  */
 
@@ -192,6 +192,7 @@ final class io
             $output[] = [
                 'name' => str_replace($this->myFolder, "", $file), // everything less the myFolder path, used to delete and navigate to
                 'title'=> str_replace($this->myFolder.$path, "", $file), // just the filename, part matching the *
+                'fn'   => str_replace($this->myFolder.$path, "", $file), // duplicate of title to use in attach grid to avoid conflict with title of grid
                 'size' => viewFilesize($file),
                 'mtime'=> $fmTime,
                 'date' => date(getModuleCache('bizuno', 'settings', 'locale', 'date_short'), $fmTime)];
@@ -232,7 +233,7 @@ final class io
      * Recursively copies the contents of the source to the destination
      * @param string $dir_source - Source directory from the users root
      * @param string $dir_dest - Destination directory from the users root
-     * @return string - boolean false
+     * @return null
      */
     public function folderCopy($dir_source, $dir_dest)
     {
@@ -448,7 +449,6 @@ final class io
         if ($srcPath === '' || $srcPath === null || $srcPath === false) { return false; }
         $path  = pathinfo(BIZUNO_DATA . $srcPath, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR; // pull the path from the full path and file
         if (!is_dir($path)) {
-//          msgDebug("\nMaking path = $path");
             @mkdir($path, 0775, true);
             $blnkDir = pathinfo($srcPath, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR; // need to remove BIZUNO_DATA before writing file
             $this->fileWrite('<'.'?'.'php', "{$blnkDir}index.php", false);
