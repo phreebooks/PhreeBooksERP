@@ -226,7 +226,7 @@ class bizunoBackup
                 msgDebug("\nUnzip successful, removing downloaded zipped file: $zipFile");
                 @unlink($zipFile);
                 $srcFolder = $this->guessFolder("temp/");
-                if (!$srcFolder) { return msgAdd("Could not find downloded upgrade folder, aborting!"); }
+                if (!$srcFolder) { return msgAdd("Could not find downloaded upgrade folder, aborting!"); }
                 $io->folderMove("temp/$srcFolder/", '', true);
                 rmdir($pathLocal.$srcFolder);
             } else {

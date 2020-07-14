@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2018-12-19
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/payment/common.php
  */
 
@@ -30,16 +30,16 @@ class paymentCommon
     {
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
-        settingsReplace($this->settings, $usrSettings, $this->settingsStructure());        
+        settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
     }
-    
+
     protected function settingsDefaults()
     {
         $pmtDef = getModuleCache($this->moduleID, 'settings', 'general', false, []);
         return ['cash_gl_acct'=>$pmtDef['gl_payment_c'],'disc_gl_acct'=>$pmtDef['gl_discount_c'],'order'=>10,
             'prefix'=>'CC','prefixAX'=>'AX','allowRefund'=>'0'];
     }
-    
+
     public function settingsCommon()
     {
         $noYes = [['id'=>'0','text'=>lang('no')], ['id'=>'1','text'=>lang('yes')]];
@@ -52,7 +52,7 @@ class paymentCommon
             'allowRefund' => ['label'=>$this->lang['allow_refund'],'values'=>$noYes,   'attr'=>['type'=>'select','value'=>$this->settings['allowRefund']]]];
     }
 
-    public function renderCommon(&$output, $data, $values=[], $dispFirst=false)
+    public function renderCommon($data, $values=[], $dispFirst=false)
     {
         msgDebug("\nWorking with values = ".print_r($values, true));
         $exp = pullExpDates();
@@ -65,7 +65,7 @@ class paymentCommon
             'month'     => ['label'=>lang('payment_expiration'),  'values'=>$exp['months'],'attr'=>  ['type'=>'select']],
             'year'      => ['values'=>$exp['years'],              'break'=>true,'attr'=>['type'=>'select']],
             'cvv'       => ['label'=>lang('payment_cvv'),                       'attr'=>['size'=>'5', 'maxlength'=>'4']]];
-        if (isset($values['method']) && $values['method']==$this->code 
+        if (isset($values['method']) && $values['method']==$this->code
                 && isset($data['fields']['id']['attr']['value']) && $data['fields']['id']['attr']['value']) { // edit
             $this->viewData['number']['attr']['value'] = isset($values['hint']) ? $values['hint'] : '****';
             $invoice_num = $invoice_amex = $data['fields']['invoice_num']['attr']['value'];
@@ -103,7 +103,7 @@ class paymentCommon
                 $show_c = true;
             } else { $show_c = false; }
         }
-        $output['jsBody'][] = "
+        htmlQueue("
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account', discGL:'$discount_gl', ref:'$invoice_num', refAX:'$invoice_amex'};
 function payment_$this->code() {
     jq('#invoice_num').val(arrPmtMethod['$this->code'].ref);
@@ -119,9 +119,9 @@ function {$this->code}RefNum(type) {
     var prefix= ccNum.substr(0, 2);
     var newRef = prefix=='37' ? arrPmtMethod['$this->code'].refAX : arrPmtMethod['$this->code'].ref;
     jq('#invoice_num').val(newRef);
-}";
-        if ($this->code == $dispFirst) { $output['jsReady'][] = "jq('#invoice_num').val('$invoice_num');"; }
-        $output['body'] .= html5($this->code.'_action', ['label'=>lang('capture'),'hidden'=>($show_c?false:true),'attr'=>['type'=>'radio','value'=>'c','checked'=>$checked=='c'?true:false],
+}", 'jsHead');
+        if ($this->code == $dispFirst) { htmlQueue("jq('#invoice_num').val('$invoice_num');", 'jsReady'); }
+        $html  = html5($this->code.'_action', ['label'=>lang('capture'),'hidden'=>($show_c?false:true),'attr'=>['type'=>'radio','value'=>'c','checked'=>$checked=='c'?true:false],
     'events'=>  ['onChange'=>"jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').hide(); jq('#div{$this->code}c').show();"]]).
 html5($this->code.'_action', ['label'=>lang('stored'), 'hidden'=>($show_s?false:true),'attr'=>['type'=>'radio','value'=>'s','checked'=>$checked=='s'?true:false],
     'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}n').hide(); jq('#div{$this->code}s').show();"]]).
@@ -129,13 +129,13 @@ html5($this->code.'_action', ['label'=>lang('new'),    'hidden'=>($show_n?false:
     'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').show();"]]).
 html5($this->code.'_action', ['label'=>$this->lang["at_{$this->code}"],                    'attr'=>['type'=>'radio','value'=>'w','checked'=>$checked=='w'?true:false],
     'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').hide();"]]).'<br />';
-$output['body'] .= '<div id="div'.$this->code.'c"'.($show_c?'':'style=" display:none"').'>';
-if ($show_c) {
-    $output['body'] .= html5($this->code.'trans_code',$this->viewData['trans_code']).sprintf(lang('msg_capture_payment'), viewFormat($values['total'],'currency'));
-}
-$output['body'] .= '</div><div id="div'.$this->code.'s"'.(!$show_c?'':'style=" display:none"').'>';
-if ($show_s) { $output['body'] .= lang('payment_stored_cards').'<br />'.html5($this->code.'selCards', $this->viewData['selCards']); }
-$output['body'] .= '</div>
+        $html .= '<div id="div'.$this->code.'c"'.($show_c?'':'style=" display:none"').'>';
+        if ($show_c) {
+            $html .= html5($this->code.'trans_code',$this->viewData['trans_code']).sprintf(lang('msg_capture_payment'), viewFormat($values['total'],'currency'));
+        }
+        $html .= '</div><div id="div'.$this->code.'s"'.(!$show_c?'':'style=" display:none"').'>';
+        if ($show_s) { $html .= lang('payment_stored_cards').'<br />'.html5($this->code.'selCards', $this->viewData['selCards']); }
+        $html .= '</div>
 <div id="div'.$this->code.'n"'.(!$show_c&&!$show_s?'':'style=" display:none"').'>'.
     html5($this->code.'_save',  $this->viewData['save']).
     html5($this->code.'_name',  $this->viewData['name']).
@@ -144,6 +144,7 @@ $output['body'] .= '</div>
     html5($this->code.'_year',  $this->viewData['year']).
     html5($this->code.'_cvv',   $this->viewData['cvv']).'
 </div>';
+        return $html;
     }
 
     private function getDiscGL($data)

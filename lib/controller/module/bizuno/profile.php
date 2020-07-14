@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-11
+ * @version    4.x Last Update: 2020-07-08
  * @filesource lib/controller/module/bizuno/profile.php
  */
 
@@ -70,8 +70,8 @@ class bizunoProfile
             'tabs'    => ['tabProfile'=>['divs'=>[
                 'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','classes'=>['areaView'],'divs'=>[
                     'genAcct' => ['order'=>10,'type'=>'panel','key'=>'genAcct','classes'=>['block33']],
-                    'genProp' => ['order'=>40,'type'=>'panel','key'=>'genProp','classes'=>['block33']]]]],
-                'reminders'=> ['order'=>50,'label'=>$this->lang['reminders'],'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=bizuno/profile/reminderManager&uID=".getUserCache('profile', 'admin_id', false, 0)."'"]]]],
+                    'genProp' => ['order'=>40,'type'=>'panel','key'=>'genProp','classes'=>['block33']]]],
+                'reminders'=> ['order'=>50,'label'=>$this->lang['reminders'],'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=bizuno/profile/reminderManager&uID=".getUserCache('profile', 'admin_id', false, 0)."'"]]]]],
             'panels' => [
                 'genAcct' => ['label'=>lang('account'),   'type'=>'fields','keys'=>$fldGen],
                 'genProp' => ['label'=>lang('properties'),'type'=>'fields','keys'=>$fldProp]],

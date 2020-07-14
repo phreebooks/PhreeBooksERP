@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-04-09
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/phreebooks/totals/balance/balance.php
  */
 
@@ -46,19 +46,20 @@ class balance
             'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'readonly'=>'readonly','value'=>$this->settings['order']]]];
     }
 
-    public function render(&$output)
+    public function render()
     {
-        $output['body'] .= '<div style="text-align:right">'."\n";
-        $output['body'] .= html5('total_balance',['label'=>$this->lang['title'],'attr'=>['type'=>'currency','size'=>15,'value'=>0]]);
-        $output['body'] .= html5('total_amount', ['attr'=>['type'=>'hidden','value'=>0]]);
-        $output['body'] .= "</div>\n";
-        $output['jsHead'][] = "function totals_balance(begBalance) {
+        $html  = '<div style="text-align:right">'."\n";
+        $html .= html5('total_balance',['label'=>$this->lang['title'],'attr'=>['type'=>'currency','size'=>15,'value'=>0]]);
+        $html .= html5('total_amount', ['attr'=>['type'=>'hidden','value'=>0]]);
+        $html .= "</div>\n";
+        htmlQueue("function totals_balance(begBalance) {
     var newBalance = begBalance;
     if (newBalance == 0) jq('#total_balance').css({color:'#000000'}); else jq('#total_balance').css({color:'#FF0000'});
     bizNumSet('total_balance', newBalance);
     var totalDebit = cleanCurrency(bizNumGet('totals_debit'));
     jq('#total_amount').val(totalDebit);
     return newBalance;
-}";
+}", 'jsHead');
+        return $html;
     }
 }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-05
+ * @version    4.x Last Update: 2020-06-26
  * @filesource /lib/model/db.php
  */
 
@@ -364,7 +364,7 @@ function dbWriteCache($usrEmail=false, $lang=false)
         dbWrite(BIZUNO_DB_PREFIX.'users', $data, 'update', "email='$usrEmail'");
         unset($GLOBALS['updateUserCache']);
     }
-    if (isset($GLOBALS['updateModuleCache'])) {
+    if (isset($GLOBALS['updateModuleCache'])&& empty($GLOBALS['noBizunoDB'])) {
         ksort($bizunoMod);
         foreach ($bizunoMod as $module => $settings) {
             if (!empty($GLOBALS['updateModuleCache'][$module])) {
@@ -721,8 +721,7 @@ function dbTableRead($data)
         foreach ($data['source']['filters'] as $key => $value) {
             if ($key == 'search') {
                 if (isset($value['attr']) && isset($value['attr']['value'])) {
-                    $search_text = addslashes($value['attr']['value']);
-                    $criteria[] = "(".implode(" LIKE '%$search_text%' OR ", $data['source']['search'])." LIKE '%$search_text%')";
+                    $criteria[] = dbGetSearch($value['attr']['value'], $data['source']['search']);
                 }
             } else {
                 if (!empty($value['sql'])) { $criteria[] = $value['sql']; }
@@ -743,7 +742,7 @@ function dbTableRead($data)
             if ($key == 'action') { continue; } // skip action column
             if (isset($value['field']) && strpos($value['field'], ":") !== false) { // look for embedded settings
                 $parts = explode(":", $value['field'], 2);
-                $aFields[] = $parts[0]." AS `$key`";
+                $aFields[] = "{$parts[0]} AS `{$parts[0]}`";
             } elseif (isset($value['field'])) {
                 $aFields[] = $value['field']." AS `$key`";
             }
@@ -864,6 +863,14 @@ function dbGetStores($addAll=false)
     foreach ($result as $row) { $output[] = ['id'=>$row['id'], 'text'=>$row['short_name']]; }
     return $output;
 }
+
+function dbGetSearch($search, $fields)
+{
+    $search_text = addslashes($search);
+    return "(".implode(" LIKE '%$search_text%' OR ", $fields)." LIKE '%$search_text%')";
+}
+
+
 
 /**
  * Calculates fiscal dates, pulled from journal_period table

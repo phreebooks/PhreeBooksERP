@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-03-11
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /controller/module/phreebooks/totals/subtotalChk/subtotalChk.php
  */
 
@@ -45,15 +45,15 @@ class subtotalChk {
             'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
     }
 
-    public function render(&$output)
+    public function render()
     {
         $this->fields = [
             'totals_subtotal'    => ['label'=>$this->lang['subtotal'],'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']],
             'totals_subtotal_opt'=> ['icon'=>'blank','size'=>'small']];
-        $output['body'] .= '<div style="text-align:right">'
+        $html = '<div style="text-align:right">'
             .html5('totals_subtotal', $this->fields['totals_subtotal'])
             .html5('',                $this->fields['totals_subtotal_opt'])."</div>\n";
-        $output['jsHead'][] = "function totals_subtotalChk(begBalance) {
+        htmlQueue("function totals_subtotalChk(begBalance) {
     var newBalance = 0;
     var rowData = jq('#dgJournalItem').datagrid('getData');
     for (var i=0; i<rowData.rows.length; i++) if (rowData.rows[i]['checked']) {
@@ -65,6 +65,7 @@ class subtotalChk {
     }
     bizNumSet('totals_subtotal', newBalance);
     return newBalance;
-}";
+}", 'jsHead');
+        return $html;
     }
 }

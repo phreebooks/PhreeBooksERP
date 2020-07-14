@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-15
+ * @version    4.x Last Update: 2020-06-19
  * @filesource /lib/controller/module/phreebooks/journals/j14.php
  */
 
@@ -105,7 +105,7 @@ class j14 extends jCommon
         $data['divs']['divDetail']   = ['order'=>50,'type'=>'divs',   'classes'=>['areaView'],'divs'=>[
             'props'  => ['order'=>20,'type'=>'panel','key'=>'props',  'classes'=>['block50']],
             'dgItems'=> ['order'=>30,'type'=>'panel','key'=>'dgItems','classes'=>['block50']],
-            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['blockViewR']],
+            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['block25R']],
             'divAtch'=> ['order'=>90,'type'=>'panel','key'=>'divAtch','classes'=>['block50']]]];
 
         $data['panels']['props']  = ['label'=>lang('details'),'type'=>'fields',  'keys'   =>$fldKeys];

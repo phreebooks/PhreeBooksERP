@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-28
+ * @version    4.x Last Update: 2020-06-19
  * @filesource /lib/controller/module/phreebooks/journals/j15.php
  */
 
@@ -93,8 +93,8 @@ class j15 extends jCommon
         $isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? 1 : 0;
         $data['fields']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs',     'classes'=>['areaView'],'divs'=>[
-            'props'  => ['order'=>30,'type'=>'panel','key'=>'props',  'classes'=>['block33']],
-            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['blockViewR']],
+            'props'  => ['order'=>30,'type'=>'panel','key'=>'props',  'classes'=>['block25']],
+            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['block25R']],
             'dgItems'=> ['order'=>50,'type'=>'panel','key'=>'dgItems','classes'=>['block99']],
             'divAtch'=> ['order'=>90,'type'=>'panel','key'=>'divAtch','classes'=>['block50']]]];
         $data['panels']['props']  = ['label'=>lang('details'),'type'=>'fields','keys'   =>$fldKeys];

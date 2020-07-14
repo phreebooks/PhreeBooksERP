@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2020-04-22
+ * @version    3.x Last Update: 2020-06-15
  * @filesource /portal/upgrade.php
  */
 
@@ -222,6 +222,11 @@ function bizunoUpgrade($dbVersion='1.0')
         }
         if (!dbFieldExists(BIZUNO_DB_PREFIX.'address_book', 'email4')) {
             dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."address_book` ADD `email4` VARCHAR(64) NULL DEFAULT '' COMMENT 'tag:Email4;order:80' AFTER `telephone4`");
+        }
+    }
+    if (version_compare($dbVersion, '4.0.2') < 0) { // new field for table phreeform
+        if (!dbFieldExists(BIZUNO_DB_PREFIX.'phreeform', 'bookmarks')) {
+            dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."phreeform` ADD `bookmarks` TEXT DEFAULT NULL COMMENT 'type:checkbox;tag:Bookmarks;order:50' AFTER `title`");
         }
     }
 

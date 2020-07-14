@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-12
+ * @version    4.x Last Update: 2020-06-22
  * @filesource /local/en_US/language.php
  */
 
@@ -77,7 +77,7 @@ $langCore = [
     'active' => 'Active',
     'actuals' => 'Actuals',
     'add' => 'Add',
-    'add_dashboards' => 'Add more dashboards to this menu..',
+    'add_dashboards' => 'Manage Dashboards',
     'add_folder' => 'Add Folder',
     'add_update' => 'Add/Update',
     'adjustment' => 'Adjustment',
@@ -109,6 +109,7 @@ $langCore = [
     'bank_cc_card_hint' => 'CC Hint',
     'bank_cc_card_code' => 'CC Auth Code',
     'bill_to' => 'Bill To',
+    'bookmark' => 'Bookmark',
     'both' => 'Both',
     'browse' => 'Browse',
     'browser' => 'Browser',
@@ -846,6 +847,7 @@ $langCore = [
     'journal_main_primary_name_b' => 'Bill Contact Name',
     'journal_main_freight' => 'Freight Amount',
     'journal_main_method_code' => 'Method Code',
+    'journal_main_method_code_12' => 'Ship Method',
     'journal_main_drop_ship' => 'Drop Ship',
     'journal_main_contact_id_s' => 'Ship Contact Record ID',
     'journal_main_address_id_s' => 'Ship Address Record ID',

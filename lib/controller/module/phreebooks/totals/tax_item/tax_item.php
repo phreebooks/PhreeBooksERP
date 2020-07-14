@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-11
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /controller/module/phreebooks/totals/tax_item/tax_item.php
  */
 
@@ -108,17 +108,18 @@ class tax_item
      * @param type $output
      * @param type $data
      */
-    public function render(&$output, $data=[])
+    public function render($data=[])
     {
-        $hide = $this->hidden ? ';display:none' : '';
-        $output['body'] .= '<div style="text-align:right'.$hide.'">';
-        $output['body'] .= html5('totals_tax_item',$this->fields['totals_tax_item']);
-        $output['body'] .= html5('',               $this->fields['totals_tax_item_opt']);
-        $output['body'] .= "</div>";
-        $output['body'] .= '<div id="phreebooks_totals_tax_item" style="display:none" class="layout-expand-over">';
-        $output['body'] .= '<table id="tableTaxItem"></table>';
-        $output['body'] .= "</div>";
-        $output['jsHead'][] = $this->jsTotal($data);
+        $hide  = $this->hidden ? ';display:none' : '';
+        $html  = '<div style="text-align:right'.$hide.'">';
+        $html .= html5('totals_tax_item',$this->fields['totals_tax_item']);
+        $html .= html5('',               $this->fields['totals_tax_item_opt']);
+        $html .= "</div>";
+        $html .= '<div id="phreebooks_totals_tax_item" style="display:none" class="layout-expand-over">';
+        $html .= '<table id="tableTaxItem"></table>';
+        $html .= "</div>";
+        htmlQueue($this->jsTotal($data), 'jsHead');
+        return $html;
     }
 
     /**

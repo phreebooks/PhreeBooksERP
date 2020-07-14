@@ -16,7 +16,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-18
+ * @version    4.x Last Update: 2020-06-19
  * @filesource /view/theme/default/stylesheet.css
  */
 
@@ -34,19 +34,17 @@ label                    { margin:0; padding:0; font-weight:bold; display:inline
 th                       { text-align:center; font-weight:bold;}
 .modal                   { display:none; position:fixed; z-index:10000; top:0; left:0; height:100%; width:100%;
 						   background: rgba( 255, 255, 255, .8 ) url('../../images/loading.gif') 50% 50% no-repeat; }
-.msgCount                { color:#ff0000; padding:0px 0; text-align:center;font: 24px Arial, sans-serif; }
 body.loading             { overflow: hidden; }
 body.loading .modal      { display:block; }
 .areaView                { display:block; width:100%; position:relative; }
 .block20                 { width:19%; display:inline-block; position:relative; vertical-align:top; min-width:200px; min-height:50px; margin:3px; }
 .block25                 { width:24%; display:inline-block; position:relative; vertical-align:top; min-width:250px; min-height:50px; margin:3px; }
+.block25R                { width:24%; display:inline-block; position:relative; vertical-align:top; min-width:250px; min-height:50px; margin:3px; text-align:right; }
 .block33                 { width:32%; display:inline-block; position:relative; vertical-align:top; min-width:333px; min-height:50px; margin:3px; }
 .block50                 { width:49%; display:inline-block; position:relative; vertical-align:top; min-width:500px; min-height:50px; margin:3px; }
 .block66                 { width:65%; display:inline-block; position:relative; vertical-align:top; min-width:666px; min-height:50px; margin:3px; }
 .block75                 { width:74%; display:inline-block; position:relative; vertical-align:top; min-width:750px; min-height:50px; margin:3px; }
 .block99                 { width:99%; display:inline-block; position:relative; vertical-align:top; min-width:999px; min-height:50px; margin:3px; }
-.blockView               { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; }
-.blockViewR              { display:inline-block; position:relative; vertical-align:top; min-width:250px; margin:3px; text-align:right; }
 .menuHide                { display:none; }
 .fldLabel                { }
 .journal-waiting         { background-color:#FFFF00; }

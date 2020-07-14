@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-26
+ * @version    4.x Last Update: 2020-07-08
  * @filesource lib/controller/functions.php
  */
 
@@ -799,7 +799,7 @@ function getDefaultFormID($jID=0, $rtnSrc=false)
 function viewFavicon($url, $title='', $event=false)
 {
     global $io;
-    $target= $event ? "style=\"cursor:pointer\" onClick=\"window.open('$url', '_blank');\" " : '';
+    $target= $event ? "style=\"cursor:pointer\" onClick=\"winHref('$url');\" " : '';
     $parts = parse_url($url);
     if (empty($parts['host'])) { return ''; }
     if (file_exists(BIZUNO_DATA."cache/icons/{$parts['host']}.fav")) { // load the icon

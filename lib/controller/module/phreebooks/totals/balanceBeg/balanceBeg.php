@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-03-06
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/phreebooks/totals/balanceBeg/balanceBeg.php
  *
  */
@@ -47,14 +47,14 @@ class balanceBeg
             'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','readonly'=>'readonly','value'=>$this->settings['order']]]];
     }
 
-    public function render(&$output)
+    public function render()
     {
         // ajax request with GL acct/post_date to get starting balance
         // need to modify post_date and gl_account field to call javascript call
         $this->fields = ['totals_balanceBeg'=>['label'=>$this->lang['title'],'attr'=>['type'=>'currency','value'=>'0','readonly'=>'readonly']]];
-        $output['body'] .= '<div style="text-align:right">'."\n"
+        $html = '<div style="text-align:right">'."\n"
                 .html5('totals_balanceBeg',$this->fields['totals_balanceBeg']).html5('', ['icon'=>'blank', 'size'=>'small'])."</div>\n";
-        $output['jsHead'][] = "function totals_balanceBeg(begBalance) { return cleanCurrency(jq('#totals_balanceBeg').val()); }
+        htmlQueue("function totals_balanceBeg(begBalance) { return cleanCurrency(jq('#totals_balanceBeg').val()); }
 function totalsGetBegBalance() {
     var rID      = jq('#id').val();
     var postDate = jq('#post_date').val();
@@ -69,7 +69,8 @@ function totalsGetBegBalance() {
             totalUpdate();
        }
     });
-}";
-        $output['jsReady'][] = "totalsGetBegBalance();";
+}", 'jsHead');
+        htmlQueue("totalsGetBegBalance();", 'jsReady');
+        return $html;
     }
 }

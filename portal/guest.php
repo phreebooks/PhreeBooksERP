@@ -174,8 +174,8 @@ class guest
         global $db;
         session_start(); // need a session to keep some info to new reload
         // validate user
-        $email = $_SESSION['UserEmail']= clean('UserEmail', 'email', 'post');
-//      $pass  = $_SESSION['UserPass'] = biz_hash_password(clean('UserPass', 'text', 'post'));
+        $_SESSION['UserEmail']= $email = clean('UserEmail', 'email', 'post');
+        $_SESSION['UserPass'] = biz_hash_password(clean('UserPass', 'text', 'post'));
         set_user_cookie($email);
         $GLOBALS['dbBizuno'] = $GLOBALS['dbPortal'] = ['type'=>'mysql',
             'host'  => clean('dbHost', 'text', 'post'),
@@ -215,7 +215,6 @@ class guest
         // set the password now that user table exists
         session_start();
         $pass = $_SESSION['UserPass'];
-//      $lang = getUserCache('profile', 'language');
         dbWrite(BIZUNO_DB_PREFIX.'users', ['password'=>$pass,'last_login'=>date('Y-m-d h:i:s'),'date_created'=>date('Y-m-d h:i:s')], 'update', "admin_id=1");
         clearUserCache('profile', 'password');
         session_destroy();

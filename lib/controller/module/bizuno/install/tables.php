@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-29
+ * @version    4.x Last Update: 2020-06-15
  * @filesource /lib/controller/module/bizuno/install/tables.php
  */
 namespace bizuno;
@@ -121,13 +121,13 @@ $tables = [
                 'import'=>true, 'export'=>true,'required'=>false,'desc'=>"Government ID Number, i.e. SSN for US citizens"],
             'gl_account'    => ['format'=>'VARCHAR(15)',  'attr'=>"NOT NULL DEFAULT ''",    'comment'=> 'type:ledger;tag:DefaultGLAccount;order:30',
                 'import'=>true, 'export'=>true,'required'=>false,'desc'=>"Default GL Account for purchases/sales"],
-            'first_date'    => ['format'=>'DATE',         'attr'=>"DEFAULT NULL",           'comment'=> 'type:date;tag:DateCreated;order:10',
+            'first_date'    => ['format'=>'DATE',         'attr'=>"DEFAULT NULL",           'comment'=> 'type:date;tag:DateCreated;order:70',
                 'import'=>false,'export'=>true,'required'=>false,'desc'=>"The database record creation date for this contact"],
-            'last_update'   => ['format'=>'DATE',         'attr'=>"DEFAULT NULL",           'comment'=> 'type:date;tag:DateLastEntry;order:20',
+            'last_update'   => ['format'=>'DATE',         'attr'=>"DEFAULT NULL",           'comment'=> 'type:date;tag:DateLastEntry;order:75',
                 'import'=>false,'export'=>true,'required'=>false,'desc'=>"The last update for this contact."],
-            'last_date_1'   => ['format'=>'DATE',         'attr'=>"DEFAULT NULL",           'comment'=> 'type:date;tag:AltDate1;order:30',
+            'last_date_1'   => ['format'=>'DATE',         'attr'=>"DEFAULT NULL",           'comment'=> 'type:date;tag:AltDate1;order:80',
                 'import'=>false,'export'=>true,'required'=>false,'desc'=>"Last Date 1, uses vary depending on contact type"],
-            'last_date_2'   => ['format'=>'DATE',         'attr'=>"DEFAULT NULL",           'comment'=> 'type:date;tag:AltDate2;order:40',
+            'last_date_2'   => ['format'=>'DATE',         'attr'=>"DEFAULT NULL",           'comment'=> 'type:date;tag:AltDate2;order:85',
                 'import'=>false,'export'=>true,'required'=>false,'desc'=>"Last Date 2, uses vary depending on contact type"]],
         'keys' => 'PRIMARY KEY (id), KEY type (type), KEY short_name (short_name)',
         'attr' => 'ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci',
@@ -413,9 +413,10 @@ $tables = [
             'mime_type'  => ['format'=>'VARCHAR(4)',  'attr'=>"DEFAULT NULL",           'comment'=>'type:hidden;tag:MimeType;order:4'],
             'security'   => ['format'=>'VARCHAR(255)','attr'=>"DEFAULT 'u:-1;g:-1'",    'comment'=>'type:hidden;tag:Security;order:5'],
             'title'      => ['format'=>'VARCHAR(64)', 'attr'=>"DEFAULT ''",             'comment'=>'tag:Title;order:10'],
-            'create_date'=> ['format'=>'DATE',        'attr'=>"DEFAULT NULL",           'comment'=>'type:date;tag:CreateDate;order:20'],
-            'last_update'=> ['format'=>'DATE',        'attr'=>"DEFAULT NULL",           'comment'=>'type:date;tag:LastUpdate;order:30'],
-            'doc_data'   => ['format'=>'TEXT',        'attr'=>"",                       'comment'=>'tag:DocData;order:40']],
+            'bookmarks'  => ['format'=>'TEXT',        'attr'=>"DEFAULT NULL",           'comment'=>'type:checkbox;tag:Bookmarks;order:50'],
+            'create_date'=> ['format'=>'DATE',        'attr'=>"DEFAULT NULL",           'comment'=>'type:date;tag:CreateDate;order:70'],
+            'last_update'=> ['format'=>'DATE',        'attr'=>"DEFAULT NULL",           'comment'=>'type:date;tag:LastUpdate;order:80'],
+            'doc_data'   => ['format'=>'TEXT',        'attr'=>"",                       'comment'=>'tag:DocData;order:90']],
         'keys' => 'PRIMARY KEY (id)',
         'attr' => 'ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;'],
     'phreemsg' => ['module' => 'bizuno',

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-15
+ * @version    4.x Last Update: 2020-06-19
  * @filesource /lib/controller/module/phreebooks/journals/j21.php
  */
 
@@ -58,18 +58,18 @@ class j21 extends jCommon
         $data['fields']['invoice_num']['attr']['value'] = dbGetValue(BIZUNO_DB_PREFIX."current_status", "next_ref_j20");
         $data['fields']['gl_acct_id']['attr']['value'] = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');
         $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'divs'=>[
-            'billAD' => ['order'=>10,'type'=>'panel','key'=>'billAD', 'classes'=>['blockView']],
-            'shipAD' => ['order'=>20,'type'=>'panel','key'=>'shipAD', 'classes'=>['blockView']],
+            'billAD' => ['order'=>10,'type'=>'panel','key'=>'billAD', 'classes'=>['block25']],
+            'shipAD' => ['order'=>20,'type'=>'panel','key'=>'shipAD', 'classes'=>['block25']],
             'props'  => ['order'=>30,'type'=>'panel','key'=>'props',  'classes'=>['block25']],
-            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['blockViewR']],
+            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['block25R']],
             'dgItems'=> ['order'=>50,'type'=>'panel','key'=>'dgItems','classes'=>['block99']],
             'divAtch'=> ['order'=>90,'type'=>'panel','key'=>'divAtch','classes'=>['block50']]]];
         $data['panels']['billAD'] = ['type'=>'address','label'=>lang('bill_to'),'attr'   =>['id'=>'address_b'],'fields'=>$fldAddr,
             'settings'=>['suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false,'cols'=>false]];
         $data['panels']['shipAD'] = ['type'=>'address','label'=>lang('ship_to'),'attr'   =>['id'=>'address_s'],'fields'=>$fldAddr,
             'settings'=>['suffix'=>'_s','search'=>true,'update'=>true,'validate'=>true,'drop'=>true,'cols'=>false]];
-        $data['panels']['props']  = ['type'=>'fields','classes'=>['blockView'], 'keys'   =>$fldKeys];
-        $data['panels']['totals'] = ['type'=>'totals','classes'=>['blockViewR'],'content'=>$data['totals']];
+        $data['panels']['props']  = ['type'=>'fields','classes'=>['block25'], 'keys'   =>$fldKeys];
+        $data['panels']['totals'] = ['type'=>'totals','classes'=>['block25R'],'content'=>$data['totals']];
         $data['panels']['dgItems']= ['type'=>'datagrid','key'=>'item'];
     }
 

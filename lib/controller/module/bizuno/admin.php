@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-27
+ * @version    4.x Last Update: 2020-07-08
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -39,19 +39,18 @@ class bizunoAdmin
             'required'       => true,
             'usersAttachPath'=> 'data/bizuno/users/uploads',
             'quickBar'       => ['styles'=>['float'=>'right','padding'=>'1px'],'child'=>[
-                'sysMsg'     => ['order'=>20,'label'=>lang('messages'),'icon'=>'email','classes'=>['msgCount'],'required'=>true,'hideLabel'=>true,'attr'=>['id'=>'sysMsg'],'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
-                'encrypt'    => ['order'=>60,'label'=>lang('bizuno_encrypt_enable'),'icon'=>'encrypt-off','required'=>true,'hideLabel'=>true,'attr'=>['id'=>'ql_encrypt'],
-                    'events' => ['onClick'=>"windowEdit('bizuno/main/encryptionForm','winEncrypt','".jsLang('bizuno_encrypt_enable')."',400,150)"]],
-                'newTab'     => ['order'=>95,'label'=>lang('new_tab'), 'icon'=>'add','required'=>true,'hideLabel'=>true,'events'=>['onClick'=>"tabOpen('', '');"]],
-                'home'       => ['order'=>90,'label'=>lang('bizuno_company'),'icon'=>'settings','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=settings');"],'child'=>[
+                'settings' => ['order'=>50,'label'=>lang('bizuno_company'),'icon'=>'settings','child'=>[
                     'admin'  => ['order'=>10,'label'=>lang('settings'),'icon'=>'settings','events'=>['onClick'=>"hrefClick('bizuno/settings/manager');"]],
-                    'profile'=> ['order'=>20,'label'=>lang('profile'), 'icon'=>'profile', 'events'=>['onClick'=>"hrefClick('bizuno/profile/edit');"]],
-                    'roles'  => ['order'=>30,'label'=>lang('roles'),   'icon'=>'roles',   'events'=>['onClick'=>"hrefClick('bizuno/roles/manager');"]],
-                    'users'  => ['order'=>40,'label'=>lang('users'),   'icon'=>'users',   'events'=>['onClick'=>"hrefClick('bizuno/users/manager');"]],
-                    'help'   => ['order'=>50,'label'=>lang('help'),    'icon'=>'help',    'required'=>true,'events'=>['onClick'=>"bizHelp();"]],
-                    'message'=> ['order'=>60,'label'=>lang('messages'),'icon'=>'email',   'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
-                    'ticket' => ['order'=>70,'label'=>lang('support'), 'icon'=>'support', 'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/tools/ticketMain');"],'hidden'=>defined('BIZUNO_SUPPORT_EMAIL')?false:true],
-                    'logout' => ['order'=>90,'label'=>lang('logout'),  'icon'=>'logout',  'required'=>true,'events'=>['onClick'=>"jsonAction('bizuno/portal/logout');"]]]]]],
+                    'encrypt'=> ['order'=>20,'label'=>lang('bizuno_encrypt_enable'),'icon'=>'encrypt-off','required'=>true,'attr'=>['id'=>'ql_encrypt'],
+                        'events' => ['onClick'=>"windowEdit('bizuno/main/encryptionForm','winEncrypt','".jsLang('bizuno_encrypt_enable')."', 400, 150)"]],
+                    'profile'=> ['order'=>30,'label'=>lang('profile'), 'icon'=>'profile', 'events'=>['onClick'=>"hrefClick('bizuno/profile/edit');"]],
+                    'roles'  => ['order'=>40,'label'=>lang('roles'),   'icon'=>'roles',   'events'=>['onClick'=>"hrefClick('bizuno/roles/manager');"]],
+                    'users'  => ['order'=>50,'label'=>lang('users'),   'icon'=>'users',   'events'=>['onClick'=>"hrefClick('bizuno/users/manager');"]],
+                    'help'   => ['order'=>60,'label'=>lang('help'),    'icon'=>'help',    'required'=>true,'events'=>['onClick'=>"winHref('https://www.phreesoft.com/biz-school');"]],
+                    'sysMsg' => ['order'=>70,'label'=>lang('messages'),'icon'=>'email',   'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/messages/manager');"]],
+                    'ticket' => ['order'=>80,'label'=>lang('support'), 'icon'=>'support', 'required'=>true,'events'=>['onClick'=>"hrefClick('bizuno/tools/ticketMain');"],'hidden'=>defined('BIZUNO_SUPPORT_EMAIL')?false:true],
+                    'newTab' => ['order'=>95,'label'=>lang('new_tab'), 'icon'=>'add',     'required'=>true,'events'=>['onClick'=>"winHref(bizunoHome);"]],
+                    'logout' => ['order'=>99,'label'=>lang('logout'),  'icon'=>'logout',  'required'=>true,'events'=>['onClick'=>"jsonAction('bizuno/portal/logout');"]]]]]],
             'menuBar' => ['child'=>[
                 'tools' => ['order'=>70,'label'=>lang('tools'),'icon'=>'tools','group'=>'tool','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=tools');"],'child'=>[
                     'imgmgr' => ['order'=>75,'label'=>lang('image_manager'),'icon'=>'mimeImg', 'events'=>['onClick'=>"jsonAction('bizuno/image/manager');"]],
@@ -362,20 +361,25 @@ class bizunoAdmin
     {
         return ['ACCOUNT'=>lang('account'),
             'CITY'       =>lang('address_book_city'),
+            'CLOSE'      =>lang('close'),
             'CONTACT_ID' =>lang('contacts_short_name'),
             'EDIT'       =>lang('edit'),
             'FINISHED'   =>lang('finished'),
+            'FROM'       =>lang('from'),
             'INFORMATION'=>lang('information'),
             'MESSAGE'    =>lang('message'),
             'NAME'       =>lang('address_book_primary_name'),
             'PLEASE_WAIT'=>lang('please_wait'),
+            'PROPERTIES' =>lang('properties'),
             'SETTINGS'   =>lang('settings'),
             'SHIPPING_ESTIMATOR'=>lang('shipping_estimator'),
             'STATE'      =>lang('address_book_state'),
             'TITLE'      =>lang('title'),
+            'TO'         =>lang('to'),
             'TOTAL'      =>lang('total'),
             'TRASH'      =>lang('trash'),
             'TYPE'       =>lang('type'),
+            'VALUE'      =>lang('value'),
             'VIEW'       =>lang('view')];
     }
 
@@ -500,7 +504,8 @@ class bizunoAdmin
         $pbAdmin = new phreebooksAdmin();
         $pbAdmin->installFirst(); // load the chart and initialize PhreeBooks stuff
         // now Modules
-        setUserCache('security', 'admin', 4);
+        setUserCache('security', 'admin',   4);
+        setUserCache('profile',  'role_id', 1);
         msgDebug("\nModule list to install = ".print_r($guest->getModuleList(true), true));
         foreach ($guest->getModuleList(true) as $module => $path) { $bAdmin->moduleInstall($layout, $module, $path); }
         // create the admin user account

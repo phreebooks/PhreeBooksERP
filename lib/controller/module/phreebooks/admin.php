@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-22
+ * @version    4.x Last Update: 2020-06-26
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -423,13 +423,21 @@ class phreebooksAdmin {
     }
 
     /**
-     * Installs the total methods at first install, can be modified by user later
+     * Installs the currency settings and total methods at first install, can be modified by user later
      * @param array $layout - structure coming in
      * @return modified $layout
      */
     public function install(&$layout=[])
     {
-        $bAdmin = new bizunoSettings();
+        // set the currency settings
+        $defISO    = getModuleCache('phreebooks', 'currency', 'defISO');
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/currency.php", 'phreebooksCurrency');
+        $currency  = new phreebooksCurrency();
+        $currencies= getModuleCache('phreebooks', 'currency', 'iso', false, []);
+        $currencies[$defISO] = $currency->currencySettings($defISO);
+        setModuleCache('phreebooks', 'currency', 'iso', $currencies);
+        // Set the totals methods
+        $bAdmin    = new bizunoSettings();
         foreach ($this->totalMethods as $method) {
             $bAdmin->methodInstall($layout, ['module'=>'phreebooks', 'path'=>'totals', 'method'=>$method], false);
         }

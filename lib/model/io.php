@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-27
+ * @version    4.x Last Update: 2020-06-09
  * @filesource /lib/model/io.php
  */
 
@@ -126,8 +126,8 @@ final class io
     public function fileDelete($path=false)
     {
         if (!$path) { return msgAdd("No file specified to delete!"); }
+        msgDebug("\nDeleting files: BIZUNO_DATA/".print_r($path,true));
         $files = glob($this->myFolder.$path);
-        msgDebug("\nDeleting files: ".print_r($files,true));
         if (is_array($files)) { foreach ($files as $filename) { @unlink($filename); } }
     }
 

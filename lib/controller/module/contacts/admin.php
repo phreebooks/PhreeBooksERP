@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-09-05
+ * @version    4.x Last Update: 2020-06-18
  * @filesource /lib/controller/module/contacts/admin.php
  */
 
@@ -38,7 +38,7 @@ class contactsAdmin
             'required'  => '1',
             'attachPath'=> 'data/contacts/uploads/',
             'api'       => ['path'=>'contacts/api/contactsAPI'],
-            'quickBar'  => ['child'=>['home'=>['child'=>[
+            'quickBar'  => ['child'=>['settings'=>['child'=>[
                 'mgr_e' => ['order'=>45,'label'=>lang('employees'),'icon'=>'employee','events'=>['onClick'=>"hrefClick('contacts/main/manager&type=e');"]]]]]],
             'menuBar'   => ['child'=>[
                 'customers'=> ['order'=>10,'label'=>lang('customers'),'group'=>'cust','icon'=>'sales', 'events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=customers');"],'child'=>[

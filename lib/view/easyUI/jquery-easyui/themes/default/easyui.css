@@ -1,3 +1,55 @@
+.f-row {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  position: relative;
+}
+.f-column {
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: -moz-flex;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-direction: normal;
+  -webkit-box-orient: vertical;
+  -webkit-flex-direction: column;
+  -moz-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  position: relative;
+}
+.f-full {
+  -webkit-box-flex: 1 1 auto;
+  -ms-flex: 1 1 auto;
+  flex: 1 1 auto;
+}
+.f-noshrink {
+  -webkit-flex-shrink: 0;
+  -moz-flex-shrink: 0;
+  -ms-flex-negative: 0;
+  flex-shrink: 0;
+}
+.f-content-center {
+  -webkit-box-pack: center;
+  -ms-flex-pack: center;
+  -webkit-justify-content: center;
+  -moz-justify-content: center;
+  justify-content: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  align-items: center;
+}
+.f-vcenter {
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  -webkit-align-items: center;
+  -moz-align-items: center;
+  align-items: center;
+}
 * {
   -moz-box-sizing: border-box;
   -webkit-box-sizing: border-box;
@@ -126,6 +178,7 @@
   background: linear-gradient(to bottom,#EFF5FF 0,#E0ECFF 100%);
   background-repeat: repeat-x;
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#EFF5FF,endColorstr=#E0ECFF,GradientType=0);
+  color: #0E2D5F;
 }
 .panel-body {
   background-color: #ffffff;
@@ -143,6 +196,7 @@
   border: 1px solid #95B8E7;
   overflow: hidden;
   background: #F4F4F4;
+  color: #000000;
 }
 .panel-footer-noborder {
   border-width: 1px 0 0 0;
@@ -2200,11 +2254,12 @@
 }
 .calendar-header {
   position: relative;
-  height: 28px;
+  height: 36px;
 }
 .calendar-title {
   text-align: center;
-  height: 28px;
+  height: 36px;
+  line-height: 36px;
 }
 .calendar-title span {
   position: relative;
@@ -2235,19 +2290,19 @@
   border-radius: 5px 5px 5px 5px;
 }
 .calendar-prevmonth {
-  left: 20px;
+  left: 30px;
   background: url('images/calendar_arrows.png') no-repeat -16px 0;
 }
 .calendar-nextmonth {
-  right: 20px;
+  right: 30px;
   background: url('images/calendar_arrows.png') no-repeat -32px 0;
 }
 .calendar-prevyear {
-  left: 3px;
+  left: 10px;
   background: url('images/calendar_arrows.png') no-repeat 0px 0;
 }
 .calendar-nextyear {
-  right: 3px;
+  right: 10px;
   background: url('images/calendar_arrows.png') no-repeat -48px 0;
 }
 .calendar-body {
@@ -2380,6 +2435,15 @@
   color: #000000;
   border: 1px solid #ffab3f;
   padding: 0;
+}
+.calendar-info {
+  background-color: #E0ECFF;
+  font-size: 28px;
+  height: 70px;
+  padding: 10px 20px;
+}
+.calendar-info .year {
+  font-size: 16px;
 }
 .datebox-calendar-inner {
   height: 250px;
@@ -3493,4 +3557,97 @@
 .sidemenu-tooltip .tooltip-arrow-outer,
 .sidemenu-tooltip .tooltip-arrow {
   display: none;
+}
+.timepicker-panel .clock-wrap {
+  position: relative;
+}
+.timepicker-panel .clock {
+  position: relative;
+  background: #E0ECFF;
+  color: #0E2D5F;
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  top: 50%;
+}
+.timepicker-panel .clock .item {
+  width: 32px;
+  height: 32px;
+  left: 50%;
+  top: 50%;
+  margin-left: -16px;
+  margin-top: -16px;
+  position: absolute;
+  user-select: none;
+  border-radius: 50%;
+  z-index: 9;
+  cursor: pointer;
+}
+.timepicker-panel .clock .item-selected {
+  background: #ffab3f;
+  color: #000000;
+}
+.timepicker-panel .clock .hand {
+  width: 2px;
+  bottom: 50%;
+  left: 50%;
+  margin-left: -1px;
+  top: 20px;
+  -webkit-transform-origin: center bottom;
+  transform-origin: center bottom;
+  position: absolute;
+  will-change: transform;
+  z-index: 1;
+  background-color: #ffab3f;
+}
+.timepicker-panel .clock .hand .drag {
+  top: -16px;
+  left: -15px;
+  width: 4px;
+  height: 4px;
+  border: 14px solid #ffab3f;
+  position: absolute;
+  box-sizing: content-box;
+  border-radius: 100%;
+  background-color: #000000;
+}
+.timepicker-panel .clock .center {
+  top: 50%;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  position: absolute;
+  transform: translate(-50%,-50%);
+  border-radius: 50%;
+  background-color: #ffab3f;
+}
+.timepicker-panel .panel-header {
+  height: 70px;
+  border: 0;
+  font-size: 36px;
+  position: relative;
+}
+.timepicker-panel .body {
+  position: relative;
+}
+.timepicker-panel .panel-header .ampm {
+  font-size: 16px;
+  padding-left: 10px;
+  position: absolute;
+  right: 20px;
+}
+.timepicker-panel .panel-header .sep {
+  opacity: 0.6;
+}
+.timepicker-panel .panel-header .title {
+  cursor: pointer;
+  opacity: 0.6;
+}
+.timepicker-panel .panel-header .title:hover {
+  opacity: 1.0;
+}
+.timepicker-panel .panel-header .title-selected,
+.timepicker-panel .panel-header .title-selected:hover {
+  cursor: default;
+  opacity: 1.0;
 }

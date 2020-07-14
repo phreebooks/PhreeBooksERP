@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-11-22
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /controller/module/phreebooks/totals/total_bal/total_bal.php
  */
 
@@ -54,11 +54,12 @@ class total_bal
      * @param array $output - running output buffer
      * @return modified $output
      */
-    public function render(&$output)
+    public function render()
     {
-        $output['body'] = '<div style="text-align:right">'."\n";
-        $output['body'].= html5("totals_{$this->code}", ['label'=>$this->lang['total_pmt'],'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']]);
-        $output['body'].= "</div>\n";
-        $output['jsHead'][] = "function totals_total_pmt(begBalance) { bizNumSet('total_pmt', begBalance); return begBalance; }";
+        $html = '<div style="text-align:right">'."\n";
+        $html.= html5("totals_{$this->code}", ['label'=>$this->lang['total_pmt'],'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']]);
+        $html.= "</div>\n";
+        htmlQueue("function totals_total_pmt(begBalance) { bizNumSet('total_pmt', begBalance); return begBalance; }", 'jsHead');
+        return $html;
     }
 }

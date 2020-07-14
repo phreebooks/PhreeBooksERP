@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-23
+ * @version    4.x Last Update: 2020-07-10
  * @filesource /view/main.php
  */
 
@@ -27,14 +27,15 @@ bizAutoLoad(BIZUNO_ROOT."portal/view.php", 'portalView');
 
 final class view extends portalView
 {
-    function __construct($data=[])
+    var $html = ''; // fuly formed HTML/data to send to client
+
+    function __construct($data=[], $scope='default')
     {
         // declare global data until all modules are converted to new nested structure
         global $viewData;
         $viewData = $data;
-        $this->output = ['head'=>[],'jsHead'=>[],'body'=>'','jsBody'=>[],'jsReady'=>[],'jsResize'=>[],'raw'=>''];
         parent::__construct();
-        $this->render($data);
+        $this->render($data, $scope);
     }
 
     /**
@@ -43,120 +44,193 @@ final class view extends portalView
      * @param array $data - The layout to render from
      * @return string - Either HTML or JSON depending on expected response
      */
-    private function render($data=[])
+    private function render($data=[], $scope='default')
     {
         global $msgStack;
         dbWriteCache();
         $type = !empty($data['type']) ? $data['type'] : 'json';
         switch ($type) {
             case 'datagrid':
-                if (!empty($data['key'])){ $content = dbTableRead($data['datagrid'][$data['key']]); } // new way, aligns with manager structures
-                else                     { $content = dbTableRead($data['structure']); } // old way
+                $content = dbTableRead($data['datagrid'][$data['key']]);
                 $content['message'] = $msgStack->error;
                 msgDebug("\n datagrid results = ".print_r($content, true));
                 echo json_encode($content);
                 $msgStack->debugWrite();
                 exit();
-            case 'divHTML':
-                $this->renderDivs($data);
-                $this->renderJS($data); // add the javascript
-                msgDebug("\n sending type: divHTML and data = {$this->output['body']}");
-                echo $this->output['body'];
-                $msgStack->debugWrite();
-                exit();
-            case 'page':
-                if (!empty($data['jsHead'])) { // move the jsHead to the HTML <head> tag
-                    $data['htmlHead'] = $data['jsHead'];
-                    unset($data['jsHead']);
-                }
-                $this->setEnvHTML($this->output, $data);
-                $this->renderJS($data);
-                $this->renderDOM($this->output);
-                $msgStack->debugWrite();
-                break;
             case 'raw':
                 msgDebug("\n sending type: raw and data = {$data['content']}");
                 echo $data['content'];
                 $msgStack->debugWrite();
                 exit();
-            case 'popup': $this->renderPopup($data); // make layout changes per device
+            case 'divHTML':
+                $this->renderDivs($data); // may add JS, generates 'body'
+                $dom = $this->html;
+                $dom.= $this->renderJS($data);
+                msgDebug("\n sending type: divHTML and data = $dom");
+                echo $dom;
+                $msgStack->debugWrite();
+                break;
+            case 'page':
+                $dom = $this->viewDOM($data, $scope); // formats final HTML to specific host expectations
+                msgDebug("\n sending type: page and data = $dom");
+                echo $dom;
+                $msgStack->debugWrite();
+                break;
+            case 'popup':
+                $dom = $this->renderPopup($data); // make layout changes per device then treat like div
+                msgDebug("\n sending type: popup and data = $dom");
+                echo $dom;
+                $msgStack->debugWrite();
+                exit;
             case 'json':
             default:
                 if (isset($data['action'])){ $data['content']['action']= $data['action']; }
                 if (isset($data['divID'])) { $data['content']['divID'] = $data['divID']; }
-                if (isset($data['divs']))  { $this->renderDivs($data); }
-                $this->renderJS($data, false);
-                $data['content']['html'] = empty($data['content']['html']) ? $this->output['body'] : $data['content']['html'].$this->output['body'];
+                $this->renderDivs($data);
+                $this->html .= $this->renderJS($data, false);
+                $data['content']['html'] = empty($data['content']['html']) ? $this->html : $data['content']['html'].$this->html;
                 $data['content']['message'] = $msgStack->error;
                 msgDebug("\n json return (before encoding) = ".print_r($data['content'], true));
+                ob_clean(); // in case there is something there, this will clear everything to prevent json errors
                 echo json_encode($data['content']);
                 $msgStack->debugWrite();
                 exit();
         }
     }
 
-    private function renderPopup(&$data)
+    /**
+     * Renders the HTML for the <head> tag
+     * @param type $data
+     */
+    protected function renderHead(&$data=[])
     {
         global $html5;
-        switch($GLOBALS['myDevice']) {
-            case 'mobile': // set a new panel
-                // need container div with mobile panel
-                $divsTemp = $data['divs'];
-                $header   = ['title'=>$data['title'],'left'=>['close'],'right'=>[]];
-                $data['divs'] = [
-                    'header'=> ['order'=>  1,'type'=>'html','html'=>$html5->mobileMenu($header, 'header')],
-                    'bodyS' => ['order'=>  2,'type'=>'html','html'=>"\n".'<div class="easyui-panel"><!-- start body -->'."\n"],
-                    'body'  => ['order'=> 50,'type'=>'divs','divs'=>[$divsTemp]],
-                    'bodyE' => ['order'=> 98,'type'=>'html','html'=>"\n</div><!-- end body -->\n\n"],
-                    'footer'=> ['order'=> 99,'type'=>'html','html'=>$html5->mobileMenu([], 'footer')]];
-                $data['divs'] = array_merge($data['divs'], $divsTemp);
-                $data['jsReady'][] = "jq.mobile.go('#navPopup'); jq.parser.parse('#navPopup');"; // load the div, init easyui components
-                $data['content']['action'] = 'newDiv';
-                break;
-            case 'tablet':
-            case 'desktop': // set a javascript popup window
-            default:
-                $data['content']['action'] = 'window';
-                $data['content']['title'] = $data['title'];
-                $data['content'] = array_merge($data['content'], $data['attr']);
+        msgDebug("\nEntering renderHead");
+        $html = '';
+        $head = sortOrder($data['head']);
+        if (!empty($head)) {
+            foreach ($head as $value) {
+                $html .= "\t";
+                $html5->buildDiv($html, $value);
+            }
         }
+        if (!empty($data['jsHead'])) {
+            $html .= '<script type="text/javascript">'."\n".implode("\n", $data['jsHead'])."\n</script>\n";
+            $data['jsHead'] = [];
+        }
+        return $html;
     }
 
-    private function renderDivs($data)
+    /**
+     *
+     * @global \bizuno\class $html5
+     * @param type $data
+     * @param type $type
+     * @return type
+     */
+    protected function renderDivs($data)
     {
         global $html5;
-        if (!isset($data['divs'])) { return; }
+        if (empty($data)) { return ''; }
+        $header = $footer = '';
         msgDebug("\nEntering renderDivs");
-        $html5->buildDivs($this->output, $data);
+        $this->html = $html5->buildDivs($data, 'divs'); // generates $this->html body but can add headers and footers
+        if (!empty($data['header'])) {
+            $header .= "<header>\n";
+            $html5->buildDiv($header, $data['header']);
+            $header .= "</header>\n";
+        }
+        if (!empty($data['footer'])) {
+            $footer .= "<footer>\n";
+            $html5->buildDiv($footer, $data['footer']);
+            $footer .= "</footer>\n";
+        }
+        return "$header\n$footer\n$this->html\n";
     }
 
-    private function renderJS($data, $addMsg=true)
+    /**
+     *
+     * @global \bizuno\class $html5
+     * @param type $data
+     * @param type $addMsg
+     * @return string
+     */
+    protected function renderJS($data, $addMsg=true)
     {
         global $html5;
+        $dom = '';
         msgDebug("\nEntering renderJS");
         if (!isset($data['jsHead']))   { $data['jsHead']  = []; }
         if (!isset($data['jsBody']))   { $data['jsBody']  = []; }
         if (!isset($data['jsReady']))  { $data['jsReady'] = []; }
         if (!isset($data['jsResize'])) { $data['jsResize']= []; }
         // gather everything together
-        $jsHead  = array_merge($this->output['jsHead'],  $data['jsHead'],  $html5->jsHead);
-        $jsBody  = array_merge($this->output['jsBody'],  $data['jsBody'],  $html5->jsBody);
-        $jsReady = array_merge($this->output['jsReady'], $data['jsReady'], $html5->jsReady);
-        $jsResize= array_merge($this->output['jsResize'],$data['jsResize'],$html5->jsResize);
+        $jsHead  = array_merge($data['jsHead'],  $html5->jsHead);
+        $jsBody  = array_merge($data['jsBody'],  $html5->jsBody);
+        $jsReady = array_merge($data['jsReady'], $html5->jsReady);
+        $jsResize= array_merge($data['jsResize'],$html5->jsResize);
+        msgDebug("\n jsHead = ".print_r($jsHead, true));
+        msgDebug("\n jsBody = ".print_r($jsBody, true));
+        msgDebug("\n jsReady = ".print_r($jsReady, true));
+        msgDebug("\n jsResize = ".print_r($jsResize, true));
         if (sizeof($jsResize)) { $jsHead['reSize'] = "var windowWidth = jq(window).width();
 function resizeEverything() { ".implode(" ", $jsResize)." }
 jq(window).resize(function() { if (jq(window).width() != windowWidth) { windowWidth = jq(window).width(); resizeEverything(); } });"; }
         if ($addMsg) { $jsReady['msgStack'] = $html5->addMsgStack(); }
         // Render the output
         if (sizeof($jsHead)) { // first
-            $this->output['body'] .= '<script type="text/javascript">'."\n".implode("\n", $jsHead)."\n</script>\n";
+            $dom .= '<script type="text/javascript">'."\n".implode("\n", $jsHead)."\n</script>\n";
         }
         if (sizeof($jsBody)) { // second
-            $this->output['body'] .= '<script type="text/javascript">'."\n".implode("\n", $jsBody)."\n</script>\n";
+            $dom .= '<script type="text/javascript">'."\n".implode("\n", $jsBody)."\n</script>\n";
         }
         if (sizeof($jsReady)) { // doc ready, last
-            $this->output['body'] .= '<script type="text/javascript">'."jq(document).ready(function() {\n".implode("\n", $jsReady)."\n});\n</script>\n";
+            $dom .= '<script type="text/javascript">'."jq(document).ready(function() {\n".implode("\n", $jsReady)."\n});\n</script>\n";
         }
+        return $dom;
+    }
+
+    /**
+     * Renders popups which vary based on the type of device
+     * @global array $msgStack
+     * @param type $data
+     * @return type
+     */
+    public function renderPopup($data)
+    {
+        global $msgStack, $html5;
+        switch($GLOBALS['myDevice']) {
+            case 'mobile': // set a new panel
+                if (biz_validate_user()) {
+                    $data['header'] = ['classes'=>['m-toolbar'],'type'=>'divs','divs'=>[
+//                      'left'  => ['order'=>10,'type'=>'menu','size'=>'small','hideLabels'=>true,'classes'=>['m-left'], 'options'=>['plain'=>'true'],
+//                          'data'=>$html5->layoutMenuLeft('back')],
+                        'center'=> ['order'=>20,'type'=>'html','classes'=>['m-title'],'html'=>!empty($data['title']) ? $data['title'] : ''],
+                        'right' => ['order'=>30,'type'=>'menu','size'=>'small','hideLabels'=>true,'classes'=>['m-right'],'options'=>['plain'=>'true'],
+                            'data'=>$html5->layoutMenuLeft('back')]]];
+                } else {
+                    $data['header'] = ['classes'=>['m-toolbar'],'type'=>'divs','divs'=>[
+                        'center'=> ['order'=>20,'type'=>'html','classes'=>['m-title'],'html'=>!empty($data['title']) ? $data['title'] : '']]];
+                }
+                $data['jsReady'][] = "jq.mobile.go('#navPopup'); jq.parser.parse('#navPopup');"; // load the div, init easyui components
+                $dom  = $this->renderDivs($data);
+                $dom .= $this->renderJS($data);
+                $data['content']['action']= 'newDiv';
+                $data['content']['html']  = $dom;
+                break;
+            case 'tablet':
+            case 'desktop': // set a javascript popup window
+            default:
+                $data['content']['action']= 'window';
+                $data['content']['title'] = $data['title'];
+                $data['content'] = array_merge($data['content'], $data['attr']);
+                $this->renderDivs($data);
+                $this->html .= $this->renderJS($data, false);
+                $data['content']['html']  = empty($data['content']['html']) ? $this->html : $data['content']['html'].$this->html;
+                break;
+        }
+        $data['content']['message'] = $msgStack->error;
+        return json_encode($data['content']);
     }
 }
 
@@ -183,7 +257,8 @@ function viewFormat($value, $format = '')
         case 'curLong':
         case 'curExc':     return viewCurrency($value, $format);
         case 'date':
-        case 'datetime':   return viewDate($value);
+        case 'dateNoY':
+        case 'datetime':   return viewDate($value, false, $format);
         case 'dateLong':   return viewDate($value).' '.substr($value, strpos($value, ' '));
         case 'encryptName':if (empty(getUserCache('profile', 'admin_encrypt'))) { return ''; }
             bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
@@ -263,6 +338,16 @@ function viewFormat($value, $format = '')
  * @param type $content
  * @param type $action
  */
+function viewDashLink($left='', $right='', $action='')
+{
+    return '<div class="dashHover"><span style="width:100%;float:left;height:20px;"><span style="float:left" class="menuHide dashAction">'.$action.'</span>'.$left.'<span style="float:right">'.$right.'</span></span></div>';
+}
+
+/**
+ *
+ * @param type $content
+ * @param type $action
+ */
 function viewDashList($content='', $action='')
 {
     return '<div class="dashHover"><span style="width:100%;float:left">'.$content.'<span style="float:right" class="menuHide dashAction">'.$action.'</span></span></div>';
@@ -270,11 +355,12 @@ function viewDashList($content='', $action='')
 
 /**
  * This function takes the db formatted date and converts it into a locale specific format as defined in the settings
- * @param date $raw_date
- * @param bool $long
+ * @param date $raw_date - raw date in db format
+ * @param bool $long - [default: false] Long format
+ * @param sring $action - [default: date] The desired output format
  * @return string - Formatted date for rendering
  */
-function viewDate($raw_date = '', $long = false)
+function viewDate($raw_date = '', $long=false, $action='date')
 {
     // from db to locale display format
     if (empty($raw_date) || $raw_date=='0000-00-00' || $raw_date=='0000-00-00 00:00:00') { return ''; }
@@ -285,8 +371,8 @@ function viewDate($raw_date = '', $long = false)
     $hour   = $long ? substr($raw_date, 11, 2) : 0;
     $minute = $long ? substr($raw_date, 14, 2) : 0;
     $second = $long ? substr($raw_date, 17, 2) : 0;
-    if ($month < 1   || $month > 12)  { $error = true; }
-    if ($day   < 1   || $day > 31)    { $error = true; }
+    if ($month<    1 || $month>   12) { $error = true; }
+    if ($day  <    1 || $day  >   31) { $error = true; }
     if ($year < 1900 || $year > 2099) { $error = true; }
     if ($error) {
         $date_time = time();
@@ -294,6 +380,7 @@ function viewDate($raw_date = '', $long = false)
         $date_time = mktime($hour, $minute, $second, $month, $day, $year);
     }
     $format = getModuleCache('bizuno', 'settings', 'locale', 'date_short').($long ? ' h:i:s a' : '');
+    if ($action=='dateNoY') { $format = trim(str_replace('Y', '', $format), "-./"); }// no year
     return date($format, $date_time);
 }
 
@@ -758,8 +845,16 @@ function viewMimeIcon($type)
  */
 function viewMain()
 {
-    $view = new portalView();
-    return $view->viewMain();
+    global $html5;
+    $menuID = clean('menuID', ['format'=>'cmd', 'default'=>'home'], 'get');
+    switch ($GLOBALS['myDevice']) {
+        case 'mobile':  $data = $html5->layoutMobile($menuID);  break;
+        case 'tablet': // use desktop layout as the screen is big enough
+        default:
+        case 'desktop': $data = $html5->layoutDesktop($menuID); break;
+    }
+    if (!getUserCache('profile', 'biz_id')) { unset($data['header'], $data['footer']); }
+    return $data;
 }
 
 /**
@@ -797,8 +892,7 @@ function adminStructure($module, $structure=[], $lang=[])
         if (empty($methProps)) { continue; }
         msgDebug("\nReady to process folder $folder and props = ".print_r($methProps, true));
         $html = adminMethods($module, $methProps, $folder);
-        $data['tabs']['tabAdmin']['divs']['tab'.$folder] = ['order'=>$order,'label'=>lang($folder),'type'=>'html','html'=>$html['body']];
-        $data['jsReady']["js{$module}_{$folder}"] = $html['jsBody'];
+        $data['tabs']['tabAdmin']['divs']['tab'.$folder] = ['order'=>$order,'label'=>lang($folder),'type'=>'html','html'=>$html];
         $order++;
     }
     return array_replace_recursive(viewMain(), $data);
@@ -843,53 +937,52 @@ function adminMethods($module, $props, $key)
         'btnMethodDel' => ['attr'=>['type'=>'button','value'=>lang('remove')], 'hidden'=>$security>4?false:true],
         'btnMethodProp'=> ['icon'=>'settings'],
         'settingSave'  => ['icon'=>'save']];
-    $output = ['body'=>'', 'jsBody'=>''];
-    $output['body'] .= '<table style="border-collapse:collapse;width:100%">'."\n".' <thead class="panel-header">'."\n";
+    $html  = '<table style="border-collapse:collapse;width:100%">'."\n".' <thead class="panel-header">'."\n";
     $title = $key == 'dashboards' ? lang('dashboard') : lang('method');
-    $output['body'] .= "  <tr><th>&nbsp;</th><th>$title</th><th>".lang('description')."</th><th>".lang('action')."</th></tr>\n </thead>\n <tbody>\n";
+    $html .= "  <tr><th>&nbsp;</th><th>$title</th><th>".lang('description')."</th><th>".lang('action')."</th></tr>\n </thead>\n <tbody>\n";
     foreach ($props as $method => $settings) {
         $fqcn = "\\bizuno\\$method";
         bizAutoLoad("{$settings['path']}$method.php", $fqcn);
         if (empty($settings['settings'])) { $settings['settings'] = []; }
         $clsMeth = new $fqcn($settings['settings']);
         if (isset($clsMeth->hidden) && $clsMeth->hidden) { continue; }
-        $output['body'] .= "  <tr>\n";
-        $output['body'] .= '    <td valign="top">'.htmlFindImage($settings, "32")."</td>\n";
-        $output['body'] .= '    <td valign="top" '.($settings['status'] ? ' style="background-color:lightgreen"' : '').">".$settings['title'].'</td>';
-        $output['body'] .= "    <td><div>".$settings['description'];
+        $html .= "  <tr>\n";
+        $html .= '    <td valign="top">'.htmlFindImage($settings, "32")."</td>\n";
+        $html .= '    <td valign="top" '.($settings['status'] ? ' style="background-color:lightgreen"' : '').">".$settings['title'].'</td>';
+        $html .= "    <td><div>".$settings['description'];
         if ($key <> 'dashboards' && !$settings['status'] && $security > 1) {
-            $output['body'] .= "</div></td>\n";
+            $html .= "</div></td>\n";
             $fields['btnMethodAdd']['events']['onClick'] = "jsonAction('bizuno/settings/methodInstall&module=$module&path=$key&method=$method');";
-            $output['body'] .= '    <td valign="top" style="text-align:right;">'.html5('install_'.$method, $fields['btnMethodAdd'])."</td>\n";
+            $html .= '    <td valign="top" style="text-align:right;">'.html5('install_'.$method, $fields['btnMethodAdd'])."</td>\n";
         } else {
-            $output['body'] .= "</div>";
-            $output['body'] .= '<div id="divMethod_'.$method.'" style="display:none;" class="layout-expand-over">';
-            $output['body'] .= html5("frmMethod_$method", ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/methodSettingsSave&module=$module&type=$key&method=$method"]]);
+            $html .= "</div>";
+            $html .= '<div id="divMethod_'.$method.'" style="display:none;" class="layout-expand-over">';
+            $html .= html5("frmMethod_$method", ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/methodSettingsSave&module=$module&type=$key&method=$method"]]);
             $structure = method_exists($clsMeth, 'settingsStructure') ? $clsMeth->settingsStructure() : [];
             foreach ($structure as $setting => $values) {
                 $mult = isset($values['attr']['multiple']) ? '[]' : '';
                 if (isset($values['attr']['multiple'])) { $values['attr']['value'] = explode(':', $values['attr']['value']); }
-                $output['body'] .= html5($method.'_'.$setting.$mult, $values)."<br />\n";
+                $html .= html5($method.'_'.$setting.$mult, $values)."<br />\n";
             }
             $fields['settingSave']['events']['onClick'] = "jq('#frmMethod_".$method."').submit();";
-            $output['body']  .= '<div style="text-align:right">'.html5('imgMethod_'.$method, $fields['settingSave']).'</div>';
-            $output['body']  .= "</form></div>";
-            $output['jsBody'].= " ajaxForm('frmMethod_$method');";
-            $output['body']  .= "</td>\n";
-            $output['body']  .= '<td valign="top" nowrap="nowrap" style="text-align:right;">' . "\n";
+            $html  .= '<div style="text-align:right">'.html5('imgMethod_'.$method, $fields['settingSave']).'</div>';
+            $html  .= "</form></div>";
+            htmlQueue("ajaxForm('frmMethod_$method');", 'jsReady');
+            $html  .= "</td>\n";
+            $html  .= '<td valign="top" nowrap="nowrap" style="text-align:right;">' . "\n";
             $fields['btnMethodDel']['events']['onClick'] = "if (confirm('".lang('msg_method_delete_confirm')."')) jsonAction('bizuno/settings/methodRemove&module=$module&type=$key&method=$method');";
             if ($security>4 && $key<>'dashboards' && empty($clsMeth->required)) {
-                $output['body'] .= html5('remove_'.$method, $fields['btnMethodDel']) . "\n";
+                $html .= html5('remove_'.$method, $fields['btnMethodDel']) . "\n";
             }
             $fields['btnMethodProp']['events']['onClick'] = "jq('#divMethod_{$method}').toggle('slow');";
-            $output['body'] .= html5('prop_'.$method, $fields['btnMethodProp'])."\n";
-            $output['body'] .= "</td>\n";
+            $html .= html5('prop_'.$method, $fields['btnMethodProp'])."\n";
+            $html .= "</td>\n";
         }
-        $output['body'] .= "  </tr>\n";
-        $output['body'] .= '<tr><td colspan="5"><hr /></td></tr>'."\n";
+        $html .= "  </tr>\n";
+        $html .= '<tr><td colspan="5"><hr /></td></tr>'."\n";
     }
-    $output['body'] .= " </tbody>\n</table>\n";
-    return $output;
+    $html .= " </tbody>\n</table>\n";
+    return $html;
 }
 
 /**
@@ -944,12 +1037,31 @@ function customTabs(&$data, $module, $tabID)
  * This function builds an HTML element based on the properties passed, element of type INPUT is the default if not specified
  * @param string $id - becomes the DOM id and name of the element
  * @param array $prop - structure of the HTML element
- * @return string $output - HTML5 compatible element
+ * @return string - HTML5 compatible element
  */
 function html5($id='', $prop=[])
 {
     global $html5;
     return $html5->render($id, $prop);
+}
+
+/**
+ * Adds HTML content to the specified queue in preparation to render.
+ * @global class $html5 - UI HTML render class
+ * @param string $html - Content to add to queue
+ * @param type $type - [default: body] Which queue to use, choices are: jsHead, jsBody, jsReady, jsResize, and body
+ */
+function htmlQueue($html, $type='body')
+{
+    global $html5;
+    switch ($type) {
+        case 'jsHead':   $html5->jsHead[]  = $html; break;
+        case 'jsBody':   $html5->jsBody[]  = $html; break;
+        case 'jsReady':  $html5->jsReady[] = $html; break;
+        case 'jsResize': $html5->jsResize[]= $html; break;
+        default:
+        case 'body':     $this->html .= $html; break;
+    }
 }
 
 /**
@@ -1030,10 +1142,10 @@ function dgHtmlTaxData($id, $field, $type='c', $xClicks='')
 /**
  * This function formats database data into a JavaScript array
  * @param array $dbData - raw data from database of rows matching given criteria
- * @param string $name - JavaScript variable name linked to the datagrid to populate with data
+ * @param string $name - JavaScript variable name linked to the grid to populate with data
  * @param array $structure - used for identifying the formatting of data prior to building the string
- * @param array $override - map to replace database field name to the datagrid column name
- * @return string $output - JavaScript string of data used to populate datagrids
+ * @param array $override - map to replace database field name to the grid column name
+ * @return string $output - JavaScript string of data used to populate grids
  */
 function formatDatagrid($dbData, $name, $structure=[], $override=[])
 {

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-07
+ * @version    4.x Last Update: 2020-07-08
  * @filesource /lib/controller/module/phreebooks/dashboards/open_j10/open_j10.php
  */
 
@@ -55,6 +55,12 @@ class open_j10
             'order'   => ['label'=>lang('sort_order'),   'values'=>viewKeyDropdown($this->order),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['order']]]];
     }
 
+    /**
+     * Generates the structure for the dashboard view
+     * @global object $currencies - Sets the currency values for proper display
+     * @param array $layout - structure coming in
+     * @return modified $layout
+     */
     function render(&$layout=[])
     {
         global $currencies;
@@ -71,14 +77,15 @@ class open_j10
         $total = 0;
         if (empty($result)) { $rows[] = "<span>".lang('no_results')."</span>"; }
         else {
-            foreach ($result as $entry) { // build the list
-                $entry['total_amount'] += getInvoiceInfo($entry['id'], $entry['journal_id']);
+            foreach ($result as $entry) {
                 $currencies->iso  = $entry['currency'];
                 $currencies->rate = $entry['currency_rate'];
-                $row  = '<span style="float:left">'.html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
-                $row .= viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim).'</span><span style="float:right">'.viewFormat($entry['total_amount'], 'currency').'</span></li>';
+                $entry['total_amount'] += getInvoiceInfo($entry['id'], $entry['journal_id']);
                 $total += $entry['total_amount'];
-                $rows[]= $row;
+                $left   = viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim);
+                $right  = viewFormat($entry['total_amount'], 'currency');
+                $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
+                $rows[] = viewDashLink($left, $right, $action);
             }
             $currencies->iso  = getDefaultCurrency();
             $currencies->rate = 1;

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-07
+ * @version    4.x Last Update: 2020-07-08
  * @filesource /EXTENSION_PATH/extShipping/dashboards/unprinted_orders/unprinted_orders.php
  *
  */
@@ -52,6 +52,11 @@ class unprinted_orders
             'order'   => ['label'=>lang('sort_order'),   'values'=>viewKeyDropdown($this->order),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['order']]]];
     }
 
+    /**
+     * Generates the structure for the dashboard view
+     * @param array $layout - structure coming in
+     * @return modified $layout
+     */
     public function render(&$layout=[])
     {
         $struc  = $this->settingsStructure();
@@ -61,12 +66,14 @@ class unprinted_orders
         if (getUserCache('profile', 'restrict_store', false, -1) > -1) { $filter .= " AND store_id=".getUserCache('profile', 'restrict_store', false, -1); }
         $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_main", $filter, $order);
         if (empty($result)) { $rows[] = "<span>".lang('no_results')."</span>"; }
-        else { foreach ($result as $entry) { // build the list
-            $row  = '<span style="float:left">'.html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID=12&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
-            $row .= viewDate($entry['post_date']).' - '.viewText($entry['primary_name_b'], $this->trim)."</span>";
-            $row .= '<span style="float:right">'.html5('', ['icon'=>'email','events'=>['onClick'=>"winOpen('phreeformOpen', 'phreeform/render/open&group=cust:j12&date=a&xfld=journal_main.id&xcr=equal&xmin={$entry['id']}');"]])."</span>";
-            $rows[]= $row;
-        } }
+        else {
+            foreach ($result as $entry) { // build the list
+                $left   = viewDate($entry['post_date']).' - '.viewText($entry['primary_name_b'], $this->trim);
+                $right  = html5('', ['icon'=>'email','events'=>['onClick'=>"winOpen('phreeformOpen', 'phreeform/render/open&group=cust:j12&date=a&xfld=journal_main.id&xcr=equal&xmin={$entry['id']}');"]]);
+                $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&jID=12&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
+                $rows[] = viewDashLink($left, $right, $action);
+            }
+        }
         $filter = ucfirst(lang('filter')).": ".ucfirst(lang('sort'))." ".strtoupper($this->settings['order']).(!empty($this->settings['num_rows']) ? " ({$this->settings['num_rows']});" : '');
         $layout = array_merge_recursive($layout, [
             'divs'  => [

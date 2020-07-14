@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-11
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /controller/module/phreebooks/totals/tax_order/tax_order.php
  */
 
@@ -85,7 +85,7 @@ class tax_order
         msgDebug("\nTaxOrder is returning balance = $begBal");
     }
 
-    public function render(&$output, $data=[])
+    public function render($data=[])
     {
         $jID   = $data['fields']['journal_id']['attr']['value'];
         $type  = in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
@@ -99,21 +99,21 @@ class tax_order
             'totals_tax_order_gl'  => ['label'=>lang('gl_account'), 'attr'=>['type'=>'text','value'=>'glTBD','readonly'=>'readonly']],
             'totals_tax_order_amt' => ['attr' =>['value'=>'amtTBD', 'size'=>'15','style'=>'text-align:right','readonly'=>'readonly']],
             'totals_tax_order_opt' => ['icon' =>'settings',         'size'=>'small','events'=>['onClick'=>"jq('#phreebooks_totals_tax_order').toggle('slow');"]]];
-        $output['body'] .= '<div style="text-align:right'.$hide.'">';
-        $output['body'] .= html5('totals_tax_order',$this->fields['totals_tax_order']);
-        $output['body'] .= html5('',                $this->fields['totals_tax_order_opt'])."<br />";
-        $output['body'] .= html5('tax_rate_id',     $this->fields['tax_rate_id']);
-        $output['body'] .= "</div>";
-        $output['body'] .= '<div id="phreebooks_totals_tax_order" style="display:none" class="layout-expand-over">';
-        $output['body'] .= '  <table id="tableTaxOrder"></table>';
-        $output['body'] .= "</div>";
+        $html  = '<div style="text-align:right'.$hide.'">';
+        $html .= html5('totals_tax_order',$this->fields['totals_tax_order']);
+        $html .= html5('',                $this->fields['totals_tax_order_opt'])."<br />";
+        $html .= html5('tax_rate_id',     $this->fields['tax_rate_id']);
+        $html .= "</div>";
+        $html .= '<div id="phreebooks_totals_tax_order" style="display:none" class="layout-expand-over">';
+        $html .= '  <table id="tableTaxOrder"></table>';
+        $html .= "</div>";
 
         $temp = "<tr><td>".html5('totals_tax_order_text[]',$this->fields['totals_tax_order_text'])."</td>";
         $temp.= "<td>"    .html5('totals_tax_order_gl[]',  $this->fields['totals_tax_order_gl'])  ."</td>";
         $temp.= "<td>"    .html5('totals_tax_order_amt[]', $this->fields['totals_tax_order_amt']) ."</td></tr>";
         $row  = str_replace("\n", "", $temp);
-        if (!empty($data['fields']['id']['attr']['value'])) { $output['jsReady'][] = "totalUpdate('total_tax_order Init');"; }
-        $output['jsHead'][] = "var taxOrderTD = '".str_replace("'", "\'", $row)."';
+        if (!empty($data['fields']['id']['attr']['value'])) { htmlQueue("totalUpdate('total_tax_order Init');", 'jsReady'); }
+        htmlQueue("var taxOrderTD = '".str_replace("'", "\'", $row)."';
 function totals_tax_order(begBalance) {
     jq('#tableTaxOrder').find('tr').remove();
     var taxTotal  = 0;
@@ -152,6 +152,7 @@ function totals_tax_order(begBalance) {
     else { taxRunning = newTaxItem; }
     bizNumSet('totals_tax_order', taxRunning);
     return newBalance;
-}";
+}", 'jsHead');
+        return $html;
     }
 }

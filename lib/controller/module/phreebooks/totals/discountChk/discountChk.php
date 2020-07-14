@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-03-20
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/phreebooks/totals/discountChk/discountChk.php
  */
 
@@ -81,7 +81,7 @@ class discountChk
         msgDebug("\nDiscountChk is returning total discount = ".$totalDisc);
     }
 
-    public function render(&$output, $data=[])
+    public function render($data=[])
     {
         $this->fields = [
             'totals_discount_gl' => ['label'=>lang('gl_account'),'attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
@@ -95,14 +95,14 @@ class discountChk
                 $this->fields['totals_discount_gl']['attr']['value'] = $row['gl_account'];
             }
         } }
-        $output['body'] .= '<div style="text-align:right">';
-        $output['body'] .= html5('totals_discount',    $this->fields['totals_discount']);
-        $output['body'] .= html5('',                   $this->fields['totals_discount_opt']);
-        $output['body'] .= "</div>";
-        $output['body'] .= '<div id="phreebooks_totals_discount" style="display:none" class="layout-expand-over">';
-        $output['body'] .= html5('totals_discount_gl', $this->fields['totals_discount_gl']);
-        $output['body'] .= "</div>";
-        $output['jsHead'][] = "function totals_discountChk(begBalance) {
+        $html  = '<div style="text-align:right">';
+        $html .= html5('totals_discount',    $this->fields['totals_discount']);
+        $html .= html5('',                   $this->fields['totals_discount_opt']);
+        $html .= "</div>";
+        $html .= '<div id="phreebooks_totals_discount" style="display:none" class="layout-expand-over">';
+        $html .= html5('totals_discount_gl', $this->fields['totals_discount_gl']);
+        $html .= "</div>";
+        htmlQueue("function totals_discountChk(begBalance) {
     var totalDisc = 0;
     var rowData = jq('#dgJournalItem').datagrid('getData');
     for (var i=0; i<rowData.rows.length; i++) if (rowData.rows[i]['checked']) {
@@ -114,6 +114,7 @@ class discountChk
     var curISO    = jq('#currency').val() ? jq('#currency').val() : bizDefaults.currency.defaultCur;
     var decLen= parseInt(bizDefaults.currency.currencies[curISO].dec_len);
     return parseFloat(newBalance.toFixed(decLen));
-}";
+}", 'jsHead');
+        return $html;
     }
 }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-22
+ * @version    4.x Last Update: 2020-07-08
  * @filesource /lib/controller/module/bizuno/dashboards/lp_search/lp_search.php
  */
 
@@ -41,15 +41,15 @@ class lp_search
         $js = "
 jq('#google').keypress(function(event) {
     var keycode = (event.keyCode ? event.keyCode : event.which);
-    if (keycode == '13') { window.open('https://www.google.com/search?q='+jq('#google').val()); }
+    if (keycode == '13') { winHref('https://www.google.com/search?q='+jq('#google').val()); }
 });
 jq('#yahoo').keypress(function(event) {
     var keycode = (event.keyCode ? event.keyCode : event.which);
-    if (keycode == '13') { window.open('https://search.yahoo.com?q='+jq('#yahoo').val()); }
+    if (keycode == '13') { winHref('https://search.yahoo.com?q='+jq('#yahoo').val()); }
 });
 jq('#bing').keypress(function(event) {
     var keycode = (event.keyCode ? event.keyCode : event.which);
-    if (keycode == '13') { window.open('https://www.bing.com?q='+jq('#bing').val()); }
+    if (keycode == '13') { winHref('https://www.bing.com?q='+jq('#bing').val()); }
 });";
         $data = [
             'divs'  => [
@@ -62,11 +62,11 @@ jq('#bing').keypress(function(event) {
                 'yahoo'    => ['order'=>20,'options'=>['width'=>250],'break'=>false,'attr'=>['type'=>'text']],
                 'bing'     => ['order'=>20,'options'=>['width'=>250],'break'=>false,'attr'=>['type'=>'text']],
                 'btnGoogle'=> ['order'=>30,'attr'=>['type'=>'button','value'=>$this->lang['google']],'styles'=>['cursor'=>'pointer'],
-                    'events' => ['onClick'=> "window.open('https://www.google.com/search?q='+jq('#google').val())"]],
+                    'events' => ['onClick'=> "winHref('https://www.google.com/search?q='+jq('#google').val())"]],
                 'btnYahoo' => ['order'=>30,'attr'=>['type'=>'button','value'=>$this->lang['yahoo']], 'styles'=>['cursor'=>'pointer'],
-                    'events' => ['onClick'=> "window.open('https://search.yahoo.com?q='+jq('#yahoo').val())"]],
+                    'events' => ['onClick'=> "winHref('https://search.yahoo.com?q='+jq('#yahoo').val())"]],
                 'btnBing'  => ['order'=>30,'attr'=>['type'=>'button','value'=>$this->lang['bing']],  'styles'=>['cursor'=>'pointer'],
-                    'events' => ['onClick'=> "window.open('https://www.bing.com?q='+jq('#bing').val())"]],
+                    'events' => ['onClick'=> "winHref('https://www.bing.com?q='+jq('#bing').val())"]],
                 'imgGoogle'=> ['order'=>10,'label'=>$this->lang['google'],'attr'=>['type'=>'img','src'=>BIZUNO_URL.'controller/module/bizuno/dashboards/lp_search/google.png','height'=>'50']],
                 'imgYahoo' => ['order'=>10,'label'=>$this->lang['yahoo'], 'attr'=>['type'=>'img','src'=>BIZUNO_URL.'controller/module/bizuno/dashboards/lp_search/yahoo.png', 'height'=>'50']],
                 'imgBing'  => ['order'=>10,'label'=>$this->lang['bing'],  'attr'=>['type'=>'img','src'=>BIZUNO_URL.'controller/module/bizuno/dashboards/lp_search/bing.jpg',  'height'=>'50']]],

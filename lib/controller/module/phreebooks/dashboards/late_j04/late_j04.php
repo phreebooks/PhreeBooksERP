@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-07
+ * @version    4.x Last Update: 2020-07-08
  * @filesource /lib/controller/module/phreebooks/dashboards/late_j04/late_j04.php
  */
 
@@ -75,13 +75,13 @@ class late_j04
                     $item['total_amount'] = $item['debit_amount'] - $item['credit_amount'];
                     $filled= dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty) AS qty", "item_ref_id={$item['id']} AND gl_type='itm'", false);
                     if ($item['qty'] <= $filled || empty($item['total_amount'])) { continue; }
-//                  $entry['total_amount'] -= getInvoiceInfo($entry['id'], $entry['journal_id']);
                     $currencies->iso  = $entry['currency'];
                     $currencies->rate = $entry['currency_rate'];
-                    $row   = '<span style="float:left">'.html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
-                    $row  .= viewDate($item['date_1'])." - ".viewText($item['description'], $this->trim).'</span><span style="float:right">'.viewFormat($item['total_amount'], 'currency').'</span></li>';
-                    $total+= $item['total_amount'];
-                    $rows[]= $row;
+                    $total += $item['total_amount'];
+                    $left   = viewDate($item['date_1'])." - ".viewText($item['description'], $this->trim);
+                    $right  = viewFormat($item['total_amount'], 'currency');
+                    $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
+                    $rows[] = viewDashLink($left, $right, $action);
                 }
             }
             $currencies->iso  = getDefaultCurrency();

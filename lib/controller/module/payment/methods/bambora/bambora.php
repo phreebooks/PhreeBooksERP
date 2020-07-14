@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2018-12-10
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/payment/methods/bambora.php
  *
  * Source Information:
@@ -65,13 +65,12 @@ class bambora extends paymentCommon
         return $data;
     }
 
-    public function render(&$output, $data, $values=[], $dispFirst=false)
+    public function render($data, $values=[], $dispFirst=false)
     {
-        parent::renderCommon($output, $data, $values, $dispFirst);
-
+        return parent::renderCommon($data, $values, $dispFirst);
     }
 
-    public function paymentAuth($fields, $ledger=[])
+    public function paymentAuth($fields)
     {
         $submit_data = [
             ];

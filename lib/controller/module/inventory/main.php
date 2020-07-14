@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-25
+ * @version    4.x Last Update: 2020-07-08
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -336,7 +336,7 @@ function preSubmit() { bizGridSerializer('dgAssembly', 'dg_assy'); bizGridSerial
         if (!$sku) { return msgAdd("Bad sku passed!"); }
         $_GET['rID'] = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'id', "sku='$sku'");
         compose('inventory', 'main', 'edit', $layout);
-        unset($layout['tabs']['tabInventory']['divs']['general']['divs']['attach']);
+        unset($layout['tabs']['tabInventory']['divs']['general']['divs']['genAtch']);
         unset($layout['divs']['toolbar']);
         unset($layout['divs']['formBOF']);
         unset($layout['divs']['formEOF']);
@@ -863,10 +863,10 @@ function preSubmit() { bizGridSerializer('dgAssembly', 'dg_assy'); bizGridSerial
                 'action'     => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>60,'hidden'=>$hide_cost?true:false],
                     'events' => ['formatter'=>"function(value,row,index) { return {$props['name']}Formatter(value,row,index); }"],
                     'actions'=> [
-                        'edit'  => ['order'=>20,'icon'=>'edit',  'label'=>lang('edit'),          'hidden'=>$hide>0?false:true,'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD');"]],
+                        'edit'  => ['order'=>20,'icon'=>'edit',  'label'=>lang('edit'),          'hidden'=>$hide>0?false:true,'events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD');"]],
                         'toggle'=> ['order'=>40,'icon'=>'toggle','label'=>lang('toggle_status'), 'hidden'=>$hide>3?false:true,'events'=>['onClick'=>"jsonAction('phreebooks/main/toggleWaiting&jID=$jID&dgID={$props['name']}', idTBD);"]],
                         'dates' => ['order'=>50,'icon'=>'date',  'label'=>lang('delivery_dates'),'hidden'=>$hide>3?false:true,'events'=>['onClick'=>"windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".lang('delivery_dates')."', 500, 400);"]],
-                        'fill'  => ['order'=>80,'icon'=>$icon,   'label'=>$label,                'hidden'=>$hide>2?false:true,'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD&jID=$invID&bizAction=inv');"]]]],
+                        'fill'  => ['order'=>80,'icon'=>$icon,   'label'=>$label,                'hidden'=>$hide>2?false:true,'events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD&jID=$invID&bizAction=inv');"]]]],
                 'invoice_num'=> ['order'=>20,'label'=>lang('journal_main_invoice_num', $jID),'attr'=>['width'=>100,'resizable'=>true]],
                 'store_id'   => ['order'=>30,'label'=>lang('contacts_short_name_b'),   'attr'=>['width'=>100,'resizable'=>true,'hidden'=>$stores?false:true]],
                 'post_date'  => ['order'=>40,'label'=>lang('post_date'),               'attr'=>['width'=>150,'resizable'=>true]],

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-29
+ * @version    4.x Last Update: 2020-06-30
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -274,6 +274,7 @@ $lang = [
     'db_next_id'   => 'Next Row ID',
     'new_tab' => 'New Custom Tab',
     'new_tab_desc' => 'Select the Module/Table to create a new tab in and click Next.',
+    'err_tab_in_use' => 'This tab has custom fields assigned to it, the fields must be deleted before this tab can be deleted! The fields are: ',
         // Install notes
     'note_bizuno_install_1' => 'PRIORITY LOW: Create an account at www.PhreeSoft.com, if you do not have one, and then enter your credentials in your Bizuno Business under: Account (Login Name) -> Settings -> Bizuno tab -> Bizuno Settings icon -> Settings tab -> My PhreeSoft Account accordion.',
 ];

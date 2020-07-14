@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-07
+ * @version    4.x Last Update: 2020-07-08
  * @filesource /lib/controller/module/phreebooks/dashboards/ship_j10/ship_j10.php
  */
 
@@ -59,6 +59,12 @@ class ship_j10
             'order'   => ['label'=>lang('sort_order'),   'values'=>viewKeyDropdown($this->order),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['order']]]];
     }
 
+    /**
+     * Generates the structure for the dashboard view
+     * @global object $currencies - Sets the currency values for proper display
+     * @param array $layout - structure coming in
+     * @return modified $layout
+     */
     public function render(&$layout=[])
     {
         global $currencies;
@@ -95,10 +101,11 @@ class ship_j10
             foreach ($output as $entry) {
                 $currencies->iso  = $entry['currency'];
                 $currencies->rate = $entry['currency_rate'];
-                $row  = '<span style="float:left">'.html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
-                $row .= viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim).'</span>';
                 $this->notifyCheck($notified, $entry);
-                $rows[] = $row;
+                $left   = viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim);
+                $right  = '';
+                $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
+                $rows[] = viewDashLink($left, $right, $action);
             }
             if ($this->sendEmail && !empty($this->emailList)) { $this->notifyEmail(); }
             $currencies->iso  = getDefaultCurrency();
@@ -119,6 +126,9 @@ class ship_j10
             'lists' => [$this->code=>$rows]]);
     }
 
+    /**
+     *
+     */
     public function save()
     {
         $menu_id  = clean('menuID', 'text', 'get');
@@ -127,6 +137,12 @@ class ship_j10
         dbWrite(BIZUNO_DB_PREFIX."users_profiles", ['settings'=>json_encode($settings)], 'update', "user_id=".getUserCache('profile', 'admin_id', false, 0)." AND dashboard_id='$this->code' AND menu_id='$menu_id'");
     }
 
+    /**
+     *
+     * @param array $notified
+     * @param type $entry
+     * @return type
+     */
     private function notifyCheck(&$notified, $entry)
     {
         if ($notified['date'] == $this->today && in_array($entry['id'], $notified['rIDs'])) { return; } // notified already
@@ -136,6 +152,9 @@ class ship_j10
         $this->sendEmail   = true;
     }
 
+    /**
+     *
+     */
     private function notifyEmail()
     {
         $html = '';

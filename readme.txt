@@ -29,7 +29,7 @@ After uploading the files to your server, navigate to your root url and follow t
 * PHP   version 5.4 or greater (PHP 5.6 or greater is recommended, tested with PHP 7.4)
 * MySQL version 5.0 or greater (MySQL 5.6 or greater is recommended, tested with MySQL 5.6 & 5.7)
 
-1. Upload the file to your web site directory. PhreeBooks 5 can be installed in a subdirectory within your web site root directory.
+1. Upload the files to your web site directory. PhreeBooks 5 can be installed in a subdirectory within your web site root directory.
 1. Navigate to the PhreeBooks 5 root folder. The portal should be displayed.
 1. Enter your administrator email and password along with the database credentials.
 1. A pop up will appear to enter some initial information, select your preferences and press the Next icon.
@@ -47,6 +47,10 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.4.1.0 =
+2020-07-10 - Incorporate Bizuno Library 4.1.0. New default theme (bizuno). bug fixes to Wordpress and PhreeBooks 5 installation scripts.
+= 5.4.0.2 =
+2020-06-26 - Incorporate Bizuno Library 4.0.2. Building on blocks with new look with cleaner views and new default theme.
 = 5.4.0.1 =
 2020-06-01 - Incorporate Bizuno Library 4.0.1. Blocks view structure for easier mobile viewing.
 = 5.3.4.4 =

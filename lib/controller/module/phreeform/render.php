@@ -973,10 +973,10 @@ class phreeformRender
      * @return array - raw HTML ready to render in a DIV through AJAX
      */
     private function GenerateHTMLFile($data, $report)
-    { // for html reports only
+    {
         bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/renderHTML.php", 'HTML');
         $html = new HTML($data, $report);
-        return ['content'=>['action'=>'divHTML','divID'=>'bodyCenter','html'=>$html->output]];
+        return ['content'=>['action'=>'divHTML','divID'=>'bizBody','html'=>$html->output]];
     }
 
     /**

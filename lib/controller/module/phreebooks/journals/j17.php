@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-15
+ * @version    4.x Last Update: 2020-06-19
  * @filesource /lib/controller/module/phreebooks/journals/j17.php
  */
 
@@ -84,10 +84,10 @@ class j17 extends jCommon
                 $data['fields']['closed']= ['attr'=>  ['type'=>'hidden', 'value'=>'0']];
             }
             $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs',   'classes'=>['areaView'],'divs'=>[
-                'billAD'  => ['order'=>10,'type'=>'panel','key'=>'billAD',  'classes'=>['blockView']],
+                'billAD'  => ['order'=>10,'type'=>'panel','key'=>'billAD',  'classes'=>['block25']],
                 'props'   => ['order'=>20,'type'=>'panel','key'=>'props',   'classes'=>['block25']],
-                'totals'  => ['order'=>30,'type'=>'panel','key'=>'totals',  'classes'=>['blockViewR']],
-                'payments'=> ['order'=>40,'type'=>'panel','key'=>'payments','classes'=>['blockView']],
+                'totals'  => ['order'=>30,'type'=>'panel','key'=>'totals',  'classes'=>['block25R']],
+                'payments'=> ['order'=>40,'type'=>'panel','key'=>'payments','classes'=>['block25']],
                 'dgItems' => ['order'=>50,'type'=>'panel','key'=>'dgItems', 'classes'=>['block99']]]];
             $data['panels']['billAD']  = ['label'=>lang('bill_to'),'type'=>'address','attr'    =>['id'=>'address_b'],'fields'=>$fldAddr,
                 'settings'=>['suffix'=>'_b','clear'=>false,'props'=>false,'required'=>true,'store'=>false,'cols'=>false]];

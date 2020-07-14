@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-11
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/phreebooks/totals/tax_other/tax_other.php
  */
 
@@ -68,7 +68,7 @@ class tax_other
         msgDebug("\nTaxOther is returning balance = $begBal");
     }
 
-    public function render(&$output, $data)
+    public function render($data)
     {
         $jID   = $data['fields']['journal_id']['attr']['value'];
         $type  = in_array($jID, [3,4,6,7,17,20,21]) ? 'v' : 'c';
@@ -86,15 +86,15 @@ class tax_other
             }
         } }
         $hide = $this->hidden ? ';display:none' : '';
-        $output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
-        $output['body'] .= html5('totals_tax_other_id', $this->fields['totals_tax_other_id']);
-        $output['body'] .= html5('totals_tax_other',    $this->fields['totals_tax_other']);
-        $output['body'] .= html5('',                    $this->fields['totals_tax_other_opt']);
-        $output['body'] .= "</div>";
-        $output['body'] .= '<div id="phreebooks_totals_tax_other" style="display:none" class="layout-expand-over">';
-        $output['body'] .= html5('totals_tax_other_gl', $this->fields['totals_tax_other_gl']);
-        $output['body'] .= "</div>";
-        $output['jsHead'][] = "function totals_tax_other(begBalance) {
+        $html  = '<div style="text-align:right'.$hide.'">'."\n";
+        $html .= html5('totals_tax_other_id', $this->fields['totals_tax_other_id']);
+        $html .= html5('totals_tax_other',    $this->fields['totals_tax_other']);
+        $html .= html5('',                    $this->fields['totals_tax_other_opt']);
+        $html .= "</div>";
+        $html .= '<div id="phreebooks_totals_tax_other" style="display:none" class="layout-expand-over">';
+        $html .= html5('totals_tax_other_gl', $this->fields['totals_tax_other_gl']);
+        $html .= "</div>";
+        htmlQueue("function totals_tax_other(begBalance) {
     var newBalance = begBalance;
     var salesTax = parseFloat(bizNumGet('totals_tax_other'));
     bizNumSet('totals_tax_other', salesTax);
@@ -102,6 +102,7 @@ class tax_other
     var curISO    = jq('#currency').val() ? jq('#currency').val() : bizDefaults.currency.defaultCur;
     var decLen= parseInt(bizDefaults.currency.currencies[curISO].dec_len);
     return parseFloat(newBalance.toFixed(decLen));
-}";
+}", 'jsHead');
+        return $html;
     }
 }

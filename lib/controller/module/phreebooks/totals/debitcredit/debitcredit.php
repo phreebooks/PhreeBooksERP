@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-04-09
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/phreebooks/totals/debitcredit/debitcredit.php
  */
 
@@ -46,14 +46,14 @@ class debitCredit
             'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'readonly'=>'readonly','value'=>$this->settings['order']]]];
     }
 
-    public function render(&$output) {
+    public function render() {
         $this->fields = [
             'totals_debit' =>['label'=>lang('total_debits'), 'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']],
             'totals_credit'=>['label'=>lang('total_credits'),'attr'=>['type'=>'currency','value'=>0,'readonly'=>'readonly']]];
-        $output['body'] .= '<div style="text-align:right">'."
+        $html  = '<div style="text-align:right">'."
     ".html5('totals_debit', $this->fields['totals_debit'])."<br />
     ".html5('totals_credit',$this->fields['totals_credit'])."</div>\n";
-        $output['jsHead'][] = "function totals_debitcredit() {
+        htmlQueue("function totals_debitcredit() {
     var debitAmount = 0;
     var creditAmount= 0;
     var rows = jq('#dgJournalItem').datagrid('getRows');
@@ -68,6 +68,7 @@ class debitCredit
     bizNumSet('totals_debit', debitAmount);
     bizNumSet('totals_credit',creditAmount);
     return roundCurrency(debitAmount - creditAmount);
-}";
+}", 'jsHead');
+        return $html;
     }
 }

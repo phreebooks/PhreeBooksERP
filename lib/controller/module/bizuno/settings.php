@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-14
+ * @version    4.x Last Update: 2020-07-08
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -59,7 +59,7 @@ class bizunoSettings
                 'heading' => ['order'=>30,'type'=>'html',   'html'=>"<h1>".lang('settings')."</h1>\n"],
                 'adminSet'=> ['order'=>60,'type'=>'tabs',   'key' =>'tabSettings']],
             'toolbars'=> ['tbImgMgr'=>['icons'=>['help'=>['order'=>99,'icon'=>'help','label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
-            'tabs'    => ['tabSettings'=>['attr'=>['tabPosition'=>'left','focus'=>$focus]]]]; // removed 'fit'=>true, for WordPress
+            'tabs'    => ['tabSettings'=>['focus'=>$focus,'options'=>['tabPosition'=>"'left'"]]]]; // removed 'fit'=>true, for WordPress
         $order = 1;
         foreach ($modules as $cat => $catList) {
             $modlist = sortOrder($catList, 'title');
@@ -101,7 +101,7 @@ class bizunoSettings
                     }
                     $price = !empty($settings['priceUSD']) ? $settings['priceUSD'].' '.lang('buy') : lang('See Website');
                     if (empty($settings['url'])) { $settings['url'] = $this->phreesoftURL; }
-                    $modStatus .= html5("buy_$module_id", ['attr'=>['type'=>'button','value'=>$price],'events'=>['onClick'=>"window.open('{$settings['url']}');"]]);
+                    $modStatus .= html5("buy_$module_id", ['attr'=>['type'=>'button','value'=>$price],'events'=>['onClick'=>"winHref('{$settings['url']}');"]]);
                 }
                 $tplMod['tbody']['tr'][$idx] = ['attr'=>['type'=>'tr'],'td'=>[
                     ['attr'=>['type'=>'td','value'=>$settings['title']],'styles'=>['background-color'=>$modActive?'lightgreen':'']],
@@ -267,7 +267,7 @@ class bizunoSettings
      */
     private function setSecurity($menu)
     {
-        $roleID  = getUserCache('profile', 'role_id');
+        $roleID  = getUserCache('profile', 'role_id', false, 1);
         $dbData  = dbGetRow(BIZUNO_DB_PREFIX."roles", "id=$roleID");
         $settings= !empty($dbData['settings']) ? json_decode($dbData['settings'], true) : [];
         foreach ($menu as $catChild) {

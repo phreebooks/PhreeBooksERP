@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-12
+ * @version    4.x Last Update: 2020-06-26
  * @filesource /lib/controller/module/payment/main.php
  */
 
@@ -61,10 +61,11 @@ class paymentMain
         if (!$security = validateSecurity('contacts', 'mgr_c', 2)) { return; }
         $rID  = clean('rID', 'integer', 'get');
         $data = ['type'=>'divHTML',
-            'divs' => ['manager'=>['order'=>50,'type'=>'accordion','id'=>'accPayment','divs'=>[
+            'divs'     => ['manager'=>['order'=>50,'type'=>'accordion','key'=>'accPayment']],
+            'accordion'=> ['accPayment'=>['divs'=>[
                 'divPmtMgr'   =>['order'=>30,'type'=>'datagrid','label'=>lang('payment_stored_cards'),'key' =>'dgPayment'],
                 'divPmtDetail'=>['order'=>70,'type'=>'html',    'label'=>lang('details'),             'html'=>'&nbsp;']]]],
-            'datagrid'=>['dgPayment'=>$this->dgPayment('dgPayment', $rID, $security)]];
+            'datagrid' =>['dgPayment'=>$this->dgPayment('dgPayment', $rID, $security)]];
         $layout = array_replace_recursive($layout, $data);
     }
 

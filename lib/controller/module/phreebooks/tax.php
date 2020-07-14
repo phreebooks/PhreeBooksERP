@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-30
+ * @version    4.x Last Update: 2020-06-26
  * @filesource /lib/controller/module/phreebooks/tax.php
  */
 
@@ -92,6 +92,7 @@ class phreebooksTax
         $struc['settings'.$type]['attr']['type'] = 'hidden'; // for saving the grid data
         $struc['settings'.$type]['attr']['value']= '';
         $fldTax= ['id', 'type', 'inactive', 'title', 'start_date', 'end_date', 'settings'.$type];
+        $jsReady= "ajaxForm('frmTax$type');";
         if ($rID) { // existing record
             $dbData= dbGetRow(BIZUNO_DB_PREFIX."tax_rates", "id=$rID");
             dbStructureFill($struc, $dbData);
@@ -101,6 +102,7 @@ class phreebooksTax
             $struc['start_date']['attr']['value']= date('Y-m-d');
             $struc['end_date']['attr']['value']  = localeCalculateDate(date('Y-m-d'), 0, 0, 10); // 10 years
             $rates = $this->getRateDetail(false);
+            $jsReady .= " jq('#dgTaxVendors$type').edatagrid('addRow');";
         }
         unset($struc['settings']);
         $data = ['type'=>'divHTML',
@@ -119,7 +121,7 @@ class phreebooksTax
             'fields'  => $struc,
             'jsHead'  => ['pbChart'=>"var pbChart=bizDefaults.glAccounts.rows;"],
             'jsBody'  => ['init'   =>$this->getJsBody($type)],
-            'jsReady' => ['init'   =>"ajaxForm('frmTax$type');"]];
+            'jsReady' => ['init'   =>$jsReady]];
         $layout = array_replace_recursive($layout, $data);
     }
 
