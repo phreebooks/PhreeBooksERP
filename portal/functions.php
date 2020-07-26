@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-31
+ * @version    3.x Last Update: 2020-05-11
  * @filesource /portal/functions.php
  */
 
@@ -51,8 +51,7 @@ function set_user_cookie($email='', $time=false)
     if (empty($time)) { $time = 60*60; } // 1 hour
     $now = time();
     $cookie = $mixer->encrypt(BIZUNO_KEY, base64_encode("[\"$email\",".$now."]"));
-    $_COOKIE['bizunoSession'] = $cookie;
-    setcookie('bizunoSession', $cookie, $now+$time, "/");
+    bizSetCookie('bizunoSession', $cookie, $now+$time);
 }
 
 /**
@@ -87,7 +86,7 @@ function biz_user_logout()
 {
     $email = getUserCache('profile', 'email');
     portalWrite('users', ['cache_date'=>''], 'update', "biz_user='$email'");
-    setcookie('bizunoSession', '', time()-1, "/");
+    bizClrCookie('bizunoSession');
 }
 
 function bizuno_get_locale() { return substr($_SERVER['HTTP_ACCEPT_LANGUAGE'], 0, 5); }
@@ -102,8 +101,6 @@ function cleanLang(&$iso='en_US') {
     $iso = strtolower($parts[0]).'_'.strtoupper($parts[1]);
     if (strpos(getUserCache('profile', 'language'), '-') !== false) { setUserCache('profile', 'language', $iso); }
 }
-
-function viewSubMenu() { } // hook for creating menu bar within a page
 
 function portalRead($table, $criteria='')
 { return dbGetRow  (BIZUNO_DB_PREFIX.$table, $criteria); }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-09
+ * @version    4.x Last Update: 2020-04-23
  * @filesource /lib/controller/module/inventory/tools.php
  */
 
@@ -40,13 +40,11 @@ class inventoryTools
      */
     public function chartSales(&$layout=[])
     {
-        $rID = clean('rID', 'integer', 'get');
-        $sku = dbGetValue(BIZUNO_DB_PREFIX."inventory", "sku", "id=$rID");
+        $rID   = clean('rID', 'integer', 'get');
+        $sku   = dbGetValue(BIZUNO_DB_PREFIX."inventory", "sku", "id=$rID");
         if (!$rID) { return msgAdd(lang('err_bad_id')); }
         $struc = $this->chartSalesData($sku);
-        $iconExp= ['attr'=>['type'=>'button','value'=>'Download Data'],'events'=>['onClick'=>"jq('#frmInventoryChart').submit();"]];
-        $output= ['divID'=>"chartInventoryChart",'type'=>'column',
-            'attr'=>['title'=>lang('sales')],'data'=>array_values($struc)];
+        $output= ['divID'=>"chartInventoryChart",'type'=>'column','attr'=>['title'=>lang('sales')],'data'=>array_values($struc)];
         $action= BIZUNO_AJAX."&p=inventory/tools/chartSalesGo&sku=$sku";
         $js    = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');\n";
         $js   .= "ajaxDownload('frmInventoryChart');\n";
@@ -54,11 +52,13 @@ class inventoryTools
         $js   .= "function funcInventoryChart() { drawBizunoChart(dataInventoryChart); };";
         $js   .= "google.charts.load('current', {'packages':['corechart']});\n";
         $js   .= "google.charts.setOnLoadCallback(funcInventoryChart);\n";
-
-        $html  = '<div style="width:100%" id="chartInventoryChart"></div>';
-        $html .= '<div style="text-align:right"><form id="frmInventoryChart" action="'.$action.'">'.html5('', $iconExp).'</form></div>';
-        $html .= htmlJS($js);
-        $layout= array_replace_recursive($layout, ['type'=>'raw', 'content'=>$html]);
+        $layout = array_merge_recursive($layout, ['type'=>'divHTML',
+            'divs'  => [
+                'body'  =>['order'=>50,'type'=>'html',  'html'=>'<div style="width:100%" id="chartContactsChart"></div>'],
+                'divExp'=>['order'=>70,'type'=>'html',  'html'=>'<form id="frmInventoryChart" action="'.$action.'"></form>'],
+                'btnExp'=>['order'=>90,'type'=>'fields','keys'=>['icnExp']]],
+            'fields'=> ['icnExp'=>['attr'=>['type'=>'button','value'=>lang('download_data')],'events'=>['onClick'=>"jq('#frmInventoryChart').submit();"]]],
+            'jsHead'=> ['init'=>$js]]);
     }
 
     private function chartSalesData($sku)

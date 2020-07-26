@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-03
+ * @version    4.x Last Update: 2020-07-22
  * @filesource /lib/controller/module/inventory/dashboards/stock_aging/stock_aging.php
  */
 
@@ -33,7 +33,7 @@ class stock_aging
     function __construct($settings=[])
     {
         $this->security= getUserCache('security', 'inv_mgr', false, 0);
-        $defaults      = ['users'=>'-1','roles'=>'-1','defAge'=>4];
+        $defaults      = ['users'=>-1,'roles'=>-1,'defAge'=>4];
         $this->settings= array_replace_recursive($defaults, $settings);
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
     }
@@ -45,7 +45,7 @@ class stock_aging
         return [
             'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']],
-            'defAge'=> ['label'=>$this->lang['age_default'],'position'=>'after','values'=>$ages,'attr'=>['type'=>'select','value'=>$this->settings['defAge']]]];
+            'defAge'=> ['order'=>10,'break'=>true,'position'=>'after','label'=>$this->lang['age_default'],'values'=>$ages,'attr'=>['type'=>'select','value'=>$this->settings['defAge']]]];
     }
 
     public function render(&$layout=[])
@@ -83,12 +83,10 @@ google.charts.load('current', {'packages':['table']});
 google.charts.setOnLoadCallback(chart{$this->code});\n";
         $layout = array_merge_recursive($layout, [
             'divs'  => [
-                'admin' =>['divs' =>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'defAge', $this->code.'_btn']]]],
+                'admin' =>['divs' =>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'defAge']]]],
                 'body'  =>['order'=>40,'type'=>'html','html'=>'<div style="width:100%" id="'.$this->code.'_chart"></div>'],
                 'export'=>['order'=>80,'type'=>'html','html'=>'<form id="form'.$this->code.'" action="'.$action.'">'.html5('', $iconExp).'</form>']],
-            'fields'=> [
-                $this->code.'defAge'=> array_merge($this->struc['defAge'],['order'=>10,'break'=>true]),
-                $this->code.'_btn'  => ['order'=>90,'attr'=>['type'=>'button','value'=>lang('save')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
+            'fields'=> [$this->code.'defAge'=> array_merge_recursive($this->struc['defAge'],['events'=>['onChange'=>"dashSubmit('$this->moduleID:$this->code', 0);"]])],
             'jsHead'=> ['init'=>$js]]);
     }
 

@@ -1,6 +1,6 @@
 <?php
 /*
- * Handles user Roles
+ * Handles user roles
  *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-12
+ * @version    4.x Last Update: 2020-04-18
  * @filesource /lib/controller/module/bizuno/roles.php
  */
 
@@ -96,7 +96,7 @@ class bizunoRoles
         if (!$security = validateSecurity('bizuno', 'roles', 1)) { return; }
         $rID      = clean('rID', 'integer', 'get');
         $fields   = ['id','title','inactive','selFill','restrict'];
-        $dbData   = $rID ? dbGetRow(BIZUNO_DB_PREFIX.'roles', "id='$rID'") : ['settings'=>[]];
+        $dbData   = $rID ? dbGetRow(BIZUNO_DB_PREFIX.'roles', "id=$rID") : ['settings'=>[]];
         $structure= dbLoadStructure(BIZUNO_DB_PREFIX.'roles');
         $structure['selFill'] = ['order'=>60,'label'=>$this->lang['desc_security_fill'],'break'=>true,'values'=>$this->securityChoices,'events'=>['onChange'=>"autoFill();"],'attr'=>['type'=>'select']];
         $structure['restrict']= ['order'=>70,'label'=>$this->lang['restrict_access'],'tip'=>$this->lang['roles_restrict'],'break'=>true,'attr'=>['type'=>'checkbox','checked'=>!empty($dbData['settings']['restrict']) ? 1 : 0]];
@@ -105,14 +105,17 @@ class bizunoRoles
             'divs'    => [
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key' =>'tbRoles'],
                 'formBOF'=> ['order'=>15,'type'=>'form',   'key' =>'frmRoles'],
-                'body'   => ['order'=>40,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'roleBody'],'divs'=>[
-                    'flds' => ['order'=>40,'type'=>'fields','classes'=>['block33'],'attr'=>['id'=>'idFlds'], 'keys'=>$fields],
-                    'tabs' => ['order'=>60,'type'=>'tabs',  'classes'=>['block66'],'attr'=>['id'=>'idTabs'], 'key' =>'tabRoles']]],
+                'body'   => ['order'=>50,'type'=>'divs',   'classes'=>['areaView'],'divs'=>[
+                    'flds' => ['order'=>40,'type'=>'panel','classes'=>['block33'],'key'=>'pnlGen'],
+                    'tabs' => ['order'=>60,'type'=>'panel','classes'=>['block66'],'key'=>'pnlMod']]],
                 'formEOF'=> ['order'=>85,'type'=>'html',   'html'=>"</form>"]],
             'toolbars'=> ['tbRoles'=>['icons'=>[
                 'save' => ['order'=>20,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"jq('#frmRoles').submit();"]],
                 'new'  => ['order'=>40,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"accordionEdit('accRoles','dgRoles','divRolesDetail','".jsLang('details')."','bizuno/roles/edit', 0);"]],
                 'help' => ['order'=>99,'icon'=>'help','label'=>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
+            'panels' => [
+                'pnlGen' => ['label'=>lang('general'),'type'=>'fields','keys'=>$fields],
+                'pnlMod' => ['type'=>'tabs','key'=>'tabRoles']],
             'tabs'    => ['tabRoles'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]]],
             'forms'   => ['frmRoles'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/roles/save"]]],
             'fields'  => $structure,
@@ -123,7 +126,7 @@ class bizunoRoles
     });
 }"],
             'jsReady' => ['init'=>"ajaxForm('frmRoles');"]];
-        $data['tabs']['tabRoles']['divs'] = $this->roleTabs($dbData['settings']);
+        $this->roleTabs($data, $dbData['settings']);
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -156,7 +159,7 @@ class bizunoRoles
         msgLog(lang('table').' '.BIZUNO_DB_PREFIX."roles - ".lang('save')." {$values['title']} ($rID)");
         msgAdd(lang('msg_record_saved'), 'success');
         $title   = lang('manager');
-        $data    = ['content'=>['rID'=>$rID, 'action'=>'eval','actionData'=>"jq('#accRoles').accordion('select','$title'); jq('#dgRoles').datagrid('reload');"]];
+        $data    = ['content'=>['rID'=>$rID, 'action'=>'eval','actionData'=>"jq('#accRoles').accordion('select','$title'); bizGridReload('dgRoles');"]];
         $layout  = array_replace_recursive($layout, $data);
     }
 
@@ -176,7 +179,7 @@ class bizunoRoles
         $role['title'] = $title;
         $nID  = $_GET['rID'] = dbWrite(BIZUNO_DB_PREFIX."roles", $role);
         if ($nID) { msgLog(lang('roles')."-".lang('copy')." $title ($rID => $nID)"); }
-        $data = ['content'=>['action'=>'eval','actionData'=>"jq('#dgRoles').datagrid('reload'); accordionEdit('accRoles','dgRoles','divRolesDetail','".jsLang('details')."', 'bizuno/roles/edit',$nID);"]];
+        $data = ['content'=>['action'=>'eval','actionData'=>"bizGridReload('dgRoles'); accordionEdit('accRoles','dgRoles','divRolesDetail','".jsLang('details')."', 'bizuno/roles/edit',$nID);"]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -199,8 +202,8 @@ class bizunoRoles
         $title = dbGetValue(BIZUNO_DB_PREFIX."roles", 'title', "id=$rID");
         msgLog(lang('table').' '.BIZUNO_DB_PREFIX."roles".'-'.lang('delete')." $title ($rID)");
         $data = [
-            'content' => ['action'=>'eval','actionData'=>"jq('#dgRoles').datagrid('reload');"],
-            'dbAction'=> [BIZUNO_DB_PREFIX."roles"=>"DELETE FROM ".BIZUNO_DB_PREFIX."roles"." WHERE id='$rID'"]];
+            'content' => ['action'=>'eval','actionData'=>"bizGridReload('dgRoles');"],
+            'dbAction'=> [BIZUNO_DB_PREFIX."roles"=>"DELETE FROM ".BIZUNO_DB_PREFIX."roles WHERE id=$rID"]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -209,12 +212,12 @@ class bizunoRoles
      * @param integer $fldSettings - database field settings encoded in JSON
      * @return string - HTML view
      */
-    private function roleTabs($fldSettings=[])
+    private function roleTabs(&$data, $fldSettings=[])
     {
         global $bizunoMod;
         $settings= json_decode($fldSettings, true);
         $security= isset($settings['security']) ? $settings['security'] : [];
-        $output  = $temp =[];
+        $temp    = [];
         $order   = 50;
         $theList = $bizunoMod;
         foreach ($theList as $key => $value) { $temp[$key] = $value['properties']['title']; }
@@ -227,19 +230,19 @@ class bizunoRoles
             bizAutoLoad("{$props['properties']['path']}/admin.php", $fqcn);
             $tmp = new $fqcn();
             if (!empty($tmp->structure['menuBar']['child']) || !empty($tmp->structure['quickBar']['child'])) {
-                $tab = "<div>\n<fieldset><legend>".lang('security')."</legend>\n";
+                $html = '';
                 if (!empty($tmp->structure['menuBar']['child'])) {
-                    $tab .= $this->roleTabsChildren($tmp->structure['menuBar']['child'], $props['properties']['title'], $security);
+                    $html .= $this->roleTabsChildren($tmp->structure['menuBar']['child'], $props['properties']['title'], $security);
                 }
                 if (!empty($tmp->structure['quickBar']['child'])) {
-                    $tab .= $this->roleTabsChildren($tmp->structure['quickBar']['child'], $props['properties']['title'], $security);
+                    $html .= $this->roleTabsChildren($tmp->structure['quickBar']['child'], $props['properties']['title'], $security);
                 }
-                $tab .= "</fieldset>\n</div>\n";
-                $output[$mID] = ['type'=>'html', 'order'=>$order, 'label'=>$props['properties']['title'], 'html'=>$tab];
+                $data['tabs']['tabRoles']['divs'][$mID] = ['order'=>$order,'label'=>$props['properties']['title'],'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'security' => ['order'=>80,'type'=>'panel','classes'=>['block50'],'key'=>"{$mID}Security"]]];
+                $data['panels']["{$mID}Security"] = ['label'=>lang('security'),'type'=>'html','html'=>$html];
             }
             $order++;
         }
-        return $output;
     }
 
     /**
@@ -263,7 +266,7 @@ class bizunoRoles
                 $value = array_key_exists($id, $security) ? $security[$id] : 0;
                 if (empty($props['label'])) { msgAdd("label not set: ".print_r($props, true)); }
                 $label = $props['label']=='reports' ? lang($title).' - '.lang($props['label']) : lang($props['label']);
-                $tab  .= html5("sID_$id", ['label'=>$label,'position'=>'after','values'=>$this->securityChoices,'attr'=>['type'=>'select','value'=>$value]])."<br />\n";
+                $tab  .= html5("sID_$id", ['label'=>$label,'values'=>$this->securityChoices,'attr'=>['type'=>'select','value'=>$value]])."<br />\n";
             }
         }
         return $tab;

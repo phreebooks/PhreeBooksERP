@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-07-22
  * @filesource /lib/controller/module/bizuno/dashboards/company_to_do/company_to_do.php
  */
 
@@ -41,8 +41,8 @@ class company_to_do
     public function settingsStructure()
     {
         return [
-            'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
-            'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']]];
+            'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
+            'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']]];
     }
 
     public function install($moduleID = '', $menu_id = '')
@@ -64,9 +64,9 @@ class company_to_do
         $security = getUserCache('security', 'admin', false, 0);
         if (empty($this->settings['data'])) { $rows[] = "<span>".lang('no_results')."</span>"; }
         else { for ($i=0,$j=1; $i<sizeof($this->settings['data']); $i++,$j++) {
-                $row = '<span style="float:left">'."&#9679; {$this->settings['data'][$i]}</span>";
-                if ($security > 2) { $row .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $j);"]]).'</span>'; }
-                $rows[] = $row;
+            $content= "&#9679; {$this->settings['data'][$i]}";
+            $trash  = html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) { dashSubmit('$this->moduleID:$this->code', $j); }"]]);
+            $rows[] = viewDashList($content, $security>2 ? $trash : '');
         } }
         $layout = array_merge_recursive($layout, [
             'divs'  => [
@@ -74,7 +74,7 @@ class company_to_do
                 'body' =>['order'=>50,'type'=>'list','key'=>$this->code]],
             'fields'=> [
                 $this->code.'_0'  =>['order'=>10,'break'=>true,'label'=>lang('note'),'hidden'=>$security>1?false:true,'attr'=>['type'=>'text','required'=>true,'size'=>50]],
-                $this->code.'_btn'=>['order'=>70,'hidden'=>$security>1?false:true,'attr'=>['type'=>'button','value'=>lang('add')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
+                $this->code.'_btn'=>['order'=>70,'hidden'=>$security>1?false:true,'attr'=>['type'=>'button','value'=>lang('add')],'events'=>['onClick'=>"dashSubmit('$this->moduleID:$this->code', 0);"]]],
             'lists' => [$this->code=>$rows]]);
     }
 

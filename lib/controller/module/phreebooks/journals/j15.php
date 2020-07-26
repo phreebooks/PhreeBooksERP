@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-27
+ * @version    4.x Last Update: 2020-06-19
  * @filesource /lib/controller/module/phreebooks/journals/j15.php
  */
 
@@ -65,8 +65,7 @@ class j15 extends jCommon
      */
     public function customizeView(&$data, $rID=0)
     {
-        $fldKeys = ['id','journal_id','recur_id','recur_frequency','item_array',
-            'invoice_num','post_date','so_po_ref_id','method_code']; // source store ID, destination store added in extension
+        $fldKeys = ['id','journal_id','recur_id','recur_frequency','item_array','invoice_num','post_date','so_po_ref_id','store_id','method_code'];
         $data['jsHead']['datagridData'] = $this->dgDataItem;
         if (!$rID && getModuleCache('extShipping', 'properties', 'status')) { $data['fields']['waiting']['attr']['value'] ='1'; } // to be seen by ship manager to print label
         $data['datagrid']['item'] = $this->dgAdjust('dgJournalItem');
@@ -90,15 +89,17 @@ class j15 extends jCommon
         }
         $shipMeth = $data['fields']['method_code']['attr']['value'];
         $data['fields']['method_code'] = ['label'=>lang('journal_main_method_code'),'options'=>['width'=>300],'values'=>$choices,'attr'=>['type'=>'select','value'=>$shipMeth]];
-        unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
-        unset($data['toolbars']['tbPhreeBooks']['icons']['recur']);
-        unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
-        $isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? '1' : '0';
+        unset($data['toolbars']['tbPhreeBooks']['icons']['print'], $data['toolbars']['tbPhreeBooks']['icons']['recur'], $data['toolbars']['tbPhreeBooks']['icons']['payment']);
+        $isWaiting = isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] ? 1 : 0;
         $data['fields']['waiting'] = ['attr'=>['type'=>'hidden','value'=>$isWaiting]];
-        $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'props' => ['order'=>40,'label'=>lang('details'),'type'=>'fields','classes'=>['blockView'], 'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
-            'totals'=> ['order'=>50,'label'=>lang('totals'), 'type'=>'totals','classes'=>['blockViewR'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
-        $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
+        $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs',     'classes'=>['areaView'],'divs'=>[
+            'props'  => ['order'=>30,'type'=>'panel','key'=>'props',  'classes'=>['block25']],
+            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['block25R']],
+            'dgItems'=> ['order'=>50,'type'=>'panel','key'=>'dgItems','classes'=>['block99']],
+            'divAtch'=> ['order'=>90,'type'=>'panel','key'=>'divAtch','classes'=>['block50']]]];
+        $data['panels']['props']  = ['label'=>lang('details'),'type'=>'fields','keys'   =>$fldKeys];
+        $data['panels']['totals'] = ['label'=>lang('totals'), 'type'=>'totals','content'=>$data['totals']];
+        $data['panels']['dgItems']= ['type'=>'datagrid','key'=>'item'];
     }
 
 /*******************************************************************************************************************/
@@ -300,7 +301,8 @@ class j15 extends jCommon
                 'id'         => ['order'=>0, 'attr'=>  ['hidden'=>true]],
                 'gl_account' => ['order'=>0, 'attr'=>  ['hidden'=>true]],
                 'unit_cost'  => ['order'=>0, 'attr'=>  ['editor'=>'text', 'hidden'=>true]],
-                'action'     => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'action'     => ['order'=>1, 'label'=>lang('action'),'attr'=>['width'=>60],
+                    'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> ['trash' => ['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'sku'        => ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true,'align'=>'center'],
                     'events' => ['editor'=>"{type:'combogrid',options:{

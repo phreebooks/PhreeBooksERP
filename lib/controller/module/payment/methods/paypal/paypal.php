@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/payment/methods/paypal.php
  */
 
@@ -78,7 +78,7 @@ class paypal
             'allowRefund' => ['label'=>$this->lang['allow_refund'],'values'=>$noYes,   'attr'=>['type'=>'select','value'=>$this->settings['allowRefund']]]];
     }
 
-    public function render(&$output, $data, $values=[], $dispFirst=false)
+    public function render($data, $values=[], $dispFirst=false)
     {
         msgDebug("\nWorking with values = ".print_r($values, true));
         $cc_exp = pullExpDates();
@@ -120,7 +120,7 @@ class paypal
             $checked = 'c';
             $show_c = true;
         } else { $show_c = false; }
-        $output['jsBody'][] = "
+        htmlQueue("
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account', discGL:'$discount_gl', ref:'$invoice_num'};
 function payment_$this->code() {
     bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
@@ -132,9 +132,9 @@ function paypalRefNum(type) {
       else { var ccNum = bizTextGet('{$this->code}_number');  }
     var newRef = arrPmtMethod['$this->code'].ref;
     bizTextSet('invoice_num', newRef);
-}";
-        if ($this->code == $dispFirst) { $output['jsReady'][] = "bizTextSet('invoice_num', '$invoice_num');"; }
-        $output['body'] .= html5($this->code.'_action', ['label'=>lang('capture'),'hidden'=>($show_c?false:true),'attr'=>['type'=>'radio','value'=>'c','checked'=>$checked=='c'?true:false],
+}", 'jsHead');
+        if ($this->code == $dispFirst) { htmlQueue("bizTextSet('invoice_num', '$invoice_num');", 'jsReady'); }
+        $html  = html5($this->code.'_action', ['label'=>lang('capture'),'hidden'=>($show_c?false:true),'attr'=>['type'=>'radio','value'=>'c','checked'=>$checked=='c'?true:false],
     'events'=>  ['onChange'=>"jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').hide(); jq('#div{$this->code}c').show();"]]).
 html5($this->code.'_action', ['label'=>lang('stored'),'hidden'=>($show_s?false:true),'attr'=>  ['type'=>'radio','value'=>'s','checked'=>$checked=='s'?true:false],
     'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}n').hide(); jq('#div{$this->code}s').show();"]]).
@@ -142,13 +142,13 @@ html5($this->code.'_action', ['label'=>lang('new'),'attr'=>  ['type'=>'radio','v
     'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').show();"]]).
 html5($this->code.'_action', ['label'=>$this->lang['at_paypal'],'attr'=>  ['type'=>'radio','value'=>'w'],
     'events'=>  ['onChange'=>"jq('#div{$this->code}c').hide(); jq('#div{$this->code}s').hide(); jq('#div{$this->code}n').hide();"]]).'<br />';
-$output['body'] .= '<div id="div'.$this->code.'c"'.($show_c?'':'style=" display:none"').'>';
-if ($show_c) {
-    $output['body'] .= html5($this->code.'trans_code',$this->viewData['trans_code']).sprintf(lang('msg_capture_payment'), viewFormat($values['total'],'currency'));
-}
-$output['body'] .= '</div><div id="div'.$this->code.'s"'.(!$show_c?'':'style=" display:none"').'>';
-if ($show_s) { $output['body'] .= lang('payment_stored_cards').'<br />'.html5($this->code.'selCards', $this->viewData['selCards']); }
-$output['body'] .= '</div>
+        $html .= '<div id="div'.$this->code.'c"'.($show_c?'':'style=" display:none"').'>';
+        if ($show_c) {
+            $html .= html5($this->code.'trans_code',$this->viewData['trans_code']).sprintf(lang('msg_capture_payment'), viewFormat($values['total'],'currency'));
+        }
+        $html .= '</div><div id="div'.$this->code.'s"'.(!$show_c?'':'style=" display:none"').'>';
+        if ($show_s) { $html .= lang('payment_stored_cards').'<br />'.html5($this->code.'selCards', $this->viewData['selCards']); }
+        $html .= '</div>
 <div id="div'.$this->code.'n"'.(!$show_c&&!$show_s?'':'style=" display:none"').'>'.
     html5($this->code.'_save',  $this->viewData['save']).
     html5($this->code.'_name',  $this->viewData['name']).
@@ -157,6 +157,7 @@ $output['body'] .= '</div>
     html5($this->code.'_year',  $this->viewData['year']).
     html5($this->code.'_cvv',   $this->viewData['cvv']).'
 </div>';
+        return $html;
     }
 
     public function sale($fields, $ledger)

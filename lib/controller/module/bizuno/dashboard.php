@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-24
+ * @version    4.x Last Update: 2020-04-23
  * @filesource /lib/controller/module/bizuno/dashboard.php
  */
 
@@ -39,7 +39,10 @@ class bizunoDashboard
     public function manager(&$layout=[])
     {
         $menu_id= clean('menuID', ['format'=>'text','default'=>'home'], 'get');
-        $title  = sprintf($this->lang['edit_dashboard'], $menu_id=='home' ? lang('home') : getUserCache('menuBar', 'child', $menu_id)['label']);
+        if    ($menu_id=='home')     { $label = lang('home'); }
+        elseif($menu_id=='settings') { $label = lang('bizuno_company'); }
+        else                         { $label = getUserCache('menuBar', 'child', $menu_id)['label']; }
+        $title  = sprintf($this->lang['edit_dashboard'], $label );
         $data   = [
             'title'  => lang('dashboards'),
             'menu_id'=> $menu_id,
@@ -154,8 +157,7 @@ class bizunoDashboard
 
     /**
      * Renders the dashboard contents, called when loading menu home pages
-     * @param array $layout - structure entering the method
-     * @return array - $layout modified with the dashboard settings
+     * @param modifiedarray - $layout modified with the dashboard settings
      */
     public function settings(&$layout=[])
     {
@@ -173,15 +175,14 @@ class bizunoDashboard
         $dashboard = $this->loadDashboard($mID, $dID, $settings);
         if (!$dashboard) { return msgAdd("ERROR: Dashboard $dID NOT FOUND!"); }
         $html = $dashboard->render($layout);
+        $jsReady= "jq('#{$dID}Form').keypress(function(event) { var keycode=event.keyCode?event.keyCode:event.which; if (keycode=='13') { dashboardAttr('$mID:$dID', 0); } });";
         if (is_string($html) && strlen($html)) { // plain old HTML, old way but still used frequently
-            if (strpos($html, "{$dID}Form")) { // if there is a form for settings, set the return key to submit form
-                $html .= htmlJS("jq('#{$dID}Form').keypress(function(event) { var keycode=event.keyCode?event.keyCode:event.which; if (keycode=='13') { dashboardAttr('$mID:$dID', 0); } });");
-            }
-            $data = ['type'=>'divHTML','divs'=>[$dID=>['order'=>50,'type'=>'html','html'=>$html]]];
+            $data = ['type'=>'divHTML',
+                'divs'   =>[$dID=>['order'=>50,'type'=>'html','html'=>$html]],
+                'jsReady'=>['dbInit'=>strpos($html, "{$dID}Form") ? $jsReady : '']];
         } else { // it's a structure, process it
-            $jsReady= "jq('#{$dID}Form').keypress(function(event) { var keycode=event.keyCode?event.keyCode:event.which; if (keycode=='13') { dashboardAttr('$mID:$dID', 0); } });";
             $data   = ['type'=>'divHTML',
-                'divs'  => [
+                'divs'   => [
                     'divBOF'=>['order'=> 1,'type'=>'html','html'=>"<div>"],
 //                  'body'  =>['order'=>50,'type'=>'list','key'=>'notes'], // set in individual dashboard
                     'admin' =>['order'=>10,'styles'=>['display'=>'none'],'attr'=>['id'=>"{$dID}_attr"],'type'=>'divs','divs'=>[
@@ -189,8 +190,8 @@ class bizunoDashboard
 //                      'body'   => ['order'=>50,'type'=>'fields','keys'=>array_keys($layout['fields'])],  // set in individual dashboard
                         'frmEOF' => ['order'=>90,'type'=>'html',  'html'=>"</form>"]]],
                     'divBOF'=>['order'=> 1,'type'=>'html','html'=>"</div>"]],
-                'forms' => ["{$dID}Form"=>['attr'=>['type'=>'form','action'=>'']]],
-                'jsReady'=>['init'=>$jsReady]];
+                'forms'  => ["{$dID}Form"=>['attr'=>['type'=>'form','action'=>'']]],
+                'jsReady'=>['dbInit'=>$jsReady]];
         }
         $layout = array_replace_recursive($data, $layout);
         msgDebug("\nlayout after processing = ".print_r($layout, true));

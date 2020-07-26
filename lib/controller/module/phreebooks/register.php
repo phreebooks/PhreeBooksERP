@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-06
+ * @version    4.x Last Update: 2020-04-13
  * @filesource /lib/controller/module/phreebooks/register.php
  */
 
@@ -39,7 +39,6 @@ class phreebooksRegister
             'title'=> $title,
             'datagrid' => ['manager'=>$this->dgRegister('dgRegister', $security)],
             'divs'     => [
-                'submenu' => ['order'=>10,'type'=>'html', 'html'=>viewSubMenu('banking')],
                 'heading' => ['order'=>30,'type'=>'html', 'html'=>"<h1>$title</h1>"],
                 'register'=> ['order'=>70,'label'=>$title,'type'=>'datagrid','key'=>'manager']]]);
     }

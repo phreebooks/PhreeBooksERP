@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-20
+ * @version    4.x Last Update: 2019-06-20
  * @filesource /lib/controller/module/phreebooks/api.php
  */
 
@@ -150,8 +150,7 @@ class phreebooksApi
         $btn_j6    = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpJ6').submit();"]];
         $btn_j10   = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpJ10').submit();"]];
         $btn_j12   = ['attr'=>['type'=>'button','value'=>lang('import')],'events'=>['onClick'=>"jq('#frmImpJ12').submit();"]];
-        return "<fieldset><legend>".lang('phreebooks_import_journal_title')."</legend>
- <p>".$this->lang['desc_import_journal'].'</p>
+        return "<p>".$this->lang['desc_import_journal'].'</p>
  <table class="ui-widget" style="border-collapse:collapse;margin-left:auto;margin-right:auto;">
   <tbody>
    <tr><td>'.$this->lang['phreebooks_import_inv']."</td><td>".html5('frmImpInv',$data['forms']['frmImpInv']).
@@ -167,7 +166,7 @@ class phreebooksApi
     html5('import_j10',$import_j10).html5('btn_j10',$btn_j10).'</form></td></tr>
    <tr><td colspan="2"><hr /></td></tr>
    <tr><td>'.$this->lang['phreebooks_import_ar'] ."</td><td>".html5('frmImpJ12',$data['forms']['frmImpJ12']).
-    html5('import_j12',$import_j12).html5('btn_j12',$btn_j12)."</form></td></tr>\n</tbody>\n</table>\n</fieldset>";
+    html5('import_j12',$import_j12).html5('btn_j12',$btn_j12)."</form></td></tr>\n</tbody>\n</table>";
     }
 
     /**

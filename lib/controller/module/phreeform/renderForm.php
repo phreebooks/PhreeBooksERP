@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-20
+ * @version    4.x Last Update: 2020-04-21
  * @filesource /controller/module/phreeform/renderForm.php
  */
 
@@ -380,7 +380,7 @@ class PDF extends \TCPDF
             else { $TextField = $this->GroupPageNo().' '.lang('of').' '.$this->PageGroupAlias(); } // fix for multi-page multi-group forms
         if (isset($Params->settings->processing)) { $TextField = viewProcess($TextField, $Params->settings->processing); }
         if (isset($Params->settings->formatting)) { $TextField = viewFormat ($TextField, $Params->settings->formatting); }
-        if ($TextField) { $this->MultiCell($Params->width, $Params->height, $TextField, $Border, $Params->settings->align, $Fill); }
+        if ($TextField) {  $this->MultiCell($Params->width, $Params->height, $TextField, $Border, $Params->settings->align, $Fill); }
     }
 
     /**
@@ -435,7 +435,8 @@ class PDF extends \TCPDF
      * @param boolean $Heading - [default false] set to true to generate a heading at top of table
      * @return integer - max row height used to control pagination and end of page position
      */
-    public function ShowTableRow($Params, $myrow, $FillThisRow, $FC, $Heading=false) {
+    public function ShowTableRow($Params, $myrow, $FillThisRow, $FC, $Heading=false)
+    {
         if (!isset($Params->settings->hfshow)) { $Params->settings->hfshow = '0'; }
         if (!isset($Params->settings->fshow))  { $Params->settings->fshow  = '0'; }
         if (!isset($Params->settings->hbshow)) { $Params->settings->hbshow = '1'; }
@@ -481,8 +482,9 @@ class PDF extends \TCPDF
                 $props = (object)['abscissa'=>$this->GetX(), 'ordinate'=>$this->GetY(), 'width'=>$width, 'height'=>$width*3/4, 'hideNone'=>true];
                 $this->FormImgLink($props, $value);
                 $maxImgHt = $width * 3 / 4;
-            } else {
-                $this->MultiCell($Params->settings->boxfield[$key]->width, $CellHeight, $value, 0, $align, $fillReq?true:false);
+            } else { // fixed to support basic HTML
+                $this->writeHTMLCell($Params->settings->boxfield[$key]->width, $CellHeight, $x = '', $y = '', $value, 0, $ln = 1, $fillReq?true:false, $reseth = true, $align, $autopadding = true );
+//              $this->MultiCell($Params->settings->boxfield[$key]->width, $CellHeight, $value, 0, $align, $fillReq?true:false);
             }
             if ($this->GetY() > $maxY) { $maxY = $this->GetY(); }
             $NextXPos += $Params->settings->boxfield[$key]->width;

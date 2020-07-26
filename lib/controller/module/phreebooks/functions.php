@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-07
+ * @version    4.x Last Update: 2020-04-13
  * @filesource /lib/controller/module/phreebooks/functions.php
  */
 
@@ -123,14 +123,14 @@ function phreebooksProcess($value, $format = '')
             $vals = clean($value, 'bizunzip');
             return !empty($vals['hint'])? '**********'.substr($vals['hint'], -4) : '';
         // ************ Income Statement Processing *******************
-        case 'isCur':  return $report->currentValues['amount'];       // income_statement current period
-        case 'isYtd':  return $report->currentValues['amount_ytd'];   // income_statement year to date
-        case 'isBdgt': return $report->currentValues['budget'];       // income_statement budget current period
-        case 'isBytd': return $report->currentValues['budget_ytd'];   // income_statement budget year to date
-        case 'isLcur': return $report->currentValues['ly_amount'];    // income_statement last year current period
-        case 'isLytd': return $report->currentValues['ly_amount_ytd'];// income_statement last year to date
-        case 'isLBgt': return $report->currentValues['ly_budget'];    // income_statement last year budget current period
-        case 'isLBtd': return $report->currentValues['ly_budget_ytd'];// income_statement last year budget year to date
+        case 'isCur':  return !empty($report->currentValues['amount'])       ? $report->currentValues['amount']       : ''; // income_statement current period
+        case 'isYtd':  return !empty($report->currentValues['amount_ytd'])   ? $report->currentValues['amount_ytd']   : ''; // income_statement year to date
+        case 'isBdgt': return !empty($report->currentValues['budget'])       ? $report->currentValues['budget']       : ''; // income_statement budget current period
+        case 'isBytd': return !empty($report->currentValues['budget_ytd'])   ? $report->currentValues['budget_ytd']   : ''; // income_statement budget year to date
+        case 'isLcur': return !empty($report->currentValues['ly_amount'])    ? $report->currentValues['ly_amount']    : ''; // income_statement last year current period
+        case 'isLytd': return !empty($report->currentValues['ly_amount_ytd'])? $report->currentValues['ly_amount_ytd']: ''; // income_statement last year to date
+        case 'isLBgt': return !empty($report->currentValues['ly_budget'])    ? $report->currentValues['ly_budget']    : ''; // income_statement last year budget current period
+        case 'isLBtd': return !empty($report->currentValues['ly_budget_ytd'])? $report->currentValues['ly_budget_ytd']: ''; // income_statement last year budget year to date
         // ************ Invoice Processing *******************
         case 'invBalance': // needs journal_main.id
             $rID = intval($value);

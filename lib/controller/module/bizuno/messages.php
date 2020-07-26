@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-11
+ * @version    4.x Last Update: 2020-04-05
  * @filesource /lib/controller/module/bizuno/messages.php
  */
 
@@ -125,7 +125,7 @@ class bizunoMessages
         }
         $data = ['type'=>'popup','title'=>$row['subject'],'attr'=>['id'=>'winSysMsg'],
             'divs'   =>['body'=>['order'=>50,'type'=>'html','html'=>$response['sysMsg']]],
-            'jsReady'=>['init'=>"jq('#sysMsg').html('$newCnt'); jq('#dgMessage').datagrid('reload');"]];
+            'jsReady'=>['init'=>"jq('#sysMsg').html('$newCnt'); bizGridReload('dgMessage');"]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -155,7 +155,7 @@ class bizunoMessages
         $title = $row['msg_id'];
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."phreemsg"." WHERE id=$rID");
         msgLog(lang('message').' - '.lang('delete')." $title ($rID)");
-        $data  = ['content'=>['action'=>'eval','actionData'=>$msgCnt."jq('#dgMessage').datagrid('reload');"]];
+        $data  = ['content'=>['action'=>'eval','actionData'=>$msgCnt."bizGridReload('dgMessage');"]];
         $layout= array_replace_recursive($layout, $data);
     }
 }

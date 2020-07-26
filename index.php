@@ -17,14 +17,14 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-27
+ * @version    4.x Last Update: 2020-07-23
  * @filesource /index.php
  */
 
 namespace bizuno;
 
-define('MODULE_BIZUNO_VERSION','3.4.4');
-define('PHREEBOOKS_VERSION', '5.3.4.4'); // Version format 5.x.y.z (x.y.z is Bizuno version)
+define('MODULE_BIZUNO_VERSION','4.2.0');
+define('PHREEBOOKS_VERSION', '5.4.2.0'); // Version format 5.x.y.z (x.y.z is Bizuno version)
 
 ini_set('display_errors', true);
 //error_reporting(E_ALL);
@@ -53,8 +53,9 @@ define('BIZUNO_LIB',       BIZUNO_ROOT.'lib/'); // file system path to Bizuno Li
 define('BIZUNO_EXT',       BIZUNO_ROOT.'ext/'); // file system path to Bizuno Extensions
 define('BIZUNO_CUSTOM',    BIZUNO_ROOT.'myExt/'); // file system path to Bizuno custom extensions
 define('BIZUNO_DATA',      BIZUNO_ROOT.'myFiles/'); // myFolder
-define('BIZUNO_ICONS',     BIZUNO_ROOT.'extIcons/'); // file system path to extra icon sets
 define('BIZUNO_LOCALE',    BIZUNO_ROOT.'locale/'); // file system path to non-US locale folder
+define('BIZUNO_FONTS',     BIZUNO_ROOT.'extFonts/'); // file system path to extra font sets for PDF rendering
+define('BIZUNO_ICONS',     BIZUNO_ROOT.'extIcons/'); // file system path to extra icon sets
 define('BIZUNO_THEMES',    BIZUNO_ROOT.'extThemes/'); // file system path to extra themes
 // Database
 if (!defined('BIZUNO_DB_HOST'))  { define('BIZUNO_DB_HOST',  'localhost'); }
@@ -65,7 +66,6 @@ if (!defined('BIZUNO_DB_PREFIX')){ define('BIZUNO_DB_PREFIX',''); }
 define('PORTAL_DB_PREFIX', BIZUNO_DB_PREFIX); // Portal table prefix
 $GLOBALS['dbBizuno'] = $GLOBALS['dbPortal'] = ['type'=>'mysql','host'=>BIZUNO_DB_HOST,'name'=>BIZUNO_DB_NAME,'user'=>BIZUNO_DB_USER,'pass'=>BIZUNO_DB_PASS,'prefix'=>BIZUNO_DB_PREFIX];
 // Third Party Apps
-define('BIZUNO_3P_QZ_TRAY',BIZUNO_EXT ."extShipping/qz-tray/");
 define('BIZUNO_3P_PDF',    BIZUNO_ROOT.'apps/TCPDF/');
 
 define('BIZUNO_DEBUG', false);

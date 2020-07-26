@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-24
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/phreebooks/totals/fee_order/fee_order.php
  */
 
@@ -68,7 +68,7 @@ class fee_order
         msgDebug("\nDiscount is returning balance = ".$begBal);
     }
 
-    public function render(&$output, $data)
+    public function render($data)
     {
         $this->fields = [
             'totals_fee_order_id' => ['label'=>'', 'attr'=>['type'=>'hidden']],
@@ -88,16 +88,16 @@ class fee_order
             }
         }
         $hide = $this->hidden ? ';display:none' : '';
-        $output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
-        $output['body'] .= html5('totals_fee_order_id', $this->fields['totals_fee_order_id']);
-        $output['body'] .= html5('totals_fee_order_pct',$this->fields['totals_fee_order_pct']);
-        $output['body'] .= html5('totals_fee_order',    $this->fields['totals_fee_order']);
-        $output['body'] .= html5('',                    $this->fields['totals_fee_order_opt']);
-        $output['body'] .= "</div>\n";
-        $output['body'] .= '<div id="phreebooks_totals_fee_order" style="display:none" class="layout-expand-over">';
-        $output['body'] .= html5('totals_fee_order_gl', $this->fields['totals_fee_order_gl']);
-        $output['body'] .= "</div>\n";
-        $output['jsHead'][] = "function totals_fee_order(begBalance) {
+        $html  = '<div style="text-align:right'.$hide.'">'."\n";
+        $html .= html5('totals_fee_order_id', $this->fields['totals_fee_order_id']);
+        $html .= html5('totals_fee_order_pct',$this->fields['totals_fee_order_pct']);
+        $html .= html5('totals_fee_order',    $this->fields['totals_fee_order']);
+        $html .= html5('',                    $this->fields['totals_fee_order_opt']);
+        $html .= "</div>\n";
+        $html .= '<div id="phreebooks_totals_fee_order" style="display:none" class="layout-expand-over">';
+        $html .= html5('totals_fee_order_gl', $this->fields['totals_fee_order_gl']);
+        $html .= "</div>\n";
+        htmlQueue("function totals_fee_order(begBalance) {
     var newBalance= parseFloat(begBalance);
     var curISO    = jq('#currency').val() ? jq('#currency').val() : bizDefaults.currency.defaultCur;
     var decLen    = parseInt(bizDefaults.currency.currencies[curISO].dec_len);
@@ -117,6 +117,7 @@ class fee_order
     }
     newBalance += fee;
     return parseFloat(newBalance.toFixed(decLen));
-}";
+}", 'jsHead');
+        return $html;
     }
 }

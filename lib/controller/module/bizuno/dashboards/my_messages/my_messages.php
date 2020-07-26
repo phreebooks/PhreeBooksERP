@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-07-22
  * @filesource /lib/controller/module/bizuno/dashboards/my_messages/my_messages.php
  */
 
@@ -41,17 +41,17 @@ class my_messages
     public function settingsStructure()
     {
         return [
-            'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
-            'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']]];
+            'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
+            'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']]];
     }
 
     public function render(&$layout=[])
     {
         if (empty($this->settings['data'])) { $rows[] = "<span>".lang('no_results')."</span>"; }
         else { for ($i=0,$j=1; $i<sizeof($this->settings['data']); $i++,$j++) {
-            $row  = '<span style="float:left">'."&#9679; {$this->settings['data'][$i]}</span>";
-            $row .= '<span style="float:right">'.html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', $j);"]]).'</span>';
-            $rows[] = $row;
+            $content= "&#9679; {$this->settings['data'][$i]}";
+            $trash  = html5('', ['icon'=>'trash','size'=>'small','events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) { dashSubmit('$this->moduleID:$this->code', $j); }"]]);
+            $rows[] = viewDashList($content, $trash);
         } }
         $layout = array_merge_recursive($layout, [
             'divs'  => [
@@ -60,7 +60,7 @@ class my_messages
             'fields'=> [
                 $this->code.'_0'  =>['order'=>10,'break'=>true,'label'=>$this->lang['send_message_to'],'values'=>listUsers(),'attr'=>['type'=>'select']],
                 $this->code.'_1'  =>['order'=>20,'break'=>true,'label'=>lang('message'),'attr'=>['type'=>'text','required'=>true,'size'=>80]],
-                $this->code.'_btn'=>['order'=>70,'attr'=>['type'=>'button','value'=>lang('add')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
+                $this->code.'_btn'=>['order'=>70,'attr'=>['type'=>'button','value'=>lang('add')],'events'=>['onClick'=>"dashSubmit('$this->moduleID:$this->code', 0);"]]],
             'lists' => [$this->code=>$rows]]);
     }
 

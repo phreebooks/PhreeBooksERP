@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-07-20
  * @filesource /lib/controller/module/phreebooks/dashboards/late_j04/late_j04.php
  */
 
@@ -42,15 +42,14 @@ class late_j04
 
     public function settingsStructure()
     {
-        for ($i = 0; $i <= $this->settings['max_rows']; $i++) { $list_length[] = ['id'=>$i, 'text'=>$i]; }
         return [
             'jID'     => ['attr'=>['type'=>'hidden','value'=>$this->settings['jID']]],
             'max_rows'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['max_rows']]],
             'users'   => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
             'roles'   => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']],
             'reps'    => ['label'=>lang('just_reps'),    'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['reps']]],
-            'num_rows'=> ['label'=>lang('limit_results'),'values'=>$list_length,'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['num_rows']]],
-            'order'   => ['label'=>lang('sort_order'),   'values'=>viewKeyDropdown($this->order),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['order']]]];
+            'num_rows'=> ['order'=>10,'break'=>true,'position'=>'after','label'=>lang('limit_results'),'options'=>['min'=>0,'max'=>50,'width'=>100],'attr'=>['type'=>'spinner','value'=>$this->settings['num_rows']]],
+            'order'   => ['order'=>20,'break'=>true,'position'=>'after','label'=>lang('sort_order'),   'values'=>viewKeyDropdown($this->order),'attr'=>['type'=>'select','value'=>$this->settings['order']]]];
     }
 
     function render(&$layout=[])
@@ -75,13 +74,13 @@ class late_j04
                     $item['total_amount'] = $item['debit_amount'] - $item['credit_amount'];
                     $filled= dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty) AS qty", "item_ref_id={$item['id']} AND gl_type='itm'", false);
                     if ($item['qty'] <= $filled || empty($item['total_amount'])) { continue; }
-//                  $entry['total_amount'] -= getInvoiceInfo($entry['id'], $entry['journal_id']);
                     $currencies->iso  = $entry['currency'];
                     $currencies->rate = $entry['currency_rate'];
-                    $row   = '<span style="float:left">'.html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
-                    $row  .= viewDate($item['date_1'])." - ".viewText($item['description'], $this->trim).'</span><span style="float:right">'.viewFormat($item['total_amount'], 'currency').'</span></li>';
-                    $total+= $item['total_amount'];
-                    $rows[]= $row;
+                    $total += $item['total_amount'];
+                    $left   = viewDate($item['date_1'])." - ".viewText($item['description'], $this->trim);
+                    $right  = viewFormat($item['total_amount'], 'currency');
+                    $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
+                    $rows[] = viewDashLink($left, $right, $action);
                 }
             }
             $currencies->iso  = getDefaultCurrency();
@@ -90,15 +89,15 @@ class late_j04
         }
         $filter = ucfirst(lang('filter')).": ".ucfirst(lang('sort'))." ".strtoupper($this->settings['order']).(!empty($this->settings['num_rows']) ? " ({$this->settings['num_rows']});" : '');
         $layout = array_merge_recursive($layout, [
-            'divs'  => [
-                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'num_rows', $this->code.'order', $this->code.'_btn']]]],
-                'head' =>['order'=>40,'type'=>'html','html'=>$filter],
+            'divs'   => [
+                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'num_rows', $this->code.'order']]]],
+                'head' =>['order'=>40,'type'=>'html','html'=>$filter,'hidden'=>getModuleCache('bizuno','settings','general','hide_filters',0)],
                 'body' =>['order'=>50,'type'=>'list','key'=>$this->code]],
-            'fields'=> [
-                $this->code.'num_rows'=> array_merge($struc['num_rows'],['order'=>10,'break'=>true]),
-                $this->code.'order'   => array_merge($struc['order'],   ['order'=>20,'break'=>true]),
-                $this->code.'_btn'    => ['order'=>90,'attr'=>['type'=>'button','value'=>lang('save')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
-            'lists' => [$this->code=>$rows]]);
+            'fields' => [
+                $this->code.'num_rows'=> array_merge_recursive($struc['num_rows'],['events'=>['onChange'=>"jq('#{$this->code}num_rows').keyup();"]]),
+                $this->code.'order'   => array_merge_recursive($struc['order'],   ['events'=>['onChange'=>"dashSubmit('$this->moduleID:$this->code', 0);"]])],
+            'lists'  => [$this->code=>$rows],
+            'jsReady'=>['init'=>"dashDelay('$this->moduleID:$this->code', 0, '{$this->code}num_rows');"]]);
       }
 
     function save()

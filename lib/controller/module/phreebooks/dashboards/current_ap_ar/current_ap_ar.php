@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-06-26
  * @filesource /lib/controller/module/phreebooks/dashboards/current_ap_ar/current_ap_ar.php
  */
 
@@ -30,17 +30,25 @@ class current_ap_ar
     public $code     = 'current_ap_ar';
     public $category = 'general_ledger';
 
-    public function __construct()
+    public function __construct($settings=[])
     {
         $this->security      = getUserCache('security', 'j2_mgr', 0);
+        $defaults            = ['users'=>'-1','roles'=>'-1'];
         $this->lang          = getMethLang($this->moduleID, $this->methodDir, $this->code);
         $this->bal_tot_2     = 0;
         $this->bal_tot_3     = 0;
         $this->bal_sheet_data= [];
-        $this->settings      = [];
+        $this->settings      = array_replace_recursive($defaults, $settings);
     }
 
-    function render()
+    public function settingsStructure()
+    {
+        return [
+            'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
+            'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']]];
+    }
+
+    public function render()
     {
         $period = getModuleCache('phreebooks', 'fy', 'period');
         $html  = '<div><div id="'.$this->code.'_attr" style="display:none"><div>'.lang('msg_no_settings').'</div></div>';
@@ -56,7 +64,7 @@ class current_ap_ar
         return $html;
     }
 
-    function add_income_stmt_data($type, $period, $negate=false)
+    private function add_income_stmt_data($type, $period, $negate=false)
     {
         $rows = dbGetMulti(BIZUNO_DB_PREFIX."journal_history", "period=$period AND gl_type=$type", "gl_account");
         $total = 0;

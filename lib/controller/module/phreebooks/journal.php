@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-14
+ * @version    4.x Last Update: 2020-07-15
  * @filesource /lib/controller/module/phreebooks/journal.php
  */
 
@@ -158,6 +158,7 @@ class journal
             $this->postList[$idx] = ['main'=>$data['main'], 'item'=>$data['item'], 'uMain'=>$uData['main'], 'uItem'=>$uData['item']];
             $ledger = $this->getJournal($data['main']['journal_id'], $data['main'], $data['item']);
             $refIDs = $ledger->getRepostData();
+            msgDebug("\ngetRepostData returned with refIDs = ".print_r($refIDs, true));
             if (sizeof($refIDs)) { $this->getPostList($refIDs); }
         }
     }
@@ -211,8 +212,6 @@ class journal
             $this->items = $mainID ? dbGetMulti(BIZUNO_DB_PREFIX.'journal_item', "ref_id=$mainID") : [];
         }
         $this->currencyConvert('toPost');
-//      msgDebug("\nLeaving getDbData with main record = " .print_r($this->main,  true));
-//      msgDebug("\nRead from db item records = ".print_r($this->items, true));
     }
 
     /**

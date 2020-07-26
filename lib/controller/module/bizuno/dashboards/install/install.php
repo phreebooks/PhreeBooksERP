@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-04-22
  * @filesource /lib/controller/module/bizuno/dashboards/install/install.php
  */
 
@@ -39,7 +39,7 @@ class install
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
         $bID = !empty($GLOBALS['bizuno_install_biz_id']) ? $GLOBALS['bizuno_install_biz_id'] : 0;
         if (!$bID) { return 'Biz_id cannot be zero!'; }
@@ -51,8 +51,8 @@ class install
         if (!getUserCache('profile', 'email', false, '')) { // collect username and database info as not logged in
             $lang['userDesc']= "Please set a username (email only) and password to set as your administrator of your business.";
             $html .= "<fieldset><legend>User Settings</legend>".$lang['userDesc']."<br />";
-            $html .= html5('UserEmail', ['label'=>'User Email','attr'=>['size'=>40]])."<br />";
-            $html .= html5('UserPass', ['label'=>'Password', 'attr'=>['type'=>'password']])."</fieldset>";
+            $html .= html5('UserEmail',['label'=>'User Email','attr'=>['size'=>40]])."<br />";
+            $html .= html5('UserPass', ['label'=>'Password',  'attr'=>['type'=>'password']])."</fieldset>";
         }
         if (!function_exists('curl_init')) { msgAdd('Bizunio needs cURL to run properly. Please install/enable cURL PHP extension before performing any Input/Output operations.'); }
         if (!dbTableExists(BIZUNO_DB_PREFIX.'users') && !in_array(BIZUNO_HOST,['phreesoft','wordpress'])) { // collect username and database info as db has not been initialized
@@ -65,7 +65,8 @@ class install
             $html .= html5('dbPrfx', ['label'=>'Database Prefix',   'attr'=>['value'=>$GLOBALS['dbPortal']['prefix']]])."</fieldset>";
         }
         $html .= '<div style="text-align:center">'.html5('btnInstall', $data['btnInstall']).'</div></form></div>';
-        $html .= htmlJS("ajaxForm('frmInstall');");
-        return $html;
+        $layout = array_merge_recursive($layout, [
+            'divs'  => ['body'=>['order'=>50,'type'=>'html','html'=>$html]],
+            'jsHead'=> ['init'=>"ajaxForm('frmInstall');"]]);
     }
 }

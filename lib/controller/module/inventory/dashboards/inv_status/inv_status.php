@@ -17,9 +17,9 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-04
+ * @version    4.x Last Update: 2020-05-28
  * @filesource /lib/controller/module/phreebooks/dashboards/inv_status/inv_status.php
- * 
+ *
  */
 
 namespace bizuno;
@@ -31,7 +31,7 @@ class inv_status
     public $code      = 'inv_status';
     public $category  = 'inventory';
     public $noSettings= true;
-    
+
     function __construct($settings)
     {
         $this->security= getUserCache('security', 'inv_mgr', false, 0);
@@ -48,7 +48,7 @@ class inv_status
             'reps'  => ['label'=>lang('just_reps'),'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['reps']]]];
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
         $rows = dbGetMulti(BIZUNO_DB_PREFIX.'inventory', "qty_stock<(qty_min+qty_so+qty_alloc-qty_po)", '', ['sku','vendor_id','qty_min','qty_so','qty_alloc','qty_po','qty_stock']);
         $vendors = [];
@@ -70,11 +70,13 @@ class inv_status
         }
         $cData[] = $data['title'];
         $cData[] = $data['total'];
-        $output = ['divID'=>$this->code."_chart",'type'=>'column','attr'=>['chartArea'=>['left'=>'15%','width'=>'40%'],'legend'=>['position'=>"right"]],'data'=>$cData];
+        $output = ['divID'=>$this->code."_chart",'type'=>'column','attr'=>['legend'=>['position'=>"right"]],'data'=>$cData];
         $js = "var data_{$this->code} = ".json_encode($output).";\n";
         $js.= "function chart{$this->code}() { drawBizunoChart(data_{$this->code}); };\n";
         $js.= "google.charts.load('current', {'packages':['corechart']});\n";
         $js.= "google.charts.setOnLoadCallback(chart{$this->code});\n";
-        return '<div style="width:100%" id="'.$this->code.'_chart"></div>'.htmlJS($js);
+        $layout = array_merge_recursive($layout, [
+            'divs'  => ['body'=>['order'=>50,'type'=>'html','html'=>'<div style="width:100%" id="'.$this->code.'_chart"></div>']],
+            'jsHead'=> ['init'=>$js]]);
     }
 }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-23
+ * @version    4.x Last Update: 2020-07-08
  * @filesource lib/controller/functions.php
  */
 
@@ -149,11 +149,32 @@ function myExceptionHandler($e)
     msgTrap ();
     msgDebug("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
     msgAdd("Fatal error on line ".$e->getLine()." in file ".$e->getFile().". Description: ".$e->getCode()." - ".$e->getMessage());
-    msgDebugWrite();
+    if (dbConnected()) { msgDebugWrite(); }
     if (BIZUNO_HOST!='phreesoft' || (defined('BIZUNO_DEBUG') && constant('BIZUNO_DEBUG')===true)) {
         exit(json_encode(['message' => $msgStack->error]));
     } else {
         exit("Program Exception! Please fill out a support ticket with the details that got you here.");
+    }
+}
+
+function bizSetCookie($name, $value, $time=86400, $options=[]) // 24 hours
+{
+    $_COOKIE[$name] = $value;
+    if (PHP_VERSION_ID < 70300) {
+        setcookie($name, $value, $time, '/; samesite=lax');
+    } else {
+        $opts = array_merge($options, ['expires'=>$time,'path'=>'/','secure'=>true,'samesite'=>'lax']);
+        setcookie($name, $value, $opts);
+    }
+}
+
+function bizClrCookie($name)
+{
+    $_COOKIE[$name] = '';
+    if (PHP_VERSION_ID < 70300) {
+        setcookie($name, '', time()-1, '/; samesite=lax');
+    } else {
+        setcookie($name, '', ['expires'=>time()-1,'path'=>'/','secure'=>true,'samesite'=>'lax']);
     }
 }
 
@@ -778,7 +799,7 @@ function getDefaultFormID($jID=0, $rtnSrc=false)
 function viewFavicon($url, $title='', $event=false)
 {
     global $io;
-    $target= $event ? "style=\"cursor:pointer\" onClick=\"window.open('$url', '_blank');\" " : '';
+    $target= $event ? "style=\"cursor:pointer\" onClick=\"winHref('$url');\" " : '';
     $parts = parse_url($url);
     if (empty($parts['host'])) { return ''; }
     if (file_exists(BIZUNO_DATA."cache/icons/{$parts['host']}.fav")) { // load the icon

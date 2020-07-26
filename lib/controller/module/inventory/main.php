@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-21
+ * @version    4.x Last Update: 2020-07-08
  * @filesource /lib/controller/module/inventory/main.php
  */
 
@@ -40,7 +40,7 @@ class inventoryMain
             'nonstock'=> getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[34],
             'cogs'    => getModuleCache('phreebooks', 'chart', 'defaults', getDefaultCurrency())[32],
             'method'  => 'f'];
-        $this->inventoryTypes = [
+        $inventoryTypes = [
             'si' => ['id'=>'si','text'=>lang('inventory_inventory_type_si'),'hidden'=>0,'tracked'=>1,'order'=>10,'gl_sales'=>$defaults['sales'],'gl_inv'=>$defaults['stock'],   'gl_cogs'=>$defaults['cogs'],'method'=>$defaults['method']], // Stock Item
             'sr' => ['id'=>'sr','text'=>lang('inventory_inventory_type_sr'),'hidden'=>0,'tracked'=>1,'order'=>15,'gl_sales'=>$defaults['sales'],'gl_inv'=>$defaults['stock'],   'gl_cogs'=>$defaults['cogs'],'method'=>$defaults['method']], // Serialized
             'ma' => ['id'=>'ma','text'=>lang('inventory_inventory_type_ma'),'hidden'=>0,'tracked'=>1,'order'=>25,'gl_sales'=>$defaults['sales'],'gl_inv'=>$defaults['stock'],   'gl_cogs'=>$defaults['cogs'],'method'=>$defaults['method']], // Assembly
@@ -54,7 +54,7 @@ class inventoryMain
             'ds' => ['id'=>'ds','text'=>lang('inventory_inventory_type_ds'),'hidden'=>0,'tracked'=>0,'order'=>65,'gl_sales'=>$defaults['sales'],'gl_inv'=>$defaults['nonstock'],'gl_cogs'=>false,'method'=>false], // Description
             'ia' => ['id'=>'ia','text'=>lang('inventory_inventory_type_ia'),'hidden'=>1,'tracked'=>1,'order'=>99,'gl_sales'=>$defaults['sales'],'gl_inv'=>$defaults['stock'],   'gl_cogs'=>false,'method'=>false], // Assembly Part
             'mi' => ['id'=>'mi','text'=>lang('inventory_inventory_type_mi'),'hidden'=>1,'tracked'=>1,'order'=>99,'gl_sales'=>$defaults['sales'],'gl_inv'=>$defaults['stock'],   'gl_cogs'=>false,'method'=>false]]; // Master Stock Sub Item
-        $this->inventoryTypes = array_merge_recursive($this->inventoryTypes, getModuleCache('inventory', 'phreebooks'));
+        $this->inventoryTypes = array_merge_recursive($inventoryTypes, getModuleCache('inventory', 'phreebooks'));
     }
 
     /**
@@ -68,7 +68,6 @@ class inventoryMain
         $title = sprintf(lang('tbd_manager'),lang('gl_acct_type_4'));
         $layout = array_replace_recursive($layout, viewMain(), ['title'=>$title,
             'divs'     => [
-                'submenu'=> ['order'=>10,'type'=>'html',     'html'=>viewSubMenu('inventory')],
                 'invMgr' => ['order'=>50,'type'=>'accordion','key' =>'accInventory']],
             'accordion'=> ['accInventory'=>['divs'=>[
                 'divInventoryManager'=> ['order'=>30,'label'=>$title,         'type'=>'datagrid','key' =>'manager'],
@@ -78,7 +77,7 @@ class inventoryMain
     }
 
     /**
-     * Lists inventory rows for the manager datagrid filtered by users request
+     * Lists inventory rows for the manager grid filtered by users request
      * @param array $layout - structure coming in
      * @return modified structure
      */
@@ -113,7 +112,7 @@ class inventoryMain
     }
 
     /**
-     * Generates the datagrid structure for managing bills of materials
+     * Generates the grid structure for managing bills of materials
      * @param array $layout - structure coming in
      * @return modified structure
      */
@@ -122,21 +121,21 @@ class inventoryMain
         if (!$security = validateSecurity('inventory', 'inv_mgr', 1, false)) { return; }
         $rID  = clean('rID', 'integer', 'get');
         if ($rID) {
-            $sku    = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku', "id=$rID");
-            $asyData= dbGetMulti(BIZUNO_DB_PREFIX."inventory_assy_list", "ref_id=$rID");
+            $sku     = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'sku', "id=$rID");
+            $asyData = dbGetMulti(BIZUNO_DB_PREFIX."inventory_assy_list", "ref_id=$rID");
             foreach ($asyData as $idx => $row) {
                 $asyData[$idx]['qty_stock'] = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'qty_stock', "sku='{$row['sku']}'");
             }
-            $assemblyData = formatDatagrid($asyData, 'assyData');
-            $locked = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "sku='$sku'");
+            $assyData= formatDatagrid($asyData, 'assyData');
+            $locked  = defined('BIZ_RULE_ASSY_UNLOCK') && !empty(BIZ_RULE_ASSY_UNLOCK) ? false : dbGetValue(BIZUNO_DB_PREFIX.'journal_item', 'id', "sku='$sku'");
         } else {
-            $assemblyData = "var assyData = ".json_encode(['total'=>0,'rows'=>  []]).";";
-            $locked = false;
+            $assyData= "var assyData = ".json_encode(['total'=>0,'rows'=>  []]).";";
+            $locked  = false;
         }
         $layout = array_replace_recursive($layout, ['type'=>'divHTML',
             'divs'    => ['divVendGrid'=> ['order'=>30,'type'=>'datagrid','key'=>'dgAssembly']],
             'datagrid'=> ['dgAssembly' => $this->dgAssembly('dgAssembly', $locked)],
-            'jsHead'  => ['mgrBOMdata' => $assemblyData]]);
+            'jsHead'  => ['mgrBOMdata' => $assyData]]);
         if (!$locked) { $layout['jsReady']['mgrBOM'] = "jq('#dgAssembly').edatagrid('addRow');"; }
     }
 
@@ -174,25 +173,24 @@ class inventoryMain
         $structure   = dbLoadStructure(BIZUNO_DB_PREFIX."inventory");
         $dbData      = dbGetRow(BIZUNO_DB_PREFIX."inventory", "id='$rID'");
         dbStructureFill($structure, $dbData);
-        $inventory_type = $structure['inventory_type']['attr']['value'];
-        // set initial fieldsets
-        $fldGeneral = ['id','dg_assy','store_id','sku','inactive','description_short','upc_code','qty_min','qty_restock','qty_stock',
-            'qty_po','qty_so','qty_alloc','lead_time','item_weight','image_with_path'];
-        $fldCustomer= ['description_sales','full_price','tax_rate_id_c','price_sheet_c'];
-        $fldVendor  = ['description_purchase','item_cost','tax_rate_id_v','price_sheet_v','vendor_id'];
-        $fldLedger  = ['inventory_type','cost_method','gl_sales','gl_inv','gl_cogs'];
+        $inv_type    = $structure['inventory_type']['attr']['value'];
+        $fldProp     = ['id','dg_assy','store_id','sku','inactive','description_short','upc_code','item_weight','lead_time'];
+        $fldStatus   = ['qty_min','qty_restock','qty_stock','qty_po','qty_so','qty_alloc'];
+        $fldImage    = ['image_with_path'];
+        $fldCust     = ['description_sales','full_price','tax_rate_id_c','price_sheet_c'];
+        $fldVend     = ['description_purchase','item_cost','tax_rate_id_v','price_sheet_v','vendor_id'];
+        $fldGL       = ['inventory_type','cost_method','gl_sales','gl_inv','gl_cogs'];
         // add additional fields
         $structure['dg_assy'] = ['attr'=>['type'=>'hidden']];
-        $structure['dg_assy'] = ['attr'=>['type'=>'hidden']];
         if (validateSecurity('inventory', 'prices_c', 1, false)) {
-            $structure['show_prices_c'] = ['order'=>42,'icon'=>'price','label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=c&itemCost='+bizNumGet('item_cost')+'&fullPrice='+bizNumGet('full_price'), $rID);"]];
-            unset($structure['full_price']['break']);
-            $fldCustomer[] = 'show_prices_c';
+            $structure['full_price']['break'] = false;
+            $structure['show_prices_c'] = ['order'=>41,'icon'=>'price','label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=c&itemCost='+bizNumGet('item_cost')+'&fullPrice='+bizNumGet('full_price'), $rID);"]];
+            $fldCust[] = 'show_prices_c';
         }
         if (validateSecurity('inventory', 'prices_v', 1, false)) {
-            $structure['show_prices_v'] = ['order'=>42,'icon'=>'price','break'=>true,'label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=v&itemCost='+bizNumGet('item_cost')+'&fullPrice='+bizNumGet('full_price'), $rID);"]];
-            unset($structure['item_cost']['break']);
-            $fldVendor[] = 'show_prices_v';
+            $structure['item_cost']['break'] = false;
+            $structure['show_prices_v'] = ['order'=>41,'icon'=>'price','label'=>lang('prices'),'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=v&itemCost='+bizNumGet('item_cost')+'&fullPrice='+bizNumGet('full_price'), $rID);"]];
+            $fldVend[] = 'show_prices_v';
         }
         if (!empty($structure['image_with_path']['attr']['value'])) {
             $cleanPath = clean($structure['image_with_path']['attr']['value'], 'path_rel');
@@ -208,17 +206,18 @@ class inventoryMain
         $structure['qty_po']['attr']['readonly']   = 'readonly';
         $structure['qty_so']['attr']['readonly']   = 'readonly';
         $structure['qty_alloc']['attr']['readonly']= 'readonly';
-        $structure['inventory_type']['values']     = $this->inventoryTypes;
+        $structure['inventory_type']['values']     = array_values($this->inventoryTypes);
         $structure['cost_method']['values']        = $cost_methods;
         if ($rID) {
             $locked = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "sku='{$structure['sku']['attr']['value']}'"); // was inventory_history but if a SO exists will not lock sku field and can change
             $title  = $structure['sku']['attr']['value'].' - '.$structure['description_short']['attr']['value'];
-            $structure['where_used']= ['order'=>11,'icon'=>'tools','break'=>true,'label'=>lang('inventory_where_used'),'hidden'=>$rID?false:true,'events'=>['onClick'=>"jsonAction('inventory/main/usage', $rID);"]];
-            unset($structure['sku']['break']);
-            $fldGeneral[] = 'where_used';
-            if (in_array($inventory_type, ['ma','sa']) ) {
-                $structure['assy_cost'] = ['order'=>41,'icon'=>'payment','label'=>lang('inventory_assy_cost'),'events'=>['onClick'=>"jsonAction('inventory/main/getCostAssy', $rID);"]];
-                $fldVendor[] = 'assy_cost';
+            $structure['where_used']= ['order'=>11,'icon'=>'tools','label'=>lang('inventory_where_used'),'hidden'=>$rID?false:true,'events'=>['onClick'=>"jsonAction('inventory/main/usage', $rID);"]];
+            $structure['sku']['break'] = false;
+            $fldProp[] = 'where_used';
+            if (in_array($inv_type, ['ma','sa']) ) {
+                if (isset($structure['show_prices_v'])) { $structure['show_prices_v']['break'] = false; }
+                $structure['assy_cost'] = ['order'=>42,'icon'=>'payment','label'=>lang('inventory_assy_cost'),'events'=>['onClick'=>"jsonAction('inventory/main/getCostAssy', $rID);"]];
+                $fldVend[] = 'assy_cost';
             }
         } else { // set some defaults
             $locked = false;
@@ -231,12 +230,12 @@ class inventoryMain
             $structure['cost_method']['attr']['value']   = getModuleCache('inventory', 'settings', 'phreebooks', 'method_si');
             $structure['tax_rate_id_v']['attr']['value'] = getModuleCache('inventory', 'settings', 'general', 'tax_rate_id_v');
             $structure['tax_rate_id_c']['attr']['value'] = getModuleCache('inventory', 'settings', 'general', 'tax_rate_id_c');
-            $structure['inventory_type']['events']['onChange']= "var type=jq('#inventory_type').val(); if (invTypeMsg[type]) alert(invTypeMsg[type]);";
+            $structure['inventory_type']['events']['onChange']= "var type=bizSelGet('inventory_type'); if (invTypeMsg[type]) alert(invTypeMsg[type]);";
         }
         if ($locked) { // check to see if some fields should be locked
             $structure['sku']['attr']['readonly']           = 'readonly';
-            $structure['inventory_type']['attr']['disabled']= 'disabled';
-            $structure['cost_method']['attr']['disabled']   = 'disabled';
+            $structure['inventory_type']['attr']['readonly']= 'readonly'; // when disabled, data is not passed in POST
+            $structure['cost_method']['attr']['readonly']   = 'readonly';
         }
         if (sizeof(getModuleCache('inventory', 'prices'))) {
             bizAutoLoad(BIZUNO_LIB."controller/module/inventory/prices.php", 'inventoryPrices');
@@ -250,8 +249,8 @@ class inventoryMain
         $structure['tax_rate_id_v']['values'] = viewSalesTaxDropdown('v', 'contacts');
         $structure['tax_rate_id_c']['values'] = viewSalesTaxDropdown('c', 'contacts');
         $structure['vendor_id']['values']     = dbBuildDropdown(BIZUNO_DB_PREFIX."contacts", "id", "short_name", "type='v' AND inactive<>'1' ORDER BY short_name", lang('none'));
-        if ($rID && empty($structure['inventory_type']['values'][$inventory_type]['gl_inv'])) { $structure['gl_inv']['attr']['type'] = 'hidden'; }
-        if ($rID && empty($structure['inventory_type']['values'][$inventory_type]['gl_cogs'])){ $structure['gl_cogs']['attr']['type']= 'hidden'; }
+        if ($rID && empty($structure['inventory_type']['values'][$inv_type]['gl_inv'])) { $structure['gl_inv']['attr']['type'] = 'hidden'; }
+        if ($rID && empty($structure['inventory_type']['values'][$inv_type]['gl_cogs'])){ $structure['gl_cogs']['attr']['type']= 'hidden'; }
         if (sizeof(getModuleCache('phreebooks', 'currency', 'iso'))>1) {
             $structure['full_price']['label'].= ' ('.getDefaultCurrency().')';
             $structure['item_cost']['label'] .= ' ('.getDefaultCurrency().')';
@@ -260,7 +259,7 @@ class inventoryMain
         $data = ['type'=>'divHTML',
             'divs'    => [
                 'toolbar'=> ['order'=> 5,'type'=>'toolbar','key' =>'tbInventory'],
-                'heading'=> ['order'=>10,'type'=>'html',   'html'=>"<h1>".$title."</h1>"],
+                'heading'=> ['order'=>10,'type'=>'html',   'html'=>"<h1>$title</h1>"],
                 'formBOF'=> ['order'=>15,'type'=>'form',   'key' =>'frmInventory'],
                 'tabs'   => ['order'=>50,'type'=>'tabs',   'key' =>'tabInventory'],
                 'formEOF'=> ['order'=>85,'type'=>'html',   'html'=>'</form>']],
@@ -270,32 +269,28 @@ class inventoryMain
                 'trash'=> ['order'=>80,'hidden'=>$rID&&$security==4?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/main/delete', $rID);"]],
                 'help' => ['order'=>99,'icon'=>'help','label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]]]],
             'tabs'   => ['tabInventory'=> ['divs'=>[
-                'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','divs'=>[
-                    'general' => ['order'=>10,'type'=>'fields','keys'=>$fldGeneral],
-                    'sales'   => ['order'=>20,'label'=>lang('details').' ('.lang('customers').')',                                'type'=>'fields','keys'=>$fldCustomer],
-                    'purchase'=> ['order'=>50,'label'=>lang('details').' ('.lang('vendors').')','hidden'=>$hideV,                 'type'=>'fields','keys'=>$fldVendor],
-                    'ledger'  => ['order'=>60,'label'=>lang('details').' ('.getModuleCache('phreebooks','properties','title').')','type'=>'fields','keys'=>$fldLedger],
-                    'attach'  => ['order'=>80,'type'=>'attach','defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>"rID_{$rID}_"]]]],
+                'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'genProp' => ['order'=>10,'type'=>'panel','classes'=>['block33'],'key'=>'genProp'],
+                    'genStat' => ['order'=>20,'type'=>'panel','classes'=>['block33'],'key'=>'genStat'],
+                    'genImage'=> ['order'=>30,'type'=>'panel','classes'=>['block33'],'key'=>'genImage'],
+                    'genCust' => ['order'=>40,'type'=>'panel','classes'=>['block33'],'key'=>'genCust'],
+                    'genVend' => ['order'=>50,'type'=>'panel','classes'=>['block33'],'key'=>'genVend','hidden'=>$hideV],
+                    'genGL'   => ['order'=>60,'type'=>'panel','classes'=>['block33'],'key'=>'genGL'],
+                    'genAtch' => ['order'=>80,'type'=>'panel','classes'=>['block66'],'key'=>'genAtch']]],
                 'history' => ['order'=>30,'label'=>lang('history'),'hidden'=>$rID?false:true,'type'=>'html','html'=>'',
                     'options'=> ['href'=>"'".BIZUNO_AJAX."&p=inventory/main/history&rID=$rID'"]]]]],
+            'panels' => [
+                'genProp' => ['label'=>lang('properties'),                              'type'=>'fields','keys'=>$fldProp],
+                'genStat' => ['label'=>lang('status'),                                  'type'=>'fields','keys'=>$fldStatus],
+                'genImage'=> ['label'=>lang('current_image'),'options'=>['height'=>210],'type'=>'fields','keys'=>$fldImage],
+                'genCust' => ['label'=>lang('details').' ('.lang('customers').')',      'type'=>'fields','keys'=>$fldCust],
+                'genVend' => ['label'=>lang('details').' ('.lang('vendors').')',        'type'=>'fields','keys'=>$fldVend],
+                'genGL'   => ['label'=>lang('details').' ('.lang('general_ledger').')', 'type'=>'fields','keys'=>$fldGL],
+                'genAtch' => ['type'=>'attach','defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>"rID_{$rID}_"]]],
             'forms'  => ['frmInventory'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=inventory/main/save"]]],
             'fields' => $structure,
-            'jsHead' => ['invHead' => "var curIndex = undefined;\nvar invTypeMsg = [];\ncurIndex = 0;
-function preSubmit() {
-    if (jq('#dgAssembly').length) {
-        jq('#dgAssembly').edatagrid('saveRow');
-        var items = jq('#dgAssembly').datagrid('getData');
-        var serializedItems = JSON.stringify(items);
-        jq('#dg_assy').val(serializedItems);
-    }
-    if (jq('#dgVendors').length) {
-        jq('#dgVendors').edatagrid('saveRow');
-        var dgVal = jq('#dgVendors').datagrid('getData');
-        var invVendors = JSON.stringify(dgVal['rows'])
-        jq('#invVendors').val(invVendors);
-    }
-    return true;
-}"],
+            'jsHead' => ['invHead' => "var curIndex=undefined; var invTypeMsg=[]; curIndex=0;
+function preSubmit() { bizGridSerializer('dgAssembly', 'dg_assy'); bizGridSerializer('dgVendors', 'invVendors'); return true; }"],
             'jsBody' => ['init'=>"imgManagerInit('image_with_path', '$imgSrc', '$imgDir', 'images/');"],
             'jsReady'=> ['init'=>"ajaxForm('frmInventory');\njq('.products ul li:nth-child(3n+3)').addClass('last');"]];
         customTabs($data, 'inventory', 'tabInventory'); // add custom tabs
@@ -341,7 +336,7 @@ function preSubmit() {
         if (!$sku) { return msgAdd("Bad sku passed!"); }
         $_GET['rID'] = dbGetValue(BIZUNO_DB_PREFIX."inventory", 'id', "sku='$sku'");
         compose('inventory', 'main', 'edit', $layout);
-        unset($layout['tabs']['tabInventory']['divs']['general']['divs']['attach']);
+        unset($layout['tabs']['tabInventory']['divs']['general']['divs']['genAtch']);
         unset($layout['divs']['toolbar']);
         unset($layout['divs']['formBOF']);
         unset($layout['divs']['formEOF']);
@@ -375,7 +370,7 @@ function preSubmit() {
         $result = dbWrite(BIZUNO_DB_PREFIX."inventory", $values, $rID?'update':'insert', "id=$rID");
         if (!$rID) { $rID = $_POST['id'] = $result; }
         $dgAssy = clean('dg_assy', 'json', 'post');
-        if ($dgAssy) { $this->saveBOM($rID, $type, $values['sku'], $dgAssy); } // handle assemblies
+        if (!empty($dgAssy)) { $this->saveBOM($rID, $type, $values['sku'], $dgAssy); } // handle assemblies
         if ($makeTransaction) { dbTransactionCommit(); }
         $io = new \bizuno\io();
         if ($io->uploadSave('file_attach', getModuleCache('inventory', 'properties', 'attachPath')."rID_{$rID}_")) {
@@ -383,7 +378,7 @@ function preSubmit() {
         }
         msgAdd(lang('msg_database_write'), 'success');
         msgLog(lang('inventory').'-'.lang('save')." - ".$values['sku']." (rID=$rID)");
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accInventory').accordion('select', 0); jq('#dgInventory').datagrid('reload'); jq('#divInventoryDetail').html('&nbsp;');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accInventory').accordion('select', 0); bizGridReload('dgInventory'); jq('#divInventoryDetail').html('&nbsp;');"]]);
     }
 
     /**
@@ -397,7 +392,8 @@ function preSubmit() {
     private function saveBOM($rID, $type, $sku, $dgData)
     {
         if (!in_array($type, ['ma', 'sa'])) { return; }
-        if (dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "sku='$sku'")) { return; } // journal entry present , not ok to save
+        $locked = defined('BIZ_RULE_ASSY_UNLOCK') && !empty(BIZ_RULE_ASSY_UNLOCK) ? false : dbGetValue(BIZUNO_DB_PREFIX.'journal_item', 'id', "sku='$sku'");
+        if ($locked) { return; } // journal entry present , not ok to save
         if (is_array($dgData) && sizeof($dgData) > 0) {
             dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."inventory_assy_list WHERE ref_id=$rID");
             foreach ($dgData['rows'] as $row) {
@@ -425,7 +421,7 @@ function preSubmit() {
         // check for duplicate skus
         $found= dbGetValue(BIZUNO_DB_PREFIX."inventory", 'id', "sku='$newSKU'");
         if ($found) { return msgAdd(lang('error_duplicate_id')); }
-        $data = ['content'=> ['action'=>'eval', 'actionData'=> "jq('#dgInventory').datagrid('reload');"],
+        $data = ['content'=> ['action'=>'eval', 'actionData'=> "bizGridReload('dgInventory');"],
             'dbAction'    => [
                 "inventory"          => "UPDATE ".BIZUNO_DB_PREFIX."inventory SET sku='$newSKU' WHERE id='$rID'",
                 "inventory_assy_list"=> "UPDATE ".BIZUNO_DB_PREFIX."inventory_assy_list SET sku='$newSKU' WHERE sku='$oldSKU'",
@@ -490,7 +486,7 @@ function preSubmit() {
             dbWrite(BIZUNO_DB_PREFIX."inventory_prices", $value);
         }
         msgLog(lang('inventory').'-'.lang('copy')." - $oldSKU => $newSKU");
-        $layout = array_replace_recursive($layout, ['content' => ['action'=>'eval','actionData'=>"jq('#dgInventory').datagrid('reload'); accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', $nID);"],
+        $layout = array_replace_recursive($layout, ['content' => ['action'=>'eval','actionData'=>"bizGridReload('dgInventory'); accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', $nID);"],
             ]);
     }
 
@@ -504,7 +500,7 @@ function preSubmit() {
         if (!$security = validateSecurity('inventory', 'inv_mgr', 4)) { return; }
         $rID = clean('rID', 'integer', 'get');
         if (!$rID) { return msgAdd('Bad Record ID!'); }
-        $action= "jq('#accInventory').accordion('select', 0); jq('#dgInventory').datagrid('reload'); jq('#divInventoryDetail').html('&nbsp;');";
+        $action= "jq('#accInventory').accordion('select', 0); bizGridReload('dgInventory'); jq('#divInventoryDetail').html('&nbsp;');";
         $item  = dbGetRow(BIZUNO_DB_PREFIX."inventory", "id=$rID");
         if (!$item) { return ['content'=>['action'=>'eval','actionData'=>$action]]; }
         $sku   = clean($item['sku'], 'text');
@@ -545,31 +541,66 @@ function preSubmit() {
     public function history(&$layout=[])
     {
         if (!$security = validateSecurity('inventory', 'inv_mgr', 1)) { return; }
-        $rID = clean('rID', 'integer', 'get');
+        $rID    = clean('rID', 'integer', 'get');
         if (!$rID) { return ("This SKU does not have any history!"); }
-        $skuInfo = dbGetRow(BIZUNO_DB_PREFIX."inventory", "id='$rID'");
-        $sku = $skuInfo['sku'];
-        msgDebug("\nEntering inventory history with rID = $rID and sku = $sku");
-        $history = ['id'=>$rID,'open_po'=>[],'open_so'=>[],'purchases'=>[],'sales'=>[]];
-        $history['create'] = ['label'=>lang('inventory_creation_date'),    'attr'=>['type'=>'date','readonly'=>'readonly','value'=>$skuInfo['creation_date']]];
-        $history['update'] = ['label'=>lang('last_update'),                'attr'=>['type'=>'date','readonly'=>'readonly','value'=>$skuInfo['last_update']]];
-        $history['journal']= ['label'=>lang('inventory_last_journal_date'),'attr'=>['type'=>'date','readonly'=>'readonly','value'=>$skuInfo['last_journal_date']]];
-        // load the SO's and PO's and get order, expected del date
-        $sql = "SELECT m.id, m.journal_id, m.store_id, m.invoice_num, m.waiting, i.qty, i.post_date, i.date_1,
+        $skuInfo= dbGetRow(BIZUNO_DB_PREFIX."inventory", "id='$rID'");
+        $history= $this->historyData($rID, $skuInfo['sku']);
+        $usage  = "<br /><hr /><h2>".$this->lang['stock_usage_lbl'].'</h2>
+<table style="width:100%"><thead class="panel-header"><tr><th style="width:50%">&nbsp;</th><th style="width:25%">'.lang('journal_main_journal_id_6').'</th><th style="width:25%">'.lang('journal_main_journal_id_12')."</th></tr></thead><tbody>
+    <tr><td>".$this->lang['01month'].'</td><td style="text-align:center;">'.$history['01purch'].'</td><td style="text-align:center;">'.$history['01sales']."</td></tr>
+    <tr><td>".$this->lang['03month'].'</td><td style="text-align:center;">'.$history['03purch'].'</td><td style="text-align:center;">'.$history['03sales']."</td></tr>
+    <tr><td>".$this->lang['06month'].'</td><td style="text-align:center;">'.$history['06purch'].'</td><td style="text-align:center;">'.$history['06sales']."</td></tr>
+    <tr><td>".$this->lang['12month'].'</td><td style="text-align:center;">'.$history['12purch'].'</td><td style="text-align:center;">'.$history['12sales'].'</td></tr>
+</tbody></table></div>';
+        if (!empty($history['id'])) { $usage .= lang('id').': '.$history['id']."\n"; }
+        $fields = [
+            'create' => ['order'=>10,'label'=>lang('inventory_creation_date'),    'attr'=>['type'=>'date','readonly'=>true,'value'=>$skuInfo['creation_date']]],
+            'update' => ['order'=>20,'label'=>lang('last_update'),                'attr'=>['type'=>'date','readonly'=>true,'value'=>$skuInfo['last_update']]],
+            'journal'=> ['order'=>30,'label'=>lang('inventory_last_journal_date'),'attr'=>['type'=>'date','readonly'=>true,'value'=>$skuInfo['last_journal_date']]],
+            'usage'  => ['order'=>60,'html'=>$usage, 'attr'=>['type'=>'raw']]];
+        $data   = ['type'=>'divHTML',
+            'divs'    =>[
+                'main' => ['order'=>50,'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'dates'=> ['order'=>10,'type'=>'panel','key'=>'dates','classes'=>['block33']],
+                    'dgJ10'=> ['order'=>30,'type'=>'panel','key'=>'dgJ10','classes'=>['block33']],
+                    'dgJ04'=> ['order'=>40,'type'=>'panel','key'=>'dgJ04','classes'=>['block33']],
+                    'dgJ06'=> ['order'=>50,'type'=>'panel','key'=>'dgJ06','classes'=>['block33']],
+                    'dgJ12'=> ['order'=>60,'type'=>'panel','key'=>'dgJ12','classes'=>['block33']]]]],
+            'panels'  => [
+                'dates'=> ['label'=>lang('details'),'type'=>'fields','keys'=>['create','update','journal','usage']],
+                'dgJ04'=> ['type'=>'datagrid','key'=>'dgJ04'],
+                'dgJ06'=> ['type'=>'datagrid','key'=>'dgJ06'],
+                'dgJ10'=> ['type'=>'datagrid','key'=>'dgJ10'],
+                'dgJ12'=> ['type'=>'datagrid','key'=>'dgJ12']],
+            'datagrid'=> [
+                'dgJ04'=>$this->dgJ04J10(4,  $skuInfo['sku']), 'dgJ06'=>$this->dgJ06J12(6),
+                'dgJ10'=>$this->dgJ04J10(10, $skuInfo['sku']), 'dgJ12'=>$this->dgJ06J12(12)],
+            'fields'  => $fields,
+            'jsHead'  => ['init' =>"var dataJ6 = " .json_encode($history['purchases']).";\nvar dataJ12 = ".json_encode($history['sales']).";"]];
+        msgDebug("\nReturning from inventory history with array = ".print_r($history, true));
+        $layout = array_replace_recursive($layout, $data);
+    }
+
+    /**
+     * Retrieves the historical PO/SO data for a given SKU
+     * @param array $layout - structure coming in
+     * @return modified $layout
+     */
+    public function historyRows(&$layout=[])
+    {
+        if (!$security = validateSecurity('inventory', 'inv_mgr', 1)) { return; }
+        $jID  = clean('jID', 'ineger','get');
+        $sku  = clean('sku', 'text',  'get');
+        $data = [];
+        $stmt = dbGetResult("SELECT m.id, m.journal_id, m.store_id, m.invoice_num, m.waiting, i.qty, i.post_date, i.date_1,
             i.id AS item_id FROM ".BIZUNO_DB_PREFIX."journal_main m JOIN ".BIZUNO_DB_PREFIX."journal_item i ON m.id=i.ref_id
-            WHERE m.journal_id IN (4, 10) AND i.sku='$sku' AND m.closed='0' ORDER BY i.date_1";
-        if (!$stmt  = dbGetResult($sql)) { return; }
-        $result1= $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        msgDebug("\nReturned number of open SO/PO rows = ".sizeof($result1));
-        foreach ($result1 as $row) {
-            switch ($row['journal_id']) {
-                case  4: $hist_type = 'open_po'; break;
-                case 10: $hist_type = 'open_so'; break;
-            }
-            $adj = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty) AS qty", "gl_type='itm' AND item_ref_id={$row['item_id']}", false);
-            msgDebug("\nadj = $adj and row = ".print_r($row, true));
-            if ($row['qty'] > $adj) {
-                $history[$hist_type][] = [
+            WHERE m.journal_id='$jID' AND i.sku='$sku' AND m.closed='0' ORDER BY i.date_1");
+        if ($stmt) {
+            $result= $stmt->fetchAll(\PDO::FETCH_ASSOC);
+            msgDebug("\nReturned number of open SO/PO rows = ".sizeof($result));
+            foreach ($result as $row) {
+                $adj = dbGetValue(BIZUNO_DB_PREFIX.'journal_item', "SUM(qty) AS qty", "gl_type='itm' AND item_ref_id={$row['item_id']}", false);
+                if ($row['qty'] > $adj) { $data[] = [
                     'id'         => $row['id'],
                     'store_id'   => viewFormat($row['store_id'], 'storeID'),
                     'invoice_num'=> $row['invoice_num'],
@@ -577,8 +608,21 @@ function preSubmit() {
                     'waiting'    => $row['waiting'],
                     'qty'        => $row['qty'] - $adj,
                     'date_1'     => viewDate($row['date_1'])];
+                }
             }
         }
+        $layout = array_replace_recursive($layout, ['content'=>['total'=>sizeof($data),'rows'=>$data]]);
+    }
+
+    /**
+     *
+     * @param type $rID
+     * @param type $sku
+     * @return type
+     */
+    public function historyData($rID=0, $sku='')
+    {
+        $history = ['id'=>$rID,'purchases'=>[],'sales'=>[]];
         // load the units received and sold, assembled and adjusted
         $dates = localeGetDates();
         $cur_month = $dates['ThisYear'].'-'.substr('0'.$dates['ThisMonth'], -2).'-01';
@@ -643,17 +687,17 @@ function preSubmit() {
         $history['03sales'] = 0;
         $history['06sales'] = 0;
         $history['12sales'] = 0;
-        $cnt   = 0;
+        $cnt1  = 0;
         $sales = [];
         $history['sales']   = array_values($history['sales']);
         foreach ($history['sales'] as $key => $value) {
-            if ($cnt == 0) { $cnt++; continue; }
+            if ($cnt1 == 0) { $cnt1++; continue; }
             $history['12sales']               += $value['usage'];
-            if ($cnt < 7) { $history['06sales'] += $value['usage']; }
-            if ($cnt < 4) { $history['03sales'] += $value['usage']; }
-            if ($cnt < 2) { $history['01sales'] += $value['usage']; }
-            if ($cnt <= $this->months_of_data) { $sales[] = $value['usage']; }
-            $cnt++;
+            if ($cnt1 < 7) { $history['06sales'] += $value['usage']; }
+            if ($cnt1 < 4) { $history['03sales'] += $value['usage']; }
+            if ($cnt1 < 2) { $history['01sales'] += $value['usage']; }
+            if ($cnt1 <= $this->months_of_data) { $sales[] = $value['usage']; }
+            $cnt1++;
         }
         $history['12sales'] = round($history['12sales'] / 12);
         $history['06sales'] = round($history['06sales'] /  6);
@@ -667,10 +711,10 @@ function preSubmit() {
             $median_sales  = $sales[$idx];
             $average_sales = ceil($history[$months.'sales']);
             $new_min_stock = ceil($inv['lead_time'] / 30) * $average_sales;
-            $high_band     = $inv['qty_min'] *(1 + $this->percent_diff);
-            $low_band      = $inv['qty_min'] *(1 - $this->percent_diff);
-            $high_avg      = $average_sales * (1 + $this->med_avg_diff);
-            $low_avg       = $average_sales * (1 - $this->med_avg_diff);
+            $high_band     = $inv['qty_min'] * (1 + $this->percent_diff);
+            $low_band      = $inv['qty_min'] * (1 - $this->percent_diff);
+            $high_avg      = $average_sales  * (1 + $this->med_avg_diff);
+            $low_avg       = $average_sales  * (1 - $this->med_avg_diff);
             if ($new_min_stock > $high_band || $new_min_stock < $low_band) {
                 msgAdd(sprintf($this->lang['msg_inv_qty_min'], $new_min_stock), 'caution');
             }
@@ -678,46 +722,15 @@ function preSubmit() {
                 msgAdd(sprintf($this->lang['msg_inv_median'], $median_sales, $average_sales), 'caution');
             }
         }
-        $jsHead = "var dataPO = " .json_encode($history['open_po']).";
-var dataSO = " .json_encode($history['open_so']).";
-var dataJ6 = " .json_encode($history['purchases']).";
-var dataJ12 = ".json_encode($history['sales']).";";
-        $data = ['type'=>'divHTML',
-            'divs'   => ['history'=>['order'=>50,'type'=>'divs','divs'=>[
-                'openJ'  => ['order'=>30,'classes'=>['display'=>'blockView'],'type'=>'divs','attr'=>['id'=>'historyMain'],'divs'=>[
-                    'fields' => ['order'=>10,'type'=>'html',    'html'=>$this->viewHistory($history)],
-                    'dgJ04'  => ['order'=>30,'type'=>'datagrid','key' =>'dgJ04'],
-                    'dgJ10'  => ['order'=>40,'type'=>'datagrid','key' =>'dgJ10']]],
-                'dgJ06'  => ['order'=>50,'classes'=>['display'=>'blockView'],'type'=>'datagrid','key'=>'dgJ06'],
-                'dgJ12'  => ['order'=>60,'classes'=>['display'=>'blockView'],'type'=>'datagrid','key'=>'dgJ12']]]],
-            'datagrid'=> ['dgJ04'=>$this->dgJ04J10(4),'dgJ06'=>$this->dgJ06J12(6),'dgJ10'=>$this->dgJ04J10(10),'dgJ12'=>$this->dgJ06J12(12)],
-            'jsHead'  => ['init' =>$jsHead]];
-        msgDebug("\nReturning from inventory history with array = ".print_r($history, true));
-        $layout = array_replace_recursive($layout, $data);
-    }
-
-    private function viewHistory($history)
-    {
-        $output  = '<div class="blockView"><p>'.html5('', $history['create']) ."<br />".html5('', $history['update']) ."<br />".html5('', $history['journal'])."</p>\n";
-        if (!empty($history['id'])) { $output .= lang('id').': '.$history['id']."\n"; }
-        $output .= '<table>
-    <thead class="panel-header"><tr><th>&nbsp;</th><th>'.lang('journal_main_journal_id_6')."</th><th>".lang('journal_main_journal_id_12')."</th></tr></thead>
-    <tbody>
-        <tr><td>".$this->lang['01month'].'</td><td style="text-align:center;">'.$history['01purch'].'</td><td style="text-align:center;">'.$history['01sales']."</td></tr>
-        <tr><td>".$this->lang['03month'].'</td><td style="text-align:center;">'.$history['03purch'].'</td><td style="text-align:center;">'.$history['03sales']."</td></tr>
-        <tr><td>".$this->lang['06month'].'</td><td style="text-align:center;">'.$history['06purch'].'</td><td style="text-align:center;">'.$history['06sales']."</td></tr>
-        <tr><td>".$this->lang['12month'].'</td><td style="text-align:center;">'.$history['12purch'].'</td><td style="text-align:center;">'.$history['12sales'].'</td></tr>
-    </tbody>
-</table></div>';
-        return $output;
+        return $history;
     }
 
     /**
-     * Inventory datagrid structure
+     * Inventory grid structure
      * @param string $name - DOM field name
      * @param string $filter - control to limit filtering by inventory type
      * @param integer $security - users security level
-     * @return string - datagrid structure
+     * @return string - grid structure
      */
     private function dgInventory($name, $filter='none', $security=0)
     {
@@ -747,25 +760,25 @@ var dataJ12 = ".json_encode($history['sales']).";";
                     'search' => ['order'=>90,'attr'=>['value'=>$this->defaults['search']]]],
                 'sort' => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]]],
             'columns'  => [
-                'id'            => ['order'=>0, 'field'=>'inventory.id',      'attr'=>['hidden'=>true]],
-                'inactive'      => ['order'=>0, 'field'=>'inventory.inactive','attr'=>['hidden'=>true]],
-                'attach'        => ['order'=>0, 'field'=>'attach',            'attr'=>['hidden'=>true]],
-                'inventory_type'=> ['order'=>0, 'field'=>'inventory_type',    'attr'=>['hidden'=>true]],
+                'id'            => ['order'=> 0,'field'=>'inventory.id',      'attr'=>['hidden'=>true]],
+                'inactive'      => ['order'=> 0,'field'=>'inventory.inactive','attr'=>['hidden'=>true]],
+                'attach'        => ['order'=> 0,'field'=>'attach',            'attr'=>['hidden'=>true]],
+                'inventory_type'=> ['order'=> 0,'field'=>'inventory_type',    'attr'=>['hidden'=>true]],
                 'action' => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> [
                         'prices'=> ['order'=>20,'icon'=>'price',  'events'=>['onClick'=>"jsonAction('inventory/prices/details&type=c', idTBD);"]],
                         'edit'  => ['order'=>30,'icon'=>'edit',   'events'=>['onClick'=>"accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".lang('details')."', 'inventory/main/edit', idTBD);"]],
-                        'rename'=> ['order'=>40,'icon'=>'rename', 'events'=>['onClick'=>"var title=prompt('".$this->lang['msg_sku_entry_rename']."'); if (title!=null) jsonAction('inventory/main/rename', idTBD, title);"]],
-                        'copy'  => ['order'=>50,'icon'=>'copy',   'events'=>['onClick'=>"var title=prompt('".$this->lang['msg_sku_entry_copy']."'); if (title!=null) jsonAction('inventory/main/copy', idTBD, title);"]],
+                        'rename'=> ['order'=>40,'icon'=>'rename', 'hidden'=>$security>2?false:true,'events'=>['onClick'=>"var title=prompt('".$this->lang['msg_sku_entry_rename']."'); if (title!=null) jsonAction('inventory/main/rename', idTBD, title);"]],
+                        'copy'  => ['order'=>50,'icon'=>'copy',   'hidden'=>$security>2?false:true,'events'=>['onClick'=>"var title=prompt('".$this->lang['msg_sku_entry_copy']."'); if (title!=null) jsonAction('inventory/main/copy', idTBD, title);"]],
                         'chart' => ['order'=>60,'icon'=>'mimePpt','label'=>lang('sales'),'events'=>['onClick'=>"windowEdit('inventory/tools/chartSales&rID=idTBD', 'myInvChart', '&nbsp;', 600, 500);"]],
                         'trash' => ['order'=>90,'icon'=>'trash',  'hidden'=>$security>3?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/main/delete', idTBD);"]],
                         'attach'=> ['order'=>95,'icon'=>'attachment','display'=>"row.attach=='1'"]]],
                 'sku'              => ['order'=>10,'field'=>BIZUNO_DB_PREFIX.'inventory.sku','label'=>pullTableLabel("inventory", 'sku'), 'attr'=>['width'=>200,'sortable'=>true,'resizable'=>true]],
                 'description_short'=> ['order'=>20,'field'=>'description_short','label'=>pullTableLabel("inventory", 'description_short'),'attr'=>['width'=>500,'sortable'=>true,'resizable'=>true]],
-                'qty_stock'        => ['order'=>30,'field'=>'qty_stock','label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]],
-                'qty_po'           => ['order'=>40,'field'=>'qty_po',   'label'=>pullTableLabel("inventory", 'qty_po'),   'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]],
-                'qty_so'           => ['order'=>50,'field'=>'qty_so',   'label'=>pullTableLabel("inventory", 'qty_so'),   'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]],
-                'qty_alloc'        => ['order'=>60,'field'=>'qty_alloc','label'=>pullTableLabel("inventory", 'qty_alloc'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true]]]];
+                'qty_stock'        => ['order'=>30,'field'=>'qty_stock','format'=>'number','label'=>pullTableLabel("inventory", 'qty_stock'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'right']],
+                'qty_po'           => ['order'=>40,'field'=>'qty_po',   'format'=>'number','label'=>pullTableLabel("inventory", 'qty_po'),   'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'right']],
+                'qty_so'           => ['order'=>50,'field'=>'qty_so',   'format'=>'number','label'=>pullTableLabel("inventory", 'qty_so'),   'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'right']],
+                'qty_alloc'        => ['order'=>60,'field'=>'qty_alloc','format'=>'number','label'=>pullTableLabel("inventory", 'qty_alloc'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'right']]]];
         switch ($filter) {
             case 'stock': $data['source']['filters']['restrict'] = ['order'=>99, 'sql'=>"inventory_type in ('si','sr','ms','mi','ma')"]; break;
             case 'assy':  $data['source']['filters']['restrict'] = ['order'=>99, 'sql'=>"inventory_type in ('ma')"]; break;
@@ -826,36 +839,39 @@ var dataJ12 = ".json_encode($history['sales']).";";
      * @param type $jID
      * @return type
      */
-    private function dgJ04J10($jID=10)
+    private function dgJ04J10($jID=10, $sku='')
     {
         $hide_cost= validateSecurity('phreebooks', "j6_mgr", 1, false) ? false : true;
         $stores   = getModuleCache('extStores', 'properties', 'status', '', 0);
         if ($jID==4) {
             $props = ['name'=>'dgJ04','title'=>lang('open_journal_4'), 'data'=>'dataPO'];
-            $label = jsLang('fill_purchase');
+            $label = lang('fill_purchase');
             $invID = 6;
-            $icon = 'sales';
-        } else {
+            $icon  = 'sales';
+            $hide  = validateSecurity('phreebooks', "j4_mgr", 1, false);
+        } else { // jID=10
             $props = ['name'=>'dgJ10','title'=>lang('open_journal_10'),'data'=>'dataSO'];
-            $label = jsLang('fill_sale');
+            $label = lang('fill_sale');
             $invID = 12;
-            $icon = 'purchase';
+            $icon  = 'purchase';
+            $hide  = validateSecurity('phreebooks', "j10_mgr", 1, false);
         }
         return ['id' => $props['name'],
-            'attr'   => ['title'=>$props['title'], 'pagination'=>false, 'idField'=>'id', 'width'=>500],
-            'events' => ['data'=> $props['data']],
+            'attr'   => ['title'=>$props['title'], 'pagination'=>false, 'idField'=>'id'],
+            'events' => ['url'=>"'".BIZUNO_AJAX."&p=inventory/main/historyRows&jID=$jID&sku=$sku'"], // 'data'=> $props['data']],
             'columns'=> ['id'=> ['attr'=>['hidden'=>true]],
-                'action'     => ['order'=>1,'label'=>lang('action'),'attr'=>['hidden'=>$hide_cost?true:false],
+                'action'     => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>60,'hidden'=>$hide_cost?true:false],
                     'events' => ['formatter'=>"function(value,row,index) { return {$props['name']}Formatter(value,row,index); }"],
                     'actions'=> [
-                        'edit' =>['order'=>20,'icon'=>'edit','label'=>lang('edit'),          'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD');"]],
-                        'dates'=>['order'=>50,'icon'=>'date','label'=>lang('delivery_dates'),'events'=>['onClick'=>"windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".lang('delivery_dates')."', 500, 400);"]],
-                        'fill' =>['order'=>80,'icon'=>$icon, 'label'=>$label,                'events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD&jID=$invID&bizAction=inv');"]]]],
-                'invoice_num'=> ['order'=>20,'label'=>lang('journal_main_invoice_num_10'),'attr'=>['width'=>200,'resizable'=>true]],
-                'store_id'   => ['order'=>30,'label'=>lang('contacts_short_name_b'),'attr'=>['hidden'=>$stores?false:true,'width'=>150,'resizable'=>true]],
-                'post_date'  => ['order'=>40,'label'=>lang('post_date'),'attr'=>['width'=>200,'resizable'=>true]],
-                'qty'        => ['order'=>50,'label'=>lang('balance'),  'attr'=>['width'=>150,'resizable'=>true,'align'=>'center']],
-                'date_1'     => ['order'=>60,'label'=>jsLang('journal_item_date_1',10),'attr'=>['width'=>200,'resizable'=>true,'align'=>'center'],
+                        'edit'  => ['order'=>20,'icon'=>'edit',  'label'=>lang('edit'),          'hidden'=>$hide>0?false:true,'events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD');"]],
+                        'toggle'=> ['order'=>40,'icon'=>'toggle','label'=>lang('toggle_status'), 'hidden'=>$hide>3?false:true,'events'=>['onClick'=>"jsonAction('phreebooks/main/toggleWaiting&jID=$jID&dgID={$props['name']}', idTBD);"]],
+                        'dates' => ['order'=>50,'icon'=>'date',  'label'=>lang('delivery_dates'),'hidden'=>$hide>3?false:true,'events'=>['onClick'=>"windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".lang('delivery_dates')."', 500, 400);"]],
+                        'fill'  => ['order'=>80,'icon'=>$icon,   'label'=>$label,                'hidden'=>$hide>2?false:true,'events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD&jID=$invID&bizAction=inv');"]]]],
+                'invoice_num'=> ['order'=>20,'label'=>lang('journal_main_invoice_num', $jID),'attr'=>['width'=>100,'resizable'=>true]],
+                'store_id'   => ['order'=>30,'label'=>lang('contacts_short_name_b'),   'attr'=>['width'=>100,'resizable'=>true,'hidden'=>$stores?false:true]],
+                'post_date'  => ['order'=>40,'label'=>lang('post_date'),               'attr'=>['width'=>150,'resizable'=>true]],
+                'qty'        => ['order'=>50,'label'=>lang('balance'),                 'attr'=>['width'=>100,'resizable'=>true,'align'=>'center']],
+                'date_1'     => ['order'=>60,'label'=>jsLang('journal_item_date_1',10),'attr'=>['width'=>150,'resizable'=>true,'align'=>'center'],
                     'events'=>['styler'=>"function(value,row,index) { if (row.waiting==1) { return {style:'background-color:yellowgreen'}; } }"]]]];
     }
 

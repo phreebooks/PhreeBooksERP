@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-04-23
  * @filesource /lib/controller/module/phreebooks/dashboards/profit_loss/profit_loss.php
  *
  */
@@ -47,24 +47,26 @@ class profit_loss
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']]];
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
-        $period = getModuleCache('phreebooks', 'fy', 'period');
+        $period  = getModuleCache('phreebooks', 'fy', 'period');
         $cData[] = [lang('type'), lang('total')]; // headings
         $sales   = $this->getValue(30, $period, $negate=true);
         $cogs    = $this->getValue(32, $period, false);
         $cData[] = [lang('gl_acct_type_32'), ['v'=>$cogs, 'f'=>viewFormat($cogs, 'currency')]];
         $expenses= $this->getValue(34, $period, false);
         $cData[] = [lang('gl_acct_type_34'), ['v'=>$expenses, 'f'=>viewFormat($expenses, 'currency')]];
-        $netInc = $sales - $cogs - $expenses;
+        $netInc  = $sales - $cogs - $expenses;
         $cData[] = [lang('net_income'), ['v'=>$netInc, 'f'=>viewFormat($netInc, 'currency')]]; // Net Income
 
         $output = ['divID'=>$this->code."_chart",'type'=>'pie','attr'=>['pieHole'=>'0.3','title'=>sprintf('Total Sales: %s', viewFormat($sales, 'currency'))],'data'=>$cData];
-        $js    = "var data_{$this->code} = ".json_encode($output).";\n";
-        $js   .= "google.charts.load('current', {'packages':['corechart']});\n";
-        $js   .= "google.charts.setOnLoadCallback(chart{$this->code});\n";
-        $js   .= "function chart{$this->code}() { drawBizunoChart(data_{$this->code}); };";
-        return '<div style="width:100%" id="'.$this->code.'_chart"></div>' . htmlJS($js);
+        $js     = "var data_{$this->code} = ".json_encode($output).";\n";
+        $js    .= "google.charts.load('current', {'packages':['corechart']});\n";
+        $js    .= "google.charts.setOnLoadCallback(chart{$this->code});\n";
+        $js    .= "function chart{$this->code}() { drawBizunoChart(data_{$this->code}); };";
+        $layout = array_merge_recursive($layout, [
+            'divs'  => ['body'=>['order'=>50,'type'=>'html','html'=>'<div style="width:100%" id="'.$this->code.'_chart"></div>']],
+            'jsHead'=> ['init'=>$js]]);
     }
 
     function getValue($type, $period, $negate=false)

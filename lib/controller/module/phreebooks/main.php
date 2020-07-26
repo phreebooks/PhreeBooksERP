@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-06
+ * @version    4.x Last Update: 2020-07-09
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -81,35 +81,26 @@ class phreebooksMain
         if     (in_array($this->journalID, [3, 4, 6, 7])) {
             $manager = sprintf(lang('tbd_manager'), lang('journal_main_journal_id_6'));
             $this->helpIndex = "purchase-manager";
-            $submenu = viewSubMenu('vendors');
         } elseif (in_array($this->journalID, [9,10,12,13])) {
             $manager = sprintf(lang('tbd_manager'), lang('journal_main_journal_id_12'));
             $this->helpIndex = "sales-manager";
-            $submenu = viewSubMenu('customers');
         } else { $manager= sprintf(lang('tbd_manager'), lang('journal_main_journal_id', $this->journalID)); }
         if ($this->journalID == 0) { // search
-            $jsBody = "jq('#postDateMin').datebox({onChange:function (newDate) { jq('#postDateMin').val(newDate); } });
+            $jsBody  = "jq('#postDateMin').datebox({onChange:function (newDate) { jq('#postDateMin').val(newDate); } });
 jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val(newDate); } });";
-            $submenu = viewSubMenu('tools');
+            $jsReady.= "pbSetPrompt('refID','refIDMin','refIDMax'); pbSetPrompt('contactID','contactIDMin','contactIDMax'); pbSetPrompt('sku','skuMin','skuMax'); pbSetPrompt('amount','amountMin','amountMax'); pbSetPrompt('glAcct','glAcctMin','glAcctMax'); pbSetPrompt('rID','rIDMin','rIDMax');";
         } elseif (!$mgr || $rID || $cID) { // get the detail screen
             if ($this->action=='inv') { $jsReady = "setTimeout(function () { journalEdit($this->journalID, 0,    $cID, '$this->action', '', $rID) }, 500);\n"; }
             else                      { $jsReady = "setTimeout(function () { journalEdit($this->journalID, $rID, $cID, '$this->action') }, 500);\n"; }
         }
         $jsReady .= "bizFocus('search', 'dgPhreeBooks');";
-        if     (in_array($this->journalID, [2]))                { $submenu = viewSubMenu('ledger'); }
-        elseif (in_array($this->journalID, [14,16]))            { $submenu = viewSubMenu('inventory'); }
-        elseif (in_array($this->journalID, [17,18,19,20,21,22])){ $submenu = viewSubMenu('banking'); }
-        else                                                    { $submenu = ''; }
         $data = ['title'=> $detail,
-            'divs'     => [
-                'submenu'   => ['order'=>10, 'type'=>'html','html'=>$submenu],
-                'phreebooks'=> ['order'=>60, 'type'=>'accordion','key'=>'accJournal']],
+            'divs'     => ['phreebooks'=>['order'=>60,'type'=>'accordion','key'=>'accJournal']],
             'accordion'=> ['accJournal'=> ['divs'=>[
                 'divJournalManager'=> ['order'=>30,'label'=>$manager,'type'=>'datagrid','key' =>'manager'],
                 'divJournalDetail' => ['order'=>60,'label'=>$detail, 'type'=>'html',    'html'=>lang('msg_edit_new')]]]],
             'datagrid' => ['manager'=> $this->dgPhreeBooks('dgPhreeBooks', $security)],
             'jsHead'   => ['init' => $this->jsFormValidate()],
-//          'jsHead'   => ['init' => "jq.cachedScript('".BIZUNO_URL."controller/module/phreebooks/phreebooks.js?ver=".MODULE_BIZUNO_VERSION."');"],
             'jsBody'   => ['init' => $jsBody],
             'jsReady'  => ['init' => $jsReady]];
         if ($this->journalID == 0) {
@@ -159,9 +150,9 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
         case 12: //validate item status (inactive, out of stock [SO] etc.)
             var rowData = jq('#dgJournalItem').edatagrid('getData');
             for (var rowIndex=0; rowIndex<rowData.total; rowIndex++) {
-                var sku   = parseFloat(rowData.rows[rowIndex].sku);
-                var qty   = parseFloat(rowData.rows[rowIndex].qty);
-                var stock = parseFloat(rowData.rows[rowIndex].qty_stock);
+                var sku   = rowData.rows[rowIndex].sku;
+                var qty   = cleanNumber(rowData.rows[rowIndex].qty);
+                var stock = cleanNumber(rowData.rows[rowIndex].qty_stock);
                 var track = jq.inArray(rowData.rows[rowIndex].inventory_type, cogs_types);
                 if (rowData.rows[rowIndex].sku != '' && qty>stock && track>-1) {
                     notes+= jq.i18n('PB_NEG_STOCK')+'\\n';
@@ -199,7 +190,7 @@ jq('#postDateMax').datebox({onChange:function (newDate) { jq('#postDateMax').val
     }
 
     /**
-     * Special datagrid list request for orders independent of period
+     * Special grid list request for orders independent of period
      * @param array $layout - Structure coming in
      * @return modified $layout
      */
@@ -327,10 +318,9 @@ if (!formValidate()) return false;\n\treturn true;\n}";
             if ($this->action<>'inv') { $jsReady .= "bizCheckBox('AddUpdate_b');\n"; }
             $jsBody .= "var def_contact_gl_acct = '$default_gl';\nvar def_contact_tax_id = ".($default_tax ? $default_tax : 0).";\n";
         }
-
         // Add some new non-db fields
-        $structure['terms_text']     = ['label'=>lang('terms'),'attr'=>['value'=>viewTerms($structure['terms']['attr']['value'], true, $this->type),'readonly'=>'readonly']];
-        $structure['terms_edit']     = ['icon'=>'settings','label'=>lang('terms'),'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=$this->type', $cID, jq('#terms').val());"]];
+        $structure['terms_text']     = ['order'=>95,'label'=>lang('terms'),'break'=>false,'options'=>['width'=>175],'attr'=>['value'=>viewTerms($structure['terms']['attr']['value'], true, $this->type),'readonly'=>'readonly']];
+        $structure['terms_edit']     = ['order'=>96,'icon'=>'settings','size'=>'small','label'=>lang('terms'),'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=$this->type', $cID, jq('#terms').val());"]];
         $structure['journal_msg']    = ['html'=>'','attr'=>['type'=>'raw']];
         $structure['override_user']  = ['attr'=>['type'=>'hidden']];
         $structure['override_pass']  = ['attr'=>['type'=>'hidden']];
@@ -353,16 +343,14 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         msgDebug("\nGoing to getDataItem, rID = $rID and cID = $cID");
         $ledger->getDataItem($rID, $cID, $security);
         msgDebug("\nsetting currency to {$structure['currency']['attr']['value']}");
-        // uncommenting the following causes ALL numberboxes to format as currency. See total-discount percent field
-//      if (sizeof(getModuleCache('phreebooks', 'currency', 'iso')) > 1) { $jsHead .= "setCurrency('{$structure['currency']['attr']['value']}');\n"; }
 
         $data  = ['type'=>'divHTML',
             'divs'    => [
-                'status'   => ['order'=> 5,'styles'=>['float'=>'right'],'type'=>'fields','keys'=>['journal_msg']],
                 'tbJrnl'   => ['order'=>10,'type'=>'toolbar','key' =>'tbPhreeBooks'],
                 'formBOF'  => ['order'=>15,'type'=>'form',   'key' =>'frmJournal'],
-                'divAttach'=> ['order'=>80,'type'=>'attach', 'defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>$prefix]],
                 'formEOF'  => ['order'=>99,'type'=>'html',   'html'=>'</form>']],
+            'panels' => [
+                'divAtch'=> ['type'=>'attach', 'defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>$prefix]]],
             'toolbars'=> ['tbPhreeBooks'=>['icons'=>[
                 'jSave'=> ['order'=>10,'label'=>lang('save'),  'icon'=>'save','type'=>'menu','hidden'=>$security>1?false:true,
                     'events'=> ['onClick'=>"jq('#frmJournal').submit();"],'child'=>$this->renderMenuSave($security)],
@@ -381,6 +369,9 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
             'jsReady' => ['init'=>$jsReady, 'focus'=>"bizFocus('contactSel_b');"]];
         // Customize the layout for this journalID
         $ledger->customizeView($data, $rID, $cID, $security);
+        if (!empty($data['fields']['journal_msg']['html'])) {
+            $data['divs']['status'] = ['order'=> 5,'styles'=>['float'=>'right'],'type'=>'fields','keys'=>['journal_msg']];
+        }
         if (substr($xAction, 0, 8) == 'journal:') { // see if there are any extra actions
             $temp = explode(':', $xAction);
             if (isset($temp[1])) {
@@ -493,7 +484,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         $journalRef = pullTableLabel('journal_main', 'journal_id', $ledger->main['journal_id']);
         msgAdd(sprintf(lang('msg_gl_post_success'), $invoiceRef, $ledger->main['invoice_num']), 'success');
         msgLog($journalRef.'-'.lang('save')." $invoiceRef ".$ledger->main['invoice_num']." - $billName (rID={$ledger->main['id']}) ".lang('total').": ".viewFormat($ledger->main['total_amount'], 'currency'));
-        $jsonAction = "jq('#accJournal').accordion('select',0); jq('#dgPhreeBooks').datagrid('reload'); jq('#divJournalDetail').html('&nbsp;');";
+        $jsonAction = "jq('#accJournal').accordion('select',0); bizGridReload('dgPhreeBooks'); jq('#divJournalDetail').html('&nbsp;');";
         if (in_array($ledger->main['journal_id'], [2,3,4,6,9,10,12,20,22])) { $jsonAction = "jq('#jSave').splitbutton('destroy'); ".$jsonAction; } // only for splitbutton, else errors and halts script
         switch ($xAction) { // post processing extra stuff to do
             case 'payment':
@@ -505,7 +496,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                     default: $next_journal = false;
                 }
                 if ($next_journal) {
-                    $jsonAction = "jq('#dgPhreeBooks').datagrid('reload'); journalEdit($next_journal, 0, {$ledger->main['contact_id_b']}, 'inv', '', {$ledger->main['id']});";
+                    $jsonAction = "bizGridReload('dgPhreeBooks'); journalEdit($next_journal, 0, {$ledger->main['contact_id_b']}, 'inv', '', {$ledger->main['id']});";
                 }
                 break;
             case 'invoice':
@@ -515,13 +506,13 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                     default: $next_journal = false;
                 }
                 if ($next_journal) {
-                    $jsonAction = "jq('#dgPhreeBooks').datagrid('reload'); journalEdit($next_journal, 0, 0, 'inv', '', {$ledger->main['id']});";
+                    $jsonAction = "bizGridReload('dgPhreeBooks'); journalEdit($next_journal, 0, 0, 'inv', '', {$ledger->main['id']});";
                 }
                 break;
             case 'journal:12':
-                $jsonAction = "jq('#dgPhreeBooks').datagrid('reload'); journalEdit(12, 0);"; break;
+                $jsonAction = "bizGridReload('dgPhreeBooks'); journalEdit(12, 0);"; break;
             case 'journal:6':
-                $jsonAction = "jq('#dgPhreeBooks').datagrid('reload'); journalEdit(6, 0);"; break;
+                $jsonAction = "bizGridReload('dgPhreeBooks'); journalEdit(6, 0);"; break;
         }
         switch ($xChild) { // child screens to spawn
             case 'print':
@@ -633,7 +624,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         msgAdd(sprintf(lang('msg_gl_post_success'), $invRef, "$first_chk - $current_chk"), 'success');
         msgLog(lang('phreebooks_manager_bulk').'-'.lang('journal_main_invoice_num_20')." $first_chk - $current_chk ".lang('total').": ".viewFormat($pmt_total, 'currency'));
 //        $jsonAction = "journalEdit(6, 0);";
-        $jsonAction = "jq('#accJournal').accordion('select',0); jq('#dgPhreeBooks').datagrid('reload'); jq('#divJournalDetail').html('&nbsp;');";
+        $jsonAction = "jq('#accJournal').accordion('select',0); bizGridReload('dgPhreeBooks'); jq('#divJournalDetail').html('&nbsp;');";
         switch ($xChild) { // post processing extra stuff to do
             case 'print':
                 $formID     = getDefaultFormID($this->journalID);
@@ -708,7 +699,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         msgLog(lang('journal_main_journal_id', $this->journalID).' '.lang('delete')." - {$delOrd->main['invoice_num']} (rID=$rID)");
         $files = glob(getModuleCache('phreebooks', 'properties', 'attachPath')."rID_".$rID."_*.*");
         if (is_array($files)) { foreach ($files as $filename) { @unlink($filename); } } // remove attachments
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accJournal').accordion('select',0); jq('#dgPhreeBooks').datagrid('reload'); jq('#divJournalDetail').html('&nbsp;');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accJournal').accordion('select',0); bizGridReload('dgPhreeBooks'); jq('#divJournalDetail').html('&nbsp;');"]]);
     }
 
     /**
@@ -787,73 +778,67 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         $stmt    = dbGetResult("SELECT c.type, c.inactive, c.terms, a.notes FROM ".BIZUNO_DB_PREFIX."contacts"." c JOIN ".BIZUNO_DB_PREFIX."address_book"." a ON c.id=a.ref_id WHERE c.id=$cID AND a.type LIKE '%m'");
         $contact = $stmt->fetch(\PDO::FETCH_ASSOC);
         $new_data= calculate_aging($cID);
-        // set the customer/vendor status in order of importance
-        if     ($contact['inactive'])                           { $statusBg='red';    $statusMsg=lang('inactive');    }
-        elseif ($new_data['past_due'] > 0)                      { $statusBg='yellow'; $statusMsg=$this->lang['msg_contact_status_past_due']; }
-        elseif ($new_data['total'] > $new_data['credit_limit']) { $statusBg='yellow'; $statusMsg=$this->lang['msg_contact_status_over_limit']; }
-        else                                                    { $statusBg='green';  $statusMsg=$this->lang['msg_contact_status_good']; }
-        $statusHtml = '<p style="font-weight:bold;text-align:center;background-color:'.$statusBg.'">'.$statusMsg."</p>";
         $data = ['type'=>'popup','attr'=>['id'=>'winStatus'],
             'title'=> sprintf(lang('tbd_summary'), lang('contacts_type', $contact['type'])),
             'divs' => [
-                'status' => ['order'=>10,'type'=>'html','html'=>$statusHtml],
-                'history'=> ['order'=>30,'label'=>lang('history'),'type'=>'fields','classes'=>['blockView'],'fields'=>$this->getStatusHistory($contact, $new_data)],
-                'terms'  => ['order'=>40,'label'=>lang('terms'),  'type'=>'fields','classes'=>['blockView'],'fields'=>$this->getStatusTerms($new_data)],
-                'balance'=> ['order'=>50,'label'=>lang('account'),'type'=>'fields','classes'=>['blockView'],'fields'=>$this->getStatusBalance($new_data)]]];
+                'general' => ['order'=>10,'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'genStat' => ['order'=>10,'type'=>'panel','key'=>'genStat','classes'=>['block50']],
+                    'genHist' => ['order'=>30,'type'=>'panel','key'=>'genHist','classes'=>['block50']],
+                    'genBal'  => ['order'=>50,'type'=>'panel','key'=>'genBal', 'classes'=>['block50']]]]],
+            'panels' => [
+                'genStat' => ['label'=>lang('status'),         'type'=>'fields','keys'=>['status','terms']],
+                'genHist' => ['label'=>lang('history'),        'type'=>'fields','keys'=>['inv_orders','open_quotes','open_orders','unpaid_inv','unpaid_crd']],
+                'genBal'  => ['label'=>$new_data['terms_lang'],'type'=>'fields','keys'=>['term0','term30','term60','term90','total']]],
+            'fields'=> $this->getStatusFields($contact, $new_data)];
         $notes = !empty($contact['notes']) ? str_replace("\n", "<br />", $contact['notes']) : false;
+        if ($new_data['past_due'] == 0) {  $data['panels']['genStat']['keys'] = ['status']; }
         if ($notes) {
-            $fldNotes = ['notes'=>['label'=>lang('notes'),'attr'=>['type'=>'p','value'=>$notes]]];
-            $data['divs']['notes'] = ['order'=>20,'label'=>lang('notes'),  'type'=>'fields','fields'=>$fldNotes];
+            $data['divs']['general']['divs']['genNotes'] = ['order'=>80,'label'=>lang('notes'),'type'=>'panel','key'=>'genNotes'];
+            $data['panels']['genNotes'] = ['type'=>'html', 'html'=>$notes];
         }
         $GLOBALS['aging'] = $new_data;
         $layout = array_replace_recursive($layout, $data);
     }
 
-    private function getStatusTerms($new_data)
+    private function getStatusFields($contact, $new_data)
     {
-        $output = "<p>{$new_data['terms_lang']}</p>";
-        if (!empty($new_data['past_due'])) {
-            $output .= '<p style="background-color:yellow;">'.sprintf($this->lang['msg_contact_past_due_amount'], viewFormat($new_data['past_due'], 'currency'))."</p>";
-        }
-        return ['terms'=>['html'=>$output,'attr'=>['type'=>'raw']]];
-    }
-
-    private function getStatusHistory($contact, $new_data)
-    {
+        // set the customer/vendor status in order of importance
+        if     ($contact['inactive'])                          { $statusBg='red';    $statusMsg=lang('inactive');    }
+        elseif ($new_data['past_due'] > 0)                     { $statusBg='yellow'; $statusMsg=$this->lang['msg_contact_status_past_due']; }
+        elseif ($new_data['total'] > $new_data['credit_limit']){ $statusBg='yellow'; $statusMsg=$this->lang['msg_contact_status_over_limit']; }
+        else                                                   { $statusBg='green';  $statusMsg=$this->lang['msg_contact_status_good']; }
+        $statusHtml= '<p style="font-weight:bold;text-align:center;background-color:'.$statusBg.'">'.$statusMsg."</p>";
+        $termsHTML = '<p style="background-color:yellow;">'.sprintf($this->lang['msg_contact_past_due_amount'], viewFormat($new_data['past_due'], 'currency'))."</p>";
+        $fields = [
+            'status'     => ['order'=>10, 'html'=>$statusHtml,'attr'=>['type'=>'raw']],
+            'terms'      => ['order'=>20, 'html'=>$termsHTML, 'attr'=>['type'=>'raw']],
+            'term0'      => ['order'=>10,'label'=>'0-30', 'break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_0']]],
+            'term30'     => ['order'=>20,'label'=>'31-60','break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_30']]],
+            'term60'     => ['order'=>30,'label'=>'61-90','break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_60']]],
+            'term90'     => ['order'=>40,'label'=>$this->lang['over_90'],'break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_90']]],
+            'total'      => ['order'=>50,'label'=>lang('total'),'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['total']]],
+            'inv_orders' => ['order'=>10,'label'=>$this->lang['status_orders_invoice'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']],
+            'open_quotes'=> ['order'=>20,'label'=>$this->lang['status_open_j9'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']],
+            'open_orders'=> ['order'=>30,'label'=>$this->lang['status_open_j10'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']],
+            'unpaid_inv' => ['order'=>40,'label'=>$this->lang['status_open_j12'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']],
+            'unpaid_crd' => ['order'=>50,'label'=>$this->lang['status_open_j13'],'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']]];
         if ($contact['type']=='v') { $idx='vendors';   $jQuote=3; $jOrder= 4; $jSale= 6; $jRtn= 7; }
         else                       { $idx='customers'; $jQuote=9; $jOrder=10; $jSale=12; $jRtn=13; }
-        $output = [];
-        $output['inv_orders'] = ['order'=>10,'label'=>$this->lang['status_orders_invoice'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
-        if (sizeof($new_data['inv_orders']) >1) { $output['inv_orders'] = array_merge($output['inv_orders'], ['values'=>$new_data['inv_orders'],
+        if (sizeof($new_data['inv_orders']) >1) { $fields['inv_orders'] = array_merge($fields['inv_orders'], ['values'=>$new_data['inv_orders'],
             'attr'=>['type'=>'select'],'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jSale, 0, 0, 'inv', '', newVal);"]]); }
-        $output['open_quotes'] = ['order'=>20,'label'=>$this->lang['status_open_j9'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
-        if (sizeof($new_data['open_quotes'])>1) { $output['open_quotes']= array_merge($output['open_quotes'],['values'=>$new_data['open_quotes'],
+        if (sizeof($new_data['open_quotes'])>1) { $fields['open_quotes']= array_merge($fields['open_quotes'],['values'=>$new_data['open_quotes'],
              'attr'=>['type'=>'select'],'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jQuote, newVal);"]]); }
-        $output['open_orders'] = ['order'=>30,'label'=>$this->lang['status_open_j10'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
-        if (sizeof($new_data['open_orders'])>1) { $output['open_orders']= array_merge($output['open_orders'],['values'=>$new_data['open_orders'],
+        if (sizeof($new_data['open_orders'])>1) { $fields['open_orders']= array_merge($fields['open_orders'],['values'=>$new_data['open_orders'],
              'attr'=>['type'=>'select'],'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jOrder, newVal);"]]); }
-        $output['unpaid_inv'] = ['order'=>40,'label'=>$this->lang['status_open_j12'],'break'=>true,'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
-        if (sizeof($new_data['unpaid_inv']) >1) { $output['unpaid_inv'] = array_merge($output['unpaid_inv'], ['values'=>$new_data['unpaid_inv'],
+        if (sizeof($new_data['unpaid_inv']) >1) { $fields['unpaid_inv'] = array_merge($fields['unpaid_inv'], ['values'=>$new_data['unpaid_inv'],
             'attr'=>['type'=>'select'], 'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jSale, newVal);"]]); }
-        $output['unpaid_crd'] = ['order'=>50,'label'=>$this->lang['status_open_j13'],'html'=>lang('none')."<br />",'attr'=>['type'=>'raw']];
-        if (sizeof($new_data['unpaid_crd']) >1) { $output['unpaid_crd'] = array_merge($output['unpaid_crd'], ['values'=>$new_data['unpaid_crd'],
+        if (sizeof($new_data['unpaid_crd']) >1) { $fields['unpaid_crd'] = array_merge($fields['unpaid_crd'], ['values'=>$new_data['unpaid_crd'],
             'attr'=>['type'=>'select'], 'events'=>['onChange'=>"jq(this).combogrid('destroy'); bizWindowClose('winStatus'); journalEdit($jRtn, newVal);"]]); }
-        return $output;
-    }
-
-    private function getStatusBalance($new_data)
-    {
-        return [
-            'term0' => ['order'=>10,'label'=>'0-30', 'break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_0']]],
-            'term30'=> ['order'=>20,'label'=>'31-60','break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_30']]],
-            'term60'=> ['order'=>30,'label'=>'61-90','break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_60']]],
-            'term90'=> ['order'=>40,'label'=>$this->lang['over_90'],'break'=>true,'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['balance_90']]],
-            'total' => ['order'=>50,'label'=>lang('total'),'attr'=>['type'=>'currency','readonly'=>'readonly','value'=>$new_data['total']]],
-        ];
+        return $fields;
     }
 
     /**
-     * This method formats a db search field to the proper mysql syntax.
+     * This method formats a db search field to the proper db syntax.
      * @param string $index - Database field name to search
      * @param array $values - full db path to field, i.e. BIZUNO_DB_PREFIX.journal_main.field_name
      * @param string $type -  type of field to properly create SQL syntax
@@ -982,7 +967,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                     BIZUNO_DB_PREFIX.'journal_main.purch_order_id',
                     BIZUNO_DB_PREFIX.'journal_main.total_amount'],
                 'actions' => [
-                    'newJournal'=>['order'=>10,'icon'=>'new',    'events'=>['onClick'=>"journalEdit($this->journalID, 0);"]],
+                    'newJournal'=>['order'=>10,'icon'=>'new',    'events'=>['onClick'=>"journalEditSel($this->journalID, 0);"]],
                     'clrSearch' =>['order'=>50,'icon'=>'refresh','events'=>['onClick'=>"hrefClick('phreebooks/main/manager&mgr=1&jID=$this->journalID');"]],
                     'help'      =>['order'=>99,'icon'=>'help',   'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
                 'filters' => [
@@ -1020,13 +1005,13 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                         'reference'  => ['order'=>70,'icon'=>'invoice','label'=>$this->lang['set_ref_num'],
                             'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_ref_num']."'); jsonAction('phreebooks/main/setReferenceNum&jID=18', idTBD, invNum);"],
                             'display'=> "row.journal_id=='18' || row.journal_id=='20'"],
-                        'purchase'   => ['order'=>70,'icon'=>'purchase','label'=>$this->lang['fill_purchase'],'hidden'=>$sec6_12>1?false:true,
+                        'purchase'   => ['order'=>70,'icon'=>'purchase','label'=>lang('fill_purchase'),'hidden'=>$sec6_12>1?false:true,
                             'events' => ['onClick' => "journalEdit(6, 0, cIDTBD, 'inv', '', idTBD);"],
                             'display'=> "row.closed=='0' && (row.journal_id=='3' || row.journal_id=='4')"],
-                        'sale'       => ['order'=>70,'icon'=>'sales',   'label'=>$this->lang['fill_sale'],'hidden'=>$sec6_12>1?false:true,
+                        'sale'       => ['order'=>70,'icon'=>'sales',   'label'=>lang('fill_sale'),'hidden'=>$sec6_12>1?false:true,
                             'events' => ['onClick' => "journalEdit(12, 0, cIDTBD, 'inv', '', idTBD);"],
                             'display'=> "row.closed=='0' && (row.journal_id=='9' || row.journal_id=='10')"],
-                        'vcred'      => ['order'=>80,'icon'=>'credit',   'label'=>$this->lang['create_credit'],'hidden'=>$sec7_13>1?false:true,
+                        'vcred'      => ['order'=>80,'icon'=>'credit',   'label'=>lang('create_credit'),'hidden'=>$sec7_13>1?false:true,
                             'events' => ['onClick' => "setCrJournal(jrnlTBD, cIDTBD, idTBD);"],
                             'display'=> "row.waiting=='0' && (row.journal_id=='6' || row.journal_id=='12')"],
                         'payment'    => ['order'=>80,'icon'=>'payment','label'=>lang('payment'),
@@ -1064,14 +1049,14 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                     'attr'  => ['width'=>60, 'align'=>'center', 'resizable'=>true, 'hidden'=>in_array($this->journalID,[2,14,15,16])?true:false]]]];
         switch ($this->journalID) {
             case 0: // search journal
-                $data['events']['onDblClickRow'] = "function(rowIndex, rowData){ tabOpen('_blank', 'phreebooks/main/manager&rID='+rowData.id); }";
+                $data['events']['onDblClickRow'] = "function(rowIndex, rowData){ winHref(bizunoHome+'&p=phreebooks/main/manager&rID='+rowData.id); }";
                 $data['source']['tables']['journal_item'] = ['table'=>BIZUNO_DB_PREFIX.'journal_item', 'join'=>'JOIN', 'links'=>BIZUNO_DB_PREFIX."journal_main.id=".BIZUNO_DB_PREFIX."journal_item.ref_id"];
                 $data['source']['search'][] = BIZUNO_DB_PREFIX.'journal_main.id';
                 $data['source']['search'][] = BIZUNO_DB_PREFIX.'journal_item.sku';
                 $data['source']['search'][] = BIZUNO_DB_PREFIX.'journal_item.description';
                 unset($data['source']['actions']['newJournal']);
                 unset($data['columns']['id']['attr']['hidden']);
-                $data['columns']['action']['actions']['edit']['events']['onClick'] = "tabOpen('_blank', 'phreebooks/main/manager&rID=idTBD');";
+                $data['columns']['action']['actions']['edit']['events']['onClick'] = "winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD');";
                 $data['columns']['journal_id'] = ['order'=>15, 'field'=>BIZUNO_DB_PREFIX.'journal_main.journal_id','label'=>pullTableLabel('journal_main', 'journal_id'),
                     'events'=>['formatter'=>"function(value) { return jrnlTitles['j'+value]; }"], 'attr'=>['width'=>80, 'resizable'=>true]];
                 $journalID = clean('journalID', 'integer', 'post');
@@ -1089,37 +1074,37 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
 
                 $sql2 = $this->searchCriteriaSQL('refID', [BIZUNO_DB_PREFIX.'journal_main.invoice_num', BIZUNO_DB_PREFIX.'journal_main.purch_order_id']);
                 $temp2 = explode(':', $this->defaults['refID']);
-                $data['source']['filters']['refID']    = ['order'=>63,'sql'=>$sql2,'label'=>pullTableLabel('journal_main', 'invoice_num'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp2[0]]];
+                $data['source']['filters']['refID']    = ['order'=>63,'sql'=>$sql2,'label'=>pullTableLabel('journal_main', 'invoice_num'),'events'=>['onChange'=>"pbSetPrompt('refID', 'refIDMin','refIDMax')"],'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp2[0]]];
                 $data['source']['filters']['refIDMin'] = ['order'=>64,              'attr'=>['value'=>$temp2[1]]];
                 $data['source']['filters']['refIDMax'] = ['order'=>65,'break'=>true,'attr'=>['value'=>$temp2[2]]];
 
                 $sql3 = $this->searchCriteriaSQL('contactID', BIZUNO_DB_PREFIX.'journal_main.primary_name_b');
                 $temp3 = explode(':', $this->defaults['contactID']);
-                $data['source']['filters']['contactID']    = ['order'=>66,'sql'=>$sql3,'label'=>pullTableLabel('address_book', 'primary_name'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp3[0]]];
+                $data['source']['filters']['contactID']    = ['order'=>66,'sql'=>$sql3,'label'=>pullTableLabel('address_book', 'primary_name'),'events'=>['onChange'=>"pbSetPrompt('contactID', 'contactIDMin','contactIDMax')"],'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp3[0]]];
                 $data['source']['filters']['contactIDMin'] = ['order'=>67,              'attr'=>['value'=>$temp3[1]]];
                 $data['source']['filters']['contactIDMax'] = ['order'=>68,'break'=>true,'attr'=>['value'=>$temp3[2]]];
 
                 $sql4 = $this->searchCriteriaSQL('sku', BIZUNO_DB_PREFIX.'journal_item.sku');
                 $temp4 = explode(':', $this->defaults['sku']);
-                $data['source']['filters']['sku']    = ['order'=>69,'sql'=>$sql4,'label'=>pullTableLabel('journal_item', 'sku'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp4[0]]];
+                $data['source']['filters']['sku']    = ['order'=>69,'sql'=>$sql4,'label'=>pullTableLabel('journal_item', 'sku'),'events'=>['onChange'=>"pbSetPrompt('sku', 'skuMin','skuMax')"],'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp4[0]]];
                 $data['source']['filters']['skuMin'] = ['order'=>70,              'attr'=>['value'=>$temp4[1]]];
                 $data['source']['filters']['skuMax'] = ['order'=>71,'break'=>true,'attr'=>['value'=>$temp4[2]]];
 
                 $sql5 = $this->searchCriteriaSQL('amount',  [BIZUNO_DB_PREFIX.'journal_main.total_amount', BIZUNO_DB_PREFIX.'journal_item.debit_amount', BIZUNO_DB_PREFIX.'journal_item.credit_amount']);
                 $temp5 = explode(':', $this->defaults['amount']);
-                $data['source']['filters']['amount']    = ['order'=>72,'sql'=>$sql5,'label'=>lang('amount'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp5[0]]];
+                $data['source']['filters']['amount']    = ['order'=>72,'sql'=>$sql5,'label'=>lang('amount'),'events'=>['onChange'=>"pbSetPrompt('amount', 'amountMin','amountMax')"],'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp5[0]]];
                 $data['source']['filters']['amountMin'] = ['order'=>73,              'attr'=>['value'=>$temp5[1]]];
                 $data['source']['filters']['amountMax'] = ['order'=>74,'break'=>true,'attr'=>['value'=>$temp5[2]]];
 
                 $sql6 = $this->searchCriteriaSQL('glAcct',  [BIZUNO_DB_PREFIX.'journal_main.gl_acct_id', BIZUNO_DB_PREFIX.'journal_item.gl_account']);
                 $temp6 = explode(':', $this->defaults['glAcct']);
-                $data['source']['filters']['glAcct']    = ['order'=>75,'sql'=>$sql6,'label'=>pullTableLabel('journal_main', 'gl_acct_id'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp6[0]]];
+                $data['source']['filters']['glAcct']    = ['order'=>75,'sql'=>$sql6,'label'=>pullTableLabel('journal_main', 'gl_acct_id'),'events'=>['onChange'=>"pbSetPrompt('glAcct', 'glAcctMin','glAcctMax')"],'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp6[0]]];
                 $data['source']['filters']['glAcctMin'] = ['order'=>76,              'attr'=>['value'=>$temp6[1]]];
                 $data['source']['filters']['glAcctMax'] = ['order'=>77,'break'=>true,'attr'=>['value'=>$temp6[2]]];
 
                 $sql7 = $this->searchCriteriaSQL('rID', BIZUNO_DB_PREFIX.'journal_main.id');
                 $temp7 = explode(':', $this->defaults['rID']);
-                $data['source']['filters']['rID']    = ['order'=>78,'sql'=>$sql7,'label'=>lang('users_admin_id'),'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp7[0]]];
+                $data['source']['filters']['rID']    = ['order'=>78,'sql'=>$sql7,'label'=>lang('users_admin_id'),'events'=>['onChange'=>"pbSetPrompt('rID', 'rIDMin','rIDMax')"],'values'=>selChoices(),'attr'=>['type'=>'select','value'=>$temp7[0]]];
                 $data['source']['filters']['rIDMin'] = ['order'=>79,              'attr'=>['value'=>$temp7[1]]];
                 $data['source']['filters']['rIDMax'] = ['order'=>80,'break'=>true,'attr'=>['value'=>$temp7[2]]];
                 unset($data['source']['filters']['period']);
@@ -1201,7 +1186,24 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
             $uID = getUserCache('profile', 'contact_id', false, 0);
             $data['source']['filters']['restrict_user'] = ['order'=>99,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."journal_main.rep_id='$uID'"];
         }
+        $this->dgPhreeBooksMobile($data);
         return $data;
+    }
+
+    /**
+     * Customize grid for mobile devices
+     * @param array $data - Structure coming in
+     */
+    private function dgPhreeBooksMobile(&$data=[])
+    {
+        if ($GLOBALS['myDevice']=='mobile') {
+            $data['columns']['post_date']['label']              = lang('date');
+            $data['columns']['total_amount']['label']           = lang('total');
+            $data['columns']['post_date']['format']             = 'dateNoY';
+            $data['columns']['so_po_ref_id']['attr']['hidden']  = true;
+            $data['columns']['purch_order_id']['attr']['hidden']= true;
+            $data['columns']['closed']['attr']['hidden']        = true;
+        }
     }
 
     /**
@@ -1306,6 +1308,27 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         return new $fqcn();
     }
 
+    public function getJournalSel(&$layout=[])
+    {
+        $jID    = clean('jID', 'integer', 'get');
+        $type   = in_array($jID, [3, 4, 6, 7]) ? 'vendors' : 'customers';
+        $sType  = in_array($jID, [3, 4, 6, 7]) ? 'purch'   : 'sales';
+        $menu   = getUserCache('menuBar')['child'][$type]['child'][$sType]['child'];
+        $theList= sortOrder($menu);
+        $rows   = [];
+        foreach ($theList as $key => $child) {
+            $parts= explode('_', $key);
+            $jrnl = intval(substr($parts[0], 1));
+            if (empty($jrnl)) { continue; } // not a journal
+            $html = ['attr'=>['type'=>'a','value'=>$child['label']],'classes'=>['easyui-linkbutton'],
+                'options'=>['iconCls'=>"'iconL-{$child['icon']}'",'size'=>"'large'",'plain'=>'true'],'events'=>['onClick'=>"jq('#jrnlSel').window('close'); journalEdit($jrnl, 0);"]];
+            $rows[] = $html;
+        }
+        $layout = ['type'=>'popup','title'=>lang('select'),'attr'=>['id'=>'jrnlSel','width'=>300, 'height'=>310],
+            'divs' => ['body'=>['order'=>50,'type'=>'list','key'=>'opts']],
+            'lists'=> ['opts'=>$rows]];
+    }
+
     /**
      * Creates the structure for the delivery dates pop up for user entry
      * @param array $layout - Structure coming in
@@ -1396,12 +1419,14 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
     public function setInvoiceNum(&$layout=[])
     {
         if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", 1)) { return; }
-        $rID = clean('rID', 'integer', 'get');
-        if (!$rID) { return msgAdd(lang('bad_id')); }
-        $invNum = clean('data', 'text', 'get');
+        $rID    = clean('rID',  'integer','get');
+        $invNum = clean('data', 'text',   'get');
+        $panel  = clean('panel','cmd',    'get');
+        if (empty($rID))    { return msgAdd(lang('bad_id')); }
         if (empty($invNum)) { return msgAdd($this->lang['msg_inv_waiting']); }
         dbWrite(BIZUNO_DB_PREFIX."journal_main", ['waiting'=>'0','invoice_num'=>$invNum], 'update', "id=$rID");
-        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"jq('#dgPhreeBooks').datagrid('reload');"]]);
+        $action = !empty($panel) ? "bizPanelRefresh('$panel');" : "bizGridReload('dgPhreeBooks');";
+        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>$action]]);
     }
 
     public function setReferenceNum(&$layout=[])
@@ -1412,7 +1437,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         $refNum = clean('data', 'text', 'get');
         if (empty($refNum)) { return 'Bad reference number'; } // should never happen
         dbWrite(BIZUNO_DB_PREFIX."journal_main", ['invoice_num'=>$refNum], 'update', "id=$rID");
-        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"jq('#dgPhreeBooks').datagrid('reload');"]]);
+        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"bizGridReload('dgPhreeBooks');"]]);
     }
 
     /**
@@ -1457,12 +1482,14 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
     public function toggleWaiting(&$layout=[])
     {
         if (!$security = validateSecurity('phreebooks', "j{$this->journalID}_mgr", 1)) { return; }
-        $rID = clean('rID', 'integer', 'get');
+        $rID  = clean('rID', 'integer','get');
         if (!$rID) { return msgAdd(lang('err_copy_name_prompt')); }
+        $dgID = clean('dgID','cmd',    'get');
+        if (empty($dgID)) { $dgID = 'dgPhreeBooks'; }
         $waiting = dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'waiting', "id=$rID");
         $state = $waiting=='0' ? '1' : '0';
         dbWrite(BIZUNO_DB_PREFIX."journal_main", ['waiting'=>$state], 'update', "id=$rID");
-        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"jq('#dgPhreeBooks').datagrid('reload');"]]);
+        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"bizGridReload('$dgID');"]]);
     }
 
     /**
@@ -1488,8 +1515,9 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
             'divs'     => [
                 'toolbar' => ['order'=>10,'type'=>'toolbar','key'   =>'tbRecur'],
                 'formBOF' => ['order'=>20,'type'=>'form',   'key'   =>'frmRecur'],
-                'winRecur'=> ['order'=>50,'type'=>'fields', 'fields'=>$fields],
+                'winRecur'=> ['order'=>50,'type'=>'fields', 'keys'=>array_keys($fields)],
                 'formEOF' => ['order'=>99,'type'=>'html',   'html'  =>'</form>']],
+            'fields'   => $fields,
             'forms'    => ['frmRecur'=>['attr'=>['type'=>'form','action'=>""]]]]);
     }
 }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-27
+ * @version    4.x Last Update: 2020-06-19
  * @filesource /lib/controller/module/phreebooks/journals/j02.php
  */
 
@@ -66,12 +66,17 @@ class j02 extends jCommon
         $data['jsHead']['datagridData']= $this->dgDataItem;
         $data['jsHead']['pbChart']     = "var pbChart = bizDefaults.glAccounts.rows;"; // show all accounts from the gl chart, including inactive
         $data['datagrid']['item']      = $this->dgLedger('dgJournalItem');
-        $data['divs']['divDetail']     = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'attr'=>['id'=>'pbDetail'],'divs'=>[
-            'billAD' => ['order'=>20,'label'=>lang('bill_to'),'type'=>'address','classes'=>['blockView'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
-                'settings'=>['type'=>'ceiv','suffix'=>'_b','search'=>true,'required'=>false,'store'=>false]],
-            'props'  => ['order'=>40,'label'=>lang('details'),'type'=>'fields', 'classes'=>['blockView'],'attr'=>['id'=>'pbProps'], 'keys'   =>$fldKeys],
-            'totals' => ['order'=>50,'label'=>lang('totals'), 'type'=>'totals', 'classes'=>['blockView'],'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']]]];
-        $data['divs']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
+        $data['divs']['divDetail']     = ['order'=>50,'type'=>'divs', 'classes'=>['areaView'],'divs'=>[
+            'billAD' => ['order'=>20,'type'=>'panel','key'=>'billAD', 'classes'=>['block25']],
+            'props'  => ['order'=>40,'type'=>'panel','key'=>'props',  'classes'=>['block25']],
+            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['block25R']],
+            'dgItems'=> ['order'=>50,'type'=>'panel','key'=>'dgItems','classes'=>['block99']],
+            'divAtch'=> ['order'=>90,'type'=>'panel','key'=>'divAtch','classes'=>['block50']]]];
+        $data['panels']['billAD'] = ['label'=>lang('bill_to'),'type'=>'address','attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
+                'settings'=>['type'=>'ceiv','suffix'=>'_b','search'=>true,'required'=>false,'store'=>false]];
+        $data['panels']['props']  = ['label'=>lang('details'),'type'=>'fields', 'keys'   =>$fldKeys];
+        $data['panels']['totals'] = ['label'=>lang('totals'), 'type'=>'totals', 'content'=>$data['totals']];
+        $data['panels']['dgItems']= ['order'=>60,'type'=>'datagrid','key'=>'item'];
         unset($data['toolbars']['tbPhreeBooks']['icons']['print']);
         unset($data['toolbars']['tbPhreeBooks']['icons']['payment']);
         if ($rID) { unset($data['toolbars']['tbPhreeBooks']['icons']['recur']); }
@@ -79,7 +84,7 @@ class j02 extends jCommon
 
     /**
      * Adds the notes to a general ledger entry to show if the journal balance will increase or decrease
-     * @param array $items - line items from the general ledger datagrid
+     * @param array $items - line items from the general ledger grid
      */
     private function addGLNotes(&$items)
     {
@@ -204,9 +209,9 @@ class j02 extends jCommon
     }
 
     /**
-     * Creates the datagrid structure for general ledger items
+     * Creates the grid structure for general ledger items
      * @param string $name - DOM field name
-     * @return array - datagrid structure
+     * @return array - grid structure
      */
     private function dgLedger($name)
     {
@@ -220,7 +225,8 @@ class j02 extends jCommon
             'source' => ['actions'=>['newItem'=>['order'=>10,'icon'=>'add','size'=>'large','events'=>['onClick'=>"jq('#$name').edatagrid('addRow');"]]]],
             'columns'=> ['id'  => ['order'=>0, 'attr'=>['hidden'=>true]],
                 'qty'          => ['order'=>0, 'attr'=>['hidden'=>true,'value'=>1]],
-                'action'       => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'action'       => ['order'=>1, 'label'=>lang('action'),'attr'=>['width'=>60],
+                    'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'  => ['delete'   =>['order'=>20,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'gl_account'   => ['order'=>20,'label'=>pullTableLabel('journal_item','gl_account',$this->journalID),'attr'=>['width'=>200,'resizable'=>true,'align'=>'center'],
                     'events'   => ['editor'=>dgEditGL()]],

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-19
+ * @version    4.x Last Update: 2020-07-23
  * @filesource /lib/controller/module/inventory/prices.php
  */
 
@@ -29,8 +29,7 @@ class inventoryPrices
 
     function __construct()
     {
-        $this->lang = getLang($this->moduleID);
-        // set some defaults
+        $this->lang     = getLang($this->moduleID);
         $this->type     = clean('type', ['format'=>'char', 'default'=>'c'], 'get');
         $this->helpIndex= $this->type=='v' ? "vendor-prices" : "customer-prices";
         $this->qtySource= ['1'=>lang('direct_entry'), '2'=>lang('inventory_item_cost'), '3'=>lang('inventory_full_price'), '4'=>lang('price_level_1')];
@@ -51,17 +50,14 @@ class inventoryPrices
         $iID  = clean('iID','integer',  'get');
         $mod  = clean('mod','text',     'get');
         $title= sprintf(lang('tbd_prices'), lang('contacts_type_'.$this->type));
-        if     (!$mod && $this->type == 'c') { $submenu=viewSubMenu('customers'); }
-        elseif (!$mod && $this->type == 'v') { $submenu=viewSubMenu('vendors'); }
-        else   { $submenu = ''; }
         $data = ['type'=>'page','title'=>$title,
             'divs'     => [
-                'submenu'=> ['order'=>10,'type'=>'html','html'=>$submenu],
                 'prices' => ['order'=>50,'type'=>'accordion','key'=>'accPrices']],
             'accordion'=> ['accPrices'=>['divs'=>[
                 'divPricesMgr' =>['order'=>30,'label'=>$title,'type'=>'datagrid','key'=>'dgPricesMgr'],
                 'divPricesSet' =>['order'=>50,'label'=>lang('settings'),'type'=>'html',    'html'=>"<p>".$this->lang['msg_no_price_sheets']."</p>"]]]],
-            'datagrid' => ['dgPricesMgr' => $this->dgPrices('dgPricesMgr', $this->type, $security, $mID, $cID, $iID, $mod)]];
+            'datagrid' => ['dgPricesMgr' => $this->dgPrices('dgPricesMgr', $this->type, $security, $mID, $cID, $iID, $mod)],
+            'jsReady'  => ["bizFocus('search', 'dgPricesMgr');"]];
         if ($mod) { // if mod then in a tab of some sort
             $data['type'] = 'divHTML'; // just the div html
             $layout = array_replace_recursive($layout, $data);
@@ -71,9 +67,9 @@ class inventoryPrices
     }
 
     /**
-     * This method pulls the data from the database to populate the datagrid
+     * This method pulls the data from the database to populate the grid
      * @param $layout - Structure coming in
-     * @return array datagrid structure to load data from database
+     * @return array grid structure to load data from database
      */
     public function managerRows(&$layout=[])
     {
@@ -126,7 +122,7 @@ class inventoryPrices
             }
             $html  = '<p>'.lang('desc_new_price_sheets')."</p>";
             $html .= html5('methodID',['values'=>$meths,'attr'=>['type'=>'select']]);
-            $html .= html5('iconGO',  ['icon'=>'next','events'=>['onClick'=>"accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$this->type&mod=$mod&mID='+jq('#methodID').val(),0); bizWindowClose('winNewPrice');"]]);
+            $html .= html5('iconGO',  ['icon'=>'next','events'=>['onClick'=>"accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$this->type&mod=$mod&mID='+bizSelGet('methodID'),0); bizWindowClose('winNewPrice');"]]);
         }
         $layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['winNewPrice'=>['order'=>50,'type'=>'html','html'=>$html]]]);
     }
@@ -151,11 +147,6 @@ class inventoryPrices
             $settings= ['attr'=>'', 'title'=>''];
         }
         $row['currency'] = getDefaultCurrency(); // force currency to be the users default
-        // @TODO - remove AFTER 2019-06-01
-        $structure['contact_id']['attr']['type']  = 'hidden';
-        $structure['inventory_id']['attr']['type']= 'hidden';
-        $structure['currency']['attr']['type']    = 'hidden';
-
         unset($structure['settings']);
         $structure['contact_id']['label']   = lang('contacts_short_name');
         $structure['inventory_id']['label'] = lang('sku');
@@ -196,7 +187,7 @@ class inventoryPrices
         $priceSet = getModuleCache('inventory','prices',$mID,'settings');
         $meth = new $fqcn($priceSet);
         if ($meth->priceSave()) { msgAdd(lang('msg_record_saved'), 'success'); }
-        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"jq('#accPrices').accordion('select', 0); jq('#dgPricesMgr').datagrid('reload'); jq('#divPricesSet').html('&nbsp;');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"jq('#accPrices').accordion('select', 0); bizGridReload('dgPricesMgr'); jq('#divPricesSet').html('&nbsp;');"]]);
     }
 
     /**
@@ -245,7 +236,7 @@ class inventoryPrices
         $settings = json_decode($result['settings'], true);
         msgLog(lang('prices').' '.lang('delete')." - Title: ".(isset($settings['title']) ? $settings['title'] : '-')." (iID=".$result['inventory_id']."; cID=".$result['contact_id']."; rID=$rID)");
         $layout = array_replace_recursive($layout, [
-            'content' => ['action'=>'eval','actionData'=>"jq('#accPrices').accordion('select', 0); jq('#dgPricesMgr').datagrid('reload'); jq('#divPricesSet').html('&nbsp;');"],
+            'content' => ['action'=>'eval','actionData'=>"jq('#accPrices').accordion('select', 0); bizGridReload('dgPricesMgr'); jq('#divPricesSet').html('&nbsp;');"],
             'dbAction'=> ["inventory_prices"=>"DELETE FROM ".BIZUNO_DB_PREFIX."inventory_prices WHERE id=$rID OR ref_id=$rID"]]);
     }
 
@@ -278,14 +269,15 @@ class inventoryPrices
                 $rows[] = ['group'=>$level['title'],'text'=>"<div style='float:right'>".viewFormat($entry['price'], 'currency').'</div><div>'.(float)$entry['qty']."</div>"];
             }
         } }
-        $fields['theList'] = ['options'=>['groupField'=>"'group'",'data'=>"pricesData"],'classes'=>['easyui-datalist'],'attr'=>['type'=>'span']];
-        $layout = array_merge_recursive($layout, ['type'=>'popup', 'title'=>lang('inventory_prices', $this->type), 'attr'=>['id'=>'winPrices','width'=>275,'height'=>600],
-            'divs'  => ['winStatus'=>['order'=>50,'type'=>'fields','fields'=>$fields]],
-            'jsHead'=> ['init'=>"var pricesData = ".json_encode($rows).";"]]);
+        $data = ['type'=>'popup', 'title'=>lang('inventory_prices', $this->type), 'attr'=>['id'=>'winPrices','width'=>300,'height'=>700],
+            'divs'  => ['winStatus'=>['order'=>50,'options'=>['groupField'=>"'group'",'data'=>"pricesData"],'type'=>'list','key' =>'lstPrices']],
+            'lists' => ['lstPrices'=>[]], // handled as JavaScript data
+            'jsHead'=> ['init'=>"var pricesData = ".json_encode($rows).";"]];
+        $layout = array_merge_recursive($layout, $data);
     }
 
     /**
-     * Retrieves the best price for a given customer/sku using available price sheets
+     * Retrieves the best price for a given customer/SKU using available price sheets
      * @param array $layout - structure coming in
      * @return array - modified $layout
      */
@@ -295,7 +287,7 @@ class inventoryPrices
         $pSec = $this->type=='v' ? validateSecurity('phreebooks', 'j6_mgr', 1, false) : validateSecurity('phreebooks', 'j12_mgr', 1, false);
         if (!$security = max($iSec, $pSec)) { return msgAdd(lang('err_no_permission')." [".'prices_'.$this->type." OR jX_mgr]"); }
         if (empty($cID)) { $cID = clean('cID', 'integer','get'); } // contact record ID
-        if (empty($sku)) { $sku = clean('sku', 'text',   'get'); }// inventory SKU
+        if (empty($sku)) { $sku = clean('sku', 'text',   'get'); } // inventory SKU
         $iID = clean('rID', 'integer','get'); // inventory record ID
         $UPC = clean('upc', 'text',   'get'); // inventory UPC Code
         $qty = clean('qty', ['format'=>'float', 'default'=>1], 'get'); // quantity purchased, assume 1
@@ -437,13 +429,13 @@ class inventoryPrices
         $first_price  = 0;
         for ($i=0, $j=1; $i < sizeof($price_levels); $i++, $j++) {
             $level_info = explode(':', $price_levels[$i]);
-            $price      = isset($level_info[0]) ? $level_info[0] : ($i==0 ? $full : 0);
-            $qty        = isset($level_info[1]) ? $level_info[1] : $j;
-            $src        = isset($level_info[2]) ? $level_info[2] : 0;
-            $adj        = isset($level_info[3]) ? $level_info[3] : 0;
-            $adj_val    = isset($level_info[4]) ? $level_info[4] : 0;
-            $rnd        = isset($level_info[5]) ? $level_info[5] : 0;
-            $rnd_val    = isset($level_info[6]) ? $level_info[6] : 0;
+            $price      = !empty($level_info[0]) ? $level_info[0] : ($i==0 ? $full : 0);
+            $qty        = !empty($level_info[1]) ? $level_info[1] : $j;
+            $src        = !empty($level_info[2]) ? $level_info[2] : 0;
+            $adj        = !empty($level_info[3]) ? $level_info[3] : 0;
+            $adj_val    = !empty($level_info[4]) ? $level_info[4] : 0;
+            $rnd        = !empty($level_info[5]) ? $level_info[5] : 0;
+            $rnd_val    = !empty($level_info[6]) ? $level_info[6] : 0;
             switch ($src) {
                 case 0: $price = 0;            break; // Not Used
                 case 1:                        break; // Direct Entry
@@ -490,7 +482,7 @@ class inventoryPrices
 
     /**
      *
-     * @param string $name - REQUIRED - datagrid ID
+     * @param string $name - REQUIRED - grid ID
      * @param string $type - contact type, acceptable values are c or v
      * @param number $security - access control
      * @param text $mID - Method ID, if present will restrict output to specified method
@@ -510,7 +502,7 @@ class inventoryPrices
                 'tables' => [
                     'prices'   => ['table'=>BIZUNO_DB_PREFIX."inventory_prices"],
                     'inventory'=> ['table'=>BIZUNO_DB_PREFIX."inventory",'join'=>'JOIN','links'=>BIZUNO_DB_PREFIX."inventory_prices.inventory_id=".BIZUNO_DB_PREFIX."inventory.id"]],
-                'search' => ['settings', 'method', 'sku', 'description_short', 'description_purchase', 'description_sales'],
+                'search' => ['inventory_prices.settings', 'inventory_prices.method', 'inventory.sku', 'inventory.description_short', 'inventory.description_purchase', 'inventory.description_sales'],
                 'actions'=> [
                     'newPrices'=> ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"windowEdit('inventory/prices/add&type=$type".($mod?"&mod=$mod":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":'')."','winNewPrice','".jsLang('inventory_prices_method')."',400,200);"]],
                     'clrPrices'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"bizTextSet('search', ''); ".$name."Reload();"]],
@@ -521,39 +513,42 @@ class inventoryPrices
                 'sort' => ['s0' =>['order'=>10,'field' =>($this->defaults['sort'].' '.$this->defaults['order'])]]],
             'footnotes'=> ['codes'=>lang('color_codes').': <span class="row-default">'.lang('default').'</span>'],
             'columns'  => [
-                'id'      => ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.id',      'attr'=>['hidden'=>true]],
-                'inactive'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inactive','attr'=>['hidden'=>true]],
-//              'currency'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.currency','attr'=>['hidden'=>true]],
-                'default' => ['order'=>0,'field'=>'settings:default','attr'=>['hidden'=>true]],
-                'action'  => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
+                'id'          => ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.id',          'attr'=>['hidden'=>true]],
+                'inactive'    => ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inactive',    'attr'=>['hidden'=>true]],
+//              'currency'    => ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.currency',    'attr'=>['hidden'=>true]],
+                'default'     => ['order'=>0,'field'=>'settings:default','attr'=>['hidden'=>true]],
+//              'inventory_id'=> ['order'=>0,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inventory_id','attr'=>['hidden'=>true]],
+                'action'      => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> [
                         'edit' => ['order'=>30,'icon'=>'edit', 'hidden'=>$security>2?false:true,'events'=>['onClick'=>"accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$type',idTBD);"]],
                         'copy' => ['order'=>30,'icon'=>'copy', 'hidden'=>$security>1?false:true,'events'=>['onClick'=>"var title=prompt('".lang('msg_entry_copy')."'); if (title!=null) jsonAction('inventory/prices/copy', idTBD, title);"]],
                         'trash'=> ['order'=>90,'icon'=>'trash','hidden'=>$security>3?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('inventory/prices/delete', idTBD);"]]]],
-                'title'      => ['order'=>10, 'field'=>'settings:title',   'label'=>lang('title'),
+                'title'       => ['order'=>10, 'field'=>'settings:title',   'label'=>lang('title'),
                     'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
-                'method'     => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.method',     'label'=>lang('method'),
+                'method'      => ['order'=>20, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.method',    'label'=>lang('method'),
                     'attr'=>  ['width'=>60, 'sortable'=>true, 'resizable'=>true]],
-                'ref_id'     => ['order'=>30, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.ref_id',     'label'=>lang('reference'),'format'=>'dbVal;'.BIZUNO_DB_PREFIX.'inventory_prices;settings:title;id',
+                'ref_id'      => ['order'=>30, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.ref_id',    'label'=>lang('reference'),'format'=>'dbVal;'.BIZUNO_DB_PREFIX.'inventory_prices;settings:title;id',
                     'attr'=>  ['width'=>80, 'sortable'=>true, 'resizable'=>true]],
-                'contact_id' => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.contact_id', 'label'=>lang('address_book_primary_name'),'format'=>'contactName',
+                'contact_id'  => ['order'=>40, 'field'=>BIZUNO_DB_PREFIX.'inventory_prices.contact_id','label'=>lang('address_book_primary_name'),'format'=>'contactName',
                     'attr'=>  ['sortable'=>true, 'resizable'=>true]],
-                'inventory_id'=> ['order'=>50, 'field'=>BIZUNO_DB_PREFIX.'inventory.description_short','label'=>lang('description'),
-                    'attr'=>  ['sortable'=>true, 'resizable'=>true]],
-                'last_update'=> ['order'=>70, 'field'=>'settings:last_update',   'label'=>lang('last_update'),'format'=>'date',
+                'inventory_id'=> ['order'=>50,'field'=>BIZUNO_DB_PREFIX.'inventory_prices.inventory_id','label'=>lang('inventory_description_short'),
+                    'alias'=>'inventory_id','process'=>'inv_shrt','attr'=>['width'=>100, 'sortable'=>false, 'resizable'=>true]],
+//                'inv_desc'    => ['order'=>50, 'field'=>BIZUNO_DB_PREFIX.'inventory.description_short','label'=>lang('description'),
+//                    'attr'=>  ['sortable'=>true, 'resizable'=>true]],
+                'last_update' => ['order'=>70, 'field'=>'settings:last_update',   'label'=>lang('last_update'),'format'=>'date',
                     'attr'=>  ['width'=>70, 'sortable'=>true, 'resizable'=>true]]]];
         $cList  = $iList = [];
-        $search = addslashes($this->defaults['search']);
         if ($mID) { $data['source']['filters']['mID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"method='$mID'"]; }
         if ($cID) { $data['source']['filters']['cID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"contact_id=$cID"]; }
         elseif ($this->defaults['search']) { // see if searching within contact
-            $contacts = dbGetMulti(BIZUNO_DB_PREFIX."address_book", "primary_name LIKE '%$search%'", "primary_name {$this->defaults['order']}", ['ref_id']);
+            $cFields = ['primary_name'];
+            $contacts = dbGetMulti(BIZUNO_DB_PREFIX."address_book", dbGetSearch($this->defaults['search'], $cFields), "primary_name {$this->defaults['order']}", ['ref_id']);
             foreach ($contacts as $cID) { $cList[] = $cID['ref_id']; }
         }
-        if ($iID) {
-            $data['source']['filters']['iID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"inventory_id=$iID"];
-        } elseif ($this->defaults['search']) {
-            $inventory = dbGetMulti(BIZUNO_DB_PREFIX."inventory", "description_short LIKE '%$search%'", "description_short {$this->defaults['order']}", ['id']);
+        if ($iID) { $data['source']['filters']['iID'] = ['order'=>99, 'hidden'=>true, 'sql'=>"inventory_id=$iID"]; }
+        elseif ($this->defaults['search']) {
+            $iFields = ['sku', 'description_short', 'description_purchase', 'description_sales'];
+            $inventory = dbGetMulti(BIZUNO_DB_PREFIX."inventory", dbGetSearch($this->defaults['search'], $iFields), "description_short {$this->defaults['order']}", ['id']);
             foreach ($inventory as $iID) { $iList[] = $iID['id']; }
         }
         if (sizeof($cList) && sizeof($iList)) {
@@ -562,25 +557,25 @@ class inventoryPrices
             $data['source']['filters']['addSrch'] = ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."inventory_prices.contact_id IN (".implode(',',$cList).")"];
         } elseif (sizeof($iList)) {
             $data['source']['filters']['addSrch'] = ['order'=>99,'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."inventory_prices.inventory_id IN (".implode(',',$iList).")"];
-        } elseif (!$search) { // not in contacts or inventory managers, must be prices manager by contact type and not searching (or method quantity goes away)
+        } elseif (!$this->defaults['search']) { // not in contacts or inventory managers, must be prices manager by contact type and not searching (or method quantity goes away)
             unset($data['source']['tables']['inventory']);
-            $data['source']['search'] = ['settings', 'method', 'sku', 'description_short', 'description_purchase', 'description_sales'];
-            $data['columns']['inventory_id']['field'] = BIZUNO_DB_PREFIX.'inventory_prices.inventory_id';
-            $data['columns']['inventory_id']['format']= 'dbVal;inventory;description_short;id';
+            $data['source']['search'] = ['settings', 'method'];
+//            $data['columns']['inventory_id']['field'] = BIZUNO_DB_PREFIX.'inventory_prices.inventory_id';
+//            $data['columns']['inventory_id']['format']= 'dbVal;inventory;description_short;id';
         }
         if (in_array($GLOBALS['myDevice'], ['mobile','tablet'])) {
-            $data['columns']['title']['attr']['hidden'] = true;
-            $data['columns']['method']['attr']['hidden'] = true;
-            $data['columns']['ref_id']['attr']['hidden'] = true;
-            $data['columns']['last_update']['attr']['hidden'] = true;
+            $data['columns']['title']['attr']['hidden']      = true;
+            $data['columns']['method']['attr']['hidden']     = true;
+            $data['columns']['ref_id']['attr']['hidden']     = true;
+            $data['columns']['last_update']['attr']['hidden']= true;
         }
         return $data;
     }
 
     /**
-     * Datagrid structure for quantity based pricing
+     * Grid structure for quantity based pricing
      * @param string $name - DOM field name
-     * @return array - datagrid structure
+     * @return array - grid structure
      */
     protected function dgQuantity($name) {
         return ['id'=>$name, 'type'=>'edatagrid',

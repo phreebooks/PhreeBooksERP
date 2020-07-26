@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-04
+ * @version    4.x Last Update: 2020-05-18
  * @filesource /lib/controller/module/bizuno/backup.php
  */
 
@@ -42,45 +42,78 @@ class bizunoBackup
      */
     public function manager(&$layout=[])
     {
+        global $io;
         if (!$security = validateSecurity('bizuno', 'backup', 1)) { return; }
-        $incFiles = ['label'=>$this->lang['desc_backup_all'], 'position'=>'after', 'attr'=>['type'=>'checkbox', 'value'=>'all']];
-        $btnBackup= ['icon'=>'backup', 'size'=>'large','label'=>lang('go'), 'events'=> ['onClick'=>"jq('body').addClass('loading'); jq('#frmBackup').submit();"]];
-        $btnAudit = ['icon'=>'backup', 'size'=>'large','label'=>lang('go'), 'events'=> ['onClick'=>"jq('body').addClass('loading'); jsonAction('bizuno/backup/saveAudit');"]];
-        $dateClean= ['attr'=>['type'=>'date', 'value'=>localeCalculateDate(date('Y-m-d'), 0, -1)]];
-        $btnClean = ['icon'=>'next', 'size'=>'large','label'=>lang('go'), 'events'=> ['onClick'=>"jq('body').addClass('loading'); jq('#frmAudit').submit();"]];
-
-        $htmlBackup = '<p>'.$this->lang['desc_backup'].'</p>'.html5('incFiles', $incFiles).'
-        <p><div style="text-align:right">'.html5('btnBackup', $btnBackup).'</div></p>';
-        $htmlAudit  = '<p>'.$this->lang['audit_log_backup_desc'].'</p>'.html5('btnAudit', $btnAudit)."\n<hr />\n
-        <p>".$this->lang['desc_audit_log_clean'].'</p>'.html5('dateClean', $dateClean).html5('btnClean', $btnClean);
         $data = ['title'=>lang('bizuno_backup'),
+            'divs'   => ['body'=>['classes'=>['areaView'],'type'=>'divs','divs'=>[
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbBackup'],
+                'manager'=> ['order'=>50,'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'backup' => ['order'=>20,'type'=>'panel','key'=>'backup', 'classes'=>['block33']],
+                    'divAtch'=> ['order'=>30,'type'=>'panel','key'=>'divAtch','classes'=>['block66']],
+                    'audit'  => ['order'=>40,'type'=>'panel','key'=>'audit',  'classes'=>['block33']]]]]]],
             'toolbars'=> ['tbBackup'=>['icons'=>[
                 'restore'=> ['order'=>20,'hidden'=>$security==4?false:true,'events'=>['onClick'=>"hrefClick('bizuno/backup/managerRestore');"]],
                 'help'   => ['order'=>99,'icon'=>'help','label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>'backup-restore']]]],
-            'divs'    => [
-                'submenu'=> ['order'=> 5,'type'=>'html',   'html'=>viewSubMenu('tools')],
-                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbBackup'],
-                'heading'=> ['order'=>15,'type'=>'html',   'html'=>"<h1>".lang('bizuno_backup')."</h1>\n"],
-                'body'   => ['order'=>50,'type'=>'divs','divs'=>[
-                    'backup' => ['order'=>10,'type'=>'divs','label'=>lang('bizuno_backup'),'classes'=>['blockView'],'divs'=>[
-                        'formBOF'=> ['order'=>15,'type'=>'form','key'=>'frmBackup'],
-                        'body'   => ['order'=>50,'type'=>'html','html'=>$htmlBackup],
-                        'formEOF'=> ['order'=>85,'type'=>'html','html'=>"</form>"]]],
-                    'dgFiles'=> ['order'=>30,'type'=>'datagrid','classes'=>['blockView'],'key'=>'dgBackup'],
-                    'audit'  => ['order'=>70,'type'=>'divs','label'=>$this->lang['audit_log_backup'],'classes'=>['blockView'],'divs'=>[
-                        'formBOF'=> ['order'=>15,'type'=>'form','key'=>'frmAudit'],
-                        'body'   => ['order'=>50,'type'=>'html','html'=>$htmlAudit],
-                        'formEOF'=> ['order'=>85,'type'=>'html','html'=>"</form>"]]]]]],
+            'panels' => [
+                'backup' => ['label'=>lang('bizuno_backup'),'type'=>'divs','divs'=>[
+                    'formBOF'=> ['order'=>10,'type'=>'form',  'key' =>'frmBackup'],
+                    'body'   => ['order'=>30,'type'=>'fields','keys'=>['backupDesc','btnBackup']], // 'incFiles' is a later feature ???
+                    'formEOF'=> ['order'=>90,'type'=>'html',  'html'=>"</form>"]]],
+                'audit'  => ['label'=>$this->lang['audit_log_backup'],'type'=>'divs','divs'=>[
+                    'formBOF'=> ['order'=>10,'type'=>'form',  'key' =>'frmAudit'],
+                    'body'   => ['order'=>30,'type'=>'fields','keys'=>['auditDesc','btnAudit','audClnDesc','dateClean','btnClean']],
+                    'formEOF'=> ['order'=>90,'type'=>'html',  'html'=>"</form>"]]],
+                'divAtch'=> ['type'=>'attach','defaults'=>['dgName'=>'dgBackup','path'=>$this->dirBackup,'title'=>lang('files'),'url'=>BIZUNO_AJAX."&p=bizuno/backup/mgrRows",'ext'=>$io->getValidExt('backup')]]],
             'forms'   => [
                 'frmBackup'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/backup/save"]],
                 'frmAudit' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/backup/cleanAudit"]]],
-            'datagrid'=> ['dgBackup'=>$this->dgBackup('dgBackup', $security)],
+            'fields'  => [
+                'backupDesc'=> ['order'=>10,'html'=>$this->lang['desc_backup'],     'attr'=>['type'=>'raw']],
+//              'incFiles'  => ['order'=>20,'label'=>$this->lang['desc_backup_all'],'attr'=>['type'=>'checkbox', 'value'=>'all']],
+                'btnBackup' => ['order'=>30,'icon'=>'backup','label'=>lang('go'),'align'=>'right','events'=>['onClick'=>"jq('body').addClass('loading'); jq('#frmBackup').submit();"]],
+                'auditDesc' => ['order'=>10,'html'=>$this->lang['audit_log_backup_desc'],'attr'=>['type'=>'raw']],
+                'btnAudit'  => ['order'=>20,'icon'=>'backup','label'=>lang('go'),'align'=>'right','events'=>['onClick'=>"jq('body').addClass('loading'); jsonAction('bizuno/backup/saveAudit');"]],
+                'audClnDesc'=> ['order'=>30,'html'=>"<br /><hr />".$this->lang['desc_audit_log_clean'],'attr'=>['type'=>'raw']],
+                'dateClean' => ['order'=>40,'attr'=>['type'=>'date', 'value'=>localeCalculateDate(date('Y-m-d'), 0, -1)]],
+                'btnClean'  => ['order'=>50,'icon'=>'next',  'label'=>lang('go'),'align'=>'right','events'=>['onClick'=>"jq('body').addClass('loading'); jq('#frmAudit').submit();"]]],
             'jsReady' => ['init'=>"ajaxForm('frmBackup'); ajaxForm('frmAudit');"]];
         $layout = array_replace_recursive($layout, viewMain(), $data);
     }
 
     /**
-     * Load stored backup files through ajax call
+     * Entry point for Bizuno db Restore page
+     * @param array $layout - structure coming in
+     * @return modified $layout
+     */
+    public function managerRestore(&$layout)
+    {
+        if (!$security = validateSecurity('bizuno', 'backup', 4)) { return; }
+        $upload_mb= min((int)(ini_get('upload_max_filesize')), (int)(ini_get('post_max_size')), (int)(ini_get('memory_limit')));
+        $data     = ['title'=>lang('bizuno_restore'),
+            'divs'    => ['body'=>['classes'=>['areaView'],'type'=>'divs','divs'=>[
+                'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbRestore'],
+                'heading'=> ['order'=>15,'type'=>'html',   'html'=>"<h1>".lang('bizuno_restore')."</h1>"],
+                'manager'=> ['order'=>50,'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'restore'=> ['order'=>30,'type'=>'panel','key'=>'restore','classes'=>['block66']]]]]]],
+            'panels' => [
+                'restore'=> ['type'=>'divs','divs'=>[
+                    'dgRstr' => ['order'=>40,'type'=>'datagrid','key' =>'dgRestore'],
+                    'formBOF'=> ['order'=>50,'type'=>'form',    'key' =>'frmRestore'],
+                    'body'   => ['order'=>60,'type'=>'fields',  'keys'=>['txtFile','fldFile','btnFile'],
+                    'formEOF'=> ['order'=>90,'type'=>'html',    'html'=>"</form>"]]]]],
+            'toolbars'=> ['tbRestore' => ['icons'=>['cancel'=>['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/backup/manager'"]]]]],
+            'datagrid'=> ['dgRestore' => $this->dgRestore('dgRestore')],
+            'forms'   => ['frmRestore'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/backup/uploadRestore",'enctype'=>"multipart/form-data"]]],
+            'fields'  => [
+                'txtFile'=> ['order'=>10,'html'=>lang('msg_io_upload_select')." ".sprintf(lang('max_upload'), $upload_mb)."<br />",'attr'=>['type'=>'raw']],
+                'fldFile'=> ['order'=>15,'attr'=>['type'=>'file']],
+                'btnFile'=> ['order'=>20,'events'=>['onClick'=>"jq('#frmRestore').submit();"],'attr'=>['type'=>'button','value'=>lang('upload')]]],
+            'jsReady' => ['init'=>"ajaxForm('frmRestore');"]];
+        $layout = array_replace_recursive($layout, viewMain(), $data);
+    }
+
+    /**
+     * Load stored backup files through AJAX call
      * @param array $layout - structure coming in
      */
     public function mgrRows(&$layout=[])
@@ -103,26 +136,27 @@ class bizunoBackup
     public function save(&$layout)
     {
         if (!$security = validateSecurity('bizuno', 'backup', 2)) { return; }
+        // @todo - Need to implement this, perhaps make sure file size is not too big or drop option
 //      $incFiles = clean('data', 'text', 'post');
         // set execution time limit to a large number to allow extra time
         if (ini_get('max_execution_time') < $this->max_execution_time) { set_time_limit($this->max_execution_time); }
         dbDump("bizuno-".date('Ymd-His'), $this->dirBackup);
         msgLog($this->lang['msg_backup_success']);
         msgAdd($this->lang['msg_backup_success'], 'success');
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#dgBackup').datagrid('reload');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"bizGridReload('dgBackup');"]]);
     }
 
     /**
      * This method backs up the audit log database sends the result to the backups folder.
      * @param array $layout - structure coming in
-     * @return json to reload datagrid
+     * @return json to reload grid
      */
     public function saveAudit(&$layout)
     {
         if (!$security = validateSecurity('bizuno', 'backup', 2)) { return; }
         dbDump("bizuno_log-".date('Ymd-His'), $this->dirBackup, BIZUNO_DB_PREFIX."audit_log");
         msgAdd($this->lang['msg_backup_success'], 'success');
-        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"jq('#dgBackup').datagrid('reload');"]]);
+        $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"bizGridReload('dgBackup');"]]);
     }
 
     /**
@@ -147,16 +181,15 @@ class bizunoBackup
     {
         if (!$security = validateSecurity('bizuno', 'backup', 4)) { return; }
         $btnUpgrade = ['icon'=>'next', 'size'=>'large','label'=>lang('go'), 'events'=>['onClick'=>"jq('body').addClass('loading'); jsonAction('bizuno/backup/bizunoUpgradeGo');"]];
-        $html  = "<h1>".lang('bizuno_upgrade')."</h1>\n";
-        $html .= "<fieldset><legend>".lang('bizuno_upgrade')."</legend>";
-        $html .= "<p>Click here to start your upgrade. Please make sure all users are not using the system. Once complete, all users will need to sign off and back in to reset their cache.</p>";
+        $html  = "<p>Click here to start your upgrade. Please make sure all users are not using the system. Once complete, all users will need to sign off and back in to reset their cache.</p>";
         $html .= html5('', $btnUpgrade);
-        $html .= "</fieldset>";
         $data = ['title'=> lang('bizuno_upgrade'),
             'toolbars'=> ['tbUpgrade'=>['icons'=>['cancel'=>['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/backup/manager'"]]]]],
             'divs'    => [
                 'toolbars'=> ['order'=>20,'type'=>'toolbar','key'=>'tbUpgrade'],
-                'content' => ['order'=>50,'type'=>'html',   'html'=>$html]]];
+                'body'    => ['order'=>50,'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'upgrade'=> ['order'=>20,'type'=>'panel','classes'=>['block33'],'key'=>'upgrade']]]],
+            'panels'  => ['upgrade'=>['label'=>lang('bizuno_upgrade'),'type'=>'html','html'=>$html]]];
         $layout = array_replace_recursive($layout, viewMain(), $data);
     }
 
@@ -193,7 +226,7 @@ class bizunoBackup
                 msgDebug("\nUnzip successful, removing downloaded zipped file: $zipFile");
                 @unlink($zipFile);
                 $srcFolder = $this->guessFolder("temp/");
-                if (!$srcFolder) { return msgAdd("Could not find downloded upgrade folder, aborting!"); }
+                if (!$srcFolder) { return msgAdd("Could not find downloaded upgrade folder, aborting!"); }
                 $io->folderMove("temp/$srcFolder/", '', true);
                 rmdir($pathLocal.$srcFolder);
             } else {
@@ -225,35 +258,6 @@ class bizunoBackup
     }
 
     /**
-     * Entry point for Bizuno db Restore page
-     * @param array $layout - structure coming in
-     * @return modified $layout
-     */
-    public function managerRestore(&$layout)
-    {
-        if (!$security = validateSecurity('bizuno', 'backup', 4)) { return; }
-        $upload_mb= min((int)(ini_get('upload_max_filesize')), (int)(ini_get('post_max_size')), (int)(ini_get('memory_limit')));
-        $fields   = [
-            'txtFile'=> ['order'=>10,'html'=>lang('msg_io_upload_select')." ".sprintf(lang('max_upload'), $upload_mb)."<br />",'attr'=>['type'=>'raw']],
-            'fldFile'=> ['order'=>15,'attr'=>['type'=>'file']],
-            'btnFile'=> ['order'=>20,'events'=>['onClick'=>"jq('#frmRestore').submit();"],'attr'=>['type'=>'button','value'=>lang('upload')]]];
-        $data = ['type'=>'page','title'=>lang('bizuno_restore'),
-            'divs'    => [
-                'toolbar'=> ['order'=>10,'type'=>'toolbar', 'key' =>'tbRestore'],
-                'heading'=> ['order'=>15,'type'=>'html',    'html'=>"<h1>".lang('bizuno_restore')."</h1>"],
-                'dgRstr' => ['order'=>20,'type'=>'datagrid','key' =>'dgRestore'],
-                'formBOF'=> ['order'=>60,'type'=>'form',    'key' =>'frmRestore'],
-                'body'   => ['order'=>65,'type'=>'fields',  'keys'=>array_keys($fields)],
-                'formEOF'=> ['order'=>70,'type'=>'html',    'html'=>"</form>"]],
-            'toolbars'=> ['tbRestore' => ['icons'=>['cancel'=>['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/backup/manager'"]]]]],
-            'datagrid'=> ['dgRestore' => $this->dgRestore('dgRestore')],
-            'forms'   => ['frmRestore'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/backup/uploadRestore",'enctype'=>"multipart/form-data"]]],
-            'fields'  => $fields,
-            'jsReady' => ['init'=>"ajaxForm('frmRestore');"]];
-        $layout = array_replace_recursive($layout, viewMain(), $data);
-    }
-
-    /**
      * Method to receive a file to upload into the backup folder for db restoration
      * @param array $layout - structure coming in
      * @return modified $layout
@@ -262,11 +266,11 @@ class bizunoBackup
     {
         global $io;
         $io->uploadSave('fldFile', $this->dirBackup);
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#dgRestore').datagrid('reload');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"bizGridReload('dgRestore');"]]);
     }
 
     /**
-     * This method restores a gzip db backup file to the database, replacing the current tables
+     * This method restores a .gzip db backup file to the database, replacing the current tables
      * @param array $layout - structure coming in
      * @return modified $layout
      */
@@ -281,28 +285,6 @@ class bizunoBackup
     }
 
     /**
-     * Grid to create the list of backup files from the backup folder
-     * @param string $name - HTML element id of the grid
-     * @return array $data - grid structure
-     */
-    private function dgBackup($name, $security=0)
-    {
-        $data = ['id'=> $name, 'title'=>lang('files'),
-            'attr'   => ['idField'=>'title', 'url'=>BIZUNO_AJAX."&p=bizuno/backup/mgrRows"],
-            'columns'=> [
-                'action' => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index) { return {$name}Formatter(value,row,index); }"],
-                    'actions'=> [
-                        'download'=>['order'=>30,'icon'=>'download',
-                            'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p=bizuno/main/fileDownload&pathID={$this->dirBackup}&fileID=idTBD');"]],
-                        'trash'   =>['order'=>70,'icon'=>'trash','hidden'=>$security<4?true:false,
-                            'events'=>['onClick'=>"if (confirm('".lang('msg_confirm_delete')."')) jsonAction('bizuno/main/fileDelete','$name','{$this->dirBackup}idTBD');"]]]],
-                'title'=> ['order'=>10,'label'=>lang('filename'),'attr'=>['width'=>200,'align'=>'center','resizable'=>true]],
-                'size' => ['order'=>20,'label'=>lang('size'),    'attr'=>['width'=> 75,'align'=>'center','resizable'=>true]],
-                'date' => ['order'=>30,'label'=>lang('date'),    'attr'=>['width'=> 75,'align'=>'center','resizable'=>true]]]];
-        return $data;
-    }
-
-    /**
      * Grid to list files to restore
      * @param string $name - HTML element id of the grid
      * @return array $data - grid structure
@@ -312,15 +294,14 @@ class bizunoBackup
         $data = ['id'=>$name, 'title'=>lang('files'),
             'attr'   => ['idField'=>'title', 'url'=>BIZUNO_AJAX."&p=bizuno/backup/mgrRows"],
             'columns'=> [
-                'action' => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index) { return {$name}Formatter(value,row,index); }"],
+                'action'=> ['order'=> 1,'label'=>lang('action'),  'attr'=>['width'=>60],
+                    'events' =>['formatter'=>"function(value,row,index) { return {$name}Formatter(value,row,index); }"],
                     'actions'=> [
-                        'start' => ['order'=>30,'icon'=>'import',
-                            'events'=>  ['onClick'=>"if(confirm('".$this->lang['msg_restore_confirm']."')) { jq('body').addClass('loading'); jsonAction('bizuno/backup/saveRestore', 0, '{$this->dirBackup}idTBD'); }"]],
-                        'trash' => ['order'=>70,'icon'=>'trash',
-                            'events'=>  ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/main/fileDelete','$name','{$this->dirBackup}idTBD');"]]]],
-                'title'=> ['order'=>10,'label'=>lang('filename'),'attr'=>['width'=>200,'align'=>'center','resizable'=>true]],
-                'size' => ['order'=>20,'label'=>lang('size'),    'attr'=>['width'=> 75,'align'=>'center','resizable'=>true]],
-                'date' => ['order'=>30,'label'=>lang('date'),    'attr'=>['width'=> 75,'align'=>'center','resizable'=>true]]]];
+                        'start' => ['order'=>30,'icon'=>'import','label'=>lang('restore'),'events'=>['onClick'=>"if(confirm('".$this->lang['msg_restore_confirm']."')) { jq('body').addClass('loading'); jsonAction('bizuno/backup/saveRestore', 0, '{$this->dirBackup}idTBD'); }"]],
+                        'trash' => ['order'=>70,'icon'=>'trash','events'=>['onClick'=>"if(confirm('".jsLang('msg_confirm_delete')."')) jsonAction('bizuno/main/fileDelete','$name','{$this->dirBackup}idTBD');"]]]],
+                'title' => ['order'=>10,'label'=>lang('filename'),'attr'=>['width'=>200,'align'=>'center','resizable'=>true]],
+                'size'  => ['order'=>20,'label'=>lang('size'),    'attr'=>['width'=>100,'align'=>'center','resizable'=>true]],
+                'date'  => ['order'=>30,'label'=>lang('date'),    'attr'=>['width'=>100,'align'=>'center','resizable'=>true]]]];
         return $data;
     }
 }

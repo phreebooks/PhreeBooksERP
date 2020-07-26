@@ -1,7 +1,7 @@
 <?php
 /*
  * Method to handle custom tabs for the tables that allow them
- * 
+ *
  * NOTICE OF LICENSE
  * This source file is subject to the Open Software License (OSL 3.0)
  * that is bundled with this package in the file LICENSE.TXT.
@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-02-13
+ * @version    4.x Last Update: 2020-06-30
  * @filesource /lib/controller/module/bizuno/tabs.php
  */
 
@@ -31,7 +31,7 @@ class bizunoTabs
     {
         $this->lang = getLang($this->moduleID);
     }
-    
+
     /**
      * manager to handle tab - main entry point
      * @param array $layout - structure coming in
@@ -141,16 +141,19 @@ class bizunoTabs
             } } }
         } }
         $values = [];
-        foreach ($output as $props) { 
-            $values[] = ['id'=>"{$props['id']}.{$props['table']}", 'text'=>"{$props['title']}/{$props['table']}"];
-        }
-        $html  = '<p>'.$this->lang['new_tab_desc']."</p>";
-        $html .= html5('frmNewTab',['attr' => ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/tabs/edit&bizAction=save"]]);
-        $html .= html5('code',     ['values'=>$values, 'attr'=>  ['type'=>'select']]);
-        $html .= html5('iconGO',   ['icon'=>'next', 'events'=>  ['onClick'=>"jq('#frmNewTab').submit();"]]);
-        $html .= '</form>';
-        $html .= htmlJS("ajaxForm('frmNewTab');");
-        $layout = array_replace_recursive($layout, ['type'=>'divHTML','divs'=>['divNewTab'=>['order'=>50,'type'=>'html','html'=>$html]]]);
+        foreach ($output as $props) { $values[] = ['id'=>"{$props['id']}.{$props['table']}", 'text'=>"{$props['title']}/{$props['table']}"]; }
+        $data = ['type'=>'divHTML',
+            'divs'   =>[
+                'formBOF'=> ['order'=>10,'type'=>'form',  'key' =>'frmNewTab'],
+                'head'   => ['order'=>20,'type'=>'html',  'html'=>"<p>{$this->lang['new_tab_desc']}</p>"],
+                'body'   => ['order'=>50,'type'=>'fields','keys'=>['code','iconGO']],
+                'formEOF'=> ['order'=>90,'type'=>'html',  'html'=>"</form>"]],
+            'forms'  => ['frmNewTab'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/tabs/edit&bizAction=save"]]],
+            'fields' => [
+                'code'  => ['order'=>10,'break'=>false,'values'=>$values,'attr'=>['type'=>'select']],
+                'iconGO'=> ['order'=>20,'icon'=>'next','events'=>['onClick'=>"jq('#frmNewTab').submit();"]]],
+            'jsReady'=>['init'=>"ajaxForm('frmNewTab');"]];
+        $layout = array_replace_recursive($layout, $data);
     }
 
     /**
@@ -180,18 +183,22 @@ class bizunoTabs
             } }
         }
         if ($action=='save') {
-            $data = ['content'=>  ['action'=>'eval','actionData'=>"accordionEdit('accTabs', 'dgTabs', 'divTabDetail', '".lang('details')."', 'bizuno/tabs/edit', $rID); bizWindowClose('winNewTab');"]];
+            $data = ['content'=>['action'=>'eval','actionData'=>"accordionEdit('accTabs', 'dgTabs', 'divTabDetail', '".lang('details')."', 'bizuno/tabs/edit', $rID); bizWindowClose('winNewTab');"]];
         } else {
-            $html  = html5('frmTabs', ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/tabs/save"]]);
-            $html .= html5('id', ['attr'=>  ['type'=>'hidden', 'value'=>$rID]]);
-            $html .= html5('module_id', ['attr'=>  ['type'=>'hidden', 'value'=>isset($values['module_id'])? $values['module_id']: '']]);
-            $html .= html5('table_id', ['attr'=>  ['type'=>'hidden', 'value'=>isset($values['table_id']) ? $values['table_id'] : '']]);
-            $html .= html5('title', ['label'=>lang('title'), 'attr'=>  ['value'=>isset($values['title']) ? $values['title'] : '']])."<br />";
-            $html .= html5('sort_order',  ['label'=>lang('sort_order'), 'attr'=>  ['value'=>isset($values['sort_order']) ? $values['sort_order'] : '']]);
-            $html .= html5('', ['icon'=>'save','events'=>  ['onClick'=>"jq('#frmTabs').submit();"]]);
-            $html .= '</form>';
             $data = ['type'=>'divHTML',
-                'divs'=>  ['tabDetail'=>  ['order'=>50,'type'=>'html','html'=>$html]],
+                'divs'   => [
+                    'formBOF'=> ['order'=>10,'type'=>'form',  'key' =>'frmTabs'],
+                    'body'   => ['order'=>50,'type'=>'fields','keys'=>['id','module_id','table_id','title','sort_order','btnSave']],
+                    'formEOF'=> ['order'=>90,'type'=>'html',  'html'=>"</form>"]],
+                'forms' => [
+                    'frmTabs' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/tabs/save"]]],
+                'fields' => [
+                    'id'        => ['order'=> 1,'attr'=>['type'=>'hidden', 'value'=>$rID]],
+                    'module_id' => ['order'=> 2,'attr'=>['type'=>'hidden', 'value'=>isset($values['module_id'])? $values['module_id']: '']],
+                    'table_id'  => ['order'=> 3,'attr'=>['type'=>'hidden', 'value'=>isset($values['table_id']) ? $values['table_id'] : '']],
+                    'title'     => ['order'=>10,'label'=>lang('title'), 'attr'=>  ['value'=>isset($values['title']) ? $values['title'] : '']],
+                    'sort_order'=> ['order'=>20,'label'=>lang('sort_order'), 'attr'=>  ['value'=>isset($values['sort_order']) ? $values['sort_order'] : '']],
+                    'btnSave'   => ['order'=>80,'icon'=>'save','events'=>['onClick'=>"jq('#frmTabs').submit();"]]],
                 'jsReady'=> ['tabsNew'=>"ajaxForm('frmTabs');"]];
         }
         $layout = array_replace_recursive($layout, $data);
@@ -219,7 +226,7 @@ class bizunoTabs
         }
         msgAdd(lang('tab').": $title - ".lang('msg_settings_saved'), 'success');
         msgLog(lang('tab').": $title (Module:$mID, Table:$tID) - ".($id?lang('update'):lang('add')));
-        $data = ['content'=>  ['action'=>'eval','actionData'=>"jq('#accTabs').accordion('select', 0); jq('#dgTabs').datagrid('reload'); jq('#divTabsDetail').html('&nbsp;');"]];
+        $data = ['content'=>  ['action'=>'eval','actionData'=>"jq('#accTabs').accordion('select', 0); bizGridReload('dgTabs'); jq('#divTabsDetail').html('&nbsp;');"]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -248,13 +255,13 @@ class bizunoTabs
         foreach ($struc as $settings) {
             if ($settings['tab'] == $rID) { $usage[] = $settings['label']; }
         }
-        if (sizeof($usage) > 0) { return msgAdd(lang('err_tab_in_use').implode(", ", $usage)); }
+        if (sizeof($usage) > 0) { return msgAdd($this->lang['err_tab_in_use'].implode(", ", $usage)); }
         $tabs = getModuleCache($mID, 'tabs');
         $title  = $tabs[$rID]['title'];
         unset($tabs[$rID]);
         setModuleCache($mID, 'tabs', false, $tabs);
         msgLog(lang('tab').": $title (Module:$mID) - ".lang('delete'));
-        $data = ['content'=>  ['action'=>'eval','actionData'=>"jq('#dgTabs').datagrid('reload');"]];
+        $data = ['content'=>  ['action'=>'eval','actionData'=>"bizGridReload('dgTabs');"]];
         $layout = array_replace_recursive($layout, $data);
     }
 }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-07-23
  * @filesource /lib/controller/module/bizuno/dashboards/todays_audit/todays_audit.php
  */
 
@@ -41,52 +41,47 @@ class todays_audit
 
     public function settingsStructure()
     {
-        $noYes = ['0'=>lang('no'),'1'=>lang('yes')];
-        $order = ['asc'=>lang('increasing'),'desc'=>lang('decreasing')];
-        for ($i = 0; $i <= $this->settings['max_rows']; $i++) { $list_length[] = ['id'=>$i, 'text'=>$i]; }
-        $temps = [0,10,20,25,30,35,40,45,50,55,60];
-        foreach ($temps as $value) { $trims[] = ['id'=>$value, 'text'=>$value]; }
+        $order = viewKeyDropdown(['asc'=>lang('increasing'),'desc'=>lang('decreasing')]);
         return [
             'max_rows'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['max_rows']]],
-            'users'   => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
-            'roles'   => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']],
-            'reps'    => ['label'=>lang('just_reps'),    'values'=>viewKeyDropdown($noYes),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['reps']]],
-            'num_rows'=> ['label'=>lang('limit_results'),'values'=>$list_length,'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['num_rows']]],
-            'trim'    => ['label'=>lang('truncate'),     'values'=>$trims,'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['trim']]],
-            'order'   => ['label'=>lang('sort_order'),   'values'=>viewKeyDropdown($order),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['order']]]];
+            'users'   => ['label'=>lang('users'),    'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
+            'roles'   => ['label'=>lang('groups'),   'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']],
+            'reps'    => ['label'=>lang('just_reps'),'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['reps']]],
+            'num_rows'=> ['order'=>10,'break'=>true, 'position'=>'after','label'=>lang('limit_results'),'options'=>['min'=>0,'max'=>50,'width'=>100],'attr'=>['type'=>'spinner','value'=>$this->settings['num_rows']]],
+            'trim'    => ['order'=>20,'break'=>true, 'position'=>'after','label'=>lang('truncate'),     'options'=>['min'=>0,'max'=>99,'width'=>100],'attr'=>['type'=>'spinner','value'=>$this->settings['trim']]],
+            'order'   => ['order'=>30,'break'=>true, 'position'=>'after','label'=>lang('sort_order'),   'values' =>$order,'attr'=>['type'=>'select','value'=>$this->settings['order']]]];
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
-        $data = $this->settingsStructure();
-        $data['btnSave'] = ['attr'=>['type'=>'button','value'=>lang('save')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]];
-        $html  = '<div>';
-        $html .= '  <div id="'.$this->code.'_attr" style="display:none">';
-        $html .= '    <form id="'.$this->code.'Form" action="">';
-        $html .= '      <div style="white-space:nowrap">'.html5($this->code.'num_rows',$data['num_rows']).'</div>';
-        $html .= '      <div style="white-space:nowrap">'.html5($this->code.'order',   $data['order'])   .'</div>';
-        $html .= '      <div style="white-space:nowrap">'.html5($this->code.'trim',    $data['trim'])    .'</div>';
-        $html .= '      <div style="text-align:right;">' .html5($this->code.'_btn',    $data['btnSave']) .'</div>';
-        $html .= '    </form>';
-        $html .= '  </div>';
-        // Build content box
-        $today  = date('Y-m-d'); //localeCalculateDate(date('Y-m-d'), -1); // get yesterday
+        $struc  = $this->settingsStructure();
+        $today  = date('Y-m-d');
         $filter = "date>'{$today}'";
         if ($this->settings['reps']) {
             if (getUserCache('security', 'admin', false, 0)<3) { $filter.= " AND user_id='".getUserCache('profile', 'admin_id', false, 0)."'"; }
         }
         $order  = $this->settings['order']=='desc' ? 'date DESC' : 'date';
         $result = dbGetMulti(BIZUNO_DB_PREFIX."audit_log", $filter, $order, ['date','user_id','log_entry'], $this->settings['num_rows']);
-        if (sizeof($result) > 0) {
-            foreach ($result as $entry) {
-                $html .= '  <div>'.substr($entry['date'], 11).($this->settings['reps'] ? ' - ' : ' ('.$this->getTitle($entry['user_id']).') ');
-                $html .= viewText($entry['log_entry'], $this->settings['trim']?$this->settings['trim']:999)."</div>\n";
+        if (empty($result)) { $rows[] = "<span>".lang('no_results')."</span>"; }
+        else {
+            foreach ($result as $entry) { // build the list
+                $left   = substr($entry['date'], 11).($this->settings['reps'] ? ' - ' : ' ('.$this->getTitle($entry['user_id']).') ');
+                $left  .= viewText($entry['log_entry'], $this->settings['trim']?$this->settings['trim']:999);
+                $right  = '';
+                $action = '';
+                $rows[] = viewDashLink($left, $right, $action);
             }
-        } else {
-            $html .= '  <div>'.lang('no_results')."</div>\n";
         }
-        $html .= '</div>';
-        return $html;
+        $layout = array_merge_recursive($layout, [
+            'divs'   => [
+                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'num_rows', $this->code.'order', $this->code.'trim']]]],
+                'body' =>['order'=>50,'type'=>'list','key'=>$this->code]],
+            'fields' => [
+                $this->code.'num_rows'=> array_merge_recursive($struc['num_rows'],['events'=>['onChange'=>"jq('#{$this->code}num_rows').keyup();"]]),
+                $this->code.'trim'    => array_merge_recursive($struc['trim'],    ['events'=>['onChange'=>"jq('#{$this->code}num_rows').keyup();"]]),
+                $this->code.'order'   => array_merge_recursive($struc['order'],   ['events'=>['onChange'=>"dashSubmit('$this->moduleID:$this->code', 0);"]])],
+            'lists'  => [$this->code=>$rows],
+            'jsReady'=>['init'=>"dashDelay('$this->moduleID:$this->code', 0, '{$this->code}num_rows'); dashDelay('$this->moduleID:$this->code', 0, '{$this->code}trim');"]]);
       }
 
     public function save()

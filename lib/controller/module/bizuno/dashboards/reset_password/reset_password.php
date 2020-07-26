@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-04-23
  * @filesource /lib/controller/module/bizuno/dashboards/reset_password/reset_password.php
  */
 
@@ -39,40 +39,42 @@ class reset_password
         $this->lang    = getMethLang($this->moduleID, $this->methodDir, $this->code);
     }
 
-    public function render()
+    public function render(&$layout=[])
     {
-        $portal = explode('.', $_SERVER['SERVER_ADDR']);
-        $data = ['type'    => 'html',
-            'title'    => lang('reset_password'),
-            'username'     => ['label'=>lang('email'),            'attr'=>['type'=>'text',    'required'=>true,'size'=>40,'value'=>'']],
-            'password'     => ['label'=>$this->lang['reset_code'],'attr'=>['type'=>'password','required'=>true,'size'=>40]],
-            'newPass'      => ['label'=>lang('password_new'),     'attr'=>['type'=>'password','required'=>true,'size'=>40]],
-            'newPassrepeat'=> ['label'=>lang('password_confirm'), 'attr'=>['type'=>'password','required'=>true,'size'=>40]],
-            'language'     => ['label'=>lang('language'), 'values'=>viewLanguages(),'attr'=>['type'=>'select']],
-            'image_title'  => ['label'=>getModuleCache('bizuno','properties', 'title'),'attr'=>['type'=>'img','src'=>BIZUNO_LOGO,'height'=>'50']],
-            'btnReset'     => ['attr'=>['type'=>'button','value'=>lang('reset')],'styles'=>['cursor'=>'pointer'],'events'=>['onClick'=>"jq('#pwResetForm').submit();"]]];
-        $data['username']['attr']['value'] = clean('bizuno_user', 'text', 'cookie');
-        $data['language']['attr']['value'] = clean('bizuno_lang', 'text', 'cookie');
-        $html = '<div><!-- reset_password section -->
-    <div id="divLogin" style="text-align:center">
-        <form id="pwResetForm" method="post" action="'.BIZUNO_AJAX.'&p=bizuno/portal/bizunoResetPW">
-            <p>'.html5('email',  $data['username']).'</p>
-            <p>'.html5('pass',  $data['password']).'</p>
-            <p>'.html5('NewPW',  $data['newPass']).'</p>
-            <p>'.html5('NewPWRP',$data['newPassrepeat']).'</p>
-            <div style="text-align:right">'.html5('btnReset', $data['btnReset']).'</div>
-            <div style="text-align:right">('.$portal[3].')</div>
-        </form>
-    </div>
-</div>';
-        $js = "
+        $portal= explode('.', $_SERVER['SERVER_ADDR']);
+        $email = clean('bizunoUser', ['format'=>'email','default'=>''], 'cookie');
+        $js    = "
 ajaxForm('pwResetForm');
 jq('#pwResetForm').keypress(function(event){
     var keycode = (event.keyCode ? event.keyCode : event.which);
     if (keycode == '13') if (jq('#pwResetForm').form('validate')) { jq('body').addClass('loading'); jq('#pwResetForm').submit(); }
 });
 bizFocus('UserID');";
-        $html .= htmlJS($js);
-        return $html;
+        $layout = array_merge_recursive($layout, [
+            'divs'  => [
+                'divLogin' =>['order'=>30,'type'=>'divs','attr'=>['id'=>'divLogin'],'divs'=>[
+                    'head'    => ['order'=>10,'type'=>'html',  'html'=>"<p>&nbsp;</p>"],
+                    'formBOF' => ['order'=>20,'type'=>'form',  'key' =>'pwResetForm'],
+                    'email'   => ['order'=>50,'type'=>'fields','keys'=>['email']],
+                    'br1'     => ['order'=>51,'type'=>'html',  'html'=>"<br />"],
+                    'pass'    => ['order'=>52,'type'=>'fields','keys'=>['pass']],
+                    'br2'     => ['order'=>53,'type'=>'html',  'html'=>"<br />"],
+                    'NewPW'   => ['order'=>54,'type'=>'fields','keys'=>['NewPW']],
+                    'br3'     => ['order'=>55,'type'=>'html',  'html'=>"<br />"],
+                    'NewPWRP' => ['order'=>56,'type'=>'fields','keys'=>['NewPWRP']],
+                    'btnStrt' => ['order'=>59,'type'=>'html',  'html'=>'<div style="text-align:right">'],
+                    'btnLogin'=> ['order'=>60,'type'=>'fields','keys'=>['btnReset']],
+                    'btnEnd'  => ['order'=>61,'type'=>'html',  'html'=>"</div>"],
+                    'formEOF' => ['order'=>90,'type'=>'html',  'html'=>"</form>"]]],
+                'divSrv'   => ['order'=>99,'type'=>'html','html'=>'('.$portal[3].')']],
+            'forms' => [
+                'pwResetForm'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/portal/bizunoResetPW"]]],
+            'fields'=> [
+                'email'   => ['order'=>10,'label'=>lang('email'),            'options'=>['width'=>300,'height'=>30,'value'=>"'$email'",'validType'=>"'email'"],'attr'=>['value'=>$email,'required'=>true]],
+                'pass'    => ['order'=>20,'label'=>$this->lang['reset_code'],'attr'=>['type'=>'password','required'=>true]],
+                'NewPW'   => ['order'=>30,'label'=>lang('password_new'),     'attr'=>['type'=>'password','required'=>true]],
+                'NewPWRP' => ['order'=>40,'label'=>lang('password_confirm'), 'attr'=>['type'=>'password','required'=>true]],
+                'btnReset'=> ['order'=>60,'attr'=>['type'=>'button','value'=>lang('reset')],'events'=>['onClick'=>"jq('#pwResetForm').submit();"]]],
+            'jsReady'=> ['init'=>$js]]);
     }
 }

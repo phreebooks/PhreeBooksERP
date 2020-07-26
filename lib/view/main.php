@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-16
+ * @version    4.x Last Update: 2020-07-10
  * @filesource /view/main.php
  */
 
@@ -27,14 +27,15 @@ bizAutoLoad(BIZUNO_ROOT."portal/view.php", 'portalView');
 
 final class view extends portalView
 {
-    function __construct($data=[])
+    var $html = ''; // fuly formed HTML/data to send to client
+
+    function __construct($data=[], $scope='default')
     {
         // declare global data until all modules are converted to new nested structure
         global $viewData;
         $viewData = $data;
-        $this->output = ['head'=>[],'jsHead'=>[],'body'=>'','jsBody'=>[],'jsReady'=>[],'jsResize'=>[],'raw'=>''];
         parent::__construct();
-        $this->render($data);
+        $this->render($data, $scope);
     }
 
     /**
@@ -43,118 +44,193 @@ final class view extends portalView
      * @param array $data - The layout to render from
      * @return string - Either HTML or JSON depending on expected response
      */
-    private function render($data=[])
+    private function render($data=[], $scope='default')
     {
         global $msgStack;
         dbWriteCache();
         $type = !empty($data['type']) ? $data['type'] : 'json';
         switch ($type) {
             case 'datagrid':
-                if (!empty($data['key'])){ $content = dbTableRead($data['datagrid'][$data['key']]); } // new way, aligns with manager structures
-                else                     { $content = dbTableRead($data['structure']); } // old way
+                $content = dbTableRead($data['datagrid'][$data['key']]);
                 $content['message'] = $msgStack->error;
                 msgDebug("\n datagrid results = ".print_r($content, true));
                 echo json_encode($content);
                 $msgStack->debugWrite();
                 exit();
-            case 'divHTML':
-                $this->renderDivs($data);
-                $this->renderJS($data); // add the javascript
-                msgDebug("\n sending type: divHTML and data = {$this->output['body']}");
-                echo $this->output['body'];
-                $msgStack->debugWrite();
-                exit();
-            case 'page':
-                if (!empty($data['jsHead'])) { // move the jsHead to the HTML <head> tag
-                    $data['htmlHead'] = $data['jsHead'];
-                    unset($data['jsHead']);
-                }
-                $this->setEnvHTML($this->output, $data);
-                $this->renderJS($data);
-                $this->renderDOM($this->output);
-                $msgStack->debugWrite();
-                break;
             case 'raw':
                 msgDebug("\n sending type: raw and data = {$data['content']}");
                 echo $data['content'];
                 $msgStack->debugWrite();
                 exit();
-            case 'popup': $this->renderPopup($data); // make layout changes per device
+            case 'divHTML':
+                $this->renderDivs($data); // may add JS, generates 'body'
+                $dom = $this->html;
+                $dom.= $this->renderJS($data);
+                msgDebug("\n sending type: divHTML and data = $dom");
+                echo $dom;
+                $msgStack->debugWrite();
+                break;
+            case 'page':
+                $dom = $this->viewDOM($data, $scope); // formats final HTML to specific host expectations
+                msgDebug("\n sending type: page and data = $dom");
+                echo $dom;
+                $msgStack->debugWrite();
+                break;
+            case 'popup':
+                $dom = $this->renderPopup($data); // make layout changes per device then treat like div
+                msgDebug("\n sending type: popup and data = $dom");
+                echo $dom;
+                $msgStack->debugWrite();
+                exit;
             case 'json':
             default:
                 if (isset($data['action'])){ $data['content']['action']= $data['action']; }
                 if (isset($data['divID'])) { $data['content']['divID'] = $data['divID']; }
-                if (isset($data['divs']))  { $this->renderDivs($data); }
-                $this->renderJS($data, false);
-                $data['content']['html'] = empty($data['content']['html']) ? $this->output['body'] : $data['content']['html'].$this->output['body'];
+                $this->renderDivs($data);
+                $this->html .= $this->renderJS($data, false);
+                $data['content']['html'] = empty($data['content']['html']) ? $this->html : $data['content']['html'].$this->html;
                 $data['content']['message'] = $msgStack->error;
                 msgDebug("\n json return (before encoding) = ".print_r($data['content'], true));
+                ob_clean(); // in case there is something there, this will clear everything to prevent json errors
                 echo json_encode($data['content']);
                 $msgStack->debugWrite();
                 exit();
         }
     }
 
-    private function renderPopup(&$data)
+    /**
+     * Renders the HTML for the <head> tag
+     * @param type $data
+     */
+    protected function renderHead(&$data=[])
     {
         global $html5;
-        switch($GLOBALS['myDevice']) {
-            case 'mobile': // set a new panel
-                // need container div with mobile panel
-                $divsTemp = $data['divs'];
-                $header   = ['title'=>$data['title'],'left'=>['close'],'right'=>[]];
-                $data['divs'] = [
-                    'header'=> ['order'=>  1,'type'=>'html','html'=>$html5->mobileMenu($header, 'header')],
-                    'bodyS' => ['order'=>  2,'type'=>'html','html'=>"\n".'<div class="easyui-panel"><!-- start body -->'."\n"],
-                    'body'  => ['order'=> 50,'type'=>'divs','divs'=>[$divsTemp]],
-                    'bodyE' => ['order'=> 98,'type'=>'html','html'=>"\n</div><!-- end body -->\n\n"],
-                    'footer'=> ['order'=> 99,'type'=>'html','html'=>$html5->mobileMenu([], 'footer')]];
-                $data['divs'] = array_merge($data['divs'], $divsTemp);
-                $data['jsReady'][] = "jq.mobile.go('#navPopup'); jq.parser.parse('#navPopup');"; // load the div, init easyui components
-                $data['content']['action'] = 'newDiv';
-                break;
-            case 'tablet':
-            case 'desktop': // set a javascript popup window
-            default:
-                $data['content']['action'] = 'window';
-                $data['content']['title'] = $data['title'];
-                $data['content'] = array_merge($data['content'], $data['attr']);
+        msgDebug("\nEntering renderHead");
+        $html = '';
+        $head = sortOrder($data['head']);
+        if (!empty($head)) {
+            foreach ($head as $value) {
+                $html .= "\t";
+                $html5->buildDiv($html, $value);
+            }
         }
+        if (!empty($data['jsHead'])) {
+            $html .= '<script type="text/javascript">'."\n".implode("\n", $data['jsHead'])."\n</script>\n";
+            $data['jsHead'] = [];
+        }
+        return $html;
     }
 
-    private function renderDivs($data)
+    /**
+     *
+     * @global \bizuno\class $html5
+     * @param type $data
+     * @param type $type
+     * @return type
+     */
+    protected function renderDivs($data)
     {
         global $html5;
-        if (!isset($data['divs'])) { return; }
+        if (empty($data)) { return ''; }
+        $header = $footer = '';
         msgDebug("\nEntering renderDivs");
-        $html5->buildDivs($this->output, $data);
+        $this->html = $html5->buildDivs($data, 'divs'); // generates $this->html body but can add headers and footers
+        if (!empty($data['header'])) {
+            $header .= "<header>\n";
+            $html5->buildDiv($header, $data['header']);
+            $header .= "</header>\n";
+        }
+        if (!empty($data['footer'])) {
+            $footer .= "<footer>\n";
+            $html5->buildDiv($footer, $data['footer']);
+            $footer .= "</footer>\n";
+        }
+        return "$header\n$footer\n$this->html\n";
     }
 
-    private function renderJS($data, $addMsg=true)
+    /**
+     *
+     * @global \bizuno\class $html5
+     * @param type $data
+     * @param type $addMsg
+     * @return string
+     */
+    protected function renderJS($data, $addMsg=true)
     {
         global $html5;
+        $dom = '';
         msgDebug("\nEntering renderJS");
         if (!isset($data['jsHead']))   { $data['jsHead']  = []; }
         if (!isset($data['jsBody']))   { $data['jsBody']  = []; }
         if (!isset($data['jsReady']))  { $data['jsReady'] = []; }
         if (!isset($data['jsResize'])) { $data['jsResize']= []; }
         // gather everything together
-        $jsHead  = array_merge($this->output['jsHead'],  $data['jsHead'],  $html5->jsHead);
-        $jsBody  = array_merge($this->output['jsBody'],  $data['jsBody'],  $html5->jsBody);
-        $jsReady = array_merge($this->output['jsReady'], $data['jsReady'], $html5->jsReady);
-        $jsResize= array_merge($this->output['jsResize'],$data['jsResize'],$html5->jsResize);
-        if (sizeof($jsResize)) { $jsReady['reSize'] = "var windowWidth = jq(window).width();\njq(window).resize(function() { if (jq(window).width() != windowWidth) { windowWidth = jq(window).width(); ".implode(" ", $jsResize)." } });"; }
+        $jsHead  = array_merge($data['jsHead'],  $html5->jsHead);
+        $jsBody  = array_merge($data['jsBody'],  $html5->jsBody);
+        $jsReady = array_merge($data['jsReady'], $html5->jsReady);
+        $jsResize= array_merge($data['jsResize'],$html5->jsResize);
+        msgDebug("\n jsHead = ".print_r($jsHead, true));
+        msgDebug("\n jsBody = ".print_r($jsBody, true));
+        msgDebug("\n jsReady = ".print_r($jsReady, true));
+        msgDebug("\n jsResize = ".print_r($jsResize, true));
+        if (sizeof($jsResize)) { $jsHead['reSize'] = "var windowWidth = jq(window).width();
+function resizeEverything() { ".implode(" ", $jsResize)." }
+jq(window).resize(function() { if (jq(window).width() != windowWidth) { windowWidth = jq(window).width(); resizeEverything(); } });"; }
         if ($addMsg) { $jsReady['msgStack'] = $html5->addMsgStack(); }
         // Render the output
         if (sizeof($jsHead)) { // first
-            $this->output['body'] .= '<script type="text/javascript">'."\n".implode("\n", $jsHead)."\n</script>\n";
+            $dom .= '<script type="text/javascript">'."\n".implode("\n", $jsHead)."\n</script>\n";
         }
         if (sizeof($jsBody)) { // second
-            $this->output['body'] .= '<script type="text/javascript">'."\n".implode("\n", $jsBody)."\n</script>\n";
+            $dom .= '<script type="text/javascript">'."\n".implode("\n", $jsBody)."\n</script>\n";
         }
         if (sizeof($jsReady)) { // doc ready, last
-            $this->output['body'] .= '<script type="text/javascript">'."jq(document).ready(function() {\n".implode("\n", $jsReady)."\n});\n</script>\n";
+            $dom .= '<script type="text/javascript">'."jq(document).ready(function() {\n".implode("\n", $jsReady)."\n});\n</script>\n";
         }
+        return $dom;
+    }
+
+    /**
+     * Renders popups which vary based on the type of device
+     * @global array $msgStack
+     * @param type $data
+     * @return type
+     */
+    public function renderPopup($data)
+    {
+        global $msgStack, $html5;
+        switch($GLOBALS['myDevice']) {
+            case 'mobile': // set a new panel
+                if (biz_validate_user()) {
+                    $data['header'] = ['classes'=>['m-toolbar'],'type'=>'divs','divs'=>[
+//                      'left'  => ['order'=>10,'type'=>'menu','size'=>'small','hideLabels'=>true,'classes'=>['m-left'], 'options'=>['plain'=>'true'],
+//                          'data'=>$html5->layoutMenuLeft('back')],
+                        'center'=> ['order'=>20,'type'=>'html','classes'=>['m-title'],'html'=>!empty($data['title']) ? $data['title'] : ''],
+                        'right' => ['order'=>30,'type'=>'menu','size'=>'small','hideLabels'=>true,'classes'=>['m-right'],'options'=>['plain'=>'true'],
+                            'data'=>$html5->layoutMenuLeft('back')]]];
+                } else {
+                    $data['header'] = ['classes'=>['m-toolbar'],'type'=>'divs','divs'=>[
+                        'center'=> ['order'=>20,'type'=>'html','classes'=>['m-title'],'html'=>!empty($data['title']) ? $data['title'] : '']]];
+                }
+                $data['jsReady'][] = "jq.mobile.go('#navPopup'); jq.parser.parse('#navPopup');"; // load the div, init easyui components
+                $dom  = $this->renderDivs($data);
+                $dom .= $this->renderJS($data);
+                $data['content']['action']= 'newDiv';
+                $data['content']['html']  = $dom;
+                break;
+            case 'tablet':
+            case 'desktop': // set a javascript popup window
+            default:
+                $data['content']['action']= 'window';
+                $data['content']['title'] = $data['title'];
+                $data['content'] = array_merge($data['content'], $data['attr']);
+                $this->renderDivs($data);
+                $this->html .= $this->renderJS($data, false);
+                $data['content']['html']  = empty($data['content']['html']) ? $this->html : $data['content']['html'].$this->html;
+                break;
+        }
+        $data['content']['message'] = $msgStack->error;
+        return json_encode($data['content']);
     }
 }
 
@@ -162,7 +238,7 @@ final class view extends portalView
  * Formats a system value to the locale view format
  * @global array $currencies
  * @param mixed $value - value to be formatted
- * @param string $format - Specifies the formatting ot apply
+ * @param string $format - Specifies the formatting to apply
  * @return string
  */
 function viewFormat($value, $format = '')
@@ -181,7 +257,8 @@ function viewFormat($value, $format = '')
         case 'curLong':
         case 'curExc':     return viewCurrency($value, $format);
         case 'date':
-        case 'datetime':   return viewDate($value);
+        case 'dateNoY':
+        case 'datetime':   return viewDate($value, false, $format);
         case 'dateLong':   return viewDate($value).' '.substr($value, strpos($value, ' '));
         case 'encryptName':if (empty(getUserCache('profile', 'admin_encrypt'))) { return ''; }
             bizAutoLoad(BIZUNO_LIB."model/encrypter.php", 'encryption');
@@ -257,12 +334,33 @@ function viewFormat($value, $format = '')
 }
 
 /**
+ *
+ * @param type $content
+ * @param type $action
+ */
+function viewDashLink($left='', $right='', $action='')
+{
+    return '<div class="dashHover"><span style="width:100%;float:left;height:20px;"><span style="float:left" class="menuHide dashAction">'.$action.'</span>'.$left.'<span style="float:right">'.$right.'</span></span></div>';
+}
+
+/**
+ *
+ * @param type $content
+ * @param type $action
+ */
+function viewDashList($content='', $action='')
+{
+    return '<div class="dashHover"><span style="width:100%;float:left">'.$content.'<span style="float:right" class="menuHide dashAction">'.$action.'</span></span></div>';
+}
+
+/**
  * This function takes the db formatted date and converts it into a locale specific format as defined in the settings
- * @param date $raw_date
- * @param bool $long
+ * @param date $raw_date - raw date in db format
+ * @param bool $long - [default: false] Long format
+ * @param sring $action - [default: date] The desired output format
  * @return string - Formatted date for rendering
  */
-function viewDate($raw_date = '', $long = false)
+function viewDate($raw_date = '', $long=false, $action='date')
 {
     // from db to locale display format
     if (empty($raw_date) || $raw_date=='0000-00-00' || $raw_date=='0000-00-00 00:00:00') { return ''; }
@@ -273,8 +371,8 @@ function viewDate($raw_date = '', $long = false)
     $hour   = $long ? substr($raw_date, 11, 2) : 0;
     $minute = $long ? substr($raw_date, 14, 2) : 0;
     $second = $long ? substr($raw_date, 17, 2) : 0;
-    if ($month < 1   || $month > 12)  { $error = true; }
-    if ($day   < 1   || $day > 31)    { $error = true; }
+    if ($month<    1 || $month>   12) { $error = true; }
+    if ($day  <    1 || $day  >   31) { $error = true; }
     if ($year < 1900 || $year > 2099) { $error = true; }
     if ($error) {
         $date_time = time();
@@ -282,6 +380,7 @@ function viewDate($raw_date = '', $long = false)
         $date_time = mktime($hour, $minute, $second, $month, $day, $year);
     }
     $format = getModuleCache('bizuno', 'settings', 'locale', 'date_short').($long ? ' h:i:s a' : '');
+    if ($action=='dateNoY') { $format = trim(str_replace('Y', '', $format), "-./"); }// no year
     return date($format, $date_time);
 }
 
@@ -411,6 +510,26 @@ function viewScreenSize()
     $size = 'large';
     return $size;
 }
+
+/**
+ * Generates a value if at a sub menu dashboard page.
+ * @param string $menuID - Derives from menuID get variable
+ * @return array structure of menu
+ */
+function viewSubMenu($menuID=false) {
+    if (!$menuID) { $menuID = clean('menuID', 'cmd', 'get'); }
+    if (empty($menuID) || $menuID=='home') { return; } // only show submenu when viewing a dashboard
+    if ($menuID == 'settings') { // special case for settings in the quickbar
+        $menu = getUserCache('quickBar');
+        $prop = $menu['child']['home'];
+    } else {
+        $menu = getUserCache('menuBar');
+        if (!isset($menu['child'][$menuID])) { return ''; }
+        $prop = $menu['child'][$menuID];
+    }
+    return $prop;
+}
+
 /**
  * Takes a text string and truncates it to a given length, if the string is longer will append ... to the truncated string
  * @param string $text - Text to test/truncate
@@ -726,8 +845,16 @@ function viewMimeIcon($type)
  */
 function viewMain()
 {
-    $view = new portalView();
-    return $view->viewMain();
+    global $html5;
+    $menuID = clean('menuID', ['format'=>'cmd', 'default'=>'home'], 'get');
+    switch ($GLOBALS['myDevice']) {
+        case 'mobile':  $data = $html5->layoutMobile($menuID);  break;
+        case 'tablet': // use desktop layout as the screen is big enough
+        default:
+        case 'desktop': $data = $html5->layoutDesktop($menuID); break;
+    }
+    if (!getUserCache('profile', 'biz_id')) { unset($data['header'], $data['footer']); }
+    return $data;
 }
 
 /**
@@ -739,7 +866,9 @@ function viewMain()
  */
 function adminStructure($module, $structure=[], $lang=[])
 {
-    $title= getModuleCache($module, 'properties', 'title').' - '.lang('settings');
+    $props= getModuleCache($module, 'properties');
+    msgDebug("\nmodule $module properties = ".print_r($props, true));
+    $title= $props['title'].' - '.lang('settings');
     $data = ['title'=>$title, 'statsModule'=>$module, 'security'=>getUserCache('security', 'admin', false, 0),
         'divs'    => [
             'heading'=> ['order'=>30,'type'=>'html','html'=>html5('',['icon'=>'back','events'=>['onClick'=>"hrefClick('bizuno/settings/manager');"]])."<h1>$title</h1>"],
@@ -754,7 +883,21 @@ function adminStructure($module, $structure=[], $lang=[])
         'jsReady'=>['init'=>"ajaxForm('frmAdmin');"]];
     if (!empty($structure)) { adminSettings($data, $structure, $lang); }
     else                    { unset($data['tabs']['tabAdmin']['divs']['settings'], $data['jsReady']['init']); }
+    $methDirs = ['dashboards'];
+    if     (isset($props['dirMethods']) && is_array($props['dirMethods'])) { $methDirs = array_merge($methDirs, $props['dirMethods']); }
+    elseif (!empty($props['dirMethods']))  { $methDirs[] = $props['dirMethods']; }
+    $order = 70;
+    foreach ($methDirs as $folder) { // keys = 'dashboards','totals','carriers', etc.
+        $methProps = getModuleCache($module, $folder);
+        if (empty($methProps)) { continue; }
+        msgDebug("\nReady to process folder $folder and props = ".print_r($methProps, true));
+        $html = adminMethods($module, $methProps, $folder);
+        $data['tabs']['tabAdmin']['divs']['tab'.$folder] = ['order'=>$order,'label'=>lang($folder),'type'=>'html','html'=>$html];
+        $order++;
+    }
     return array_replace_recursive(viewMain(), $data);
+
+
 }
 
 function adminSettings(&$data, $structure, $lang)
@@ -780,7 +923,70 @@ function adminSettings(&$data, $structure, $lang)
 }
 
 /**
- * Builds the HTML for custom tabs, sorts, generates fieldset and input HTML
+ * Generates the view for modules methods including any dashboards
+ * @param string $module - module or extension id
+ * @param array $props - module properties from cache
+ * @param string $key - id of the folder to build view
+ * @return array - HTML code for the structure
+ */
+function adminMethods($module, $props, $key)
+{
+    $security = validateSecurity('bizuno', 'admin', 1);
+    $fields = [
+        'btnMethodAdd' => ['attr'=>['type'=>'button','value'=>lang('install')],'hidden'=>$security>1?false:true],
+        'btnMethodDel' => ['attr'=>['type'=>'button','value'=>lang('remove')], 'hidden'=>$security>4?false:true],
+        'btnMethodProp'=> ['icon'=>'settings'],
+        'settingSave'  => ['icon'=>'save']];
+    $html  = '<table style="border-collapse:collapse;width:100%">'."\n".' <thead class="panel-header">'."\n";
+    $title = $key == 'dashboards' ? lang('dashboard') : lang('method');
+    $html .= "  <tr><th>&nbsp;</th><th>$title</th><th>".lang('description')."</th><th>".lang('action')."</th></tr>\n </thead>\n <tbody>\n";
+    foreach ($props as $method => $settings) {
+        $fqcn = "\\bizuno\\$method";
+        bizAutoLoad("{$settings['path']}$method.php", $fqcn);
+        if (empty($settings['settings'])) { $settings['settings'] = []; }
+        $clsMeth = new $fqcn($settings['settings']);
+        if (isset($clsMeth->hidden) && $clsMeth->hidden) { continue; }
+        $html .= "  <tr>\n";
+        $html .= '    <td valign="top">'.htmlFindImage($settings, "32")."</td>\n";
+        $html .= '    <td valign="top" '.($settings['status'] ? ' style="background-color:lightgreen"' : '').">".$settings['title'].'</td>';
+        $html .= "    <td><div>".$settings['description'];
+        if ($key <> 'dashboards' && !$settings['status'] && $security > 1) {
+            $html .= "</div></td>\n";
+            $fields['btnMethodAdd']['events']['onClick'] = "jsonAction('bizuno/settings/methodInstall&module=$module&path=$key&method=$method');";
+            $html .= '    <td valign="top" style="text-align:right;">'.html5('install_'.$method, $fields['btnMethodAdd'])."</td>\n";
+        } else {
+            $html .= "</div>";
+            $html .= '<div id="divMethod_'.$method.'" style="display:none;" class="layout-expand-over">';
+            $html .= html5("frmMethod_$method", ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/methodSettingsSave&module=$module&type=$key&method=$method"]]);
+            $structure = method_exists($clsMeth, 'settingsStructure') ? $clsMeth->settingsStructure() : [];
+            foreach ($structure as $setting => $values) {
+                $mult = isset($values['attr']['multiple']) ? '[]' : '';
+                if (isset($values['attr']['multiple'])) { $values['attr']['value'] = explode(':', $values['attr']['value']); }
+                $html .= html5($method.'_'.$setting.$mult, $values)."<br />\n";
+            }
+            $fields['settingSave']['events']['onClick'] = "jq('#frmMethod_".$method."').submit();";
+            $html  .= '<div style="text-align:right">'.html5('imgMethod_'.$method, $fields['settingSave']).'</div>';
+            $html  .= "</form></div>";
+            htmlQueue("ajaxForm('frmMethod_$method');", 'jsReady');
+            $html  .= "</td>\n";
+            $html  .= '<td valign="top" nowrap="nowrap" style="text-align:right;">' . "\n";
+            $fields['btnMethodDel']['events']['onClick'] = "if (confirm('".lang('msg_method_delete_confirm')."')) jsonAction('bizuno/settings/methodRemove&module=$module&type=$key&method=$method');";
+            if ($security>4 && $key<>'dashboards' && empty($clsMeth->required)) {
+                $html .= html5('remove_'.$method, $fields['btnMethodDel']) . "\n";
+            }
+            $fields['btnMethodProp']['events']['onClick'] = "jq('#divMethod_{$method}').toggle('slow');";
+            $html .= html5('prop_'.$method, $fields['btnMethodProp'])."\n";
+            $html .= "</td>\n";
+        }
+        $html .= "  </tr>\n";
+        $html .= '<tr><td colspan="5"><hr /></td></tr>'."\n";
+    }
+    $html .= " </tbody>\n</table>\n";
+    return $html;
+}
+
+/**
+ * Builds the HTML for custom tabs, sorts, generates structure
  * @param array $data - Current working layout to modify
  * @param array $structure - Current structure to process data
  * @param string $module - Module ID
@@ -789,58 +995,49 @@ function adminSettings(&$data, $structure, $lang)
  */
 function customTabs(&$data, $module, $tabID)
 {
-    $structure = $data['fields'];
-    // @todo Use sortOrder function
-    $temp = []; // sort the fields
-    foreach ($structure as $key => $value) { $temp[$key] = isset($value['order']) ? $value['order'] : 50; }
-    array_multisort($temp, SORT_ASC, $structure);
     $tabs = getModuleCache($module, 'tabs');
     if (empty($tabs)) { return; }
-    foreach ($structure as $key => $field) { // pull out the groups
+    $data['fields'] = sortOrder($data['fields']);
+    foreach ($data['fields'] as $key => $field) { // gather by groups
         if (isset($field['tab']) && $field['tab'] > 0) { $tabs[$field['tab']]['groups'][$field['group']]['fields'][$key] = $field; }
     }
     foreach ($tabs as $tID => $tab) {
         if (!isset($tab['groups'])) { continue; }
         if (!isset($tab['title'])) { $tab['title'] = 'Untitled'; }
         if (!isset($tab['group'])) { $tab['group'] = $tab['title']; }
-        $temp = [];
-        foreach ($tab['groups'] as $key => $value) { $temp[$key] = isset($value['order']) ? $value['order'] : 50; }
-        array_multisort($temp, SORT_ASC, $tab['groups']);
-        $html = '';
-        foreach ($tab['groups'] as $gID =>$group) {
-            if (isset($group['fields']) && sizeof($group['fields']) > 0) {
-                $html .= "  <fieldset>";
-                $title = isset($group['title']) ? $group['title'] : $gID;
-                if ($title) { $html .= "<legend>$title</legend>\n"; }
-                foreach ($group['fields'] as $fID => $field) {
-                    $structure[$fID]['position'] = 'after'; // put the labels after
-                    switch($field['attr']['type']) {
-                        case 'radio':
-                            $cur = isset($structure[$fID]['attr']['value']) ? $structure[$fID]['attr']['value'] : '';
-                            foreach ($field['opts'] as $elem) {
-                                $structure[$fID]['attr']['value'] = $elem['id'];
-                                $structure[$fID]['attr']['checked'] = $cur == $elem['id'] ? true : false;
-                                $structure[$fID]['label'] = $elem['text'];
-                                $html .= "    ".html5($fID, $structure[$fID])."<br />\n";
-                            }
-                            break;
-                        case 'select': $structure[$fID]['values'] = $field['opts']; // set the choices and render
-                        default:       $html .= "    ".html5($fID, $structure[$fID])."<br />\n";
-                    }
+        $groups = sortOrder($tab['groups']);
+        $data['tabs'][$tabID]['divs']["tab_$tID"] = ['order'=>isset($tab['sort_order']) ? $tab['sort_order'] : 50,'label'=>$tab['title'],'type'=>'divs','classes'=>['areaView']];
+        foreach ($groups as $gID =>$group) {
+            if (empty($group['fields'])) { continue; }
+            $keys = [];
+            $title = isset($group['title']) ? $group['title'] : $gID;
+            foreach ($group['fields'] as $fID => $field) {
+                $keys[] = $fID;
+                switch($field['attr']['type']) {
+                    case 'radio':
+                        $cur = isset($data['fields'][$fID]['attr']['value']) ? $data['fields'][$fID]['attr']['value'] : '';
+                        foreach ($field['opts'] as $elem) {
+                            $data['fields'][$fID]['attr']['value'] = $elem['id'];
+                            $data['fields'][$fID]['attr']['checked'] = $cur == $elem['id'] ? true : false;
+                            $data['fields'][$fID]['label'] = $elem['text'];
+                        }
+                        break;
+                    case 'select': $data['fields'][$fID]['values'] = $field['opts']; // set the choices and render
+                    default:
                 }
-                $html .= "  </fieldset>\n";
             }
+            $data['tabs'][$tabID]['divs']["tab_$tID"]['divs']["{$tID}_{$gID}"] = ['order'=>10,'type'=>'panel','classes'=>['block33'],'key'=>"tab_{$tID}_{$gID}"];
+            $data['panels']["tab_{$tID}_{$gID}"] = ['label'=>$title,'type'=>'fields','keys'=>$keys];
         }
-        $data['tabs'][$tabID]['divs']["tab_".$tID] = ['type'=>'html', 'order'=>isset($tab['sort_order']) ? $tab['sort_order'] : 50, 'label'=>$tab['title'], 'html'=>$html];
     }
-    $data['fields'] = $structure;
+    msgDebug("\nstructure = ".print_r($data, true));
 }
 
 /**
- * This function builds an html element based on the properties passed, element of type INPUT is the default if not specified
+ * This function builds an HTML element based on the properties passed, element of type INPUT is the default if not specified
  * @param string $id - becomes the DOM id and name of the element
  * @param array $prop - structure of the HTML element
- * @return string $output - HTML5 compatible element
+ * @return string - HTML5 compatible element
  */
 function html5($id='', $prop=[])
 {
@@ -848,14 +1045,27 @@ function html5($id='', $prop=[])
     return $html5->render($id, $prop);
 }
 
-function htmlJS($js='')
+/**
+ * Adds HTML content to the specified queue in preparation to render.
+ * @global class $html5 - UI HTML render class
+ * @param string $html - Content to add to queue
+ * @param type $type - [default: body] Which queue to use, choices are: jsHead, jsBody, jsReady, jsResize, and body
+ */
+function htmlQueue($html, $type='body')
 {
-    if (!$js) { return ''; }
-    return '<script type="text/javascript">'."\n$js\n</script>\n";
+    global $html5;
+    switch ($type) {
+        case 'jsHead':   $html5->jsHead[]  = $html; break;
+        case 'jsBody':   $html5->jsBody[]  = $html; break;
+        case 'jsReady':  $html5->jsReady[] = $html; break;
+        case 'jsResize': $html5->jsResize[]= $html; break;
+        default:
+        case 'body':     $this->html .= $html; break;
+    }
 }
 
 /**
- * Searches a given directory for a filename match and generates html if found
+ * Searches a given directory for a filename match and generates HTML if found
  * @param string $path - path from the users root to search
  * @param string $filename - File name to search for
  * @param integer $height - Height of the image, width is auto-sized by the browser
@@ -930,125 +1140,12 @@ function dgHtmlTaxData($id, $field, $type='c', $xClicks='')
 }
 
 /**
- * This function builds the HTML output render a jQuery easyUI accordion feature
- * @param string $output - running string of them HTML output to be add to
- * @param array $prop - complete data array containing structure of entire page, only JavaScript part is used to force load from JavaScript data
- * @param string $id - accordion DOM ID
- * @param array $settings - the structure of the accordions (i.e. div structure for each accordion)
- */
-function htmlAccordion(&$output, $prop, $idx=false)
-{
-    global $html5;
-    if ($idx) { // legacy to old style
-        $prop = array_merge($prop['accordion'][$idx], ['id'=>$idx]);
-    }
-    $html5->layoutAccordion($output, $prop);
-}
-
-function htmlAddress(&$output, $prop)
-{
-    global $html5;
-    $html5->layoutAddress($output, $prop);
-}
-
-/**
- * This function builds the HTML (and JavaScript) content to render a jQuery easyUI grid
- * @param array $output - running HTML string to render the page
- * @param string $prop - The structure source data to pull from
- * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI grid appended to $output
- */
-function htmlDatagrid(&$output, $prop, $idx=false)
-{
-    global $html5;
-    $html5->layoutDatagrid($output, $prop, $idx);
-}
-
-/**
- * This function takes the menu structure and builds the easyUI HTML markup
- * @param string $output - The running html output
- * @param array $data - The current working structure to render
- * @return string - HTML formatted EasyUI menu appended to $output
- */
-function htmlMenu(&$output)
-{
-    global $html5;
-    $html5->menu($output);
-}
-
-/**
- * This function generates the tables pulled from the current structure, position: $data['tables'][$idx]
- * @param array $output - running HTML string to render the page
- * @param string $prop - The structure source data to pull from
- * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI tables appended to $output
- */
-function htmlTables(&$output, $prop, $idx=false)
-{
-    global $html5;
-    if ($idx) {  // legacy to old style
-        $prop = $prop['tables'][$idx];
-        $prop['attr']['id'] = $idx;
-    }
-    $html5->layoutTable($output, $prop);
-}
-
-/**
- * This function generates the tabs pulled from the current structure, position: $data['tabs'][$idx]
- * @param array $output - running HTML string to render the page
- * @param string $prop - The structure source data to pull from
- * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI tabs appended to $output
- */
-function htmlTabs(&$output, $prop, $idx=false)
-{
-    global $html5;
-    if ($idx) {  // legacy to old style
-        $prop = array_merge($prop['tabs'][$idx], ['id'=>$idx]);
-    }
-    $html5->layoutTab($output, $prop);
-}
-
-/**
- * This function generates a html toolbar pulled from the current structure
- * @param array $output - running HTML string to render the page
- * @param string $prop - The structure source data to pull from
- * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI toolbar appended to $output
- */
-function htmlToolbar(&$output, $prop, $idx=false)
-{
-    global $html5;
-    if ($idx) { // legacy to old style
-        if (empty($prop['toolbars'][$idx])) { return; }
-        $prop = array_merge($prop['toolbars'][$idx], ['id'=>$idx]);
-    }
-    $html5->layoutToolbar($output, $prop);
-}
-
-/**
- * This functions builds the HTML for a jQuery easyUI tree
- * @param array $output - running HTML string to render the page
- * @param string $prop - The structure source data to pull from
- * @param array $idx - The index in $data to grab the structure to build
- * @return string - HTML formatted EasyUI tree appended to $output
- */
-function htmlTree(&$output, $prop, $idx=false)
-{
-    global $html5;
-    if ($idx) {  // legacy to old style
-        $prop = array_merge($prop['tree'][$idx], ['id'=>$idx]);
-    }
-    return $html5->layoutTree($output, $prop);
-}
-
-/**
  * This function formats database data into a JavaScript array
  * @param array $dbData - raw data from database of rows matching given criteria
- * @param string $name - JavaScript variable name linked to the datagrid to populate with data
+ * @param string $name - JavaScript variable name linked to the grid to populate with data
  * @param array $structure - used for identifying the formatting of data prior to building the string
- * @param array $override - map to replace database field name to the datagrid column name
- * @return string $output - JavaScript string of data used to populate datagrids
+ * @param array $override - map to replace database field name to the grid column name
+ * @return string $output - JavaScript string of data used to populate grids
  */
 function formatDatagrid($dbData, $name, $structure=[], $override=[])
 {
@@ -1075,6 +1172,5 @@ function formatDatagrid($dbData, $name, $structure=[], $override=[])
             $rows[] = $temp;
         }
     }
-//    msgDebug("\n Added datagrid data rows: ".print_r($rows, true));
     return "var $name = ".json_encode(['total'=>sizeof($rows), 'rows'=>$rows]).";\n";
 }

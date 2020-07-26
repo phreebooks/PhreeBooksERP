@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-26
+ * @version    4.x Last Update: 2020-07-20
  * @filesource /lib/controller/module/phreebooks/dashboards/open_j06/open_j06.php
  */
 
@@ -42,19 +42,24 @@ class open_j06
 
     public function settingsStructure()
     {
-        for ($i = 0; $i <= $this->settings['max_rows']; $i++) { $list_length[] = ['id'=>$i, 'text'=>$i]; }
         return [
             'jID'     => ['attr'=>['type'=>'hidden','value'=>$this->settings['jID']]],
             'max_rows'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['max_rows']]],
             'users'   => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10, 'multiple'=>'multiple']],
             'roles'   => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10, 'multiple'=>'multiple']],
             'reps'    => ['label'=>lang('just_reps'),      'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['reps']]],
-            'disp_due'=> ['label'=>$this->lang['disp_due'],'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['disp_due']]],
-            'num_rows'=> ['label'=>lang('limit_results'),'values'=>$list_length,'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['num_rows']]],
-            'limit'   => ['label'=>lang('hide_future'),  'position'=>'after','attr'=>['type'=>'selNoYes','value'=>$this->settings['limit']]],
-            'order'   => ['label'=>lang('sort_order'),   'values'=>viewKeyDropdown($this->order),'position'=>'after','attr'=>['type'=>'select','value'=>$this->settings['order']]]];
+            'disp_due'=> ['order'=>10,'break'=>true,'position'=>'after','label'=>$this->lang['disp_due'],'attr'=>['type'=>'selNoYes','value'=>$this->settings['disp_due']]],
+            'num_rows'=> ['order'=>20,'break'=>true,'position'=>'after','label'=>lang('limit_results'),'options'=>['min'=>0,'max'=>50,'width'=>100],'attr'=>['type'=>'spinner','value'=>$this->settings['num_rows']]],
+            'limit'   => ['order'=>30,'break'=>true,'position'=>'after','label'=>lang('hide_future'),'attr'=>['type'=>'selNoYes','value'=>$this->settings['limit']]],
+            'order'   => ['order'=>40,'break'=>true,'position'=>'after','label'=>lang('sort_order'),'values'=>viewKeyDropdown($this->order),'attr'=>['type'=>'select','value'=>$this->settings['order']]]];
     }
 
+    /**
+     * Generates the structure for the dashboard view
+     * @global object $currencies - Sets the currency values for proper display
+     * @param array $layout - structure coming in
+     * @return modified $layout
+     */
     function render(&$layout=[])
     {
         global $currencies;
@@ -75,19 +80,16 @@ class open_j06
                 foreach ($result as $key => $entry) { $result[$key]['post_date'] = !empty($entry['terminal_date']) ? $entry['terminal_date'] : getTermsDate($entry['terms'], 'v', $entry['post_date']); }
                 $result = sortOrder($result, 'post_date', $this->settings['order']=='desc' ? 'desc' : 'asc');
             }
-            foreach ($result as $entry) { // build the list
-                $entry['total_amount'] += getPaymentInfo($entry['id'], $entry['journal_id']);
+            foreach ($result as $entry) {
+                $label  = !empty($entry['invoice_num']) ? "#{$entry['invoice_num']}" : lang('journal_main_waiting');
                 $currencies->iso  = $entry['currency'];
                 $currencies->rate = $entry['currency_rate'];
-                $row   = '<span style="float:left">';
-                if (empty($entry['invoice_num'])) {
-                    $row .= html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>lang('journal_main_waiting')]]);
-                } else {
-                    $row .= html5('', ['events'=>['onClick'=>"tabOpen('_blank', 'phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
-                }
-                $row  .= viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim).'</span><span style="float:right">'.viewFormat($entry['total_amount'], 'currency').'</span></li>';
-                $total+= $entry['total_amount'];
-                $rows[]= $row;
+                $entry['total_amount'] += getPaymentInfo($entry['id'], $entry['journal_id']);
+                $total += $entry['total_amount'];
+                $left   = viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim);
+                $right  = viewFormat($entry['total_amount'], 'currency');
+                $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>$label]]);
+                $rows[] = viewDashLink($left, $right, $action);
             }
             $currencies->iso  = getDefaultCurrency();
             $currencies->rate = 1;
@@ -96,16 +98,16 @@ class open_j06
         $filter = ucfirst(lang('filter')).": ".ucfirst(lang('sort'))." ".strtoupper($this->settings['order']).(!empty($this->settings['num_rows']) ? " ({$this->settings['num_rows']});" : '');
         $layout = array_merge_recursive($layout, [
             'divs'  => [
-                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'disp_due',$this->code.'num_rows', $this->code.'order', $this->code.'limit', $this->code.'_btn']]]],
-                'head' =>['order'=>40,'type'=>'html','html'=>$filter],
+                'admin'=>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'disp_due',$this->code.'num_rows', $this->code.'order', $this->code.'limit']]]],
+                'head' =>['order'=>40,'type'=>'html','html'=>$filter,'hidden'=>getModuleCache('bizuno','settings','general','hide_filters',0)],
                 'body' =>['order'=>50,'type'=>'list','key' =>$this->code]],
             'fields'=> [
-                $this->code.'disp_due'=> array_merge($struc['disp_due'],['order'=>10,'break'=>true]),
-                $this->code.'num_rows'=> array_merge($struc['num_rows'],['order'=>20,'break'=>true]),
-                $this->code.'order'   => array_merge($struc['order'],   ['order'=>30,'break'=>true]),
-                $this->code.'limit'   => array_merge($struc['limit'],   ['order'=>40,'break'=>true]),
-                $this->code.'_btn'    => ['order'=>90,'attr'=>['type'=>'button','value'=>lang('save')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
-            'lists' => [$this->code=>$rows]]);
+                $this->code.'num_rows'=> array_merge_recursive($struc['num_rows'],['events'=>['onChange'=>"jq('#{$this->code}num_rows').keyup();"]]),
+                $this->code.'disp_due'=> array_merge_recursive($struc['disp_due'],['events'=>['onChange'=>"dashSubmit('$this->moduleID:$this->code', 0);"]]),
+                $this->code.'limit'   => array_merge_recursive($struc['limit'],   ['events'=>['onChange'=>"dashSubmit('$this->moduleID:$this->code', 0);"]]),
+                $this->code.'order'   => array_merge_recursive($struc['order'],   ['events'=>['onChange'=>"dashSubmit('$this->moduleID:$this->code', 0);"]])],
+            'lists' => [$this->code=>$rows],
+            'jsReady'=>['init'=>"dashDelay('$this->moduleID:$this->code', 0, '{$this->code}num_rows');"]]);
       }
 
     function save()

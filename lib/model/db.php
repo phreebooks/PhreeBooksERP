@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-19
+ * @version    4.x Last Update: 2020-07-16
  * @filesource /lib/model/db.php
  */
 
@@ -108,7 +108,9 @@ class db extends \PDO
         msgDebug("\nFinished executing action $action for SQL (in $query_time ms): $sql returning result: $msgResult");
         if ($error) {
             msgDebug("\nSQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true), 'trap');
-            if ($verbose) { msgAdd("SQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true)); }
+            if ($verbose || 'phreesoft' <> BIZUNO_HOST) {
+                msgAdd("SQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true));
+            }
         }
         return $output;
     }
@@ -355,12 +357,14 @@ function dbWriteCache($usrEmail=false, $lang=false)
     if (!$usrEmail) { $usrEmail = $bizunoUser['profile']['email']; }
     if ($lang) { dbWriteLang($bizunoLang); } // save the language registry
     // save the users new cache
-    if (isset($GLOBALS['updateUserCache']) && $GLOBALS['updateUserCache']) {
+    if (!empty($GLOBALS['updateUserCache']) || !empty($GLOBALS['dbClearCache'])) {
         msgDebug("\nWriting user table");
-        dbWrite(BIZUNO_DB_PREFIX.'users', ['settings'=>json_encode($bizunoUser),'cache_date'=>date('Y-m-d H:i:s')], 'update', "email='$usrEmail'");
+        unset($bizunoUser['profile']['cache_date']); // clean up some unneeded fields
+        $data = ['settings'=>json_encode($bizunoUser), 'cache_date'=>!empty($GLOBALS['dbClearCache']) ? 'null' : date('Y-m-d H:i:s')];
+        dbWrite(BIZUNO_DB_PREFIX.'users', $data, 'update', "email='$usrEmail'");
         unset($GLOBALS['updateUserCache']);
     }
-    if (isset($GLOBALS['updateModuleCache'])) {
+    if (isset($GLOBALS['updateModuleCache']) && empty($GLOBALS['noBizunoDB'])) {
         ksort($bizunoMod);
         foreach ($bizunoMod as $module => $settings) {
             if (!empty($GLOBALS['updateModuleCache'][$module])) {
@@ -391,10 +395,10 @@ function dbWriteLang($lang=[], $iso='')
  * Clears the users cache by making it 'expired' for an individual user (if passed) or all users if not
  * @param string $email - users email address
  */
-function dbClearCache($email='')
+function dbClearCache()
 {
-    $crit = $email ? "email='$email'" : '';
-    dbWrite(BIZUNO_DB_PREFIX.'users', ['cache_date'=>'null'], 'update', $crit);
+    msgDebug("\nSetting global variable dbClearCache");
+    $GLOBALS['dbClearCache'] = true;
 }
 
 /**
@@ -718,8 +722,7 @@ function dbTableRead($data)
         foreach ($data['source']['filters'] as $key => $value) {
             if ($key == 'search') {
                 if (isset($value['attr']) && isset($value['attr']['value'])) {
-                    $search_text = addslashes($value['attr']['value']);
-                    $criteria[] = "(".implode(" LIKE '%$search_text%' OR ", $data['source']['search'])." LIKE '%$search_text%')";
+                    $criteria[] = dbGetSearch($value['attr']['value'], $data['source']['search']);
                 }
             } else {
                 if (!empty($value['sql'])) { $criteria[] = $value['sql']; }
@@ -740,7 +743,7 @@ function dbTableRead($data)
             if ($key == 'action') { continue; } // skip action column
             if (isset($value['field']) && strpos($value['field'], ":") !== false) { // look for embedded settings
                 $parts = explode(":", $value['field'], 2);
-                $aFields[] = $parts[0]." AS `$key`";
+                $aFields[] = "{$parts[0]} AS `{$parts[0]}`";
             } elseif (isset($value['field'])) {
                 $aFields[] = $value['field']." AS `$key`";
             }
@@ -861,6 +864,14 @@ function dbGetStores($addAll=false)
     foreach ($result as $row) { $output[] = ['id'=>$row['id'], 'text'=>$row['short_name']]; }
     return $output;
 }
+
+function dbGetSearch($search, $fields)
+{
+    $search_text = addslashes($search);
+    return "(".implode(" LIKE '%$search_text%' OR ", $fields)." LIKE '%$search_text%')";
+}
+
+
 
 /**
  * Calculates fiscal dates, pulled from journal_period table

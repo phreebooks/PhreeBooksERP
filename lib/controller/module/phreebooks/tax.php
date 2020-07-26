@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-11
+ * @version    4.x Last Update: 2020-06-26
  * @filesource /lib/controller/module/phreebooks/tax.php
  */
 
@@ -40,11 +40,12 @@ class phreebooksTax
     public function manager(&$layout=[])
     {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
-        $type = clean('type', ['format'=>'char', 'default'=>'c'], 'get');
-        $layout = array_replace_recursive($layout,  ['type'=>'divHTML',
+        $type  = clean('type', ['format'=>'char', 'default'=>'c'], 'get');
+        $title = $type=='v' ? lang('purchase_tax') : lang('sales_tax');
+        $layout= array_replace_recursive($layout,  ['type'=>'divHTML',
             'divs'     => ["tax$type"=>['order'=>50,'type'=>'accordion','key'=>"accTax$type"]],
             'accordion'=> ["accTax$type"=>['divs'=>[
-                "divTax{$type}Manager"=>['order'=>30,'label'=>pullTableLabel('inventory', 'tax_rate_id', $type),'type'=>'datagrid','key'=>"dgTax$type"],
+                "divTax{$type}Manager"=>['order'=>30,'label'=>$title,'type'=>'datagrid','key'=>"dgTax$type"],
                 "divTax{$type}Detail" =>['order'=>70,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;']]]],
             'datagrid' => ["dgTax$type" => $this->dgTax("dgTax$type", $type, $security)]]);
     }
@@ -91,6 +92,7 @@ class phreebooksTax
         $struc['settings'.$type]['attr']['type'] = 'hidden'; // for saving the grid data
         $struc['settings'.$type]['attr']['value']= '';
         $fldTax= ['id', 'type', 'inactive', 'title', 'start_date', 'end_date', 'settings'.$type];
+        $jsReady= "ajaxForm('frmTax$type');";
         if ($rID) { // existing record
             $dbData= dbGetRow(BIZUNO_DB_PREFIX."tax_rates", "id=$rID");
             dbStructureFill($struc, $dbData);
@@ -100,6 +102,7 @@ class phreebooksTax
             $struc['start_date']['attr']['value']= date('Y-m-d');
             $struc['end_date']['attr']['value']  = localeCalculateDate(date('Y-m-d'), 0, 0, 10); // 10 years
             $rates = $this->getRateDetail(false);
+            $jsReady .= " jq('#dgTaxVendors$type').edatagrid('addRow');";
         }
         unset($struc['settings']);
         $data = ['type'=>'divHTML',
@@ -118,7 +121,7 @@ class phreebooksTax
             'fields'  => $struc,
             'jsHead'  => ['pbChart'=>"var pbChart=bizDefaults.glAccounts.rows;"],
             'jsBody'  => ['init'   =>$this->getJsBody($type)],
-            'jsReady' => ['init'   =>"ajaxForm('frmTax$type');"]];
+            'jsReady' => ['init'   =>$jsReady]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -163,7 +166,7 @@ function taxPreSubmit{$type}(type) {
         $values['tax_rate'] = $settings['footer'][0]['rate'];
         msgDebug("\n  writing values = ".print_r($values, true));
         dbWrite(BIZUNO_DB_PREFIX."tax_rates", $values, $rID?'update':'insert', "id=$rID");
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accTax$type').accordion('select', 0); jq('#dgTax$type').datagrid('reload'); jq('#divTax{$type}Detail').html('&nbsp;');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accTax$type').accordion('select', 0); bizGridReload('dgTax$type'); jq('#divTax{$type}Detail').html('&nbsp;');"]]);
     }
 
     /**
@@ -181,7 +184,7 @@ function taxPreSubmit{$type}(type) {
         msgLog(lang('journal_item_tax_rate_id').'-'.lang('delete')."-".$row['title']);
         $layout = array_replace_recursive($layout, [
             'dbAction'=> [BIZUNO_DB_PREFIX."tax_rates"=>"DELETE FROM ".BIZUNO_DB_PREFIX."tax_rates WHERE id='$rID'"],
-            'content' => ['action'=>'eval', 'actionData'=>"jq('#dgTax{$row['type']}').datagrid('reload');"]]);
+            'content' => ['action'=>'eval', 'actionData'=>"bizGridReload('dgTax{$row['type']}');"]]);
     }
 
     /**

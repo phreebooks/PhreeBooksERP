@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2018-09-11
+ * @version    4.x Last Update: 2020-05-27
  * @filesource /lib/controller/module/inventory/prices/byContact.php
  */
 
@@ -92,6 +92,13 @@ class byContact extends inventoryPrices
         $type   = $layout['fields']['contact_type']['attr']['value'];
         $prices = isset($settings['attr']) ? $settings['attr'] : '';
         $layout['values']['prices']  = $this->getPrices($prices);
+        $layout['fields']['id'          .$this->code] = $layout['fields']['id']; // hidden
+        $layout['fields']['item'        .$this->code] = ['attr'=>['type'=>'hidden']];
+        $layout['fields']['contact_id'  .$this->code] = $inContacts ? ['attr'=>['type'=>'hidden']] : $layout['fields']['contact_id'];
+        $layout['fields']['inventory_id'.$this->code] = $layout['fields']['inventory_id'];
+        $layout['fields']['ref_id'      .$this->code] = $layout['fields']['ref_id'];
+        $layout['fields']['currency'    .$this->code] = $layout['fields']['currency'];
+        $keys = ['id'.$this->code,'item'.$this->code,'contact_id'.$this->code,'inventory_id'.$this->code,'ref_id'.$this->code,'currency'.$this->code];
         $jsHead = "
 var dgPricesSetData = ".json_encode($layout['values']['prices']).";
 var qtySource = "      .json_encode(viewKeyDropdown($layout['values']['qtySource'])).";
@@ -108,44 +115,31 @@ function preSubmitPrices() {
             $iID = $layout['fields']['inventory_id']['attr']['value'];
             if ($iID) {
                 $name = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'description_short', "id=$iID");
-                $layout['fields']['inventory_id']['defaults']['data'] = "iData$this->code";
+                $layout['fields']['inventory_id'.$this->code]['defaults']['data'] = "iData$this->code";
                 $jsHead .= "\nvar iData$this->code = ".json_encode([['id'=>$iID,'description_short'=>$name]]).";";
             }
-            $layout['fields']['inventory_id']['attr']['id']  = "inventory_id$this->code";
-            $layout['fields']['inventory_id']['attr']['type']= 'inventory';
+            $layout['fields']['inventory_id'.$this->code]['attr']['id']  = "inventory_id$this->code";
+            $layout['fields']['inventory_id'.$this->code]['attr']['type']= 'inventory';
         if ($inContacts) { // we're in the contact form, hide contact_id field and set to current form value
             $layout['jsReady'][$this->code] = "jq('#contact_id$this->code').val(jq('#id').val());";
         } else {
-            $cID = $layout['fields']['contact_id']['attr']['value'];
+            $cID = $layout['fields']['contact_id'.$this->code]['attr']['value'];
             if ($cID) {
                 $name = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'primary_name', "ref_id=$cID AND type='m'");
-                $layout['fields']['contact_id']['defaults']['data'] = "cData$this->code";
+                $layout['fields']['contact_id'.$this->code]['defaults']['data'] = "cData$this->code";
                 $jsHead .= "\nvar cData$this->code = ".json_encode([['id'=>$cID,'primary_name'=>$name]]).";";
             }
-            $layout['fields']['contact_id']['defaults']['suffix']= $this->code;
-            $layout['fields']['contact_id']['defaults']['type']  = $type;
-            $layout['fields']['contact_id']['attr']['id']        = "contact_id$this->code";
-            $layout['fields']['contact_id']['attr']['type']      = 'contact';
+            $layout['fields']['contact_id'.$this->code]['defaults']['suffix']= $this->code;
+            $layout['fields']['contact_id'.$this->code]['defaults']['type']  = $type;
+            $layout['fields']['contact_id'.$this->code]['attr']['type']      = 'contact';
         }
         $layout['divs']['divPrices'] = ['order'=>10,'type'=>'divs','divs'=>[
-            'byCBody' => ['order'=>20,'type'=>'fields','label'=>$this->lang['title'],'fields'=>$this->getView($layout['fields'], $inContacts)],
+            'byCBody' => ['order'=>20,'type'=>'fields','label'=>$this->lang['title'],'keys'=>$keys],
             'byCdg'   => ['order'=>50,'type'=>'datagrid','key'=>'dgPricesSet']]];
         $layout['jsHead'][$this->code] = $jsHead;
         $layout['datagrid']['dgPricesSet'] = $this->dgQuantity('dgPricesSet');
         $layout['datagrid']['dgPricesSet']['columns']['price']['attr']['hidden']  = false;
         $layout['datagrid']['dgPricesSet']['columns']['margin']['attr']['hidden'] = false;
-    }
-
-    private function getView($structure, $inContacts)
-    {
-        $output = [
-            'id'          .$this->code => $structure['id'], // hidden
-            'item'        .$this->code => ['attr'=>['type'=>'hidden']],
-            'contact_id'  .$this->code => $inContacts ? ['attr'=>['type'=>'hidden']] : array_merge($structure['contact_id'],['break'=>true]),
-            'inventory_id'.$this->code => array_merge($structure['inventory_id'],['break'=>true]),
-            'ref_id'      .$this->code => array_merge($structure['ref_id'],      ['break'=>true]),
-            'currency'    .$this->code => array_merge($structure['currency'],    ['break'=>true])];
-        return $output;
     }
 
     /**
@@ -163,8 +157,7 @@ function preSubmitPrices() {
         msgDebug("decoded data = ".print_r($data, true));
         $levels = $data['rows'];
         $prices = [];
-        foreach ($levels as $level) {
-            if ($level['source'] && $level['qty']) {
+        foreach ($levels as $level) { if ($level['source'] && $level['qty']) {
                 $temp = [];
                 $temp[] = $level['price'];
                 $temp[] = $level['qty'];
@@ -174,18 +167,17 @@ function preSubmitPrices() {
                 $temp[] = $level['rndType'];
                 $temp[] = $level['rndValue'];
                 $prices[] = implode(':', $temp);
-            }
-        }
+        } }
         $settings = ['last_update'=> date('Y-m-d'), 'attr'=>implode(';', $prices)];
         $values['settings'] = json_encode($settings);
         $result = dbWrite(BIZUNO_DB_PREFIX."inventory_prices", $values, $rID?'update':'insert', "id=$rID");
         if (!$rID) { $rID = $_POST['id'] = $result; } // for customization
-        msgLog(lang('prices').'-'.lang('save')." - $this->code; contact: ".$values['contact_id']."; SKU: ".$values['inventory_id']." (rID=$rID)");
+        msgLog(lang('prices').'-'.lang('save')." - $this->code; contact: $rID; SKU: ".$values['inventory_id']." (rID=$rID)");
         return true;
     }
 
     /**
-     * This function determines the price for a given sku and returns the entries for prices dropdown
+     * This function determines the price for a given SKU and returns the entries for prices select
      * @param array $prices - current pricing array to be added to
      * @param array $values - details needed to calculate proper price
      * @return array $prices by reference

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-03
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /controller/module/phreebooks/totals/tax_item/tax_item.php
  */
 
@@ -92,8 +92,8 @@ class tax_item
                 'gl_type'      => $this->settings['gl_type'],
                 'qty'          => '1',
                 'description'  => implode(' : ', $value['text']),
-                'debit_amount' => in_array($main['journal_id'], [3,4, 6,13,21]) ? $value['amount'] : 0,
-                'credit_amount'=> in_array($main['journal_id'], [7,9,10,12,19]) ? $value['amount'] : 0,
+                'debit_amount' => in_array($main['journal_id'], [3,4, 6,13,20,21,22])       ? $value['amount'] : 0,
+                'credit_amount'=> in_array($main['journal_id'], [7,9,10,12,14,16,17,18,19]) ? $value['amount'] : 0,
                 'gl_account'   => $glAcct,
                 'post_date'    => $main['post_date']];
             $totalTax += $value['amount'];
@@ -108,17 +108,18 @@ class tax_item
      * @param type $output
      * @param type $data
      */
-    public function render(&$output, $data=[])
+    public function render($data=[])
     {
-        $hide = $this->hidden ? ';display:none' : '';
-        $output['body'] .= '<div style="text-align:right'.$hide.'">';
-        $output['body'] .= html5('totals_tax_item',$this->fields['totals_tax_item']);
-        $output['body'] .= html5('',               $this->fields['totals_tax_item_opt']);
-        $output['body'] .= "</div>";
-        $output['body'] .= '<div id="phreebooks_totals_tax_item" style="display:none" class="layout-expand-over">';
-        $output['body'] .= '<table id="tableTaxItem"></table>';
-        $output['body'] .= "</div>";
-        $output['jsHead'][] = $this->jsTotal($data);
+        $hide  = $this->hidden ? ';display:none' : '';
+        $html  = '<div style="text-align:right'.$hide.'">';
+        $html .= html5('totals_tax_item',$this->fields['totals_tax_item']);
+        $html .= html5('',               $this->fields['totals_tax_item_opt']);
+        $html .= "</div>";
+        $html .= '<div id="phreebooks_totals_tax_item" style="display:none" class="layout-expand-over">';
+        $html .= '<table id="tableTaxItem"></table>';
+        $html .= "</div>";
+        htmlQueue($this->jsTotal($data), 'jsHead');
+        return $html;
     }
 
     /**

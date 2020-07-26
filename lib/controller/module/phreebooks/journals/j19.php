@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-19
+ * @version    4.x Last Update: 2019-11-19
  * @filesource /lib/controller/module/phreebooks/journals/j19.php
  */
 
@@ -64,7 +64,7 @@ class j19 extends jCommon
             'mainItem'=> ['region'=>'center','order'=>50,'type'=>'datagrid','key'=>'item'],
             'mainFlds'=> ['region'=>'right', 'order'=> 1,'width' =>400,'type'=>'fields',   'keys'=>$fldKeys],
             'mainAddr'=> ['region'=>'right', 'order'=>20,'width' =>400,'type'=>'accordion','key' =>'accBizPOS'],
-            'mainTtl' => ['region'=>'right', 'order'=>50,'width' =>400,'type'=>'totals',   'attr'=>['id'=>'pbTotals'],'content'=>$data['totals']],
+            'mainTtl' => ['region'=>'right', 'order'=>50,'width' =>400,'type'=>'totals',   'content'=>$data['totals']],
             'mainPmnt'=> ['region'=>'right', 'order'=>80,'width' =>400,'type'=>'datagrid', 'key' =>'payment']];
         $data['toolbars']= ['tbBizPos'=>['icons'=>[
             'back'  => ['order'=>10,'events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome');"]],
@@ -72,14 +72,14 @@ class j19 extends jCommon
             'import'=> ['order'=>30,'icon'=>'import','hidden'=>$security>2?false:true,'type'=>'menu','events'=>['onClick'=>"alert('return pressed');"]],
             'tools' => ['order'=>80,'icon'=>'tools','type'=>'menu','events'=>['onClick'=>"alert('do something');"]]]]];
         $data['accordion']= ['accBizPOS'=>['divs'=>[
-            'billAD'=>['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
+            'billAD'=>['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['block25'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
                 'settings'=>['suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false,'cols'=>false]]]]];
         $data['datagrid'] = ['item'  =>$this->dgOrders('dgJournalItem', 'v')];
         $data['jsReady']  = [
             'initPOS'  => "jq('#dgJournalItem').edatagrid('addRow');\njsonAction('extBizPOS/admin/tillSelect');",
             'addrClose'=> "var panels=jq('#accBizPOS').accordion('panels'); jq.each(panels, function() { this.panel('collapse'); });"];
         if (getModuleCache('extShipping', 'properties', 'status')) {
-            $data['accordion']['accBizPOS']['divs']['shipAD'] = ['order'=>30,'type'=>'address','label'=>lang('ship_to'),'classes'=>['blockView'],'attr'=>['id'=>'address_s'],'fields'=>$fldAddr,
+            $data['accordion']['accBizPOS']['divs']['shipAD'] = ['order'=>30,'type'=>'address','label'=>lang('ship_to'),'classes'=>['block25'],'attr'=>['id'=>'address_s'],'fields'=>$fldAddr,
                 'settings'=>['suffix'=>'_s','search'=>true,'update'=>true,'validate'=>true,'drop'=>true,'cols'=>false]];
         }
         $data['datagrid']['item']['columns']['gl_account'] = ['order'=>0, 'attr'=>['hidden'=>'true']];

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-11-05
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/payment/methods/cod.php
  */
 
@@ -47,7 +47,7 @@ class cod
             'order' => ['label'=>lang('order'), 'position'=>'after', 'attr'=>  ['type'=>'integer', 'size'=>'3', 'value'=>$this->settings['order']]]];
     }
 
-    public function render(&$output, $data, $values=[], $dispFirst=false)
+    public function render($data, $values=[], $dispFirst=false)
     {
         if (isset($values['method']) && $values['method']==$this->code && !empty($data['fields']['id']['attr']['value'])) { // edit
             $invoice_num = $data['fields']['invoice_num']['attr']['value'];
@@ -58,14 +58,14 @@ class cod
             $gl_account  = $this->settings['cash_gl_acct'];
             $discount_gl = $this->settings['disc_gl_acct'];
         }
-        $output['jsBody'][] = "
+        htmlQueue("
 arrPmtMethod['$this->code'] = {cashGL:'$gl_account',discGL:'$discount_gl',ref:'$invoice_num'};
 function payment_".$this->code."() {
     bizTextSet('invoice_num', arrPmtMethod['$this->code'].ref);
     bizSelSet('gl_acct_id', arrPmtMethod['$this->code'].cashGL);
     bizSelSet('totals_discount_gl', arrPmtMethod['$this->code'].discGL);
-}";
-        if ($this->code == $dispFirst) { $output['jsReady'][] = "bizTextSet('invoice_num', '$invoice_num');"; }
+}", 'jsHead');
+        if ($this->code == $dispFirst) { htmlQueue("bizTextSet('invoice_num', '$invoice_num');", 'jsReady'); }
     }
 
     private function getDiscGL($rID=0)

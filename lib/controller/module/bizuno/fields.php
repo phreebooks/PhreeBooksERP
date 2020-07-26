@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-06-27
+ * @version    4.x Last Update: 2020-06-26
  * @filesource /lib/controller/module/bizuno/fields.php
  */
 
@@ -107,9 +107,8 @@ class bizunoFields
         $struc = dbLoadStructure(BIZUNO_DB_PREFIX.$table);
         $props = $field ? $struc[$field] : ['attr'=>['type'=>'text']];
         msgDebug("\n Working with field properties: ".print_r($props, true));
-        $tabs  = $gList = [];
+        $gList = [];
         $groups= [['id'=>'', 'text'=>'']];
-        foreach (getModuleCache($module, 'tabs') as $tID => $settings) { $tabs[] = ['id'=>$tID, 'text'=>$settings['title']];}
         foreach ($struc as $value) {
             if (empty($value['group'])) { continue; }
             if (!in_array($value['group'], $gList)) {
@@ -136,9 +135,7 @@ class bizunoFields
                 'new' => ['order'=>20,'events'=>['onClick'=>"accordionEdit('accFields','dgFields','detail','".lang('details')."','bizuno/fields/edit&module=$module&table=$table', 0);"]],
                 'save'=> ['order'=>40,'events'=>['onClick'=>"jq('#frmField').submit();"]]]]],
             'forms'   => ['frmField'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/fields/save"]]],
-            'jsHead'  => [
-                'tabData' => "var tabData=".json_encode($tabs).";",
-                'grpData' => "var grpData=".json_encode($groups).";"],
+            'jsHead'  => ['grpData' => "var grpData=".json_encode($groups).";"],
             'jsBody'  => ['init'=>$jsBody],
             'jsReady' => ['init'=>"ajaxForm('frmField');"]];
         $layout = array_replace_recursive($layout, $data);
@@ -147,6 +144,8 @@ class bizunoFields
     private function getViewFields($props, $module, $table, $field)
     {
         $type  = isset($props['attr']['type']) ? $props['attr']['type'] : 'text';
+        $tabs = [];
+        foreach (getModuleCache($module, 'tabs') as $tID => $settings) { $tabs[] = ['id'=>$tID, 'text'=>$settings['title']]; }
         $ints  = viewKeyDropdown(['tinyint'=>'-127 '.lang('to').' 127', 'smallint'=>'-32,768 '.lang('to').' 32,768',
             'mediumint'=>'-8,388,608 '.lang('to').' 8,388,607', 'int'=>'-2,147,483,648 '.lang('to').' 2,147,483,647',
             'bigint'   =>lang('greater_than').' 2,147,483,648']);
@@ -159,8 +158,8 @@ class bizunoFields
             'field'           => ['label'=>$this->lang['xf_lbl_field'],'position'=>'after','attr'=>['value'=>$field]],
             'label'           => ['label'=>$this->lang['xf_lbl_label'],'position'=>'after','attr'=>['value'=>isset($props['label'])?$props['label']:'']],
             'tag'             => ['label'=>$this->lang['xf_lbl_tag'],  'position'=>'after','attr'=>['value'=>isset($props['tag'])?$props['tag']:'']],
-            'tab'             => ['label'=>$this->lang['xf_lbl_tab'],  'position'=>'after','attr'=>['type'=>'select','value'=>isset($props['tab'])?$props['tab']:''],
-                'options'=>['data'=>'tabData','width'=>200,'valueField'=>"'id'",'textField'=>"'text'",'editable'=>'true']],
+            'tab'             => ['label'=>$this->lang['xf_lbl_tab'],  'position'=>'after','values'=>$tabs,'attr'=>['type'=>'select','value'=>isset($props['tab'])?$props['tab']:''],
+                'options'=>['width'=>200]],
             'group'           => ['label'=>$this->lang['xf_lbl_group'],'position'=>'after','attr'=>['type'=>'select','value'=>isset($props['group'])?$props['group']:''],
                 'options'=>['editable'=>'true']],
             'order'           => ['label'=>$this->lang['xf_lbl_order'],'position'=>'after','attr'=>['value'=>isset($props['order'])?$props['order']:'']],
@@ -436,7 +435,7 @@ class bizunoFields
         dbGetResult($sql);
         msgAdd(lang('extra_fields')." (".($old_field?lang('update'):lang('add')).") ".lang('msg_database_write'), 'success');
         msgLog(lang('extra_fields')." (".($old_field?lang('update'):lang('add')).") $table.$new_field");
-        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accFields').accordion('select', 0); jq('#dgFields').datagrid('reload'); jq('#detail').html('&nbsp;');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#accFields').accordion('select', 0); bizGridReload('dgFields'); jq('#detail').html('&nbsp;');"]]);
     }
 
     /**
@@ -452,18 +451,18 @@ class bizunoFields
         if (!$table || !$field) { return msgAdd("Table and/of field information missing!"); }
         if ($field) {
             msgLog(lang('extra_tabs')." (".lang('delete').") $table.$field");
-            $layout = array_replace_recursive($layout, ['content' => ['action'=>'eval','actionData'=>"jq('#dgFields').datagrid('reload');"],
+            $layout = array_replace_recursive($layout, ['content' => ['action'=>'eval','actionData'=>"bizGridReload('dgFields');"],
                 'dbAction'=> [BIZUNO_DB_PREFIX.'TBD' => "ALTER TABLE `".BIZUNO_DB_PREFIX."$table` DROP COLUMN `$field`"]]);
         }
     }
 
     /**
-     * Datagrid structure for listing and retrieving custom fields
-     * @param string $name - datagrid name
+     * Grid structure for listing and retrieving custom fields
+     * @param string $name - grid name
      * @param string $module - module name
      * @param string $table - database table name to add/delete fields
      * @param integer $security - user security settings
-     * @return array - structure of datagrid
+     * @return array - structure of grid
      */
     private function dgFields($name, $module, $table, $security=0)
     {

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-09-19
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /lib/controller/module/phreebooks/totals/discount/discount.php
  */
 
@@ -69,7 +69,7 @@ class discount
         msgDebug("\n{$this->code} is returning balance = ".$begBal);
     }
 
-    public function render(&$output, $data=[])
+    public function render($data=[])
     {
         $this->fields = [
           "totals_{$this->code}_id" => ['attr'=>['type'=>'hidden']],
@@ -90,16 +90,16 @@ class discount
             }
         }
         $hide = !empty($this->hidden) ? ';display:none' : '';
-        $output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
-        $output['body'] .= html5("totals_{$this->code}_id", $this->fields["totals_{$this->code}_id"]);
-        $output['body'] .= html5("totals_{$this->code}_pct",$this->fields["totals_{$this->code}_pct"]);
-        $output['body'] .= html5("totals_{$this->code}",    $this->fields["totals_{$this->code}"]);
-        $output['body'] .= html5('',                        $this->fields["totals_{$this->code}_opt"]);
-        $output['body'] .= "</div>\n";
-        $output['body'] .= '<div id="phreebooks_totals_'.$this->code.'" style="display:none" class="layout-expand-over">'."\n";
-        $output['body'] .= html5("totals_{$this->code}_gl", $this->fields["totals_{$this->code}_gl"])."\n";
-        $output['body'] .= "</div>\n";
-        $output['jsHead'][] = "function totals_{$this->code}(begBalance) {
+        $html  = '<div style="text-align:right'.$hide.'">'."\n";
+        $html .= html5("totals_{$this->code}_id", $this->fields["totals_{$this->code}_id"]);
+        $html .= html5("totals_{$this->code}_pct",$this->fields["totals_{$this->code}_pct"]);
+        $html .= html5("totals_{$this->code}",    $this->fields["totals_{$this->code}"]);
+        $html .= html5('',                        $this->fields["totals_{$this->code}_opt"]);
+        $html .= "</div>\n";
+        $html .= '<div id="phreebooks_totals_'.$this->code.'" style="display:none" class="layout-expand-over">'."\n";
+        $html .= html5("totals_{$this->code}_gl", $this->fields["totals_{$this->code}_gl"])."\n";
+        $html .= "</div>\n";
+        htmlQueue("function totals_{$this->code}(begBalance) {
     var newBalance= begBalance;
     var curISO    = jq('#currency').val() ? jq('#currency').val() : bizDefaults.currency.defaultCur;
     var decLen    = parseInt(bizDefaults.currency.currencies[curISO].dec_len);
@@ -119,6 +119,7 @@ class discount
     }
     newBalance -= discount;
     return parseFloat(newBalance.toFixed(decLen));
-}";
+}", 'jsHead');
+        return $html;
     }
 }

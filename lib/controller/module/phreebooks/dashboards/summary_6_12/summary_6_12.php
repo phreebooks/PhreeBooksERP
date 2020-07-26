@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-17
+ * @version    4.x Last Update: 2020-04-07
  * @filesource /lib/controller/module/phreebooks/dashboards/summary_6_12/summary_6_12.php
  */
 
@@ -44,7 +44,7 @@ class summary_6_12
         return [
             'users' => ['label'=>lang('users'), 'position'=>'after','values'=>listUsers(),'attr'=>['type'=>'select','value'=>$this->settings['users'],'size'=>10,'multiple'=>'multiple']],
             'roles' => ['label'=>lang('groups'),'position'=>'after','values'=>listRoles(),'attr'=>['type'=>'select','value'=>$this->settings['roles'],'size'=>10,'multiple'=>'multiple']],
-            'range' => ['label'=>lang('range'), 'position'=>'after','values'=>viewKeyDropdown($this->dates),'attr'=>['type'=>'select','value'=>$this->settings['range']]]];
+            'range' => ['order'=>10,'break'=>true,'position'=>'after','label'=>lang('range'),'values'=>viewKeyDropdown($this->dates),'attr'=>['type'=>'select','value'=>$this->settings['range']]]];
     }
 
     /**
@@ -53,12 +53,12 @@ class summary_6_12
      */
     public function render(&$layout=[])
     {
-        $total_v = $total_c = 0;
-        $iconExp = ['attr'=>['type'=>'button','value'=>lang('download')],'events'=>['onClick'=>"jq('#sum_6_12').submit();"]];
-        $settings= $this->settingsStructure();
-        $data    = $this->dataSales($this->settings['range']);
-        $action  = BIZUNO_AJAX."&p=phreebooks/tools/jrnlData&code=6_12&range={$this->settings['range']}";
-        $js      = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');
+        $total_v= $total_c = 0;
+        $iconExp= ['attr'=>['type'=>'button','value'=>lang('download')],'events'=>['onClick'=>"jq('#sum_6_12').submit();"]];
+        $struc  = $this->settingsStructure();
+        $data   = $this->dataSales($this->settings['range']);
+        $action = BIZUNO_AJAX."&p=phreebooks/tools/jrnlData&code=6_12&range={$this->settings['range']}";
+        $js     = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');
 ajaxDownload('sum_6_12');
 function chart{$this->code}() {
     var data = new google.visualization.DataTable();
@@ -81,13 +81,11 @@ google.charts.setOnLoadCallback(chart{$this->code});\n";
         $filter = ucfirst(lang('filter')).": {$this->dates[$this->settings['range']]}";
         $layout = array_merge_recursive($layout, [
             'divs'  => [
-                'admin' =>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'range',$this->code.'_btn']]]],
-                'head'  =>['order'=>40,'type'=>'html','html'=>$filter],
+                'admin' =>['divs'=>['body'=>['order'=>50,'type'=>'fields','keys'=>[$this->code.'range']]]],
+                'head'  =>['order'=>40,'type'=>'html','html'=>$filter,'hidden'=>getModuleCache('bizuno','settings','general','hide_filters',0)],
                 'body'  =>['order'=>50,'type'=>'html','html'=>'<div style="width:100%" id="'.$this->code.'_chart"></div>'],
                 'export'=>['order'=>95,'type'=>'html','html'=>'<form id="sum_6_12" action="'.$action.'">'.html5('', $iconExp).'</form>']],
-            'fields'=> [
-                $this->code.'range'=> array_merge($settings['range'],['order'=>10,'break'=>true]),
-                $this->code.'_btn' => ['order'=>90,'attr'=>['type'=>'button','value'=>lang('save')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]]],
+            'fields'=> [$this->code.'range'=>array_merge_recursive($struc['range'], ['events'=>['onChange'=>"dashSubmit('$this->moduleID:$this->code', 0);"]])],
             'jsHead'=> ['init'=>$js]]);
     }
 

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-13
+ * @version    4.x Last Update: 2020-06-30
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -39,6 +39,8 @@ $lang = [
     'max_rows_tip' => 'Sets the default number of rows to show for datagrid (table) listings. Minimun value 10, maximum value 100.',
     'session_max_lbl' => 'Maximum Idle Time',
     'session_max_tip' => 'Sets the maximum session time to automatically sign off user when inactive in minutes. A value of zero keeps session alive automatically. Minimum value is 5 minutes and maximum value is 300 minutes.',
+    'hide_filters_lbl' => 'Hide Dashboard Filters',
+    'hide_filters_tip' => 'Select to hide the filter settings on the first row of dashboards that have user defined settings. Helpful to quickly review properties for truncated listings.',
     'number_precision_lbl' => 'Decimal Precision',
     'number_precision_tip' => 'Precision for decimal values [Default: 2]',
     'number_prefix_lbl' => 'Positive Prefix',
@@ -56,6 +58,8 @@ $lang = [
     'date_short_lbl' => 'Date Format',
     'date_short_tip' => 'Sets the format for calendar dates',
     'newLogo_lbl' => 'Select an image to upload to use as a new logo',
+    'auto_detect_lbl' => 'Auto Detect Sale/SO',
+    'auto_detect_tip' => 'When importing orders, selects whether to allow auto-detection of a sale or sales order depending on inventory stock levels or to force a specific journal. If auto detect is selected Sales will be created only if there is sufficient stock on hand to fill the order, otherwise a Sales Order will be created.',
     'gl_receivables_lbl' => 'AR GL Account',
     'gl_receivables_tip' => 'Default Accounts Receivables account for API order imports. Typically an Accounts Receivable type account. If this is left blank, the default accounts receivable account for customers set in the PhreeBooks module will be used.',
     'gl_sales_lbl' => 'Sales GL Account',
@@ -93,7 +97,6 @@ $lang = [
     'msg_restore_confirm' => 'Warning! This operation will delete and re-write the database. Are you sure you want to continue?',
     'msg_restore_success' => 'Restore complete! Press OK to complete the restore, sign off and return to the welcome screen.',
     'msg_backup_success' => 'Your backup is ready to download from the list below.',
-    'msg_add_dashboards' => 'Add more dashboards to this menu..',
     'msg_no_shipments_found' => 'No shipments have been found that have shipped on this date!',
     'msg_new_user' => 'Congratulations! Your business has been created.<br /><br />
         Since you already have an account, click <a href="%s">HERE</a> to access the portal, log in and get started. You new business will be named My Business and should be changed during installation. If you have any questions, please out a support ticket (if logged into Bizuno) or email us at biznerds@phreesoft.com.<br />
@@ -195,6 +198,7 @@ $lang = [
     // API Settings
     'cart_sync' => '%s Product',
     'cart_cat' => '%s Category Path',
+    'auto_detect' => 'Auto Detect',
     // API and Import/Export
     'upload_all' => 'Slowest - All Data (Including Images)',
     'upload_images' => 'Faster - All Data (Except Images)',
@@ -260,14 +264,17 @@ $lang = [
     'admin_encrypt_old' => 'Current Encryption Key',
     'admin_encrypt_new' => 'New Encryption Key',
     'admin_encrypt_confirm' => 'Re-Enter New Key ',
-    'admin_fix_comments' => 'Check/Repair database comments to latest structure',
+    'admin_fix_comments' => 'Check/Repair Database Comments',
     'desc_update_comments' => '<p>This tool iterrates through your database tables to update the comments used to set positioning, styling and formatting the database fields. Generally this tool does not need to be run more than once or only after recommended by PhreeSoft after an update. If no changes are necessary, this tool will not touch your database.</p><p>Remember to backup your database before running this tool.</p>',
     'db_engine' => 'DB Engine',
-    'db_rows' => 'Number of Rows',
+    'db_rows' => '# Rows',
     'db_collation' => 'Collation',
+    'db_data_size' => 'Data Size',
+    'db_idx_size' => 'Index Size',
     'db_next_id'   => 'Next Row ID',
     'new_tab' => 'New Custom Tab',
     'new_tab_desc' => 'Select the Module/Table to create a new tab in and click Next.',
+    'err_tab_in_use' => 'This tab has custom fields assigned to it, the fields must be deleted before this tab can be deleted! The fields are: ',
         // Install notes
     'note_bizuno_install_1' => 'PRIORITY LOW: Create an account at www.PhreeSoft.com, if you do not have one, and then enter your credentials in your Bizuno Business under: Account (Login Name) -> Settings -> Bizuno tab -> Bizuno Settings icon -> Settings tab -> My PhreeSoft Account accordion.',
 ];

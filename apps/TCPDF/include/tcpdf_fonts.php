@@ -1529,12 +1529,10 @@ class TCPDF_FONTS {
 		return defined('K_PATH_FONTS') ? K_PATH_FONTS : '';
 	}
 
-
-
 	/**
 	 * Return font full path
 	 * @param $file (string) Font file name.
-	 * @param $fontdir (string) Font directory (set to false fto search on default directories)
+	 * @param $fontdir (string) Font directory (set to false to search on default directories)
 	 * @return string Font full path or empty string
 	 * @author Nicola Asuni
 	 * @since 6.0.025
@@ -1543,18 +1541,21 @@ class TCPDF_FONTS {
 	public static function getFontFullPath($file, $fontdir=false) {
 		$fontfile = '';
 		// search files on various directories
-		if (($fontdir !== false) AND @TCPDF_STATIC::file_exists($fontdir.$file)) {
+/* BOF - PhreeSoft mod for support of multiple font folders */
+        if     (file_exists(K_PATH_FONTS .$file)) { $fontfile = K_PATH_FONTS .$file; } 
+        elseif (file_exists(K_PATH_XFONTS.$file)) { $fontfile = K_PATH_XFONTS.$file; }
+/* EOF - PhreeSoft mod */
+/* Original TCPDF function used for single font file folder
+ 		if (($fontdir !== false) AND @TCPDF_STATIC::file_exists($fontdir.$file)) {
 			$fontfile = $fontdir.$file;
 		} elseif (@TCPDF_STATIC::file_exists(self::_getfontpath().$file)) {
 			$fontfile = self::_getfontpath().$file;
 		} elseif (@TCPDF_STATIC::file_exists($file)) {
 			$fontfile = $file;
-		}
+		} 
+ */
 		return $fontfile;
 	}
-
-
-
 
 	/**
 	 * Get a reference font size.
@@ -1604,7 +1605,6 @@ class TCPDF_FONTS {
 		}
 		return $size;
 	}
-
 
 
 

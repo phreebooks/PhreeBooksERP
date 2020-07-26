@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-26
+ * @version    4.x Last Update: 2020-06-09
  * @filesource /lib/model/io.php
  */
 
@@ -126,8 +126,8 @@ final class io
     public function fileDelete($path=false)
     {
         if (!$path) { return msgAdd("No file specified to delete!"); }
+        msgDebug("\nDeleting files: BIZUNO_DATA/".print_r($path,true));
         $files = glob($this->myFolder.$path);
-        msgDebug("\nDeleting files: ".print_r($files,true));
         if (is_array($files)) { foreach ($files as $filename) { @unlink($filename); } }
     }
 
@@ -192,6 +192,7 @@ final class io
             $output[] = [
                 'name' => str_replace($this->myFolder, "", $file), // everything less the myFolder path, used to delete and navigate to
                 'title'=> str_replace($this->myFolder.$path, "", $file), // just the filename, part matching the *
+                'fn'   => str_replace($this->myFolder.$path, "", $file), // duplicate of title to use in attach grid to avoid conflict with title of grid
                 'size' => viewFilesize($file),
                 'mtime'=> $fmTime,
                 'date' => date(getModuleCache('bizuno', 'settings', 'locale', 'date_short'), $fmTime)];
@@ -232,7 +233,7 @@ final class io
      * Recursively copies the contents of the source to the destination
      * @param string $dir_source - Source directory from the users root
      * @param string $dir_dest - Destination directory from the users root
-     * @return string - boolean false
+     * @return null
      */
     public function folderCopy($dir_source, $dir_dest)
     {
@@ -382,9 +383,9 @@ final class io
     public function ftpUploadFile($con, $local_file, $remote_file='') {
         $success = true;
         if (!$remote_file) { $remote_file = $local_file; }
-        msgDebug("Ready to open file $local_file and send to remote file name $remote_file");
+        msgDebug("\nReady to open file $local_file and send to remote file name $remote_file");
         $fp = fopen(BIZUNO_DATA.$local_file, 'r');
-        if (!ftp_fput ($con, $remote_file, $fp, FTP_ASCII)) {
+        if (!ftp_fput($con, $remote_file, $fp, FTP_ASCII)) {
             return msgAdd("There was a problem while uploading $local_file through ftp to the remote server!");
         }
         ftp_close($con);
@@ -448,7 +449,6 @@ final class io
         if ($srcPath === '' || $srcPath === null || $srcPath === false) { return false; }
         $path  = pathinfo(BIZUNO_DATA . $srcPath, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR; // pull the path from the full path and file
         if (!is_dir($path)) {
-//          msgDebug("\nMaking path = $path");
             @mkdir($path, 0775, true);
             $blnkDir = pathinfo($srcPath, PATHINFO_DIRNAME) . DIRECTORY_SEPARATOR; // need to remove BIZUNO_DATA before writing file
             $this->fileWrite('<'.'?'.'php', "{$blnkDir}index.php", false);

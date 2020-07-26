@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-03-18
+ * @version    4.x Last Update: 2020-06-26
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -173,7 +173,7 @@ class phreebooksAdmin {
                 'gl_liability'   => ['attr'=>['type'=>'ledger','id'=>'customers_gl_liability',   'value'=>$this->glDefaults['liability']]],
                 'gl_expense'     => ['attr'=>['type'=>'ledger','id'=>'customers_gl_expense',     'value'=>$this->glDefaults['expense']]],
                 'tax_rate_id_c'  => ['label'=>lang('sales_tax'),'defaults'=>['type'=>'c','target'=>'contacts'], 'attr'=>['type'=>'tax','value'=>0]],
-                'terms_text'     => ['break'=>false,'attr'=>['value'=>'']],
+                'terms_text'     => ['break'=>false],
                 'terms'          => ['break'=>false,'attr'=>['type'=>'hidden','value'=>'2']],
                 'terms_edit'     => ['icon'=>'settings','label'=>lang('terms'),'attr'=>['type'=>'hidden'],'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=c&callBack=customers_terms', 0, jq('#customers_terms').val());"]],
                 'show_status'    => ['attr'=>['type'=>'selNoYes', 'value'=>1]],
@@ -188,11 +188,13 @@ class phreebooksAdmin {
                 'gl_liability'   => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_liability',   'value'=>$this->glDefaults['liability']]],
                 'gl_expense'     => ['attr'=>['type'=>'ledger','id'=>'vendors_gl_expense',     'value'=>$this->glDefaults['expense']]],
                 'tax_rate_id_v'  => ['label'=>lang('purchase_tax'),'defaults'=>['type'=>'v','target'=>'contacts'], 'attr'=>['type'=>'tax','value'=>0]],
-                'terms_text'     => ['break'=>false,'attr'=>['value'=>'']],
+                'terms_text'     => ['break'=>false],
                 'terms'          => ['break'=>false,'attr'=>['type'=>'hidden','value'=>'3:0:0:30:1000.00']],
                 'terms_edit'     => ['icon'=>'settings','label'=>lang('terms'),'attr'=>['type'=>'hidden'],'events'=>['onClick'=>"jsonAction('contacts/main/editTerms&type=v&callBack=vendors_terms', 0, jq('#vendors_terms').val());"]],
                 'show_status'    => ['attr'=>['type'=>'selNoYes', 'value'=>1]]]]];
         settingsFill($data, $this->moduleID);
+        $data['customers']['fields']['terms_text']['attr']['value']= viewTerms($data['customers']['fields']['terms']['attr']['value'],true, 'c');
+        $data['vendors']['fields']['terms_text']['attr']['value']  = viewTerms($data['vendors']['fields']['terms']['attr']['value'],  true, 'v');
         return $data;
     }
 
@@ -214,131 +216,110 @@ class phreebooksAdmin {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }
         bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/currency.php", 'phreebooksCurrency');
         $currency= new phreebooksCurrency();
-        $tools   = $this->getViewTools($security);
+        $repost  = $this->getViewRepost();
+        $fields  = [
+            'glTestDesc'   => ['order'=>10,'html'=>$this->lang['pbtools_gl_test_desc'],'attr'=>['type'=>'raw']],
+            'btnRepairGL'  => ['order'=>20,'attr'=>['type'=>'button','value'=>lang('start')],'events'=>['onClick'=>"jsonAction('phreebooks/tools/glRepair');"]],
+            'pruneCogsDesc'=> ['order'=>10,'html'=>$this->lang['pb_prune_cogs_desc'],'attr'=>['type'=>'raw']],
+            'btnPruneCogs' => ['order'=>20,'attr'=>['type'=>'button', 'value'=>lang('start')],'events'=>['onClick'=>"jsonAction('phreebooks/tools/pruneCogs');"]],
+            'cleanAtchDesc'=> ['order'=>10,'html'=>$this->lang['pb_attach_clean_desc'],'attr'=>['type'=>'raw']],
+            'dateAtchCln'  => ['order'=>20,'attr'=> ['type'=>'date',  'value'=>localeCalculateDate(date('Y-m-d'), 0, -6)]],
+            'btnAtchCln'   => ['order'=>30,'attr'=> ['type'=>'button','value'=>lang('start')],
+                'events' => ['onClick'=>"if (confirm('".$this->lang['pb_attach_clean_confirm']."')) jsonAction('phreebooks/tools/cleanAttach', 0, jq('#dateAtchCln').datebox('getValue'));"]],
+            'purgeGlDesc'  => ['order'=>10,'html'=>$this->lang['msg_gl_db_purge_confirm'],'attr'=>['type'=>'raw']],
+            'purge_db'     => ['order'=>20,'styles'=>["text-align"=>"right"],'attr'=>['size'=>"7"]],
+            'btn_purge'    => ['order'=>30,'attr'=>['type'=>'button', 'value'=>$this->lang['phreebooks_purge_db_journal']],
+                'events' => ['onClick'=>"if (confirm('".$this->lang['msg_gl_db_purge_confirm']."')) jsonAction('phreebooks/tools/glPurge', 0, jq('#purge_db').val());"]]];
         $data    = [
             'tabs'    => ['tabAdmin'=>['divs'=>[
                 'tabGL'    => ['order'=>20,'label'=>lang('phreebooks_chart_of_accts'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/chart/manager'"]],
                 'tabCur'   => ['order'=>30,'label'=>lang('currencies'),     'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/currency/manager'"]],
                 'tabTaxc'  => ['order'=>40,'label'=>lang('sales_tax'),      'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/tax/manager&type=c'"]],
                 'tabTaxv'  => ['order'=>50,'label'=>lang('purchase_tax'),   'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/tax/manager&type=v'"]],
-                'tabTotals'=> ['order'=>60,'label'=>lang('totals'),         'attr'=>['module'=>$this->moduleID,'path'=>$this->structure['dirMethods']],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
-                'tabDBs'   => ['order'=>70,'label'=>lang('dashboards'),     'attr'=>['module'=>$this->moduleID,'path'=>'dashboards'],'src'=>BIZUNO_LIB."view/tabAdminMethods.php"],
-                'tabFY'    => ['order'=>80,'label'=>lang('fiscal_calendar'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/admin/managerFY'"]],
-                'tabTools' => ['order'=>90,'label'=>$this->lang['journal_tools'],'type'=>'html','html'=>$tools['body']]]]],
+                'tabFY'    => ['order'=>80,'label'=>lang('fiscal_calendar'),'type'=>'html','html'=>'',
+                    'options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/admin/managerFY'"]],
+                'tabTools' => ['order'=>90,'label'=>$this->lang['journal_tools'],'type'=>'divs','divs'=>[
+                    'general' => ['order'=>20,'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                        'repostGL' => ['order'=>10,'type'=>'panel','classes'=>['block66'],'key'=>'repostGL'],
+                        'testGL'   => ['order'=>20,'type'=>'panel','classes'=>['block33'],'key'=>'testGL'],
+                        'pruneCOGS'=> ['order'=>30,'type'=>'panel','classes'=>['block33'],'key'=>'pruneCOGS'],
+                        'cleanAtch'=> ['order'=>40,'type'=>'panel','classes'=>['block33'],'key'=>'cleanAtch'],
+                        'purgeGL'  => ['order'=>50,'type'=>'panel','hidden'=> $security>4?false:true,'classes'=>['block33'],'key'=>'purgeGL']]]]]]]],
+            'panels'  => [
+                'repostGL' => ['label'=>$this->lang['phreebooks_repost_title'],'type'=>'html','html'=>$repost],
+                'testGL'   => ['label'=>$this->lang['title_gl_test'],          'type'=>'fields','keys'=>['glTestDesc','btnRepairGL']],
+                'pruneCOGS'=> ['label'=>$this->lang['pb_prune_cogs_title'],    'type'=>'fields','keys'=>['pruneCogsDesc','btnPruneCogs']],
+                'cleanAtch'=> ['label'=>$this->lang['pb_attach_clean_title'],  'type'=>'fields','keys'=>['cleanAtchDesc','dateAtchCln','btnAtchCln']],
+                'purgeGL'  => ['label'=>$this->lang['msg_gl_db_purge'],        'type'=>'fields','keys'=>['purgeGlDesc','purge_db','btn_purge']]],
             'datagrid'=> ['dgCurrency'  =>$currency->dgCurrency('dgCurrency', $security)],
             'forms'   => ['frmCurrency' =>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/save"]]],
+            'fields'  => $fields,
             'jsHead'  => ['dataCurrency'=>"var dataCurrency = ".json_encode(array_values(getModuleCache('phreebooks','currency','iso'))).";"],
-            'jsBody'  => [$tools['jsBody']]];
+            'jsBody'  => ['init'=>"jq('#repost_begin').datebox({ required:true }); jq('#repost_end').datebox({ required:true });"]];
         $layout = array_replace_recursive($layout, adminStructure($this->moduleID, $this->settingsStructure(), $this->lang), $data);
     }
 
-    private function getViewTools($security)
+    private function getViewRepost()
     {
-        // General Journal
         $repost      = ['position'=>'after','attr'=>['type'=>'checkbox']]; // label comes later
         $repost_begin= ['attr'=>['type'=>'date',   'value'=>date('Y-m-d')]];
         $repost_end  = ['attr'=>['type'=>'date',   'value'=>date('Y-m-d')]];
         $btn_repost  = ['icon'=>'save','size'=>'large','events'=>['onClick'=>"divSubmit('phreebooks/tools/glRepostBulk', 'glRepost');"]];
-        // Misc tools
-        $btnRepairGL = ['attr'=>['type'=>'button', 'value'=>lang('start')],'events'=>['onClick'=>"jsonAction('phreebooks/tools/glRepair');"]];
-        $btnPruneCogs= ['attr'=>['type'=>'button', 'value'=>lang('start')],'events'=>['onClick'=>"jsonAction('phreebooks/tools/pruneCogs');"]];
-        $purge_db    = ['styles'=>["text-align"=>"right"],'attr'=>['size'=>"7"]];
-        $btn_purge   = ['attr'=>['type'=>'button', 'value'=>$this->lang['phreebooks_purge_db_journal']],
-            'events' => ['onClick'=>"if (confirm('".$this->lang['msg_gl_db_purge_confirm']."')) jsonAction('phreebooks/tools/glPurge', 0, jq('#purge_db').val());"]];
-        $dateAtchCln = ['attr'=> ['type'=>'date',  'value'=>localeCalculateDate(date('Y-m-d'), 0, -6)]];
-        $btnAtchCln  = ['attr'=> ['type'=>'button','value'=>lang('start')],
-            'events' => ['onClick'=>"if (confirm('".$this->lang['pb_attach_clean_confirm']."')) jsonAction('phreebooks/tools/cleanAttach', 0, jq('#dateAtchCln').datebox('getValue'));"]];
 
-        $output['body'] = '<div id="glRepost"><fieldset><legend>'.$this->lang['phreebooks_repost_title']."</legend>\n";
-        $output['body'] .= " <p>".$this->lang['msg_gl_repost_journals_confirm']."</p>\n";
-        $output['body'] .= ' <table style="border-style:none;margin-left:auto;margin-right:auto;">'."\n";
-        $output['body'] .= "  <tbody>\n";
-        $output['body'] .= '   <tr class="panel-header">'."\n";
-        $output['body'] .= "    <th>".lang('gl_acct_type_2')."</th>\n<th>".lang('gl_acct_type_20')."</th>\n<th>".lang('gl_acct_type_0')."</th>\n<th>".lang('gl_acct_type_4')."</th>\n<th>&nbsp;</th>\n";
-        $output['body'] .= "   </tr>\n<tr>\n";
+        $output  = '<div id="glRepost">';
+        $output .= " <p>".$this->lang['msg_gl_repost_journals_confirm']."</p>\n";
+        $output .= ' <table style="border-style:none;margin-left:auto;margin-right:auto;">'."\n";
+        $output .= "  <tbody>\n";
+        $output .= '   <tr class="panel-header">'."\n";
+        $output .= "    <th>".lang('gl_acct_type_2')."</th>\n<th>".lang('gl_acct_type_20')."</th>\n<th>".lang('gl_acct_type_0')."</th>\n<th>".lang('gl_acct_type_4')."</th>\n<th>&nbsp;</th>\n";
+        $output .= "   </tr>\n<tr>\n";
         $repost['label'] = lang('journal_main_journal_id_9');
-        $output['body'] .= "    <td>".html5('jID[9]',  $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[9]',  $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_3');
-        $output['body'] .= "    <td>".html5('jID[3]',  $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[3]',  $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_2');
-        $output['body'] .= "    <td>".html5('jID[2]',  $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[2]',  $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_14');
-        $output['body'] .= "    <td>".html5('jID[14]', $repost)."</td>\n";
-        $output['body'] .= "    <td>&nbsp;</td>\n";
-        $output['body'] .= "   </tr>\n<tr>\n";
+        $output .= "    <td>".html5('jID[14]', $repost)."</td>\n";
+        $output .= "    <td>&nbsp;</td>\n";
+        $output .= "   </tr>\n<tr>\n";
         $repost['label'] = lang('journal_main_journal_id_10');
-        $output['body'] .= "    <td>".html5('jID[10]', $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[10]', $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_4');
-        $output['body'] .= "    <td>".html5('jID[4]',  $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[4]',  $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_18');
-        $output['body'] .= "    <td>".html5('jID[18]',  $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[18]',  $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_16');
-        $output['body'] .= "    <td>".html5('jID[16]', $repost)."</td>\n";
-        $output['body'] .= "    <td>&nbsp;</td>\n";
-        $output['body'] .= "   </tr>\n<tr>\n";
+        $output .= "    <td>".html5('jID[16]', $repost)."</td>\n";
+        $output .= "    <td>&nbsp;</td>\n";
+        $output .= "   </tr>\n<tr>\n";
         $repost['label'] = lang('journal_main_journal_id_12');
-        $output['body'] .= "    <td>".html5('jID[12]', $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[12]', $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_6');
-        $output['body'] .= "    <td>".html5('jID[6]',  $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[6]',  $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_20');
-        $output['body'] .= "    <td>".html5('jID[20]', $repost)."</td>\n";
-        $output['body'] .= '    <td style="text-align:right">'.lang('start')."</td>\n";
-        $output['body'] .= "    <td>".html5('repost_begin',  $repost_begin)."</td>\n";
-        $output['jsBody'][]  = "jq('#repost_begin').datebox({ required:true });";
-        $output['body'] .= "   </tr>\n<tr>\n";
+        $output .= "    <td>".html5('jID[20]', $repost)."</td>\n";
+        $output .= '    <td style="text-align:right">'.lang('start')."</td>\n";
+        $output .= "    <td>".html5('repost_begin',  $repost_begin)."</td>\n";
+        $output .= "   </tr>\n<tr>\n";
         $repost['label'] = lang('journal_main_journal_id_13');
-        $output['body'] .= "    <td>".html5('jID[13]', $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[13]', $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_7');
-        $output['body'] .= "    <td>".html5('jID[7]',  $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[7]',  $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_17');
-        $output['body'] .= "    <td>".html5('jID[17]', $repost)."</td>\n";
-        $output['body'] .= '    <td style="text-align:right">'.lang('end')."</td>\n";
-        $output['body'] .= "    <td>".html5('repost_end', $repost_end)."</td>\n";
-        $output['jsBody'][]  = "jq('#repost_end').datebox({ required:true });";
-        $output['body'] .= "   </tr>\n<tr>\n";
+        $output .= "    <td>".html5('jID[17]', $repost)."</td>\n";
+        $output .= '    <td style="text-align:right">'.lang('end')."</td>\n";
+        $output .= "    <td>".html5('repost_end', $repost_end)."</td>\n";
+        $output .= "   </tr>\n<tr>\n";
         $repost['label'] = lang('journal_main_journal_id_19');
-        $output['body'] .= "    <td>".html5('jID[19]', $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[19]', $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_21');
-        $output['body'] .= "    <td>".html5('jID[21]', $repost)."</td>\n";
+        $output .= "    <td>".html5('jID[21]', $repost)."</td>\n";
         $repost['label'] = lang('journal_main_journal_id_22');
-        $output['body'] .= "    <td>".html5('jID[22]', $repost)."</td>\n";
-        $output['body'] .= "    <td>&nbsp;</td>\n";
-        $output['body'] .= '    <td rowspan="2" style="text-align:right">'.html5('btn_repost', $btn_repost)."</td>\n";
-        $output['body'] .= "   </tr>\n</tbody>\n</table>\n</fieldset></div>";
-        // GL Test and Repair
-        $output['body'] .= "
-<fieldset><legend>".$this->lang['title_gl_test']."</legend>
-    <p>".$this->lang['pbtools_gl_test_desc'].'</p>
-    <p>'.html5('btnRepairGL', $btnRepairGL)."</p>
-</fieldset>
-<fieldset><legend>".$this->lang['pb_prune_cogs_title']."</legend>
-    <p>".$this->lang['pb_prune_cogs_desc'].'</p>
-    <p>'.html5('btnPruneCogs', $btnPruneCogs)."</p>
-</fieldset>
-
-<fieldset><legend>".$this->lang['pb_attach_clean_title']."</legend>
-    <p>".$this->lang['pb_attach_clean_desc'].'</p>
-    <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">
-        <tbody>
-            <tr>
-                <td>'.html5('dateAtchCln',$dateAtchCln)."</td>
-                <td>".html5('btnAtchCln', $btnAtchCln) ."</td>
-            </tr>
-        </tbody>
-    </table>
-</fieldset>";
-        if ($security > 4) { // GL Purge
-            $output['body'] .= "<fieldset><legend>".$this->lang['msg_gl_db_purge'].'</legend>
-    <table class="ui-widget" style="border-style:none;margin-left:auto;margin-right:auto;">'."
-        <tbody>
-            <tr>
-                <td>".$this->lang['msg_gl_db_purge_confirm']."</td>
-                <td>".html5('purge_db', $purge_db).' '.html5('btn_purge', $btn_purge)."</td>
-            </tr>
-        </tbody>
-    </table>
-</fieldset>";
-        }
+        $output .= "    <td>".html5('jID[22]', $repost)."</td>\n";
+        $output .= "    <td>&nbsp;</td>\n";
+        $output .= '    <td rowspan="2" style="text-align:right">'.html5('btn_repost', $btn_repost)."</td>\n";
+        $output .= "   </tr>\n</tbody>\n</table></div>";
         return $output;
     }
 
@@ -351,17 +332,30 @@ class phreebooksAdmin {
 
     public function managerFY(&$layout=[])
     {
-        $html = $this->getViewFY();
-        $layout = array_replace_recursive($layout, ['type'=>'divHTML',
-            'divs'  => ['divFY'=>['order'=>80,'type'=>'html','html'=>$html['body']]],
-            'jsBody'=> ['init' =>$html['jsBody']]]);
+        $dbMaxFY= dbGetValue(BIZUNO_DB_PREFIX . "journal_periods", ["MAX(fiscal_year) AS fiscal_year", "MAX(period) AS period"], false, false);
+        $maxFY  = $dbMaxFY['fiscal_year'] > 0 ? $dbMaxFY['fiscal_year'] : 0;
+        $html   = $this->getViewFY();
+        $fields = [
+            'btnNewFy'  => ['order'=>10,'attr'=>['type'=>'button','value' => $this->lang['phreebooks_new_fiscal_year']],
+                'events' => ['onClick'=>"if (confirm('".sprintf($this->lang['msg_gl_fiscal_year_confirm'], $maxFY + 1)."')) { jq('body').addClass('loading'); jsonAction('phreebooks/tools/fyAdd'); }"]],
+            'btnCloseFy'=> ['order'=>20,'attr'=>['type'=>'button','value'=>$this->lang['del_fiscal_year_btn']],'events'=>['onClick'=>"jsonAction('phreebooks/tools/fyCloseValidate');"]],
+        ];
+        $data = ['type'=>'divHTML',
+            'divs'  => ['divFY'=>['order'=>50,'type'=>'divs','divs'=>[
+                'general' => ['order'=>20,'type'=>'divs','classes'=>['areaView'],'divs'=>[
+                    'newFY'  => ['order'=>10,'type'=>'panel','classes'=>['block33'],'key'=>'newFY'],
+                    'editPer'=> ['order'=>20,'type'=>'panel','classes'=>['block50'],'key'=>'editPer']]]]]],
+            'panels'=> [
+                'newFY'  => ['label'=>$this->lang['phreebooks_fiscal_years'],   'type'=>'fields','keys'=>['btnNewFy','btnCloseFy']],
+                'editPer'=> ['label'=>$this->lang['phreebooks_journal_periods'],'type'=>'html',  'html'=>$html['body']]],
+            'fields'=> $fields,
+            'jsBody'=> ['init' =>$html['jsBody']]];
+        $layout = array_replace_recursive($layout, $data);
     }
 
     private function getViewFY()
     {
         $FYs       = $outputJS = [];
-        $dbMaxFY   = dbGetValue(BIZUNO_DB_PREFIX . "journal_periods", ["MAX(fiscal_year) AS fiscal_year", "MAX(period) AS period"], false, false);
-        $maxFY     = $dbMaxFY['fiscal_year'] > 0 ? $dbMaxFY['fiscal_year'] : 0;
         $stmt      = dbGetResult("SELECT DISTINCT fiscal_year FROM ".BIZUNO_DB_PREFIX."journal_periods");
         $dbFYs     = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         foreach ($dbFYs as $row) { $FYs[] = ['id' => $row['fiscal_year'], 'text' => $row['fiscal_year']]; }
@@ -370,19 +364,11 @@ class phreebooksAdmin {
             'events' => ['onChange'=>"var tab=jq('#tabAdmin').tabs('getSelected'); tab.panel( 'refresh', '".BIZUNO_AJAX."&p=phreebooks/admin/managerFY&fy='+jq('#fy').val() );"]];
         $btnSaveFy = ['icon'=>'save','size'=>'large',
             'events' => ['onClick'=>"divSubmit('phreebooks/tools/fySave', 'fyCal');"]];
-        $btnNewFy  = ['attr'=>['type'=>'button','value' => $this->lang['phreebooks_new_fiscal_year']],
-            'events' => ['onClick'=>"if (confirm('".sprintf($this->lang['msg_gl_fiscal_year_confirm'], $maxFY + 1)."')) { jq('body').addClass('loading'); jsonAction('phreebooks/tools/fyAdd'); }"]];
-        $btnCloseFy= ['attr'=>['type'=>'button','value' => $this->lang['del_fiscal_year_btn']],
-            'events' => ['onClick' => "jsonAction('phreebooks/tools/fyCloseValidate');"]];
         $max_posted= dbGetValue(BIZUNO_DB_PREFIX."journal_main",    "MAX(period) AS period", false, false);
         $dbPer     = dbGetMulti(BIZUNO_DB_PREFIX."journal_periods", "fiscal_year=$fy", "period");
         $periods   = [];
         foreach ($dbPer as $row) { $periods[$row['period']] = ['start' => $row['start_date'], 'end' => $row['end_date']]; }
-        $output    = "<fieldset><legend>".$this->lang['phreebooks_fiscal_years']."</legend>
-            <p>".html5('btnNewFy', $btnNewFy)."</p>\n<p>".html5('btnCloseFy', $btnCloseFy)."</p>
-        </fieldset>
-        <fieldset><legend>".$this->lang['phreebooks_journal_periods']."</legend>
-            <p>".$this->lang['msg_gl_fiscal_year_edit'].'</p>
+        $output    = "<p>".$this->lang['msg_gl_fiscal_year_edit'].'</p>
             <div id="fyCal" style="text-align:center">'.html5('fy', $fiscalY).html5('btnSaveFy', $btnSaveFy).'
             <table style="border-style:none;margin-left:auto;margin-right:auto;">
                 <thead class="panel-header">
@@ -402,7 +388,7 @@ class phreebooksAdmin {
             }
             $output .= "</tr>\n";
         }
-        $output .= "</tbody>\n</table>\n</div>\n</fieldset>";
+        $output .= "</tbody>\n</table>\n</div>";
         return ['body'=>$output,'jsBody'=>$outputJS];
     }
 
@@ -437,13 +423,21 @@ class phreebooksAdmin {
     }
 
     /**
-     * Installs the total methods at first install, can be modified by user later
+     * Installs the currency settings and total methods at first install, can be modified by user later
      * @param array $layout - structure coming in
      * @return modified $layout
      */
     public function install(&$layout=[])
     {
-        $bAdmin = new bizunoSettings();
+        // set the currency settings
+        $defISO    = getModuleCache('phreebooks', 'currency', 'defISO');
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/currency.php", 'phreebooksCurrency');
+        $currency  = new phreebooksCurrency();
+        $currencies= getModuleCache('phreebooks', 'currency', 'iso', false, []);
+        $currencies[$defISO] = $currency->currencySettings($defISO);
+        setModuleCache('phreebooks', 'currency', 'iso', $currencies);
+        // Set the totals methods
+        $bAdmin    = new bizunoSettings();
         foreach ($this->totalMethods as $method) {
             $bAdmin->methodInstall($layout, ['module'=>'phreebooks', 'path'=>'totals', 'method'=>$method], false);
         }
@@ -495,19 +489,16 @@ class phreebooksAdmin {
      * @return modified $layout
      */
     public function rolesEdit(&$layout=[]) {
-        $rID = clean('rID', 'integer', 'get');
-        $settings = json_decode(dbGetValue(BIZUNO_DB_PREFIX . "roles", 'settings', "id=$rID"), true);
+        $rID     = clean('rID', 'integer', 'get');
+        $settings= json_decode(dbGetValue(BIZUNO_DB_PREFIX . "roles", 'settings', "id=$rID"), true);
         $enableSales = isset($settings['bizuno']['roles']['sales']) && $settings['bizuno']['roles']['sales'] ? true : false;
         $enablePurch = isset($settings['bizuno']['roles']['purch']) && $settings['bizuno']['roles']['purch'] ? true : false;
-        $fields = [
-            'phreebooks_sales' => ['label' => lang('journal_main_journal_id_12'), 'position' => 'after', 'attr' => ['type' => 'checkbox', 'value' => '1', 'checked' => $enableSales]],
-            'phreebooks_purch' => ['label' => lang('journal_main_journal_id_6'), 'position' => 'after', 'attr' => ['type' => 'checkbox', 'value' => '1', 'checked' => $enablePurch]]];
-        $output = "  <fieldset>\n<p>" . $this->lang['msg_pb_admin_roles'] . "</p>";
-        $output .= html5('phreebooks_sales', $fields['phreebooks_sales']) . "<br />\n";
-        $output .= html5('phreebooks_purch', $fields['phreebooks_purch']) . "<br />\n</fieldset>\n";
-        if (!empty($layout['tabs']['tabRoles']['divs'])) {
-            $layout['tabs']['tabRoles']['divs'][$this->moduleID]['html'] = $output . $layout['tabs']['tabRoles']['divs'][$this->moduleID]['html'];
-        }
+        $fields  = [
+            'phreebooks_sales'=>['label'=>lang('journal_main_journal_id_12'),'attr'=>['type'=>'checkbox','checked'=>$enableSales]],
+            'phreebooks_purch'=>['label'=>lang('journal_main_journal_id_6'), 'attr'=>['type'=>'checkbox','checked'=>$enablePurch]]];
+        $html    = $this->lang['msg_pb_admin_roles']."<br />".html5('phreebooks_sales', $fields['phreebooks_sales'])."<br />".html5('phreebooks_purch', $fields['phreebooks_purch']);
+        $layout['tabs']['tabRoles']['divs'][$this->moduleID]['divs']['props'] = ['order'=>20,'type'=>'panel','classes'=>['block50'],'key'=>"{$this->moduleID}Props"];
+        $layout['panels']["{$this->moduleID}Props"] = ['label'=>lang('settings'),'type'=>'html','html'=>$html];
     }
 
     /**
@@ -548,7 +539,9 @@ class phreebooksAdmin {
         ];
         if (empty($layout['fields'])) { $layout['fields'] = []; }
         $layout['fields'] = array_merge($layout['fields'], $fields);
-        $layout['tabs']['tabUsers']['divs']['phreebooks'] = ['order'=>50,'label'=>$this->lang['title'],'type'=>'fields','keys'=>$keys];
+        $layout['tabs']['tabUsers']['divs']['phreebooks'] = ['order'=>60,'label'=>$this->lang['title'],'type'=>'divs','classes'=>['areaView'],'divs'=>[
+            'pnlPB'=> ['order'=>40,'type'=>'panel','key'=>'pnlPhreeBooks','classes'=>['block50']]]];
+        $layout['panels']['pnlPhreeBooks'] = ['label'=>lang('properties'),'type'=>'fields','keys'=>$keys];
     }
 
     /**

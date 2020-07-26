@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-04-26
+ * @version    4.x Last Update: 2020-06-04
  * @filesource /controller/module/phreebooks/totals/total/total.php
  */
 
@@ -104,7 +104,7 @@ class total
      * @param array $output - running output buffer
      * @param array $data - source data
      */
-    public function render(&$output, $data=[])
+    public function render($data=[])
     {
           $this->fields = [
             'totals_total_id'  => ['attr'=>['type'=>'hidden']],
@@ -123,20 +123,21 @@ class total
             }
         } }
         $hide = $this->hidden ? ';display:none' : '';
-        $output['body'] .= '<div style="text-align:right'.$hide.'">'."\n";
-        $output['body'] .= html5('totals_total_id',  $this->fields['totals_total_id']);
-        $output['body'] .= html5('totals_total_desc',$this->fields['totals_total_desc']);
-        $output['body'] .= html5('totals_total_txid',$this->fields['totals_total_txid']);
-        $output['body'] .= html5('total_amount',     $this->fields['total_amount']);
-        $output['body'] .= html5('',                 $this->fields['totals_total_opt']);
-        $output['body'] .= "</div>\n";
-        $output['body'] .= '<div id="totals_total_div" style="display:none" class="layout-expand-over">'."\n";
-        $output['body'] .= html5('gl_acct_id',       $this->fields['gl_acct_id'])."\n";
-        $output['body'] .= "</div>\n";
-        $output['jsHead'][] = "function totals_total(begBalance) {
+        $html  = '<div style="text-align:right'.$hide.'">'."\n";
+        $html .= html5('totals_total_id',  $this->fields['totals_total_id']);
+        $html .= html5('totals_total_desc',$this->fields['totals_total_desc']);
+        $html .= html5('totals_total_txid',$this->fields['totals_total_txid']);
+        $html .= html5('total_amount',     $this->fields['total_amount']);
+        $html .= html5('',                 $this->fields['totals_total_opt']);
+        $html .= "</div>\n";
+        $html .= '<div id="totals_total_div" style="display:none" class="layout-expand-over">'."\n";
+        $html .= html5('gl_acct_id',       $this->fields['gl_acct_id'])."\n";
+        $html .= "</div>\n";
+        htmlQueue("function totals_total(begBalance) {
     var newBalance = begBalance;
     bizNumSet('total_amount', newBalance);
     return newBalance;
-}";
+}", 'jsHead');
+        return $html;
     }
 }

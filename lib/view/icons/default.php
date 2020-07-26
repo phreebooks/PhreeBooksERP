@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-21
+ * @version    4.x Last Update: 2020-04-15
  * @filesource lib/view/theme/default/icons-default.php
  */
 
@@ -58,11 +58,11 @@ $icons = [
     'employee'   => ['dir'=>'default','path'=>'employee.png'],
     'encrypt-off'=> ['dir'=>'default','path'=>'network-wireless-encrypted.png'],
     'expand'     => ['dir'=>'default','path'=>'list-add.png'],
-    'lock'       => ['dir'=>'default','path'=>'emblem-readonly.png'],
     'exit'       => ['dir'=>'default','path'=>'system-log-out.png'],
     'export'     => ['dir'=>'default','path'=>'format-indent-more.png'],
     'fileMgr'    => ['dir'=>'default','path'=>'system-file-manager.png'],
     'fillup'     => ['dir'=>'default','path'=>'media-eject.png'],
+    'fullscreen' => ['dir'=>'default','path'=>'view-fullscreen.png'],
     'help'       => ['dir'=>'default','path'=>'help-browser.png'],
     'home'       => ['dir'=>'default','path'=>'go-home.png'],
     'import'     => ['dir'=>'default','path'=>'format-indent-less.png'],
@@ -71,6 +71,7 @@ $icons = [
     'invoice'    => ['dir'=>'default','path'=>'applix.png'],
     'journal'    => ['dir'=>'default','path'=>'journal.png'],
     'loading'    => ['dir'=>'default','path'=>'loading.gif'],
+    'lock'       => ['dir'=>'default','path'=>'emblem-readonly.png'],
     'locked'     => ['dir'=>'default','path'=>'system-lock-screen.png'],
     'logout'     => ['dir'=>'default','path'=>'system-log-out.png'],
     'merge'      => ['dir'=>'default','path'=>'mail-reply-all.png'],
@@ -92,9 +93,6 @@ $icons = [
     'new'        => ['dir'=>'default','path'=>'document-new.png'],
     'newFolder'  => ['dir'=>'default','path'=>'folder-new.png'],
     'next'       => ['dir'=>'default','path'=>'go-next.png'],
-    'recur'      => ['dir'=>'default','path'=>'go-jump.png'],
-    'register'   => ['dir'=>'default','path'=>'register.jpeg'],
-    'rename'     => ['dir'=>'default','path'=>'accessories-text-editor.png'],
     'no_image'   => ['dir'=>'default','path'=>'emblem-important.png'],
     'open'       => ['dir'=>'default','path'=>'document-open.png'],
     'order'      => ['dir'=>'default','path'=>'signature.png'],
@@ -109,7 +107,10 @@ $icons = [
     'purchase'   => ['dir'=>'default','path'=>'package-x-generic.png'],
     'quality'    => ['dir'=>'default','path'=>'quality.png'],
     'quote'      => ['dir'=>'default','path'=>'internet-group-chat.png'],
+    'recur'      => ['dir'=>'default','path'=>'go-jump.png'],
     'refresh'    => ['dir'=>'default','path'=>'view-refresh.png'],
+    'register'   => ['dir'=>'default','path'=>'register.jpeg'],
+    'rename'     => ['dir'=>'default','path'=>'accessories-text-editor.png'],
     'report'     => ['dir'=>'default','path'=>'x-office-document.png'],
     'reset'      => ['dir'=>'default','path'=>'view-refresh.png'],
     'restore'    => ['dir'=>'default','path'=>'system-installer.png'],
@@ -136,5 +137,7 @@ $icons = [
     'update'     => ['dir'=>'default','path'=>'system-software-update.png'],
     'users'      => ['dir'=>'default','path'=>'system-users.png'],
     'web'        => ['dir'=>'default','path'=>'internet-web-browser.png'],
+    'winNew'     => ['dir'=>'default','path'=>'window_new.png'],
     'work'       => ['dir'=>'default','path'=>'applications-development.png'],
+    'wp-admin'   => ['dir'=>'default','path'=>'wp-admin.jpg'],
 ];

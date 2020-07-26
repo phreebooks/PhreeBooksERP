@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-09
+ * @version    4.x Last Update: 2020-01-09
  * @filesource /lib/controller/module/contacts/tools.php
  */
 
@@ -52,14 +52,12 @@ class contactsTools
      */
     public function chartSales(&$layout=[])
     {
-        $rID = clean('rID', 'integer', 'get');
+        $rID   = clean('rID', 'integer', 'get');
         if (!$rID) { return msgAdd(lang('err_bad_id')); }
         $type  = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID");
         $struc = $this->chartSalesData($rID, $type);
         $title = $type=='v' ? $this->lang['purchases_by_month'] : $this->lang['sales_by_month'];
-        $iconExp= ['attr'=>['type'=>'button','value'=>'Download Data'],'events'=>['onClick'=>"jq('#frmContactsChart').submit();"]];
-        $output= ['divID'=>"chartContactsChart",'type'=>'column','attr'=>['legend'=>'none','title'=>$title],
-            'data'=>array_values($struc)];
+        $output= ['divID'=>"chartContactsChart",'type'=>'column','attr'=>['legend'=>'none','title'=>$title],'data'=>array_values($struc)];
         $action= BIZUNO_AJAX."&p=contacts/tools/chartSalesGo&rID=$rID&type=$type";
         $js    = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');\n";
         $js   .= "ajaxDownload('frmContactsChart');\n";
@@ -67,13 +65,21 @@ class contactsTools
         $js   .= "function funcContactsChart() { drawBizunoChart(dataContactsChart); };";
         $js   .= "google.charts.load('current', {'packages':['corechart']});\n";
         $js   .= "google.charts.setOnLoadCallback(funcContactsChart);\n";
-
-        $html  = '<div style="width:100%" id="chartContactsChart"></div>';
-        $html .= '<div style="text-align:right"><form id="frmContactsChart" action="'.$action.'">'.html5('', $iconExp).'</form></div>';
-        $html .= htmlJS($js);
-        $layout = array_replace_recursive($layout, ['type'=>'raw', 'content'=>$html]);
+        $layout = array_merge_recursive($layout, ['type'=>'divHTML',
+            'divs'  => [
+                'body'  =>['order'=>50,'type'=>'html',  'html'=>'<div style="width:100%" id="chartContactsChart"></div>'],
+                'divExp'=>['order'=>70,'type'=>'html',  'html'=>'<form id="frmContactsChart" action="'.$action.'"></form>'],
+                'btnExp'=>['order'=>90,'type'=>'fields','keys'=>['icnExp']]],
+            'fields'=> ['icnExp'=>['attr'=>['type'=>'button','value'=>lang('download_data')],'events'=>['onClick'=>"jq('#frmContactsChart').submit();"]]],
+            'jsHead'=> ['init'=>$js]]);
     }
 
+    /**
+     *
+     * @param type $rID
+     * @param type $type
+     * @return type
+     */
     private function chartSalesData($rID, $type)
     {
         $dates= localeGetDates(localeCalculateDate(date('Y-m-d'), 0, 0, -1));
@@ -102,6 +108,10 @@ class contactsTools
         return $struc;
     }
 
+    /**
+     *
+     * @global type $io
+     */
     public function chartSalesGo()
     {
         global $io;

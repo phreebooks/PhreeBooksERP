@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-10
+ * @version    3.x Last Update: 2020-04-21
  * @filesource /portal/guest.php
  */
 
@@ -136,37 +136,36 @@ class guest
 
     /**
      * Add/Update the users table in the portal, record may be local but not in portal, in this case add it.
-     * If add, check for dups at the portal, if edit get portal information to revise, could also be adding a
+     * If add, check for duplicates at the portal, if edit get portal information to revise, could also be adding a
      * new business to users list
-     * @param string $email - users email address
-     * @param string $title - users title, from form
+     * @param array $values - database fields to set
      * @param boolean - specifies whether this user is new to this business
      */
-    public function portalSaveUser($email, $title='New User', $newUser=false)
+    public function portalSaveUser($values, $newUser=false)
     {
         require_once(BIZUNO_LIB."model/mail.php");
-        $pData = dbGetRow(BIZUNO_DB_PREFIX.'users', "email='$email'");
+        $pData = dbGetRow(BIZUNO_DB_PREFIX.'users', "email='{$values['email']}'");
         msgDebug("\nRead portal user data = ".print_r($pData, true));
         $pID   = isset($pData['admin_id']) ? $pData['admin_id'] : 0; // portal user record ID
-        $portal= ['email'=>$email];
+        $portal= ['email'=>$values['email']];
         if (!$pID || $newUser) { // send welcome new user email
             $fromEmail= getUserCache('profile', 'email');
             $fromName = getUserCache('profile', 'title');
             $bizTitle = getModuleCache('bizuno','settings', 'company', 'primary_name');
-            $link = BIZUNO_SRVR.BIZUNO_HOME;
+            $link     = BIZUNO_SRVR.BIZUNO_HOME;
             if (!$pData['password']) { // send new user mail with temp password
                 $portal['date_created']= date('Y-m-d H:i:s');
                 $password = randomValue();
                 $portal['pw_reset'] = time().":".$password;
                 $link.= '&newuser=true';
-                $body = sprintf($this->lang['email_new_portal_body'], $fromName, $bizTitle, $link, $link, $password);
+                $body = sprintf($this->lang['email_new_portal_body'],$fromName, $bizTitle, $link, $link, $password);
             } else { // send new user email with you already have a bizuno login message
-                $body = sprintf($this->lang['email_new_user_body'], $fromName, $bizTitle, $link, $link);
+                $body = sprintf($this->lang['email_new_user_body'],  $fromName, $bizTitle, $link, $link);
             }
-            $mail = new bizunoMailer($email, $title, $this->lang['email_new_user_subject'], $body, $fromEmail, $fromName);
+            $mail = new bizunoMailer($values['email'], $values['title'], $this->lang['email_new_user_subject'], $body, $fromEmail, $fromName);
             $mail->sendMail();
         }
-        dbWrite(BIZUNO_DB_PREFIX.'users', $portal, $pID?'update':'insert', "email='$email'");
+        dbWrite(BIZUNO_DB_PREFIX.'users', $portal, $pID?'update':'insert', "email='{$values['email']}'");
     }
 
     public function installPreflight(&$layout=[])
@@ -175,8 +174,8 @@ class guest
         global $db;
         session_start(); // need a session to keep some info to new reload
         // validate user
-        $email = $_SESSION['UserEmail']= clean('UserEmail', 'email', 'post');
-        $pass  = $_SESSION['UserPass'] = biz_hash_password(clean('UserPass', 'text', 'post'));
+        $_SESSION['UserEmail']= $email = clean('UserEmail', 'email', 'post');
+        $_SESSION['UserPass'] = biz_hash_password(clean('UserPass', 'text', 'post'));
         set_user_cookie($email);
         $GLOBALS['dbBizuno'] = $GLOBALS['dbPortal'] = ['type'=>'mysql',
             'host'  => clean('dbHost', 'text', 'post'),
@@ -216,7 +215,6 @@ class guest
         // set the password now that user table exists
         session_start();
         $pass = $_SESSION['UserPass'];
-        $lang = getUserCache('profile', 'language');
         dbWrite(BIZUNO_DB_PREFIX.'users', ['password'=>$pass,'last_login'=>date('Y-m-d h:i:s'),'date_created'=>date('Y-m-d h:i:s')], 'update', "admin_id=1");
         clearUserCache('profile', 'password');
         session_destroy();

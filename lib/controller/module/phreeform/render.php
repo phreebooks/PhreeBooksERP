@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-06
+ * @version    4.x Last Update: 2020-07-20
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -98,10 +98,10 @@ class phreeformRender
             'forms'   => ['frmPhreeform'=>['classes'=>['fileDownloadForm'],'attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=phreeform/render/render".$extras]]],
             'fields'  => [
                 'id'        => ['attr'=>['type'=>'hidden','value'=>$rID]],
-                'msgFrom'   => ['break'=>true,'label'=>lang('from'),    'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsFrom'],'attr'=>['type'=>'select','value'=>$emailData['defFrom']]],
-                'msgTo'     => ['break'=>true,'label'=>lang('to'),      'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>$emailData['defTo']]],
-                'msgCC1'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>$emailData['defCC']]],
-                'msgCC2'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>$emailData['valsTo'],  'attr'=>['type'=>'select','value'=>'']],
+                'msgFrom'   => ['break'=>true,'label'=>lang('from'),    'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>array_values($emailData['valsFrom']),'attr'=>['type'=>'select','value'=>$emailData['defFrom']]],
+                'msgTo'     => ['break'=>true,'label'=>lang('to'),      'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>array_values($emailData['valsTo']),  'attr'=>['type'=>'select','value'=>$emailData['defTo']]],
+                'msgCC1'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>array_values($emailData['valsTo']),  'attr'=>['type'=>'select','value'=>$emailData['defCC']]],
+                'msgCC2'    => ['break'=>true,'label'=>lang('email_cc'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>array_values($emailData['valsTo']),  'attr'=>['type'=>'select','value'=>'']],
                 'msgSubject'=> ['break'=>true,'label'=>lang('email_subject'),'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>600],'attr'=>['size'=>40,'value'=>$emailData['msgSubject']]],
                 'msgBody'   => ['break'=>true,'label'=>lang('email_body'),'lblStyle'=>['min-width'=>'60px'],'attr' =>['type'=>'textarea','value'=>$emailData['msgBody'],'cols'=>'80','rows'=>'10']],
                 'reports'   => $reports],
@@ -148,7 +148,7 @@ class phreeformRender
             $viewData['fields']['msgBody']['attr']['value'] = str_replace(['<br />','<br>'], "\n", $viewData['fields']['msgBody']['attr']['value']);
         }
         $output .= html5('msgBody', $viewData['fields']['msgBody']);
-        $output .= '</div>'."\n";
+        $output .= "</div>\n";
 
         if (isset($viewData['report'])) {
             $output .= '<table style="border-collapse:collapse;margin-left:auto;margin-right:auto;">'."\n";
@@ -235,7 +235,7 @@ class phreeformRender
           $output .= '    <div id="frm_select">'."\n";
           $output .= "    <br /><h2>".$this->lang['phreeform_form_select']."</h2>\n";
           foreach ($viewData['fields']['reports'] as $value) {
-            $output .= '    <p style="min_height:30px">'.html5('rID',['label'=>$value['text'],'events'=>['onChange'=>"if (newVal) { pfGetInfo(this.value); }"],'attr'=>['type'=>'radio','value'=>$value['id']]])."</p>\n";
+            $output .= '    <p style="min_height:30px">'.html5('', ['label'=>$value['text'],'position'=>'after','events'=>['onChange'=>"if (newVal) { pfGetInfo(this.value); }"],'attr'=>['type'=>'checkbox','name'=>'rIDs[]','value'=>$value['id']]])."</p>\n";
           }
           $output .= "    </div>\n";
         } elseif (!isset($viewData['fields']['id']['attr']['value'])) {
@@ -324,154 +324,208 @@ class phreeformRender
      * output is choice of PDF, HTML, XML, or CSV for reports, PDF for forms.
      * @global object $report - report structure
      * @param array $layout - Structure coming in
-     * @return array - modified $layout
+     * @return array - modified $layout or die
      */
     public function render(&$layout=[])
     {
         global $report;
-        $data     = [];
-        $rID      = clean('rID', 'integer', 'request'); // could come in as $_POST or $_GET
-        if (!$rID) { return msgAdd("Not enough data provided to generate the report/form. rID = $rID"); }
-        $format   = clean('fmt', 'text', 'post');
-        $xmlReport= dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'doc_data', "id=$rID");
-        $report   = phreeFormXML2Obj($xmlReport);
-//      msgAdd("report = ".print_r($report, true));
+        $output  = [];
+        $rptID   = clean('rID', 'integer', 'request');
+        if (empty($rptID)){ $rIDs = clean('rIDs', 'array', 'post'); }
+        else              { $rIDs = [$rptID]; }
+        if (empty($rIDs)) { return msgAdd("Not enough data provided to generate the report/form. rIDs = ".print_r($rIDs, true)); }
+        $format  = clean('fmt', 'text', 'post');
+        $delivery= clean('delivery',['format'=>'char','default'=>'I'], 'post');
+        $data    = ['type'=>'page',
+            'toolbars'=>['tbBack'=>['icons'=>['back'=>['events'=>['onClick'=>"window.history.back();"]]]]],
+            'divs'    =>['null'=>['type'=>'toolbar','key'=>'tbBack']]];
+        $rID    = array_shift($rIDs);
+        $xmlRpt = dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'doc_data', "id=$rID");
+        $report = phreeFormXML2Obj($xmlRpt);
+        $this->renderPrefs($report);
         if (!empty($report->special_class)) { if (!$this->loadSpecialClass($report->special_class)) { return; } }
-        $delivery   = clean('delivery',['format'=>'char','default'=>'D'], 'post');
-        $msgFrom    = clean('msgFrom', ['format'=>'text','default'=>getUserCache('profile','email')],'post');
-        $msgTo      = clean('msgTo',   ['format'=>'text','default'=>clean('rEmail','email','get')],  'post');
-        $msgCC1     = clean('msgCC1',  'text','post');
-        $msgCC2     = clean('msgCC2',  'text','post');
-        $defSubject = $report->title.' '.lang('from').' '.getModuleCache('bizuno', 'settings', 'company', 'primary_name');
-        $msgSubject = clean('msgSubject',['format'=>'text', 'default'=>$defSubject], 'post');
-        $defBody    = isset($report->EmailBody) ? TextReplace($report->EmailBody) : sprintf(lang('email_body'), $report->title, getModuleCache('bizuno', 'settings', 'company', 'primary_name'));
-        $msgBodyRaw = clean('msgBody',   ['format'=>'text', 'default'=>$defBody], 'post');
-        $msgBody    = str_replace("\n", "<br />", $msgBodyRaw); // convert textbox nl to html br
-        // read in user data and merge with report defaults
-        if ($report->reporttype == 'rpt') {
-            if (isset($report->grouplist) && is_array($report->grouplist)) { foreach ($report->grouplist as $key => $value) {
-                $report->grouplist[$key]->default = (isset($_POST['critGrpSel']) && $_POST['critGrpSel'] == ($key+1)) ? 1 : 0;
-            } }
+        if ($report->reporttype == 'rpt') { // report
+            $ReportData = $this->renderReport($report);
+            if (empty($ReportData)) { return; } // no data, fail gracefully
+            if     ($format == 'html') { $layout = array_replace_recursive($layout, $this->GenerateHTMLFile($ReportData, $report)); }
+            elseif ($format == 'pdf')  { $output = $this->GeneratePDFFile ($ReportData, $report, $delivery); }
+            elseif ($format == 'csv')  { $output = $this->GenerateCSVFile ($ReportData, $report, $delivery); }
+            elseif ($format == 'xml')  { $output = $this->GenerateXMLFile ($ReportData, $report, $delivery); }
+        } else { // form
+            do {
+                msgDebug("\nfetching form with id = $rID");
+                $strPDF = $this->renderForm($report);
+                if (empty($strPDF['data'])) { msgAdd("form id = $rID had no data, need to create 'NO DATA' pdf"); }
+                $PDFs[] = $strPDF; // will creae list of pdfs, need to be combined if inline or download, multiple attachments if email
+                $rID    = array_shift($rIDs);
+                if (empty($rID)) { break; }
+                $xmlRpt = dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'doc_data', "id=$rID");
+                $report = phreeFormXML2Obj($xmlRpt);
+                $this->renderPrefs($report);
+                if (!empty($report->special_class)) { if (!$this->loadSpecialClass($report->special_class)) { return $layout; } }
+            } while (true);
+            $output = sizeof($PDFs)>1 ? $this->renderMerge($PDFs) : array_shift($PDFs);
         }
-        $date    = clean('date',       ['format'=>'text','default'=>''], 'get');
-        $critDate= clean('critDateSel',['format'=>'text','default'=>''], 'post');
-        $period  = clean('period',     ['format'=>'integer','default'=>getModuleCache('phreebooks', 'fy', 'period')], 'post');
+        msgDebug("\nReady to download file...");
+        if     ($format == 'html')       { return; }
+        elseif ($delivery == 'S')        { $layout = $this->renderEmail($output, $report); return; } // assume format=pdf
+        elseif (!empty($output['data'])) { // $delivery=='I' or $delivery=='D', inline browser or download
+            msgDebugWrite();
+            header('Cache-Control: max-age=60, must-revalidate');
+            header('Expires: 0');
+            if ($delivery=='D') { // download
+                header('Set-Cookie: fileDownload=true; path=/');
+                header("Content-Disposition: attachment; filename={$output['filename']}");
+            }
+            switch ($format) {
+                case 'pdf': header('Content-type: application/pdf'); break;
+                case 'csv': header("Content-type: text/csv");        break;
+                case 'xml': header("Content-type: text/xml");        break;
+            }
+            print $output['data'];
+            exit();
+        }
+        $layout = array_replace_recursive($layout, $data);
+    }
+
+    private function renderPrefs(&$report)
+    {
+        $date     = clean('date',       ['format'=>'cmd','default'=>''], 'get');
+        $critDate = clean('critDateSel',['format'=>'cmd','default'=>''], 'post');
+        $period   = clean('period',     ['format'=>'integer','default'=>getModuleCache('phreebooks', 'fy', 'period')], 'post');
         msgDebug("\nTrying to get details for date = $date and critDate = $critDate and period = $period");
         if     (!empty($date))     { $report->datedefault = $date; } // should be encoded, this first as it means date override
         elseif (!empty($critDate)) { $report->datedefault = "$critDate:".$_POST['critDateMin'].':'.$_POST['critDateMax']; }
         elseif (!empty($period))   { $report->period = $period; $report->datedefault = $period; }
-        if (isset($report->sortlist) && is_array($report->sortlist)) { foreach ($report->sortlist as $key => $value) {
-            $report->sortlist[$key]->default = (isset($_POST['critSortSel']) && $_POST['critSortSel'] == ($key+1)) ? 1 : 0;
-        } }
-        if (isset($report->filterlist) && is_array($report->filterlist)) { foreach ($report->filterlist as $key => $value) { // Criteria Field Selection
-            if (isset($_POST['critFltrSel'.$key])) { $value->default = $_POST['critFltrSel'.$key]; }
-            if (isset($_POST['fromvalue'  .$key])) { $value->min     = $_POST['fromvalue'  .$key]; }
-            if (isset($_POST['tovalue'    .$key])) { $value->max     = $_POST['tovalue'    .$key]; }
-            $report->filterlist[$key] = $value;
-        } }
+        if (isset($report->sortlist) && is_array($report->sortlist)) {
+            foreach ($report->sortlist as $key => $value) {
+                $report->sortlist[$key]->default = (isset($_POST['critSortSel']) && $_POST['critSortSel'] == ($key+1)) ? 1 : 0;
+            }
+        }
+        if (isset($report->filterlist) && is_array($report->filterlist)) {
+            foreach ($report->filterlist as $key => $value) { // Criteria Field Selection
+                if (isset($_POST['critFltrSel'.$key])) { $value->default = $_POST['critFltrSel'.$key]; }
+                if (isset($_POST['fromvalue'  .$key])) { $value->min     = $_POST['fromvalue'  .$key]; }
+                if (isset($_POST['tovalue'    .$key])) { $value->max     = $_POST['tovalue'    .$key]; }
+                $report->filterlist[$key] = $value;
+            }
+        }
         $report->xfilterlist = new \stdClass();
         $report->xfilterlist->fieldname= clean('xfld','text','get');
         $report->xfilterlist->default  = clean('xcr', 'text','get');
         $report->xfilterlist->min      = clean('xmin','text','get');
         $report->xfilterlist->max      = clean('xmax','text','get');
         msgDebug("\nWorking with report (after overrides) = ".print_r($report, true));
-        $dataError = ['type'=>'page',
-            'toolbars'=>['tbBack'=>['icons'=>['back'=>['events'=>['onClick'=>"window.history.back();"]]]]],
-            'divs'    =>['null'=>['type'=>'toolbar','key'=>'tbBack']]];
-        switch ($report->reporttype) {
-            case 'frm':
-                $data = $this->BuildForm($report, $delivery); // if we come back from this function it's for emailing the form
-                if (!isset($data['pdf'])) { $layout = $dataError; return; } // no data, fail gracefully
-                break;
-            case 'rpt':
-                $ReportData = '';
-                $report->iso = clean('iso', ['format'=>'alpha_num', 'default'=>''], 'post');
-                $result = $this->BuildSQL($report);
-                if ($result['level'] == 'success') { // Generate the output data array
-                    $sql = $result['data'];
-                    if (!isset($report->filter)) { $report->filter = new \stdClass(); }
-                    $report->filter->text = $result['description']; // fetch the filter message
-                    $ReportData = BuildDataArray($sql, $report);
-                    if ($format == 'html') { // show the format with no results message
-                        $layout = array_replace_recursive($layout, $this->GenerateHTMLFile($ReportData, $report));
-                        return;
-                    }
-                    if (empty($ReportData)) { // no data, fail gracefully
-                        $layout= $dataError;
-                        return;
-                    }
-                    if ($format == 'pdf')  { $data  = $this->GeneratePDFFile ($ReportData, $report, $delivery); }
-                    if ($format == 'csv')  { $data  = $this->GenerateCSVFile ($ReportData, $report, $delivery); }
-                    if ($format == 'xml')  { $data  = $this->GenerateXMLFile ($ReportData, $report, $delivery); }
-                } else { // Houston, we have a problem
-                    return msgAdd($result['message'], $result['level']);
-                }
-                break;
+    }
+
+    /**
+     *
+     * @param object $report
+     * @return type
+     */
+    private function renderReport(&$report)
+    {
+        if (isset($report->grouplist) && is_array($report->grouplist)) {
+            foreach ($report->grouplist as $key => $value) {
+                $grpSel = clean('critGrpSel', ['format'=>'integer','default'=>''], 'post');
+                $report->grouplist[$key]->default = $grpSel==($key+1) ? 1 : 0;
+            }
         }
-        if ($delivery=='S' && isset($data['filename'])) {
-            $temp_file = BIZUNO_DATA."temp/{$data['filename']}";
-            if (!$handle = fopen($temp_file, 'w')) { return msgAdd("Cannot open temp folder to write attachment, the email was not sent!"); }
-            if (!fwrite($handle, $data['pdf'])) { return msgAdd("Cannot find attachment, the email was not sent!"); }
-            fclose($handle);
-            chmod($temp_file, 0644);
-            // send the email
-            $msgFrom= $this->getAddrInfo('msgFrom', getUserCache('profile','email'), getUserCache('profile','title'));
-            $msgTo  = $this->getAddrInfo('msgTo');
-            $msgCC1 = $this->getAddrInfo('msgCC1');
-            $msgCC2 = $this->getAddrInfo('msgCC2');
-            bizAutoLoad(BIZUNO_LIB."model/mail.php", 'bizunoMailer');
-            if (empty($msgTo['email']) || empty($msgFrom['email'])) { return msgAdd("I cannot find a valid From/To email address to generate the message."); }
-            $mail = new bizunoMailer($msgTo['email'], $msgTo['name'], $msgSubject, $msgBody, $msgFrom['email'], $msgFrom['name']);
-            if (!empty($msgCC1)) { $mail->addToCC($msgCC1['email'], $msgCC1['name']); }
-            if (!empty($msgCC2)) { $mail->addToCC($msgCC2['email'], $msgCC2['name']); }
-            $mail->attach($temp_file);
-            if ($mail->sendMail()) {
-                msgAdd(sprintf(lang('msg_email_sent'), $msgTo['name']), 'success');
-                $data = ['content'=>['action'=>'eval','actionData'=>"window.close();"]];
-                unlink($temp_file);
-                if (!empty($report->contactlog)) { // Update the contact record with information
-                    if (isset($report->xfilterlist) && $report->xfilterlist->default=='equal') {
-                        $vals = explode('.', $report->xfilterlist->fieldname);
-                        $cID  = dbGetValue(BIZUNO_DB_PREFIX.$vals[0], $report->contactlog, "{$vals[1]}={$report->xfilterlist->min}", false);
-                        if ($cID) {
-                            $sql_data = [
-                                'contact_id' => $cID,
-                                'entered_by' => getUserCache('profile', 'contact_id', false, '0'),
-                                'log_date'   => date('Y-m-d H:i:s'),
-                                'action'     => $this->lang['mail_out'],
-                                'notes'      => "Email: {$msgTo['name']} ({$msgTo['email']}), $msgSubject"];
-                            msgDebug("\nReady to write sql data: ".print_r($sql_data, true));
-                            dbWrite(BIZUNO_DB_PREFIX.'contacts_log', $sql_data);
-                        }
+        $ReportData = '';
+        $report->iso = clean('iso', ['format'=>'alpha_num', 'default'=>''], 'post');
+        $result = $this->BuildSQL($report);
+        if ($result['level'] == 'success') { // Generate the output data array
+            $sql = $result['data'];
+            if (!isset($report->filter)) { $report->filter = new \stdClass(); }
+            $report->filter->text = $result['description']; // fetch the filter message
+            $ReportData = BuildDataArray($sql, $report);
+        } else { // Houston, we have a problem
+            return msgAdd($result['message'], $result['level']);
+        }
+        return $ReportData;
+    }
+
+    /**
+     *
+     * @param type $output
+     * @param object $report
+     * @return array
+     */
+    private function renderEmail($output, $report)
+    {
+        $data      = [];
+        $defSubject= $report->title.' '.lang('from').' '.getModuleCache('bizuno', 'settings', 'company', 'primary_name');
+        $msgSubject= clean('msgSubject',['format'=>'text', 'default'=>$defSubject], 'post');
+        $defBody   = isset($report->EmailBody) ? TextReplace($report->EmailBody) : sprintf(lang('email_body'), $report->title, getModuleCache('bizuno', 'settings', 'company', 'primary_name'));
+        $msgBodyRaw= clean('msgBody',   ['format'=>'text', 'default'=>$defBody], 'post');
+        $msgBody   = str_replace("\n", "<br />", $msgBodyRaw); // convert textbox nl to html br
+        $temp_file = BIZUNO_DATA."temp/{$output['filename']}";
+        if (!$handle = fopen($temp_file, 'w')) { return msgAdd("Cannot open temp folder to write attachment, the email was not sent!"); }
+        if (!fwrite($handle, $output['data']))  { return msgAdd("Cannot find attachment, the email was not sent!"); }
+        fclose($handle);
+        chmod($temp_file, 0644);
+        // send the email
+        $msgFrom   = $this->getAddrInfo('msgFrom', getUserCache('profile','email'), getUserCache('profile','title'));
+        $msgTo     = $this->getAddrInfo('msgTo');
+        $msgCC1    = $this->getAddrInfo('msgCC1');
+        $msgCC2    = $this->getAddrInfo('msgCC2');
+        bizAutoLoad(BIZUNO_LIB."model/mail.php", 'bizunoMailer');
+        if (empty($msgTo['email']) || empty($msgFrom['email'])) { return msgAdd("I cannot find a valid From/To email address to generate the message."); }
+        $mail = new bizunoMailer($msgTo['email'], $msgTo['name'], $msgSubject, $msgBody, $msgFrom['email'], $msgFrom['name']);
+        if (!empty($msgCC1)) { $mail->addToCC($msgCC1['email'], $msgCC1['name']); }
+        if (!empty($msgCC2)) { $mail->addToCC($msgCC2['email'], $msgCC2['name']); }
+        $mail->attach($temp_file);
+        if ($mail->sendMail()) {
+            msgAdd(sprintf(lang('msg_email_sent'), $msgTo['name']), 'success');
+            $data = ['content'=>['action'=>'eval','actionData'=>"window.close();"]];
+            unlink($temp_file);
+            if (!empty($report->contactlog)) { // Update the contact record with information
+                if (isset($report->xfilterlist) && $report->xfilterlist->default=='equal') {
+                    $vals = explode('.', $report->xfilterlist->fieldname);
+                    $cID  = dbGetValue(BIZUNO_DB_PREFIX.$vals[0], $report->contactlog, "{$vals[1]}={$report->xfilterlist->min}", false);
+                    if ($cID) {
+                        $sql_data = [
+                            'contact_id' => $cID,
+                            'entered_by' => getUserCache('profile', 'contact_id', false, '0'),
+                            'log_date'   => date('Y-m-d H:i:s'),
+                            'action'     => $this->lang['mail_out'],
+                            'notes'      => "Email: {$msgTo['name']} ({$msgTo['email']}), $msgSubject"];
+                        msgDebug("\nReady to write sql data: ".print_r($sql_data, true));
+                        dbWrite(BIZUNO_DB_PREFIX.'contacts_log', $sql_data);
                     }
                 }
             }
         }
-        $layout = array_replace_recursive($layout, $data);
+        return $data;
     }
 
-    private function getAddrInfo($idx, $defEmail='', $defName='')
+    private function renderMerge($PDFs)
     {
-        $value = clean($idx, 'text', 'post');
-        if (strpos($value, '<') === false) { // no bracket, check for just an email
-            return strpos($value, '@') !== false ? ['name'=>trim($value), 'email'=>trim($value)] : [];
+        require_once(BIZUNO_3P_PDF."FPDI/src/autoload.php");
+        require_once(BIZUNO_3P_PDF."FPDI/src/Tcpdf/Fpdi.php");
+        $pdf = new \setasign\Fpdi\Tcpdf\FPDI();
+        $fn  = false;
+        foreach ($PDFs as $doc) {
+            if (empty($fn)) { $fn = $doc['filename']; }
+            $pageCount = $pdf->setSourceFile(\setasign\Fpdi\PdfParser\StreamReader::createByString($doc['data']));
+            for ($pageNo=1; $pageNo<=$pageCount; $pageNo++) {
+                $templateId = $pdf->importPage($pageNo);
+                msgDebug("\nAdding page with orient = {$doc['orient']} and format = ".print_r($doc['format'], true));
+                $pdf->AddPage($doc['orient'], $doc['format']);
+                $pdf->useTemplate($templateId, ['adjustPageSize'=>true]);
+            }
         }
-        $name  = trim(substr($value, 0, strpos($value, '<')));
-        $bofEm = substr($value, strpos($value, '<')+1);
-        $email = trim(substr($bofEm, 0, strpos($bofEm, '>')));
-        return ['name'=>empty($name) ? $email : $name, 'email'=>$email];
+        return ['filename'=>$fn, 'data'=>$pdf->Output($fn, 'S')];
     }
 
     /**
-     * Builds the database SQL statement, executes it and merges result with the report structure
+     * Renders the database SQL statement, executes it and merges result with the report structure
      * @global object $report - Report structure after merge ready for TCPDF render
      * @param object $report - Report structure void of result data, typically the raw report from the db
-     * @param char $delivery_method - what to do with the result, D - download, S - serial
      * @return type
      */
-    private function BuildForm($report, $delivery_method = 'D')
+    private function renderForm(&$report)
     {
-        global $report;
         bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/renderForm.php", 'PDF');
         // check for at least one field selected to show
         if (!$report->fieldlist) { // No fields are checked to show, that's bad
@@ -532,19 +586,38 @@ class phreeformRender
                 }
                 $tField = '';
                 foreach ($report->fieldlist[$i]->settings->boxfield as $entry) {
-                    $value  = getModuleCache('bizuno', 'settings', 'company', $entry->fieldname);
-                    $value  = isset($entry->processing) ? viewProcess($value, $entry->processing): $value;
-                    $value  = isset($entry->formatting) ? viewFormat ($value, $entry->formatting): $value;
-                    $tField.= isset($entry->separator)  ? AddSep($value, $entry->separator)      : $value;
-                    msgDebug("\n Adding $value to textfield which is now $tField");
+                    $value0 = getModuleCache('bizuno', 'settings', 'company',  $entry->fieldname);
+                    $value1 = isset($entry->processing) ? viewProcess($value0, $entry->processing): $value0;
+                    $value2 = isset($entry->formatting) ? viewFormat ($value1, $entry->formatting): $value1;
+                    $tField.= isset($entry->separator)  ? AddSep     ($value2, $entry->separator) : $value2;
+                    msgDebug("\n Adding $value2 to textfield which is now $tField");
                 }
                 $report->fieldlist[$i]->settings->text = $tField;
             }
         }
         if (isset($report->serialform) && $report->serialform) {
-            return $this->BuildSeq($report, $delivery_method); // build sequential form (receipt style)
+            return $this->BuildSeq($report); // build sequential form (receipt style)
         }
-        return $this->BuildPDF($report, $delivery_method); // build standard PDF form, doesn't return if download
+        return $this->BuildPDF($report); // build standard PDF form, doesn't return if download
+    }
+
+    /**
+     *
+     * @param type $idx
+     * @param type $defEmail
+     * @param type $defName
+     * @return type
+     */
+    private function getAddrInfo($idx)
+    {
+        $value = clean($idx, 'text', 'post');
+        if (strpos($value, '<') === false) { // no bracket, check for just an email
+            return strpos($value, '@') !== false ? ['name'=>trim($value), 'email'=>trim($value)] : [];
+        }
+        $name  = trim(substr($value, 0, strpos($value, '<')));
+        $bofEm = substr($value, strpos($value, '<')+1);
+        $email = trim(substr($bofEm, 0, strpos($bofEm, '>')));
+        return ['name'=>empty($name) ? $email : $name, 'email'=>$email];
     }
 
     /**
@@ -552,14 +625,11 @@ class phreeformRender
      * @global object $report - report structure after database has been run and data has been added
      * @global array $currencies - will be extracted from the data to determine ISO code for formatting
      * @param object $report - report with modified data
-     * @param char $delivery_method - [default D, download] other options S to return with PDF formatted output
      * @return doesn't return if successful, user message if failure
      */
-    private function BuildPDF($report, $delivery_method = 'D')
+    private function BuildPDF($report)
     {
         global $report, $currencies;
-        // Generate a form for each group element
-        $output = [];
         if (!empty($report->special_class)) {
             $fqcn = "\\bizuno\\$report->special_class";
             $special_form = new $fqcn();
@@ -577,7 +647,7 @@ class phreeformRender
                 if (!$stmt = dbGetResult("SELECT $report->sqlField $TrailingSQL")) { return msgAdd("Error selecting data! See trace file.", 'trap'); }
                 $report->FieldValues = $stmt->fetch(\PDO::FETCH_ASSOC);
             }
-            //echo "\nTrying to find results, sql = $report->sqlField $TrailingSQL";
+//          echo "\nTrying to find results, sql = $report->sqlField $TrailingSQL";
             $currencies = (object)['iso'=>getDefaultCurrency(), 'rate'=>1];
             if (sizeof(getModuleCache('phreebooks', 'currency', 'iso', false, [])) > 1 && strpos($report->sqlTable, BIZUNO_DB_PREFIX."journal_main") !== false) {
                 $stmt  = dbGetResult("SELECT currency, currency_rate $TrailingSQL");
@@ -597,7 +667,7 @@ class phreeformRender
                         $tField = $special_form->load_text_block_data($field->settings->boxfield);
                     } else {
                         $strTxtBlk = $this->setFieldList($field->settings->boxfield);
-//                        msgDebug("\n Executing textblock sql = SELECT $strTxtBlk $TrailingSQL");
+//                      msgDebug("\n Executing textblock sql = SELECT $strTxtBlk $TrailingSQL");
                         if (!$stmt= dbGetResult("SELECT $strTxtBlk $TrailingSQL")) { return msgAdd("Error selecting data! See trace file.", 'trap'); }
                         $result   = $stmt->fetch(\PDO::FETCH_ASSOC);
                         $tField   = '';
@@ -615,7 +685,7 @@ class phreeformRender
                         return msgAdd($this->lang['err_pf_field_empty'] . $field->title);
                     }
                     $strTxtBlk = $this->setFieldList($field->settings->boxfield);
-//                    msgDebug("\n Executing LtrTpl sql = SELECT $strTxtBlk $TrailingSQL");
+//                  msgDebug("\n Executing LtrTpl sql = SELECT $strTxtBlk $TrailingSQL");
                     if (!$stmt= dbGetResult("SELECT $strTxtBlk $TrailingSQL")) { return msgAdd("Error selecting data! See trace file.", 'trap'); }
                     $result   = $stmt->fetch(\PDO::FETCH_ASSOC);
                     msgDebug("\nResult fo template sql = ".print_r($result, true));
@@ -692,7 +762,7 @@ class phreeformRender
             }
             // set the printed flag field if provided
             if (isset($report->printedfield)) {
-                $id_field = $report->formbreakfield;
+//              $id_field = $report->formbreakfield;
                 $temp     = explode('.', $report->printedfield);
                 if (sizeof($temp) == 2) { // need the table name and field name
                     $sql = "UPDATE ".BIZUNO_DB_PREFIX.$temp[0]." SET ".$temp[1]."=".$temp[1]."+1 WHERE ".BIZUNO_DB_PREFIX."$report->formbreakfield='$Fvalue'";
@@ -700,17 +770,12 @@ class phreeformRender
                 }
             }
         }
-        // Add additional headers needed for MSIE and send page
-        header('Set-Cookie: fileDownload=true; path=/');
-        header('Cache-Control: max-age=60, must-revalidate');
-        header('Expires: 0');
-        header('Content-type: application/pdf');
-        header('Content-Disposition: attachment; filename="'.$report->filename.'"');
-        $output['filename'] = isset($report->filename) ? $report->filename : 'document';
-        $output['pdf']      = $pdf->Output($report->filename, $delivery_method);
-        if ($delivery_method == 'S') { return $output; }
-        msgDebugWrite();
-        exit(); // needs to be here to properly render the pdf file if delivery_method = I or D
+        $page = explode(':', $report->page->size);
+        return [
+            'filename'=> isset($report->filename) ? $report->filename : 'bizuno-'.date('Ymd-his'),
+            'data'    => $pdf->Output($report->filename, 'S'),
+            'orient'  => !empty($report->page->orientation) ? $report->page->orientation : 'P',
+            'format'  => [$page[1]*1.25, $page[2]*1.25]]; // fudge factor eliminates strange line at top of page.
     }
 
     /**
@@ -719,10 +784,9 @@ class phreeformRender
      * @global object $report - report structure after database has been run and data has been added
      * @global array $currencies - will be extracted from the data to determine ISO code for formatting
      * @param object $report - report with modified data
-     * @param char $delivery_method - [default D, download] other options S to return with PDF formatted output
      * @return doesn't return if successful, user message if failure
      */
-    private function BuildSeq($report, $delivery_method='D')
+    private function BuildSeq($report)
     {
         global $report, $currencies;
         // Generate a form for each group element
@@ -775,26 +839,6 @@ class phreeformRender
                         $oneline = $report->fieldlist[$field->type]->text;
                         break;
                     case 'Tbl':
-/*        // Build the sql
-        $tblField   = '';
-        $tblHeading = [];
-        foreach ($field->settings->boxfield as $TableField) { if (isset($TableField->title)) { $tblHeading[] = $TableField->title; } }
-        $data = [];
-        if (isset($report->special_class) && $report->special_class) {
-            $data = $special_form->load_table_data($field->boxfield);
-        } elseif (isset($field->settings->fieldname) && $field->settings->fieldname) {
-            $fld = 'd'.$field->type;
-            $data = viewFormat (viewProcess($report->FieldValues[$fld], $field->settings->processing), $field->settings->formatting);
-        } else {
-            $tblField = $this->setFieldList($field->settings->boxfield);
-            if (!$stmt = dbGetResult("SELECT $tblField $TrailingSQL")) { return msgAdd("Error selecting table data! See trace file."); }
-            $data = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-        }
-        array_unshift($data, $tblHeading); // set the first data element to the headings
-        $field->data = $data;
-        $StoredTable = clone $field;
-        $pdf->FormTable($field);
-*/
                         if (!$field->settings->boxfield) { return msgAdd($this->lang['err_pf_field_empty'] . $field->title); }
                         //          $tblHeading = [];
                         //          foreach ($field->settings->boxfield as $TableField) $tblHeading[] = $TableField->title;
@@ -857,7 +901,6 @@ class phreeformRender
             }
             // set the printed flag field if provided
             if (isset($report->printedfield)) {
-                $id_field = $report->formbreakfield;
                 $temp     = explode('.', $report->printedfield);
                 if (sizeof($temp) == 2) { // need the table name and field name
                     dbGetResult("UPDATE ".$temp[0]." SET ".$temp[1]." = ".$temp[1]."+1 WHERE $report->formbreakfield = '$Fvalue'");
@@ -865,31 +908,7 @@ class phreeformRender
             }
             $output .= "\n\n\n\n"; // page break
         }
-/*
-        // FROM FORM GENERATOR - Add additional headers needed for MSIE and send page
-        header('Set-Cookie: fileDownload=true; path=/');
-        header('Cache-Control: max-age=60, must-revalidate');
-        header('Expires: 0');
-        header('Content-type: application/pdf');
-        header('Content-Disposition: attachment; filename="'.$report->filename.'"');
-        $output['filename'] = isset($report->filename) ? $report->filename : 'document';
-        $output['pdf']      = $pdf->Output($report->filename, $delivery_method);
-        if ($delivery_method == 'S') { return $output; }
-        msgDebugWrite();
-        exit(); // needs to be here to properly render the pdf file if delivery_method = I or D
-*/
-        if ($delivery_method == 'S') { return $output; }
-        $FileSize = strlen($output);
-        header("Content-type: application/text");
-        header("Content-disposition: attachment; filename=" . $report->filenameprefix . ".txt; size=" . $FileSize);
-        header('Pragma: cache');
-        header('Cache-Control: public, must-revalidate, max-age=0');
-        header('Connection: close');
-        header('Expires: ' . date('r', time()+60*60));
-        header('Last-Modified: ' . date('r', time()));
-        msgDebugWrite();
-        print $output;
-        exit();
+        return ['filename'=>'TBD', 'data'=>'TBD'];
     }
 
     /**
@@ -942,28 +961,21 @@ class phreeformRender
      * @global object $report - globalized to allow usage in subclasses
      * @param array $data - results of the SQL statement containing the data
      * @param object $report
-     * @param char $delivery_method - [default D, download] select S if return with PDF as a file.
      * @return does not return if successful, user message on fail
      */
-    private function GeneratePDFFile($data, $report, $delivery_method = 'D')
+    private function GeneratePDFFile($data, $report)
     { // for pdf reports only
         global $report;
         bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/renderReport.php", 'PDF');
-        $pdf = new PDF();
+        $pdf   = new PDF();
         $pdf->ReportTable($data);
         $ReportName = ReplaceNonAllowedCharacters($report->title).'.pdf';
-        msgDebug("\nReady to download file...");
-        msgDebugWrite();
-        // Add additional headers needed for MSIE and send page
-        header('Set-Cookie: fileDownload=true; path=/');
-        header('Cache-Control: max-age=60, must-revalidate');
-        header('Expires: 0');
-        header('Content-type: application/pdf');
-        header("Content-Disposition: attachment; filename='$ReportName'");
-        $output = ['filename' => $ReportName];
-        $output['pdf'] = $pdf->Output($ReportName, $delivery_method);
-        if ($delivery_method == 'S') { return $output; }
-        exit(); // needs to be here to properly render the pdf file if delivery_method = I or D
+        $page  = explode(':', $report->page->size);
+        return [
+            'filename'=> $ReportName,
+            'data'    => $pdf->Output($ReportName, 'S'),
+            'orient'  => !empty($report->page->orientation) ? $report->page->orientation : 'P',
+            'format'  => [$page[1]*1.25, $page[2]*1.25]]; // fudge factor eliminates strange line at top of page.
     }
 
     /**
@@ -973,21 +985,20 @@ class phreeformRender
      * @return array - raw HTML ready to render in a DIV through AJAX
      */
     private function GenerateHTMLFile($data, $report)
-    { // for html reports only
+    {
         bizAutoLoad(BIZUNO_LIB."controller/module/phreeform/renderHTML.php", 'HTML');
         $html = new HTML($data, $report);
-        return ['content'=>['action'=>'divHTML','divID'=>'bodyCenter','html'=>$html->output]];
+        return ['content'=>['action'=>'divHTML','divID'=>'bizBody','html'=>$html->output]];
     }
 
     /**
      * Generates a file formatted in csv from $data to either download direct to browser or return as file for another delivery method
      * @param array $data - Source data
      * @param object $report - Report structure
-     * @param type $delivery_method - [default D, download]
      * @return doen's return if successful, user message on failure
      */
-    private function GenerateCSVFile($data, $report, $delivery_method='D')
-    { // for csv reports only
+    private function GenerateCSVFile($data, $report)
+    {
         $CSVOutput = '';
         $temp = []; // Write the column headings
         foreach ($report->fieldlist as $value) {
@@ -1011,24 +1022,16 @@ class phreeformRender
             }
         }
         $ReportName = ReplaceNonAllowedCharacters($report->title).'.csv';
-        if ($delivery_method == 'S') { return ['filename' => $ReportName, 'pdf' => $CSVOutput]; }
-        msgDebugWrite();
-        header('Set-Cookie: fileDownload=true; path=/');
-        header('Cache-Control: max-age=60, must-revalidate');
-        header("Content-type: text/csv");
-        header("Content-Disposition: attachment; filename=$ReportName");
-        print $CSVOutput;
-        exit();
+        return ['filename'=>$ReportName, 'data'=>$CSVOutput];
     }
 
     /**
      * Generates a file formatted in XML from $data to either download direct to browser or return as file for another delivery method
      * @param array $data - Source data
      * @param object $report - Report structure
-     * @param type $delivery_method - [default D, download]
      * @return doen's return if successful, user message on failure
      */
-    private function GenerateXMLFile($data, $report, $delivery_method='D') // for xml reports only
+    private function GenerateXMLFile($data, $report) // for xml reports only
     {
         $Heading = [];
         foreach ($report->fieldlist as $value) {
@@ -1056,19 +1059,12 @@ class phreeformRender
             $xml .= "</Row>\n";
         }
         $ReportName = ReplaceNonAllowedCharacters($report->title) . '.xml';
-        if ($delivery_method == 'S') { return ['filename' => $ReportName, 'pdf' => $xml]; }
-        msgDebugWrite();
         $output = '<?xml version="1.0" encoding="UTF-8" standalone="yes"?>'."\n".$xml;
-        header('Set-Cookie: fileDownload=true; path=/');
-        header('Cache-Control: max-age=60, must-revalidate');
-        header("Content-type: text/xml");
-        header("Content-Disposition: attachment; filename=$ReportName");
-        print $output;
-        exit();
+        return ['filename'=>$ReportName, 'data'=>$output];
     }
 
     /**
-     * Extracts and gets the runtime data to use in report headers
+     * Extracts and gets the run time data to use in report headers
      * @param array $layout - Structure coming in
      * @return array - modified $layout
      */

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-12-15
+ * @version    3.x Last Update: 2020-06-26
  * @filesource /portal/main.php
  */
 
@@ -72,6 +72,7 @@ class main //extends controller
         global $db;
         msgDebug("\nEntering initDB"); // with dbCreds = ".print_r($GLOBALS['dbBizuno'], true));
         $db = new db($GLOBALS['dbBizuno']);
+        $GLOBALS['noBizunoDB'] = !dbTableExists(BIZUNO_DB_PREFIX.'configuration') ? true : false;
         msgDebug(" ... after db connection connected = ".($db->connected?'true':'false'));
     }
 
@@ -91,8 +92,7 @@ class main //extends controller
             set_user_cookie($email);
         }
         $bizunoUser['profile']['biz_id'] = 1;
-        // refresh cookies
-        setcookie('bizunoUser', $bizunoUser['profile']['email'],   time()+(60*60*24*7)); // 7 days
+        bizSetCookie('bizunoUser', $bizunoUser['profile']['email'], time()+(60*60*24*7)); // 7 days
         msgDebug("\nLeaving validateUser with email = {$bizunoUser['profile']['email']}");
         return true;
     }
@@ -109,7 +109,7 @@ class main //extends controller
 
     private function validateBusiness()
     {
-        msgDebug("\nEntering validateBusiness with biz_id = ".getUserCache('profile', 'biz_id'));
+        msgDebug("\nEntering validateBusiness");
         if (getUserCache('profile', 'biz_id')) { return true; } // logged in and business selected
         if (constant('BIZUNO_DB_NAME')=='') { $this->setInstallView(); } // logged in but configure.php file is not set, install
         if (!$email = getUserCache('profile', 'email')) { return; } // not logged in
@@ -132,16 +132,16 @@ class main //extends controller
         $email = getUserCache('profile', 'email');
         msgDebug("\nEntering initUserCache with email = $email");
         if ($email && getUserCache('profile', 'biz_id')) {
-            $usrData = dbGetRow(BIZUNO_DB_PREFIX.'users', "email='$email'");
+            $usrData = empty($GLOBALS['noBizunoDB']) ? dbGetRow(BIZUNO_DB_PREFIX.'users', "email='$email'") : null;
             if ($usrData && $this->sessionExpired($usrData)) { // logged in, cache stale, need to reload
                 $this->reloadCache($email);
             } elseif ($usrData) { // logged in, normal just get settings
                 $bizunoUser = json_decode($usrData['settings'], true);
-            } elseif (!$usrData && dbTableExists(BIZUNO_DB_PREFIX.'users')) {
+            } elseif (!$usrData && empty($GLOBALS['noBizunoDB'])) {
                 msgAdd("You do not have an account, please see your Bizuno administrator!");
                 unset($_GET['p']);
             }
-        } elseif (!dbTableExists(BIZUNO_DB_PREFIX.'users')) { $this->setInstallView(); }
+        } elseif (!empty($GLOBALS['noBizunoDB'])) { $this->setInstallView(); }
         setlocale(LC_COLLATE,getUserCache('profile', 'langauge'));
         setlocale(LC_CTYPE,  getUserCache('profile', 'langauge'));
     }
@@ -221,13 +221,12 @@ class main //extends controller
         $postLang = clean('UserLang','cmd', 'post'); // passed with login
         if (!empty($getLang) && strlen($getLang)==5) {
             $bizunoUser['profile']['language'] = $getLang;
-            setcookie('bizunoLang', $getLang,  time()+(60*60*24*7));
         } elseif (!empty($postLang) && strlen($postLang)==5) {
             $bizunoUser['profile']['language'] = $postLang;
-            setcookie('bizunoLang', $postLang, time()+(60*60*24*7));
         } else {
             $bizunoUser['profile']['language'] = clean('bizunoLang',['format'=>'cmd','default'=>$bizunoUser['profile']['language']],'cookie');
         }
+        bizSetCookie('bizunoLang', $postLang, time()+(60*60*24*7));
         cleanLang($bizunoUser['profile']['language']);
         $bizunoLang= $this->loadBaseLang($bizunoUser['profile']['language']);
     }

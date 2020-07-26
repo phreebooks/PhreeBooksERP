@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-07-18
+ * @version    4.x Last Update: 2020-07-22
  * @filesource /lib/controller/module/bizuno/dashboards/launchpad/launchpad.php
  */
 
@@ -54,7 +54,7 @@ class launchpad
             if (sizeof($parts) > 1) { $parts[0] = $parts[1]; } // for legacy
             $props = $this->findIdx($menu1, $parts[0]);
             if (!$props) { $props = $this->findIdx($menu2, $parts[0]); } // try the quickBar
-            $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) dashboardAttr('$this->moduleID:$this->code', ($idx+1));"];
+            $data['delete_icon']['events'] = ['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) { dashSubmit('$this->moduleID:$this->code', ($idx+1)); }"];
             $html  .= '<div><div style="float:right;height:17px;">'.html5('delete_icon', $data['delete_icon']).'</div>';
             $html  .= '<div style="min-height:17px;">'.lang($props['label']).'</div></div>';
             // build the body part while we're here
@@ -67,7 +67,7 @@ class launchpad
                 'body' =>['order'=>50,'type'=>'html','html'=>$body]],
             'fields'=> [
                 $this->code.'_0'  =>['order'=>10,'break'=>true,'label'=>lang('select'),'values'=>$this->choices,'attr'=>['type'=>'select']],
-                $this->code.'_btn'=>['order'=>70,'attr'=>['type'=>'button','value'=>lang('add')],'events'=>['onClick'=>"dashboardAttr('$this->moduleID:$this->code', 0);"]],
+                $this->code.'_btn'=>['order'=>70,'attr'=>['type'=>'button','value'=>lang('add')],'events'=>['onClick'=>"dashSubmit('$this->moduleID:$this->code', 0);"]],
                 $this->code.'_del'=>['order'=>90,'html'=>$html,'attr'=>['type'=>'raw']]]]);
     }
 

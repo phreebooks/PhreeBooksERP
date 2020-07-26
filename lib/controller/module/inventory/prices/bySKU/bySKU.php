@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2019-03-05
+ * @version    4.x Last Update: 2019-05-27
  * @filesource /lib/controller/module/inventory/prices/bySKU.php
  */
 
@@ -90,6 +90,12 @@ class bySKU extends inventoryPrices
         $layout['values']['prices'] = $this->getPrices($prices);
         $mod    = clean('mod', 'text', 'request'); // in specific module, can be either post or get
         $inInv  = $mod=='inventory' ? true : false;
+        $layout['fields']['id'          .$this->code] = $layout['fields']['id']; // hidden
+        $layout['fields']['item'        .$this->code] = ['attr'=>['type'=>'hidden']];
+        $layout['fields']['inventory_id'.$this->code] = $inInv ? ['attr'=>['type'=>'hidden']] : $layout['fields']['inventory_id'];
+        $layout['fields']['ref_id'      .$this->code] = $layout['fields']['ref_id'];
+        $layout['fields']['currency'    .$this->code] = $layout['fields']['currency'];
+        $keys = ['id'.$this->code,'item'.$this->code,'contact_id'.$this->code,'inventory_id'.$this->code,'ref_id'.$this->code,'currency'.$this->code];
         $jsHead = "
 var dgPricesSetData = ".json_encode($layout['values']['prices']).";
 var qtySource = "      .json_encode(viewKeyDropdown($layout['values']['qtySource'])).";
@@ -105,32 +111,22 @@ function preSubmitPrices() {
         if ($inInv) { // we're in the inventory form, hide inventory_id field and set to current form value
             $layout['jsReady'][$this->code] = "jq('#inventory_id$this->code').val(jq('#id').val());";
         } else {
-            $iID = $layout['fields']['inventory_id']['attr']['value'];
+            $iID = $layout['fields']['inventory_id'.$this->code]['attr']['value'];
             if ($iID) {
                 $name = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'description_short', "id=$iID");
-                $layout['fields']['inventory_id']['defaults']['data'] = "iData$this->code";
+                $layout['fields']['inventory_id'.$this->code]['defaults']['data'] = "iData$this->code";
                 $jsHead .= "\nvar iData$this->code = ".json_encode([['id'=>$iID,'description_short'=>$name]]).";";
             }
-            $layout['fields']['inventory_id']['attr']['id']  = "inventory_id$this->code";
-            $layout['fields']['inventory_id']['attr']['type']= 'inventory';
+            $layout['fields']['inventory_id'.$this->code]['attr']['id']  = "inventory_id$this->code";
+            $layout['fields']['inventory_id'.$this->code]['attr']['type']= 'inventory';
         }
         $layout['divs']['divPrices'] = ['order'=>10,'type'=>'divs','divs'=>[
-            'byCBody' => ['order'=>20,'label'=>$this->lang['title'],'type'=>'fields','fields'=>$this->getView($layout['fields'], $inInv)],
+            'byCBody' => ['order'=>20,'label'=>$this->lang['title'],'type'=>'fields','keys'=>$keys],
             'byCdg'   => ['order'=>50,'type'=>'datagrid','key'=>'dgPricesSet']]];
         $layout['jsHead'][$this->code] = $jsHead;
         $layout['datagrid']['dgPricesSet'] = $this->dgQuantity('dgPricesSet');
         $layout['datagrid']['dgPricesSet']['columns']['price']['attr']['hidden']  = false;
         $layout['datagrid']['dgPricesSet']['columns']['margin']['attr']['hidden'] = false;
-    }
-
-    private function getView($structure, $inInv)
-    {
-        return [
-            'id'          .$this->code => $structure['id'], // hidden
-            'item'        .$this->code => ['attr'=>['type'=>'hidden']],
-            'inventory_id'.$this->code => $inInv ? ['attr'=>['type'=>'hidden']] : array_merge($structure['inventory_id'],['break'=>true]),
-            'ref_id'      .$this->code => array_merge($structure['ref_id'],  ['break'=>true]),
-            'currency'    .$this->code => array_merge($structure['currency'],['break'=>true])];
     }
 
     /**

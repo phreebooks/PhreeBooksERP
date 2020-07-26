@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-01-31
+ * @version    4.x Last Update: 2020-07-06
  * @filesource /lib/model/registry.php
  */
 
@@ -51,10 +51,10 @@ final class bizRegistry
         $bizunoMod = $this->initSettings();
         $this->initModules($bizunoMod);
         if (!$this->initUser($usrEmail, $bizID)) { return; }
-        $this->initAccount($bizunoMod);
+        $this->initAccount();
         $this->setUserSecurity(getUserCache('profile', 'email'));
         $this->setUserMenu('quickBar');
-        $bizunoUser['quickBar']['child']['home']['label'] = getUserCache('profile', 'title', false, lang('bizuno_company'));
+        $bizunoUser['quickBar']['child']['settings']['label'] = getUserCache('profile', 'title', false, lang('bizuno_company'));
         $this->setUserMenu('menuBar');
         // Unique module initializations
         $this->initBizuno($bizunoMod);
@@ -79,6 +79,7 @@ final class bizRegistry
         if ($lang == 'en_US') { return $langCache; } // just english, we're done
         if (file_exists(BIZUNO_LOCALE."$lang/language.php")) {
             require(BIZUNO_LOCALE."$lang/language.php");  // pulls locale overlay
+            $langCore = array_merge($langCache, $langCore); // overlay ISO lang on top of working cache file
             include(BIZUNO_LIB   ."locale/en_US/langByRef.php"); // lang by reference (reset after loading translation)
             $otherLang = array_merge($langCore, $langByRef);
         } else { $otherLang = []; }
@@ -192,8 +193,8 @@ final class bizRegistry
         $bizunoUser['profile']['language']= $lang;
         // Check to make sure the themes and icons folders are still there
         $theme = getUserCache('profile', 'theme');
-        if ('default' != $theme) {
-            if (!defined('BIZUNO_THEMES') || !is_dir(BIZUNO_THEMES.$theme)) { setUserCache('profile', 'theme', 'default'); }
+        if ('bizuno' != $theme) {
+            if (!defined('BIZUNO_THEMES') || !is_dir(BIZUNO_THEMES.$theme)) { setUserCache('profile', 'theme', 'bizuno'); }
         }
         $icons = getUserCache('profile', 'icons');
         if ('default' != $icons) {
@@ -206,11 +207,12 @@ final class bizRegistry
     /**
      * Contacts PhreeSoft with module list and get subscription status
      */
-    private function initAccount(&$bizunoMod)
+    private function initAccount()
     {
         if (!empty($GLOBALS['skipUpgradeCheck'])) { return; }
         $io      = new io(); // needs to be here as global may not be set up yet
         $myAcct  = $io->apiPhreeSoft('getMyExtensions');
+        if (empty($myAcct)) { return msgAdd("Cannot reach the PhreeSoft server, please try again later."); }
         $messages= [];
         // check for new version of Bizuno
         msgDebug("\nComparing this version: ".MODULE_BIZUNO_VERSION." with Phreesoft.com version: {$myAcct['bizuno']['version']}");

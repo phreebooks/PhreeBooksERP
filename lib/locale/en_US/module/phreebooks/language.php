@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-02-12
+ * @version    4.x Last Update: 2020-04-29
  * @filesource /locale/en_US/module/phreebooks/language.php
  */
 
@@ -70,8 +70,8 @@ $lang = [
     'fy_del_btn_go' => 'Yes I am ready! lets proceed ...',
     'fy_del_btn_cancel' => 'Not Now, thanks.',
     'msg_gl_repost_journals_confirm' => '<b>BE SURE TO BACKUP YOUR DATA BEFORE YOU RE-POST ANY JOURNALS!</b><br />Note 1: Re-posting journals can take some time, you may want to limit the re-posts by entering a smaller date range or a limited number of journals.',
-    'msg_gl_db_purge' => 'Purge all Journal Transactions (retains contacts and settings)',
-    'msg_gl_db_purge_confirm' => 'Are you sure you want to clear all journal entries? Type the word [purge] in the box and press the Purge Journal Entries button.',
+    'msg_gl_db_purge' => 'Purge all Journal Transactions',
+    'msg_gl_db_purge_confirm' => 'Are you sure you want to clear all journal entries? Type the word [purge] in the box and press the Purge Journal Entries button. NOTE: Contacts, Inventory and settings will be retained.',
     'msg_attach_clean_success' => 'Successfully removed %s attachments',
     'msg_attach_clean_empty' => 'No attachments were found prior to your date criteria!',
     'msg_pb_admin_roles' => 'Select the PhreeBooks roles that apply to this Bizuno role. If selected, users will appear in the Rep ID drop downs in Sales, Purchases, etc.',
@@ -111,7 +111,7 @@ $lang = [
     'err_journal_delete' => 'This %s record cannot be deleted because there is a future transaction posted that is dependent on this record. The future transaction must be deleted first.',
     'err_total_not_match' => 'The calculated total of %s is not equal to the submitted total of %s, this is typically a tax calculation or rounding problem, please contact PhreeSoft for assistance!',
     // Buttons
-    'title_gl_test' => 'Validate and Repair General Ledger Account Balances',
+    'title_gl_test' => 'Validate and Repair GL Balances',
     'new_currency' => 'New Currency',
     'new_currency_desc' => 'Select a new currency from the drop down menu and press Next.',
     'desc_import_journal' => 'Used for importing beginning balances into PhreeBooks journals typically for the \'Line in the Sand\' approach when converting from another accounting application. Refer to the help file for format requirements.',
@@ -132,9 +132,6 @@ $lang = [
     'status_open_j12' => 'Unpaid Invoices',
     'status_open_j13' => 'Unpaid Credits',
     // General
-    'create_credit' => 'Create Credit Memo',
-    'fill_purchase' => 'Receive/Fill Purchase',
-    'fill_sale' => 'Invoice/Fill Sale',
     'pb_inv_unit' => 'Unit Price',
     'pb_line_item_tax' => 'Line Item Tax',
     'pb_tax_by_journal' => 'Tax by Journal',
