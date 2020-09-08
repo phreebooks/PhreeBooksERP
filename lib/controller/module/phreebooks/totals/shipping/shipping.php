@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-04
+ * @version    4.x Last Update: 2020-08-11
  * @filesource /lib/controller/module/phreebooks/totals/shipping/shipping.php
  */
 
@@ -33,7 +33,6 @@ class shipping
     public function __construct()
     {
         if (!defined('JOURNAL_ID')) { define('JOURNAL_ID', 2); }
-        $this->cType   = defined('CONTACT_TYPE') ? CONTACT_TYPE : 'c';
         $glV           = getModuleCache('extShipping','settings','general','gl_shipping_v', getModuleCache('phreebooks','settings','vendors',  'gl_expense'));
         $glC           = getModuleCache('extShipping','settings','general','gl_shipping_c', getModuleCache('phreebooks','settings','customers','gl_sales'));
         $this->settings= ['gl_type'=>'frt','journals'=>'[3,4,6,7,9,10,12,13,19,21]','gl_account'=>in_array(JOURNAL_ID, [3,4,6,7,21]) ? $glV : $glC,'order'=>60];
@@ -48,7 +47,7 @@ class shipping
             'gl_type'   => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'  => ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
             'gl_account'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_account']]], // set in extShipping settings
-            'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
+            'order'     => ['label'=>lang('order'),'options'=>['min'=>5,'max'=>95,'width'=>100],'attr'=>['type'=>'spinner','value'=>$this->settings['order']]]];
     }
 
     public function glEntry(&$main, &$item, &$begBal=0)
@@ -205,7 +204,7 @@ class shipping
         }
         if (!$taxID || $taxID==-1) { return 0; } // return if no tax or per inventory item
         $gl      = [];
-        $rates   = loadTaxes($this->cType);
+        $rates   = loadTaxes('c'); // @todo - is this needed as the id should be unique independent of the contact type
         while ($rate = array_shift($rates)) { if ($rate['id'] == $taxID) { break; } }
         if (!$rate) { msgAdd($this->lang['msg_no_tax_found']); return 0; }
         foreach ($rate['auths'] as $auth) {

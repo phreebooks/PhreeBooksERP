@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-27
+ * @version    4.x Last Update: 2020-08-06
  * @filesource /lib/controller/module/phreebooks/chart.php
  */
 
@@ -153,7 +153,7 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         if (!$security = validateSecurity('bizuno', 'admin', 3)) { return; }
         $acct    = clean('gl_account', 'text',   'post'); // 1234
         $inactive= clean('gl_inactive','boolean','post') ? true : false; // on
-        $previous= clean('gl_previous','text',   'post'); // TBD
+        $previous= clean('gl_previous','text',   'post'); // if edit this will be the original account
         $desc    = clean('gl_desc',    'text',   'post'); // asdf
         $type    = clean('gl_type',    'integer','post'); // 8
         $heading = clean('gl_header',  'boolean','post'); // on
@@ -163,15 +163,16 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         if (!$desc)                 { return msgAdd($this->lang['chart_save_02']); }
         If (!$acct && $previous)    { $acct = $previous; } // not an account # change, set it to what it was
         $glAccounts = getModuleCache('phreebooks', 'chart', 'accounts');
-        $used = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "gl_account='$acct'");
+        $oldGL   = isset($glAccounts[$previous]) ? $glAccounts[$previous] : [];
+        $used    = dbGetValue(BIZUNO_DB_PREFIX."journal_item", 'id', "gl_account='$acct'");
         if ($used && !$isEdit)      { return msgAdd($this->lang['chart_save_03']); }
         if ($type == 44 && !$isEdit){ foreach ($glAccounts as $row) { if ($row['type'] == 44) { return msgAdd($this->lang['chart_save_04']); } } }
         if ($used && $heading)      { return msgAdd($this->lang['chart_save_05']); }
         if ($parent && empty($glAccounts[$parent]['heading'])) { return msgAdd(sprintf($this->lang['chart_save_06'], $parent)); }
-        $glAccounts["$acct"] = ['id'=>"$acct", 'title'=>$desc, 'type'=>$type, 'cur'=>getDefaultCurrency()];
-        $glAccounts["$acct"]['inactive']= $inactive? '1' : '0';
-        $glAccounts["$acct"]['heading'] = $heading ? '1' : '0';
-        $glAccounts["$acct"]['parent']  = $parent  ? $parent : '';
+        $glAccounts[$acct] = ['id'=>"$acct", 'title'=>$desc, 'type'=>$type, 'cur'=>getDefaultCurrency()];
+        $glAccounts[$acct]['inactive']= $inactive? true : false;
+        $glAccounts[$acct]['heading'] = $heading ? true : false;
+        $glAccounts[$acct]['parent']  = $parent  ? $parent : '';
         if ($isEdit && ($previous <> $acct)) { // update journal and all affected tables
             dbWrite(BIZUNO_DB_PREFIX."contacts",       ['gl_account'=>$acct], 'update', "gl_account='$previous'");
             dbWrite(BIZUNO_DB_PREFIX."inventory",      ['gl_sales'  =>$acct], 'update', "gl_sales='$previous'");
@@ -181,15 +182,15 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
             dbWrite(BIZUNO_DB_PREFIX."journal_item",   ['gl_account'=>$acct], 'update', "gl_account='$previous'");
             dbWrite(BIZUNO_DB_PREFIX."journal_main",   ['gl_acct_id'=>$acct], 'update', "gl_acct_id='$previous'");
             unset($glAccounts[$previous]);
-        } elseif ($isEdit && $glAccounts[$previous]['type'] <> $type) {
-            dbWrite(BIZUNO_DB_PREFIX."journal_history",['gl_type'=>$type],    'update', "gl_account='$previous'");
+        } elseif (!empty($oldGL['type']) && $oldGL['type'] <> $type) { // just the type was changed
+            dbWrite(BIZUNO_DB_PREFIX."journal_history",['gl_type'=>$type],    'update', "gl_account='$acct'");
         }
         ksort($glAccounts, SORT_STRING);
         setModuleCache('phreebooks', 'chart', 'accounts', $glAccounts);
         $this->checkDefault($acct, $type, getDefaultCurrency());
         if (!$isEdit) { insertChartOfAccountsHistory($acct, $type); } // build the journal_history entries
         // send confirm and reload browser cache (and page since datagrid doesn't reload properly)
-        msgLog(lang('gl_account')." - ".lang('save'));
+        msgLog(lang('gl_account')." - ".lang('save')."; title: $desc, gl account: $acct, type: $type");
         msgAdd(lang('gl_account')." - ".lang('save'), 'success');
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"reloadSessionStorage(chartRefresh);"]]);
     }
@@ -233,12 +234,13 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
         if (!$security = validateSecurity('bizuno', 'admin', 4)){ return; }
         $chart = clean('data', 'path', 'get');
         if (dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'id'))  { return msgAdd($this->lang['coa_import_blocked']); }
-        if (!$this->chartInstall(BIZUNO_LIB.$chart))            { return; }
+        if (!$this->chartInstall($chart))            { return; }
         dbGetResult("TRUNCATE ".BIZUNO_DB_PREFIX."journal_history");
         buildChartOfAccountsHistory();
-        msgAdd($this->lang['msg_gl_replace_success'], 'success');
+        msgAdd($this->lang['msg_gl_replace_success'], 'caution');
         msgLog($this->lang['msg_gl_replace_success']);
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval', 'actionData'=>"reloadSessionStorage(chartRefresh);"]]);
+        return true;
     }
 
     /**
@@ -268,10 +270,13 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
      */
     public function chartInstall($chart)
     {
-        if (!dbTableExists(BIZUNO_DB_PREFIX."journal_main") || dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id')) { return msgAdd(lang('coa_import_blocked')); }
         msgDebug("\nTrying to load chart at path: $chart");
-        if (!file_exists($chart)) { return msgAdd("Bad path to chart!", 'trap'); }
-        $accounts = parseXMLstring(file_get_contents($chart));
+        if     (file_exists(BIZUNO_LIB. $chart)) { $prefix=BIZUNO_LIB; }
+        elseif (file_exists(BIZUNO_DATA.$chart)) { $prefix=BIZUNO_DATA; }
+        else                                     {return msgAdd("Bad path to chart!", 'trap'); }
+
+        if (!dbTableExists(BIZUNO_DB_PREFIX."journal_main") || dbGetValue(BIZUNO_DB_PREFIX."journal_main", 'id')) { return msgAdd(lang('coa_import_blocked')); }
+        $accounts = parseXMLstring(file_get_contents($prefix.$chart));
         if (empty($accounts)) { return msgAdd('Invalid chart of accounts. Is the XML properly formed?'); }
         if (is_object($accounts->account)) { $accounts->account = [$accounts->account]; } // in case of only one chart entry
         $output = [];

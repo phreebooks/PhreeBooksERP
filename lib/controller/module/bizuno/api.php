@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-03-30
+ * @version    4.x Last Update: 2020-08-14
  * @filesource /lib/controller/module/bizuno/api.php
  */
 
@@ -47,7 +47,9 @@ class bizunoApi
                 // wordpress API to wordpress host is adding slashes to Order?? strip them, others?
                 if (substr($_POST['Order'], 1, 1) == "\\") { $_POST['Order'] = stripslashes($_POST['Order']); }
                 $order = clean('Order', 'json', 'post');
-                return $this->apiJournalEntry($layout, $order);
+                $jID   = getModuleCache('bizuno','settings','bizuno_api','auto_detect', 0);
+                if (empty($jID)) { $jID = $this->getStockLevels($order['Item']); } // assumes customer order was placed
+                return $this->apiJournalEntry($layout, $order, $jID); // jID will be empty for auto
             case 'products':
                 return msgAdd("Processing product, nothing to see here! This is not the code you are looking for.");
             default: // do nothing, maybe mods
@@ -61,48 +63,44 @@ class bizunoApi
      * @param integer $jID [default 0] - used to preset the journal being written to
      * @return array modified $layout structure
      */
-    protected function apiJournalEntry(&$layout, $order=[], $forceJrnl=0)
+    public function apiJournalEntry(&$layout, $order=[], $jID=0)
     {
         msgDebug("\nWorking with submitted order = ".print_r($order, true));
         if (!dbConnected()) { return msgAdd('There was an issue connecting to your account! Please check your credentials.'); }
-        $this->itemTotal = 0;
-        $this->main = $this->items = $map = [];
-        $this->defaultAR      = getModuleCache('bizuno','settings','bizuno_api','gl_receivables',getModuleCache('phreebooks','settings','customers','gl_receivables'));
-        $this->defaultGlSales = getModuleCache('bizuno','settings','bizuno_api','gl_sales',      getModuleCache('phreebooks','settings','customers','gl_sales'));
-        $this->inStock        = true;
+        $this->itemTotal= 0;
+        $this->main     = ['journal_id'=>$jID, 'method_code'=>''];
+        $this->items    = $map = [];
+        $this->inStock  = true;
         require(BIZUNO_LIB."controller/module/bizuno/apiMaps/journal.php"); // loads the journal map file structure
         $this->setJournalMain($map, $order);
-        $this->setJournalItem($map, $order);
-        $this->setJournalFreight($order);
-        $this->setJournalTax($order);
-        $this->setJournalDiscount($order); // must be last, also does unbalance correction for discrepancies between order total and item total
-        $this->setJournalTotal($order);
-        // determine what journal to post to
-        $jID = !empty($forceJrnl) ? $forceJrnl : getModuleCache('bizuno','settings','bizuno_api','auto_detect');
+        $this->setJournalItem($map, $order, $jID);
+        $this->setJournalFreight($order, $jID);
+        $this->setJournalTax($order, $jID);
+        $this->setJournalDiscount($order, $jID); // must be last, also does unbalance correction for discrepancies between order total and item total
+        $this->setJournalTotal($order, $jID);
         switch ($jID) {
-            case 10: $jID = 10; break; // Sales Order
-            case 12: $jID = 12; break; // Sale
-            default: $jID = $this->getStockLevels($this->items); // Auto detect
+            case 6:
+                if (empty($this->main['invoice_num'])) { $this->main['waiting'] = 1; }
+                break;
+            case 10:
+                $dup = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'id', "journal_id=10 AND invoice_num='{$this->main['invoice_num']}'");
+                if ($dup) { return msgAdd(sprintf(lang('err_gl_invoice_num_dup'), lang('reference'), $this->main['invoice_num'])); }
+                $this->main['waiting'] = 1; // force unshipped
+                break;
+            case 12:
+                if (!empty($this->main['invoice_num'])) {
+                    $dup = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'id', "journal_id=12 AND purch_order_id='{$this->main['invoice_num']}'");
+                    if ($dup) { return msgAdd(sprintf(lang('err_gl_invoice_num_dup'), lang('reference'), $this->main['invoice_num'])); }
+                }
+                $this->main['waiting'] = 1; // force unshipped
+                break;
         }
-        // test for duplicate invoice #'s
-        if ($jID == 10) {
-            $test = "journal_id=10 AND invoice_num='{$this->main['invoice_num']}'";
-        } else { // jID=12
-            $this->main['purch_order_id']= $this->main['invoice_num'];
-            $this->main['invoice_num']   = '';  // force new invoice #
-            $test = "journal_id=12 AND purch_order_id='{$this->main['purch_order_id']}'";
-        }
-        $dup = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'id', $test);
-        if ($dup) { return msgAdd(sprintf(lang('err_gl_invoice_num_dup'), lang('reference'), $jID==10 ? $this->main['invoice_num'] : $this->main['purch_order_id'])); }
-        // Set some other main values to post, fill in defaults
-        $this->main['waiting'] = '1'; // force unshipped
-        if ( empty($this->main['gl_acct_id'])) { $this->main['gl_acct_id'] = $this->defaultAR; }
+        if ( empty($this->main['gl_acct_id'])) { $this->main['gl_acct_id'] = $this->setDefGL($jID); }
         if (!empty($this->main['store_id']))   { // try to find the store record ID from the short_name
             $sID = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'id', "type='b' AND short_name='{$this->main['store_id']}'");
             if ($sID) { $this->main['store_id'] = $sID; }
         }
         $this->main['method_code'] = $this->guessShipMethod($this->main['method_code']); // try to map shipping method
-        // Post order
         bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/journal.php", 'journal');
         // ***************************** START TRANSACTION *******************************
         dbTransactionStart();
@@ -119,13 +117,13 @@ class bizunoApi
             $journal->main['contact_id_b'] = $cID['contact_id'];
             $journal->main['address_id_b'] = $cID['address_id'];
         } else { // force the contact record to be created, set $_POST so contact info can be saved
-            foreach ($journal->main as $key => $value) { $_POST[$key] = $value; } // temp until contacts module can be re-written to accept ->main and process
+            foreach ($journal->main as $key => $value) { $_POST[$key] = $value; } // @todo Temp until contacts module can be re-written to accept ->main and process
             $_POST['tax_rate_id_b'] = $journal->main['tax_rate_id'];
             $journal->updateContact_b = true;
         }
         msgDebug("\nReady to post order, main = ".print_r($journal->main, true));
         msgDebug("\nitems = ".print_r($journal->items, true));
-        if (!$journal->Post()) { return; }
+        if (!$journal->Post()) { dbTransactionRollback(); return; }
         $this->setJournalPayment($map, $order, $journal->main['id']);
         // ***************************** END TRANSACTION *******************************
         dbTransactionCommit();
@@ -134,6 +132,19 @@ class bizunoApi
         msgAdd(sprintf(lang('msg_gl_post_success'), $invoiceRef, $journal->main['invoice_num']), 'success');
         msgLog('Bizuno API -'.lang('save')." $invoiceRef ".$journal->main['invoice_num']." - $billName (rID={$journal->main['id']}) ".lang('total').": ".viewFormat($journal->main['total_amount'], 'currency'));
         $layout    = ['content'=>['resultCode'=>0]];
+        $_GET['rID'] = $journal->main['id']; // set the ID for hook processing
+    }
+
+    private function setDefGL($jID=0)
+    {
+        if (in_array($jID, [3,4,6,7])) { return getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables'); }
+        return getModuleCache('bizuno','settings','bizuno_api','gl_receivables',getModuleCache('phreebooks','settings','customers','gl_receivables'));
+    }
+
+    private function setDefGLItem($jID=0)
+    {
+        if (in_array($jID, [3,4,6,7])) { return getModuleCache('phreebooks', 'settings', 'vendors', 'gl_purchases'); }
+        return getModuleCache('bizuno', 'settings', 'bizuno_api', 'gl_sales', getModuleCache('phreebooks','settings','customers','gl_sales'));
     }
 
     /**
@@ -161,7 +172,7 @@ class bizunoApi
      * @param array $map - map of API keys to journal_main fields
      * @param array $order - data received through the API
      */
-    private function setJournalItem($map, $order=[])
+    private function setJournalItem($map, $order=[], $jID=0)
     {
         $itmCnt = 1;
         foreach ($order['Item'] as $item) {
@@ -169,17 +180,21 @@ class bizunoApi
             foreach ($map['Item'] as $idx => $value) {
                 if (isset($item[$idx])) { $temp[$value['field']] = clean($item[$idx], $value['format']); }
             }
-            if (empty($temp['gl_account'])) { $temp['gl_account'] = $this->defaultGlSales; }
+            if (empty($temp['gl_account'])) { $temp['gl_account'] = $this->setDefGLItem($this->main['journal_id']); }
             // the tax guess at item levels has been commented out as it is about impossible to guaranty accuracy and results in out of balance errors.
             $temp['tax_rate_id'] = $this->taxGuess($item, $temp['credit_amount']);
             $this->itemTotal+= $temp['credit_amount'];
-            $this->items[]   = $temp;
+            if (in_array($jID, [3,4,6,7])) {
+                $temp['debit_amount'] = $temp['credit_amount'];
+                unset($temp['credit_amount']);
+            }
+            $this->items[] = $temp;
             $itmCnt++;
         }
-        msgDebug("\nFinished checking stock, inStock = ".($this->inStock?'TRUE':'FALSE'));
+        msgDebug("\nFinished setJournalItem, inStock = ".($this->inStock?'TRUE':'FALSE'));
         // process any notes, this is after map so need to use table field names to inject no-sku item
         if (!empty($order['General']['OrderNotes'])) {
-            $this->items[] = ['item_cnt'=>$itmCnt,'gl_type'=>'itm','qty'=>'1','sku'=>'','description'=>$order['General']['OrderNotes'], 'gl_account'=>$this->defaultGlSales,'post_date'=>$this->main['post_date']];
+            $this->items[] = ['item_cnt'=>$itmCnt,'gl_type'=>'itm','qty'=>'1','sku'=>'','description'=>$order['General']['OrderNotes'], 'gl_account'=>$this->setDefGLItem($this->main['journal_id']),'post_date'=>$this->main['post_date']];
         }
     }
 
@@ -187,7 +202,7 @@ class bizunoApi
      * Sets the shipping item record
      * @param array $order - order as received through the API
      */
-    private function setJournalFreight($order=[])
+    private function setJournalFreight($order=[], $jID=0)
     {
         if (empty($order['General']['ShippingTotal'])) { return; }
         $this->items[] = [
@@ -195,7 +210,8 @@ class bizunoApi
             'sku'          => '',
             'description'  => "title:".lang('shipping'),
             'gl_type'      => 'frt',
-            'credit_amount'=> $order['General']['ShippingTotal'],
+            'debit_amount' =>  in_array($jID, [3,4,6,7]) ? $order['General']['ShippingTotal'] : 0,
+            'credit_amount'=> !in_array($jID, [3,4,6,7]) ? $order['General']['ShippingTotal'] : 0,
             'gl_account'   => getModuleCache('extShipping','settings','general','gl_shipping_c',getModuleCache('phreebooks','settings','customers','gl_sales')),
             'post_date'    => $this->main['post_date']];
         $this->itemTotal += $order['General']['ShippingTotal'];
@@ -205,7 +221,7 @@ class bizunoApi
      * Creates a tax item record making the assumption that the tax has been properly calculated at the cart
      * @param array $order - order as received through the API
      */
-    private function setJournalTax($order=[])
+    private function setJournalTax($order=[], $jID=0)
     {
         if (empty($order['General']['SalesTaxAmount'])) { return; }
         $this->main['sales_tax']  = $order['General']['SalesTaxAmount'];
@@ -213,9 +229,10 @@ class bizunoApi
         $this->items[] = [
             'qty'          => 1,
             'sku'          => '',
-            'description'  => "title:".lang('inventory_tax_rate_id_c'),
-            'gl_type'      => 'tax',
-            'credit_amount'=> $order['General']['SalesTaxAmount'],
+            'description'  => "title:Sales Tax",
+            'gl_type'      => empty($this->main['tax_rate_id']) ? 'glt' : 'tax', // if no rate found, add to order tax (Amount) so we don't have to worry about
+            'debit_amount' => in_array($jID, [3,4, 6,13,20,21,22])       ? $order['General']['SalesTaxAmount'] : 0,
+            'credit_amount'=> in_array($jID, [7,9,10,12,14,16,17,18,19]) ? $order['General']['SalesTaxAmount'] : 0,
             'gl_account'   => getModuleCache('bizuno','settings','bizuno_api','gl_tax'),
             'post_date'    => $this->main['post_date']];
         $this->itemTotal  += $order['General']['SalesTaxAmount'];
@@ -224,33 +241,35 @@ class bizunoApi
     /**
      * Check item total to order total, any difference should be made into a discount record
      */
-    private function setJournalDiscount()
+    private function setJournalDiscount($order=[], $jID=0)
     {
         $balanceCheck = $this->itemTotal - $this->main['total_amount'];
         if ($balanceCheck == 0) { return; }
         $this->items[] = [
-            'qty'         => 1,
-            'sku'         => '',
-            'description' => "title:".lang('discount'),
-            'gl_type'     => 'dsc',
-            'debit_amount'=> $balanceCheck,
-            'gl_account'  => getModuleCache('bizuno','settings','bizuno_api','gl_discount'),
-            'post_date'   => $this->main['post_date']];
+            'qty'          => 1,
+            'sku'          => '',
+            'description'  => "title:".lang('discount'),
+            'gl_type'      => 'dsc',
+            'debit_amount' => !in_array($jID, [3,4,6,7]) ? $balanceCheck : 0,
+            'credit_amount'=>  in_array($jID, [3,4,6,7]) ? $balanceCheck : 0,
+            'gl_account'   => getModuleCache('bizuno','settings','bizuno_api','gl_discount'),
+            'post_date'    => $this->main['post_date']];
     }
 
     /**
      * Creates the total item record
      * @param array $order - order as received through the API
      */
-    private function setJournalTotal($order=[])
+    private function setJournalTotal($order=[], $jID=0)
     {
         $this->items[] = [
             'qty'          => 1,
             'sku'          => '',
             'description'  => "title:".lang('total'),
             'gl_type'      => 'ttl',
-            'debit_amount' => $order['General']['OrderTotal'],
-            'gl_account'   => $this->defaultAR,
+            'debit_amount' => !in_array($jID, [3,4,6,7]) ? $order['General']['OrderTotal'] : 0,
+            'credit_amount'=>  in_array($jID, [3,4,6,7]) ? $order['General']['OrderTotal'] : 0,
+            'gl_account'   => $this->setDefGL($this->main['journal_id']),
             'post_date'    => $this->main['post_date']];
     }
 
@@ -263,6 +282,7 @@ class bizunoApi
      */
     private function setJournalPayment($map, $order=[], $rID=0)
     {
+        if ($order['General']['OrderTotal'] == 0) { return; } // for free orders, this is not necessary
         $pmtInfo = [];
         foreach ($map['Payment'] as $idx => $value) {
             if (isset($order['Payment'][$idx])) { $pmtInfo[$value['field']] = clean($order['Payment'][$idx], $value['format']); }
@@ -313,11 +333,11 @@ class bizunoApi
     {
         $jID = 12;
         foreach ($items as $item) {
-            if ($item['gl_type'] <> 'itm' || $item['sku'] == '') { continue; }
-            $inv = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['inventory_type', 'qty_stock'], "sku='{$item['sku']}'");
-            msgDebug("\nChecking stock levels, SKU = {$item['sku']} and qty = {$item['qty']} and stock level = {$inv['qty_stock']}");
+            if ($item['ItemID'] == '') { continue; }
+            $inv = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['inventory_type', 'qty_stock'], "sku='{$item['ItemID']}'");
+            msgDebug("\nChecking stock levels, SKU = {$item['ItemID']} and qty = {$item['Quantity']} and stock level = {$inv['qty_stock']}");
             msgDebug("\nCOG_ITEM_TYPES = ".COG_ITEM_TYPES." and inventory_type = {$inv['inventory_type']}");
-            if (strpos(COG_ITEM_TYPES, $inv['inventory_type']) !== false && $inv['qty_stock'] < $item['qty']) { $jID = 10; }
+            if (strpos(COG_ITEM_TYPES, $inv['inventory_type']) !== false && $inv['qty_stock'] < $item['Quantity']) { $jID = 10; }
         }
         return $jID;
     }
@@ -375,6 +395,8 @@ class bizunoApi
      */
     private function guessShipMethod($method='')
     {
+        msgDebug("\nEntering guessShipMethod with method = $method");
+        if (empty($method)) { return ''; }
         $defCarrier = false;
         $defMethod  = false;
         $carriers = getModuleCache('extShipping', 'carriers');

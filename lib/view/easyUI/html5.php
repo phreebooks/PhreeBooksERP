@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-20
+ * @version    4.x Last Update: 2020-08-23
  * @filesource /view/easyUI/html5.php
  */
 
@@ -174,6 +174,7 @@ final class html5 {
             case 'tbody':
             case 'tfoot':
             case 'ul':          return $this->htmlElOpen($id, $prop);
+            case 'badge':       return $this->inputBadge($id, $prop);
             case 'button':      return $this->inputButton($id, $prop);
 //          case 'iframe':      return $this->layoutIframe($output, $id, $prop);
             case 'checkbox':    return $this->inputCheckbox($id, $prop);
@@ -453,13 +454,14 @@ final class html5 {
             // The following line is commmented out as the tooltips from Edge browser cause user issues forcing drop down menus to disappear as you cross the tip
 //          $submenu['attr']['title'] = !empty($submenu['tip']) ? $submenu['tip'] : $label;
             $submenu['options'] = $options;
+            $badge = !empty($submenu['badge']) ? '<span class="m-badge" style="margin-top:10px;margin-right:10px">'.$submenu['badge'].'</span>' : '';
             if ($orient == 'h') {
                 if (isset($submenu['child'])) { $subQueue[] = ['id'=>"sub_{$subid}", 'menu'=>$submenu['child']]; }
                 $submenu['attr']['type'] = 'a';
-                $output .= "  ".$this->htmlElOpen($subid, $submenu) . ($hideLabel ? '' : $label) . "</a>\n";
+                $output .= "  ".$this->htmlElOpen($subid, $submenu) . $badge . ($hideLabel ? '' : $label) ."</a>\n";
             } else {
                 $submenu['attr']['type'] = 'div';
-                $output .= "  ".$this->htmlElOpen($subid, $submenu) .($hideLabel ? '' :  "<span>$label</span>");
+                $output .= "  ".$this->htmlElOpen($subid, $submenu) .($hideLabel ? '' :  "<span>$label</span>") . $badge;
                 if (isset($submenu['child'])) { $output .= "\n<div>\n" . $this->menuChild($submenu['child'], 'small', 'v') . "</div>\n"; }
                 $output .= " </div>\n";
             }

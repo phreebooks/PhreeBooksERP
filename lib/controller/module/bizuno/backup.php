@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-05-18
+ * @version    4.x Last Update: 2020-08-15
  * @filesource /lib/controller/module/bizuno/backup.php
  */
 
@@ -140,7 +140,7 @@ class bizunoBackup
 //      $incFiles = clean('data', 'text', 'post');
         // set execution time limit to a large number to allow extra time
         if (ini_get('max_execution_time') < $this->max_execution_time) { set_time_limit($this->max_execution_time); }
-        dbDump("bizuno-".date('Ymd-His'), $this->dirBackup);
+        if (!dbDump("bizuno-".date('Ymd-His'), $this->dirBackup)) { return msgAdd(lang('err_io_write_failed')); }
         msgLog($this->lang['msg_backup_success']);
         msgAdd($this->lang['msg_backup_success'], 'success');
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"bizGridReload('dgBackup');"]]);
@@ -154,7 +154,7 @@ class bizunoBackup
     public function saveAudit(&$layout)
     {
         if (!$security = validateSecurity('bizuno', 'backup', 2)) { return; }
-        dbDump("bizuno_log-".date('Ymd-His'), $this->dirBackup, BIZUNO_DB_PREFIX."audit_log");
+        if (!dbDump("bizuno_log-".date('Ymd-His'), $this->dirBackup, BIZUNO_DB_PREFIX."audit_log")) { return msgAdd(lang('err_io_write_failed')); }
         msgAdd($this->lang['msg_backup_success'], 'success');
         $layout = array_replace_recursive($layout,['content'=>['action'=>'eval','actionData'=>"bizGridReload('dgBackup');"]]);
     }

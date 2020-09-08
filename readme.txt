@@ -9,7 +9,7 @@ Bizuno Accounting, by PhreeSoft, Inc., is a full featured double-entry accountin
 
 == Description ==
 
-Bizuno Accounting, by PhreeSoft, Inc., is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform. Features include CRM, Customer account management, vendor management, full featured double-entry accounting, inventory control, financial transaction management an more. Features include:
+Bizuno Accounting, by PhreeSoft, Inc., is a full featured double-entry accounting/ERP application based on the PhreeBooks open source platform. Features include customer account management, vendor management, full featured double-entry accounting, inventory control, financial transaction management an more. Features include:
 
 * Multi-user and multi-Currency capability
 * Over 40 standard reports and PhreeForm report/form generator with user level lockout security
@@ -47,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.4.3.0 =
+2020-09-07 - Incorporate Bizuno Library 4.3.0. Migrate CRM into extension. Locale fix, other minor bugs.
 = 5.4.2.0 =
 2020-07-23 - Incorporate Bizuno Library 4.2.0. Auto save on dashboard settings. Multiple forms in single PDF. Minor bug fixes.
 = 5.4.1.0 =

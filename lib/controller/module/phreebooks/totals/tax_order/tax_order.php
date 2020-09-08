@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-04
+ * @version    4.x Last Update: 2020-08-11
  * @filesource /controller/module/phreebooks/totals/tax_order/tax_order.php
  */
 
@@ -33,7 +33,7 @@ class tax_order
     public function __construct()
     {
         $this->settings= ['gl_type'=>'tax','journals'=>'[3,4,6,7,9,10,12,13,19,21]','tax_id_c'=>0,'tax_id_v'=>0,'order'=>40];
-        $this->cType   = defined('CONTACT_TYPE') ? CONTACT_TYPE : 'c';
+        $this->cType   = 'c'; // @todo should be able to eliminte this
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
@@ -46,7 +46,7 @@ class tax_order
             'journals'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
             'tax_id_v'=> ['label'=>$this->lang['tax_id_v'],'position'=>'after','values'=>viewSalesTaxDropdown('v'),'attr'=>['type'=>'select','value'=>$this->settings['tax_id_v']]],
             'tax_id_c'=> ['label'=>$this->lang['tax_id_c'],'position'=>'after','values'=>viewSalesTaxDropdown('c'),'attr'=>['type'=>'select','value'=>$this->settings['tax_id_c']]],
-            'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
+            'order'   => ['label'=>lang('order'),'options'=>['min'=>5,'max'=>95,'width'=>100],'attr'=>['type'=>'spinner','value'=>$this->settings['order']]]];
     }
 
     public function glEntry(&$main, &$item, &$begBal=0)
@@ -56,7 +56,7 @@ class tax_order
         $totalTax = 0;
         $isoVals  = getModuleCache('phreebooks', 'currency', 'iso', getDefaultCurrency());
         $roundAuth= getModuleCache('phreebooks', 'settings', 'general', 'round_tax_auth', 0);
-        $rates    = loadTaxes($this->cType);
+        $rates    = loadTaxes($this->cType); // @todo - is this needed as the id houlkd be unique independent of the contact type
         foreach ($rates as $rate) { if ($main['tax_rate_id'] == $rate['id']) { break; } }
         if (empty($rate)) { return; }
         foreach ($rate['auths'] as $auth) {

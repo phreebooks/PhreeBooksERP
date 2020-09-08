@@ -211,7 +211,7 @@ $tables = [
             'full_price'          => ['format'=>'DOUBLE',       'attr'=>"NOT NULL DEFAULT '0'",    'comment'=>'type:currency;tag:FullPrice;order:40',
                 'import'=>true, 'export'=>true,'required'=>false,'desc'=>"Retail or List price for the item"],
             'description_purchase'=> ['format'=>'VARCHAR(255)', 'attr'=>"DEFAULT NULL",            'comment'=>'tag:DescriptionPurchase;order:10',
-                'import'=>true, 'export'=>true,'required'=>false,'desc'=>"Detailed decription to use for purchses"],
+                'import'=>true, 'export'=>true,'required'=>false,'desc'=>"Detailed decription to use for purchases"],
             'tax_rate_id_v'       => ['format'=>'INT(11)',      'attr'=>"NOT NULL DEFAULT '0'",    'comment'=>'type:select;tag:TaxRateIDVendor;order:20',
                 'import'=>true, 'export'=>true,'required'=>false,'desc'=>"[Default: 0] Tax Rate ID for vendors from the db table"],
             'price_sheet_v'       => ['format'=>'INT(11)',      'attr'=>"NOT NULL DEFAULT '0'",    'comment'=>'type:select;tag:DefPriceSheetIDPurchase;order:30',
@@ -240,7 +240,7 @@ $tables = [
                 'import'=>false,'export'=>true,'required'=>false,'desc'=>"Last update. Format YYYY-MM-DD"],
             'last_journal_date'   => ['format'=>'DATETIME',     'attr'=>"DEFAULT NULL",            'comment'=>'type:date;tag:DateLastJournal;order:30',
                 'import'=>false,'export'=>true,'required'=>false,'desc'=>"Last date the item was used in a journal entry, format YYY-MM-DD"]],
-        'keys' => 'PRIMARY KEY (id)',
+        'keys' => 'PRIMARY KEY (id), KEY sku (sku)',
         'attr' => 'ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci',
         'extra_tabs' => true], // allow extra tabs to be added to table
     'inventory_assy_list' => ['module' => 'inventory',

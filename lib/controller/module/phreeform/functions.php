@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-03-27
+ * @version    4.x Last Update: 2020-08-31
  * @filesource /controller/module/phreeform/functions.php
  */
 
@@ -186,8 +186,11 @@ function ReadDefReports($id, $path='', $lang="en_US")
     foreach (getModuleCache('phreeform', 'frmGroups') as $value) { $titles[$value['id']] = $value['text']; }
     $ReportList = [];
     $files = @scandir($path);
+    msgDebug("\nRead from path $path files: ".print_r($files, true));
     foreach ($files as $DefRpt) {
+        if (in_array($DefRpt, ['.', '..'])) { continue; }
         $pinfo  = pathinfo("$path/$DefRpt");
+        msgDebug("\nReading file: $DefRpt from pathinfo: ".print_r($pinfo, true));
         $strXML = file_get_contents("$path/$DefRpt");
         $report = parseXMLstring($strXML);
         if (!is_object($report)) { continue; }
@@ -198,7 +201,6 @@ function ReadDefReports($id, $path='', $lang="en_US")
             'path'       => $pinfo['basename']];
     }
     if (sizeof($ReportList) == 0) { return lang('msg_no_documents'); }
-
     $output   = '<select id="'.$id.'" size="15">';
     ksort($ReportList);
     foreach ($ReportList as $GrpName => $members) {
@@ -593,7 +595,7 @@ function BuildDataArray($sql, $report)
                 $OutputArray[$RowCnt][$ColCnt] = viewFormat($processedData, $TableCtl['formatting']);
             }
             $ColCnt++;
-            if ($TableCtl['total']) { // add to the running total if need be
+            if (!empty($TableCtl['total'])) { // add to the running total if need be
                 $seq[$key]['grptotal'] += $processedData;
                 $seq[$key]['rpttotal'] += $processedData;
                 $ShowTotals = true;

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-18
+ * @version    4.x Last Update: 2020-08-12
  * @filesource /lib/controller/module/contacts/admin.php
  */
 
@@ -35,7 +35,7 @@ class contactsAdmin
             'url'       => BIZUNO_URL."controller/module/$this->moduleID/",
             'version'   => MODULE_BIZUNO_VERSION,
             'category'  => 'bizuno',
-            'required'  => '1',
+            'required'  => 1,
             'attachPath'=> 'data/contacts/uploads/',
             'api'       => ['path'=>'contacts/api/contactsAPI'],
             'quickBar'  => ['child'=>['settings'=>['child'=>[
@@ -43,7 +43,6 @@ class contactsAdmin
             'menuBar'   => ['child'=>[
                 'customers'=> ['order'=>10,'label'=>lang('customers'),'group'=>'cust','icon'=>'sales', 'events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=customers');"],'child'=>[
                     'mgr_c'=> ['order'=>10,'label'=>lang('contacts_type_c_mgr'),'icon'=>'users',       'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=c');"]],
-                    'mgr_i'=> ['order'=>20,'label'=>lang('contacts_type_i_mgr'),'icon'=>'chat',        'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=i');"]],
                     'rpt_c'=> ['order'=>99,'label'=>lang('reports'),            'icon'=>'mimeDoc',     'events'=>['onClick'=>"hrefClick('phreeform/main/manager&gID=cust');"]]]],
                 'vendors'  => ['order'=>20,'label'=>lang('vendors'),'group'=>'vend','icon'=>'purchase','events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome&menuID=vendors');"],'child'=>[
                     'mgr_v'=> ['order'=>20,'label'=>lang('contacts_type_v_mgr'),'icon'=>'users',       'events'=>['onClick'=>"hrefClick('contacts/main/manager&type=v');"]],
@@ -73,7 +72,11 @@ class contactsAdmin
      */
     public function settingsStructure()
     {
+        $meths= ['auto'=>lang('default'), 'email'=>lang('email'), 'tele'=>lang('telephone')];
         $data = [
+            'general'     => ['order'=>10,'label'=>lang('general'),'fields'=>[
+                'short_name_c'=> ['values'=>viewKeyDropdown($meths),'attr'=>['type'=>'select','value'=>'auto']],
+                'short_name_v'=> ['values'=>viewKeyDropdown($meths),'attr'=>['type'=>'select','value'=>'auto']]]],
             'address_book'=> ['order'=>20,'label'=>lang('address_book'),'fields'=>[
                 'primary_name'=> ['attr'=>['type'=>'selNoYes', 'value'=>'1']],
                 'address1'    => ['attr'=>['type'=>'selNoYes', 'value'=>'0']],

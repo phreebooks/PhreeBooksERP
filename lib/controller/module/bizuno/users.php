@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-04-21
+ * @version    4.x Last Update: 2020-09-03
  * @filesource lib/controller/module/bizuno/users.php
  */
 
@@ -99,8 +99,8 @@ class bizunoUsers
         msgDebug("\nSettings decoded is: ".print_r($settings, true));
         unset($dbData['settings']);
         dbStructureFill($structure, $dbData);
-        $fldAcct   = ['admin_id','email','inactive','title','role_id','contact_id','store_id'];
-        $fldProp   = ['restrict_store','restrict_user','icons','theme','menu','cols'];
+        $fldAcct   = ['admin_id','email','inactive','title','role_id','contact_id'];
+        $fldProp   = ['icons','theme','cols']; // 'menu','restrict_user','store_id','restrict_store',
         $eKeys     = ['smtp_enable', 'smtp_host', 'smtp_port', 'smtp_user', 'smtp_pass'];
         $cID       = !empty($structure['contact_id']['attr']['value']) ? (int)$structure['contact_id']['attr']['value'] : 0;
         $name      = $cID ? dbGetValue(BIZUNO_DB_PREFIX."address_book", 'primary_name', "ref_id=$cID AND type='m'") : '';
@@ -133,7 +133,7 @@ class bizunoUsers
             'panels' => [
                 'genAcct' => ['label'=>lang('account'),   'type'=>'fields','keys'=>$fldAcct],
                 'genProp' => ['label'=>lang('properties'),'type'=>'fields','keys'=>$fldProp],
-                'genAtch' => ['type'=>'attach','defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>"rID_{$rID}_"]],
+                'genAtch' => ['type'=>'attach','defaults'=>['path'=>getModuleCache($this->moduleID,'properties','usersAttachPath'),'prefix'=>"rID_{$rID}_"]],
                 'pnlEmail'=> ['label'=>lang('settings'),  'type'=>'fields','keys'=>$eKeys]],
             'forms'   => ['frmUsers'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/users/save"]]],
             'fields'  => $fields,
@@ -145,7 +145,7 @@ class bizunoUsers
     }
 
     /**
-     *
+     * Generates the field list for the user edit view
      * @param array $fields
      * @param type $settings
      * @return array
@@ -154,22 +154,17 @@ class bizunoUsers
     {
         $stores= getModuleCache('bizuno', 'stores');
         array_unshift($stores, ['id'=>-1, 'text'=>lang('all')]);
-        $posi  = [['id'=>'top','text'=>lang('top')], ['id'=>'left','text'=>lang('left')]];
         $defs  = ['type'=>'e', 'data'=>'usersContact', 'callback'=>''];
         $fields['role_id']['attr']['type']= 'select';
-        $output = [
+        $output= [
             'admin_id'      => $fields['admin_id'],
             'email'         => array_merge($fields['email'],   ['order'=>15,'break'=>true]),
             'inactive'      => array_merge($fields['inactive'],['order'=>20,'break'=>true]),
             'title'         => array_merge($fields['title'],   ['order'=>25,'break'=>true]),
             'role_id'       => array_merge($fields['role_id'], ['order'=>30,'break'=>true,'values'=>listRoles(true, false, false)]),
             'contact_id'    => ['order'=>35,'break'=>true,'label'=>lang('contacts_rep_id_i'),'defaults'=>$defs,'attr'=>['type'=>'contact','value'=>$fields['contact_id']['attr']['value']]],
-            'store_id'      => ['order'=>40,'break'=>true,'label'=>$this->lang['store_id_lbl'],      'tip'=>$this->lang['store_id_tip'],'values'=>getModuleCache('bizuno', 'stores'),'attr'=>['type'=>'select','value'=>isset($settings['store_id'])?$settings['store_id']:0]],
-            'restrict_store'=> ['order'=>45,'break'=>true,'label'=>$this->lang['restrict_store_lbl'],'tip'=>$this->lang['restrict_store_tip'],'values'=>$stores, 'attr'=>['type'=>'select','value'=>isset($settings['restrict_store'])?$settings['restrict_store']:-1]],
-            'restrict_user' => ['order'=>50,'break'=>true,'label'=>$this->lang['restrict_user_lbl'], 'tip'=>$this->lang['restrict_user_tip'], 'attr'=>['type'=>'selNoYes','value'=>isset($settings['restrict_user'])?$settings['restrict_user']:0]],
             'icons'         => ['order'=>65,'break'=>true,'label'=>$this->lang['icon_set'],'values'=>getIcons(), 'attr'=>['type'=>'select','value'=>isset($settings['icons'])?$settings['icons']:'default']],
             'theme'         => ['order'=>70,'break'=>true,'label'=>lang('theme'),          'values'=>getThemes(),'attr'=>['type'=>'select','value'=>isset($settings['theme'])?$settings['theme']:'default']],
-            'menu'          => ['order'=>75,'break'=>true,'label'=>lang('menu_pos'),       'values'=>$posi,      'attr'=>['type'=>'select','value'=>isset($settings['menu']) ?$settings['menu'] :'left']],
             'cols'          => ['order'=>80,'break'=>true,'label'=>$this->lang['dashboard_columns'],'attr'=>['value'=>isset($settings['cols'])?$settings['cols']:3]],
 //          'mail_enable'   => ['order'=>10,'break'=>true,'label'=>$this->lang['mail_enable_lbl'],'tip'=>$this->lang['mail_enable_tip'],'attr'=>['type'=>'selNoYes','value'=>isset($settings['mail_enable'])?$settings['mail_enable']:1]],
             'smtp_enable'   => ['order'=>20,'break'=>true,'label'=>$this->lang['smtp_enable_lbl'],'tip'=>$this->lang['smtp_enable_tip'],'attr'=>['type'=>'selNoYes','value'=>isset($settings['smtp_enable'])?$settings['smtp_enable']:0]],
@@ -202,22 +197,22 @@ class bizunoUsers
         // build the users default settings
         $settings = $rID ? json_decode(dbGetValue(BIZUNO_DB_PREFIX."users", 'settings', "admin_id=$rID"), true) : [];
         if (empty($settings['profile']['smtp_pass'])) { $settings['profile']['smtp_pass'] = ''; }
-        $settings['profile']['icons']         = clean('icons', 'text',   'post');
-        $settings['profile']['theme']         = clean('theme', 'text',   'post');
-        $settings['profile']['menu']          = clean('menu',  'text',   'post'); // menu position
-        $settings['profile']['cols']          = clean('cols',  'integer','post'); // # of dashboard columns
-        $settings['profile']['store_id']      = clean('store_id','integer','post'); // home store for granularity
-        $settings['profile']['restrict_store']= clean('restrict_store','integer','post'); // restrict to store
-        $settings['profile']['restrict_user'] = clean('restrict_user', 'integer','post'); // restrict user
-        $settings['profile']['smtp_enable']   = clean('smtp_enable','boolean','post');
-        $settings['profile']['smtp_host']     = clean('smtp_host',  'url',    'post');
-        $settings['profile']['smtp_port']     = clean('smtp_port',  'integer','post');
-        $settings['profile']['smtp_user']     = clean('smtp_user',  'email',  'post');
+        $settings['profile']['icons']         = clean('icons',         'text',   'post');
+        $settings['profile']['theme']         = clean('theme',         'text',   'post');
+        $settings['profile']['menu']          = clean('menu',          'text',   'post'); // menu position
+        $settings['profile']['cols']          = clean('cols',          'integer','post'); // # of dashboard columns
+//        $settings['profile']['store_id']      = clean('store_id',      'integer','post'); // home store for granularity
+//        $settings['profile']['restrict_store']= clean('restrict_store','integer','post'); // restrict to store
+//        $settings['profile']['restrict_user'] = clean('restrict_user', 'integer','post'); // restrict user
+        $settings['profile']['smtp_enable']   = clean('smtp_enable',   'boolean','post');
+        $settings['profile']['smtp_host']     = clean('smtp_host',     'url',    'post');
+        $settings['profile']['smtp_port']     = clean('smtp_port',     'integer','post');
+        $settings['profile']['smtp_user']     = clean('smtp_user',     'email',  'post');
         $password = clean('smtp_pass', 'text', 'post');
         $settings['profile']['smtp_pass']     = !empty($password) ? $password : $settings['profile']['smtp_pass'];
         $values['settings']  = json_encode($settings);
         // update the local users table with details
-        $newID = dbWrite(BIZUNO_DB_PREFIX."users", $values, $rID?'update':'insert', "admin_id='$rID'");
+        $newID = dbWrite(BIZUNO_DB_PREFIX.'users', $values, $rID?'update':'insert', "admin_id=$rID");
         // check role attributes for more processing
         $role = dbGetRow(BIZUNO_DB_PREFIX."roles", "id={$values['role_id']}");
         msgDebug("\nRead role = ".print_r($role, true));
@@ -241,11 +236,11 @@ class bizunoUsers
         if (!$rID) { $rID = $_POST['admin_id'] = $newID; }
         msgDebug("\nrID = $rID and session admin_id = ".getUserCache('profile', 'admin_id', false, 0));
         if ($io->uploadSave('file_attach', getModuleCache('bizuno', 'properties', 'usersAttachPath')."rID_{$rID}_")) {
-            dbWrite(BIZUNO_DB_PREFIX.'users', ['attach'=>'1'], 'update', "id=$rID");
+            dbWrite(BIZUNO_DB_PREFIX.'users', ['attach'=>1], 'update', "id=$rID");
         }
         msgLog(lang('table')." users - ".lang('save')." {$values['email']} ($rID)");
         msgAdd(lang('msg_database_write'), 'success');
-        $data = ['content'=>  ['action'=>'eval','actionData'=>"jq('#accUsers').accordion('select',0); bizGridReload('dgUsers');"]];
+        $data = ['content'=>['action'=>'eval','actionData'=>"jq('#accUsers').accordion('select',0); bizGridReload('dgUsers');"]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -330,7 +325,7 @@ class bizunoUsers
                     'roles' => ['table'=>BIZUNO_DB_PREFIX."roles", 'join'=>'join','links'=>BIZUNO_DB_PREFIX."roles.id=".BIZUNO_DB_PREFIX."users.role_id"]],
                 'actions' => [
                     'newUser'  => ['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', 0);"]],
-                    'clrSearch'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#search').val(''); ".$name."Reload();"]],
+                    'clrSearch'=> ['order'=>50,'icon'=>'clear','events'=>['onClick'=>"bizTextSet('search', ''); ".$name."Reload();"]],
                     'help'     => ['order'=>99,'icon'=>'help', 'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
                 'search' => [BIZUNO_DB_PREFIX."users.email", BIZUNO_DB_PREFIX."roles".'.title'],
                 'sort'   => ['s0'=>  ['order'=>10, 'field'=>($this->defaults['sort'].' '.$this->defaults['order'])]],

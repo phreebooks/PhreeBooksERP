@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-15
+ * @version    4.x Last Update: 2020-09-02
  * @filesource /lib/controller/module/phreebooks/journal.php
  */
 
@@ -255,7 +255,7 @@ class journal
             'waiting'      => 0,
             'post_date'    => $post_date,
             'terminal_date'=> date('Y-m-d'),
-            'period'       => calculatePeriod($post_date),
+            'period'       => calculatePeriod($post_date, false), // hold back not curent period message for API
             'admin_id'     => getUserCache('profile', 'admin_id', false, 0),
             'rep_id'       => getUserCache('profile', 'contact_id', false, '0'),
             'contact_id_b' => 0,
@@ -420,7 +420,7 @@ class journal
      */
     private function preFlightCheck($action)
     {
-        if ($this->main['so_po_ref_id']) { // see if post date is BEFORE linked ref date, this causes un-closed references
+        if (!empty($this->main['so_po_ref_id'])) { // see if post date is BEFORE linked ref date, this causes un-closed references
             $refDate = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'post_date', "id={$this->main['so_po_ref_id']}");
             msgDebug("\nChecking post dates, this = {$this->main['post_date']} and so_po_ref id = $refDate");
             if ($refDate > $this->main['post_date']) { return msgAdd(lang('err_gl_bad_post_date')); }
@@ -491,7 +491,7 @@ class journal
         // By commenting these, the terms and rep DO NOT UPDATE the contat record. This must be done through the Contacts Manager
 //        $_POST['terms_'.$type] = $this->main['terms_'.$type] = $this->main['terms'];
 //        $_POST['rep_id_'.$type] = !empty($this->main['rep_id']) ? $this->main['rep_id'] : ''; // map the rep ID
-        msgDebug("\nAdding/updating contact with this->main = ".print_r($this->main, true));
+//        msgDebug("\nAdding/updating contact with this->main = ".print_r($this->main, true));
         $success = $contact->dbContactSave($cType, "_$type");
         if (!$success) { return; } // record creation failed (permission, problem, etc), stop here
         else { $cID = $success; }
@@ -595,7 +595,7 @@ class journal
      */
     public function updateJournalHistory($period)
     {
-        $fy_props = $period <> getModuleCache('phreebooks', 'fy', 'period') ? getPeriodInfo($period) : getModuleCache('phreebooks', 'fy');
+        $fy_props = $period <> getModuleCache('phreebooks', 'fy', 'period') ? dbGetPeriodInfo($period) : getModuleCache('phreebooks', 'fy');
         msgDebug("\n  Updating chart history for fiscal year: {$fy_props['fiscal_year']} and period: $period");
         for ($i = $period; $i <= $fy_props['period_max']; $i++) { // update future months
             if (!$this->setGlBalance($i)) { return; }
@@ -659,8 +659,8 @@ class journal
     }
 
     /**
-     * retrieves an CSV list of gl accounts that needs to be closed at end of fiscal year
-     * @return string - comma seperated list of gl accounts
+     * Retrieves an CSV list of gl accounts that needs to be closed at end of fiscal year
+     * @return string - comma separated list of gl accounts
      */
     private function getGLtoClose()
     {

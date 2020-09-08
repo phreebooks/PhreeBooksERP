@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-04
+ * @version    4.x Last Update: 2020-07-29
  * @filesource /controller/module/phreebooks/totals/disc_item/disc_item.php
  */
 
@@ -49,7 +49,7 @@ class disc_item
             'gl_type'   => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'  => ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
             'gl_account'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_account']]],
-            'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'value'=>$this->settings['order']]]];
+            'order'     => ['label'=>lang('order'),'options'=>['min'=>5,'max'=>95,'width'=>100],'attr'=>['type'=>'spinner','value'=>$this->settings['order']]]];
     }
 
     /**

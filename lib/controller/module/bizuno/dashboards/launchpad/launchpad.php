@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-22
+ * @version    4.x Last Update: 2020-08-13
  * @filesource /lib/controller/module/bizuno/dashboards/launchpad/launchpad.php
  */
 
@@ -74,10 +74,12 @@ class launchpad
     private function listMenus($source, $cat=false)
     {
         if (empty($source)) { return; }
-        foreach ($source as $menu) {
+        foreach ($source as $key => $menu) {
             msgDebug("\nmenu list = ".print_r($menu, true));
             if (!isset($menu['child'])) { continue; }
+            if (empty($menu['label'])) { $menu['label'] = $key; }
             foreach ($menu['child'] as $idx => $submenu) {
+                if (empty($submenu['label'])) { $submenu['label'] = $idx; }
                 msgDebug("\nsubmenu list = ".print_r($submenu, true));
                 if (empty($submenu['security'])) { continue; }
                 if (!isset($submenu['hidden']) || !$submenu['hidden']) {

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-04
+ * @version    4.x Last Update: 2020-08-11
  * @filesource /controller/module/phreebooks/totals/tax_item/tax_item.php
  */
 
@@ -32,7 +32,7 @@ class tax_item
 
     public function __construct()
     {
-        $this->cType   = defined('CONTACT_TYPE') ? CONTACT_TYPE : 'c';
+        $this->cType   = 'c'; // @todo is there different language for customer versus vendor? if not then not needed.
         $this->settings= ['gl_type'=>'tax','journals'=>'[3,4,6,7,9,10,12,13,19,21]','order'=>50];
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
@@ -55,7 +55,7 @@ class tax_item
         return [
             'gl_type' => ['attr' =>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'=> ['attr' =>['type'=>'hidden','value'=>$this->settings['journals']]],
-            'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'value'=>$this->settings['order']]]];
+            'order'   => ['label'=>lang('order'),'options'=>['min'=>5,'max'=>95,'width'=>100],'attr'=>['type'=>'spinner','value'=>$this->settings['order']]]];
     }
 
     /**
@@ -67,7 +67,7 @@ class tax_item
     public function glEntry(&$main, &$item, &$begBal=0)
     {
         $type     = in_array($main['journal_id'], [3,4,6,7,21]) ? 'v' : 'c';
-        $tax_rates= loadTaxes($type); // dbGetMulti(BIZUNO_DB_PREFIX."tax_rates", "type='$this->cType'");
+        $tax_rates= loadTaxes($type);
         $gl       = [];
         $totalTax = 0;
         $roundAuth= getModuleCache('phreebooks', 'settings', 'general', 'round_tax_auth', 0);

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-20
+ * @version    4.x Last Update: 2020-08-31
  * @filesource /controller/module/phreeform/render.php
  */
 
@@ -175,6 +175,7 @@ class phreeformRender
                 $group_list   = [['id'=>'0', 'text'=>lang('none')]];
                 $group_default= '';
                 if (is_array($viewData['report']->grouplist)) { foreach ($viewData['report']->grouplist as $group) {
+                    if ( empty($group->title) || empty($group->fieldname)) { continue; }
                     if (!empty($group->default))   { $group_default = $i; }
                     if (!empty($group->page_break)){ $group_break   = true; }
                     $group_list[] = ['id'=>$i, 'text'=>$group->title];
@@ -373,7 +374,7 @@ class phreeformRender
             msgDebugWrite();
             header('Cache-Control: max-age=60, must-revalidate');
             header('Expires: 0');
-            if ($delivery=='D') { // download
+            if ($delivery=='D' || $format == 'csv') { // download
                 header('Set-Cookie: fileDownload=true; path=/');
                 header("Content-Disposition: attachment; filename={$output['filename']}");
             }

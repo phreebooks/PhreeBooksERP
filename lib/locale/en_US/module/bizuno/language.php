@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-30
+ * @version    4.x Last Update: 2020-08-26
  * @filesource /locale/en_US/module/bizuno/language.php
  */
 
@@ -33,6 +33,10 @@ $lang = [
     // Settings
     'timezone_lbl' => 'Timezone',
     'timezone_tip' => 'The timezone selected will be used for all posted transactions and reports. This will typically be your primary business location.',
+    'phreesoft_user_lbl' => 'PhreeSoft Account Email',
+    'phreesoft_user_tip' => 'This is your email you used to purchase your membership, support plans and extensions at the PhreeSoft.com store. It is used to verify your purchases used to enable your extensions.',
+    'phreesoft_key_lbl' => 'Product Key',
+    'phreesoft_key_tip' => 'Leave this blank if you have not purchased anything from PhreeSoft. Enter the product key of you Bizuno purchase, or, if not available a key from a product purchased from the PhreeSoft store using the username above.',
     'password_min_lbl' => 'Min Password Length',
     'password_min_tip' => 'Sets the minimum password length. Longer passwords lead to a more secure website. The minimum value is 8.',
     'max_rows_lbl' => 'Display Rows',
@@ -70,8 +74,6 @@ $lang = [
     'gl_tax_tip' => 'Default account to use for Sales Tax collected. The sales tax passed should be equal to the calculated value based on the default rate specified below.',
     'tax_rate_id_lbl' => 'Default Tax Rate',
     'tax_rate_id_tip' => 'This tax will be the default tax used when importing API transactions.Tax rates can be set up in PhreeBooks settings.',
-    'phreesoft_user_tip' => 'This is your email you used to purchase your membership at the PhreeSoft.com store. It is used to verify your purchases used to enable your extensions.',
-    'phreesoft_pass_tip' => 'This the corresponding password you used at the PhreeSoft.com store to make all your purchases. It is a good practice to use a different password at the PhreeSoft.com store than any other web site you frequent.',
     'smtp_enable_lbl' => 'Enable SMTP e-Mail',
     'smtp_enable_tip' => 'Enable sending Bizuno emails through your SMTP server. By default Bizuno uses it\'s internal mail capability, all emails will originate from the PhreeSoft servers with the return host ps*.phreesoft.com.',
     'smtp_host_lbl' => 'SMTP Host',
@@ -111,13 +113,7 @@ $lang = [
     'table_stats' => 'Table Statistics',
     'dashboard_columns' => 'Dashboard Columns',
     'icon_set' => 'Icon Set',
-    'store_id_lbl' => 'Home Store',
     'restrict_access' => 'Restrict Access',
-    'restrict_store_lbl' => 'Restrict to Store',
-    'restrict_user_lbl' => 'Limit Views',
-    'store_id_tip' => 'Sets the home store in multiple store businesses. Used for reports and listings for store stock levels, contacts, etc.',
-    'restrict_store_tip' => 'Restrict user to a specific store, All for no restrictions, Select store to restrict viewable activity to a specific store.',
-    'restrict_user_tip' => 'Restrict the user to only see sales/purchases registered to them. Affects Customer Manager, Vendor Manager, Sales and Purchases and related Banking. More filtering is also possible for extensions and other core Bizuno functions.',
     // Buttons
     'btn_security_clean' => 'Clean Data Security Values',
     // Portal

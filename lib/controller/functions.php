@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-08
+ * @version    4.x Last Update: 2020-09-07
  * @filesource lib/controller/functions.php
  */
 
@@ -176,6 +176,37 @@ function bizClrCookie($name)
     } else {
         setcookie($name, '', ['expires'=>time()-1,'path'=>'/','secure'=>true,'samesite'=>'lax']);
     }
+}
+
+/**
+ * Loads the language, tries cache first, then if stale or missing loads en_US first then overlays non-en_US if necessary
+ * @param string $lang - ISO language code to load
+ * @return array - core language array
+ */
+function loadBaseLang($lang='en_US')
+{
+    msgDebug("\nEntering loadBaseLang with lang = $lang");
+    $langCore = $langByRef = [];
+    if (strlen($lang) <> 5) { $lang = 'en_US'; }
+    if (defined('BIZUNO_DATA') && file_exists(BIZUNO_DATA."cache/lang_{$lang}.json")) {
+        msgDebug("\nFetching lang from cache.");
+        return json_decode(file_get_contents(BIZUNO_DATA."cache/lang_{$lang}.json"), true);
+    } else {
+        msgDebug("\nFetching lang from file system.");
+        require(BIZUNO_LIB."locale/en_US/language.php");  // pulls the current language in English
+        include(BIZUNO_LIB."locale/en_US/langByRef.php"); // lang by reference (no translation required)
+        $langCache = array_merge($langCore, $langByRef);
+    }
+    if ($lang == 'en_US') { return $langCache; } // just english, we're done
+    $otherLang = [];
+    if (file_exists(BIZUNO_LOCALE."$lang/language.php")) {
+        msgDebug("\nFetching lang: $lang from file system.");
+        require(BIZUNO_LOCALE."$lang/language.php");  // pulls locale overlay
+        $langCore = array_replace($langCache, $langCore); // overlay ISO lang on top of working cache file
+        include(BIZUNO_LIB."locale/en_US/langByRef.php"); // lang by reference (reset after loading translation)
+        $otherLang = array_replace($langCore, $langByRef);
+    }
+    return array_replace($langCache, $otherLang);
 }
 
 /**
@@ -571,6 +602,58 @@ function auto_version($file)
 }
 
 /**
+ * Determines the fiscal calendar period based on a passed date
+ * @param string $post_date - date to retrieve period information
+ * @param boolean $verbose - [default true] set to false to suppress user messages
+ * @return integer - fiscal year period based on the submitted date
+ */
+function calculatePeriod($post_date, $verbose=true)
+{
+    if (getModuleCache('phreebooks', 'fy', 'period')) {
+        $post_time_stamp         = strtotime($post_date);
+        $period_start_time_stamp = strtotime(getModuleCache('phreebooks', 'fy', 'period_start'));
+        $period_end_time_stamp   = strtotime(getModuleCache('phreebooks', 'fy', 'period_end'));
+        if (($post_time_stamp >= $period_start_time_stamp) && ($post_time_stamp <= $period_end_time_stamp)) {
+            return getModuleCache('phreebooks', 'fy', 'period', false, 0);
+        }
+    }
+    $period = dbGetValue(BIZUNO_DB_PREFIX.'journal_periods', 'period', "start_date<='$post_date' AND end_date>='$post_date'");
+    if (!$period) { // post_date is out of range of defined accounting periods
+        return msgAdd(sprintf(lang('err_gl_post_date_invalid'), $post_date));
+    }
+    if ($verbose) { msgAdd(lang('msg_gl_post_date_out_of_period'), 'caution'); }
+    return $period;
+}
+
+/**
+ * This function automatically updates the period and sets the new constants in the configuration db table
+ * MOVED HERE FROM phreebooks/functions as it tests with every page load
+ * @param boolean $verbose
+ * @return boolean
+ */
+function periodAutoUpdate($verbose=true)
+{
+    $period = calculatePeriod(date('Y-m-d'), false);
+    if ($period == getModuleCache('phreebooks', 'fy', 'period')) { return true; } // we're in the current period
+    if (!$period) { // we're outside of the defined fiscal years
+        if ($verbose) { msgAdd(sprintf(lang('err_gl_post_date_invalid'), $period)); } // removed 'trap' as auto fiscal year creates debug files everywhwere
+        $tmpSec = getUserCache('security', 'admin', false, 0);
+        setUserCache('security', 'admin', 3);
+        bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/tools.php", 'phreebooksTools');
+        $tools = new phreebooksTools();
+        $tools->fyAdd(); // auto-add new fiscal year
+        setUserCache('security', 'admin', $tmpSec); // restore user permissions
+        return true;
+    } else {
+        $props = dbGetPeriodInfo($period);
+        setModuleCache('phreebooks', 'fy', false, $props);
+        msgLog(sprintf(lang('msg_period_changed'), $period));
+        if ($verbose) { msgAdd(sprintf(lang('msg_period_changed'), $period), 'success'); }
+    }
+    return true;
+}
+
+/**
  * Generates a random string of given length, characters used are A-Za-z0-9
  * @param integer $length - (Default 12) Length of string to generate
  * @return string - Random string of length $length
@@ -751,7 +834,7 @@ function bizuno_simpleXML($strXML) {
     libxml_use_internal_errors(true);
     $sxe = simplexml_load_string(trim($strXML), 'SimpleXMLElement', LIBXML_NOCDATA);
     if (!$sxe) {
-        foreach(libxml_get_errors() as $error) { msgAdd("\t".$error->message); }
+        foreach(libxml_get_errors() as $error) { msgDebug("simpleXML error: ".$error->message, true); }
         libxml_clear_errors();
         msgAdd("There was a problem reading data from the remote server. Please try again in a few minutes.");
         return [];

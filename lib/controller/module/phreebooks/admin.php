@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-26
+ * @version    4.x Last Update: 2020-08-12
  * @filesource /lib/controller/module/phreebooks/admin.php
  */
 
@@ -44,7 +44,7 @@ class phreebooksAdmin {
         $this->assets    = [0, 2, 4, 6, 8, 12, 32, 34]; // gl_account types that are assets
         $this->settings  = array_replace_recursive(getStructureValues($this->settingsStructure()), getModuleCache($this->moduleID, 'settings', false, false, []));
         $this->structure = [
-            'url' => BIZUNO_URL."controller/module/$this->moduleID/",
+            'url'       => BIZUNO_URL."controller/module/$this->moduleID/",
             'version'   => MODULE_BIZUNO_VERSION,
             'category'  => 'bizuno',
             'required'  => '1',
@@ -83,14 +83,9 @@ class phreebooksAdmin {
                         'j6_mgr' => ['order'=>10,'label'=>lang('journal_main_journal_id_6'),'icon'=>'purchase','events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=6');"]],
                         'j7_mgr' => ['order'=>40,'label'=>lang('journal_main_journal_id_7'),'icon'=>'credit',  'events'=>['onClick'=>"hrefClick('phreebooks/main/manager&jID=7');"]]]]]]]],
             'hooks' => ['bizuno' => [
-                    'admin' => [
-                        'loadBrowserSession' => ['page'=>'admin','class'=>'phreebooksAdmin','order'=>50]],
-                    'roles' => [
-                        'edit' => ['order'=>50,'page'=>'admin','class'=>'phreebooksAdmin', 'method'=>'rolesEdit'],
-                        'save' => ['order'=>50,'page'=>'admin','class'=>'phreebooksAdmin', 'method'=>'rolesSave']],
-                    'users' => [
-                        'edit' => ['order'=>50,'page'=>'admin','class'=>'phreebooksAdmin', 'method'=>'usersEdit'],
-                        'save' => ['order'=>50,'page'=>'admin','class'=>'phreebooksAdmin', 'method'=>'usersSave']]]],
+                'admin' => ['loadBrowserSession'=>['order'=>50]],
+                'roles' => ['edit'=>['order'=>50,'method'=>'rolesEdit'], 'save'=>['order'=>50,'method'=>'rolesSave']],
+                'users' => ['edit'=>['order'=>50,'method'=>'usersEdit'], 'save'=>['order'=>50,'method'=>'usersSave']]]],
             'api' => ['path' => 'phreebooks/api/journalAPI', 'attr' => ['jID' => 12]]]; // default to import sales
         $this->phreeformProcessing = [
             'AgeCur'    => ['text'=>$this->lang['pb_inv_age_00']],
@@ -361,7 +356,7 @@ class phreebooksAdmin {
         foreach ($dbFYs as $row) { $FYs[] = ['id' => $row['fiscal_year'], 'text' => $row['fiscal_year']]; }
         $fy        = clean('fy', ['format'=>'integer', 'default'=>getModuleCache('phreebooks', 'fy', 'fiscal_year', false, date('Y'))], 'get');
         $fiscalY   = ['label'=>lang('phreebooks_fiscal_year'),'values'=>$FYs,'attr'=>['type'=>'select','value'=>$fy],
-            'events' => ['onChange'=>"var tab=jq('#tabAdmin').tabs('getSelected'); tab.panel( 'refresh', '".BIZUNO_AJAX."&p=phreebooks/admin/managerFY&fy='+jq('#fy').val() );"]];
+            'events' => ['onChange'=>"var tab=jq('#tabAdmin').tabs('getSelected'); tab.panel( 'refresh', '".BIZUNO_AJAX."&p=phreebooks/admin/managerFY&fy='+bizSelGet('fy') );"]];
         $btnSaveFy = ['icon'=>'save','size'=>'large',
             'events' => ['onClick'=>"divSubmit('phreebooks/tools/fySave', 'fyCal');"]];
         $max_posted= dbGetValue(BIZUNO_DB_PREFIX."journal_main",    "MAX(period) AS period", false, false);
@@ -400,7 +395,7 @@ class phreebooksAdmin {
         bizAutoLoad(BIZUNO_LIB."controller/module/phreebooks/chart.php", 'phreebooksChart');
         $coa = new phreebooksChart();
         msgDebug("\n  Loading chart of accounts");
-        $coa->chartInstall(BIZUNO_LIB.getUserCache('profile', 'chart'));
+        $coa->chartInstall(getUserCache('profile', 'chart'));
         msgDebug("\n  Building fiscal year.");
         $current_year= date('Y');
         $start_year  = getUserCache('profile', 'first_fy');
@@ -488,7 +483,8 @@ class phreebooksAdmin {
      * @param array $layout - structure coming in
      * @return modified $layout
      */
-    public function rolesEdit(&$layout=[]) {
+    public function rolesEdit(&$layout=[])
+    {
         $rID     = clean('rID', 'integer', 'get');
         $settings= json_decode(dbGetValue(BIZUNO_DB_PREFIX . "roles", 'settings', "id=$rID"), true);
         $enableSales = isset($settings['bizuno']['roles']['sales']) && $settings['bizuno']['roles']['sales'] ? true : false;
@@ -505,14 +501,11 @@ class phreebooksAdmin {
      * Extends the Roles settings to Save the PhereeBooks Specific settings
      * @return boolean null
      */
-    public function rolesSave() {
+    public function rolesSave()
+    {
         $rID = clean('id', 'integer', 'post');
-        if (!$rID) {
-            return;
-        }
-        if (!$security = validateSecurity('bizuno', 'roles', $rID ? 3 : 2)) {
-            return;
-        }
+        if (!$rID) { return; }
+        if (!$security = validateSecurity('bizuno', 'roles', $rID?3:2)) { return; }
         $settings = json_decode(dbGetValue(BIZUNO_DB_PREFIX . "roles", 'settings', "id=$rID"), true);
         unset($settings[$this->moduleID]);
         $settings['bizuno']['roles']['sales'] = clean('phreebooks_sales', 'boolean', 'post');
@@ -525,7 +518,8 @@ class phreebooksAdmin {
      * @param array $layout - structure coming in
      * @return modified $layout
      */
-    public function usersEdit(&$layout=[]) {
+    public function usersEdit(&$layout=[]) 
+    {
         $keys = ['restrict_period', 'cash_acct', 'ar_acct', 'ap_acct'];
         $settings = $layout['settings'];
         if (empty($settings['cash_acct'])){ $settings['cash_acct']= getModuleCache('phreebooks', 'settings', 'customers','gl_cash'); }
@@ -535,12 +529,12 @@ class phreebooksAdmin {
             'restrict_period'=> ['order'=>10,'break'=>true,'label'=>$this->lang['restrict_period_lbl'],'tip'=>$this->lang['restrict_period_tip'],'attr'=>['type'=>'checkbox']],
             'cash_acct'      => ['order'=>20,'break'=>true,'label'=>$this->lang['gl_cash_lbl'],        'tip'=>$this->lang['gl_cash_tip'],        'attr'=>['type'=>'ledger','value'=>$settings['cash_acct']]],
             'ar_acct'        => ['order'=>30,'break'=>true,'label'=>$this->lang['gl_receivables_lbl'], 'tip'=>$this->lang['gl_receivables_tip'], 'attr'=>['type'=>'ledger','value'=>$settings['ar_acct']]],
-            'ap_acct'        => ['order'=>40,'break'=>true,'label'=>$this->lang['gl_purchases_lbl'],   'tip'=>$this->lang['gl_purchases_tip'],   'attr'=>['type'=>'ledger','idvalue'=>$settings['ap_acct']]],
+            'ap_acct'        => ['order'=>40,'break'=>true,'label'=>$this->lang['gl_purchases_lbl'],   'tip'=>$this->lang['gl_purchases_tip'],   'attr'=>['type'=>'ledger','value'=>$settings['ap_acct']]],
         ];
         if (empty($layout['fields'])) { $layout['fields'] = []; }
         $layout['fields'] = array_merge($layout['fields'], $fields);
         $layout['tabs']['tabUsers']['divs']['phreebooks'] = ['order'=>60,'label'=>$this->lang['title'],'type'=>'divs','classes'=>['areaView'],'divs'=>[
-            'pnlPB'=> ['order'=>40,'type'=>'panel','key'=>'pnlPhreeBooks','classes'=>['block50']]]];
+            'pnlPB'=> ['order'=>40,'type'=>'panel','key'=>'pnlPhreeBooks','classes'=>['block33']]]];
         $layout['panels']['pnlPhreeBooks'] = ['label'=>lang('properties'),'type'=>'fields','keys'=>$keys];
     }
 
@@ -548,23 +542,25 @@ class phreebooksAdmin {
      * Extends the users save method with PHreeBooks specific fields
      * @return boolean null
      */
-    public function usersSave() {
+    public function usersSave()
+    {
         $rID = clean('admin_id', 'integer', 'post');
         if (!$security = validateSecurity('bizuno', 'users', $rID ? 3 : 2)) { return; }
         if (!$rID) { return; }
-        $settings = json_decode(dbGetValue(BIZUNO_DB_PREFIX . "users", 'settings', "admin_id=$rID"), true);
+        $settings = json_decode(dbGetValue(BIZUNO_DB_PREFIX.'users', 'settings', "admin_id=$rID"), true);
         $settings['restrict_period']= clean('restrict_period', 'boolean', 'post');
         $settings['cash_acct']      = clean('cash_acct', 'text', 'post');
         $settings['ar_acct']        = clean('ar_acct', 'text', 'post');
         $settings['ap_acct']        = clean('ap_acct', 'text', 'post');
-        dbWrite(BIZUNO_DB_PREFIX . "users", ['settings'=>json_encode($settings)], 'update', "admin_id=$rID");
+        dbWrite(BIZUNO_DB_PREFIX.'users', ['settings'=>json_encode($settings)], 'update', "admin_id=$rID");
     }
 
     /**
      * Saves the users preferred order total sequence and methods used to set the order screen totals fields
      * @return null, but session and registry are updated
      */
-    public function orderTotals() {
+    public function orderTotals()
+    {
         $data = clean('data', 'text', 'get');
         if (!$data) { return msgAdd("Bad values sent!"); }
         $vals = explode(';', $data);
@@ -584,5 +580,4 @@ class phreebooksAdmin {
         setModuleCache('phreebooks', 'totals', false, $output);
         msgAdd(lang('msg_settings_saved'), 'success');
     }
-
 }

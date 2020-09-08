@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-02-19
+ * @version    4.x Last Update: 2020-08-23
  * @filesource /locale/cleaner.php
  */
 
@@ -36,6 +36,7 @@ class cleaner
     {
         switch ($src) {
             case 'cookie': $value = isset($_COOKIE[$idx]) ? $_COOKIE[$idx] : ''; break;
+            case 'server': $value = isset($_SERVER[$idx]) ? $_SERVER[$idx] : ''; break;
             case 'get':    $value = isset($_GET[$idx])    ? $_GET[$idx]    : ''; break;
             case 'post':   $value = isset($_POST[$idx])   ? $_POST[$idx]   : ''; break;
             case 'request':$value = isset($_REQUEST[$idx])? $_REQUEST[$idx]: ''; break; // $_POST overrides $_GET and $_COOKIE ???
@@ -54,7 +55,7 @@ class cleaner
             case 'array':    return is_array($value) ? $value : [];
             case 'bool':     return substr(trim($value), 0 , 1) == '1' ? true : false;
             case 'bizunzip': return $this->cleanBizUnzip($value, $default);
-            case 'char':     return strlen(trim($value))==0 ? $default : substr(trim($value), 0 , 1); // tbd what about length? char(3), etc
+            case 'char':     return strlen(trim($value))==0 ? $default : substr(trim($value), 0, 1); // tbd what about length? char(3), etc
             case 'cmd':      return strlen(trim($value)) ? preg_replace("/[^a-zA-Z0-9\_\-\:]/", '', $value) : $default;
             case 'command':  return $this->cleanCommand($value, $default);
             case 'country':  return $this->cleanCountry($value, $option);
@@ -477,7 +478,7 @@ function localeGetDates($this_date = '')
 function localeCalculateDate($start_date, $day_offset=0, $month_offset=0, $year_offset=0)
 {
     $date_details= localeGetDates($start_date);
-    msgDebug("\nstart date = $start_date and day offset = $day_offset and month offsest = $month_offset and year offset = $year_offset");
+    msgDebug("\nin localeCalculateDate with start date = $start_date and day offset = $day_offset and month offsest = $month_offset and year offset = $year_offset");
     if ($date_details['ThisYear'] > '1900' && $date_details['ThisYear'] < '2099') {
         // check for current day greater than the month will allow (for recurs)
         $days_in_month = date('t', mktime(0, 0, 0, $date_details['ThisMonth'] + $month_offset, 1, $date_details['ThisYear'] + $year_offset));

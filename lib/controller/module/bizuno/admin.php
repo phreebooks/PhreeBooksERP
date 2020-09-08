@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-08
+ * @version    4.x Last Update: 2020-09-03
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -37,7 +37,7 @@ class bizunoAdmin
             'version'        => MODULE_BIZUNO_VERSION,
             'category'       => 'bizuno',
             'required'       => true,
-            'usersAttachPath'=> 'data/bizuno/users/uploads',
+            'usersAttachPath'=> "data/$this->moduleID/users/uploads",
             'quickBar'       => ['styles'=>['float'=>'right','padding'=>'1px'],'child'=>[
                 'settings' => ['order'=>50,'label'=>lang('bizuno_company'),'icon'=>'settings','child'=>[
                     'admin'  => ['order'=>10,'label'=>lang('settings'),'icon'=>'settings','events'=>['onClick'=>"hrefClick('bizuno/settings/manager');"]],
@@ -60,7 +60,7 @@ class bizunoAdmin
                 'fyCloseHome'=> ['page'=>'tools','class'=>'bizunoTools','order'=>50],
                 'fyClose'    => ['page'=>'tools','class'=>'bizunoTools','order'=>50]]]]];
         if (strpos(getUserCache('profile', 'admin_encrypt', false, ''), ':')) {
-            $this->structure['quickBar']['child']['encrypt'] = ['tip'=>lang('encrypt_enabled'),'order'=>60,'icon'=>'icon-encrypt-on'];
+//            $this->structure['quickBar']['child']['settings']['child']['encrypt'] = ['tip'=>lang('encrypt_enabled'),'order'=>60,'icon'=>'icon-encrypt-on'];
         }
         $this->dirlist = ['backups','data','images','temp'];
         $this->reportStructure = [
@@ -180,8 +180,9 @@ class bizunoAdmin
                 'logo'            => ['attr'=>['type'=>'hidden']]]],
             'my_phreesoft_account' => ['order'=>30,'label'=>lang('my_phreesoft_account'),'fields'=>[
                 'phreesoft_user'  => ['label'=>lang('username')],
-                'phreesoft_pass'  => ['label'=>lang('password'),'attr'=>['type'=>'password']],
-                'test_con'        => ['label'=>lang('test'),'icon'=>'checkin','attr'=>['type'=>'hidden'],'events'=>['onClick'=>"jsonAction('bizuno/admin/testAccount', 0, jq('#my_phreesoft_account_phreesoft_user').val()+';'+jq('#my_phreesoft_account_phreesoft_pass').val());"]]]],
+                'phreesoft_key'   => ['options'=>['width'=>400]]]],
+//              'phreesoft_pass'  => ['label'=>lang('password'),'attr'=>['type'=>'password']],
+//              'test_con'        => ['label'=>lang('test'),'icon'=>'checkin','attr'=>['type'=>'hidden'],'events'=>['onClick'=>"jsonAction('bizuno/admin/testAccount', 0, jq('#my_phreesoft_account_phreesoft_user').val()+';'+jq('#my_phreesoft_account_phreesoft_pass').val());"]]]],
             'mail' => ['order'=>40,'label'=>lang('mail'),'fields'=>[
                 'smtp_enable'     => ['attr'=>['type'=>'selNoYes']],
                 'smtp_host'       => ['attr'=>['value'=>'smtp.gmail.com']],
@@ -209,7 +210,12 @@ class bizunoAdmin
         return $data;
     }
 
-    public function testAccount(&$layout=[])
+    /**
+     * Tests the entered credentials for API transactions
+     * @param array $layout - Structure coming in
+     * @return modified $layout
+     */
+    public function testAccount()
     {
         global $io;
         $parts  = explode(';', clean('data', 'text', 'get'), 2);

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-09
+ * @version    4.x Last Update: 2020-08-14
  * @filesource /lib/controller/module/phreebooks/main.php
  */
 
@@ -41,7 +41,6 @@ class phreebooksMain
         else { $this->journalID = clean('jID', 'integer', 'get'); }
         if (!defined('JOURNAL_ID')) { define('JOURNAL_ID', $this->journalID); }
         $this->type  = clean('type', ['format'=>'char', 'default'=>in_array($this->journalID, [2,3,4,6,7,17,20,21]) ? 'v' : 'c'], 'get');
-        if (!defined('CONTACT_TYPE')) { define('CONTACT_TYPE', $this->type); }
         $this->helpIndex = "";
         switch ($this->journalID) {
             case  2: $this->helpIndex = "gl-manager";           $this->gl_type= 'gl'; break; // General Journal
@@ -1000,7 +999,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                             'events' => ['onClick' => "windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".lang('delivery_dates')."', 500, 400);"],
                             'display'=> "row.journal_id=='4' || row.journal_id=='10'"],
                         'invoice'    => ['order'=>70,'icon'=>'invoice','label'=>$this->lang['set_invoice_num'],'hidden'=>$sec6_12>2?false:true,
-                            'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_invoice_num']."'); if (invNum) { jsonAction('phreebooks/main/setInvoiceNum&jID=6', idTBD, invNum); }"],
+                            'events' => ['onClick' => "var row = jq('#dgPhreeBooks').datagrid('getRows')[indexTBD]; var invNum=prompt('".$this->lang['enter_invoice_num']."', row.invoice_num); if (invNum) { jsonAction('phreebooks/main/setInvoiceNum&jID=6', idTBD, invNum); }"],
                             'display'=> "row.waiting=='1' && row.journal_id=='6'"],
                         'reference'  => ['order'=>70,'icon'=>'invoice','label'=>$this->lang['set_ref_num'],
                             'events' => ['onClick' => "var invNum=prompt('".$this->lang['enter_ref_num']."'); jsonAction('phreebooks/main/setReferenceNum&jID=18', idTBD, invNum);"],

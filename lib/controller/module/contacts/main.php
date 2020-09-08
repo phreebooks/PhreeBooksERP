@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-17
+ * @version    4.x Last Update: 2020-08-26
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -29,6 +29,7 @@ class contactsMain
     private $reqFields= ['primary_name', 'address1', 'telephone1', 'email'];
     private $restrict_store = true;
     private $defaults = [];
+    private $refTries = 100; // number of attempts to pull a new refernce before punting. Helps fix bad Vendor IDs and Customer IDs
 
     function __construct()
     {
@@ -36,7 +37,6 @@ class contactsMain
         $rID = clean('rID', 'integer', 'get');
         if ($rID) { $this->type = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'type', "id=$rID"); }
         else      { $this->type = clean('type', ['format'=>'char', 'default'=>'c'], 'get'); }
-        if (!defined('CONTACT_TYPE')) { define('CONTACT_TYPE', $this->type); }
         $this->securityModule = 'contacts';
         $this->securityMenu   = 'mgr_'.$this->type;
         switch ($this->type) {
@@ -116,55 +116,25 @@ class contactsMain
     }
 
     /**
-     * Main entry point for CRM tab within contact edit
-     * @param array $layout -  working structure
-     * @return modified $layout
-     */
-    public function crmManager(&$layout=[])
-    {
-        if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
-        $rID  = clean('rID', 'integer', 'get');
-        $data = ['type'=>'divHTML',
-            'divs' => ['crm'=>['order'=>50,'type'=>'accordion','key'=>'accCRM']],
-            'accordion' => ['accCRM' => ['divs'=>[
-                'divCRMManager'=>['order'=>30,'type'=>'datagrid','label'=>sprintf(lang('tbd_manager'), lang('contacts_type_i')),'key'=>'crmMgr'],
-                'divCRMDetail' =>['order'=>70,'type'=>'html',    'label'=>lang('details'),'html'=>'&nbsp;']]]],
-            'datagrid'=>['crmMgr'=>$this->dgContacts('CRM', 'i', $security, $rID)]];
-        $data['datagrid']['crmMgr']['footnotes']['crm_dg_notes']= $this->lang['crm_dg_notes'];
-        $data['datagrid']['crmMgr']['attr']['url']= BIZUNO_AJAX."&p=contacts/main/managerRows&type=i&ref=$rID";
-        $data['jsReady']['init'] = "bizFocus('search_i', 'dgCRM');";
-        $layout = array_replace_recursive($layout, $data);
-    }
-
-    /**
      * Gets the results to populate the active contact grid
      * @param array $layout -  working structure
      * @return modified $layout
      */
     public function managerRows(&$layout=[])
     {
-        $type = clean('type',['format'=>'text','default'=>$this->type], 'get'); // reload here for multi type searches
+        $type = clean('type',['format'=>'alpha_num','default'=>$this->type], 'get'); // reload here for multi type searches
         $rID  = clean('rID', 'integer','get');
-        $iID  = clean('ref', ['format'=>'integer','default'=>-1],'get');
         $this->restrict_store = clean('store',['format'=>'boolean','default'=>true],'get'); // set store restiction override
-        if (strlen($type)>1) { $this->type = 'i'; } // must have CRM access to look at entire contacts table
-        if (in_array($this->type, ['a','b'])) { // a - all contacts, b - branches
+        if (in_array($type, ['a','b'])) { // a - all contacts, b - branches
             $security = 1; // branches are part of bizuno admin settings and restricted in settings, needs to be read-only here for address searches of branches for users without access to settings
         } else {
-            if (!$security = validateSecurity('contacts', "mgr_{$this->type}", 1)) { return; }
+            if (!$security = validateSecurity('contacts', "mgr_{$this->type}", 1)) { return; } // has to be only 1 char
         }
         $_POST['search_'.$type] = getSearch(['search_'.$type,'q']);
-        $data = $this->dgContacts($iID>0?'CRM':'Contacts', $type, $security, $rID);
+        $data = $this->dgContacts('Contacts', $type, $security, $rID);
         if ($rID) {
             $_POST['search_'.$type] = ''; // preload hit which is erased if searching is started
             $data['source']['filters']['rID'] = ['order'=>99, 'hidden'=>true, 'sql'=>BIZUNO_DB_PREFIX."contacts.id=$rID"];
-        }
-        if ($iID>0) { // it's the crm table in contacts, fix some things
-            $data['source']['filters']['rep_id'] = ['order'=>98, 'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."contacts.rep_id=$iID"];
-            $data['events']['onDblClickRow']  = "function(rowIndex, rowData){ crmDetail(rowData.id, 'i'); }";
-            unset($data['source']['actions']['newContact']);
-            unset($data['columns']['action']['actions']['download']);
-            unset($data['columns']['action']['actions']['chart']);
         }
         $data['strict'] = true;
         $layout = array_replace_recursive($layout, ['type'=>'datagrid','key'=>'manager','datagrid'=>['manager'=>$data]]);
@@ -223,10 +193,6 @@ class contactsMain
             $title = $structure['short_name']['attr']['value'].' - '.$aValue['primary_name'];
             $structure['first_date']['attr']['readonly'] = true;
             $structure['last_update']['attr']['readonly']= true;
-// BOF - Remove after 4.0.2
-            $structure['first_date']['order'] = 70;
-            $structure['last_update']['order']= 75;
-// EOF - Remove above
         } else {
             $title = lang('new');
             $structure['gl_account']['attr']['value']= $this->contact['gl_account'];
@@ -290,8 +256,6 @@ class contactsMain
                     'genAcct' => ['order'=>30,'type'=>'panel','key'=>'genAcct','classes'=>['block33']],
                     'genProp' => ['order'=>40,'type'=>'panel','key'=>'genProp','classes'=>['block33']],
                     'genAtch' => ['order'=>80,'type'=>'panel','key'=>'genAtch','classes'=>['block66']]]],
-                'crm_add' => ['order'=>20,'label'=>lang('contacts'), 'type'=>'html', 'html'=>'',
-                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/crmManager&rID=$rID'"]],
                 'history' => ['order'=>30,'label'=>lang('history'), 'hidden'=>$rID?false:true,'type'=>'html', 'html'=>'',
                     'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/history&rID=$rID'"]],
                 'bill_add'=> ['order'=>40,'label'=>lang('address_book_type_b'), 'type'=>'html', 'html'=>'',
@@ -352,62 +316,6 @@ class contactsMain
         $layout = array_replace_recursive($layout, $data);
     }
 
-    /**
-     * Retrieves the details for the CRM tab in contacts
-     * @param array $layout - working structure
-     */
-    public function editCRM(&$layout=[])
-    {
-        if (!$security = validateSecurity($this->securityModule, $this->securityMenu, 1)) { return; }
-        $rID  = clean('rID', 'integer', 'get');
-        $refID= clean('ref', 'integer', 'get');
-        $contact = dbLoadStructure(BIZUNO_DB_PREFIX.'contacts', $this->type);
-        $contact['inactive']['label']      = lang('status');
-        $contact['inactive']['values']     = $this->status_choices;
-        $contact['short_name']['label']    = lang('contacts_short_name');
-        $contact['account_number']['order']= 25;
-        $contact['gov_id_number']['order'] = 27;
-        $contact['account_number']['label']= 'Facebook ID';
-        $contact['gov_id_number']['label'] = 'Twitter ID';
-        $contact['rep_id']['attr']['type'] = 'hidden'; // hide link ID to contact
-        // merge data with structure
-        $cData = dbGetRow(BIZUNO_DB_PREFIX."contacts", "id=$rID");
-        dbStructureFill($contact, $cData);
-        $add_book = dbLoadStructure(BIZUNO_DB_PREFIX.'address_book', $this->type);
-        if ($rID) { // set some defaults
-            $aValue= dbGetRow(BIZUNO_DB_PREFIX."address_book", "ref_id=$rID AND type='m'");
-            dbStructureFill($add_book, $aValue);
-            $title = $contact['short_name']['attr']['value'].' - '.$aValue['primary_name'];
-        } else {
-            $title = lang('new');
-            $contact['rep_id']['attr']['value'] = $refID;
-        }
-        foreach (array_keys($contact) as $idx)  { $structure[$idx.'i'] = $contact[$idx]; }
-        foreach (array_keys($add_book) as $idx) { $structure[$idx.'i'] = $add_book[$idx]; }
-        $fldAcct = ['idi','typei','rep_idi','short_namei','inactivei','store_idi','account_numberi','gov_id_numberi'];
-        $fldCont = ['contact_firsti','contact_lasti','flex_field_1i','telephone1i','telephone2i','telephone3i','telephone4i','emaili','websitei'];
-        $data = ['type'=>'divHTML',
-            'toolbars'=> [
-                'tbAddressi'=> ['icons' => [
-                    'savei' => ['order'=>10,'icon'=>'save','label'=>lang('save'),'hidden'=>$security >1?false:true,'events'=>['onClick'=>"divSubmit('contacts/main/saveAddress&aType=i&rID=$rID', 'crmDiv');"]],
-                    'newi'  => ['order'=>20,'icon'=>'new', 'label'=>lang('new'), 'hidden'=>$security >1?false:true,'events'=>['onClick'=>"addressClear('i');"]],
-                    'copyi' => ['order'=>30,'icon'=>'copy','label'=>lang('copy'),'hidden'=>$security >1?false:true,'events'=>['onClick'=>"addressCopy('m', 'i');"]]]]],
-            'divs'   => [
-                'heading' => ['order'=>10,'type'=>'html',   'html'=>"<h1>$title</h1>"],
-                'crmTB'  => ['order'=>10,'type'=>'toolbar','key'=>'tbAddressi'],
-                'general'=> ['order'=>50,'type'=>'divs','attr'=>['id'=>'crmDiv'],'classes'=>['areaView'],'divs'=>[
-                    'genAcct' => ['order'=>10,'type'=>'panel','key'=>'genAcct','classes'=>['block33']],
-                    'genCont' => ['order'=>20,'type'=>'panel','key'=>'genCont','classes'=>['block33']],
-                    'genAddA' => ['order'=>30,'type'=>'panel','key'=>'genAddA','classes'=>['block33']]]]],
-            'panels' => [
-                'genAcct' => ['label'=>lang('account'),          'type'=>'fields', 'keys'=>$fldAcct],
-                'genCont' => ['label'=>lang('contact_info'),     'type'=>'fields', 'keys'=>$fldCont],
-                'genAddA' => ['label'=>lang('address_book_type'),'type'=>'address','fields'=>array_keys($add_book),'settings'=>['limit'=>'a','suffix'=>'i','clear'=>false,'required'=>true]]],
-            'fields'   => $structure,
-        ];
-        $layout = array_replace_recursive($layout, $data);
-    }
-
     private function editCustomType(&$data, $rID)
     {
         switch ($this->type) {
@@ -425,33 +333,6 @@ class contactsMain
                 $data['fields']['contact_first']['order']= 7;
                 $data['fields']['contact_last']['order'] = 8;
                 $data['fields']['flex_field_1']['order'] = 25;
-                break;
-            case 'i': // CRM
-                $data['panels']['genAcct']['keys'] = ['short_name','inactive','rep_id','tax_rate_id','store_id','terms'];
-                $data['panels']['genCont']['keys'] = ['contact_first','contact_last','flex_field_1','telephone1m','telephone2m','telephone3m','telephone4m','emailm','websitem'];
-                $data['panels']['genProp']['keys'] = ['id','type','account_number','gov_id_number','gl_account','recordID'];
-                $linkID = !empty($data['fields']['rep_id']['attr']['value']) ? $data['fields']['rep_id']['attr']['value'] : 0;
-                $data['fields']['account_number']['attr']['type']= 'hidden';
-                $data['fields']['gov_id_number']['attr']['type'] = 'hidden';
-                $data['fields']['tax_rate_id']['attr']['type']   = 'hidden';
-                $data['fields']['gl_account']['attr']['type']    = 'hidden';
-                $data['fields']['terms']['attr']['type']         = 'hidden';
-                $data['fields']['account_number']['attr']['type']= 'hidden';
-                unset($data['fields']['rep_id']['attr']['size'], $data['fields']['rep_id']['values']);
-                $primary_name = $linkID ? dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'primary_name', "ref_id=$linkID AND type='m'") : '';
-                $data['jsReady']['repIDi'] = "
-jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textField:'primary_name',mode:'remote',
-    url:    '".BIZUNO_AJAX."&p=contacts/main/managerRows&type=cv&store=0',
-    onBeforeLoad:function (param) { var newValue = jq('#rep_id').combogrid('getValue'); if (newValue.length < 3) return false; },
-    selectOnNavigation:false,
-    columns:[[{field:'id',hidden:true},
-        {field:'short_name',  title:'".pullTableLabel(BIZUNO_DB_PREFIX."contacts",    'short_name')."',  width:100},
-        {field:'type',        title:'".pullTableLabel(BIZUNO_DB_PREFIX."contacts",    'type')."',        width:100},
-        {field:'primary_name',title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'primary_name')."',width:200},
-        {field:'address1',    title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'address1')."',    width:200},
-        {field:'city',        title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'city')."',        width:100},
-        {field:'postal_code', title:'".pullTableLabel(BIZUNO_DB_PREFIX."address_book",'postal_code')."', width:100}]]
-}).combogrid('setValue', {id:'$linkID',primary_name:'$primary_name'});";
                 break;
         }
         if (in_array($this->type, ['c','v'])) {
@@ -482,7 +363,6 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         if (!$this->dbAddressSave($rID, 'm', 'm', true)) { return; }   // Address records, main is required
         $this->dbAddressSave($rID, 'b', 'b', false);
         $this->dbAddressSave($rID, 's', 's', false);
-        $this->dbCRMSave(); // CRM contact record
         $this->saveLog($layout, $rID);
         if ($makeTransaction) { dbTransactionCommit(); }
         $io = new \bizuno\io();
@@ -502,19 +382,11 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
      */
     public function saveAddress(&$layout=[])
     {
-        $aType= clean('aType','char',   'get');
-        switch ($aType) {
-            case 'i': // CRM  so it's a contact with main address
-                $this->dbCRMSave();
-                $dgID = 'CRM';
-                break;
-            default: // just the address record
-                $rID  = clean('rID',  'integer','get');
-                if (!$rID) { return msgAdd(lang('err_bad_id')); }
-                $this->dbAddressSave($rID, $aType, $aType, false);
-                $dgID = "Address$aType";
-                break;
-        }
+        $aType= clean('aType','char','get');
+        $rID  = clean('rID',  'integer','get');
+        if (!$rID) { return msgAdd(lang('err_bad_id')); }
+        $this->dbAddressSave($rID, $aType, $aType, false);
+        $dgID = "Address$aType";
         // return to clear address fields and reload datagrid
         $data = ['content' => ['action'=>'eval','actionData'=>"jq('#acc$dgID').accordion('select', 0); bizGridReload('dg$dgID'); jq('#div{$dgID}Detail').html('&nbsp;');"]];
         $layout = array_replace_recursive($layout, $data);
@@ -626,7 +498,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         if ($block) { return msgAdd($this->lang['err_contacts_delete']); }
         $short_name = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'short_name', "id='$rID'");
         $actionData = "bizGridReload('dgContacts'); accordionEdit('accContacts','dgContacts','divContactsDetail','".jsLang('details')."','contacts/main/edit&type=$this->type', 0);";
-        if (isset($action) && $action) {
+        if (!empty($action)) {
             $parts = explode(':', $action);
             switch ($parts[0]) {
                 case 'reload': $actionData = "bizGridReload('{$parts[1]}');"; break; // just reload the datagrid
@@ -792,7 +664,6 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
     {
         $rID  = clean('id'.$suffix, 'integer', 'post');
         $title= clean('primary_name'.$suffix, 'text', 'post');
-        msgDebug("\nfound rID = $rID");
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, $rID?3:2)) { return; }
         $values = requestData(dbLoadStructure(BIZUNO_DB_PREFIX."contacts"), $suffix);
         $values['type'] = $cType; // force the type or set if a suffix is used
@@ -803,25 +674,41 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         if (!$required) { if (isset($values['contact_first']) && empty($values['contact_first']) &&
                               isset($values['contact_last'])  && empty($values['contact_last'])  &&
                               empty($title)) { return; } }
-        if (isset($values['short_name']) && $values['short_name']) { // check for duplicate short_names
-            $short_name = addslashes($values['short_name']);
-            $dup = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'id', "short_name='$short_name' AND type='$cType' AND id<>$rID");
+        if (!$rID && empty($values['short_name'])) { $values['short_name'] = $this->getNextShortName($suffix, $cType, $rID); } // auto generate new ID
+        if (!empty($values['short_name'])) { // check for duplicate short_names
+            $dup = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'id', "short_name='".addslashes($values['short_name'])."' AND type='$cType' AND id<>$rID");
             if ($dup) { return msgAdd(lang('error_duplicate_id')); }
-        } elseif (!$rID) { // new contact, auto-increment is set to always on
-            $str_field = $this->type=='v' ? 'next_vend_id_num' : 'next_cust_id_num';
-            $result = dbGetValue(BIZUNO_DB_PREFIX."current_status", $str_field);
-            $values['short_name'] = $result;
-            $result++;
-            dbWrite(BIZUNO_DB_PREFIX."current_status", [$str_field => $result], 'update');
-        } elseif (isset($values['short_name']) && !$values['short_name']) {
-            unset($values['short_name']); // existing record and no Contact ID passed, leave it alone
-        }
+        } else { unset($values['short_name']); } // existing record and no Contact ID passed, leave it alone
         if (empty($values['inactive'])) { $values['inactive'] = 0; } // fixes bug in conversions and prevents null inactive value
         $result = dbWrite(BIZUNO_DB_PREFIX."contacts", $values, $rID?'update':'insert', "id=$rID");
         if (!$rID) { $rID = $result; }
         $_POST['id'.$suffix] = $rID; // save for customization
         msgDebug("\n  Finished adding/updating contact, id = $rID");
         return $rID;
+    }
+
+    /**
+     * Generates the short_name for new contacts based on user preferences
+     * @param array $values - post variables
+     * @param string $suffix - suffix from post variables to pull values
+     * @return type
+     */
+    private function getNextShortName($suffix, $cType, $rID)
+    {
+        $setting= $this->type=='v' ? 'short_name_v' : 'short_name_c';
+        $values = requestData(dbLoadStructure(BIZUNO_DB_PREFIX."address_book"), $suffix);
+        $method = getModuleCache('contacts', 'settings', 'general', $setting, 'auto');
+        msgDebug("\nIn getNextShortName with suffix = $suffix and values = ".print_r($values, true));
+        if ($method=='email' && !empty($values['email']))      { return $values['email']; }
+        if ($method=='tele'  && !empty($values['telephone1'])) { return $values['telephone1']; }
+        $output = dbPullReference($this->type=='v' ? 'next_vend_id_num' : 'next_cust_id_num');
+        while ($this->refTries > 0) {
+            $this->refTries--;
+            $dup = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'id', "short_name='".addslashes($values['short_name'])."' AND type='$cType' AND id<>$rID");
+            if     ($dup && $this->refTries > 0) { $this->getNextShortName($suffix, $cType, $rID); } // loop back through as this auto ID is used
+            elseif ($dup) { return msgAdd(lang('error_duplicate_id')); }
+        }
+        return $output;
     }
 
     /**
@@ -845,20 +732,6 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         $_POST['address_id'.$suffix] = $aID; // save for customization
         msgDebug("\n  Finished adding/updating address, address_id = $aID");
         return $aID;
-    }
-
-    /**
-     * This method saves the CRM record data
-     * @param string $request
-     * @param integer $rID
-     * @param string $suffix
-     */
-    public function dbCRMSave()
-    {
-        $primaryName = clean("primary_namei", 'text', 'post');
-        if (empty($primaryName)) { return; }
-        if (!$iID = $this->dbContactSave('i', 'i', false)) { return; } // no changes, so just return
-        $this->dbAddressSave($iID, 'm', 'i', true);
     }
 
     /**
@@ -919,10 +792,9 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
      * @param string $rID - contact record id for CRM retrievals to limit results.
      * @return array $data - structure of the grid to render
      */
-    private function dgContacts($name, $type, $security=0, $rID=false)
+    protected function dgContacts($name, $type, $security=0, $rID=false)
     {
         $this->managerSettings($type);
-        $edit = $name<>'Contacts' ? $name : '';
         $statusValues = array_merge([['id'=>'a','text'=>lang('all')]], $this->status_choices);
         // clean up the filter sqls
         if (!isset($this->defaults['f0_'.$type])) { $this->defaults['f0_'.$type] = 'a'; }
@@ -936,7 +808,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         $data = ['id'=>"dg$name", 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
             'attr'=> ['idField'=>'id', 'toolbar'=>"#dg{$name}Toolbar", 'url'=>BIZUNO_AJAX."&p=contacts/main/managerRows&type=$type".($rID?"&rID=$rID":'')],
             'events' => [
-                'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('acc$name', 'dg$name', 'div{$name}Detail', '".jsLang('details')."', 'contacts/main/edit{$edit}&type=$type&ref=$rID', rowData.id); }",
+                'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('acc$name', 'dg$name', 'div{$name}Detail', '".jsLang('details')."', 'contacts/main/edit&type=$type&ref=$rID', rowData.id); }",
                 'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; } if (row.inactive==2) { return {style:'background-color:pink'}; }}"],
             'footnotes' => ['codes'=>lang('color_codes').': <span class="row-inactive">&nbsp;'.lang('inactive').'&nbsp;</span>&nbsp;<span style="background-color:pink">&nbsp;'.lang('locked').'&nbsp;</span>'],
             'source'    => [
@@ -955,7 +827,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                     BIZUNO_DB_PREFIX."address_book.city",
                     BIZUNO_DB_PREFIX."address_book.postal_code"],
                 'actions' => [
-                    'newContact'=>['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('acc$name', 'dg$name', 'div{$name}Detail', '".lang('details')."', 'contacts/main/edit{$edit}&type=$type&ref=$rID', 0, '');"]],
+                    'newContact'=>['order'=>10,'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('acc$name', 'dg$name', 'div{$name}Detail', '".lang('details')."', 'contacts/main/edit&type=$type&ref=$rID', 0, '');"]],
                     'clrSearch' =>['order'=>50,'icon'=>'clear','events'=>['onClick'=>"jq('#f0_{$type}').val('$this->f0_default'); bizTextSet('search_$type', ''); dg".$name."Reload();"]],
                     'help'      =>['order'=>99,'icon'=>'help',   'label' =>lang('help'),'align'=>'right','hideLabel'=>true,'index'=>$this->helpIndex]],
                 'filters' => [
@@ -973,7 +845,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                     'events' => ['formatter'=>"function(value,row,index){ return dg".$name."Formatter(value,row,index); }"],
                     'actions'=> [
                         'edit'  => ['icon'=>'edit', 'order'=>20, 'label'=>lang('edit'),
-                            'events'=> ['onClick' => "accordionEdit('acc$name', 'dg$name', 'div{$name}Detail', '".lang('details')."', 'contacts/main/edit{$edit}&type=$type&ref=$rID', idTBD);"]],
+                            'events'=> ['onClick' => "accordionEdit('acc$name', 'dg$name', 'div{$name}Detail', '".lang('details')."', 'contacts/main/edit&type=$type&ref=$rID', idTBD);"]],
                         'delete'=> ['icon'=>'trash', 'order'=>60, 'label'=>lang('delete'),'hidden'=>$security>3?false:true,
                             'events'=> ['onClick' => "if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('contacts/main/delete', idTBD, 'reload:dg$name');"]],
                         'chart' => ['icon'=>'mimePpt', 'order'=>80, 'label'=>lang('sales'),'hidden'=>in_array($type, ['c','v'])?false:true,
@@ -1015,15 +887,10 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         if ($type <> 'a') {
             $data['source']['filters']['cType'] = ['order'=>98,'hidden'=>true,'sql'=>BIZUNO_DB_PREFIX."contacts.type='$type'"];
         }
-        if ($type=='i') {
-            $data['source']['search'][] = BIZUNO_DB_PREFIX."contacts.contact_first";
-            $data['source']['search'][] = BIZUNO_DB_PREFIX."contacts.contact_last";
-        }
         if ($type=='c' || $type == 'v') {
             $data['source']['actions']['mergeContact'] = ['order'=>20,'icon'=>'merge','events'=>['onClick'=>"jsonAction('contacts/main/merge&type=$type', 0);"]];
         } elseif (strlen($type)>1) { // search only certain types, all types are listed (i.e. cv)
             $data['source']['filters']['cType']['sql'] = BIZUNO_DB_PREFIX."contacts.type IN ('".implode("','", str_split($type))."')";
-//            $data['columns']['type']['attr']['hidden'] = false;
         }
         if (getUserCache('profile', 'restrict_user', false, 0)) { // check for user restrictions
             $uID = getUserCache('profile', 'contact_id', false, 0);
@@ -1054,6 +921,7 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
         $order  = clean('order',['format'=>'text',   'default'=>'desc'],     'post');
         $gID    = explode(":", getDefaultFormID($jID));
         $jSearch= in_array($jID, [4,10]) ? $jID : ($jID==6 ? '6,7' : '12,13');
+        $sec4_10= in_array($jID, [4,10]) ? getUserCache('security', "j{$jID}_mgr") : 0;
         switch ($jID) {
             case  6: $jPmt = 20; break;
             case 12:
@@ -1078,6 +946,9 @@ jq('#rep_id').combogrid({width:225,panelWidth:825,delay:700,idField:'id',textFie
                             'events' => ['onClick' => "winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD');"]],
                         'print'      => ['order'=>40,'icon'=>'print',   'label'=>lang('print'),
                             'events' => ['onClick'=>"var idx=jq('#$name').datagrid('getRowIndex', idTBD); var jID=jq('#$name').datagrid('getRows')[idx].journal_id; ('fitColumns', true); winOpen('phreeformOpen', 'phreeform/render/open&group={$gID[0]}:j'+jID+'&date=a&xfld=journal_main.id&xcr=equal&xmin=idTBD');"]],
+                        'dates'      => ['order'=>50,'icon'=>'date',   'label'=>lang('delivery_dates'), 'hidden'=>$sec4_10>1?false:true,
+                            'events' => ['onClick' => "windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".lang('delivery_dates')."', 500, 400);"],
+                            'display'=> "row.journal_id=='4' || row.journal_id=='10'"],
                         'purchase'   => ['order'=>80,'icon'=>'purchase','label'=>lang('fill_purchase'),
                             'events' => ['onClick' => "winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD&jID=6&bizAction=inv');"],
                             'display'=> "row.closed=='0' && (row.journal_id=='3' || row.journal_id=='4')"],

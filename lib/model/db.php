@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-16
+ * @version    4.x Last Update: 2020-09-07
  * @filesource /lib/model/db.php
  */
 
@@ -349,13 +349,13 @@ function dbWrite($table, $data, $action='insert', $parameters='', $quote=true)
  */
 function dbWriteCache($usrEmail=false, $lang=false)
 {
-    global $bizunoUser, $bizunoLang, $bizunoMod;
+    global $bizunoUser, $bizunoMod;
     msgDebug("\nentering dbWriteCache");
     if (!biz_validate_user() || !getUserCache('profile', 'biz_id')) {
         return msgDebug("\nTrying to write to cache but user is not logged in or Bizuno not installed!");
     }
     if (!$usrEmail) { $usrEmail = $bizunoUser['profile']['email']; }
-    if ($lang) { dbWriteLang($bizunoLang); } // save the language registry
+    if ($lang) { dbWriteLang(); } // save the language registry
     // save the users new cache
     if (!empty($GLOBALS['updateUserCache']) || !empty($GLOBALS['dbClearCache'])) {
         msgDebug("\nWriting user table");
@@ -379,16 +379,15 @@ function dbWriteCache($usrEmail=false, $lang=false)
 
 /**
  * Writes the language file to the users cache in JSON format. Saves rebuilding every pass through
- * @param array $lang - language file after including all active modules
- * @param string $iso - ISO language to store (xx_XX)
+ * @param string $iso - ISO language to store (xx_XX), defaults to users profile setting
  */
-function dbWriteLang($lang=[], $iso='')
+function dbWriteLang($iso='')
 {
-    global $io;
-    ksort($lang);
+    global $io, $bizunoLang;
+    ksort($bizunoLang);
     if ( empty($iso)) { $iso = getUserCache('profile', 'language'); }
     msgDebug("\nin dbWriteLang, writing lang file to iso = $iso");
-    if (!empty($iso)) { $io->fileWrite(json_encode($lang), "cache/lang_{$iso}.json", false, false, true); }
+    if (!empty($iso)) { $io->fileWrite(json_encode($bizunoLang), "cache/lang_{$iso}.json", false, false, true); }
 }
 
 /**
@@ -440,7 +439,9 @@ function dbDump($filename='bizuno_backup', $dirWrite='', $dbTable='')
     msgDebug("\n Executing command: $cmd");
     if (!function_exists('exec')) { msgAdd("php exec is disabled, the backup cannot be achieved this way!"); }
     $result = exec($cmd, $retValue);
-    chmod($dbPath.$dbFile, 0644);
+    if (!file_exists($dbPath.$dbFile)) { return; } // for some reason the dump failed, could be out of disk space
+    chmod($dbPath.$dbFile, 0644); 
+    return true;
 }
 
 /**
@@ -811,7 +812,7 @@ function dbBuildDropdown($table, $id='id', $field='description', $filter='', $nu
 function dbGetContact($request, $suffix='')
 {
     if (!empty($request['short_name'.$suffix])) {
-        $cID = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'id', "short_name='{$request['short_name'.$suffix]}'");
+        $cID = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'id', "short_name='".addslashes($request['short_name'.$suffix])."'");
         if ($cID) {
             $aID = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'address_id', "ref_id=$cID");
             msgDebug("\ndbGetContact found existing customer using short_name, cID = $cID and aID = $aID");
@@ -871,7 +872,29 @@ function dbGetSearch($search, $fields)
     return "(".implode(" LIKE '%$search_text%' OR ", $fields)." LIKE '%$search_text%')";
 }
 
-
+/**
+ * Retrieves fiscal year period details
+ * @param integer $period - period to get data on
+ * @return array - details of requested fiscal year period information
+ */
+function dbGetPeriodInfo($period)
+{
+    $values     = dbGetRow  (BIZUNO_DB_PREFIX."journal_periods", "period='$period'");
+    $period_min = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", "MIN(period)", "fiscal_year={$values['fiscal_year']}", false);
+    $period_max = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", "MAX(period)", "fiscal_year={$values['fiscal_year']}", false);
+    $fy_max     = dbGetValue(BIZUNO_DB_PREFIX."journal_periods", ['MAX(fiscal_year) AS fiscal_year', 'MAX(period) AS period'], "", false);
+    $output = [
+        'period'       => $period,
+        'period_start' => $values['start_date'],
+        'period_end'   => $values['end_date'],
+        'fiscal_year'  => $values['fiscal_year'],
+        'period_min'   => $period_min,
+        'period_max'   => $period_max,
+        'fy_max'       => $fy_max['fiscal_year'],
+        'fy_period_max'=> $fy_max['period']];
+    msgDebug("\nCalculating period information, returning with values: ".print_r($output, true));
+    return $output;
+}
 
 /**
  * Calculates fiscal dates, pulled from journal_period table
@@ -899,28 +922,6 @@ function dbFiscalDropDown()
     $output = [];
     foreach ($result as $row) { $output[] = ['id'=>$row['fiscal_year'], 'text'=>$row['fiscal_year']]; }
     return $output;
-}
-
-/**
- * @todo DEPRECATED - Delete after R3.3.4
- * Generates a drop down list of the accounting periods in the system
- * @param string $incAll [default: true] - Add the 'All' choice at the beginning
- * @param boolean $incRecent [default: false] - true to include the recent choices, last 30, 60 90, etc.
- * @return array - formatted result array to be used for HTML5 input type select render function
- */
-function dbPeriodDropDown($incAll=true, $incRecent=false)
-{
-    $result = dbGetMulti(BIZUNO_DB_PREFIX."journal_periods", '', 'period');
-    $output = $choices = [];
-    if ($incRecent) {
-        $choices = ['l'=>lang('dates_this_period'),'t'=>lang('last_30_days'),'v'=>lang('last_60_days'),'w'=>lang('last_90_days'),'i'=>lang('dates_qtd'),'k'=>lang('dates_ytd')];
-    }
-    if ($incAll) { $output[] = ['id'=>'a', 'text'=>lang('all')]; }
-    foreach ($result as $row) {
-        $text_value = lang('period').' '.$row['period'].' : '.viewDate($row['start_date']).' - '.viewDate($row['end_date']);
-        $output[] = ['id' => $row['period'], 'text' => $text_value];
-    }
-    return array_merge(viewKeyDropdown($choices), $output);
 }
 
 /**

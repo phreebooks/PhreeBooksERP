@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-10
+ * @version    4.x Last Update: 2020-08-26
  * @filesource /view/main.php
  */
 
@@ -701,6 +701,7 @@ function viewCurrency($value, $format='currency')
     $isoDef = getDefaultCurrency();
     $iso    = !empty($currencies->iso)  ? $currencies->iso  : $isoDef;
     $isoVals= getModuleCache('phreebooks', 'currency', 'iso', $iso);
+    if (empty($isoVals)) { $isoVals = ['dec_pt'=>'.', 'dec_len'=>2, 'sep'=>',', 'prefix'=>'$', 'suffix'=>'']; } // when not logged in default to USD
     $rate   = !empty($currencies->rate) ? $currencies->rate : ($iso==$isoDef ? 1 : $isoVals['value']);
     $newNum = number_format($value * $rate, $isoVals['dec_len'], $isoVals['dec_pt'], $isoVals['sep']);
     $zero   = number_format(0, $isoVals['dec_len']); // to handle -0.00

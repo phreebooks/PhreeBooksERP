@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-02-12
+ * @version    4.x Last Update: 2020-08-03
  * @filesource /lib/controller/module/phreebooks/tools.php
  */
 
@@ -119,15 +119,17 @@ class phreebooksTools
     public function fySave()
     {
         if (!validateSecurity('bizuno', 'admin', 3)) { return; }
-        $pStart = $_POST['pStart'];
-        $pEnd   = $_POST['pEnd'];
-        foreach ($pStart as $period => $value) {
-            $dateStart= clean($pStart[$period],'date');
-            $dateEnd  = clean($pEnd[$period],  'date');
+        $pStart= clean('pStart','array', 'post');
+        $pEnd  = clean('pEnd',  'array', 'post');
+        foreach ($pStart as $period => $date) {
+            $dateStart= clean($date,         'date');
+            $dateEnd  = clean($pEnd[$period],'date');
             if ($dateStart && $dateEnd) {
                 dbWrite(BIZUNO_DB_PREFIX."journal_periods", ['start_date'=>$dateStart, 'end_date'=>$dateEnd, 'last_update'=>date('Y-m-d')], 'update', "period='$period'");
             }
         }
+        setModuleCache('phreebooks', 'fy', 'period', 0); // force a new period as the dates may require this
+        periodAutoUpdate(false);
         msgLog(lang('phreebooks_fiscal_year')." - ".lang('edit'));
         msgAdd(lang('msg_settings_saved'), 'success');
     }
@@ -215,7 +217,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
     {
         global $io;
         if (!$security = validateSecurity('bizuno', 'admin', 4)) { return; }
-        $fyInfo    = getPeriodInfo(1);
+        $fyInfo    = dbGetPeriodInfo(1);
         $minPeriod = $fyInfo['period_min'];
         $maxPeriod = $fyInfo['period_max'];
 //      $firstDate = dbGetValue(BIZUNO_DB_PREFIX.'journal_periods', 'start_date', "period=$minPeriod");
@@ -324,7 +326,7 @@ Most of these are available in the Journal Tools tab in the PhreeBooks module se
         dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."journal_history SET period = period - {$cron['periodEnd']}");
         dbGetResult("UPDATE ".BIZUNO_DB_PREFIX."journal_item    SET reconciled = reconciled - {$cron['periodEnd']} WHERE reconciled > 0");
         dbTransactionCommit();
-        $props = getPeriodInfo(getModuleCache('phreebooks', 'fy', 'period') - $cron['periodEnd']);
+        $props = dbGetPeriodInfo(getModuleCache('phreebooks', 'fy', 'period') - $cron['periodEnd']);
         setModuleCache('phreebooks', 'fy', false, $props);
         array_unshift($cron['taskClose'], ['mID'=>$this->moduleID, 'method'=>'fyCloseHistory', 'settings'=>['cnt'=>1]]);
         return "Finished closing journal.";

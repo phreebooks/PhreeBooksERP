@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-03-18
+ * @version    4.x Last Update: 2020-08-11
  * @filesource /lib/controller/module/inventory/api.php
  */
 
@@ -52,6 +52,9 @@ class inventoryApi
         $layout['jsReady'][$this->moduleID] = "ajaxForm('frmInvApiImport');";
     }
 
+    /**
+     *
+     */
     public function apiTemplate()
     {
         $tables = [];
@@ -71,27 +74,28 @@ class inventoryApi
         $io->download('data', $content, 'InventoryTemplate.csv');
     }
 
-    public function apiImport(&$layout)
+    /**
+     * Imports csv data/file into the inventory table, Uploaded files support field names and tags, direct import only supports field names
+     * @param array $layout - structure coming in
+     * @param type $rows - if data is provided only field names are allowed
+     * @param type $verbose - turns off success messages to allow iteration
+     * @return modified $layout
+     */
+    public function apiImport(&$layout, $rows=false, $verbose=true)
     {
         if (!$security = validateSecurity('bizuno', 'admin', 2)) { return; }
         set_time_limit(600); // 10 minutes
-        $upload  = new \bizuno\io();
-        if (!$upload->validateUpload('fileInventory', '', ['csv','txt'])) { return; } // removed type=text as windows edited files fail the test
-        $tables  = [];
-        require(BIZUNO_LIB."controller/module/bizuno/install/tables.php");
-        $map     = $tables['inventory']['fields'];
-        $fields  = dbLoadStructure(BIZUNO_DB_PREFIX.'inventory');
-        $template= [];
-        foreach ($fields as $field => $props) { $template[$props['tag']] = trim($field); }
-        $csv     = array_map('str_getcsv', file($_FILES['fileInventory']['tmp_name']));
-        $head    = array_shift($csv);
-        $cnt     = $newCnt = $updCnt = 0;
-        foreach ($csv as $row) {
-            $tmp = array_combine($head, $row);
+        $fields= dbLoadStructure(BIZUNO_DB_PREFIX.'inventory');
+        $tables= $map = [];
+        require(BIZUNO_LIB."controller/module/bizuno/install/tables.php"); // replaces $map
+        $map   = $tables['inventory']['fields'];
+        if (!$rows) { $rows = $this->prepData($fields); }
+        $cnt   = $newCnt = $updCnt = 0;
+        foreach ($rows as $row) {
             $sqlData = [];
-            foreach ($tmp as $tag => $value) {
-                if (!empty($template[$tag])){ $sqlData[$template[$tag]] = trim($value); } // if tags are used
-                if (!empty($fields[$tag]))  { $sqlData[$tag] = trim($value); }  // if field names are used
+            foreach ($row as $tag => $value) {
+                if (!empty($this->template[$tag])) { $sqlData[$this->template[$tag]] = trim($value); } // if tags are used
+                if (!empty($fields[$tag]))         { $sqlData[$tag] = trim($value); }  // if field names are used
             }
             if (!isset($sqlData['sku'])) { return msgAdd("The SKU field cannot be found and is a required field. The operation was aborted!"); }
             if (!$sqlData['sku']) { msgAdd(sprintf("Missing SKU on row: %s. The row will be skipped", $cnt+1)); continue; }
@@ -104,36 +108,55 @@ class inventoryApi
             }
             // clean out the un-importable fields
             foreach ($map as $field => $settings) { if (!$settings['import']) { unset($sqlData[$field]); } }
-            $rID = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'id', "sku='{$sqlData['sku']}'");
+            $rID = dbGetValue(BIZUNO_DB_PREFIX.'inventory', 'id', "sku='".addslashes($sqlData['sku'])."'");
             $sqlData['last_update'] = date('Y-m-d');
             if ($rID) {
                 unset($sqlData['inventory_type']);
                 $updCnt++;
             } else {
-                if (!isset($sqlData['inventory_type'])) { $sqlData['inventory_type']    = 'si'; }
+                if (!isset($sqlData['inventory_type'])) { $sqlData['inventory_type'] = 'si'; }
                 $type   = $sqlData['inventory_type'];
                 $sales_ = getModuleCache('inventory', 'settings', 'phreebooks', "sales_$type");
                 $inv_   = getModuleCache('inventory', 'settings', 'phreebooks', "inv_$type");
                 $cogs_  = getModuleCache('inventory', 'settings', 'phreebooks', "cogs_$type");
                 $method_= getModuleCache('inventory', 'settings', 'phreebooks', "method_$type");
-                if (!isset($sqlData['gl_sales']))     { $sqlData['gl_sales']     = $sales_; }
-                if (!isset($sqlData['gl_inv']))        { $sqlData['gl_inv']     = $inv_; }
-                if (!isset($sqlData['gl_cogs']))    { $sqlData['gl_cogs']     = $cogs_; }
+                if (!isset($sqlData['gl_sales']))   { $sqlData['gl_sales']   = $sales_; }
+                if (!isset($sqlData['gl_inv']))     { $sqlData['gl_inv']     = $inv_; }
+                if (!isset($sqlData['gl_cogs']))    { $sqlData['gl_cogs']    = $cogs_; }
                 if (!isset($sqlData['cost_method'])){ $sqlData['cost_method']= $method_; }
                 $sqlData['creation_date'] = date('Y-m-d');
                 $newCnt++;
             }
-            if ($rID && $security < 2) {
-                msgAdd('Your permissions prevent altering an existing record, the entry will be skipped!'); continue;
-            }
+            if ($rID && $security < 2) { msgAdd('Your permissions prevent altering an existing record, the entry will be skipped!'); continue; }
             dbWrite(BIZUNO_DB_PREFIX.'inventory', $sqlData, $rID?'update':'insert', "id=$rID");
             $cnt++;
         }
-        msgAdd(sprintf("Imported total rows: %s, Added: %s, Updated: %s", $cnt, $newCnt, $updCnt), 'success');
+        if ($verbose) { msgAdd(sprintf("Imported total rows: %s, Added: %s, Updated: %s", $cnt, $newCnt, $updCnt), 'success'); }
         msgLog(sprintf("Imported total rows: %s, Added: %s, Updated: %s", $cnt, $newCnt, $updCnt));
-        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'eval','actionData'=>"jq('body').removeClass('loading');"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('body').removeClass('loading');"]]);
     }
 
+    /**
+     * reads the uploaded file and converts it into a keyed array
+     * @param array $fields - table field structure
+     * @return array - keyed data array of file contents
+     */
+    private function prepData($fields)
+    {
+        global $io;
+        if (!$io->validateUpload('fileInventory', '', ['csv','txt'])) { return; } // removed type=text as windows edited files fail the test
+        $this->template = $output = [];
+        foreach ($fields as $field => $props) { $this->template[$props['tag']] = trim($field); }
+        $rows    = array_map('str_getcsv', file($_FILES['fileInventory']['tmp_name']));
+        $head    = array_shift($rows);
+        foreach ($rows as $row) { $output[] = array_combine($head, $row); }
+        return $output;
+    }
+
+    /**
+     * Exports the inventory table in csv format including all custom fields.
+     * @return doesn't unless there is an error, exits script on success
+     */
     public function apiExport()
     {
         if (!$security = validateSecurity('bizuno', 'admin', 1)) { return; }

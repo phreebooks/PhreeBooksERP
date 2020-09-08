@@ -182,22 +182,23 @@ function imgRefresh() {
      */
     public function delete(&$layout=[])
     {
+        global $io;
         if (!validateSecurity('bizuno', 'profile', 4)) { return; }
         $target  = clean('target','text', 'get');
         $search  = clean('search','text', 'get');
         $path    = clean('path',  'path_rel','get');
         $fn      = clean('fn',    'text', 'get');
         $href    = BIZUNO_AJAX."&p=bizuno/image/manager&imgTarget=$target&imgMgrPath=$path&imgSearch=$search&imgAction=refresh";
-        $fullPath= BIZUNO_DATA . clean("images/$path/$fn", 'path_rel'); // remove double slashes, if present
+        $fullPath= clean("images/$path/$fn", 'path_rel'); // remove double slashes, if present
         msgDebug("\nLooking for file to delete file or folder at full path: $fullPath");
-        if (file_exists($fullPath)) {
-            if (is_dir($fullPath)) {
-                $files = scandir($fullPath);
-                if (sizeof($files) > 2) { return msgAdd("Folder must be empty before it can be deleted! sizeof = ".sizeof($files)); }
-                rmdir($fullPath);
-            } else {
-                unlink($fullPath);
-            }
+        if (is_dir(BIZUNO_DATA.$fullPath)) {
+            msgDebug("\nCalling io to Delete folder: $fullPath");
+//          $files = scandir(BIZUNO_DATA.$fullPath); // includes . & .. & index.php plus maybe more if 'empty'
+//          if (sizeof($files) > 2) { return msgAdd("Folder must be empty before it can be deleted! sizeof = ".sizeof($files)); }
+            $io->folderDelete($fullPath);
+        } else {
+            msgDebug("\nCalling io to Delete file: $fullPath");
+            $io->fileDelete($fullPath);
         }
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('#winImgMgr').window('refresh','$href');"]]);
     }

@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-04
+ * @version    4.x Last Update: 2020-08-14
  * @filesource /lib/controller/module/phreebooks/totals/tax_other/tax_other.php
  */
 
@@ -44,7 +44,7 @@ class tax_other
             'gl_type'   => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'  => ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
             'gl_account'=> ['attr'=>['type'=>'ledger','value'=>$this->settings['gl_account']]],
-            'order'     => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>'3','value'=>$this->settings['order']]]];
+            'order'     => ['label'=>lang('order'),'options'=>['min'=>5,'max'=>95,'width'=>100],'attr'=>['type'=>'spinner','value'=>$this->settings['order']]]];
     }
 
     public function glEntry(&$main, &$item, &$begBal=0)
@@ -85,7 +85,7 @@ class tax_other
                 $this->fields['totals_tax_other']['attr']['value']    = $row['credit_amount'] + $row['debit_amount'];
             }
         } }
-        $hide = $this->hidden ? ';display:none' : '';
+        $hide  = $this->hidden ? ';display:none' : '';
         $html  = '<div style="text-align:right'.$hide.'">'."\n";
         $html .= html5('totals_tax_other_id', $this->fields['totals_tax_other_id']);
         $html .= html5('totals_tax_other',    $this->fields['totals_tax_other']);

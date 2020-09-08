@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-07-12
+ * @version    4.x Last Update: 2020-07-28
  * @filesource /locale/en_US/module/contacts/language.php
  */
 
@@ -25,6 +25,10 @@ $lang = [
     'title' => 'Contacts',
     'description' => 'The contacts module manages all customer, vendors, employees, and branches used in the Bizuno Business Toolkit. <b>NOTE: This is a core module and cannot be removed!</b>',
     // Settings
+    'short_name_c_lbl' => 'New Customer ID Source',
+    'short_name_c_tip' => 'Sets the field to use to create new customer records, default will use the next value set in Bizuno settings.',
+    'short_name_v_lbl' => 'New Vendor ID Source',
+    'short_name_v_tip' => 'Sets the field to use to create new vendor records, default will use the next value set in Bizuno settings.',
     'primary_name_lbl' => 'Require Primary Name',
     'primary_name_tip' => 'Require Primary Name when creating a new address. For all required fields, posts will not be allowed unless there is data in the field. The exception is shipping addresses and customer/vendor contacts entered in the Customer/Vendor Manager screens.',
     'address1_lbl' => 'Require Address 1',

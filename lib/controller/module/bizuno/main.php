@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-10
+ * @version    4.x Last Update: 2020-09-03
  * @filesource /lib/controller/module/bizuno/main.php
  */
 
@@ -54,6 +54,24 @@ class bizunoMain
         $data['divs']['bodyDash'] = ['order'=>50,'styles'=>['clear'=>'both'],'attr'=>['id'=>'dashboard'],'type'=>'html','html'=>$html];
         $layout = array_replace_recursive(viewMain(), $data);
         msgDebug("\nlayout bizunoHome = ".print_r($layout, true));
+    }
+
+    /**
+     * 
+     * @global type $io
+     * @param type $layout
+     * @return type
+     */
+    public function attachRows(&$layout=[])
+    {
+        global $io;
+        if (!validateSecurity('bizuno', 'profile', 1)) { return; }
+        $mID   = clean('mID',   'cmd',     'get');
+        $prefix= clean('prefix','filename','get');
+        if (empty($mID)) { msgAdd('Bad ID'); return; }
+        $path  = getModuleCache($mID,'properties','attachPath')."$prefix";
+        $rows  = $io->fileReadGlob($path, $io->getValidExt('file'));
+        $layout = array_replace_recursive($layout, ['type'=>'raw', 'content'=>json_encode(['total'=>sizeof($rows), 'rows'=>$rows])]);
     }
 
     public function dashboard(&$layout=[])

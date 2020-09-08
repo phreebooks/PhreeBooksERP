@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-01-07
+ * @version    4.x Last Update: 2020-08-10
  * @filesource /lib/controller/module/contacts/api.php
  */
 
@@ -98,39 +98,36 @@ class contactsApi
      * @param type $layout - structure coming in
      * @return modified layout
      */
-    public function apiImport(&$layout=[])
+    public function apiImport(&$layout, $rows=false, $verbose=true)
     {
         if (!$security = validateSecurity('bizuno', 'admin', 2)) { return; }
-        $upload  = new \bizuno\io();
-        if (!$upload->validateUpload('fileContacts', 'text', 'csv')) { return; }
-        $tables  = [];
-        require(BIZUNO_LIB."controller/module/bizuno/install/tables.php");
+        $tables  = $map = $this->template = [];
+        require(BIZUNO_LIB."controller/module/bizuno/install/tables.php"); // replaces $map
         $cMap    = $tables['contacts']['fields'];
         $cFields = dbLoadStructure(BIZUNO_DB_PREFIX.'contacts', '', 'Contact');
         $aMap    = $tables['address_book']['fields'];
         $amFields= dbLoadStructure(BIZUNO_DB_PREFIX.'address_book', '', 'MainAddress');
         unset($GLOBALS['bizTables'][BIZUNO_DB_PREFIX.'address_book']);
         $asFields= dbLoadStructure(BIZUNO_DB_PREFIX.'address_book', '', 'ShipAddress');
-        $template= [];
         foreach ($cFields  as $field => $props) { $template[$props['tag']] = trim($field); }
         foreach ($amFields as $field => $props) { $template[$props['tag']] = trim($field); }
         foreach ($asFields as $field => $props) { $template[$props['tag']] = trim($field); }
-        $csv = array_map('str_getcsv', file($_FILES['fileContacts']['tmp_name']));
-        $head= array_shift($csv);
-        $cnt = $newCnt = $updCnt = 0;
-        foreach ($csv as $row) {
+        if (!$rows) { $rows = $this->prepData(); }
+        $cnt     = $newCnt = $updCnt = 0;
+        foreach ($rows as $row) {
             $cData = $amData = $asData = [];
-            $tmp = array_combine($head, $row);
-            foreach ($tmp as $tag => $value) { if (isset($template[$tag])) {
+            foreach ($row as $tag => $value) { if (isset($template[$tag])) {
                 if (strpos($tag, 'Contact')    ===0) { $cData[$template[$tag]] = trim($value); }
                 if (strpos($tag, 'MainAddress')===0) { $amData[$template[$tag]]= trim($value); }
                 if (strpos($tag, 'ShipAddress')===0) { $asData[$template[$tag]]= trim($value); }
             } }
             // commented out to skip blank rows
 //          if (!isset($cData['short_name'])) { return msgAdd("The Contact ID field cannot be found and is a required field. The operation was aborted!"); }
-            if (empty($cData['short_name']) || empty($cData['type'])) { msgAdd(sprintf("Missing Contact ID and/or Type on row: %s. The row will be skipped!", $cnt+1)); continue; }
+            if (empty($cData['type']))       { msgAdd(sprintf("Missing Type on row: %s. The row will be skipped!", $cnt+1)); continue; }
             $cData['type'] = trim(strtolower($cData['type']));
             if (!in_array($cData['type'], ['c','v','b','i','e','j'])) { msgAdd("Contact: {$cData['short_name']} has an invalid type, skipping!"); continue; }
+            if (empty($cData['short_name'])) { $cData['short_name'] = $this->getShortName($cData['type'], $amData); }
+            if (empty($cData['short_name'])) { msgAdd(sprintf("The Contact ID cannot be auto-set on primary_name: %s. The row will be skipped!", $amData['primary_name'])); continue; }
             // clean out the un-importable fields
             foreach ($cMap as $field => $settings) { if (!$settings['import']) { unset($cData[$field]); } }
             foreach ($aMap as $field => $settings) { if (!$settings['import']) { unset($amData[$field]); } }
@@ -157,7 +154,7 @@ class contactsApi
                 $amData['type']  = 'm';
                 dbWrite(BIZUNO_DB_PREFIX.'address_book', $amData, $mID?'update':'insert', "address_id=$mID");
                 if (!empty($asData['primary_name'])) {
-                    $sID = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'address_id', "ref_id=$cID AND type='s' AND primary_name='{$asData['primary_name']}'");
+                    $sID = dbGetValue(BIZUNO_DB_PREFIX.'address_book', 'address_id', "ref_id=$cID AND type='s' AND primary_name='".addslashes($asData['primary_name'])."'");
                     $asData['ref_id']= $cID;
                     $asData['type']  = 's';
                     dbWrite(BIZUNO_DB_PREFIX.'address_book', $asData, $sID?'update':'insert', "address_id=$sID");
@@ -165,11 +162,47 @@ class contactsApi
             }
             $cnt++;
         }
-        msgAdd(sprintf("Imported total rows: %s, Added: %s, Updated: %s", $cnt, $newCnt, $updCnt), 'success');
+        if ($verbose) { msgAdd(sprintf("Imported total rows: %s, Added: %s, Updated: %s", $cnt, $newCnt, $updCnt), 'success'); }
         msgLog(sprintf("Imported total rows: %s, Added: %s, Updated: %s", $cnt, $newCnt, $updCnt));
         $layout = array_replace_recursive($layout, ['content'=>['action'=>'eval','actionData'=>"jq('body').removeClass('loading');"]]);
     }
 
+    /**
+     * reads the uploaded file and converts it into a keyed array
+     * @param array $fields - table field structure
+     * @return array - keyed data array of file contents
+     */
+    private function prepData()
+    {
+        global $io;
+        if (!$io->validateUpload('fileContacts', '', ['csv'])) { return; } // removed type=text as windows edited files fail the test
+        $output = [];
+        $rows = array_map('str_getcsv', file($_FILES['fileContacts']['tmp_name']));
+        $head = array_shift($rows);
+        foreach ($rows as $row) { $output[] = array_combine($head, $row); }
+        return $output;
+    }
+
+    /**
+     * Auto generates a short name based on the users preferences
+     */
+    private function getShortName($type='c', $address=[])
+    {
+        $meth = getModuleCache('contacts', 'settings', 'general', "short_name_$type", 'auto');
+        if ($meth=='email' && !empty($address['email']))      { return $address['email']; }
+        if ($meth=='tele'  && !empty($address['telephone1'])) { return $address['telephone1']; }
+        // else fall through and generate the next auto-increment
+        $str_field = $type=='c' ? 'next_cust_id_num' : 'next_vend_id_num';
+        $output = $next = dbGetValue(BIZUNO_DB_PREFIX."current_status", $str_field);
+        $next++;
+        dbWrite(BIZUNO_DB_PREFIX."current_status", [$str_field => $next], 'update');
+        return $output;
+    }
+
+    /**
+     * Exports the inventory table in csv format including all custom fields.
+     * @return doesn't unless there is an error, exits script on success
+     */
     /**
      * Exports data from the database table contacts to a user
      * Doesn't return if successful

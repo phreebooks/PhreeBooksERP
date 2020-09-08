@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-03-27
+ * @version    4.x Last Update: 2020-08-31
  * @filesource /controller/module/phreeform/renderHTML.php
  */
 
@@ -180,7 +180,7 @@ class HTML
     }
 
     /**
-     * Adds a row the the HTLM output string
+     * Adds a row the the HTML output string
      * @param array $aData - data to write on form page
      * @param string $rStyle - [default ''] style to add to the HTML tr element, if any
      * @param type $dStyle - [default ''] style to add to the HTLM td element, if any
@@ -201,7 +201,8 @@ class HTML
                 case 'L':
             }
             $output .= $params . (!$dStyle ? '' : ' '.$dStyle).'>';
-            $output .= ($value['value'] == '') ? '&nbsp;' : htmlspecialchars($value['value']);
+            $html = str_replace("\n", '<br />', htmlspecialchars($value['value']));
+            $output .= ($value['value'] == '') ? '&nbsp;' : $html;
             $output .= '</td>';
         }
         $output .= '  </tr>';

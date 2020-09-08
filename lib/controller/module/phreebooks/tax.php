@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-26
+ * @version    4.x Last Update: 2020-08-17
  * @filesource /lib/controller/module/phreebooks/tax.php
  */
 
@@ -299,7 +299,7 @@ function taxPreSubmit{$type}(type) {
                 'search' => [BIZUNO_DB_PREFIX."tax_rates.title", BIZUNO_DB_PREFIX."tax_rates.description"],
                 'actions'=> [
                     "newTax$type" => ['order'=>10,'label'=>lang('New'),'icon'=>'new',  'events'=>['onClick'=>"accordionEdit('accTax$type', 'dgTax$type', 'divTax{$type}Detail', '".lang('details')."', 'phreebooks/tax/edit&type=$type', 0);"]],
-                    "clrSrch$type"=> ['order'=>30,'label'=>lang('New'),'icon'=>'clear','events'=>['onClick'=>"jq('#f0_{$type}').val('0'); jq('#search_$type').val(''); ".$name."Reload();"]],
+                    "clrSrch$type"=> ['order'=>30,'label'=>lang('New'),'icon'=>'clear','events'=>['onClick'=>"bizSelSet('f0_$type', '0'); bizTextSet('search_$type', ''); ".$name."Reload();"]],
                     "blkTax$type" => ['order'=>80,'icon'=>'merge','events'=>['onClick'=>"jsonAction('phreebooks/tax/bulkChange&type=$type', 0);"]]],
                 'filters'=> [
                     "f0_$type"    => ['order'=>10, 'sql'=>$f0_value,'label'=>lang('status'),'values'=>$statusValues,'attr'=>['type'=>'select','value'=>$this->defaults['f0_'.$type]]],

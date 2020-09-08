@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-06-26
+ * @version    3.x Last Update: 2020-09-07
  * @filesource /portal/main.php
  */
 
@@ -102,7 +102,6 @@ class main //extends controller
         global $bizunoUser;
         msgDebug("\nEntering setSession");
         if (isset($creds[0])) { $bizunoUser['profile']['email']  = $creds[0]; }
-        if (isset($creds[1])) { $bizunoUser['profile']['session']= $creds[1]; }
         $GLOBALS['updateUserCache']  = false;
         $GLOBALS['updateModuleCache']= [];
     }
@@ -142,6 +141,7 @@ class main //extends controller
                 unset($_GET['p']);
             }
         } elseif (!empty($GLOBALS['noBizunoDB'])) { $this->setInstallView(); }
+        $this->setLanguage($bizunoUser);
         setlocale(LC_COLLATE,getUserCache('profile', 'langauge'));
         setlocale(LC_CTYPE,  getUserCache('profile', 'langauge'));
     }
@@ -156,6 +156,7 @@ class main //extends controller
             if (empty($rows)) { $this->setGuestRegistry(); }
             else {
                 foreach ($rows as $row) { $bizunoMod[$row['config_key']] = json_decode($row['config_value'], true); }
+                if (date('Y-m-d') > getModuleCache('phreebooks', 'fy', 'period_end')) { periodAutoUpdate(false); }
                 $this->validateVersion($bizunoMod['bizuno']['properties']['version']);
             }
         } else { // set guest registry
@@ -224,37 +225,11 @@ class main //extends controller
         } elseif (!empty($postLang) && strlen($postLang)==5) {
             $bizunoUser['profile']['language'] = $postLang;
         } else {
-            $bizunoUser['profile']['language'] = clean('bizunoLang',['format'=>'cmd','default'=>$bizunoUser['profile']['language']],'cookie');
+            $bizunoUser['profile']['language'] = clean('bizunoLang', ['format'=>'cmd','default'=>$bizunoUser['profile']['language']], 'cookie');
         }
         bizSetCookie('bizunoLang', $postLang, time()+(60*60*24*7));
         cleanLang($bizunoUser['profile']['language']);
-        $bizunoLang= $this->loadBaseLang($bizunoUser['profile']['language']);
-    }
-
-    private function loadBaseLang($lang='en_US')
-    {
-        msgDebug("\nEntering loadBaseLang with lang = $lang");
-        $langCore = $langByRef = [];
-        if (strlen($lang) <> 5) { $lang = 'en_US'; }
-        if (defined('BIZUNO_DATA') && file_exists(BIZUNO_DATA."cache/lang_{$lang}.json")) {
-            msgDebug("\nGetting $lang lang from cache");
-            $langCache = json_decode(file_get_contents(BIZUNO_DATA."cache/lang_{$lang}.json"), true);
-        } else {
-            require(BIZUNO_LIB."locale/en_US/language.php"); // pulls the current language in English
-            include(BIZUNO_LIB."locale/en_US/langByRef.php"); // lang by reference (no translation required)
-            $langCache = array_merge($langCore, $langByRef);
-        }
-        if ($lang == 'en_US') { return $langCache; }
-        $otherLang = [];
-        if (defined('BIZUNO_DATA') && file_exists(BIZUNO_DATA."cache/lang_{$lang}.json")) {
-            $otherLang = json_decode(file_get_contents(BIZUNO_DATA."cache/lang_{$lang}.json"), true);
-        } elseif (file_exists(BIZUNO_ROOT."locale/$lang/language.php")) {
-            require(BIZUNO_ROOT."locale/$lang/language.php"); // pulls locale overlay
-            include(BIZUNO_LIB ."locale/en_US/langByRef.php"); // lang by reference (reset after loading translation)
-            $otherLang = array_merge($langCore, $langByRef);
-        }
-        $langCache = array_merge($langCache, $otherLang);
-        return $langCache;
+        $bizunoLang = loadBaseLang($bizunoUser['profile']['language']);
     }
 
     public function setGuestCache($usrEmail='')

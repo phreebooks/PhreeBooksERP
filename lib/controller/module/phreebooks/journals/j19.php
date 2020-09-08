@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2019-11-19
+ * @version    4.x Last Update: 2020-08-27
  * @filesource /lib/controller/module/phreebooks/journals/j19.php
  */
 
@@ -42,48 +42,131 @@ class j19 extends jCommon
     /**
      * Tailors the structure for the specific journal
      */
-    public function getDataItem() { }
+    public function getDataItem()
+    {
+        $structure = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
+        if ($this->action == 'inv') {
+            foreach ($this->items as $idx => $row) { // clear all of the id's
+                if ($row['gl_type'] == 'itm') {
+                    $this->items[$idx]['item_ref_id'] = $this->items[$idx]['id'];
+                    $this->items[$idx]['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0;
+                    $this->items[$idx]['total'] = 0;
+                    $this->items[$idx]['bal'] = $row['qty'];
+                    $this->items[$idx]['qty'] = 0;
+                }
+                unset($this->items[$idx]['id']);
+                unset($this->items[$idx]['ref_id']);
+            }
+        }
+        if (!empty($this->main['so_po_ref_id'])) { // complex merge the two by item, keep the rest from the rID only
+            $sopo = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "ref_id={$this->main['so_po_ref_id']}");
+            foreach ($sopo as $row) {
+                if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
+                $inList = false;
+                foreach ($this->items as $idx => $item) {
+                    if ($row['item_cnt'] == $item['item_cnt']) {
+                        $this->items[$idx]['bal'] = $row['qty'];
+                        $inList = true;
+                        break;
+                    }
+                }
+                if (!$inList) { // add unposted so/po row, create row with no quantity on this record
+                    $row['price']        = ($row['credit_amount']+$row['debit_amount'])/$row['qty'];
+                    $row['bal']          = $row['qty'];
+                    $row['item_ref_id']  = $row['id'];
+                    $row['credit_amount']= 0;
+                    $row['debit_amount'] = 0;
+                    $row['total']        = 0;
+                    $row['qty']          = '';
+                    $row['id']           = '';
+                    $this->items[] = $row;
+                }
+            }
+            $this->items = sortOrder($this->items, 'item_cnt');
+        }
+        $dbData = [];
+        foreach ($this->items as $row) {
+            if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
+            if (empty($row['bal'])) { $row['bal'] = 0; }
+            if (empty($row['qty'])) { $row['qty'] = 0; }
+            if (is_null($row['sku'])) { $row['sku'] = ''; } // bug fix for easyui combogrid, doesn't like null value
+            $row['description'] = str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
+            if (!isset($row['price'])) { $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
+            if ($row['item_ref_id']) {
+                $filled    = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['item_ref_id']} AND gl_type='itm'", false);
+                $row['bal']= $row['bal'] - $filled + $row['qty']; // so/po - filled prior + this order
+            }
+            if ($row['sku']) { // now fetch some inventory details for the datagrid
+                $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['inventory_type', 'qty_stock', 'item_weight'], "sku='{$row['sku']}'");
+                $inv_adj = in_array($this->journalID, [3,4,6,13,21]) ? -$row['qty'] : $row['qty'];
+                $row['qty_stock']     = $inv['qty_stock'] + $inv_adj;
+                $row['inventory_type']= $inv['inventory_type'];
+                $row['item_weight']   = $inv['item_weight'];
+            }
+            $dbData[] = $row;
+        }
+        $map['credit_amount']= ['type'=>'field','index'=>'total'];
+        $map['debit_amount'] = ['type'=>'trash'];
+        // add some extra fields needed for validation
+        $structure['inventory_type'] = ['attr'=>['type'=>'hidden']];
+        $this->dgDataItem = formatDatagrid($dbData, 'datagridData', $structure, $map);
+    }
 
     /**
      * Customizes the layout for this particular journal
      * @param array $data - Current working structure
+     * @param integer $rID - current db record ID
+     * @param integer $security - users security setting
      */
     public function customizeView(&$data, $rID=0, $cID=0, $security=0)
     {
-        $fldAddr = ['contact_id','address_id','primary_name','contact','address1','address2','city','state','postal_code','country','telephone1','email'];
         $fldKeys = ['id','journal_id','so_po_ref_id','terms','override_user','override_pass','recur_id','recur_frequency','item_array','xChild','xAction','store_id',
-            'purch_order_id','invoice_num','waiting','closed','terms_text','post_date','terminal_date','rep_id','currency','currency_rate',
-            'fldPayment', 'fldSummary'];
-//      $data['fields']['gl_acct_id']['attr']['value'] = getModuleCache('phreebooks', 'settings', 'customers', 'gl_receivables');
-        // make the main fields all hidden
-        foreach ($fldKeys as $fld) { $data['fields'][$fld]['attr']['type'] = 'hidden'; }
-        $data['payments']= getModuleCache('payment', 'methods');
-        unset($data['divs'], $data['toolbars']);
-        $data['divs']    = [
-            'mainHead'=> ['region'=>'top',   'order'=>50,'height'=> 51,'type'=>'toolbar',  'key' =>'tbBizPos'],
-            'mainItem'=> ['region'=>'center','order'=>50,'type'=>'datagrid','key'=>'item'],
-            'mainFlds'=> ['region'=>'right', 'order'=> 1,'width' =>400,'type'=>'fields',   'keys'=>$fldKeys],
-            'mainAddr'=> ['region'=>'right', 'order'=>20,'width' =>400,'type'=>'accordion','key' =>'accBizPOS'],
-            'mainTtl' => ['region'=>'right', 'order'=>50,'width' =>400,'type'=>'totals',   'content'=>$data['totals']],
-            'mainPmnt'=> ['region'=>'right', 'order'=>80,'width' =>400,'type'=>'datagrid', 'key' =>'payment']];
-        $data['toolbars']= ['tbBizPos'=>['icons'=>[
-            'back'  => ['order'=>10,'events'=>['onClick'=>"hrefClick('bizuno/main/bizunoHome');"]],
-            'new'   => ['order'=>20,'hidden'=>$security>1?false:true,'events'=>['onClick'=>"location.reload();"]],
-            'import'=> ['order'=>30,'icon'=>'import','hidden'=>$security>2?false:true,'type'=>'menu','events'=>['onClick'=>"alert('return pressed');"]],
-            'tools' => ['order'=>80,'icon'=>'tools','type'=>'menu','events'=>['onClick'=>"alert('do something');"]]]]];
-        $data['accordion']= ['accBizPOS'=>['divs'=>[
-            'billAD'=>['order'=>20,'type'=>'address','label'=>lang('bill_to'),'classes'=>['block25'],'attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
-                'settings'=>['suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false,'cols'=>false]]]]];
-        $data['datagrid'] = ['item'  =>$this->dgOrders('dgJournalItem', 'v')];
-        $data['jsReady']  = [
-            'initPOS'  => "jq('#dgJournalItem').edatagrid('addRow');\njsonAction('extBizPOS/admin/tillSelect');",
-            'addrClose'=> "var panels=jq('#accBizPOS').accordion('panels'); jq.each(panels, function() { this.panel('collapse'); });"];
-        if (getModuleCache('extShipping', 'properties', 'status')) {
-            $data['accordion']['accBizPOS']['divs']['shipAD'] = ['order'=>30,'type'=>'address','label'=>lang('ship_to'),'classes'=>['block25'],'attr'=>['id'=>'address_s'],'fields'=>$fldAddr,
-                'settings'=>['suffix'=>'_s','search'=>true,'update'=>true,'validate'=>true,'drop'=>true,'cols'=>false]];
+            'purch_order_id','invoice_num','waiting','closed','terms_text','terms_edit','post_date','terminal_date','rep_id','currency','currency_rate','sales_order_num'];
+        $fldAddr = ['contact_id','address_id','primary_name','contact','address1','address2','city','state','postal_code','country','telephone1','email'];
+        if (!empty($data['fields']['so_po_ref_id']['attr']['value'])) {
+            $this->main['soNum'] = dbGetValue(BIZUNO_DB_PREFIX.'journal_main', 'invoice_num', "id={$data['fields']['so_po_ref_id']['attr']['value']}");
         }
-        $data['datagrid']['item']['columns']['gl_account'] = ['order'=>0, 'attr'=>['hidden'=>'true']];
-        unset($data['datagrid']['item']['columns']['action']['actions']['price']);
+        $data['fields']['sales_order_num'] = ['order'=>90,'break'=>true,'label'=>lang('journal_main_invoice_num_10'),'attr'=>['value'=>isset($this->main['soNum'])?$this->main['soNum']:'','readonly'=>'readonly']];
+        $data['jsHead']['datagridData'] = $this->dgDataItem;
+        $data['datagrid']['item'] = $this->dgOrders('dgJournalItem', 'c');
+        if ($this->action=='inv') {
+            $data['datagrid']['item']['source']['actions']['fillAll'] = ['order'=>30,'icon'=>'select_all','size'=>'large','hidden'=>$security>1?false:true,'events'=>['onClick'=>"phreebooksSelectAll();"]];
+        }
+        if ($rID || $this->action=='inv') { unset($data['datagrid']['item']['source']['actions']['insertRow']); } // only allow insert for new orders
+        $data['fields']['gl_acct_id']['attr']['value'] = getModuleCache('phreebooks', 'settings', 'customers', 'gl_receivables');
+        if (!$rID) { // new order
+            $data['fields']['closed']= ['attr'=>['type'=>'hidden', 'value'=>'0']];
+        } elseif (isset($data['fields']['closed']['attr']['checked']) && $data['fields']['closed']['attr']['checked'] == 'checked') {
+            $data['fields']['closed']= ['attr'=>['type'=>'hidden', 'value'=>'1']];
+            $data['fields']['journal_msg']['html'] .= '<span style="font-size:20px;color:red">'.lang('paid')."</span>";
+        } else {
+            $data['fields']['closed']= ['attr'=>['type'=>'hidden', 'value'=>'0']];
+            $data['fields']['journal_msg']['html'] .= '<span style="font-size:20px;color:red">'.lang('unpaid')."</span>";
+        }
+        if (!$rID) { // new order
+            $data['fields']['waiting']= ['attr'=>['type'=>'hidden', 'value'=>'1']];
+        } elseif (isset($data['fields']['waiting']['attr']['checked']) && $data['fields']['waiting']['attr']['checked'] == 'checked') {
+            $data['fields']['waiting']= ['attr'=>  ['type'=>'hidden', 'value'=>'1']];
+            $data['fields']['journal_msg']['html'] .= ' - <span style="font-size:20px;color:red">'.lang('unshipped')."</span>";
+        } else {
+            $data['fields']['waiting']= ['attr'=>['type'=>'hidden', 'value'=>'0']];
+            $data['fields']['journal_msg']['html'] .= ' - <span style="font-size:20px;color:red">'.lang('shipped')."</span>";
+        }
+        $data['divs']['divDetail'] = ['order'=>50,'type'=>'divs','classes'=>['areaView'],'divs'=>[
+            'billAD' => ['order'=>10,'type'=>'panel','key'=>'billAD', 'classes'=>['block25']],
+            'shipAD' => ['order'=>20,'type'=>'panel','key'=>'shipAD', 'classes'=>['block25']],
+            'props'  => ['order'=>30,'type'=>'panel','key'=>'props',  'classes'=>['block25']],
+            'totals' => ['order'=>40,'type'=>'panel','key'=>'totals', 'classes'=>['block25R']],
+            'dgItems'=> ['order'=>50,'type'=>'panel','key'=>'dgItems','classes'=>['block99']],
+            'divAtch'=> ['order'=>90,'type'=>'panel','key'=>'divAtch','classes'=>['block50']]]];
+        $data['panels']['billAD'] = ['label'=>lang('bill_to'),'type'=>'address','attr'=>['id'=>'address_b'],'fields'=>$fldAddr,
+                'settings'=>['suffix'=>'_b','search'=>true,'copy'=>true,'update'=>true,'validate'=>true,'fill'=>'both','required'=>true,'store'=>false,'cols'=>false]];
+        $data['panels']['shipAD'] = ['label'=>lang('ship_to'),'type'=>'address','attr'=>['id'=>'address_s'],'fields'=>$fldAddr,
+                'settings'=>['suffix'=>'_s','search'=>true,'update'=>true,'validate'=>true,'drop'=>true,'cols'=>false]];
+        $data['panels']['props']  = ['label'=>lang('details'),'type'=>'fields', 'keys'   =>$fldKeys];
+        $data['panels']['totals'] = ['label'=>lang('totals'), 'type'=>'totals', 'content'=>$data['totals']];
+        $data['panels']['dgItems']= ['type'=>'datagrid','key'=>'item'];
+        $data['divs']['other']  = ['order'=>70,'type'=>'html','html'=>'<div id="shippingVal"></div>'];
     }
 
 /*******************************************************************************************************************/

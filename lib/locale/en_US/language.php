@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-22
+ * @version    4.x Last Update: 2020-08-25
  * @filesource /local/en_US/language.php
  */
 
@@ -75,6 +75,7 @@ $langCore = [
     'account' => 'Account',
     'action' => 'Action',
     'active' => 'Active',
+    'activate' => 'Activate',
     'actuals' => 'Actuals',
     'add' => 'Add',
     'add_dashboards' => 'Manage Dashboards',
@@ -164,6 +165,7 @@ $langCore = [
     'date' => 'Date',
     'date_range' => 'Date Range',
     'debug' => 'Debug',
+    'deactivate' => 'Deactivate ',
     'decreasing' => 'Decreasing',
     'default' => 'Default',
     'delete' => 'Delete',
@@ -243,6 +245,7 @@ $langCore = [
     'inactive' => 'Inactive',
     'information' => 'Information',
     'install' => 'Install',
+    'installed' => 'Installed',
     'kilograms' => 'Kilograms',
     'label' => 'Label',
     'language' => 'Language',
@@ -476,6 +479,7 @@ $langCore = [
     'err_no_communication' => 'There was an error communicating with %s server. Details:',
     'err_io_file_open' => 'Cannot open file (%s)',
     'err_io_file_write' => 'Cannot write file (%s)',
+    'err_io_write_failed' => 'The log save operation failed. You could be out of disk space!',
     'err_io_no_zip_class' => 'The PHP ZipArchive library cannot be found, this feature is not available.',
     'err_io_dir_create' => 'Error creating folder: %s. Check your permissions!',
     'err_io_dir_remove' => 'Error removing folder: %s. The folder may not exist or may not be empty! It must be removed by hand.',

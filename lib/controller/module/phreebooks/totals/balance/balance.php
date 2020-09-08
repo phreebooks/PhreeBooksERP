@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-04
+ * @version    4.x Last Update: 2020-07-29
  * @filesource /lib/controller/module/phreebooks/totals/balance/balance.php
  */
 
@@ -32,7 +32,7 @@ class balance
 
     public function __construct()
     {
-        $this->settings= ['gl_type'=>'','journals'=>'[2]','order'=>100];
+        $this->settings= ['gl_type'=>'','journals'=>'[2]','order'=>99];
         $this->lang    = getMethLang   ($this->moduleID, $this->methodDir, $this->code);
         $usrSettings   = getModuleCache($this->moduleID, $this->methodDir, $this->code, 'settings', []);
         settingsReplace($this->settings, $usrSettings, $this->settingsStructure());
@@ -43,7 +43,7 @@ class balance
         return [
             'gl_type' => ['attr'=>['type'=>'hidden','value'=>$this->settings['gl_type']]],
             'journals'=> ['attr'=>['type'=>'hidden','value'=>$this->settings['journals']]],
-            'order'   => ['label'=>lang('order'),'position'=>'after','attr'=>['type'=>'integer','size'=>3,'readonly'=>'readonly','value'=>$this->settings['order']]]];
+            'order'   => ['label'=>lang('order'),'position'=>'after','options'=>['width'=>100],'attr'=>['type'=>'spinner','value'=>$this->settings['order'],'readonly'=>true]]];
     }
 
     public function render()

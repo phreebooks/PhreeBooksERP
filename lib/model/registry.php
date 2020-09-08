@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-06
+ * @version    4.x Last Update: 2020-09-07
  * @filesource /lib/model/registry.php
  */
 
@@ -27,9 +27,8 @@ bizAutoLoad(BIZUNO_ROOT."portal/guest.php", 'guest');
 
 final class bizRegistry
 {
-    /**
-     * Initializes the registry class
-     */
+    private $addUpgrade = 0;
+
     function __construct() {
         $this->dbVersion = MODULE_BIZUNO_VERSION;
         $this->guest = new guest();
@@ -47,43 +46,21 @@ final class bizRegistry
     {
         global $bizunoMod, $bizunoUser, $bizunoLang;
         msgDebug("\nEntering initRegistry with email = $usrEmail");
-        $bizunoLang= $this->initLanguage($bizunoUser['profile']['language']);
+        $bizunoLang= loadBaseLang($bizunoUser['profile']['language']);
         $bizunoMod = $this->initSettings();
         $this->initModules($bizunoMod);
         if (!$this->initUser($usrEmail, $bizID)) { return; }
         $this->initAccount();
         $this->setUserSecurity(getUserCache('profile', 'email'));
         $this->setUserMenu('quickBar');
-        $bizunoUser['quickBar']['child']['settings']['label'] = getUserCache('profile', 'title', false, lang('bizuno_company'));
         $this->setUserMenu('menuBar');
+        $this->setStatus();
         // Unique module initializations
         $this->initBizuno($bizunoMod);
         $this->initPhreeBooks($bizunoMod); // taxes
         $this->initPhreeForm($bizunoMod); // report structure
         dbWriteCache($usrEmail, true);
         msgDebug("\nReturning from initRegistry"); // with bizunoUser: ".print_r($bizunoUser,true));
-    }
-    /**
-     * Resets the language translation array to the latest version base, adds extension global adds during module init, writes at the end of registry creation
-     * @param string $lang [default: en_US] - ISO language file to create
-     * @return array - language file with latest updates
-     */
-    private function initLanguage($lang='en_US')
-    {
-        msgDebug("\nEntering initLanguage with lang = $lang");
-        $langCore = $langByRef = [];
-        if (strlen($lang) <> 5) { $lang = 'en_US'; }
-        require(BIZUNO_LIB."locale/en_US/language.php");  // pulls the current language in English
-        include(BIZUNO_LIB."locale/en_US/langByRef.php"); // lang by reference (no translation required)
-        $langCache = array_merge($langCore, $langByRef);
-        if ($lang == 'en_US') { return $langCache; } // just english, we're done
-        if (file_exists(BIZUNO_LOCALE."$lang/language.php")) {
-            require(BIZUNO_LOCALE."$lang/language.php");  // pulls locale overlay
-            $langCore = array_merge($langCache, $langCore); // overlay ISO lang on top of working cache file
-            include(BIZUNO_LIB   ."locale/en_US/langByRef.php"); // lang by reference (reset after loading translation)
-            $otherLang = array_merge($langCore, $langByRef);
-        } else { $otherLang = []; }
-        return array_merge($langCache, $otherLang);
     }
 
     /**
@@ -102,7 +79,7 @@ final class bizRegistry
             }
         }
         // get the Bizuno database version and retain for upgrade check
-        $this->dbVersion = !empty($modSettings['bizuno']['properties']['version']) ? $modSettings['bizuno']['properties']['version'] : '1.0';
+        $this->dbVersion = !empty($modSettings['bizuno']['properties']['version']) ? $modSettings['bizuno']['properties']['version'] : '4.1.0';
         msgDebug("\ndbVersion has been stored for bizuno module with $this->dbVersion");
         return $modSettings;
     }
@@ -149,6 +126,8 @@ final class bizRegistry
         $admin->structure['description']= $admin->lang['description'];
         $admin->structure['path']       = $path;
         if (!isset($admin->structure['status'])) { $admin->structure['status'] = 1; }
+        $admin->structure['hasAdmin']   = method_exists($admin, 'adminHome') ? true : false;
+        $admin->structure['devStatus']  = !empty($admin->devStatus) ? $admin->devStatus : false;
         $this->setGlobalLang($admin->structure);
         $this->setHooks($admin->structure, $module, $path);
         $this->setAPI($admin->structure);
@@ -209,17 +188,17 @@ final class bizRegistry
      */
     private function initAccount()
     {
+        global $io, $bizunoMod;
         if (!empty($GLOBALS['skipUpgradeCheck'])) { return; }
-        $io      = new io(); // needs to be here as global may not be set up yet
+//      $io      = new io(); // needs to be here as global may not be set up yet
         $myAcct  = $io->apiPhreeSoft('getMyExtensions');
         if (empty($myAcct)) { return msgAdd("Cannot reach the PhreeSoft server, please try again later."); }
-        $messages= [];
-        // check for new version of Bizuno
+//        $messages= [];
         msgDebug("\nComparing this version: ".MODULE_BIZUNO_VERSION." with Phreesoft.com version: {$myAcct['bizuno']['version']}");
         // Check for new version AND add message/download icon ONLY if host doen't handle the upgrade
         if (in_array(BIZUNO_HOST, ['phreebooks']) && version_compare(MODULE_BIZUNO_VERSION, $myAcct['bizuno']['version']) < 0) {
-            $messages[] = ['msg_id'=>'BIZ:'.$myAcct['bizuno']['version'], 'subject'=>"Bizuno Library Version {$myAcct['bizuno']['version']} Released!"];
-            $this->addUpgrade = true; // add the download icon
+            $this->addUpgrade++; // since WordPress and PhreeSoft have their own upgrade mechanisms
+//          $messages[] = ['msg_id'=>'BIZ:'.$myAcct['bizuno']['version'], 'subject'=>"Bizuno Library Version {$myAcct['bizuno']['version']} Released!"];
         }
         $myPurchases = $this->reSortExtensions($myAcct);
         msgDebug("\nmyPurchases = ".print_r($myPurchases, true));
@@ -229,7 +208,7 @@ final class bizRegistry
                 msgDebug("\nDisabling status for business ID = ".getUserCache('profile', 'biz_id')." and module: $mID");
                 $this->setModuleStatus($mID, 0);
                 continue;
-            } elseif (!empty($settings['paid']) && !getModuleCache($mID, 'properties', 'status', false, 0)) { // set status to disabled
+            } elseif (!empty($settings['paid']) && !getModuleCache($mID, 'properties', 'status', false, 0)) {
                 msgDebug("\nEnabling status for business ID = ".getUserCache('profile', 'biz_id')." and module: $mID");
                 $this->setModuleStatus($mID, $settings['version']);
                 continue;
@@ -238,10 +217,13 @@ final class bizRegistry
             msgDebug("\ncomparing extension $mID local version ".getModuleCache($mID, 'properties', 'version', false, 0)." with PhreeSoft.com version {$settings['version']}");
             if (!$settings['paid'] || !getModuleCache($mID, 'properties', 'version')) { continue; }
             if (!in_array(BIZUNO_HOST, ['phreesoft']) && version_compare($settings['version'], getModuleCache($mID, 'properties', 'version', false, 0))) { // compare versions, add messages if reminder to renew or expired
-                $messages[] = ['msg_id'=>"EXT:$mID:{$settings['version']}", 'subject'=>"Extension: $mID Version {$settings['version']} is Available!"];
+                $this->addUpgrade++;
+//                $messages[] = ['msg_id'=>"EXT:$mID:{$settings['version']}", 'subject'=>"Extension: $mID Version {$settings['version']} is Available!"];
             }
         }
-        msgSysWrite($messages);
+        $myPurchases['bizuno'] = ['version'=>$myAcct['bizuno']['version']];
+        $bizunoMod['bizuno']['shop'] = sortOrder($myPurchases, 'title'); // flat version of all extensions
+//        msgSysWrite($messages);
     }
 
     /**
@@ -310,12 +292,10 @@ final class bizRegistry
 
     /**
      *
-     * @global array $bizunoUser
      * @param array $bizunoMod
      */
     private function initBizuno(&$bizunoMod)
     {
-        global $bizunoUser;
         $bizunoMod['bizuno']['stores'] = dbGetStores();
     }
 
@@ -400,19 +380,21 @@ final class bizRegistry
         msgDebug("\nSetting menu ID = $menuID");
         $links = [];
         foreach ($bizunoMod as $module => $data) {
+//            msgDebug("\nSetting bizunoMod for module $module and menu $menuID with props = ".print_r($data, true));
             if (!isset($data['properties'][$menuID])) { continue; }
             $links = array_replace_recursive($links, $data['properties'][$menuID]);
             unset($bizunoMod[$module]['properties'][$menuID]);
         }
-        if ($menuID=='quickBar' && validateSecurity('bizuno', 'admin', 1, false)) {
-            $sysMsgs = dbGetMulti(BIZUNO_DB_PREFIX."phreemsg", "status='0'");
-            if (sizeof($sysMsgs)) { $links['child']['sysMsg']['attr']['value'] = sizeof($sysMsgs); }
-            if (!empty($this->addUpgrade) && (!defined('BIZUNO_HOST_UPGRADE') || !constant('BIZUNO_HOST_UPGRADE'))) {
-                $links['child']['upgrade'] = ['order'=>0,'label'=>lang('bizuno_upgrade'),'icon'=>'download','required'=>true,'hideLabel'=>true,
-                    'events'=>['onClick'=>"hrefClick('bizuno/backup/managerUpgrade');"]];
-            }
-        }
+//        if ($menuID=='quickBar' && validateSecurity('bizuno', 'admin', 1, false)) {
+//            $sysMsgs = dbGetMulti(BIZUNO_DB_PREFIX."phreemsg", "status='0'");
+//            if (sizeof($sysMsgs)) { $links['child']['sysMsg']['attr']['value'] = sizeof($sysMsgs); }
+//            if (!empty($this->addUpgrade) && (!defined('BIZUNO_HOST_UPGRADE') || !constant('BIZUNO_HOST_UPGRADE'))) {
+//                $links['child']['upgrade'] = ['order'=>0,'label'=>lang('bizuno_upgrade'),'icon'=>'download','required'=>true,'hideLabel'=>true,
+//                    'events'=>['onClick'=>"hrefClick('bizuno/backup/managerUpgrade');"]];
+//            }
+//        }
         $this->removeOrphanMenus($links['child'], getUserCache('security', false, false, []));
+//        msgDebug("\nSetting bizunoUser for menu $menuID = ".print_r($links, true));
         $bizunoUser[$menuID] = sortOrder($links);
     }
 
@@ -440,6 +422,19 @@ final class bizRegistry
             $security = max($security, $menu[$key]['security']);
         }
         return $security;
+    }
+
+    /**
+     * Customizes the current menu and other properties for the particular user
+     */
+    private function setStatus()
+    {
+        global $bizunoUser;
+        $bizunoUser['quickBar']['child']['settings']['label'] = getUserCache('profile', 'title', false, lang('bizuno_company'));
+        if (!empty($this->addUpgrade)) { 
+            $bizunoUser['quickBar']['child']['settings']['badge'] = $this->addUpgrade;
+            $bizunoUser['quickBar']['child']['settings']['child']['admin']['badge'] = $this->addUpgrade;
+        }
     }
 
     /**
