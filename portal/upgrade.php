@@ -11,7 +11,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2017, PhreeSoft, Inc.
  * @license    PhreeSoft Proprietary, All Rights Reserved
- * @version    3.x Last Update: 2020-06-15
+ * @version    4.x Last Update: 2020-09-11
  * @filesource /portal/upgrade.php
  */
 
@@ -139,12 +139,6 @@ function bizunoUpgrade($dbVersion='1.0')
         } }
     }
     if (version_compare($dbVersion, '3.2.5') < 0) {
-        // add new vendor form folder to phreeform
-        $id = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='vend:j6' AND mime_type='dir'");
-        if (!$id) {
-            $parent = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='vend' AND mime_type='dir'");
-            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_6','group_id'=>'vend:j6','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
-        }
         clearModuleCache('bizuno', 'properties', 'encKey'); // Fixes possible bug in storage of encryption key
         // set the .htaccess file
         if (file_exists('dist.htaccess') && !file_exists('.htaccess')) { rename('dist.htaccess', '.htaccess'); }
@@ -185,11 +179,6 @@ function bizunoUpgrade($dbVersion='1.0')
     }
     if (version_compare($dbVersion, '3.3.1') < 0) { }
     if (version_compare($dbVersion, '3.3.2') < 0) {
-        $id = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv:frm' AND mime_type='dir'");
-        if (!$id) { // add new inventory form folder in phreeform
-            $parent = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv' AND mime_type='dir'");
-            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'forms','group_id'=>'inv:frm','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
-        }
         if (dbTableExists(BIZUNO_DB_PREFIX.'extFixedAssets')) { if (!dbFieldExists(BIZUNO_DB_PREFIX.'extFixedAssets', 'store_id')) { // add new field to extension Fixed Assets table
             dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extFixedAssets` ADD `store_id` INT(11) NOT NULL DEFAULT '0' COMMENT 'type:hidden;tag:StoreID;order:25' AFTER `status`");
         } }
@@ -204,14 +193,6 @@ function bizunoUpgrade($dbVersion='1.0')
             dbGetResult("UPDATE `".BIZUNO_DB_PREFIX."extReturns` SET preventable='1' WHERE fault='1' OR fault='3'");
             dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."extReturns` DROP fault");
         } }
-    }
-    if (version_compare($dbVersion, '3.3.3') < 0) { // add new vendor form folder to phreeform, didn't take for upgrade in 3.2.6
-        $id = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv:j14' AND mime_type='dir'");
-        if (!$id) {
-            $parent = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='inv' AND mime_type='dir'");
-            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_14','group_id'=>'inv:j14','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
-            dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$parent,'title'=>'journal_main_journal_id_16','group_id'=>'inv:j16','mime_type'=>'dir','security'=>'u:-1;g:-1','create_date'=>date('Y-m-d')]);
-        }
     }
     if (version_compare($dbVersion, '3.4.5') < 0) { // add additional emails to the address book
         if (!dbFieldExists(BIZUNO_DB_PREFIX.'address_book', 'email2')) {
@@ -229,8 +210,13 @@ function bizunoUpgrade($dbVersion='1.0')
             dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."phreeform` ADD `bookmarks` TEXT DEFAULT NULL COMMENT 'type:checkbox;tag:Bookmarks;order:50' AFTER `title`");
         }
     }
+    if (version_compare($dbVersion, '4.4.0') < 0) { // index sku for large inventory tables
+        $stmt = dbGetResult("SELECT COUNT(*) AS cnt FROM information_schema.statistics WHERE TABLE_SCHEMA='".$GLOBALS['dbBizuno']['name']."' AND TABLE_NAME='".BIZUNO_DB_PREFIX."inventory' AND INDEX_NAME='sku'");
+        $data = $stmt->fetch(\PDO::FETCH_ASSOC);
+        if (empty($data['cnt'])) { dbGetResult("ALTER TABLE ".BIZUNO_DB_PREFIX."inventory ADD INDEX('sku')"); }
+    }
 
-    // At every upgrade, run the comments repair tool to fix changes to the view structure
+    // At every upgrade, run the comments repair tool to fix changes to the view structure and add any new phreeform categories
     bizAutoLoad(BIZUNO_LIB."controller/module/bizuno/tools.php", 'bizunoTools');
     $ctl = new bizunoTools();
     $ctl->repairComments(false);

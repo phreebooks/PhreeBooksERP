@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-23
+ * @version    4.x Last Update: 2020-09-11
  * @filesource /lib/controller/module/bizuno/tools.php
  */
 
@@ -250,7 +250,6 @@ class bizunoTools {
             $stmt = dbGetResult("SHOW FULL COLUMNS FROM ".BIZUNO_DB_PREFIX."$table");
             if (!$stmt) { return msgAdd("No results for table $table! Bailing"); }
             $structure = $stmt->fetchAll(\PDO::FETCH_ASSOC);
-//          msgDebug("\nTable $table returned structure: ".print_r($structure, true));
             foreach ($structure as $field) {
                 $default = in_array($field['Default'], ['CURRENT_TIMESTAMP']) ? $field['Default'] : "'{$field['Default']}'"; // don't quote mysql reserved words
                 $params  = $field['Type'].' ';
@@ -259,8 +258,24 @@ class bizunoTools {
                 $params .= $field['Extra']           ? $field['Extra'].' ' : '';
                 $newComment = !empty($tProps['fields'][$field['Field']]['comment']) ? $tProps['fields'][$field['Field']]['comment'] : $field['Comment'];
                 if ($newComment == $field['Comment']) { continue; } // if not changed, do nothing
-//              msgDebug("\nWriting sql to db: ALTER TABLE `".BIZUNO_DB_PREFIX."$table` CHANGE `{$field['Field']}` `{$field['Field']}` $params COMMENT '$newComment'");
                 dbGetResult("ALTER TABLE `".BIZUNO_DB_PREFIX."$table` CHANGE `{$field['Field']}` `{$field['Field']}` $params COMMENT '$newComment'");
+            }
+        }
+        // now verify Phreeform structure
+        $phreeform = [];
+        include(BIZUNO_LIB."controller/module/bizuno/install/phreeform.php");
+        foreach ($phreeform as $grp => $rows) {
+            $gID = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='$grp' AND mime_type='dir'");
+            if (empty($gID)) {
+                msgDebug("Adding main group $grp - {$rows['title']}");
+                $gID = dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>0, 'group_id'=>$grp, 'mime_type'=>'dir', 'title'=>$rows['title'], 'create_date'=>date('Y-m-d'), 'last_update'=>date('Y-m-d')]);
+            }
+            foreach ($rows['folders'] as $gname => $props) {
+                $fID = dbGetValue(BIZUNO_DB_PREFIX.'phreeform', 'id', "group_id='$gname' AND mime_type='dir'");
+                if (empty($fID)) {
+                    msgDebug("Adding subgroup $gname - {$props['title']}");
+                    dbWrite(BIZUNO_DB_PREFIX.'phreeform', ['parent_id'=>$gID, 'group_id'=>$gname, 'mime_type'=>'dir', 'title'=>$props['title'], 'create_date'=>date('Y-m-d'), 'last_update'=>date('Y-m-d')]);
+                }
             }
         }
         if ($verbose) { msgAdd("finished!"); }

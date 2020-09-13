@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-08-26
+ * @version    4.x Last Update: 2020-09-11
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -76,23 +76,24 @@ class bizunoSettings
     private function buildModProps($mID, $settings, $store) {
         $security = validateSecurity('bizuno', 'admin', 2);
         msgDebug("\nsecurity = $security");
-        if  (empty($settings['version'])) { $settings['version'] = MODULE_BIZUNO_VERSION; }
+        if ( empty($settings['version'])) { $settings['version'] = MODULE_BIZUNO_VERSION; }
         if (!empty($settings['devStatus']) && $settings['devStatus']=='dev') { $store[$mID] = ['paid'=>true,'url'=>'','version'=>MODULE_BIZUNO_VERSION]; }
         if ( empty($store[$mID])) { $store[$mID] = ['version'=>MODULE_BIZUNO_VERSION]; }
         $version = in_array($mID, $this->core) ? MODULE_BIZUNO_VERSION : $store[$mID]['version'];
-        $hasDash= getModuleCache($mID, 'dashboards') ? 1 : 0;
-        $html  = '<div style="float:left">'."\n";
+        $hasProp = !empty($settings['hasAdmin']) || !empty($settings['settings']) || getModuleCache($mID, 'dashboards') || !empty($settings['dirMethods']) ? true : false;
+        $isPaid  = in_array($mID, $this->core) || (!in_array($mID, $this->core) && !empty($store[$mID]['paid'])) ? true : false;
+        $html    = '<div style="float:left">'."\n";
         if (!empty($settings['logo'])){ $html .= html5('', ['styles'=>['cursor'=>'pointer','max-height'=>'50px'],'attr'=>['type'=>'img','src'=>$settings['logo']]]); }
         else                          { $html .= html5('', ['styles'=>['cursor'=>'pointer','max-height'=>'50px'],'attr'=>['type'=>'img','src'=>BIZUNO_URL.'images/phreesoft.png']]); }
-        $html .= '</div><div style="float:right">'."\n";
+        $html   .= '</div><div style="float:right">'."\n";
         if (version_compare($settings['version'], $version)<0 && !in_array(BIZUNO_HOST, ['phreesoft'])
-                && (($mID=='bizuno' && in_array(BIZUNO_HOST, ['phreebooks'])) || (!empty($store[$mID]['paid']) && !in_array($mID, $this->core)))) { // if paid and needs upgrade
+                && (($mID=='bizuno' && in_array(BIZUNO_HOST, ['phreebooks'])) || $isPaid)) { // if paid and needs upgrade
             $html .= $this->btnDownload($mID);
         }
-        if ( empty($store[$mID]['paid']) && !in_array($mID, $this->core) && !empty($store[$mID]['sku'])) { // if not paid but had been installed and has a store SKU, show purchase button
+        if (!$isPaid && !empty($store[$mID]['sku'])) { // if not paid but had been installed and has a store SKU, show purchase button
             $html .= $this->btnPurchase($mID, $store[$mID]['priceUSD'], $store[$mID]['url']);
         }
-        if (!empty($settings['hasAdmin']) || !empty($settings['settings']) || $hasDash || !empty($settings['dirMethods'])) { // check to see if the module has admin settings
+        if ( $hasProp && $isPaid) { // check to see if the module has admin settings
             $html .= html5("prop_$mID", ['icon'=>'settings','events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=$mID/admin/adminHome'"]]);
         }
         $html .= '</div>'."\n";
@@ -100,7 +101,7 @@ class bizunoSettings
         $html .= "<p>Installed Version: ".$settings['version']."; Current Version: $version</p>";
         if ( empty($settings['status']) && !in_array($mID, $this->core) && $store[$mID]['paid']) { $html .= $this->btnInstall($mID, $settings['path']); } // activate
         if (!empty($settings['status']) && !in_array($mID, $this->core)) { $html .= $this->btnDeactivate($mID); }
-        if ( empty($settings['status']) && !in_array($mID, $this->core) && $security>3) { $html .= $this->btnDelete($mID); }
+        if ( empty($settings['status']) && !in_array($mID, $this->core) && $security>3 && !in_array(BIZUNO_HOST, ['phreesoft'])) { $html .= $this->btnDelete($mID); }
         $infoLink = in_array($mID, $this->core) && !empty($store[$mID]['url']) ? $store[$mID]['url'] : $this->phreesoftURL;
         $html .= '<a href="'.$infoLink.'" target="_blank">More Info</a>';
         $html .= '</div>';
