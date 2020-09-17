@@ -103,7 +103,7 @@ class ship_j10
                 $this->notifyCheck($notified, $entry);
                 $left   = viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim);
                 $right  = '';
-                $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
+                $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&bizRt=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
                 $rows[] = viewDashLink($left, $right, $action);
             }
             if ($this->sendEmail && !empty($this->emailList)) { $this->notifyEmail(); }

@@ -1005,7 +1005,7 @@ class jCommon
             'events' => ['data'=> "datagridData",
                 'onLoadSuccess'=> "function(row)      { totalUpdate('dgOrders LoadSuccess'); }",
                 'onClickRow'   => "function(rowIndex, row) { curIndex = rowIndex; }",
-                'onBeforeEdit' => "function(rowIndex) { curIndex = rowIndex; var edtURL=jq(this).edatagrid('getColumnOption','sku'); edtURL.editor.options.url='".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&bID='+jq('#store_id').val(); }",
+                'onBeforeEdit' => "function(rowIndex) { curIndex = rowIndex; var edtURL=jq(this).edatagrid('getColumnOption','sku'); edtURL.editor.options.url='".BIZUNO_AJAX."&bizRt=inventory/main/managerRows&clr=1&bID='+jq('#store_id').val(); }",
                 'onBeginEdit'  => "function(rowIndex) { ordersEditing(rowIndex); }",
                 'onDestroy'    => "function(rowIndex) { totalUpdate('dgOrders onDestroy'); curIndex = undefined; }",
                 'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
@@ -1038,7 +1038,7 @@ if (idx!=null) {
                             'display' => "typeof row.item_ref_id==='undefined' || row.item_ref_id=='0' || row.item_ref_id==''"]]],
                 'sku'=> ['order'=>30, 'label'=>pullTableLabel('journal_item', 'sku', $this->journalID),
                     'attr' => ['width'=>150, 'sortable'=>true, 'resizable'=>true, 'align'=>'center', 'value'=>''],
-                    'events'=>  ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
+                    'events'=>  ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&bizRt=inventory/main/managerRows&clr=1',
                         width:150, panelWidth:550, delay:500, idField:'sku', textField:'sku', mode:'remote',
                         onLoadSuccess: function () { jq.parser.parse(jq(this).datagrid('getPanel'));
                             var skuEditor = jq('#dgJournalItem').datagrid('getEditor', {index:curIndex,field:'sku'});

@@ -39,11 +39,11 @@ class inventoryApi
     public function inventoryAPI(&$layout)
     {
         $fields = [
-            'btnInvapi_tpl' => ['icon'=>'download','label'=>lang('download'),'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p=inventory/api/apiTemplate');"]],
+            'btnInvapi_tpl' => ['icon'=>'download','label'=>lang('download'),'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&bizRt=inventory/api/apiTemplate');"]],
             'fileInventory' => ['attr'=>  ['type'=>'file']],
             'btnInvapi_imp' => ['icon'=>'import','label'=>lang('import'),'events'=>['onClick'=>"jq('body').addClass('loading'); jq('#frmInvApiImport').submit();"]],
-            'btnInvapi_exp' => ['icon'=>'export','label'=>lang('export'),'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p=inventory/api/apiExport');"]]];
-        $forms = ['frmInvApiImport'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=inventory/api/apiImport"]]];
+            'btnInvapi_exp' => ['icon'=>'export','label'=>lang('export'),'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&bizRt=inventory/api/apiExport');"]]];
+        $forms = ['frmInvApiImport'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=inventory/api/apiImport"]]];
         $html = '<p>'.$this->lang['invapi_desc'].'</p>
 <p>'.$this->lang['invapi_template'].html5('', $fields['btnInvapi_tpl']).'</p><hr />'.html5('frmInvApiImport',  $forms['frmInvApiImport']).'
 <p>'.$this->lang['invapi_import'].html5('fileInventory', $fields['fileInventory']).html5('btnInvapi_imp', $fields['btnInvapi_imp']).'</p></form><hr />

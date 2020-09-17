@@ -50,12 +50,12 @@ class phreebooksApi
                 'body'    => ['order'=>50,'type'=>'html','html'=>$this->getViewBB()],
                 'formEOF' => ['order'=>95,'type'=>'html','html'=>"</form>"]]]]]],
             'forms'=>[
-                'frmBegBal'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/begBalSave"]],
-                'frmImpInv'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=inv"]],
-                'frmImpJ4' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j4"]],
-                'frmImpJ6' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j6"]],
-                'frmImpJ10'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j10"]],
-                'frmImpJ12'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/api/importJournal&id=j12"]]],
+                'frmBegBal'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/api/begBalSave"]],
+                'frmImpInv'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/api/importJournal&id=inv"]],
+                'frmImpJ4' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/api/importJournal&id=j4"]],
+                'frmImpJ6' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/api/importJournal&id=j6"]],
+                'frmImpJ10'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/api/importJournal&id=j10"]],
+                'frmImpJ12'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/api/importJournal&id=j12"]]],
             'jsBody' => ['init'=>$this->getViewBBJS()],
             'jsReady'=> ['init'=>"ajaxForm('frmBegBal');"]]);
         $layout['jsReady']['phreebooksImport'] = "ajaxForm('frmImpInv');\najaxForm('frmImpJ4');\najaxForm('frmImpJ6');\najaxForm('frmImpJ10');\najaxForm('frmImpJ12');";

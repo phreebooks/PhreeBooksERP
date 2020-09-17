@@ -177,7 +177,7 @@ class inventoryAdmin
                 'events' => ['onClick'=>"jq('body').addClass('loading'); jsonAction('inventory/tools/priceAssy');"]]];
         $data = [
             'tabs' => ['tabAdmin'=> ['divs'=>[
-                'fields'=> ['order'=>60,'label'=>lang('extra_fields'),'type'=>'html', 'html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=bizuno/fields/manager&module=$this->moduleID&table=inventory'"]],
+                'fields'=> ['order'=>60,'label'=>lang('extra_fields'),'type'=>'html', 'html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=bizuno/fields/manager&module=$this->moduleID&table=inventory'"]],
                 'tools' => ['order'=>80,'label'=>lang('tools'),'type'=>'divs','divs'=>[
                     'general' => ['order'=>20,'type'=>'divs','classes'=>['areaView'],'divs'=>[
                         'invVal'  => ['order'=>10,'type'=>'panel','classes'=>['block50'],'key'=>'invVal'],

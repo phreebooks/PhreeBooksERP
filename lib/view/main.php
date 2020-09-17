@@ -875,7 +875,7 @@ function adminStructure($module, $structure=[], $lang=[])
             'heading'=> ['order'=>30,'type'=>'html','html'=>html5('',['icon'=>'back','events'=>['onClick'=>"hrefClick('bizuno/settings/manager');"]])."<h1>$title</h1>"],
             'main'   => ['order'=>50,'type'=>'tabs','key'=>'tabAdmin']],
         'toolbars'=> ['tbAdmin' =>['icons'=>['save'=>['order'=>20,'events'=>['onClick'=>"jq('#frmAdmin').submit();"]]]]],
-        'forms'   => ['frmAdmin'=>['attr'=>['type'=>'form', 'action'=>BIZUNO_AJAX."&p=$module/admin/adminSave"]]],
+        'forms'   => ['frmAdmin'=>['attr'=>['type'=>'form', 'action'=>BIZUNO_AJAX."&bizRt=$module/admin/adminSave"]]],
         'tabs'    => ['tabAdmin'=>['divs'=>['settings'=>['order'=>10,'label'=>lang('settings'),'type'=>'divs','divs'=>[
             'toolbar'=> ['order'=>10,'type'=>'toolbar',  'key' =>'tbAdmin'],
             'formBOF'=> ['order'=>15,'type'=>'form',     'key' =>'frmAdmin'],
@@ -958,7 +958,7 @@ function adminMethods($module, $props, $key)
         } else {
             $html .= "</div>";
             $html .= '<div id="divMethod_'.$method.'" style="display:none;" class="layout-expand-over">';
-            $html .= html5("frmMethod_$method", ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/methodSettingsSave&module=$module&type=$key&method=$method"]]);
+            $html .= html5("frmMethod_$method", ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/settings/methodSettingsSave&module=$module&type=$key&method=$method"]]);
             $structure = method_exists($clsMeth, 'settingsStructure') ? $clsMeth->settingsStructure() : [];
             foreach ($structure as $setting => $values) {
                 $mult = isset($values['attr']['multiple']) ? '[]' : '';
@@ -1096,7 +1096,7 @@ function htmlComboContact($id, $props=[])
     $attr = array_replace($defaults, $props);
     return html5($id, ['label'=>lang('search'),'classes'=>['easyui-combogrid'],'attr'=>['data-options'=>"
         width:130, panelWidth:750, delay:900, idField:'id', textField:'primary_name', mode: 'remote',
-        url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type={$attr['type']}&store=".($attr['store']?'1':'0')."',
+        url:'".BIZUNO_AJAX."&bizRt=contacts/main/managerRows&clr=1&type={$attr['type']}&store=".($attr['store']?'1':'0')."',
         onBeforeLoad:function (param) { var newValue=jq('#$id').combogrid('getValue'); if (newValue.length < 3) { return false; } },
         selectOnNavigation:false,
         onClickRow:  function (idx, row){ {$attr['callback']}(row, '{$attr['opt1']}', '{$attr['opt2']}'); },

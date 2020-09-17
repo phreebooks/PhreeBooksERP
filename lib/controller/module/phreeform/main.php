@@ -49,8 +49,8 @@ class phreeformMain
         if (!$rID && $gID) { // no node so look for group
             $rID = dbGetValue(BIZUNO_DB_PREFIX."phreeform", 'id', "group_id='$gID:rpt' AND mime_type='dir'");
         }
-        $divSrch= html5('', ['options'=>['mode'=>"'remote'",'url'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/search'",'editable'=>'true','idField'=>"'id'",'textField'=>"'text'",'width'=>250,'panelWidth'=>400,
-            'onClick'=>"function (row) { jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+row.id); }"],'attr'=>['type'=>'select']]);
+        $divSrch= html5('', ['options'=>['mode'=>"'remote'",'url'=>"'".BIZUNO_AJAX."&bizRt=$this->moduleID/main/search'",'editable'=>'true','idField'=>"'id'",'textField'=>"'text'",'width'=>250,'panelWidth'=>400,
+            'onClick'=>"function (row) { jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&bizRt=$this->moduleID/main/edit&rID='+row.id); }"],'attr'=>['type'=>'select']]);
         $data   = ['title'=> lang('reports'),
             'divs'   => [
                 'toolbar'  => ['order'=>10,'type'=>'toolbar','key' =>'tbPhreeForm'],
@@ -70,17 +70,17 @@ class phreeformMain
                     'search'=> ['type'=>'panel','key'=>'docSearch'],
                     'panel' => ['type'=>'panel','key'=>'myBookMark']]],
                 'docSearch' => ['label'=>lang('search'),               'type'=>'html','html'=>$divSrch],
-                'myBookMark'=> ['label'=>$this->lang['my_favorites'],  'type'=>'html','id'=>'myBookMark','options'=>['collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/favorites'"],'html'=>'&nbsp;'],
-                'myHist'    => ['label'=>$this->lang['recent_reports'],'type'=>'html','options'=>['collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&p=$this->moduleID/main/recent'"],   'html'=>'&nbsp;']],
+                'myBookMark'=> ['label'=>$this->lang['my_favorites'],  'type'=>'html','id'=>'myBookMark','options'=>['collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&bizRt=$this->moduleID/main/favorites'"],'html'=>'&nbsp;'],
+                'myHist'    => ['label'=>$this->lang['recent_reports'],'type'=>'html','options'=>['collapsible'=>'true','href'=>"'".BIZUNO_AJAX."&bizRt=$this->moduleID/main/recent'"],   'html'=>'&nbsp;']],
             'accordion'=> ['accDocs'=>['styles'=>['height'=>'100%'],'divs'=>[ // 'attr'=>['halign'=>'left'], crashes older versions of Chrome and Safari
                 'divTree'  => ['order'=>10,'label'=>$this->lang['my_reports'],'type'=>'divs','styles'=>['overflow'=>'auto','padding'=>'10px'], // 'attr'=>['titleDirection'=>'up'],
                     'divs'=>[
                         'toolbar'=> ['order'=>10,'type'=>'fields','keys'=>['expand','collapse']],
                         'tree'   => ['order'=>50,'type'=>'tree',  'key' =>'treePhreeform']]],
                 'divDetail'=> ['order'=>30,'label'=>lang('details'),'type'=>'html','html'=>'&nbsp;']]]], // 'attr'=>['titleDirection'=>'up'],
-            'tree'     => ['treePhreeform'=>['attr'=>['type'=>'tree','url'=>BIZUNO_AJAX."&p=phreeform/main/managerTree"],'events'=>[
+            'tree'     => ['treePhreeform'=>['attr'=>['type'=>'tree','url'=>BIZUNO_AJAX."&bizRt=phreeform/main/managerTree"],'events'=>[
                 'onClick'  => "function(node) { if (typeof node.id != 'undefined') {
-    if (jq('#treePhreeform').tree('isLeaf', node.target)) { jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+node.id); }
+    if (jq('#treePhreeform').tree('isLeaf', node.target)) { jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&bizRt=$this->moduleID/main/edit&rID='+node.id); }
     else { jq('#treePhreeform').tree('toggle', node.target); } } }"]]],
             'fields'   => [
                 'expand'  => ['events'=>['onClick'=>"jq('#treePhreeform').tree('expandAll');"],  'attr'=>['type'=>'button','value'=>lang('expand_all')]],
@@ -144,7 +144,7 @@ jq('#treePhreeform').tree('expand', node.target); }";
             'toolbars'  => ['tbReport'=>['hideLabels'=>true,'icons'=>[
                 'open'  => ['order'=>10,'events'=>['onClick'=>"winOpen('phreeformOpen', 'phreeform/render/open&rID=$rID');"]],
                 'edit'  => ['order'=>20,'hidden'=>($security>1)?false:true,
-                    'events'=>['onClick'=>"window.location.href='".BIZUNO_HOME."&p=phreeform/design/edit&rID='+$rID;"]],
+                    'events'=>['onClick'=>"window.location.href='".BIZUNO_HOME."&bizRt=phreeform/design/edit&rID='+$rID;"]],
                 'rename'=> ['order'=>30,'hidden'=>($security>2)?false:true,
                     'events'=>['onClick'=>"var title=prompt('".lang('msg_entry_rename')."'); if (title !== null) { jsonAction('phreeform/main/rename', $rID, title); }"]],
                 'copy'  => ['order'=>40,'hidden'=>($security>1)?false:true,
@@ -152,7 +152,7 @@ jq('#treePhreeform').tree('expand', node.target); }";
                 'trash' => ['order'=>50,'hidden'=>($security>3)?false:true,
                     'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreeform/main/delete', $rID, '');"]],
                 'export'=> ['order'=>60,'hidden'=>($security>2)?false:true,
-                    'events'=>['onClick'=>"window.location.href='".BIZUNO_AJAX."&p=phreeform/io/export&rID='+$rID;"]]]]],
+                    'events'=>['onClick'=>"window.location.href='".BIZUNO_AJAX."&bizRt=phreeform/io/export&rID='+$rID;"]]]]],
             'fields'=> $struc];
         $layout = array_replace_recursive($layout, $data);
     }
@@ -186,7 +186,7 @@ jq('#treePhreeform').tree('expand', node.target); }";
         $sql_data = ['title'=>$title, 'doc_data'=>$docData, 'last_update'=>date('Y-m-d')];
         dbWrite(BIZUNO_DB_PREFIX."phreeform", $sql_data, 'update', "id='$rID'");
         msgLog(lang('phreeform_manager').'-'.lang('rename')." $title ($rID)");
-        $data  = ['content'=>['action'=>'eval','actionData'=>"bizTreeReload('treePhreeform'); bizPanelRefresh('myBookMark'); jq('#docRecent').panel('refresh'); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID=$rID');"]];
+        $data  = ['content'=>['action'=>'eval','actionData'=>"bizTreeReload('treePhreeform'); bizPanelRefresh('myBookMark'); jq('#docRecent').panel('refresh'); jq('#divDetail').panel('refresh', bizunoAjax+'&bizRt=$this->moduleID/main/edit&rID=$rID');"]];
         $layout= array_replace_recursive($layout, $data);
     }
 
@@ -214,7 +214,7 @@ jq('#treePhreeform').tree('expand', node.target); }";
             msgLog(lang('phreeform_manager').'-'.lang('copy')." - $title ($rID=>$newID)");
             $_GET['rID'] = $newID;
         }
-        $data  = ['content'=>['action'=>'eval','actionData'=>"bizTreeReload('treePhreeform'); bizPanelRefresh('myBookMark'); jq('#docRecent').panel('refresh'); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID=$newID');"]];
+        $data  = ['content'=>['action'=>'eval','actionData'=>"bizTreeReload('treePhreeform'); bizPanelRefresh('myBookMark'); jq('#docRecent').panel('refresh'); jq('#divDetail').panel('refresh', bizunoAjax+'&bizRt=$this->moduleID/main/edit&rID=$newID');"]];
         $layout= array_replace_recursive($layout, $data);
     }
 
@@ -251,7 +251,7 @@ jq('#treePhreeform').tree('expand', node.target); }";
         else { foreach ($output as $doc) {
                 $btnHTML= html5('', ['icon'=>viewMimeIcon($doc['mime_type'])]).$doc['title'];
                 $rows[] = html5('', ['attr'=>['type'=>'a','value'=>$btnHTML],
-                    'events'=>['onClick'=>"jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+{$doc['id']});"]]);
+                    'events'=>['onClick'=>"jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&bizRt=$this->moduleID/main/edit&rID='+{$doc['id']});"]]);
         } }
         $layout = array_replace_recursive($layout, ['type'=>'divHTML',
             'divs'=>['body'=>['order'=>50,'type'=>'list','key'=>'reports']],
@@ -279,7 +279,7 @@ jq('#treePhreeform').tree('expand', node.target); }";
         else { foreach ($output as $doc) {
                 $btnHTML= html5('', ['icon'=>viewMimeIcon($doc['mime_type'])]).$doc['title'];
                 $rows[] = html5('', ['attr'=>['type'=>'a','value'=>$btnHTML],
-                    'events'=>['onClick'=>"jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&p=$this->moduleID/main/edit&rID='+{$doc['id']});"]]);
+                    'events'=>['onClick'=>"jq('#accDocs').accordion('select', 1); jq('#divDetail').panel('refresh', bizunoAjax+'&bizRt=$this->moduleID/main/edit&rID='+{$doc['id']});"]]);
         } }
         $layout = array_replace_recursive($layout, ['type'=>'divHTML',
             'divs' => ['body'=>['order'=>50,'type'=>'list','key'=>'reports']],

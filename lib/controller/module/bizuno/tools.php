@@ -72,7 +72,7 @@ class bizunoTools {
                 'formBOF'=> ['order'=>15,'type'=>'form',  'key' =>'frmTicket'],
                 'body'   => ['order'=>50,'type'=>'fields','keys'=>array_keys($fields)],
                 'formEOF'=> ['order'=>85,'type'=>'html',  'html'=>"</form>"]]]],
-            'forms' => ['frmTicket'=>['attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=bizuno/tools/ticketSave",'enctype'=>"multipart/form-data"]]],
+            'forms' => ['frmTicket'=>['attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&bizRt=bizuno/tools/ticketSave",'enctype'=>"multipart/form-data"]]],
             'fields'=> $fields];
         $layout = array_replace_recursive($layout, viewMain(), $data);
 

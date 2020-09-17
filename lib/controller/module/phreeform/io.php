@@ -57,14 +57,14 @@ class phreeformIo
         $data  = [
             'title'=> lang('import'),
             'toolbars' => ['tbImport'=>['icons'=>[
-                'back' => ['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=phreeform/main/manager'"]]]]],
+                'back' => ['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&bizRt=phreeform/main/manager'"]]]]],
             'divs'     => [
                 'toolbar'=> ['order'=>10,'type'=>'toolbar','key'=>'tbImport'],
                 'heading'=> ['order'=>15,'type'=>'html',   'html'=>"<h1>".$this->lang['phreeform_import']."</h1>"],
                 'formBOF'=> ['order'=>20,'type'=>'form',   'key'=>'frmImport'],
                 'body'   => ['order'=>50,'type'=>'html',   'html'=>$this->getViewMgr($fields)],
                 'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"],],
-            'forms'    => ['frmImport'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreeform/io/importReport"]]],
+            'forms'    => ['frmImport'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreeform/io/importReport"]]],
             'fields'   => $fields,
             'jsReady'  => ['init'=>"ajaxForm('frmImport');"]];
         $layout = array_replace_recursive($layout, viewMain(), $data);

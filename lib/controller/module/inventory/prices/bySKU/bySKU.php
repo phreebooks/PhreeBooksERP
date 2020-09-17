@@ -60,7 +60,7 @@ class bySKU extends inventoryPrices
         if (!$security = validateSecurity('inventory', 'prices_'.$type, 3, false)) { return; }
         if (!$iID) { return; }// cannot add prices until the sku has been saved and exists as prices are added asyncronously
         $layout['tabs']['tabInventory']['divs'][$this->code] = ['order'=>40, 'label'=>$this->lang['tab_label'], 'type'=>'html', 'html'=>'',
-            'options'=>['href'=>"'".BIZUNO_AJAX."&p=inventory/prices/manager&type=$type&security=$security&iID=$iID&mod={$GLOBALS['bizunoModule']}'"]];
+            'options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=inventory/prices/manager&type=$type&security=$security&iID=$iID&mod={$GLOBALS['bizunoModule']}'"]];
     }
 
     /**

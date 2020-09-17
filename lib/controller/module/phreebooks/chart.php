@@ -67,7 +67,7 @@ function chartRefresh() {
                         'formEOF'=> ['order'=>95,'type'=>'html',  'html'=>"</form>"]]],
                     'dgChart' => ['order'=>50,'type'=>'datagrid', 'key' =>'dgChart']]],
                 'divGLDetail' => ['order'=>70,'label'=>lang('details'),'type'=>'html','html'=>'']]]],
-            'forms'    => ['frmGlUpload'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/chart/upload"]]],
+            'forms'    => ['frmGlUpload'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/chart/upload"]]],
             'datagrid' => ['dgChart'=>$this->dgChart('dgChart', $security)],
             'fields'   => $fields,
             'jsHead'   => ['chart' => $jsHead], // clone object
@@ -137,7 +137,7 @@ jq('#dgPopupGL').datagrid({ pagination:false,data:winChart,columns:[[{field:'id'
             'toolbars'=> ['tbGL'=>['icons'=>[
                 "glSave"=> ['order'=>10,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"jq('#frmGLEdit').submit();"]],
                 "glNew" => ['order'=>20,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"accordionEdit('accGL', 'dgChart', 'divGLDetail', '".lang('details')."', 'phreebooks/chart/edit', 0);"]]]]],
-            'forms'   => ['frmGLEdit'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/chart/save"]]],
+            'forms'   => ['frmGLEdit'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/chart/save"]]],
             'fields'  => $fields,
             'jsBody'  => ["ajaxForm('frmGLEdit');"]];
         $layout = array_replace_recursive($layout, $data);

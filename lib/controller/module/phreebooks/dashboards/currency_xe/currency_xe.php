@@ -74,7 +74,7 @@ class currency_xe
                     'excRate'=> ['order'=>20,'break'=>false,'options'=>['width'=>100],'attr'=>['value'=>'']],
                     'excISO' => ['order'=>30,'values'=>viewKeyDropdown($cVals), 'attr'=>['type'=>'select']],
                     'btnUpd' => ['order'=>40,'attr'=>['type'=>'button','value'=>lang('update')],'events'=>['onClick'=>"jq('#xeForm').submit();"]]],
-                'forms' => ['xeForm'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/setExcRate"]]],
+                'forms' => ['xeForm'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/currency/setExcRate"]]],
                 'jsReady'=>['init'=>"ajaxForm('xeForm');"]];
         } else {
             $data = ['divs'=>['body'=>['order'=>50,'type'=>'html','html'=>'<br />'.$this->lang['no_multi_langs']]]];

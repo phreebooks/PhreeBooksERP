@@ -60,7 +60,7 @@ class byContact extends inventoryPrices
         if (!$security = validateSecurity('inventory', 'prices_'.$type, 3, false)) { return; }
         if (!$cID) { return; }// cannot add prices until the contact has been saved and exists as prices are added asyncronously
         $layout['tabs']['tabContacts']['divs'][$this->code] = ['order'=>35, 'label'=>$this->lang['tab_label'], 'type'=>'html', 'html'=>'',
-            'options'=>['href'=>"'".BIZUNO_AJAX."&p=inventory/prices/manager&type=$type&security=$security&mID=$this->code&cID=$cID&mod={$GLOBALS['bizunoModule']}'"]];
+            'options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=inventory/prices/manager&type=$type&security=$security&mID=$this->code&cID=$cID&mod={$GLOBALS['bizunoModule']}'"]];
     }
 
     /**

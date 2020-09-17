@@ -99,7 +99,7 @@ class bizunoTabs
     {
         $this->managerSettings();
         return ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
-            'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id','url'=>BIZUNO_AJAX."&p=bizuno/tabs/managerRows"],
+            'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id','url'=>BIZUNO_AJAX."&bizRt=bizuno/tabs/managerRows"],
             'events' => ['onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accTabs', 'dgTabs', 'divTabDetail', '".lang('details')."', 'bizuno/tabs/edit', rowData.id); }"],
             'source' => [
                 'actions'=> ['newTab' => ['order'=>10,'icon'=>'new','events'=>  ['onClick'=>"windowEdit('bizuno/tabs/add','winNewTab','".$this->lang['new_tab']."',400,200);"]]],
@@ -148,7 +148,7 @@ class bizunoTabs
                 'head'   => ['order'=>20,'type'=>'html',  'html'=>"<p>{$this->lang['new_tab_desc']}</p>"],
                 'body'   => ['order'=>50,'type'=>'fields','keys'=>['code','iconGO']],
                 'formEOF'=> ['order'=>90,'type'=>'html',  'html'=>"</form>"]],
-            'forms'  => ['frmNewTab'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/tabs/edit&bizAction=save"]]],
+            'forms'  => ['frmNewTab'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/tabs/edit&bizAction=save"]]],
             'fields' => [
                 'code'  => ['order'=>10,'break'=>false,'values'=>$values,'attr'=>['type'=>'select']],
                 'iconGO'=> ['order'=>20,'icon'=>'next','events'=>['onClick'=>"jq('#frmNewTab').submit();"]]],
@@ -191,7 +191,7 @@ class bizunoTabs
                     'body'   => ['order'=>50,'type'=>'fields','keys'=>['id','module_id','table_id','title','sort_order','btnSave']],
                     'formEOF'=> ['order'=>90,'type'=>'html',  'html'=>"</form>"]],
                 'forms' => [
-                    'frmTabs' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/tabs/save"]]],
+                    'frmTabs' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/tabs/save"]]],
                 'fields' => [
                     'id'        => ['order'=> 1,'attr'=>['type'=>'hidden', 'value'=>$rID]],
                     'module_id' => ['order'=> 2,'attr'=>['type'=>'hidden', 'value'=>isset($values['module_id'])? $values['module_id']: '']],

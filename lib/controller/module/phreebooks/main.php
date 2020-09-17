@@ -359,7 +359,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                 'new'  => ['order'=>60,'label'=>lang('new'),   'hidden'=>$security>1?false:true,'events'=>['onClick'=>"journalEdit($this->journalID, 0);"]],
                 'trash'=> ['order'=>70,'label'=>lang('delete'),'hidden'=>$rID && $security==4?false:true,'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('phreebooks/main/delete&jID=$this->journalID', $rID);"]],
                 'help' => ['order'=>99,'label'=>lang('help'),  'icon'=>'help','align'=>'right','hideLabel'=>true,'index' =>$this->helpIndex]]]],
-            'forms'   => ['frmJournal'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/main/save&jID=$this->journalID"]]],
+            'forms'   => ['frmJournal'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/main/save&jID=$this->journalID"]]],
             'fields'  => $structure,
             'items'   => $ledger->items,
             'totals'  => $ledger->journal->totals,
@@ -951,7 +951,7 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
         }
         $jrnl_sql = $this->setAllowedJournals($valid_jIDs);
         $data  = ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
-            'attr'=> ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=phreebooks/main/managerRows&jID=$this->journalID&type=$this->type",
+            'attr'=> ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&bizRt=phreebooks/main/managerRows&jID=$this->journalID&type=$this->type",
                 'xtraField'=> [['key'=>'jrnlTBD','value'=>"journal_id"],['key'=>'cIDTBD','value'=>"contact_id_b"]]],
             'events' => ['onDblClickRow'=>"function(idx, data){ journalEdit(data.journal_id, data.id); }"],
             'source' => [
@@ -1048,14 +1048,14 @@ var pbChart=[];\njq.each(bizDefaults.glAccounts.rows, function( key, value ) { i
                     'attr'  => ['width'=>60, 'align'=>'center', 'resizable'=>true, 'hidden'=>in_array($this->journalID,[2,14,15,16])?true:false]]]];
         switch ($this->journalID) {
             case 0: // search journal
-                $data['events']['onDblClickRow'] = "function(rowIndex, rowData){ winHref(bizunoHome+'&p=phreebooks/main/manager&rID='+rowData.id); }";
+                $data['events']['onDblClickRow'] = "function(rowIndex, rowData){ winHref(bizunoHome+'&bizRt=phreebooks/main/manager&rID='+rowData.id); }";
                 $data['source']['tables']['journal_item'] = ['table'=>BIZUNO_DB_PREFIX.'journal_item', 'join'=>'JOIN', 'links'=>BIZUNO_DB_PREFIX."journal_main.id=".BIZUNO_DB_PREFIX."journal_item.ref_id"];
                 $data['source']['search'][] = BIZUNO_DB_PREFIX.'journal_main.id';
                 $data['source']['search'][] = BIZUNO_DB_PREFIX.'journal_item.sku';
                 $data['source']['search'][] = BIZUNO_DB_PREFIX.'journal_item.description';
                 unset($data['source']['actions']['newJournal']);
                 unset($data['columns']['id']['attr']['hidden']);
-                $data['columns']['action']['actions']['edit']['events']['onClick'] = "winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD');";
+                $data['columns']['action']['actions']['edit']['events']['onClick'] = "winHref(bizunoHome+'&bizRt=phreebooks/main/manager&rID=idTBD');";
                 $data['columns']['journal_id'] = ['order'=>15, 'field'=>BIZUNO_DB_PREFIX.'journal_main.journal_id','label'=>pullTableLabel('journal_main', 'journal_id'),
                     'events'=>['formatter'=>"function(value) { return jrnlTitles['j'+value]; }"], 'attr'=>['width'=>80, 'resizable'=>true]];
                 $journalID = clean('journalID', 'integer', 'post');

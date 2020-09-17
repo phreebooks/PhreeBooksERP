@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-19
+ * @version    4.x Last Update: 2020-09-17
  * @filesource /lib/controller/module/phreebooks/journals/j04.php
  */
 
@@ -33,7 +33,7 @@ class j04 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->items = $item;
+        $this->items= $item;
     }
 
 /*******************************************************************************************************************/
@@ -45,21 +45,14 @@ class j04 extends jCommon
     public function getDataItem()
     {
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
-        foreach ($this->items as $idx => $row) {
-            $this->items[$idx]['bal'] = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['id']} AND gl_type='itm'", false);
-        }
         $dbData = [];
         foreach ($this->items as $row) {
             if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
-            if (empty($row['bal'])) { $row['bal'] = 0; }
             if (empty($row['qty'])) { $row['qty'] = 0; }
             if (is_null($row['sku'])) { $row['sku'] = ''; } // bug fix for easyui combogrid, doesn't like null value
-            $row['description'] = str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
+            $row['description']= str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
+		    $row['bal']        = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['id']} AND gl_type='itm'", false); // so/po - filled
             if (!isset($row['price'])) { $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
-            if ($row['item_ref_id']) {
-                $filled    = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['item_ref_id']} AND gl_type='itm'", false);
-                $row['bal']= $row['bal'] - $filled + $row['qty']; // so/po - filled prior + this order
-            }
             if ($row['sku']) { // now fetch some inventory details for the datagrid
                 $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['qty_stock', 'item_weight'], "sku='{$row['sku']}'");
                 $inv_adj = in_array($this->journalID, [3,4,6,13,21]) ? -$row['qty'] : $row['qty'];

@@ -57,7 +57,7 @@ class summary_6_12
         $iconExp= ['attr'=>['type'=>'button','value'=>lang('download')],'events'=>['onClick'=>"jq('#sum_6_12').submit();"]];
         $struc  = $this->settingsStructure();
         $data   = $this->dataSales($this->settings['range']);
-        $action = BIZUNO_AJAX."&p=phreebooks/tools/jrnlData&code=6_12&range={$this->settings['range']}";
+        $action = BIZUNO_AJAX."&bizRt=phreebooks/tools/jrnlData&code=6_12&range={$this->settings['range']}";
         $js     = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');
 ajaxDownload('sum_6_12');
 function chart{$this->code}() {

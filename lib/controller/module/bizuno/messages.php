@@ -74,7 +74,7 @@ class bizunoMessages
     private function dgMessage($name, $security=0)
     {
         return ['id' =>$name,
-            'attr'   =>['type'=>'table','idField'=>'id','url'=>BIZUNO_AJAX."&p=bizuno/messages/managerRows"],
+            'attr'   =>['type'=>'table','idField'=>'id','url'=>BIZUNO_AJAX."&bizRt=bizuno/messages/managerRows"],
             'events' =>[
                 'rowStyler'    => "function(index, row) { if (row.status=='0') { return {class:'row-default'}; }}",
                 'onDblClickRow'=> "function(rowIndex, rowData) { jsonAction('bizuno/messages/read&host=".BIZUNO_HOST."', rowData.id); }"],

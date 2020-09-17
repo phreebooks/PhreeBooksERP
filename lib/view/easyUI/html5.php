@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-08-23
+ * @version    4.x Last Update: 2020-09-16
  * @filesource /view/easyUI/html5.php
  */
 
@@ -534,7 +534,7 @@ final class html5 {
     private function mobileMenuType()
     {
         if (!getUserCache('profile', 'admin_id', false, 0)) { return 'portal'; } // not logged in
-        $path = clean('p', 'filename', 'get');
+        $path = clean('bizRt', 'filename', 'get');
         if (empty($path) || in_array($path, ['bizuno/main/bizunoHome'])) {
             $menuID = clean('menuID', 'cmd', 'get');
             return !empty($menuID) ? 'menu' : 'home';
@@ -696,7 +696,7 @@ final class html5 {
                 'action' => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>60],
                     'events' => ['formatter'=>"function(value,row,index) { return {$attr['dgName']}Formatter(value,row,index); }"],
                     'actions'=> [
-                        'download'=>['order'=>30,'icon'=>'download','events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p={$attr['getPath']}&pathID=$path&fileID=idTBD');"]],
+                        'download'=>['order'=>30,'icon'=>'download','events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&bizRt={$attr['getPath']}&pathID=$path&fileID=idTBD');"]],
                         'trash'   =>['order'=>70,'icon'=>'trash',   'events'=>['onClick'=>"if (confirm('".jsLang('msg_confirm_delete')."')) jsonAction('{$attr['delPath']}','{$attr['dgName']}','{$path}idTBD');"]]]],
                 'fn'   => ['order'=>10,'label'=>lang('filename'),'attr'=>['width'=>300,'resizable'=>true]],
                 'size' => ['order'=>20,'label'=>lang('size'),    'attr'=>['width'=>100,'resizable'=>true,'align'=>'center']],
@@ -958,7 +958,7 @@ final class html5 {
         msgDebug("\nEntering layoutMenuLeft working with type = $type and menuID = ".print_r($menuID, true));
         switch ($type) {
             case 'add':   return html5('', ['order'=>10,'icon'=>'add','options'=>['menuAlign'=>"'right'"],
-                'classes'=>['easyui-linkbutton'],'events'=>['onClick'=>"hrefClick('".BIZUNO_HOME."&p=bizuno/dashboard/manager&menuID=$menuID');"]]);
+                'classes'=>['easyui-linkbutton'],'events'=>['onClick'=>"hrefClick('".BIZUNO_HOME."&bizRt=bizuno/dashboard/manager&menuID=$menuID');"]]);
             case 'back':  return ['child'=>['back'=>['order'=>50,'icon'=>'back','events'=>['onClick'=>"jq.mobile.back();"]]]];
             case 'close': return html5('', ['order'=>10,'icon'=>'close','options'=>['menuAlign'=>"'left'"],
                 'classes'=>['easyui-linkbutton'],'events'=>['onClick'=>"jq.mobile.back();"]]);
@@ -1281,7 +1281,7 @@ final class html5 {
     public function inputContact($id, $prop) {
         $defs = ['type'=>'c','value'=>0,'suffix'=>'','store'=>0,'drop'=>false,'fill'=>false,'data'=>false,'callback'=>"contactsDetail(row.id, '', false);"];
         $attr = array_merge($defs, $prop['defaults']);
-        $url  = "'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1";
+        $url  = "'".BIZUNO_AJAX."&bizRt=contacts/main/managerRows&clr=1";
         $url .= "&type=" .(!empty($attr['drop'])  ? 'c' : $attr['type']);
         $url .= "&store=".(!empty($attr['store']) ? '1' : '0');
         $url .= "'";
@@ -1408,7 +1408,7 @@ final class html5 {
     public function inputInventory($id, $prop) {
         $defaults = ['width'=>250, 'panelWidth'=>350, 'delay'=>500, //'iconCls'=>"'icon-search'", 'hasDownArrow'=>'false',
             'idField'=>"'id'", 'textField'=>"'description_short'", 'mode'=>"'remote'"];
-        $defaults['url']     = "'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1'";
+        $defaults['url']     = "'".BIZUNO_AJAX."&bizRt=inventory/main/managerRows&clr=1'";
         $defaults['callback']= "jq('#item_cost').val(data.item_cost); jq('#full_price').val(data.full_price);";
         $defaults['columns'] = "[[{field:'id',hidden:true},{field:'sku',title:'".jsLang('sku')."',width:100},{field:'description_short',title:'".jsLang('description')."',width:200}]]";
         // override defaults

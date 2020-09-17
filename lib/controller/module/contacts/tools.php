@@ -58,7 +58,7 @@ class contactsTools
         $struc = $this->chartSalesData($rID, $type);
         $title = $type=='v' ? $this->lang['purchases_by_month'] : $this->lang['sales_by_month'];
         $output= ['divID'=>"chartContactsChart",'type'=>'column','attr'=>['legend'=>'none','title'=>$title],'data'=>array_values($struc)];
-        $action= BIZUNO_AJAX."&p=contacts/tools/chartSalesGo&rID=$rID&type=$type";
+        $action= BIZUNO_AJAX."&bizRt=contacts/tools/chartSalesGo&rID=$rID&type=$type";
         $js    = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');\n";
         $js   .= "ajaxDownload('frmContactsChart');\n";
         $js   .= "var dataContactsChart = ".json_encode($output).";\n";

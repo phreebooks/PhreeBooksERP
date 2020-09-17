@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-09-11
+ * @version    4.x Last Update: 2020-09-16
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -52,7 +52,7 @@ class bizunoSettings
                 'main'=> ['order'=>10,'label'=>lang('installed'),'type'=>'divs','classes'=>['areaView'],'divs'=>[
                     'head' => ['order'=>10,'type'=>'html','html'=>"<p>&nbsp;</p>"]]],
                 'ext' => ['order'=>20,'label'=>lang('extensions'),'type'=>'html','html'=>'',
-                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=bizuno/settings/getExtensions'"]]]]]];
+                    'options'=> ['href'=>"'".BIZUNO_AJAX."&bizRt=bizuno/settings/getExtensions'"]]]]]];
         $order  = 30;
         $modList= $this->getLocal();
         $store  = getModuleCache('bizuno', 'shop');
@@ -87,14 +87,14 @@ class bizunoSettings
         else                          { $html .= html5('', ['styles'=>['cursor'=>'pointer','max-height'=>'50px'],'attr'=>['type'=>'img','src'=>BIZUNO_URL.'images/phreesoft.png']]); }
         $html   .= '</div><div style="float:right">'."\n";
         if (version_compare($settings['version'], $version)<0 && !in_array(BIZUNO_HOST, ['phreesoft'])
-                && (($mID=='bizuno' && in_array(BIZUNO_HOST, ['phreebooks'])) || $isPaid)) { // if paid and needs upgrade
+                && (($mID=='bizuno' && in_array(BIZUNO_HOST, ['phreebooks'])) || ($isPaid && !in_array($mID, $this->core)))) { // if bizuno or paid ext
             $html .= $this->btnDownload($mID);
         }
         if (!$isPaid && !empty($store[$mID]['sku'])) { // if not paid but had been installed and has a store SKU, show purchase button
             $html .= $this->btnPurchase($mID, $store[$mID]['priceUSD'], $store[$mID]['url']);
         }
         if ( $hasProp && $isPaid) { // check to see if the module has admin settings
-            $html .= html5("prop_$mID", ['icon'=>'settings','events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=$mID/admin/adminHome'"]]);
+            $html .= html5("prop_$mID", ['icon'=>'settings','events'=>['onClick'=>"location.href='".BIZUNO_HOME."&bizRt=$mID/admin/adminHome'"]]);
         }
         $html .= '</div>'."\n";
         $html .= "<div><p>{$settings['description']}</p>";
@@ -161,7 +161,7 @@ class bizunoSettings
 //      $bizPass = getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_pass');
         $bizPost = ['bizID'=>$bizID, 'UserID'=>$bizUser, 'UserKey'=>$bizKey]; // , 'UserPW'=>$bizPass
         try {
-            $source = "https://www.phreesoft.com/wp-admin/admin-ajax.php?action=bizuno_ajax&p=myPortal/admin/loadExtension&mID=$moduleID";
+            $source = "https://www.phreesoft.com/wp-admin/admin-ajax.php?action=bizuno_ajax&bizRt=myPortal/admin/loadExtension&mID=$moduleID";
             $dest   = "temp/$moduleID.zip";
             msgDebug("\nSource = $source");
             msgDebug("\nDest = BIZUNO_DATA/$dest");
@@ -187,7 +187,7 @@ class bizunoSettings
                     unlink(BIZUNO_EXT."$moduleID/bizunoUPG.php");
                 }
                 dbClearCache();
-                $layout = array_replace_recursive($layout, ['content'=>['action'=>'href','link'=>BIZUNO_HOME."&p=bizuno/settings/manager"]]);
+                $layout = array_replace_recursive($layout, ['content'=>['action'=>'href','link'=>BIZUNO_HOME."&bizRt=bizuno/settings/manager"]]);
             } else { msgAdd('There was a problem retrieving your extension, please contact PhreeSoft for assistance.', 'trap'); }
         } catch (Exception $e) { msgAdd("We had an exception: ". print_r($e, true)); }
         @unlink(BIZUNO_DATA."temp/$moduleID.zip");
@@ -218,7 +218,7 @@ class bizunoSettings
         $settings['properties']['status'] = 0;
         $bizunoMod[$mID] = $settings;
         dbWrite(BIZUNO_DB_PREFIX.'configuration', ['config_value'=>json_encode($settings)], 'update', "config_key='$mID'");
-        $layout = array_replace_recursive($layout, ['content'=>['rID'=>$mID,'action'=>'href','link'=>BIZUNO_HOME."&p=bizuno/settings/manager"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['rID'=>$mID,'action'=>'href','link'=>BIZUNO_HOME."&bizRt=bizuno/settings/manager"]]);
     }
 
     /**
@@ -274,7 +274,7 @@ class bizunoSettings
         }
         dbClearCache();
         $cat    = getModuleCache($module, 'properties', 'category', false, 'bizuno');
-        $layout = array_replace_recursive($layout, ['content'=>['rID'=>$module,'action'=>'href','link'=>BIZUNO_HOME."&p=bizuno/settings/manager&cat=$cat"]]);
+        $layout = array_replace_recursive($layout, ['content'=>['rID'=>$module,'action'=>'href','link'=>BIZUNO_HOME."&bizRt=bizuno/settings/manager&cat=$cat"]]);
     }
 
     /**
@@ -330,7 +330,7 @@ class bizunoSettings
         msgLog("Removed module: $module");
         dbGetResult("DELETE FROM ".BIZUNO_DB_PREFIX."configuration WHERE config_key='$module'");
         dbClearCache(); // force reload of all users cache with next page access, menus and permissions, etc.
-        $layout= array_replace_recursive($layout, ['content'=>['rID'=>$module, 'action'=>'href', 'link'=>BIZUNO_HOME."&p=bizuno/settings/manager"]]);
+        $layout= array_replace_recursive($layout, ['content'=>['rID'=>$module, 'action'=>'href', 'link'=>BIZUNO_HOME."&bizRt=bizuno/settings/manager"]]);
     }
 
     /**

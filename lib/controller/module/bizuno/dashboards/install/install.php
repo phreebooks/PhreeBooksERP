@@ -47,7 +47,7 @@ class install
             'btnInstall' => ['attr'=>['type'=>'button','value'=>lang('install')],'styles'=>['cursor'=>'pointer'],
                 'events' => ['onClick'=> "jq('#frmInstall').submit();"]]];
         $html  = '<div><p>'.$this->lang['instructions'].'</p>';
-        $html .= '<form id="frmInstall" method="post" action="'.BIZUNO_AJAX.'&p=bizuno/admin/installPreFlight&bID='.$bID.'">';
+        $html .= '<form id="frmInstall" method="post" action="'.BIZUNO_AJAX.'&bizRt=bizuno/admin/installPreFlight&bID='.$bID.'">';
         if (!getUserCache('profile', 'email', false, '')) { // collect username and database info as not logged in
             $lang['userDesc']= "Please set a username (email only) and password to set as your administrator of your business.";
             $html .= "<fieldset><legend>User Settings</legend>".$lang['userDesc']."<br />";

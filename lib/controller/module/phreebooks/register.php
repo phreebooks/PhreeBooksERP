@@ -86,7 +86,7 @@ class phreebooksRegister
     private function dgRegister($name)
     {
         return ['id' => $name,
-            'attr'   => ['toolbar'=>"#{$name}Toolbar",'url'=>BIZUNO_AJAX."&p=phreebooks/register/managerRows"],
+            'attr'   => ['toolbar'=>"#{$name}Toolbar",'url'=>BIZUNO_AJAX."&bizRt=phreebooks/register/managerRows"],
             'source' => ['filters'=>[
                 'period'=> ['order'=>10,'options'=>['width'=>300],'label'=>lang('period'),'break'=>true,'values'=>viewKeyDropdown(localeDates(false, false, false, false, true)),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'fy', 'period')]],
                 'glAcct'=> ['order'=>20,'options'=>['width'=>350],'label'=>lang('gl_account'),'values'=>dbGLDropDown(false, ['0']),'attr'=>['type'=>'select','value'=>getModuleCache('phreebooks', 'settings', 'customers', 'gl_cash')]],

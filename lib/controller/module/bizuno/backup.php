@@ -63,10 +63,10 @@ class bizunoBackup
                     'formBOF'=> ['order'=>10,'type'=>'form',  'key' =>'frmAudit'],
                     'body'   => ['order'=>30,'type'=>'fields','keys'=>['auditDesc','btnAudit','audClnDesc','dateClean','btnClean']],
                     'formEOF'=> ['order'=>90,'type'=>'html',  'html'=>"</form>"]]],
-                'divAtch'=> ['type'=>'attach','defaults'=>['dgName'=>'dgBackup','path'=>$this->dirBackup,'title'=>lang('files'),'url'=>BIZUNO_AJAX."&p=bizuno/backup/mgrRows",'ext'=>$io->getValidExt('backup')]]],
+                'divAtch'=> ['type'=>'attach','defaults'=>['dgName'=>'dgBackup','path'=>$this->dirBackup,'title'=>lang('files'),'url'=>BIZUNO_AJAX."&bizRt=bizuno/backup/mgrRows",'ext'=>$io->getValidExt('backup')]]],
             'forms'   => [
-                'frmBackup'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/backup/save"]],
-                'frmAudit' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/backup/cleanAudit"]]],
+                'frmBackup'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/backup/save"]],
+                'frmAudit' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/backup/cleanAudit"]]],
             'fields'  => [
                 'backupDesc'=> ['order'=>10,'html'=>$this->lang['desc_backup'],     'attr'=>['type'=>'raw']],
 //              'incFiles'  => ['order'=>20,'label'=>$this->lang['desc_backup_all'],'attr'=>['type'=>'checkbox', 'value'=>'all']],
@@ -101,9 +101,9 @@ class bizunoBackup
                     'formBOF'=> ['order'=>50,'type'=>'form',    'key' =>'frmRestore'],
                     'body'   => ['order'=>60,'type'=>'fields',  'keys'=>['txtFile','fldFile','btnFile'],
                     'formEOF'=> ['order'=>90,'type'=>'html',    'html'=>"</form>"]]]]],
-            'toolbars'=> ['tbRestore' => ['icons'=>['cancel'=>['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/backup/manager'"]]]]],
+            'toolbars'=> ['tbRestore' => ['icons'=>['cancel'=>['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&bizRt=bizuno/backup/manager'"]]]]],
             'datagrid'=> ['dgRestore' => $this->dgRestore('dgRestore')],
-            'forms'   => ['frmRestore'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/backup/uploadRestore",'enctype'=>"multipart/form-data"]]],
+            'forms'   => ['frmRestore'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/backup/uploadRestore",'enctype'=>"multipart/form-data"]]],
             'fields'  => [
                 'txtFile'=> ['order'=>10,'html'=>lang('msg_io_upload_select')." ".sprintf(lang('max_upload'), $upload_mb)."<br />",'attr'=>['type'=>'raw']],
                 'fldFile'=> ['order'=>15,'attr'=>['type'=>'file']],
@@ -184,7 +184,7 @@ class bizunoBackup
         $html  = "<p>Click here to start your upgrade. Please make sure all users are not using the system. Once complete, all users will need to sign off and back in to reset their cache.</p>";
         $html .= html5('', $btnUpgrade);
         $data = ['title'=> lang('bizuno_upgrade'),
-            'toolbars'=> ['tbUpgrade'=>['icons'=>['cancel'=>['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/backup/manager'"]]]]],
+            'toolbars'=> ['tbUpgrade'=>['icons'=>['cancel'=>['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&bizRt=bizuno/backup/manager'"]]]]],
             'divs'    => [
                 'toolbars'=> ['order'=>20,'type'=>'toolbar','key'=>'tbUpgrade'],
                 'body'    => ['order'=>50,'type'=>'divs','classes'=>['areaView'],'divs'=>[
@@ -213,7 +213,7 @@ class bizunoBackup
             'header' => "Content-type: application/x-www-form-urlencoded\r\nContent-Length: ".strlen($data)."\r\n",
             'content'=> $data]]);
         try {
-            $source = "https://www.phreesoft.com/wp-admin/admin-ajax.php?action=bizuno_ajax&p=myPortal/admin/upgradeBizuno&host=".BIZUNO_HOST;
+            $source = "https://www.phreesoft.com/wp-admin/admin-ajax.php?action=bizuno_ajax&bizRt=myPortal/admin/upgradeBizuno&host=".BIZUNO_HOST;
             $dest   = $zipFile;
             msgDebug("\nReady to fetch $source to $zipFile");
             @copy($source, $dest, $context);
@@ -292,7 +292,7 @@ class bizunoBackup
     private function dgRestore($name='dgRestore')
     {
         $data = ['id'=>$name, 'title'=>lang('files'),
-            'attr'   => ['idField'=>'title', 'url'=>BIZUNO_AJAX."&p=bizuno/backup/mgrRows"],
+            'attr'   => ['idField'=>'title', 'url'=>BIZUNO_AJAX."&bizRt=bizuno/backup/mgrRows"],
             'columns'=> [
                 'action'=> ['order'=> 1,'label'=>lang('action'),  'attr'=>['width'=>60],
                     'events' =>['formatter'=>"function(value,row,index) { return {$name}Formatter(value,row,index); }"],

@@ -135,7 +135,7 @@ class bizunoUsers
                 'genProp' => ['label'=>lang('properties'),'type'=>'fields','keys'=>$fldProp],
                 'genAtch' => ['type'=>'attach','defaults'=>['path'=>getModuleCache($this->moduleID,'properties','usersAttachPath'),'prefix'=>"rID_{$rID}_"]],
                 'pnlEmail'=> ['label'=>lang('settings'),  'type'=>'fields','keys'=>$eKeys]],
-            'forms'   => ['frmUsers'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/users/save"]]],
+            'forms'   => ['frmUsers'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/users/save"]]],
             'fields'  => $fields,
             'text'    => ['pw_title' => $rID?lang('password_lost'):lang('password')],
             'jsHead'  => ['init'=>"var usersContact = ".json_encode([['id'=>$cID, 'primary_name'=>$name]]).";"],
@@ -315,7 +315,7 @@ class bizunoUsers
         }
         return ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
             'strict' => true, // forces limit of the fields read to columns listed, roles inactive is overwriting users inactive
-            'attr'   => ['toolbar'=>"#{$name}Toolbar",'idField'=>'admin_id', 'url'=>BIZUNO_AJAX."&p=bizuno/users/managerRows"],
+            'attr'   => ['toolbar'=>"#{$name}Toolbar",'idField'=>'admin_id', 'url'=>BIZUNO_AJAX."&bizRt=bizuno/users/managerRows"],
             'events' => [
                 'rowStyler'    => "function(index, row) { if (row.inactive == '1') { return {class:'row-inactive'}; }}",
                 'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accUsers', 'dgUsers', 'divUsersDetail', '".lang('details')."', 'bizuno/users/edit', rowData.admin_id); }"],

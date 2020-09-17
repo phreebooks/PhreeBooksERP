@@ -87,7 +87,7 @@ class open_j12
                 $total += $entry['total_amount'];
                 $left   = viewDate($entry['post_date'])." - ".viewText($entry['primary_name_b'], $this->trim);
                 $right  = viewFormat($entry['total_amount'], 'currency');
-                $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
+                $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&bizRt=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
                 $rows[] = viewDashLink($left, $right, $action);
             }
             $currencies->iso  = getDefaultCurrency();

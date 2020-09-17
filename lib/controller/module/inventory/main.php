@@ -278,7 +278,7 @@ class inventoryMain
                     'genGL'   => ['order'=>60,'type'=>'panel','classes'=>['block33'],'key'=>'genGL'],
                     'genAtch' => ['order'=>80,'type'=>'panel','classes'=>['block66'],'key'=>'genAtch']]],
                 'history' => ['order'=>30,'label'=>lang('history'),'hidden'=>$rID?false:true,'type'=>'html','html'=>'',
-                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=inventory/main/history&rID=$rID'"]]]]],
+                    'options'=> ['href'=>"'".BIZUNO_AJAX."&bizRt=inventory/main/history&rID=$rID'"]]]]],
             'panels' => [
                 'genProp' => ['label'=>lang('properties'),                              'type'=>'fields','keys'=>$fldProp],
                 'genStat' => ['label'=>lang('status'),                                  'type'=>'fields','keys'=>$fldStatus],
@@ -287,7 +287,7 @@ class inventoryMain
                 'genVend' => ['label'=>lang('details').' ('.lang('vendors').')',        'type'=>'fields','keys'=>$fldVend],
                 'genGL'   => ['label'=>lang('details').' ('.lang('general_ledger').')', 'type'=>'fields','keys'=>$fldGL],
                 'genAtch' => ['type'=>'attach','defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>"rID_{$rID}_"]]],
-            'forms'  => ['frmInventory'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=inventory/main/save"]]],
+            'forms'  => ['frmInventory'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=inventory/main/save"]]],
             'fields' => $structure,
             'jsHead' => ['invHead' => "var curIndex=undefined; var invTypeMsg=[]; curIndex=0;
 function preSubmit() { bizGridSerializer('dgAssembly', 'dg_assy'); bizGridSerializer('dgVendors', 'invVendors'); return true; }"],
@@ -296,7 +296,7 @@ function preSubmit() { bizGridSerializer('dgAssembly', 'dg_assy'); bizGridSerial
         customTabs($data, 'inventory', 'tabInventory'); // add custom tabs
         if (in_array($data['fields']['inventory_type']['attr']['value'], ['ma','sa'])) { // assembly, add tab
             $data['tabs']['tabInventory']['divs']['bom'] = ['order'=>20,'label'=>lang('inventory_assy_list'),'type'=>'html','html'=>'',
-                'options'=>['href'=>"'".BIZUNO_AJAX."&p=inventory/main/managerBOM&rID=$rID'"]];
+                'options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=inventory/main/managerBOM&rID=$rID'"]];
         }
         $layout = array_replace_recursive($layout, $data);
     }
@@ -743,7 +743,7 @@ function preSubmit() { bizGridSerializer('dgAssembly', 'dg_assy'); bizGridSerial
             case 'n': $f0_value = "inactive='1'"; break;
         }
         $data = ['id'=> $name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
-            'attr'     => ['idField'=>'id', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&p=inventory/main/managerRows"],
+            'attr'     => ['idField'=>'id', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&bizRt=inventory/main/managerRows"],
             'events'   => [
                 'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accInventory', 'dgInventory', 'divInventoryDetail', '".jsLang('details')."', 'inventory/main/edit', rowData.id); }",
                 'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; }}"],
@@ -809,7 +809,7 @@ function preSubmit() { bizGridSerializer('dgAssembly', 'dg_assy'); bizGridSerial
                     'events' => ['formatter'=>"function(value,row,index){ return {$name}Formatter(value,row,index); }"],
                     'actions'=> ['trash'=>['icon'=>'trash','order'=>20,'size'=>'small','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'sku'=> ['order'=>30,'label'=>lang('sku'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'center'],
-                    'events' => ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1',
+                    'events' => ['editor'=>"{type:'combogrid',options:{ url:'".BIZUNO_AJAX."&bizRt=inventory/main/managerRows&clr=1',
                         width:150, panelWidth:320, delay:500, idField:'sku', textField:'sku', mode:'remote',
                         onClickRow: function (idx, data) {
                             var descEditor= jq('#$name').datagrid('getEditor', {index:curIndex,field:'description'});
@@ -858,15 +858,15 @@ function preSubmit() { bizGridSerializer('dgAssembly', 'dg_assy'); bizGridSerial
         }
         return ['id' => $props['name'],
             'attr'   => ['title'=>$props['title'], 'pagination'=>false, 'idField'=>'id'],
-            'events' => ['url'=>"'".BIZUNO_AJAX."&p=inventory/main/historyRows&jID=$jID&sku=$sku'"], // 'data'=> $props['data']],
+            'events' => ['url'=>"'".BIZUNO_AJAX."&bizRt=inventory/main/historyRows&jID=$jID&sku=$sku'"], // 'data'=> $props['data']],
             'columns'=> ['id'=> ['attr'=>['hidden'=>true]],
                 'action'     => ['order'=>1,'label'=>lang('action'),'attr'=>['width'=>60,'hidden'=>$hide_cost?true:false],
                     'events' => ['formatter'=>"function(value,row,index) { return {$props['name']}Formatter(value,row,index); }"],
                     'actions'=> [
-                        'edit'  => ['order'=>20,'icon'=>'edit',  'label'=>lang('edit'),          'hidden'=>$hide>0?false:true,'events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD');"]],
+                        'edit'  => ['order'=>20,'icon'=>'edit',  'label'=>lang('edit'),          'hidden'=>$hide>0?false:true,'events'=>['onClick'=>"winHref(bizunoHome+'&bizRt=phreebooks/main/manager&rID=idTBD');"]],
                         'toggle'=> ['order'=>40,'icon'=>'toggle','label'=>lang('toggle_status'), 'hidden'=>$hide>3?false:true,'events'=>['onClick'=>"jsonAction('phreebooks/main/toggleWaiting&jID=$jID&dgID={$props['name']}', idTBD);"]],
                         'dates' => ['order'=>50,'icon'=>'date',  'label'=>lang('delivery_dates'),'hidden'=>$hide>3?false:true,'events'=>['onClick'=>"windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".lang('delivery_dates')."', 500, 400);"]],
-                        'fill'  => ['order'=>80,'icon'=>$icon,   'label'=>$label,                'hidden'=>$hide>2?false:true,'events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD&jID=$invID&bizAction=inv');"]]]],
+                        'fill'  => ['order'=>80,'icon'=>$icon,   'label'=>$label,                'hidden'=>$hide>2?false:true,'events'=>['onClick'=>"winHref(bizunoHome+'&bizRt=phreebooks/main/manager&rID=idTBD&jID=$invID&bizAction=inv');"]]]],
                 'invoice_num'=> ['order'=>20,'label'=>lang('journal_main_invoice_num', $jID),'attr'=>['width'=>100,'resizable'=>true]],
                 'store_id'   => ['order'=>30,'label'=>lang('contacts_short_name_b'),   'attr'=>['width'=>100,'resizable'=>true,'hidden'=>$stores?false:true]],
                 'post_date'  => ['order'=>40,'label'=>lang('post_date'),               'attr'=>['width'=>150,'resizable'=>true]],

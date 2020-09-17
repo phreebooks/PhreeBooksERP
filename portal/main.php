@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-09-07
+ * @version    3.x Last Update: 2020-09-16
  * @filesource /portal/main.php
  */
 
@@ -57,12 +57,7 @@ class main //extends controller
         $this->initBusiness();
         $this->initUserCache();
         $this->initModuleCache();
-        clean('p', ['format'=>'command', 'default'=>'bizuno/main/bizunoHome'], 'get');
-        if (getUserCache('profile', 'biz_id', false, 0)) { // keep going
-        } elseif (!in_array($GLOBALS['bizunoModule'], ['bizuno'])) { // not logged in or not installed, restrict to parts of module bizuno
-            $_GET['p'] = '';
-            clean('p', ['format'=>'command','default'=>'bizuno/main/bizunoHome'], 'get');
-        }
+        clean('bizRt', 'command', 'get');
         compose($GLOBALS['bizunoModule'], $GLOBALS['bizunoPage'], $GLOBALS['bizunoMethod'], $this->layout);
         return $this->layout;
     }
@@ -138,7 +133,7 @@ class main //extends controller
                 $bizunoUser = json_decode($usrData['settings'], true);
             } elseif (!$usrData && empty($GLOBALS['noBizunoDB'])) {
                 msgAdd("You do not have an account, please see your Bizuno administrator!");
-                unset($_GET['p']);
+                unset($_GET['bizRt']);
             }
         } elseif (!empty($GLOBALS['noBizunoDB'])) { $this->setInstallView(); }
         $this->setLanguage($bizunoUser);

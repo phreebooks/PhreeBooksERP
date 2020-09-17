@@ -27,9 +27,9 @@ $lang = [
     'msg_welcome'=> '<p>Thank you for your interest in Bizuno. PhreeSoft believes that a good business accounting/ERP application must revolve around your business and make you life easier. To get the most out of Bizuno, spend a few minutes before you start with your Bizuno business settings.</p>
 <p>Here are a few ideas to help you get started. NOTE: Your chart of accounts and default currency need to be set BEFORE any journal entries are made. You may also want to spend a few minutes reading the <a href="https://www.phreesoft.com/biz-school/?section=working-with-bizuno" target="_blank">Working With Bizuno</a> guide in the PhreeSoft Biz School. The Biz School is PhreeSoft\'s online resource for all things Bizuno.</p>
 <ul>
-<li>Set up your <a href="'.BIZUNO_HOME.'&p=bizuno/admin/adminHome&tab=3" target="_blank">business</a> information and connect with your PhreeSoft account.</li>
-<li>Set up your <a href="'.BIZUNO_HOME.'&p=contacts/main/manager&type=c" target="_blank">customers</a> or <a href="'.BIZUNO_HOME.'&p=contacts/main/manager&type=v" target="_blank">vendors</a>.</li>
-<li>Configure your <a href="'.BIZUNO_HOME.'&p=phreebooks/admin/adminHome&tab=3" target="_blank">sales tax</a> or <a href="'.BIZUNO_HOME.'&p=phreebooks/admin/adminHome&tab=4" target="_blank">purchase tax</a> rates.</li>
-<li>Have inventory? You can add it <a href="'.BIZUNO_HOME.'&p=inventory/main/manager" target="_blank">here</a> OR visit the Biz School for how to import from a .csv file.</li>
+<li>Set up your <a href="'.BIZUNO_HOME.'&bizRt=bizuno/admin/adminHome&tab=3" target="_blank">business</a> information and connect with your PhreeSoft account.</li>
+<li>Set up your <a href="'.BIZUNO_HOME.'&bizRt=contacts/main/manager&type=c" target="_blank">customers</a> or <a href="'.BIZUNO_HOME.'&bizRt=contacts/main/manager&type=v" target="_blank">vendors</a>.</li>
+<li>Configure your <a href="'.BIZUNO_HOME.'&bizRt=phreebooks/admin/adminHome&tab=3" target="_blank">sales tax</a> or <a href="'.BIZUNO_HOME.'&bizRt=phreebooks/admin/adminHome&tab=4" target="_blank">purchase tax</a> rates.</li>
+<li>Have inventory? You can add it <a href="'.BIZUNO_HOME.'&bizRt=inventory/main/manager" target="_blank">here</a> OR visit the Biz School for how to import from a .csv file.</li>
 </ul>
 <p>We hope you enjoy the application and remember that PhreeSoft support is always there to help.</p>'];

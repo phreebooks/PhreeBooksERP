@@ -47,6 +47,8 @@ After uploading the files to your server, navigate to your root url and follow t
 
 == Changelog ==
 
+= 5.4.4.1 =
+2020-09-17 - Incorporate Bizuno Library 4.4.1. Redefine path get variable to avoid conflict with WordPress full page mode. 
 = 5.4.4.0 =
 2020-09-13 - Incorporate Bizuno Library 4.4.0. Fix locale bug and issue retrieving account information from PhreeSoft. 
 = 5.4.3.0 =

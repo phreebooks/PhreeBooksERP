@@ -116,7 +116,7 @@ class phreebooksTax
             'toolbars'=> ['tbTax'=>['icons'=>[
                 "taxSave$type"=> ['order'=>20,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"taxPreSubmit$type('$type'); jq('#frmTax$type').submit();"]],
                 "taxNew$type" => ['order'=>40,'icon'=>'new', 'label'=>lang('new'), 'events'=>['onClick'=>"accordionEdit('accTax$type','dgTax$type','divTax{$type}Detail','".jsLang('details')."', 'phreebooks/tax/edit&type=$type', 0);"]]]]],
-            'forms'   => ["frmTax$type"=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/tax/save&type=$type"]]],
+            'forms'   => ["frmTax$type"=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/tax/save&type=$type"]]],
             'datagrid'=> ['dgTaxVendors'=>$this->dgTaxVendors("dgTaxVendors$type", $type, $rates)],
             'fields'  => $struc,
             'jsHead'  => ['pbChart'=>"var pbChart=bizDefaults.glAccounts.rows;"],
@@ -288,7 +288,7 @@ function taxPreSubmit{$type}(type) {
             case '1': $f0_value = BIZUNO_DB_PREFIX."tax_rates.inactive='1'"; break;
         }
         $data = ['id'=>$name,'rows'=>$this->defaults['rows'],'page'=>$this->defaults['page'],
-            'attr'   => ['toolbar'=>"#{$name}Bar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=phreebooks/tax/managerRows&type=$type"],
+            'attr'   => ['toolbar'=>"#{$name}Bar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&bizRt=phreebooks/tax/managerRows&type=$type"],
             'events' => [
                 'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accTax$type', 'dgTax$type', 'divTax{$type}Detail', '".lang('details')."', 'phreebooks/tax/edit&type=$type', rowData.id); }",
                 'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; } else {
@@ -353,7 +353,7 @@ function taxPreSubmit{$type}(type) {
                         'attr'  => ['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'center'],
                         'events'=> ['formatter'=>"function(value, row) { return row.cTitle; }",
                             'editor'=>"{type:'combogrid', options:{width:130, panelWidth:750, delay:900, idField:'id', textField:'primary_name', mode:'remote',
-    url:'".BIZUNO_AJAX."&p=contacts/main/managerRows&clr=1&type=v', selectOnNavigation:false,
+    url:'".BIZUNO_AJAX."&bizRt=contacts/main/managerRows&clr=1&type=v', selectOnNavigation:false,
     onSelect:function(index,row) { bizSelEdSet('$name',curIndex,'text',row.short_name); bizGridEdSet('$name',curIndex,'glAcct',row.gl_account); bizNumEdSet('$name',curIndex,'rate', 0); },
     columns: [[
       {field:'id',          hidden:true},

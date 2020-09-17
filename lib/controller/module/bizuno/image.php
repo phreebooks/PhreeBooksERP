@@ -153,7 +153,7 @@ function imgRefresh() {
     var path   = jq('#imgMgrPath').val();
     var search = jq('#imgSearch').val();
     var action = jq('#imgAction').val();
-    var shref  = '".BIZUNO_AJAX."&p=bizuno/image/manager&imgTarget='+target+'&imgMgrPath='+path+'&imgSearch='+search+'&imgAction=';
+    var shref  = '".BIZUNO_AJAX."&bizRt=bizuno/image/manager&imgTarget='+target+'&imgMgrPath='+path+'&imgSearch='+search+'&imgAction=';
     if (action == 'upload') {
         jq('#frmImgMgr').submit(function (e) {
             jq.ajax({
@@ -188,7 +188,7 @@ function imgRefresh() {
         $search  = clean('search','text', 'get');
         $path    = clean('path',  'path_rel','get');
         $fn      = clean('fn',    'text', 'get');
-        $href    = BIZUNO_AJAX."&p=bizuno/image/manager&imgTarget=$target&imgMgrPath=$path&imgSearch=$search&imgAction=refresh";
+        $href    = BIZUNO_AJAX."&bizRt=bizuno/image/manager&imgTarget=$target&imgMgrPath=$path&imgSearch=$search&imgAction=refresh";
         $fullPath= clean("images/$path/$fn", 'path_rel'); // remove double slashes, if present
         msgDebug("\nLooking for file to delete file or folder at full path: $fullPath");
         if (is_dir(BIZUNO_DATA.$fullPath)) {

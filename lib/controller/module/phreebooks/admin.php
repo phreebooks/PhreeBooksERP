@@ -227,12 +227,12 @@ class phreebooksAdmin {
                 'events' => ['onClick'=>"if (confirm('".$this->lang['msg_gl_db_purge_confirm']."')) jsonAction('phreebooks/tools/glPurge', 0, jq('#purge_db').val());"]]];
         $data    = [
             'tabs'    => ['tabAdmin'=>['divs'=>[
-                'tabGL'    => ['order'=>20,'label'=>lang('phreebooks_chart_of_accts'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/chart/manager'"]],
-                'tabCur'   => ['order'=>30,'label'=>lang('currencies'),     'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/currency/manager'"]],
-                'tabTaxc'  => ['order'=>40,'label'=>lang('sales_tax'),      'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/tax/manager&type=c'"]],
-                'tabTaxv'  => ['order'=>50,'label'=>lang('purchase_tax'),   'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/tax/manager&type=v'"]],
+                'tabGL'    => ['order'=>20,'label'=>lang('phreebooks_chart_of_accts'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=phreebooks/chart/manager'"]],
+                'tabCur'   => ['order'=>30,'label'=>lang('currencies'),     'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=phreebooks/currency/manager'"]],
+                'tabTaxc'  => ['order'=>40,'label'=>lang('sales_tax'),      'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=phreebooks/tax/manager&type=c'"]],
+                'tabTaxv'  => ['order'=>50,'label'=>lang('purchase_tax'),   'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=phreebooks/tax/manager&type=v'"]],
                 'tabFY'    => ['order'=>80,'label'=>lang('fiscal_calendar'),'type'=>'html','html'=>'',
-                    'options'=>['href'=>"'".BIZUNO_AJAX."&p=phreebooks/admin/managerFY'"]],
+                    'options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=phreebooks/admin/managerFY'"]],
                 'tabTools' => ['order'=>90,'label'=>$this->lang['journal_tools'],'type'=>'divs','divs'=>[
                     'general' => ['order'=>20,'type'=>'divs','classes'=>['areaView'],'divs'=>[
                         'repostGL' => ['order'=>10,'type'=>'panel','classes'=>['block66'],'key'=>'repostGL'],
@@ -247,7 +247,7 @@ class phreebooksAdmin {
                 'cleanAtch'=> ['label'=>$this->lang['pb_attach_clean_title'],  'type'=>'fields','keys'=>['cleanAtchDesc','dateAtchCln','btnAtchCln']],
                 'purgeGL'  => ['label'=>$this->lang['msg_gl_db_purge'],        'type'=>'fields','keys'=>['purgeGlDesc','purge_db','btn_purge']]],
             'datagrid'=> ['dgCurrency'  =>$currency->dgCurrency('dgCurrency', $security)],
-            'forms'   => ['frmCurrency' =>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/save"]]],
+            'forms'   => ['frmCurrency' =>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/currency/save"]]],
             'fields'  => $fields,
             'jsHead'  => ['dataCurrency'=>"var dataCurrency = ".json_encode(array_values(getModuleCache('phreebooks','currency','iso'))).";"],
             'jsBody'  => ['init'=>"jq('#repost_begin').datebox({ required:true }); jq('#repost_end').datebox({ required:true });"]];
@@ -356,7 +356,7 @@ class phreebooksAdmin {
         foreach ($dbFYs as $row) { $FYs[] = ['id' => $row['fiscal_year'], 'text' => $row['fiscal_year']]; }
         $fy        = clean('fy', ['format'=>'integer', 'default'=>getModuleCache('phreebooks', 'fy', 'fiscal_year', false, date('Y'))], 'get');
         $fiscalY   = ['label'=>lang('phreebooks_fiscal_year'),'values'=>$FYs,'attr'=>['type'=>'select','value'=>$fy],
-            'events' => ['onChange'=>"var tab=jq('#tabAdmin').tabs('getSelected'); tab.panel( 'refresh', '".BIZUNO_AJAX."&p=phreebooks/admin/managerFY&fy='+bizSelGet('fy') );"]];
+            'events' => ['onChange'=>"var tab=jq('#tabAdmin').tabs('getSelected'); tab.panel( 'refresh', '".BIZUNO_AJAX."&bizRt=phreebooks/admin/managerFY&fy='+bizSelGet('fy') );"]];
         $btnSaveFy = ['icon'=>'save','size'=>'large',
             'events' => ['onClick'=>"divSubmit('phreebooks/tools/fySave', 'fyCal');"]];
         $max_posted= dbGetValue(BIZUNO_DB_PREFIX."journal_main",    "MAX(period) AS period", false, false);

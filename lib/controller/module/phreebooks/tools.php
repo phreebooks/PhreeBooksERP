@@ -142,7 +142,7 @@ class phreebooksTools
     public function fyCloseValidate(&$layout=[])
     {
         $icnFyGo = ['attr'=>['type'=>'button', 'value'=>$this->lang['fy_del_btn_go']],
-            'events'=>  ['onClick'=>"jq('#tabAdmin').tabs('add',{title:'Close FY',href:'".BIZUNO_AJAX."&p=phreebooks/tools/fyCloseHome'}); bizWindowClose('winFyClose');"]];
+            'events'=>  ['onClick'=>"jq('#tabAdmin').tabs('add',{title:'Close FY',href:'".BIZUNO_AJAX."&bizRt=phreebooks/tools/fyCloseHome'}); bizWindowClose('winFyClose');"]];
         $icnCancel = ['attr'=>['type'=>'button', 'value'=>$this->lang['fy_del_btn_cancel']],
             'events'=>  ['onClick'=>"bizWindowClose('winFyClose');"]];
         $html  = '<p>'.$this->lang['fy_del_desc'] .'</p><div style="float:right">'.html5('', $icnFyGo).'</div><div>'.html5('', $icnCancel).'</div>';

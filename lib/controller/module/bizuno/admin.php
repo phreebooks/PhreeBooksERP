@@ -250,8 +250,8 @@ class bizunoAdmin
         $stats = $stmt->fetchAll(\PDO::FETCH_ASSOC);
         $data  = [
             'tabs'    => ['tabAdmin'=>['divs'=>[
-//              'mail' => ['order'=>30,'label'=>lang('mail_accounts'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=bizuno/admin/mailMgr'"]],
-                'tabs' => ['order'=>40,'label'=>lang('extra_tabs'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=bizuno/tabs/manager'"]],
+//              'mail' => ['order'=>30,'label'=>lang('mail_accounts'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=bizuno/admin/mailMgr'"]],
+                'tabs' => ['order'=>40,'label'=>lang('extra_tabs'),'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=bizuno/tabs/manager'"]],
                 'tools'=> ['order'=>80,'label'=>lang('tools'),'type'=>'divs','divs'=>[
                     'status' => ['order'=>20,'type'=>'divs','classes'=>['areaView'],'divs'=>[
                         'stsSet' => ['order'=>10,'type'=>'panel','classes'=>['block66'],'key'=>'stsSet'],
@@ -268,7 +268,7 @@ class bizunoAdmin
                 'encDel' => ['label'=>$this->lang['btn_security_clean'],  'type'=>'fields','keys'=>$output['keys']['keys2']],
                 'fixCmt' => ['label'=>$this->lang['admin_fix_comments'],  'type'=>'fields','keys'=>$output['keys']['keys3']]],
             'datagrid'=> ['bizStats'=>$this->dgStats('bizStats')],
-            'forms'   => ['frmStatus'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/settings/statusSave"]]],
+            'forms'   => ['frmStatus'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/settings/statusSave"]]],
             'fields'  => $output['fields'],
             'jsHead'  => [$this->moduleID=>"var bizStatsData = ".json_encode($stats).";"],
             'jsBody'  => ['company_logo'=>"imgManagerInit('company_logo', '$imgSrc', '$imgDir', 'images/');"],
@@ -445,7 +445,7 @@ class bizunoAdmin
     jq('#instNext').linkbutton({ iconCls:'iconL-loading',text:'' });
     divData = jq('#divInstall :input').serializeObject();
     jq.ajax({
-        url:     '".BIZUNO_AJAX."&p=bizuno/admin/installBizuno&bID='+bizID,
+        url:     '".BIZUNO_AJAX."&bizRt=bizuno/admin/installBizuno&bID='+bizID,
         type:    'post',
         data:    divData,
         async:   false,

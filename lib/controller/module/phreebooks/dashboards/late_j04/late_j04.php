@@ -79,7 +79,7 @@ class late_j04
                     $total += $item['total_amount'];
                     $left   = viewDate($item['date_1'])." - ".viewText($item['description'], $this->trim);
                     $right  = viewFormat($item['total_amount'], 'currency');
-                    $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
+                    $action = html5('', ['events'=>['onClick'=>"winHref(bizunoHome+'&bizRt=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]]);
                     $rows[] = viewDashLink($left, $right, $action);
                 }
             }

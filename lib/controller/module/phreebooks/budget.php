@@ -50,7 +50,7 @@ class phreebooksBudget
                 'divWizard'=> ['order'=>40,'type'=>'html', 'html'=>$this->getViewBudget()],
                 'fsetfoot' => ['order'=>41,'type'=>'html', 'html'=>"</form></fieldset>"],
                 'dgBudget' => ['order'=>60,'label'=>$title,'type'=>'datagrid','key'=>'manager']],
-            'forms'    => ['frmWizard'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/budget/wizard"]]],
+            'forms'    => ['frmWizard'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/budget/wizard"]]],
             'datagrid' => ['manager'=>$this->dgBudget('dgBudget', $security)],
             'jsHead'   => ['init'=>$this->getViewBudgetJS()],
             'jsReady'  => ['init'=>"ajaxForm('frmWizard');"]];
@@ -140,7 +140,7 @@ function budgetDistribute() {
         // dbGLDropDown(false, ['0']) - for cash type
         return ['id' => $name,
             'type'   => 'edatagrid',
-            'attr'   => ['url'=>BIZUNO_AJAX."&p=phreebooks/budget/managerRows",'toolbar'=>"#{$name}Toolbar",'pagination'=>false,'singleSelect'=> true],
+            'attr'   => ['url'=>BIZUNO_AJAX."&bizRt=phreebooks/budget/managerRows",'toolbar'=>"#{$name}Toolbar",'pagination'=>false,'singleSelect'=> true],
             'events' => [
                 'onEndEdit'  => "function(index) { if (index!=12) budgetTotal(); }",
                 'rowStyler'  => "function(index, row) { if (row.code=='".getDefaultCurrency()."') { return {class:'row-default'}; }}"],

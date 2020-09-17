@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-07-10
+ * @version    3.x Last Update: 2020-09-16
  * @filesource portal/view.php
  */
 
@@ -43,7 +43,7 @@ class portalView
         $favicon = $logoPath ? BIZUNO_URL_FS."&src=".getUserCache('profile', 'biz_id')."/images/$logoPath" : BIZUNO_LOGO;
         // Create page Head HTML
         $data['head']['metaTitle']   = ['order'=>20,'type'=>'html','html'=>'<title>'.(!empty($data['title']) ? $data['title'] : getModuleCache('bizuno', 'properties', 'title')).'</title>'];
-        $data['head']['metaPath']    = ['order'=>22,'type'=>'html','html'=>'<!-- p:'.clean('p',['format'=>'path_rel','default'=>''],'get').' -->'];
+        $data['head']['metaPath']    = ['order'=>22,'type'=>'html','html'=>'<!-- route:'.clean('bizRt',['format'=>'path_rel','default'=>''],'get').' -->'];
         $data['head']['metaContent'] = ['order'=>24,'type'=>'html','html'=>'<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />'];
         $data['head']['metaViewport']= ['order'=>26,'type'=>'html','html'=>'<meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=0.9, maximum-scale=0.9" />'];
         $data['head']['metaMobile']  = ['order'=>30,'type'=>'html','html'=>'<meta name="mobile-web-app-capable" content="yes" />'];

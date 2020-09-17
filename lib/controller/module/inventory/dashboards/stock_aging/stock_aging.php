@@ -54,7 +54,7 @@ class stock_aging
         $this->struc = $this->settingsStructure();
         $this->ageFld= dbFieldExists(BIZUNO_DB_PREFIX.'inventory', 'shelf_life') ? true : false;
         $iconExp     = ['attr'=>['type'=>'button','value'=>lang('download')],'events'=>['onClick'=>"jq('#form{$this->code}').submit();"]];
-        $action      = BIZUNO_AJAX."&p=$this->category/tools/stockAging";
+        $action      = BIZUNO_AJAX."&bizRt=$this->category/tools/stockAging";
         $js          = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');
 ajaxDownload('form{$this->code}');
 function chart{$this->code}() {

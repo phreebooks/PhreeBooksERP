@@ -34,7 +34,7 @@ class phreebooksReconcile
     {
         if (!$security = validateSecurity('phreebooks', 'recon', 3)) { return; }
         $this->helpIndex= 'cash-reconciliation';
-        $htmlHead = html5('frmReconcile',['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/reconcile/save"]]).
+        $htmlHead = html5('frmReconcile',['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/reconcile/save"]]).
                     html5('item_array',  ['attr'=>['type'=>'hidden']]);
         $data = ['title'=> lang('phreebooks_recon'),
             'toolbars'=> ['tbRecon'=>['icons'=>[
@@ -230,7 +230,7 @@ class phreebooksReconcile
         $stmt_balance = dbGetValue(BIZUNO_DB_PREFIX."journal_history", 'stmt_balance', "period='{$this->defaults['period']}' AND gl_account='{$this->defaults['glAcct']}'");
         return ['id'=>$name, 'type'=>'treegrid', 'title'=>lang('phreebooks_recon'),
             'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'treeField'=>'title', 'singleSelect'=>false, 'showFooter'=>true, 'animate'=>true, 'pagination'=>false, 'width'=>1000,
-                'url' => BIZUNO_AJAX."&p=phreebooks/reconcile/managerRows"],
+                'url' => BIZUNO_AJAX."&bizRt=phreebooks/reconcile/managerRows"],
             'events' => [
                 'onLoadSuccess'=> "function(row, data){ reconInit(row, data); }",
                 'onCheck'      => "function(row)      { reconCheck(row); reconTotal(); }",

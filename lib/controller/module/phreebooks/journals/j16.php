@@ -232,7 +232,7 @@ class j16 extends jCommon
     var opts = jq('#dgJournalItem').datagrid('getColumnOption', 'balance');  opts.editor.options.disabled = true;
     totalUpdate();
 }",
-                'onBeforeEdit' => "function(rowIndex) { var edtURL = jq(this).edatagrid('getColumnOption','sku'); edtURL.editor.options.url = '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID='+jq('#store_id').val(); }",
+                'onBeforeEdit' => "function(rowIndex) { var edtURL = jq(this).edatagrid('getColumnOption','sku'); edtURL.editor.options.url = '".BIZUNO_AJAX."&bizRt=inventory/main/managerRows&clr=1&f0=a&bID='+jq('#store_id').val(); }",
                 'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; }",
                 'onDestroy'    => "function(rowIndex) { totalUpdate(); curIndex = undefined; }",
                 'onAdd'        => "function(rowIndex) { setFields(rowIndex); }"],
@@ -246,7 +246,7 @@ class j16 extends jCommon
                     'actions'=> ['trash'=>['order'=>20,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'sku'        => ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>150,'sortable'=>true,'resizable'=>true,'align'=>'center'],
                     'events' => ['editor'=>"{type:'combogrid',options:{ width:150, panelWidth:540, delay:500, idField:'sku', textField:'sku', mode:'remote',
-    url:        '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID=$store_id',
+    url:        '".BIZUNO_AJAX."&bizRt=inventory/main/managerRows&clr=1&f0=a&bID=$store_id',
     onClickRow: function (idx, data) { adjFill(data); },
     columns:    [[{field:'sku',title:'".jsLang('sku')."',width:100},{field:'description_short',title:'".jsLang('description')."',width:200},{field:'qty_stock',title:'$on_hand', align:'right',width:90},{field:'qty_po',title:'$on_order',align:'right',width:90}]]
 }}"]],

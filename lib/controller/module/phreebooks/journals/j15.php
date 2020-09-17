@@ -75,7 +75,7 @@ class j15 extends jCommon
         $data['fields']['so_po_ref_id']['events']['onChange'] = "jq('#dgJournalItem').edatagrid('endEdit', curIndex); crmDetail(this.value, '_b');";
         $data['datagrid']['item']['events']['onBeforeEdit']= "function(rowIndex) {
     var edtURL = jq(this).edatagrid('getColumnOption','sku');
-    edtURL.editor.options.url = bizunoAjax+'&p=inventory/main/managerRows&clr=1&bID='+jq('#so_po_ref_id').val();
+    edtURL.editor.options.url = bizunoAjax+'&bizRt=inventory/main/managerRows&clr=1&bID='+jq('#so_po_ref_id').val();
 }";
         $data['datagrid']['item']['columns']['qty']['events']['editor']  = "{type:'numberbox',options:{min:0,onChange:function(){ adjCalc('qty'); } } }";
         $data['datagrid']['item']['columns']['total']['events']['editor']= "{type:'numberbox',options:{disabled:true}}";
@@ -290,7 +290,7 @@ class j15 extends jCommon
                 'onClickRow'   => "function(rowIndex) { curIndex = rowIndex; }",
                 'onBeforeEdit' => "function(rowIndex) {
     var edtURL = jq(this).edatagrid('getColumnOption','sku');
-    edtURL.editor.options.url = '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID='+jq('#store_id').val();
+    edtURL.editor.options.url = '".BIZUNO_AJAX."&bizRt=inventory/main/managerRows&clr=1&f0=a&bID='+jq('#store_id').val();
 }",
                 'onBeginEdit'  => "function(rowIndex) { curIndex = rowIndex; jq('#$name').edatagrid('editRow', rowIndex); }",
                 'onDestroy'    => "function(rowIndex) { totalUpdate(); curIndex = undefined; }",
@@ -307,7 +307,7 @@ class j15 extends jCommon
                 'sku'        => ['order'=>20, 'label'=>lang('sku'),'attr'=>['width'=>120,'sortable'=>true,'resizable'=>true,'align'=>'center'],
                     'events' => ['editor'=>"{type:'combogrid',options:{
                         width: 150, panelWidth: 540, delay: 500, idField: 'sku', textField: 'sku', mode: 'remote',
-                        url:        '".BIZUNO_AJAX."&p=inventory/main/managerRows&clr=1&f0=a&bID=$store_id',
+                        url:        '".BIZUNO_AJAX."&bizRt=inventory/main/managerRows&clr=1&f0=a&bID=$store_id',
                         onClickRow: function (idx, data) { adjFill(data); },
                         columns:[[{field:'sku',              title:'".jsLang('sku')."',width:100},
                                   {field:'description_short',title:'".jsLang('description')."',width:200},

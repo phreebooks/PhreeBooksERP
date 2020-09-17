@@ -134,7 +134,7 @@ class bizunoFields
             'toolbars'=> ['tbField'=>['icons' =>[
                 'new' => ['order'=>20,'events'=>['onClick'=>"accordionEdit('accFields','dgFields','detail','".lang('details')."','bizuno/fields/edit&module=$module&table=$table', 0);"]],
                 'save'=> ['order'=>40,'events'=>['onClick'=>"jq('#frmField').submit();"]]]]],
-            'forms'   => ['frmField'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/fields/save"]]],
+            'forms'   => ['frmField'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/fields/save"]]],
             'jsHead'  => ['grpData' => "var grpData=".json_encode($groups).";"],
             'jsBody'  => ['init'=>$jsBody],
             'jsReady' => ['init'=>"ajaxForm('frmField');"]];
@@ -468,7 +468,7 @@ class bizunoFields
     {
         $this->managerSettings();
         return ['id' => $name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
-            'attr'   => ['idField'=>'field', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&p=bizuno/fields/managerRows&module=$module&table=$table"],
+            'attr'   => ['idField'=>'field', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&bizRt=bizuno/fields/managerRows&module=$module&table=$table"],
             'events' => ['onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accFields', 'dgFields', 'detail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', rowData.id); }"],
             'source' => ['actions'=>['newField'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"accordionEdit('accFields','dgFields','detail', '".lang('details')."', 'bizuno/fields/edit&module=$module&table=$table', 0);"]]]],
             'columns'=> [

@@ -79,8 +79,8 @@ bizFocus('UserPW');";
                     'formEOF' => ['order'=>99,'type'=>'html',  'html'=>"</form>"]]],
                 'divSrv'   => ['order'=>99,'type'=>'html',  'html'=>$divSrv]],
             'forms' => [
-                'frmLogin' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/portal/login"]],
-                'frmLostPW'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/portal/bizunoLostPW"]]],
+                'frmLogin' => ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/portal/login"]],
+                'frmLostPW'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/portal/bizunoLostPW"]]],
             'fields'=> [
                 'UserID'   => ['order'=>10,'label'=>lang('email'),   'options'=>['width'=>300,'height'=>30,'value'=>"'$email'",'validType'=>"'email'"],'attr'=>['type'=>'email','value'=>$email]],
                 'UserPW'   => ['order'=>20,'label'=>lang('password'),'options'=>['width'=>300,'value'=>"''"],'attr'=>['type'=>'password', 'value'=>'']],

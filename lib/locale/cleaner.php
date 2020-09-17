@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-08-23
+ * @version    4.x Last Update: 2020-09-16
  * @filesource /locale/cleaner.php
  */
 
@@ -57,7 +57,7 @@ class cleaner
             case 'bizunzip': return $this->cleanBizUnzip($value, $default);
             case 'char':     return strlen(trim($value))==0 ? $default : substr(trim($value), 0, 1); // tbd what about length? char(3), etc
             case 'cmd':      return strlen(trim($value)) ? preg_replace("/[^a-zA-Z0-9\_\-\:]/", '', $value) : $default;
-            case 'command':  return $this->cleanCommand($value, $default);
+            case 'command':  return $this->cleanCommand();
             case 'country':  return $this->cleanCountry($value, $option);
             case 'currency': return $this->cleanCurrency($value);
             case 'date':     return $this->localeDateToDb($value, $separator = '/', $default);
@@ -113,12 +113,15 @@ class cleaner
      * @param string $value - Command string as received from GET variable
      * @param string $default - Default value to use if $value is empty
      */
-    private function cleanCommand($value, $default='bizuno/main/bizunoHome')
+    private function cleanCommand()
     {
-        if (substr_count($value, '/') != 2) { // check for valid structure, else home or default
-            $value = getUserCache('profile', 'biz_id') ? 'bizuno/main/bizunoHome' : $default;
+        if (empty($_GET['bizRt'])) { $_GET['bizRt'] = !empty($_GET['p']) ? $_GET['p'] : ''; }
+        $value= $_GET['bizRt'];
+        if (substr_count($value, '/') != 2) { $value = 'bizuno/main/bizunoHome'; } // check for valid structure, else home
+        $temp = explode('/', $value, 3);
+        if (!getUserCache('profile', 'biz_id') && !in_array($temp[0], ['bizuno'])) { // not logged in or not installed, restrict to parts of module bizuno
+            $temp = ['bizuno', 'main', 'bizunoHome'];
         }
-        $temp = explode('/', $value);
         $GLOBALS['bizunoModule'] = $temp[0];
         $GLOBALS['bizunoPage']   = $temp[1];
         $GLOBALS['bizunoMethod'] = $this->clean($temp[2], 'cmd'); // remove illegal characters, fix for WordPress as it was adding ? at the end of the $_GET string
@@ -175,32 +178,6 @@ class cleaner
         if (!is_string($value)) { return print_r($value, true); } // an array was submitted
         return strlen(trim($value))==0 ? $default : trim($value);
     }
-
-    /**
-     * DEPRECATED AS VALUES ARE IN US NUMERIC FORMAT
-     * Converts a provided number to system format (no thousands character, dot for decimal, dash fo negative)
-     * @param string $value
-     * @param string $type - [default: integer] Choices are integer or float
-     * @return integer/float Result after conversion
-     */
-/*   private function localeNumber($value=0, $type='integer', $default=0)
-   {
-       if (!strlen($value)) { return $default===null ? 0 : $default; }
-       $vals = getModuleCache('bizuno', 'settings', 'locale');
-       $dec  = isset($vals['number_decimal']) ? $vals['number_decimal'] : '.';
-       $sep  = isset($vals['number_thousand'])? $vals['number_thousand'] : ',';
-       $pfx  = isset($vals['number_prefix'])  ? $vals['number_prefix'] : '';
-       $sfx  = isset($vals['number_suffix'])  ? $vals['number_suffix'] : '';
-       $pfxN = isset($vals['number_neg_pfx']) ? $vals['number_neg_pfx'] : '-';
-       $sfxN = isset($vals['number_neg_sfx']) ? $vals['number_neg_sfx'] : '';
-       if ($pfx)  { $value = str_replace($pfx, '', $value); }
-       if ($sfx)  { $value = str_replace($sfx, '', $value); }
-       if ($sfxN) { $value = str_replace($sfxN, '', $value); }
-       if ($pfxN) { $value = str_replace($pfxN, '-', $value); }
-       if ($sep)  { $value = str_replace($sep, '', $value); }
-       if ($dec)  { $value = str_replace($dec, '.', $value); }
-       return $type=='integer' ? intval($value) : floatval($value);
-    } */
 
     /**
      * Converts locale date formats to db format YYY-MM-DD
@@ -410,11 +387,6 @@ function pullTableLabel($table, $field, $suffix='')
     if     (isset($bizunoLang[$table.'_'.$field.'_'.$suffix])) { return $bizunoLang[$table.'_'.$field.'_'.$suffix]; }
     elseif (isset($bizunoLang[$table.'_'.$field]))             { return $bizunoLang[$table.'_'.$field]; }
     elseif (isset($bizunoLang[$field]))                        { return $bizunoLang[$field]; }
-    // If we are here, the translation could not be found, send email to devs to fix this and return $field.
-//  bizAutoLoad(BIZUNO_LIB."model/mail.php", 'bizunoMailer');
-//    $body = 'Missing translation from function pullTableLabel, path='.$_GET['p']." missing field=$field with suffix=$suffix";
-//    $mail = new bizunoMailer('dave.premo@phreesoft.com', 'Bizuno Devs', 'Missing Translation', $body, 'kevin.premo@gmail.com', 'Bizuno App');
-//    $mail->sendMail();
     return $field;
 }
 

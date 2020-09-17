@@ -185,7 +185,7 @@ class paymentMain
         $sort = clean('sort', ['format'=>'text',   'default'=>'exp_date'],'post');
         $order= clean('order',['format'=>'text',   'default'=>''],        'post');
         $data = ['id'=>$name, 'rows'=>$rows, 'page'=>$page,
-            'attr'   =>['idField'=>'id', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&p=payment/main/managerRows&rID=$rID"],
+            'attr'   =>['idField'=>'id', 'toolbar'=>"#{$name}Toolbar", 'url'=>BIZUNO_AJAX."&bizRt=payment/main/managerRows&rID=$rID"],
             'events' => [
                 'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accPayment', '$name', 'divPmtDetail', '".jsLang('details')."', 'payment/main/edit&cID=$rID', rowData.id); }"],
             'source' => [

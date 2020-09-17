@@ -117,7 +117,7 @@ class bizunoRoles
                 'pnlGen' => ['label'=>lang('general'),'type'=>'fields','keys'=>$fields],
                 'pnlMod' => ['type'=>'tabs','key'=>'tabRoles']],
             'tabs'    => ['tabRoles'=>['attr'=>['tabPosition'=>'left', 'headerWidth'=>200]]],
-            'forms'   => ['frmRoles'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/roles/save"]]],
+            'forms'   => ['frmRoles'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/roles/save"]]],
             'fields'  => $structure,
             'jsHead'  => ['init'=>"function autoFill() {
     var setting = jq('#selFill').val();
@@ -282,7 +282,7 @@ class bizunoRoles
     {
         $this->managerSettings();
         return ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
-            'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=bizuno/roles/managerRows"],
+            'attr'   => ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&bizRt=bizuno/roles/managerRows"],
             'events' => [
                 'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; }}",
                 'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('accRoles', 'dgRoles', 'divRolesDetail', '".lang('details')."', 'bizuno/roles/edit', rowData.id); }"],

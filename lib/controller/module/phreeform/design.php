@@ -84,11 +84,11 @@ class phreeformDesign
                     'tabs'   => ['order'=>50,'type'=>'tabs','key' =>'tabPhreeForm'],
                     'formEOF'=> ['order'=>90,'type'=>'html','html'=>"</form>"]]]],
             'toolbars'  => ['tbEdit'=>['icons'=>[
-                'back'   => ['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=phreeform/main/manager'"]],
+                'back'   => ['order'=>10,'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&bizRt=phreeform/main/manager'"]],
                 'save'   => ['order'=>20,'events'=>['onClick'=>"jq('#frmPhreeform').submit();"]],
                 'preview'=> ['order'=>30,'events'=>['onClick'=>"jq('#xChild').val('print'); jq('#frmPhreeform').submit();"]],
                 'help'   => ['order'=>99,'index' =>'']]]],
-            'forms'     => ['frmPhreeform'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=phreeform/design/save"]]],
+            'forms'     => ['frmPhreeform'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreeform/design/save"]]],
             'tabs'      => ['tabPhreeForm'=>['divs'=>[
                 'page'    => ['order'=>10,'label'=>$this->lang['phreeform_title_page'], 'type'=>'html','html'=>$this->getViewPage($fields, $type)],
                 'db'      => ['order'=>20,'label'=>$this->lang['phreeform_title_db'],   'type'=>'datagrid', 'key'=>'tables'],
@@ -352,23 +352,23 @@ function pfTableUpdate() {
             'groupname'     => ['break'=>true,'label'=>lang('group_list'), 'values'=>$groups,'attr'=>['type'=>'select', 'value'=>(isset($report->groupname)?$report->groupname:'')]],
             'dateperiod'    => ['break'=>true,'attr'=>['type'=>'radio']],
             'datelist'      => ['break'=>true,'position'=>'after','attr'=>['type'=>'checkbox', 'value'=>(isset($report->datelist)?$report->datelist:'a')]],
-            'datefield'     => ['break'=>true,'label'=>$this->lang['phreeform_date_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+            'datefield'     => ['break'=>true,'label'=>$this->lang['phreeform_date_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->datefield)?$report->datefield:'']],
             'datedefault'   => ['break'=>true,'label'=>$this->lang['date_default_selected'],'values'=>viewDateChoices(), 'attr'=>['type'=>'select','value'=>(isset($report->datedefault) ? $report->datedefault : '')]],
-            'printedfield'  => ['break'=>true,'label'=>$this->lang['lbl_set_printed_flag'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+            'printedfield'  => ['break'=>true,'label'=>$this->lang['lbl_set_printed_flag'],'options'=>['url'=>"'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->printedfield)?$report->printedfield:'']],
-            'contactlog'    => ['break'=>true,'label'=>$this->lang['lbl_phreeform_contact'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+            'contactlog'    => ['break'=>true,'label'=>$this->lang['lbl_phreeform_contact'],'options'=>['url'=>"'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->contactlog)?$report->contactlog:'']],
             'defaultemail'  => ['break'=>true,'label'=>$this->lang['lbl_phreeform_email'],  'values'=>$this->emailChoices,'attr'=>['type'=>'select','value'=>(isset($report->defaultemail) ? $report->defaultemail : 'user')]],
-            'formbreakfield'=> ['break'=>true,'label'=>$this->lang['page_break_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+            'formbreakfield'=> ['break'=>true,'label'=>$this->lang['page_break_field'],'options'=>['url'=>"'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->formbreakfield)?$report->formbreakfield:'']],
-            'skipnullfield' => ['break'=>true,'label'=>$this->lang['lbl_skip_null'],'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+            'skipnullfield' => ['break'=>true,'label'=>$this->lang['lbl_skip_null'],'options'=>['url'=>"'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->skipnullfield)?$report->skipnullfield:'']],
             'truncate'      => ['break'=>true,'label'=>$this->lang['truncate_fit'],      'attr'=>['type'=>'checkbox','checked'=>(!empty($report->truncate)    ?'1':'0')]],
             'totalonly'     => ['break'=>true,'label'=>$this->lang['show_total_only'],   'attr'=>['type'=>'checkbox','checked'=>(!empty($report->totalonly)   ?'1':'0')]],
 //            'calccurrency'  => ['break'=>true,'label'=>$this->lang['calculate_currency'],'attr'=>['type'=>'checkbox','checked'=>(!empty($report->calccurrency)?'1':'0')]],
             'filenameprefix'=> ['break'=>true,'label'=>lang('prefix'),    'attr'=>['size'=>10, 'value'=>(isset($report->filenameprefix) ? $report->filenameprefix : '')]],
-            'filenamefield' => ['break'=>true,'label'=>lang('fieldname'),'options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+            'filenamefield' => ['break'=>true,'label'=>lang('fieldname'),'options'=>['url'=>"'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                 'attr'      => ['type'=>'select','value'=>isset($report->filenamefield)?$report->filenamefield:'']],
             'breakfield'    => ['break'=>true,'label'=>lang('phreeform_field_break'),'attr'=>['maxlength'=>64]],
             'users'         => ['break'=>true,'label'=>lang('users'),'options'=>['multiple'=>'true'],'values'=>listUsers(),'attr'=>['type'=>'select','name'=>'users[]']],
@@ -498,9 +498,9 @@ function pfTableUpdate() {
                         'fldEdit' =>['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                         'fldTrash'=>['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'join_type'   => ['order'=>10, 'label'=>$this->lang['join_type'], 'attr'=>['width'=>100, 'resizable'=>true],
-                    'events'  => ['editor'=>"{type:'combobox',options:{editable:false,mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getTablesJoin',valueField:'id',textField:'text'}}"]],
+                    'events'  => ['editor'=>"{type:'combobox',options:{editable:false,mode:'remote',url:'".BIZUNO_AJAX."&bizRt=phreeform/design/getTablesJoin',valueField:'id',textField:'text'}}"]],
                 'tablename'   => ['order'=>20, 'label'=>$this->lang['table_name'], 'attr'=>['width'=>200, 'resizable'=>true],
-                    'events'  => ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getTables',valueField:'id',textField:'text'}}"]],
+                    'events'  => ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&bizRt=phreeform/design/getTables',valueField:'id',textField:'text'}}"]],
                 'relationship'=> ['order'=>30, 'label'=>lang('relationship'), 'attr'=>['width'=>300,'resizable'=>true,'editor'=>'text']]]];
     }
 
@@ -603,7 +603,7 @@ function pfTableUpdate() {
                             'fldEdit' => ['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                             'fldTrash'=> ['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                     'fieldname' => ['order'=>5, 'label' => lang('fieldname'), 'attr'=>['width'=>200, 'resizable'=>true],
-                        'events'=> ['editor'=>"{type:'combobox',options:{editable:true,mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
+                        'events'=> ['editor'=>"{type:'combobox',options:{editable:true,mode:'remote',url:'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
                     'title' => ['order'=>10, 'label' => lang('title'), 'attr'=>  ['width'=>150, 'resizable'=>true, 'editor'=>'text']],
                     'break' => ['order'=>20, 'label' => $this->lang['column_break'], 'attr'=>['width'=>80, 'resizable'=>true],
                         'events'=>  ['editor'=>"{type:'checkbox',options:{on:'1',off:''}}"]],
@@ -677,7 +677,7 @@ function pfTableUpdate() {
                 'index'      => ['attr'   =>['type'=>'hidden','value'=>$index]],
                 'type'       => ['attr'   =>['type'=>'hidden','value'=>$fData->type]],
                 'boxField'   => ['attr'   =>['type'=>'hidden','value'=>'']],
-                'fieldname'  => ['options'=>['url'=>"'".BIZUNO_AJAX."&p=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
+                'fieldname'  => ['options'=>['url'=>"'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields'",'editable'=>'true','valueField'=>"'id'",'textField'=>"'text'",'mode'=>"'remote'",'width'=>300],
                     'attr'   => ['type'=>'select','value'=>isset($settings->fieldname)? $settings->fieldname:'']],
                 'barcodes'   => ['options'=>['data'=>'dataBarCodes','valueField'=>"'id'",'textField'=>"'text'"],
                     'attr'   => ['type'=>'select','value'=>isset($settings->barcode)? $settings->barcode:'']],
@@ -954,7 +954,7 @@ jq('#frmFieldSettings').submit(function (e) {
             case 'Ttl':
                 if (!isset($data['columns']['fieldname'])) {
                     $data['columns']['fieldname'] = ['order'=>5, 'label'=>lang('fieldname'), 'attr'=>  ['width'=>200, 'resizable'=>true],
-                        'events' => ['editor'=>"{type:'combobox',options:{editable:false,mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getFields',valueField:'id',textField:'text'}}"]];
+                        'events' => ['editor'=>"{type:'combobox',options:{editable:false,mode:'remote',url:'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields',valueField:'id',textField:'text'}}"]];
                 }
                 unset($data['columns']['title']);
                 unset($data['columns']['font']);
@@ -965,7 +965,7 @@ jq('#frmFieldSettings').submit(function (e) {
                 break;
             default:
                 $data['columns']['fieldname'] = ['order'=>5, 'label'=>lang('fieldname'), 'attr'=>  ['width'=>200, 'resizable'=>true],
-                    'events' => ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getFields',valueField:'id',textField:'text'}}"]];
+                    'events' => ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields',valueField:'id',textField:'text'}}"]];
                 break;
         }
         return $data;
@@ -990,7 +990,7 @@ jq('#frmFieldSettings').submit(function (e) {
                         'fldEdit' => ['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                         'fldTrash'=> ['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'fieldname' => ['order'=>10, 'label' => lang('fieldname'), 'attr'=>['width'=>250,'resizable'=>true],
-                    'events'=> ['editor'=>"{type:'combobox',options:{editable:false,mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
+                    'events'=> ['editor'=>"{type:'combobox',options:{editable:false,mode:'remote',url:'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
                 'title'     => ['order'=>20, 'label' => lang('title'),     'attr'=>['width'=>150,'resizable'=>true, 'editor'=>'text']],
                 'default'   => ['order'=>30, 'label' => lang('default'),   'attr'=>['width'=>120,'resizable'=>true],
                     'events'=> ['editor'=>"{type:'checkbox',options:{on:'1',off:''}}"]],
@@ -1021,7 +1021,7 @@ jq('#frmFieldSettings').submit(function (e) {
                         'fldEdit' => ['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                         'fldTrash'=> ['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'fieldname'=> ['order'=>10, 'label'=>lang('fieldname'), 'attr'=>  ['width'=>250, 'resizable'=>'true'],
-                    'events'=> ['editor'=>"{type:'combobox',options:{editable:false,mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
+                    'events'=> ['editor'=>"{type:'combobox',options:{editable:false,mode:'remote',url:'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
                 'title'    => ['order'=>20, 'label'=>lang('title'), 'attr' => ['width'=>150, 'resizable'=>'true', 'editor'=>'text']],
                 'default'  => ['order'=>30, 'label'=>lang('default'), 'attr'=>  ['width'=>120],
                     'events'=> ['editor'=>"{type:'checkbox',options:{on:'1',off:''}}", 'resizable'=>'true']]]];
@@ -1045,7 +1045,7 @@ jq('#frmFieldSettings').submit(function (e) {
                         'fldEdit' => ['order'=>40,'icon'=>'edit', 'events'=>['onClick'=>"var row = jq('#$name').datagrid('getSelected'); jq('#$name').edatagrid('editRow', jq('#$name').datagrid('getRowIndex', row));"]],
                         'fldTrash'=> ['order'=>80,'icon'=>'trash','events'=>['onClick'=>"jq('#$name').edatagrid('destroyRow');"]]]],
                 'fieldname' => ['order'=>10,'label'=>lang('fieldname'), 'attr'=>  ['width'=>250, 'resizable'=>true],
-                    'events'=> ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&p=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
+                    'events'=> ['editor'=>"{type:'combobox',options:{mode:'remote',url:'".BIZUNO_AJAX."&bizRt=phreeform/design/getFields',valueField:'id',textField:'text'}}"]],
                 'title'     => ['order'=>20,'label'=>lang('title'),'attr'=>['width'=>150, 'editor'=>'text', 'resizable'=>true]],
                 'visible'   => ['order'=>30,'label'=>lang('show'), 'attr'=>['width'=>120, 'resizable'=>true],'events'=>['editor'=>"{type:'checkbox',options:{on:'1',off:''}}"]],
                 'type'      => ['order'=>40,'label'=>lang('type'), 'attr'=>['width'=>200, 'resizable'=>true],'events'=>[

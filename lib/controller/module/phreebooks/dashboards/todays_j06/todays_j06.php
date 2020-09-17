@@ -85,7 +85,7 @@ class todays_j06
                 if (!empty($entry['waiting'])) {
                     $elDOM = ['icon'=>'invoice','events'=>['onClick'=>"var invNum=prompt('".$this->lang['enter_invoice_num']."'); if (invNum) { jsonAction('phreebooks/main/setInvoiceNum&panel=$this->code&jID=6', {$entry['id']}, invNum); }"],'attr'=>[]];
                 } else {
-                    $elDOM = ['events'=>['onClick'=>"winHref(bizunoHome+'&p=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]];
+                    $elDOM = ['events'=>['onClick'=>"winHref(bizunoHome+'&bizRt=phreebooks/main/manager&jID={$this->settings['jID']}&rID={$entry['id']}');"],'attr'=>['type'=>'button','value'=>"#{$entry['invoice_num']}"]];
                 }
                 $left   = viewText($entry['primary_name_b'], $this->trim);
                 $right  = viewFormat($jTotal, 'currency');

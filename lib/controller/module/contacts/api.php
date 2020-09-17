@@ -38,11 +38,11 @@ class contactsApi
     public function contactsAPI(&$layout)
     {
         $fields = [
-            'btnConapi_tpl'=> ['icon'=>'download','label'=>lang('download'),'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p=contacts/api/apiTemplate');"]],
+            'btnConapi_tpl'=> ['icon'=>'download','label'=>lang('download'),'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&bizRt=contacts/api/apiTemplate');"]],
             'fileContacts' => ['attr'=>['type'=>'file']],
             'btnConapi_imp'=> ['icon'=>'import','label'=>lang('import'),'events'=>['onClick'=>"jq('body').addClass('loading'); jq('#frmConApiImport').submit();"]],
-            'btnConapi_exp'=> ['icon'=>'export','label'=>lang('export'),'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&p=contacts/api/apiExport');"]]];
-        $forms = ['frmConApiImport'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=contacts/api/apiImport"]]];
+            'btnConapi_exp'=> ['icon'=>'export','label'=>lang('export'),'events'=>['onClick'=>"jq('#attachIFrame').attr('src','".BIZUNO_AJAX."&bizRt=contacts/api/apiExport');"]]];
+        $forms = ['frmConApiImport'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=contacts/api/apiImport"]]];
         $html  = '<p>'.$this->lang['conapi_desc'].'</p>
 <p>'.$this->lang['conapi_template'].html5('', $fields['btnConapi_tpl']).'</p><hr />'.html5('frmConApiImport',  $forms['frmConApiImport']).'
 <p>'.$this->lang['conapi_import']  .html5('fileContacts', $fields['fileContacts']).html5('', $fields['btnConapi_imp'])."</p></form>\n<hr />

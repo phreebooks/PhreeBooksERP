@@ -60,7 +60,7 @@ function totalsGetBegBalance() {
     var postDate = jq('#post_date').val();
     var glAccount= jq('#gl_acct_id').val();
     jq.ajax({
-        url: '".BIZUNO_AJAX."&p=phreebooks/main/journalBalance&rID='+rID+'&postDate='+postDate+'&glAccount='+glAccount,
+        url: '".BIZUNO_AJAX."&bizRt=phreebooks/main/journalBalance&rID='+rID+'&postDate='+postDate+'&glAccount='+glAccount,
         success: function (json) {
             processJson(json);
             if (json.balance) {

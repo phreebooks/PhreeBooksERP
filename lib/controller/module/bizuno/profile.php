@@ -71,11 +71,11 @@ class bizunoProfile
                 'general' => ['order'=>10,'label'=>lang('general'),'type'=>'divs','classes'=>['areaView'],'divs'=>[
                     'genAcct' => ['order'=>10,'type'=>'panel','key'=>'genAcct','classes'=>['block33']],
                     'genProp' => ['order'=>40,'type'=>'panel','key'=>'genProp','classes'=>['block33']]]],
-                'reminders'=> ['order'=>50,'label'=>$this->lang['reminders'],'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&p=bizuno/profile/reminderManager&uID=".getUserCache('profile', 'admin_id', false, 0)."'"]]]]],
+                'reminders'=> ['order'=>50,'label'=>$this->lang['reminders'],'type'=>'html','html'=>'','options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=bizuno/profile/reminderManager&uID=".getUserCache('profile', 'admin_id', false, 0)."'"]]]]],
             'panels' => [
                 'genAcct' => ['label'=>lang('account'),   'type'=>'fields','keys'=>$fldGen],
                 'genProp' => ['label'=>lang('properties'),'type'=>'fields','keys'=>$fldProp]],
-            'forms'   => ['frmProfile'=>['attr' =>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/profile/save"]]],
+            'forms'   => ['frmProfile'=>['attr' =>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/profile/save"]]],
             'fields'  => $this->editFields($struc, $settings),
             'jsReady' => ['jsProfile'=>"ajaxForm('frmProfile');"]];
         $layout = array_replace_recursive($layout, viewMain(), $data);
@@ -137,7 +137,7 @@ class bizunoProfile
             if ($pw_enc) { portalWrite('users', ['biz_pass' => $pw_enc], 'update', "biz_user='$email'"); }
         }
         msgLog(lang('bizuno_profile')." - ".lang('update')." $email");
-        $data = ['content'=>['action'=>'href','link'=>BIZUNO_HOME."&p=bizuno/profile/edit"]];
+        $data = ['content'=>['action'=>'href','link'=>BIZUNO_HOME."&bizRt=bizuno/profile/edit"]];
         $layout = array_replace_recursive($layout, $data);
     }
 
@@ -205,7 +205,7 @@ class bizunoProfile
                 'body'   => ['order'=>50,'type'=>'fields', 'keys'=>$flds],
                 'formEOF'=> ['order'=>90,'type'=>'html',   'html'=>"</form>"]],
             'toolbars'=> ['tbReminder'=>['icons'=>['save'=>['order'=>10,'icon'=>'save','label'=>lang('save'),'events'=>['onClick'=>"jq('#frmReminder').submit();"]]]]],
-            'forms'   => ['frmReminder'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/profile/reminderSave"]]],
+            'forms'   => ['frmReminder'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/profile/reminderSave"]]],
             'fields'  => $fields,
             'jsReady' => ['init'=>"ajaxForm('frmReminder');"]];
         $layout = array_replace_recursive($layout, $data);
@@ -271,7 +271,7 @@ class bizunoProfile
     public function dgReminder($name, $security=0)
     {
         $output = ['id'=>$name, 'rows'=>getModuleCache('bizuno', 'settings', 'general', 'max_rows'), 'page'=>'1',
-            'attr'=> ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=bizuno/profile/reminderManagerRows&uID=".getUserCache('profile', 'admin_id', false, 0).""],
+            'attr'=> ['toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&bizRt=bizuno/profile/reminderManagerRows&uID=".getUserCache('profile', 'admin_id', false, 0).""],
             'source'   => ['actions'=>['reminderNew'=>['order'=>10,'icon'=>'new','events'=>['onClick'=>"accordionEdit('accReminder','dgReminder','divReminderDtl','".jsLang('details')."','bizuno/profile/reminderEdit', 0);"]]]],
             'columns'  => ['id'=>['order'=>0,'attr'=>['hidden'=>true]],
                 'action' => ['order'=> 1, 'label'=>lang('action'),

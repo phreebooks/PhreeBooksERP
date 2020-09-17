@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-06-19
+ * @version    4.x Last Update: 2020-09-17
  * @filesource /lib/controller/module/phreebooks/journals/j10.php
  */
 
@@ -33,7 +33,7 @@ class j10 extends jCommon
     {
         parent::__construct();
         $this->main = $main;
-        $this->items = $item;
+        $this->items= $item;
     }
 
 /*******************************************************************************************************************/
@@ -45,49 +45,14 @@ class j10 extends jCommon
     public function getDataItem()
     {
         $structure = dbLoadStructure(BIZUNO_DB_PREFIX.'journal_item', $this->journalID);
-        if (!empty($this->main['so_po_ref_id'])) { // complex merge the two by item, keep the rest from the rID only
-            $sopo = dbGetMulti(BIZUNO_DB_PREFIX."journal_item", "ref_id={$this->main['so_po_ref_id']}");
-            foreach ($sopo as $row) {
-                if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
-                $inList = false;
-                foreach ($this->items as $idx => $item) {
-                    if ($row['item_cnt'] == $item['item_cnt']) {
-                        $this->items[$idx]['bal'] = $row['qty'];
-                        $inList = true;
-                        break;
-                    }
-                }
-                if (!$inList) { // add unposted so/po row, create row with no quantity on this record
-                    $row['price']        = ($row['credit_amount']+$row['debit_amount'])/$row['qty'];
-                    $row['credit_amount']= 0;
-                    $row['debit_amount'] = 0;
-                    $row['total']        = 0;
-                    $row['bal']          = $row['qty'];
-                    $row['qty']          = '';
-                    $row['item_ref_id']  = $row['id'];
-                    $row['id']           = '';
-                    $this->items[]     = $row;
-                }
-            }
-            $temp = []; // now sort to get item_cnt in order
-            foreach ($this->items as $key => $value) { $temp[$key] = $value['item_cnt']; }
-            array_multisort($temp, SORT_ASC, $this->items);
-        }
-        foreach ($this->items as $idx => $row) {
-            $this->items[$idx]['bal'] = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['id']} AND gl_type='itm'", false);
-        }
         $dbData = [];
         foreach ($this->items as $row) {
             if ($row['gl_type'] <> 'itm') { continue; } // not an item record, skip
-            if (empty($row['bal'])) { $row['bal'] = 0; }
-            if (empty($row['qty'])) { $row['qty'] = 0; }
+            if (empty($row['qty']))   { $row['qty'] = 0; }
             if (is_null($row['sku'])) { $row['sku'] = ''; } // bug fix for easyui combogrid, doesn't like null value
-            $row['description'] = str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
-            if (!isset($row['price'])) { $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
-            if ($row['item_ref_id']) {
-                $filled    = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['item_ref_id']} AND gl_type='itm'", false);
-                $row['bal']= $row['bal'] - $filled + $row['qty']; // so/po - filled prior + this order
-            }
+            $row['description']= str_replace("\n", " ", $row['description']); // fixed bug with \n in description field
+		    $row['bal']        = dbGetValue(BIZUNO_DB_PREFIX."journal_item", "SUM(qty)", "item_ref_id={$row['id']} AND gl_type='itm'", false); // so/po - filled
+            if (!isset($row['price'])){ $row['price'] = $row['qty'] ? (($row['credit_amount']+$row['debit_amount'])/$row['qty']) : 0; }
             if ($row['sku']) { // now fetch some inventory details for the datagrid
                 $inv     = dbGetValue(BIZUNO_DB_PREFIX."inventory", ['inventory_type', 'qty_stock', 'item_weight'], "sku='{$row['sku']}'");
                 $inv_adj = in_array($this->journalID, [3,4,6,13,21]) ? -$row['qty'] : $row['qty'];
@@ -99,7 +64,6 @@ class j10 extends jCommon
         }
         $map['credit_amount']= ['type'=>'field','index'=>'total'];
         $map['debit_amount'] = ['type'=>'trash'];
-        // add some extra fields needed for validation
         $structure['inventory_type'] = ['attr'=>['type'=>'hidden']];
         $this->dgDataItem = formatDatagrid($dbData, 'datagridData', $structure, $map);
     }

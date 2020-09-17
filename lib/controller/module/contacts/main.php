@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-08-26
+ * @version    4.x Last Update: 2020-09-15
  * @filesource /lib/controller/module/contacts/main.php
  */
 
@@ -29,7 +29,7 @@ class contactsMain
     private $reqFields= ['primary_name', 'address1', 'telephone1', 'email'];
     private $restrict_store = true;
     private $defaults = [];
-    private $refTries = 100; // number of attempts to pull a new refernce before punting. Helps fix bad Vendor IDs and Customer IDs
+    private $refTries = 10; // number of attempts to pull a new refernce before punting. Helps fix bad Vendor IDs and Customer IDs
 
     function __construct()
     {
@@ -257,20 +257,20 @@ class contactsMain
                     'genProp' => ['order'=>40,'type'=>'panel','key'=>'genProp','classes'=>['block33']],
                     'genAtch' => ['order'=>80,'type'=>'panel','key'=>'genAtch','classes'=>['block66']]]],
                 'history' => ['order'=>30,'label'=>lang('history'), 'hidden'=>$rID?false:true,'type'=>'html', 'html'=>'',
-                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/history&rID=$rID'"]],
+                    'options'=> ['href'=>"'".BIZUNO_AJAX."&bizRt=contacts/main/history&rID=$rID'"]],
                 'bill_add'=> ['order'=>40,'label'=>lang('address_book_type_b'), 'type'=>'html', 'html'=>'',
-                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/addressManager&type=$this->type&aType=b&rID=$rID'"]],
+                    'options'=> ['href'=>"'".BIZUNO_AJAX."&bizRt=contacts/main/addressManager&type=$this->type&aType=b&rID=$rID'"]],
                 'ship_add'=> ['order'=>50,'label'=>lang('address_book_type_s'), 'type'=>'html', 'html'=>'',
-                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/addressManager&type=$this->type&aType=s&rID=$rID'"]],
+                    'options'=> ['href'=>"'".BIZUNO_AJAX."&bizRt=contacts/main/addressManager&type=$this->type&aType=s&rID=$rID'"]],
                 'notes'   => ['order'=>70,'label'=>lang('notes'), 'type'=>'html', 'html'=>'',
-                    'options'=> ['href'=>"'".BIZUNO_AJAX."&p=contacts/main/getTabNotes&rID=$rID'"]]]]],
+                    'options'=> ['href'=>"'".BIZUNO_AJAX."&bizRt=contacts/main/getTabNotes&rID=$rID'"]]]]],
             'panels' => [
                 'genAcct' => ['label'=>lang('account'),            'type'=>'fields', 'keys'=>$fldAcct],
                 'genCont' => ['label'=>lang('contact_info'),       'type'=>'fields', 'keys'=>$fldCont],
                 'genProp' => ['label'=>lang('properties'),         'type'=>'fields', 'keys'=>$fldProp],
                 'genAddA' => ['label'=>lang('address_book_type_m'),'type'=>'address','fields'=>array_keys($add_book),'settings'=>['limit'=>'a','suffix'=>'m','required'=>true]],
                 'genAtch' => ['type'=>'attach','defaults'=>['path'=>getModuleCache($this->moduleID,'properties','attachPath'),'prefix'=>"rID_{$rID}_"]]],
-            'forms'    => ['frmContact'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=contacts/main/save&type=$this->type"]]],
+            'forms'    => ['frmContact'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=contacts/main/save&type=$this->type"]]],
             'fields'   => $structure,
             'jsReady'  => ['init'=>"ajaxForm('frmContact');"]];
         customTabs($data, 'contacts', 'tabContacts');
@@ -321,7 +321,7 @@ class contactsMain
         switch ($this->type) {
             case 'c': // Customers
                 $data['tabs']['tabContacts']['divs']['payment'] = ['order'=>60,'label'=>lang('payment'),'hidden'=>$rID && getUserCache('profile', 'admin_encrypt')?false:true,'type'=>'html','html'=>'',
-                    'options'=>['href'=>"'".BIZUNO_AJAX."&p=payment/main/manager&rID=$rID'"]];
+                    'options'=>['href'=>"'".BIZUNO_AJAX."&bizRt=payment/main/manager&rID=$rID'"]];
                 break;
             case 'j': // Projects/Jobs
             case 'v': // Vendors
@@ -662,10 +662,11 @@ class contactsMain
      */
     public function dbContactSave($cType='c', $suffix='', $required=true)
     {
-        $rID  = clean('id'.$suffix, 'integer', 'post');
-        $title= clean('primary_name'.$suffix, 'text', 'post');
+        $rID   = clean('id'.$suffix, 'integer', 'post');
         if (!$security = validateSecurity($this->securityModule, $this->securityMenu, $rID?3:2)) { return; }
-        $values = requestData(dbLoadStructure(BIZUNO_DB_PREFIX."contacts"), $suffix);
+        $title = clean('primary_name'.$suffix, 'text', 'post');
+        if (empty($title)) { $title = clean('primary_namem'.$suffix, 'text', 'post'); } // may happen either with or without address suffix
+        $values= requestData(dbLoadStructure(BIZUNO_DB_PREFIX."contacts"), $suffix);
         $values['type'] = $cType; // force the type or set if a suffix is used
         if (!$rID) { $values = array_merge($this->contact, $values); }
         else       { $values['last_update'] = date('Y-m-d'); }
@@ -674,13 +675,13 @@ class contactsMain
         if (!$required) { if (isset($values['contact_first']) && empty($values['contact_first']) &&
                               isset($values['contact_last'])  && empty($values['contact_last'])  &&
                               empty($title)) { return; } }
-        if (!$rID && empty($values['short_name'])) { $values['short_name'] = $this->getNextShortName($suffix, $cType, $rID); } // auto generate new ID
+        if (!$rID && empty($values['short_name'])) { $values['short_name'] = $this->getNextShortName($values, $cType, $rID); } // auto generate new ID
         if (!empty($values['short_name'])) { // check for duplicate short_names
             $dup = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'id', "short_name='".addslashes($values['short_name'])."' AND type='$cType' AND id<>$rID");
             if ($dup) { return msgAdd(lang('error_duplicate_id')); }
         } else { unset($values['short_name']); } // existing record and no Contact ID passed, leave it alone
         if (empty($values['inactive'])) { $values['inactive'] = 0; } // fixes bug in conversions and prevents null inactive value
-        $result = dbWrite(BIZUNO_DB_PREFIX."contacts", $values, $rID?'update':'insert', "id=$rID");
+        $result = dbWrite(BIZUNO_DB_PREFIX.'contacts', $values, $rID?'update':'insert', "id=$rID");
         if (!$rID) { $rID = $result; }
         $_POST['id'.$suffix] = $rID; // save for customization
         msgDebug("\n  Finished adding/updating contact, id = $rID");
@@ -690,22 +691,24 @@ class contactsMain
     /**
      * Generates the short_name for new contacts based on user preferences
      * @param array $values - post variables
-     * @param string $suffix - suffix from post variables to pull values
+     * @param string $cType - suffix from post variables to pull values
+     * @param integer $rID - db record ID
      * @return type
      */
-    private function getNextShortName($suffix, $cType, $rID)
+    private function getNextShortName($values, $cType, $rID)
     {
         $setting= $this->type=='v' ? 'short_name_v' : 'short_name_c';
-        $values = requestData(dbLoadStructure(BIZUNO_DB_PREFIX."address_book"), $suffix);
+        $address= requestData(dbLoadStructure(BIZUNO_DB_PREFIX."address_book"), '');
+        if (empty($address)) { $address= requestData(dbLoadStructure(BIZUNO_DB_PREFIX."address_book"), 'm'); }
         $method = getModuleCache('contacts', 'settings', 'general', $setting, 'auto');
-        msgDebug("\nIn getNextShortName with suffix = $suffix and values = ".print_r($values, true));
-        if ($method=='email' && !empty($values['email']))      { return $values['email']; }
-        if ($method=='tele'  && !empty($values['telephone1'])) { return $values['telephone1']; }
+        msgDebug("\nIn getNextShortName with type = $cType and address = ".print_r($address, true));
+        if ($method=='email' && !empty($address['email']))      { return $address['email']; }
+        if ($method=='tele'  && !empty($address['telephone1'])) { return $address['telephone1']; }
         $output = dbPullReference($this->type=='v' ? 'next_vend_id_num' : 'next_cust_id_num');
         while ($this->refTries > 0) {
             $this->refTries--;
-            $dup = dbGetValue(BIZUNO_DB_PREFIX."contacts", 'id', "short_name='".addslashes($values['short_name'])."' AND type='$cType' AND id<>$rID");
-            if     ($dup && $this->refTries > 0) { $this->getNextShortName($suffix, $cType, $rID); } // loop back through as this auto ID is used
+            $dup = dbGetValue(BIZUNO_DB_PREFIX.'contacts', 'id', "short_name='".addslashes($values['short_name'])."' AND type='$cType' AND id<>$rID");
+            if     ($dup && $this->refTries > 0) { $this->getNextShortName($values, $cType, $rID); } // loop back through as this auto ID is used
             elseif ($dup) { return msgAdd(lang('error_duplicate_id')); }
         }
         return $output;
@@ -746,7 +749,7 @@ class contactsMain
     {
         $this->managerSettingsAddress($aType);
         return ['id'=>'dgAddress'.$aType, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
-            'attr'   => ['idField'=>'address_id', 'toolbar'=>"#dgAddress{$aType}Toolbar", 'url'=>BIZUNO_AJAX."&p=contacts/main/managerRowsAddress&type=$type&rID=$rID&aType=$aType"],
+            'attr'   => ['idField'=>'address_id', 'toolbar'=>"#dgAddress{$aType}Toolbar", 'url'=>BIZUNO_AJAX."&bizRt=contacts/main/managerRowsAddress&type=$type&rID=$rID&aType=$aType"],
             'events' => ['onDblClickRow'=>"function(rowIndex, rowData){ accordionEdit('accAddress$aType', 'dgAddress$aType', 'divAddress{$aType}Detail', '".jsLang('details')."', 'contacts/main/editAddress&aType=$aType&type=$type&cID=$rID', rowData.address_id); }"],
             'source' => [
                 'tables'  => ['address_book'=> ['table'=>BIZUNO_DB_PREFIX."address_book"]],
@@ -764,7 +767,7 @@ class contactsMain
             'columns' => [
                 'address_id' => ['order'=>0,'field'=>'address_id',  'attr'=>['hidden'=>true]],
                 'ref_id'     => ['order'=>0,'field'=>'ref_id',      'attr'=>['hidden'=>true]],
-                'action'     => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return dgAddress".$aType."Formatter(value,row,index); }"],
+                'action'     => ['order'=>1,'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return dgAddress{$aType}Formatter(value,row,index); }"],
                     'actions'=> [
                         'edit' => ['icon'=>'edit', 'size'=>'small', 'order'=>30, 'label'=>lang('edit'), 'hidden'=> $security > 2 ? false : true,
                             'events'=> ['onClick' => "accordionEdit('accAddress$aType', 'dgAddress$aType', 'divAddress{$aType}Detail', '".jsLang('details')."', 'contacts/main/editAddress&aType=$aType&type=$type&cID=$rID', idTBD);"]],
@@ -806,7 +809,7 @@ class contactsMain
             case '2': $f0_value = BIZUNO_DB_PREFIX."contacts.inactive='2'"; break;
         }
         $data = ['id'=>"dg$name", 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
-            'attr'=> ['idField'=>'id', 'toolbar'=>"#dg{$name}Toolbar", 'url'=>BIZUNO_AJAX."&p=contacts/main/managerRows&type=$type".($rID?"&rID=$rID":'')],
+            'attr'=> ['idField'=>'id', 'toolbar'=>"#dg{$name}Toolbar", 'url'=>BIZUNO_AJAX."&bizRt=contacts/main/managerRows&type=$type".($rID?"&rID=$rID":'')],
             'events' => [
                 'onDblClickRow'=> "function(rowIndex, rowData){ accordionEdit('acc$name', 'dg$name', 'div{$name}Detail', '".jsLang('details')."', 'contacts/main/edit&type=$type&ref=$rID', rowData.id); }",
                 'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; } if (row.inactive==2) { return {style:'background-color:pink'}; }}"],
@@ -928,7 +931,7 @@ class contactsMain
             default: $jPmt = 18; break;
         }
         $data = ['id'=>$name, 'strict'=>true, 'rows'=>$rows, 'page'=>$page, 'title'=>sprintf(lang('tbd_history'), lang('journal_main_journal_id', $jID)),
-            'attr'   => ['idField'=>'id','url'=>BIZUNO_AJAX."&p=contacts/main/managerRowsHistory&type=$this->type&jID=$jID&rID=$rID"],
+            'attr'   => ['idField'=>'id','url'=>BIZUNO_AJAX."&bizRt=contacts/main/managerRowsHistory&type=$this->type&jID=$jID&rID=$rID"],
             'source' => [
                 'tables' => ['journal_main'=>['table'=>BIZUNO_DB_PREFIX."journal_main"]],
                 'filters' => [
@@ -943,20 +946,20 @@ class contactsMain
                 'action'    => ['order'=>1, 'label'=>lang('action'),'events'=>['formatter'=>"function(value,row,index){ return ".$name."Formatter(value,row,index); }"],
                     'actions'=> [
                         'edit'       => ['order'=>20,'icon'=>'edit',    'label'=>lang('edit'),
-                            'events' => ['onClick' => "winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD');"]],
+                            'events' => ['onClick' => "winHref(bizunoHome+'&bizRt=phreebooks/main/manager&rID=idTBD');"]],
                         'print'      => ['order'=>40,'icon'=>'print',   'label'=>lang('print'),
                             'events' => ['onClick'=>"var idx=jq('#$name').datagrid('getRowIndex', idTBD); var jID=jq('#$name').datagrid('getRows')[idx].journal_id; ('fitColumns', true); winOpen('phreeformOpen', 'phreeform/render/open&group={$gID[0]}:j'+jID+'&date=a&xfld=journal_main.id&xcr=equal&xmin=idTBD');"]],
                         'dates'      => ['order'=>50,'icon'=>'date',   'label'=>lang('delivery_dates'), 'hidden'=>$sec4_10>1?false:true,
                             'events' => ['onClick' => "windowEdit('phreebooks/main/deliveryDates&rID=idTBD', 'winDelDates', '".lang('delivery_dates')."', 500, 400);"],
                             'display'=> "row.journal_id=='4' || row.journal_id=='10'"],
                         'purchase'   => ['order'=>80,'icon'=>'purchase','label'=>lang('fill_purchase'),
-                            'events' => ['onClick' => "winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD&jID=6&bizAction=inv');"],
+                            'events' => ['onClick' => "winHref(bizunoHome+'&bizRt=phreebooks/main/manager&rID=idTBD&jID=6&bizAction=inv');"],
                             'display'=> "row.closed=='0' && (row.journal_id=='3' || row.journal_id=='4')"],
                         'sale'       => ['order'=>80,'icon'=>'sales',   'label'=>lang('fill_sale'),
-                            'events' => ['onClick' => "winHref(bizunoHome+'&p=phreebooks/main/manager&rID=idTBD&jID=12&bizAction=inv');"],
+                            'events' => ['onClick' => "winHref(bizunoHome+'&bizRt=phreebooks/main/manager&rID=idTBD&jID=12&bizAction=inv');"],
                             'display'=> "row.closed=='0' && (row.journal_id=='9' || row.journal_id=='10')"],
                         'payment'    => ['order'=>80,'icon'=>'payment', 'label'=>lang('payment'),
-                            'events' => ['onClick' => "var cID=jq('#id').val(); winHref(bizunoHome+'&p=phreebooks/main/manager&rID=0&jID=$jPmt&bizAction=inv&iID=idTBD&cID='+cID);"],
+                            'events' => ['onClick' => "var cID=jq('#id').val(); winHref(bizunoHome+'&bizRt=phreebooks/main/manager&rID=0&jID=$jPmt&bizAction=inv&iID=idTBD&cID='+cID);"],
                             'display'=> "row.closed=='0' && (row.journal_id=='6' || row.journal_id=='7' || row.journal_id=='12' || row.journal_id=='13')"]]],
                 'invoice_num'   => ['order'=>10, 'field'=>BIZUNO_DB_PREFIX."journal_main.invoice_num",'label'=>pullTableLabel("journal_main", 'invoice_num', $jID),
                     'attr'  => ['width'=>125, 'sortable'=>true, 'resizable'=>true]],
@@ -1063,7 +1066,7 @@ class contactsMain
         $order = clean('order',['format'=>'text',     'default'=>'desc'],    'post');
         $search= clean('search_log',['format'=>'text','default'=>''],        'post');
         return ['id'=>$name, 'rows'=>$rows, 'page'=>$page,
-            'attr'   => ['nowrap'=>false, 'toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=contacts/main/managerRowsLog&rID=$rID"],
+            'attr'   => ['nowrap'=>false, 'toolbar'=>"#{$name}Toolbar", 'idField'=>'id', 'url'=>BIZUNO_AJAX."&bizRt=contacts/main/managerRowsLog&rID=$rID"],
             'source' => [
                 'tables' => ['contacts_log'=>['table'=>BIZUNO_DB_PREFIX."contacts_log"]],
                 'search' => ['notes'],
@@ -1118,7 +1121,7 @@ class contactsMain
                 'formBOF' => ['order'=>20,'type'=>'form',   'key' =>'frmTerms'],
                 'winTerms'=> ['order'=>50,'type'=>'fields', 'keys'=>array_keys($fields)],
                 'formEOF' => ['order'=>99,'type'=>'html',   'html'=>'</form>']],
-            'forms'    => ['frmTerms'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=contacts/main/setTerms"]]],
+            'forms'    => ['frmTerms'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=contacts/main/setTerms"]]],
             'fields'   => $fields,
             'jsReady'  => ['init'=>"ajaxForm('frmTerms');"]];
         $layout = array_replace_recursive($layout, $data);

@@ -48,14 +48,14 @@ class bizunoDashboard
             'menu_id'=> $menu_id,
             'divs'   => [
                 'toolbar' => ['order'=>10,'type'=>'toolbar','key' =>'tbDashBoard'],
-                'frmDash' => ['order'=>15,'type'=>'html',   'html'=>html5('frmDashboard', ['attr'=>  ['type'=>'form', 'action'=>BIZUNO_AJAX."&p=bizuno/dashboard/save&menuID=$menu_id"]])],
+                'frmDash' => ['order'=>15,'type'=>'html',   'html'=>html5('frmDashboard', ['attr'=>  ['type'=>'form', 'action'=>BIZUNO_AJAX."&bizRt=bizuno/dashboard/save&menuID=$menu_id"]])],
                 'heading' => ['order'=>30,'type'=>'html',   'html'=>"<h1>$title</h1>"],
                 'adminSet'=> ['order'=>50,'type'=>'tabs',   'key' =>'tabSettings'],
                 'footer'  => ['order'=>99,'type'=>'html',   'html'=>"</form>"]],
             'jsReady' => ['jsForm'=>"ajaxForm('frmDashboard');"],
             'tabs'    => ['tabSettings'=> ['attr'=>['tabPosition'=>'left']]],
             'toolbars'=> ['tbDashBoard'=> ['icons' => [
-                'cancel'=> ['order'=> 10, 'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&p=bizuno/main/bizunoHome&menuID=$menu_id'"]],
+                'cancel'=> ['order'=> 10, 'events'=>['onClick'=>"location.href='".BIZUNO_HOME."&bizRt=bizuno/main/bizunoHome&menuID=$menu_id'"]],
                 'save'  => ['order'=> 20, 'events'=>['onClick'=>"jq('#frmDashboard').submit();"]]]]]];
         $order  = 1;
         $header = '<table style="border-collapse:collapse;width:100%">'."\n".' <thead class="panel-header">'."\n";
@@ -152,7 +152,7 @@ class bizunoDashboard
                 }
             }
         } }
-        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'href', 'link'=>BIZUNO_HOME."&p=bizuno/main/bizunoHome&menuID=$menu_id"]]);
+        $layout = array_replace_recursive($layout, ['content'=>  ['action'=>'href', 'link'=>BIZUNO_HOME."&bizRt=bizuno/main/bizunoHome&menuID=$menu_id"]]);
     }
 
     /**
@@ -267,7 +267,7 @@ class bizunoDashboard
                 'collapsible'=> empty($myDash->noCollapse)? true : false,
                 'closable'   => empty($myDash->noClose)   ? true : false,
                 'tools'      => $showSettings,
-                'href'       => BIZUNO_AJAX.'&p=bizuno/dashboard/settings&dID='.$values['dashboard_id'].'&mID='.$values['module_id'].'&menu='.$menu_id];
+                'href'       => BIZUNO_AJAX.'&bizRt=bizuno/dashboard/settings&dID='.$values['dashboard_id'].'&mID='.$values['module_id'].'&menu='.$menu_id];
         }
         msgDebug("\nList dashboards for menu ID = $menu_id is: ".print_r($dashboard, true));
         for ($i = 0; $i < $cols; $i++) { $state[] = isset($temp[$i]) && is_array($temp[$i]) ? implode(',', $temp[$i]) : ''; }

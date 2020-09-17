@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-09-03
+ * @version    4.x Last Update: 2020-09-14
  * @filesource /lib/controller/module/bizuno/main.php
  */
 
@@ -57,7 +57,7 @@ class bizunoMain
     }
 
     /**
-     * 
+     *
      * @global type $io
      * @param type $layout
      * @return type
@@ -81,7 +81,7 @@ class bizunoMain
         $menuID= clean('menuID', ['format'=>'text','default'=>'home'], 'get');
         $data['jsHead']['menu_id'] = "var menuID='$menuID';";
         if ($GLOBALS['myDevice'] != 'mobile') { // text and link to add dashboards
-//          $linkDash = ['attr'=>['type'=>'a','value'=>lang('add_dashboards'),'href'=>BIZUNO_HOME.'&p=bizuno/dashboard/manager&menuID='.$menuID]];
+//          $linkDash = ['attr'=>['type'=>'a','value'=>lang('add_dashboards'),'href'=>BIZUNO_HOME.'&bizRt=bizuno/dashboard/manager&menuID='.$menuID]];
 //          $data['divs']['tbDash'] = ['order'=>10,'classes'=>['datagrid-toolbar'],'styles'=>['min-height'=>'32px'],'attr'=>['id'=>'tbDash'],'type'=>'html','html'=>html5('', $linkDash)];
         }
         $cols = getColumns();
@@ -134,12 +134,11 @@ function addPanels(json) {
         }
     }
 }";
-        $data['jsReady']['initDash'] = "jq('#dashboard').portal({border:false,onStateChange:function(){
-        var state = getPortalState();
-        jq.ajax({ url:'".BIZUNO_AJAX."&p=bizuno/dashboard/organize&menuID='+menuID+'&state='+state });
-    }
+        $data['jsReady']['initDash'] = "jq('#dashboard').portal( { border:false,
+    onStateChange:function() { var state = getPortalState(); jq.ajax({ url:'".BIZUNO_AJAX."&bizRt=bizuno/dashboard/organize&menuID='+menuID+'&state='+state }); }
 });
-jq.ajax({ url: '".BIZUNO_AJAX."&p=bizuno/dashboard/render$opts&menuID='+menuID, success: addPanels });";
+jq.ajax({ url: '".BIZUNO_AJAX."&bizRt=bizuno/dashboard/render$opts&menuID='+menuID, success: addPanels });";
+        $data['jsResize']['initDash'] = "jq('#dashboard').portal('resize', {width:jq(window).width()} );";
     }
 
     /**

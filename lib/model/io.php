@@ -552,7 +552,7 @@ final class io
             'bizID' => getUserCache('profile', 'biz_id', false, 0),
             'UserID'=> getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_user'),
             'UserPW'=> getModuleCache('bizuno', 'settings', 'my_phreesoft_account', 'phreesoft_pass')], $myData);
-        $result = $this->cURLGet("https://www.phreesoft.com/wp-admin/admin-ajax.php?action=bizuno_ajax&p=myPortal/admin/$method", $data, $type);
+        $result = $this->cURLGet("https://www.phreesoft.com/wp-admin/admin-ajax.php?action=bizuno_ajax&bizRt=myPortal/admin/$method", $data, $type);
         if (!$result) {
             msgAdd("I cannot reach the PhreeSoft.com server, please try again later.");
             return [];

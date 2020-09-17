@@ -494,7 +494,7 @@ class inventoryPrices
     {
         $this->managerSettings();
         $data = ['id'=>$name, 'rows'=>$this->defaults['rows'], 'page'=>$this->defaults['page'],
-            'attr'   => ['toolbar'=>"#{$name}Toolbar",'idField'=>'id', 'url'=>BIZUNO_AJAX."&p=inventory/prices/managerRows&type=$type".($mID?"&mID=$mID":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":'')],
+            'attr'   => ['toolbar'=>"#{$name}Toolbar",'idField'=>'id', 'url'=>BIZUNO_AJAX."&bizRt=inventory/prices/managerRows&type=$type".($mID?"&mID=$mID":'').($cID?"&cID=$cID":'').($iID?"&iID=$iID":'')],
             'events' => [
                 'onDblClickRow'=> "function(rowIndex, rowData) { accordionEdit('accPrices','dgPricesMgr','divPricesSet','".jsLang('settings')."','inventory/prices/edit&type=$type".($mod?"&mod=$mod":'')."',rowData.id); }",
                 'rowStyler'    => "function(index, row) { if (row.inactive==1) { return {class:'row-inactive'}; } if (row.default==1) { return {class:'row-default'}; } }"],

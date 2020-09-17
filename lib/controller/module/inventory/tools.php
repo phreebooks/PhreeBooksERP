@@ -45,7 +45,7 @@ class inventoryTools
         if (!$rID) { return msgAdd(lang('err_bad_id')); }
         $struc = $this->chartSalesData($sku);
         $output= ['divID'=>"chartInventoryChart",'type'=>'column','attr'=>['title'=>lang('sales')],'data'=>array_values($struc)];
-        $action= BIZUNO_AJAX."&p=inventory/tools/chartSalesGo&sku=$sku";
+        $action= BIZUNO_AJAX."&bizRt=inventory/tools/chartSalesGo&sku=$sku";
         $js    = "jq.cachedScript('".BIZUNO_URL."../apps/jquery-file-download.js?ver=".MODULE_BIZUNO_VERSION."');\n";
         $js   .= "ajaxDownload('frmInventoryChart');\n";
         $js   .= "var dataInventoryChart = ".json_encode($output).";\n";

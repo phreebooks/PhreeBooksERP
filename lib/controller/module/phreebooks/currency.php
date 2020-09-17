@@ -101,7 +101,7 @@ class phreebooksCurrency
             'toolbars' => ['tbCurrency'=>  ['icons' => [
                 "currencySave" => ['order'=>10,'icon'=>'save','label'=>lang('save'),
                     'events'=>  ['onClick'=>"jq('body').addClass('loading'); jq('#frmCurrency').submit();"]]]]],
-            'forms'    => ['frmCurrency'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&p=phreebooks/currency/save"]]],
+            'forms'    => ['frmCurrency'=>  ['attr'=>  ['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=phreebooks/currency/save"]]],
             'fields'   => $fields,
             'jsReady'  => ['jsReady'=>"ajaxForm('frmCurrency');"]];
         $layout = array_replace_recursive($layout, $data);

@@ -69,7 +69,7 @@ bizFocus('pass');";
                     'formEOF' => ['order'=>90,'type'=>'html',  'html'=>"</form>"]]],
                 'divSrv'   => ['order'=>99,'type'=>'html','html'=>'('.$portal[3].')']],
             'forms' => [
-                'userNewForm'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/portal/bizunoNewUser"]]],
+                'userNewForm'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/portal/bizunoNewUser"]]],
             'fields'=> [
                 'email'   => ['order'=>10,'label'=>lang('email'),            'options'=>['width'=>300,'height'=>30,'value'=>"'$email'",'validType'=>"'email'"],'attr'=>['value'=>$email,'required'=>true,'size'=>40]],
                 'pass'    => ['order'=>20,'label'=>$this->lang['reset_code'],'attr'=>['type'=>'password','required'=>true]],

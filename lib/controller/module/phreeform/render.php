@@ -95,7 +95,7 @@ class phreeformRender
                 'mimeHtml'=> ['order'=>40,'label'=>lang('html'),'hidden'=>$hidden,'events'=>['onClick'=>"jq('#fmt').val('html');jq('#frmPhreeform').submit();"]],
                 'mimeXls' => ['order'=>50,'label'=>lang('csv'), 'hidden'=>$hidden,'events'=>['onClick'=>"jq('#fmt').val('csv'); jq('#frmPhreeform').submit();"]],
                 'mimeXML' => ['order'=>60,'label'=>lang('xml'), 'hidden'=>$hidden,'events'=>['onClick'=>"jq('#fmt').val('xml'); jq('#frmPhreeform').submit();"]]]]],
-            'forms'   => ['frmPhreeform'=>['classes'=>['fileDownloadForm'],'attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&p=phreeform/render/render".$extras]]],
+            'forms'   => ['frmPhreeform'=>['classes'=>['fileDownloadForm'],'attr'=>['type'=>'form','method'=>'post','action'=>BIZUNO_AJAX."&bizRt=phreeform/render/render".$extras]]],
             'fields'  => [
                 'id'        => ['attr'=>['type'=>'hidden','value'=>$rID]],
                 'msgFrom'   => ['break'=>true,'label'=>lang('from'),    'lblStyle'=>['min-width'=>'60px'],'options'=>['width'=>500,'editable'=>true],'values'=>array_values($emailData['valsFrom']),'attr'=>['type'=>'select','value'=>$emailData['defFrom']]],
@@ -262,7 +262,7 @@ class phreeformRender
     if (vars['xcr'])  params += '&xcr=' +vars['xcr'];
     if (vars['xmin']) params += '&xmin='+vars['xmin'];
     if (vars['xmax']) params += '&xmax='+vars['xmax'];
-    jq.ajax({ url:bizunoAjax+'&p=phreeform/render/phreeformBody'+params,
+    jq.ajax({ url:bizunoAjax+'&bizRt=phreeform/render/phreeformBody'+params,
         success: function(json) { processJson(json);
             if (json.msgBody) {
                 bizSelSet ('msgFrom',   json.defFrom);

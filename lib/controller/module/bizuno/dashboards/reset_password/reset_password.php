@@ -68,7 +68,7 @@ bizFocus('UserID');";
                     'formEOF' => ['order'=>90,'type'=>'html',  'html'=>"</form>"]]],
                 'divSrv'   => ['order'=>99,'type'=>'html','html'=>'('.$portal[3].')']],
             'forms' => [
-                'pwResetForm'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&p=bizuno/portal/bizunoResetPW"]]],
+                'pwResetForm'=> ['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/portal/bizunoResetPW"]]],
             'fields'=> [
                 'email'   => ['order'=>10,'label'=>lang('email'),            'options'=>['width'=>300,'height'=>30,'value'=>"'$email'",'validType'=>"'email'"],'attr'=>['value'=>$email,'required'=>true]],
                 'pass'    => ['order'=>20,'label'=>$this->lang['reset_code'],'attr'=>['type'=>'password','required'=>true]],
