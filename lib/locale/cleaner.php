@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-09-16
+ * @version    4.x Last Update: 2020-09-17
  * @filesource /locale/cleaner.php
  */
 
@@ -119,7 +119,7 @@ class cleaner
         $value= $_GET['bizRt'];
         if (substr_count($value, '/') != 2) { $value = 'bizuno/main/bizunoHome'; } // check for valid structure, else home
         $temp = explode('/', $value, 3);
-        if (!getUserCache('profile', 'biz_id') && !in_array($temp[0], ['bizuno'])) { // not logged in or not installed, restrict to parts of module bizuno
+        if (!getUserCache('profile', 'biz_id') && !in_array($temp[0], ['bizuno', 'myPortal'])) { // not logged in or not installed, restrict to parts of module bizuno
             $temp = ['bizuno', 'main', 'bizunoHome'];
         }
         $GLOBALS['bizunoModule'] = $temp[0];

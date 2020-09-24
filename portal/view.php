@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-09-16
+ * @version    3.x Last Update: 2020-09-23
  * @filesource portal/view.php
  */
 
@@ -58,11 +58,11 @@ class portalView
         $data['head']['jsMobile']    = ['order'=>66,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/jquery.easyui.mobile.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
         $data['head']['jsI18N']      = ['order'=>68,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-i18n/src/jquery.i18n.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
         $data['head']['jsI18Nmsg']   = ['order'=>70,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'apps/jquery-i18n/src/jquery.i18n.messagestore.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
-        $data['head']['jsLang']      = ['order'=>72,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/locale/easyui-lang-'.$lang.'.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
-        $data['head']['jsBizuno']    = ['order'=>74,'type'=>'html','html'=>'<script type="text/javascript">var myDevice='."'$myDevice';var bizID=".getUserCache('profile','biz_id',false,0).";</script>"];
-        $data['head']['jsView']      = ['order'=>76,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'portal/view.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
-        $data['head']['jsCommon']    = ['order'=>78,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/common.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
-        $data['head']['jsEasyExt']   = ['order'=>80,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/easyui-extensions.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $data['head']['jsEasyExt']   = ['order'=>72,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/easyui-extensions.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $data['head']['jsLang']      = ['order'=>74,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/jquery-easyui/locale/easyui-lang-'.$lang.'.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $data['head']['jsBizuno']    = ['order'=>76,'type'=>'html','html'=>'<script type="text/javascript">var myDevice='."'$myDevice';var bizID=".getUserCache('profile','biz_id',false,0).";</script>"];
+        $data['head']['jsView']      = ['order'=>78,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_SRVR.'portal/view.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
+        $data['head']['jsCommon']    = ['order'=>80,'type'=>'html','html'=>'<script type="text/javascript" src="'.BIZUNO_URL .'view/easyUI/common.js?ver='.MODULE_BIZUNO_VERSION.'"></script>'];
     }
 
     /**

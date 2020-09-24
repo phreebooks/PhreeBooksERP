@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-09-17
+ * @version    4.x Last Update: 2020-09-23
  * @filesource /lib/controller/module/phreebooks/journals/j04.php
  */
 
@@ -77,7 +77,7 @@ class j04 extends jCommon
         $fldAddr = ['contact_id','address_id','primary_name','contact','address1','address2','city','state','postal_code','country','telephone1','email'];
         $data['jsHead']['datagridData'] = $this->dgDataItem;
         $data['datagrid']['item'] = $this->dgOrders('dgJournalItem', 'v');
-        $data['datagrid']['item']['columns']['action']['actions']['trash']['display'] = "typeof row.bal==='undefined' || row.bal==0"; // do not allow trash if line has received qty
+        $data['datagrid']['item']['columns']['action']['actions']['trash']['display'] = "typeof row.bal==='undefined' || row.bal==0 || row.bal==null"; // do not allow trash if line has received qty
         if ($rID) { unset($data['datagrid']['item']['source']['actions']['insertRow']); } // only allow insert for new orders
         $data['fields']['gl_acct_id']['attr']['value']   = getModuleCache('phreebooks', 'settings', 'vendors', 'gl_payables');
         $data['fields']['terminal_date']['attr']['value']= getTermsDate($data['fields']['terms']['attr']['value'], 'v');

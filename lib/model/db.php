@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft Inc.
  * @license    http://opensource.org/licenses/OSL-3.0  Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-09-07
+ * @version    4.x Last Update: 2020-09-22
  * @filesource /lib/model/db.php
  */
 
@@ -108,7 +108,7 @@ class db extends \PDO
         msgDebug("\nFinished executing action $action for SQL (in $query_time ms): $sql returning result: $msgResult");
         if ($error) {
             msgDebug("\nSQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true), 'trap');
-            if ($verbose || 'phreesoft' <> BIZUNO_HOST) {
+            if ($verbose || ('phreesoft'<>BIZUNO_HOST && dbTableExists(BIZUNO_DB_PREFIX.'configuration'))) { // make sure we're installed
                 msgAdd("SQL Error: action: $action SQL (in $query_time ms): $sql returned error:".print_r($this->errorInfo(), true));
             }
         }
@@ -129,8 +129,8 @@ class db extends \PDO
         $sql = "ALTER TABLE $table CHANGE `$field` `$field` ";
         if (!empty($props['dbType'])) { $sql .= ' '.$props['dbType']; }
         if (!empty($props['collate'])){ $sql .= " CHARACTER SET utf8 COLLATE ".$props['collate']; }
-        if (isset($props['null']) && strtolower($props['null'])=='no') { $sql .= ' NOT NULL'; }
-        if (isset($props['default'])) { $sql .= " DEFAULT '".$props['default']."'"; }
+        if ( isset($props['null']) && strtolower($props['null'])=='no') { $sql .= ' NOT NULL'; }
+        if ( isset($props['default'])) { $sql .= " DEFAULT '".$props['default']."'"; }
         if (!empty($props['extra']))  { $sql .= ' '.$props['extra']; }
         if (!empty($props['tag']))    { $comment['tag']  = $props['tag']; }
         if (!empty($props['tab']))    { $comment['tab']  = $props['tab']; }
@@ -440,7 +440,7 @@ function dbDump($filename='bizuno_backup', $dirWrite='', $dbTable='')
     if (!function_exists('exec')) { msgAdd("php exec is disabled, the backup cannot be achieved this way!"); }
     $result = exec($cmd, $retValue);
     if (!file_exists($dbPath.$dbFile)) { return; } // for some reason the dump failed, could be out of disk space
-    chmod($dbPath.$dbFile, 0644); 
+    chmod($dbPath.$dbFile, 0644);
     return true;
 }
 

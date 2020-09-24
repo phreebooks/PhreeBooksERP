@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-09-16
+ * @version    4.x Last Update: 2020-09-17
  * @filesource /lib/controller/module/bizuno/settings.php
  */
 
@@ -73,7 +73,8 @@ class bizunoSettings
      * @param type $settings
      * @return string
      */
-    private function buildModProps($mID, $settings, $store) {
+    private function buildModProps($mID, $settings, $store)
+    {
         $security = validateSecurity('bizuno', 'admin', 2);
         msgDebug("\nsecurity = $security");
         if ( empty($settings['version'])) { $settings['version'] = MODULE_BIZUNO_VERSION; }

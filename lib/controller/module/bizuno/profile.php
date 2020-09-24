@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-07-10
+ * @version    4.x Last Update: 2020-09-21
  * @filesource lib/controller/module/bizuno/profile.php
  */
 
@@ -125,7 +125,7 @@ class bizunoProfile
         setUserCache('profile', 'langForce', $langForce);
         setUserCache('profile', 'language', $langForce); // update the language also
         dbClearCache();
-        bizSetCookie('bizunoLang', $langForce, time()+(60*60*24*7));
+        bizSetCookie('bizunoLang', getUserCache('profile', 'language'), time()+(60*60*24*7));
         $pw_cur= clean('password', 'password', 'post');
         $email = getUserCache('profile', 'email');
         if (strlen($pw_cur) > 0 && biz_validate_user_creds($email, $pw_cur, 'email', false)) { // check, see if reset password

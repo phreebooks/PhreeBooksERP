@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    3.x Last Update: 2020-09-16
+ * @version    3.x Last Update: 2020-09-21
  * @filesource /portal/main.php
  */
 
@@ -222,7 +222,7 @@ class main //extends controller
         } else {
             $bizunoUser['profile']['language'] = clean('bizunoLang', ['format'=>'cmd','default'=>$bizunoUser['profile']['language']], 'cookie');
         }
-        bizSetCookie('bizunoLang', $postLang, time()+(60*60*24*7));
+        bizSetCookie('bizunoLang', $bizunoUser['profile']['language'], time()+(60*60*24*7));
         cleanLang($bizunoUser['profile']['language']);
         $bizunoLang = loadBaseLang($bizunoUser['profile']['language']);
     }

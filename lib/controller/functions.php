@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-09-07
+ * @version    4.x Last Update: 2020-09-21
  * @filesource lib/controller/functions.php
  */
 
@@ -157,8 +157,16 @@ function myExceptionHandler($e)
     }
 }
 
+/**
+ *
+ * @param type $name
+ * @param type $value
+ * @param type $time
+ * @param type $options
+ */
 function bizSetCookie($name, $value, $time=86400, $options=[]) // 24 hours
 {
+    msgDebug("\nSetting cookie $name with value = $value and exp time = $time");
     $_COOKIE[$name] = $value;
     if (PHP_VERSION_ID < 70300) {
         setcookie($name, $value, $time, '/; samesite=lax');
@@ -168,6 +176,10 @@ function bizSetCookie($name, $value, $time=86400, $options=[]) // 24 hours
     }
 }
 
+/**
+ *
+ * @param type $name
+ */
 function bizClrCookie($name)
 {
     $_COOKIE[$name] = '';

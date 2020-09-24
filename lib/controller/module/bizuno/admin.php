@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-09-03
+ * @version    4.x Last Update: 2020-09-22
  * @filesource /lib/controller/module/bizuno/admin.php
  */
 
@@ -421,7 +421,7 @@ class bizunoAdmin
             'biz_currency'=> ['order'=>40,'label'=>$this->lang['biz_currency'],'values'=>viewCurrencySel($locale),'attr'=>['type'=>'select','value'=>'USD']],
             'biz_chart'   => ['order'=>50,'label'=>$this->lang['biz_chart'],   'values'=>localeLoadCharts(),      'attr'=>['type'=>'select','value'=>"locale/en_US/charts/retailCorp.xml"]],
             'biz_fy'      => ['order'=>60,'label'=>$this->lang['biz_fy'],      'values'=>$years, 'attr'=>['type'=>'select','value'=>date('Y')]]];
-        $data = ['type'=>'popup','title'=>$this->lang['bizuno_install_title'],'attr'=>['id'=>'bizInstall','wClosable'=>false],
+        $data = ['type'=>'popup','title'=>$this->lang['bizuno_install_title'],'attr'=>['id'=>'bizInstall','wClosable'=>false,'top'=>100,'left'=>200],
             'toolbars'=> ['tbInstall'=>['icons'=> [
                 'instBack'=> ['order'=>10,'icon'=>'close','label'=>lang('cancel'),'events'=>['onClick'=>"bizWindowClose('bizInstall');"]],
                 'instNext'=> ['order'=>20,'icon'=>'next', 'label'=>lang('next'),  'events'=>['onClick'=>"installSave($bID);"]]]]],

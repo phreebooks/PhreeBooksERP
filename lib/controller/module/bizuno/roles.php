@@ -17,7 +17,7 @@
  * @author     Dave Premo, PhreeSoft <support@phreesoft.com>
  * @copyright  2008-2020, PhreeSoft, Inc.
  * @license    http://opensource.org/licenses/OSL-3.0 Open Software License (OSL 3.0)
- * @version    4.x Last Update: 2020-08-17
+ * @version    4.x Last Update: 2020-09-23
  * @filesource /lib/controller/module/bizuno/roles.php
  */
 
@@ -120,7 +120,7 @@ class bizunoRoles
             'forms'   => ['frmRoles'=>['attr'=>['type'=>'form','action'=>BIZUNO_AJAX."&bizRt=bizuno/roles/save"]]],
             'fields'  => $structure,
             'jsHead'  => ['init'=>"function autoFill() {
-    var setting = jq('#selFill').val();
+    var setting = bizSelGet('selFill');
     jq('#frmRoles select').each(function() {
         if (typeof jq(this).attr('id') !== 'undefined' && jq(this).attr('id').substr(0, 4) == 'sID_') { bizSelSet(jq(this).attr('id'), setting); }
     });
