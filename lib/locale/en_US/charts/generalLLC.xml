@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<ChartofAccounts>
+    <title>US - General store simple Chart of Accounts (LLC and Partnerships)</title>
+    <defaults>
+        <type><id> 0</id><account>1060</account><title>Cash</title></type>
+        <type><id> 2</id><account>1200</account><title>Accounts Receivable</title></type>
+        <type><id> 4</id><account>1500</account><title>Inventory</title></type>
+        <type><id> 6</id><account> TBD</account><title>Other Current Assets</title></type>
+        <type><id> 8</id><account>1800</account><title>Fixed Assets</title></type>
+        <type><id>10</id><account>1900</account><title>Accumulated Depreciation</title></type>
+        <type><id>12</id><account> TBD</account><title>Other Assets</title></type>
+        <type><id>20</id><account>2100</account><title>Accounts Payable</title></type>
+        <type><id>22</id><account>2140</account><title>Other Current Liabilities</title></type>
+        <type><id>24</id><account>2620</account><title>Long Term Liabilities</title></type>
+        <type><id>30</id><account>4010</account><title>Income</title></type>
+        <type><id>32</id><account>5010</account><title>Cost of Sales</title></type>
+        <type><id>34</id><account>5600</account><title>Expenses</title></type>
+        <type><id>40</id><account> TBD</account><title>Equity - Does Not Close</title></type>
+        <type><id>42</id><account>3400</account><title>Equity - Gets Closed</title></type>
+        <type><id>44</id><account>3800</account><title>Equity - Retained Earnings</title></type>
+    </defaults>
+    <account><id>1060</id><type> 0</type><title>Checking Account</title></account>
+    <account><id>1070</id><type> 0</type><title>Petty Cash</title></account>
+    <account><id>1200</id><type> 2</type><title>Accounts Receivable</title></account>
+    <account><id>1210</id><type> 2</type><title>Allowance for Doubtful Debt</title></account>
+    <account><id>1500</id><type> 4</type><title>Inventory</title></account>
+    <account><id>1800</id><type> 8</type><title>Capital assets</title></account>
+    <account><id>1820</id><type> 8</type><title>Office Furniture &amp; Equipment</title></account>
+    <account><id>1830</id><type> 8</type><title>Accum. Amort. - Furn. &amp; Equip.</title></account>
+    <account><id>1840</id><type> 8</type><title>Vehicle</title></account>
+    <account><id>1850</id><type> 8</type><title>Accum. Amort. - Vehicle</title></account>
+    <account><id>1900</id><type>10</type><title>Accum. Depreciation</title></account>
+    <account><id>2100</id><type>20</type><title>Accounts Payable</title></account>
+    <account><id>2110</id><type>22</type><title>Accrued Income Tax - Federal</title></account>
+    <account><id>2120</id><type>22</type><title>Accrued Income Tax - State</title></account>
+    <account><id>2130</id><type>22</type><title>Accrued Franchise Tax</title></account>
+    <account><id>2140</id><type>22</type><title>Accrued Real &amp; Personal Prop Tax</title></account>
+    <account><id>2150</id><type>22</type><title>Sales Tax</title></account>
+    <account><id>2160</id><type>22</type><title>Accrued Use Tax Payable</title></account>
+    <account><id>2210</id><type>22</type><title>Accrued Wages</title></account>
+    <account><id>2220</id><type>22</type><title>Accrued Comp Time</title></account>
+    <account><id>2230</id><type>22</type><title>Accrued Holiday Pay</title></account>
+    <account><id>2240</id><type>22</type><title>Accrued Vacation Pay</title></account>
+    <account><id>2310</id><type>22</type><title>Accr. Benefits - 401K</title></account>
+    <account><id>2320</id><type>22</type><title>Accr. Benefits - Stock Purchase</title></account>
+    <account><id>2330</id><type>22</type><title>Accr. Benefits - Med, Den</title></account>
+    <account><id>2340</id><type>22</type><title>Accr. Benefits - Payroll Taxes</title></account>
+    <account><id>2350</id><type>22</type><title>Accr. Benefits - Credit Union</title></account>
+    <account><id>2360</id><type>22</type><title>Accr. Benefits - Savings Bond</title></account>
+    <account><id>2370</id><type>22</type><title>Accr. Benefits - Garnish</title></account>
+    <account><id>2380</id><type>22</type><title>Accr. Benefits - Charity Cont.</title></account>
+    <account><id>2620</id><type>24</type><title>Bank Loans</title></account>
+    <account><id>3400</id><type>42</type><title>Owners Contribution</title></account>
+    <account><id>3600</id><type>42</type><title>Owners Draw</title></account>
+    <account><id>3800</id><type>44</type><title>Retained Earnings</title></account>
+    <account><id>4010</id><type>30</type><title>Sales</title></account>
+    <account><id>4400</id><type>30</type><title>Other Revenue</title></account>
+    <account><id>4430</id><type>30</type><title>Shipping &amp; Handling</title></account>
+    <account><id>4440</id><type>30</type><title>Interest</title></account>
+    <account><id>4450</id><type>30</type><title>Foreign Exchange Gain</title></account>
+    <account><id>5010</id><type>32</type><title>Cost of Goods Sold</title></account>
+    <account><id>5100</id><type>32</type><title>Freight</title></account>
+    <account><id>5400</id><type>34</type><title>Payroll Expenses</title></account>
+    <account><id>5410</id><type>34</type><title>Wages &amp; Salaries</title></account>
+    <account><id>5420</id><type>34</type><title>Wages - Overtime</title></account>
+    <account><id>5430</id><type>34</type><title>Benefits - Comp Time</title></account>
+    <account><id>5440</id><type>34</type><title>Benefits - Payroll Taxes</title></account>
+    <account><id>5450</id><type>34</type><title>Benefits - Workers Comp</title></account>
+    <account><id>5460</id><type>34</type><title>Benefits - 401K</title></account>
+    <account><id>5470</id><type>34</type><title>Benefits - General Benefits</title></account>
+    <account><id>5510</id><type>34</type><title>Inc Tax Exp - Federal</title></account>
+    <account><id>5520</id><type>34</type><title>Inc Tax Exp - State</title></account>
+    <account><id>5530</id><type>34</type><title>Taxes - Real Estate</title></account>
+    <account><id>5540</id><type>34</type><title>Taxes - Personal Property</title></account>
+    <account><id>5550</id><type>34</type><title>Taxes - Franchise</title></account>
+    <account><id>5560</id><type>34</type><title>Taxes - Foreign Withholding</title></account>
+    <account><id>5600</id><type>34</type><title>General &amp; Administrative Expenses</title></account>
+    <account><id>5610</id><type>34</type><title>Accounting &amp; Legal</title></account>
+    <account><id>5620</id><type>34</type><title>Advertising &amp; Promotions</title></account>
+    <account><id>5630</id><type>34</type><title>Bad Debts</title></account>
+    <account><id>5660</id><type>34</type><title>Amortization Expense</title></account>
+    <account><id>5680</id><type>34</type><title>Insurance</title></account>
+    <account><id>5690</id><type>34</type><title>Interest &amp; Bank Charges</title></account>
+    <account><id>5700</id><type>34</type><title>Office Supplies</title></account>
+    <account><id>5730</id><type>34</type><title>Rent</title></account>
+    <account><id>5740</id><type>34</type><title>Repair &amp; Maintenance</title></account>
+    <account><id>5750</id><type>34</type><title>Telephone</title></account>
+    <account><id>5760</id><type>34</type><title>Travel &amp; Entertainment</title></account>
+    <account><id>5770</id><type>34</type><title>Utilities</title></account>
+    <account><id>5780</id><type>34</type><title>Registrations</title></account>
+    <account><id>5800</id><type>34</type><title>Licenses</title></account>
+    <account><id>5810</id><type>34</type><title>Foreign Exchange Loss</title></account>
+</ChartofAccounts>

@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<PhreeformReport>
+    <reporttype><![CDATA[rpt]]></reporttype>
+<tables>
+    <tablename><![CDATA[audit_log]]></tablename>
+</tables>
+<tables>
+    <joinopt><![CDATA[JOIN]]></joinopt>
+    <tablename><![CDATA[users]]></tablename>
+    <relationship><![CDATA[audit_log.user_id = users.admin_id]]></relationship>
+    <join_type><![CDATA[JOIN]]></join_type>
+</tables>
+<fieldlist>
+    <fieldname><![CDATA[users.title]]></fieldname>
+    <title><![CDATA[User]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[15]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[L]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[audit_log.date]]></fieldname>
+    <title><![CDATA[Date]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[40]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[L]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[audit_log.log_entry]]></fieldname>
+    <title><![CDATA[Log Entry]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[200]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[L]]></align>
+</fieldlist>
+<grouplist>
+    <fieldname><![CDATA[users.username]]></fieldname>
+    <title><![CDATA[User Name]]></title>
+</grouplist>
+<sortlist>
+    <fieldname><![CDATA[audit_log.date]]></fieldname>
+    <title><![CDATA[Date]]></title>
+    <default><![CDATA[1]]></default>
+</sortlist>
+<sortlist>
+    <fieldname><![CDATA[audit_log.log_entry]]></fieldname>
+    <title><![CDATA[Action]]></title>
+    <default><![CDATA[0]]></default>
+</sortlist>
+<sortlist>
+    <fieldname><![CDATA[audit_log.user_id]]></fieldname>
+    <title><![CDATA[Reference]]></title>
+    <default><![CDATA[0]]></default>
+</sortlist>
+<sortlist>
+    <fieldname><![CDATA[users.username]]></fieldname>
+    <title><![CDATA[User Name]]></title>
+    <default><![CDATA[0]]></default>
+</sortlist>
+<filterlist>
+    <fieldname><![CDATA[users.username]]></fieldname>
+    <title><![CDATA[User Name]]></title>
+    <visible><![CDATA[1]]></visible>
+    <type><![CDATA[0]]></type>
+</filterlist>
+    <title><![CDATA[Audit Log]]></title>
+    <description><![CDATA[User audit log. Captures all activities by users. format: Letter, Portrait]]></description>
+<page>
+    <size><![CDATA[Letter:216:282]]></size>
+    <orientation><![CDATA[P]]></orientation>
+    <margin>
+        <top><![CDATA[8]]></top>
+        <bottom><![CDATA[12]]></bottom>
+        <left><![CDATA[8]]></left>
+        <right><![CDATA[8]]></right>
+    </margin>
+</page>
+<heading>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[helvetica]]></font>
+    <size><![CDATA[12]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</heading>
+<title1>
+    <text><![CDATA[%reportname%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[helvetica]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title1>
+<title2>
+    <text><![CDATA[Report Generated %date%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[helvetica]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title2>
+<filter>
+    <font><![CDATA[helvetica]]></font>
+    <size><![CDATA[8]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</filter>
+<data>
+    <font><![CDATA[helvetica]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</data>
+<totals>
+    <font><![CDATA[helvetica]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</totals>
+    <datelist><![CDATA[abcdlfhj]]></datelist>
+    <datedefault><![CDATA[c]]></datedefault>
+    <datefield><![CDATA[audit_log.date]]></datefield>
+    <truncate><![CDATA[on]]></truncate>
+    <groupname><![CDATA[misc:rpt]]></groupname>
+    <security><![CDATA[u:-1;g:-1]]></security>
+</PhreeformReport>

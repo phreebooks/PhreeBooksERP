@@ -1,0 +1,234 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<PhreeformReport>
+    <reporttype><![CDATA[rpt]]></reporttype>
+<tables>
+    <tablename><![CDATA[inventory]]></tablename>
+    <join_type><![CDATA[JOIN]]></join_type>
+</tables>
+<fieldlist>
+    <fieldname><![CDATA[inventory.sku]]></fieldname>
+    <title><![CDATA[SKU Number]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[29]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[L]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.description_short]]></fieldname>
+    <title><![CDATA[Description Short]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[56]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[L]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.gl_inv]]></fieldname>
+    <title><![CDATA[Inv. Acct]]></title>
+    <width><![CDATA[25]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[L]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.item_cost]]></fieldname>
+    <title><![CDATA[Item Cost]]></title>
+    <width><![CDATA[25]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[R]]></align>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.full_price]]></fieldname>
+    <title><![CDATA[Full Price]]></title>
+    <width><![CDATA[25]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[R]]></align>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.qty_min]]></fieldname>
+    <title><![CDATA[Min Stock]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[15]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[C]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.qty_stock]]></fieldname>
+    <title><![CDATA[In Stock]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[15]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[C]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.qty_po]]></fieldname>
+    <title><![CDATA[On Order]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[15]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[C]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.qty_so]]></fieldname>
+    <title><![CDATA[On SO]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[15]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[C]]></align>
+    <total><![CDATA[1]]></total>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.qty_alloc]]></fieldname>
+    <title><![CDATA[On Alloc]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[15]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[C]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.qty_restock]]></fieldname>
+    <title><![CDATA[Reorder]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[15]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[C]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.vendor_id]]></fieldname>
+    <title><![CDATA[Vendor]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[25]]></width>
+    <break><![CDATA[1]]></break>
+    <processing><![CDATA[contactID]]></processing>
+    <align><![CDATA[L]]></align>
+</fieldlist>
+<grouplist>
+    <fieldname><![CDATA[inventory.vendor_id]]></fieldname>
+    <title><![CDATA[Vendor Name]]></title>
+    <default><![CDATA[1]]></default>
+</grouplist>
+<grouplist>
+    <fieldname><![CDATA[inventory.gl_inv]]></fieldname>
+    <title><![CDATA[GL Inventory Acct]]></title>
+</grouplist>
+<grouplist>
+    <fieldname><![CDATA[inventory.inventory_type]]></fieldname>
+    <title><![CDATA[Inventory Type]]></title>
+</grouplist>
+<sortlist>
+    <fieldname><![CDATA[inventory.sku]]></fieldname>
+    <title><![CDATA[SKU]]></title>
+    <default><![CDATA[1]]></default>
+</sortlist>
+<sortlist>
+    <fieldname><![CDATA[inventory.qty_stock]]></fieldname>
+    <title><![CDATA[In Stock]]></title>
+</sortlist>
+<sortlist>
+    <fieldname><![CDATA[inventory.qty_po]]></fieldname>
+    <title><![CDATA[On Order]]></title>
+</sortlist>
+<sortlist>
+    <fieldname><![CDATA[inventory.qty_so]]></fieldname>
+    <title><![CDATA[On SO]]></title>
+</sortlist>
+<sortlist>
+    <fieldname><![CDATA[inventory.description_short]]></fieldname>
+    <title><![CDATA[Description]]></title>
+</sortlist>
+<filterlist>
+    <fieldname><![CDATA[inventory.sku]]></fieldname>
+    <title><![CDATA[SKU]]></title>
+    <visible><![CDATA[1]]></visible>
+    <type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[inventory.inactive]]></fieldname>
+    <title><![CDATA[Inactive]]></title>
+    <visible><![CDATA[1]]></visible>
+    <type><![CDATA[2]]></type>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[inventory.inventory_type]]></fieldname>
+    <title><![CDATA[Inventory Type]]></title>
+    <visible><![CDATA[1]]></visible>
+    <type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[inventory.gl_inv]]></fieldname>
+    <title><![CDATA[GL Inventroy Acct]]></title>
+    <visible><![CDATA[1]]></visible>
+    <type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[inventory.vendor_id]]></fieldname>
+    <title><![CDATA[Vendor ID]]></title>
+    <visible><![CDATA[1]]></visible>
+    <type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[inventory.qty_stock]]></fieldname>
+    <title><![CDATA[In Stock]]></title>
+    <type><![CDATA[10]]></type>
+    <min><![CDATA[(inventory.qty_min + inventory.qty_so + inventory.qty_alloc - inventory.qty_po)]]></min>
+</filterlist>
+    <title><![CDATA[Inventory Re-order Worksheet]]></title>
+    <description><![CDATA[Lists inventory items needed for re-order. Format: Letter, Portrait]]></description>
+<page>
+    <size><![CDATA[Letter:216:282]]></size>
+    <orientation><![CDATA[P]]></orientation>
+    <margin>
+        <top><![CDATA[8]]></top>
+        <bottom><![CDATA[8]]></bottom>
+        <left><![CDATA[8]]></left>
+        <right><![CDATA[8]]></right>
+    </margin>
+</page>
+<heading>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[12]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</heading>
+<title1>
+    <text><![CDATA[%reportname%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title1>
+<title2>
+    <text><![CDATA[Report Generated %date%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title2>
+<filter>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[8]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</filter>
+<data>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</data>
+<totals>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</totals>
+    <datelist><![CDATA[a]]></datelist>
+    <datedefault><![CDATA[a]]></datedefault>
+    <truncate><![CDATA[on]]></truncate>
+    <groupname><![CDATA[inv:rpt]]></groupname>
+    <security><![CDATA[u:-1;g:-1]]></security>
+</PhreeformReport>

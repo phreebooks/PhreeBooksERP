@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<PhreeformReport>
+    <reporttype><![CDATA[rpt]]></reporttype>
+<tables>
+    <tablename><![CDATA[journal_history]]></tablename>
+</tables>
+<fieldlist>
+    <formatting><![CDATA[glTitle]]></formatting>
+    <fieldname><![CDATA[journal_history.gl_account]]></fieldname>
+    <title><![CDATA[Account]]></title>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[60]]></width>
+    <visible><![CDATA[1]]></visible>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[current]]></fieldname>
+    <title><![CDATA[Current Month]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[30]]></width>
+    <processing><![CDATA[isCur]]></processing>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[current_ytd]]></fieldname>
+    <title><![CDATA[Year to Date]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[30]]></width>
+    <processing><![CDATA[isYtd]]></processing>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[ly_current]]></fieldname>
+    <title><![CDATA[LY Current]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[30]]></width>
+    <processing><![CDATA[isLcur]]></processing>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[ly_ytd]]></fieldname>
+    <title><![CDATA[Last YTD]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[30]]></width>
+    <processing><![CDATA[isLytd]]></processing>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[budget_cur]]></fieldname>
+    <title><![CDATA[Budget]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[30]]></width>
+    <processing><![CDATA[isBdgt]]></processing>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[budget_ytd]]></fieldname>
+    <title><![CDATA[Budget YTD]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[30]]></width>
+    <processing><![CDATA[isBytd]]></processing>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+    <title><![CDATA[Income Statement w/Budget]]></title>
+    <description><![CDATA[General ledger Income statement with budget and last year to date capability. Format: Letter, Portrait. Requires special report: is_budget.]]></description>
+<page>
+    <size><![CDATA[Letter:216:282]]></size>
+    <orientation><![CDATA[L]]></orientation>
+    <margin>
+        <top><![CDATA[8]]></top>
+        <bottom><![CDATA[8]]></bottom>
+        <left><![CDATA[8]]></left>
+        <right><![CDATA[8]]></right>
+    </margin>
+</page>
+<heading>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[12]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</heading>
+<title1>
+    <text><![CDATA[%reportname%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title1>
+<title2>
+    <text><![CDATA[Report Generated %date%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title2>
+<filter>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[8]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</filter>
+<data>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</data>
+<totals>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</totals>
+    <datedefault><![CDATA[a]]></datedefault>
+    <truncate><![CDATA[on]]></truncate>
+    <special_class><![CDATA[income_statement]]></special_class>
+    <groupname><![CDATA[gl:rpt]]></groupname>
+    <filenameprefix><![CDATA[income_statement]]></filenameprefix>
+    <filenamefield><![CDATA[journal_history.period]]></filenamefield>
+    <security><![CDATA[u:-1;g:-1]]></security>
+    <datelist><![CDATA[z]]></datelist>
+</PhreeformReport>

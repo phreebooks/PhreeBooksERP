@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<PhreeformReport>
+    <reporttype><![CDATA[rpt]]></reporttype>
+<tables>
+    <tablename><![CDATA[journal_history]]></tablename>
+</tables>
+<fieldlist>
+    <fieldname><![CDATA[description]]></fieldname>
+    <title><![CDATA[Account]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[75]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[L]]></align>
+    <formatting><![CDATA[glTitle]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[current]]></fieldname>
+    <title><![CDATA[Current]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[30]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+    <processing><![CDATA[isCur]]></processing>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[current_ytd]]></fieldname>
+    <title><![CDATA[Year to Date]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[30]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+    <processing><![CDATA[isYtd]]></processing>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[ly_current]]></fieldname>
+    <title><![CDATA[LY Current]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[30]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+    <processing><![CDATA[isLcur]]></processing>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[ly_ytd]]></fieldname>
+    <title><![CDATA[Last YTD]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[30]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+    <processing><![CDATA[isLytd]]></processing>
+</fieldlist>
+    <title><![CDATA[Income Stmt - 2 Years]]></title>
+    <description><![CDATA[General ledger income statement 2 year for comparison. Format: Letter, Portrait. Requires special report: income_statement.]]></description>
+<page>
+    <size><![CDATA[Letter:216:282]]></size>
+    <orientation><![CDATA[P]]></orientation>
+    <margin>
+        <top><![CDATA[10]]></top>
+        <bottom><![CDATA[10]]></bottom>
+        <left><![CDATA[10]]></left>
+        <right><![CDATA[10]]></right>
+    </margin>
+</page>
+<heading>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[12]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</heading>
+<title1>
+    <text><![CDATA[%reportname%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title1>
+<title2>
+    <text><![CDATA[Report Generated %date%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title2>
+<filter>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[8]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</filter>
+<data>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</data>
+<totals>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</totals>
+    <datedefault><![CDATA[a]]></datedefault>
+    <datefield><![CDATA[description]]></datefield>
+    <truncate><![CDATA[on]]></truncate>
+    <special_class><![CDATA[income_statement]]></special_class>
+    <groupname><![CDATA[gl:rpt]]></groupname>
+    <filenamefield><![CDATA[description]]></filenamefield>
+    <security><![CDATA[u:-1;g:-1]]></security>
+    <datelist><![CDATA[z]]></datelist>
+</PhreeformReport>

@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<ChartofAccounts>
+    <title>US - Retail store simple Chart of Accounts (Corporations, S Corporations)</title>
+    <defaults>
+        <type><id> 0</id><account>1020</account><title>Cash</title></type>
+        <type><id> 2</id><account>1100</account><title>Accounts Receivable</title></type>
+        <type><id> 4</id><account>1200</account><title>Inventory</title></type>
+        <type><id> 6</id><account>1400</account><title>Other Current Assets</title></type>
+        <type><id> 8</id><account>1500</account><title>Fixed Assets</title></type>
+        <type><id>10</id><account>1900</account><title>Accumulated Depreciation</title></type>
+        <type><id>12</id><account> TBD</account><title>Other Assets</title></type>
+        <type><id>20</id><account>2000</account><title>Accounts Payable</title></type>
+        <type><id>22</id><account>2320</account><title>Other Current Liabilities</title></type>
+        <type><id>24</id><account> TBD</account><title>Long Term Liabilities</title></type>
+        <type><id>30</id><account>4000</account><title>Income</title></type>
+        <type><id>32</id><account>5000</account><title>Cost of Sales</title></type>
+        <type><id>34</id><account>6550</account><title>Expenses</title></type>
+        <type><id>40</id><account>3200</account><title>Equity - Does Not Close</title></type>
+        <type><id>42</id><account>3500</account><title>Equity - Gets Closed</title></type>
+        <type><id>44</id><account>3800</account><title>Equity - Retained Earnings</title></type>
+    </defaults>
+    <account><id>1000</id><type> 0</type><title>Cash</title></account>
+    <account><id>1020</id><type> 0</type><title>Checking Account</title></account>
+    <account><id>1100</id><type> 2</type><title>Accounts Receivable</title></account>
+    <account><id>1150</id><type> 2</type><title>Allowance for Doubtful Debt</title></account>
+    <account><id>1200</id><type> 4</type><title>Inventory</title></account>
+    <account><id>1400</id><type> 6</type><title>Prepaid Expenses</title></account>
+    <account><id>1500</id><type> 8</type><title>Property and Equipment</title></account>
+    <account><id>1900</id><type>10</type><title>Accum. Dep - Prop and Equip</title></account>
+    <account><id>2000</id><type>20</type><title>Accounts Payable</title></account>
+    <account><id>2310</id><type>22</type><title>Sales Tax Payable</title></account>
+    <account><id>2312</id><type>22</type><title>City Tax Payable</title></account>
+    <account><id>2314</id><type>22</type><title>County Tax Payable</title></account>
+    <account><id>2316</id><type>22</type><title>State Tax Payable</title></account>
+    <account><id>2320</id><type>22</type><title>Deductons Payable</title></account>
+    <account><id>2330</id><type>22</type><title>Federal Payroll Taxes Payable</title></account>
+    <account><id>2340</id><type>22</type><title>FUTA Payable</title></account>
+    <account><id>2350</id><type>22</type><title>State Payroll Taxes Payable</title></account>
+    <account><id>2360</id><type>22</type><title>SUTA Payable</title></account>
+    <account><id>2370</id><type>22</type><title>Local Taxes Payable</title></account>
+    <account><id>2380</id><type>22</type><title>Income Taxes Payable</title></account>
+    <account><id>2400</id><type>22</type><title>Customer Deposits</title></account>
+    <account><id>2500</id><type>22</type><title>Current Portion Long-Term Debt</title></account>
+    <account><id>2700</id><type>22</type><title>Long Term Debt - Noncurrent</title></account>
+    <account><id>3100</id><type>40</type><title>Common Stock</title></account>
+    <account><id>3200</id><type>40</type><title>Paid In Capital</title></account>
+    <account><id>3500</id><type>42</type><title>Dividends Paid</title></account>
+    <account><id>3800</id><type>44</type><title>Retained Earnings</title></account>
+    <account><id>4000</id><type>30</type><title>Sales Income</title></account>
+    <account><id>4100</id><type>30</type><title>Interest Income</title></account>
+    <account><id>4200</id><type>30</type><title>Finance Charge Income</title></account>
+    <account><id>4300</id><type>30</type><title>Other Income</title></account>
+    <account><id>4900</id><type>30</type><title>Sales Discounts</title></account>
+    <account><id>5000</id><type>32</type><title>Cost of Sales</title></account>
+    <account><id>5100</id><type>32</type><title>Cost of Sales - Freight</title></account>
+    <account><id>5400</id><type>32</type><title>Cost of Sales - Salary &amp; Wage</title></account>
+    <account><id>5900</id><type>32</type><title>Inventory Adjustments</title></account>
+    <account><id>6000</id><type>34</type><title>Wages Expense</title></account>
+    <account><id>6050</id><type>34</type><title>Employee Benefit Expense</title></account>
+    <account><id>6100</id><type>34</type><title>Payroll Tax Expense</title></account>
+    <account><id>6150</id><type>34</type><title>Bad Debt Expense</title></account>
+    <account><id>6200</id><type>34</type><title>Income Tax Expense</title></account>
+    <account><id>6250</id><type>34</type><title>Other Taxes Expense</title></account>
+    <account><id>6300</id><type>34</type><title>Rent or Lease Expense</title></account>
+    <account><id>6350</id><type>34</type><title>Maintenance &amp; Repairs Expense</title></account>
+    <account><id>6400</id><type>34</type><title>Utilities Expense</title></account>
+    <account><id>6450</id><type>34</type><title>Office Supplies Expense</title></account>
+    <account><id>6500</id><type>34</type><title>Telephone Expense</title></account>
+    <account><id>6550</id><type>34</type><title>Other Office Expense</title></account>
+    <account><id>6600</id><type>34</type><title>Advertising Expense</title></account>
+    <account><id>6650</id><type>34</type><title>Commissions &amp; Fees Expense</title></account>
+    <account><id>6700</id><type>34</type><title>Franchise Fees Expense</title></account>
+    <account><id>6750</id><type>34</type><title>Equipment Rental Expense</title></account>
+    <account><id>6800</id><type>34</type><title>Freight Expense</title></account>
+    <account><id>6850</id><type>34</type><title>Service Charge Expense</title></account>
+    <account><id>6900</id><type>34</type><title>Purchase Discount Expense</title></account>
+    <account><id>6950</id><type>34</type><title>Insurance Expense</title></account>
+    <account><id>7000</id><type>34</type><title>Over and Short Expense</title></account>
+    <account><id>7050</id><type>34</type><title>Depreciation Expense</title></account>
+    <account><id>7100</id><type>34</type><title>Gain/Loss - Sale of Assets Exp</title></account>
+</ChartofAccounts>

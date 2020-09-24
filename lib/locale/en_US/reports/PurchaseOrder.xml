@@ -1,0 +1,974 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<PhreeformReport>
+    <reporttype><![CDATA[frm]]></reporttype>
+<tables>
+    <tablename><![CDATA[journal_main]]></tablename>
+</tables>
+<tables>
+    <tablename><![CDATA[journal_item]]></tablename>
+    <relationship><![CDATA[journal_main.id = journal_item.ref_id]]></relationship>
+    <join_type><![CDATA[JOIN]]></join_type>
+</tables>
+<tables>
+    <tablename><![CDATA[contacts]]></tablename>
+    <relationship><![CDATA[journal_main.contact_id_b = contacts.id]]></relationship>
+    <join_type><![CDATA[JOIN]]></join_type>
+</tables>
+<tables>
+    <tablename><![CDATA[address_book]]></tablename>
+    <relationship><![CDATA[contacts.id = address_book.ref_id]]></relationship>
+    <join_type><![CDATA[JOIN]]></join_type>
+</tables>
+<fieldlist>
+    <title><![CDATA[Logo]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[13]]></ordinate>
+    <width><![CDATA[40]]></width>
+    <type><![CDATA[Img]]></type>
+    <settings>
+        <img_file><![CDATA[bizuno.png]]></img_file>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Company Address]]></title>
+    <abscissa><![CDATA[50]]></abscissa>
+    <ordinate><![CDATA[12]]></ordinate>
+    <width><![CDATA[60]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[CBlk]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[14]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <boxfield>
+            <fieldname><![CDATA[primary_name]]></fieldname>
+            <separator><![CDATA[nl]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[address1]]></fieldname>
+            <separator><![CDATA[nl]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[address2]]></fieldname>
+            <separator><![CDATA[del-nl]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[city]]></fieldname>
+            <separator><![CDATA[com-sp]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[state]]></fieldname>
+            <separator><![CDATA[2sp]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[postal_code]]></fieldname>
+        </boxfield>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Company Telephone]]></title>
+    <abscissa><![CDATA[21]]></abscissa>
+    <ordinate><![CDATA[32]]></ordinate>
+    <width><![CDATA[25]]></width>
+    <height><![CDATA[4]]></height>
+    <type><![CDATA[CDta]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <fieldname><![CDATA[telephone1]]></fieldname>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Company Fax]]></title>
+    <abscissa><![CDATA[59]]></abscissa>
+    <ordinate><![CDATA[32]]></ordinate>
+    <width><![CDATA[25]]></width>
+    <height><![CDATA[4]]></height>
+    <type><![CDATA[CDta]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <fieldname><![CDATA[telephone3]]></fieldname>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Bill To Address]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[45]]></ordinate>
+    <width><![CDATA[80]]></width>
+    <height><![CDATA[4.5]]></height>
+    <type><![CDATA[TBlk]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.primary_name_b]]></fieldname>
+            <separator><![CDATA[nl]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.address1_b]]></fieldname>
+            <separator><![CDATA[nl]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.address2_b]]></fieldname>
+            <separator><![CDATA[del-nl]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.city_b]]></fieldname>
+            <separator><![CDATA[com-sp]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.state_b]]></fieldname>
+            <separator><![CDATA[2sp]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.postal_code_b]]></fieldname>
+        </boxfield>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[ShipTo Address]]></title>
+    <abscissa><![CDATA[120]]></abscissa>
+    <ordinate><![CDATA[45]]></ordinate>
+    <width><![CDATA[80]]></width>
+    <height><![CDATA[4.5]]></height>
+    <type><![CDATA[TBlk]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.primary_name_s]]></fieldname>
+            <separator><![CDATA[nl]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.contact_s]]></fieldname>
+            <separator><![CDATA[del-nl]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.address1_s]]></fieldname>
+            <separator><![CDATA[nl]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.address2_s]]></fieldname>
+            <separator><![CDATA[del-nl]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.city_s]]></fieldname>
+            <separator><![CDATA[com-sp]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.state_s]]></fieldname>
+            <separator><![CDATA[2sp]]></separator>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.postal_code_s]]></fieldname>
+        </boxfield>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Bill Phone]]></title>
+    <abscissa><![CDATA[21]]></abscissa>
+    <ordinate><![CDATA[73]]></ordinate>
+    <width><![CDATA[40]]></width>
+    <height><![CDATA[4]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <fieldname><![CDATA[address_book.telephone1]]></fieldname>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Bill Fax]]></title>
+    <abscissa><![CDATA[85]]></abscissa>
+    <ordinate><![CDATA[73]]></ordinate>
+    <width><![CDATA[40]]></width>
+    <height><![CDATA[4]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <fieldname><![CDATA[address_book.telephone3]]></fieldname>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - PO Number]]></title>
+    <abscissa><![CDATA[155]]></abscissa>
+    <ordinate><![CDATA[19]]></ordinate>
+    <width><![CDATA[50]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <fieldname><![CDATA[journal_main.invoice_num]]></fieldname>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Issue Date]]></title>
+    <abscissa><![CDATA[155]]></abscissa>
+    <ordinate><![CDATA[29]]></ordinate>
+    <width><![CDATA[50]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <fieldname><![CDATA[journal_main.post_date]]></fieldname>
+        <formatting><![CDATA[date]]></formatting>
+        <display><![CDATA[0]]></display>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Page Num]]></title>
+    <abscissa><![CDATA[155]]></abscissa>
+    <ordinate><![CDATA[39]]></ordinate>
+    <width><![CDATA[50]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[PgNum]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Good Thru]]></title>
+    <abscissa><![CDATA[9]]></abscissa>
+    <ordinate><![CDATA[89]]></ordinate>
+    <width><![CDATA[38]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <fieldname><![CDATA[journal_main.terminal_date]]></fieldname>
+        <formatting><![CDATA[date]]></formatting>
+        <display><![CDATA[0]]></display>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[C]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Ship Via]]></title>
+    <abscissa><![CDATA[49]]></abscissa>
+    <ordinate><![CDATA[89]]></ordinate>
+    <width><![CDATA[38]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <fieldname><![CDATA[journal_main.method_code]]></fieldname>
+        <processing><![CDATA[shipInfo]]></processing>
+        <display><![CDATA[0]]></display>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[C]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Account Num]]></title>
+    <abscissa><![CDATA[89]]></abscissa>
+    <ordinate><![CDATA[89]]></ordinate>
+    <width><![CDATA[38]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[C]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <fieldname><![CDATA[contacts.account_number]]></fieldname>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Terms]]></title>
+    <abscissa><![CDATA[129]]></abscissa>
+    <ordinate><![CDATA[89]]></ordinate>
+    <width><![CDATA[38]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[C]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <fieldname><![CDATA[journal_main.terms]]></fieldname>
+        <processing><![CDATA[terms]]></processing>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Buyer]]></title>
+    <abscissa><![CDATA[169]]></abscissa>
+    <ordinate><![CDATA[89]]></ordinate>
+    <width><![CDATA[38]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <fieldname><![CDATA[journal_main.rep_id]]></fieldname>
+        <processing><![CDATA[contactID]]></processing>
+        <display><![CDATA[0]]></display>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[C]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data Table - Items]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[100]]></ordinate>
+    <width><![CDATA[200]]></width>
+    <height><![CDATA[160]]></height>
+    <type><![CDATA[Tbl]]></type>
+    <settings>
+        <hfont><![CDATA[default]]></hfont>
+        <hsize><![CDATA[8]]></hsize>
+        <halign><![CDATA[L]]></halign>
+        <hcolor><![CDATA[0:0:0]]></hcolor>
+        <hbsize><![CDATA[1]]></hbsize>
+        <hbcolor><![CDATA[0:0:0]]></hbcolor>
+        <hfcolor><![CDATA[0:0:0]]></hfcolor>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <boxfield>
+            <fieldname><![CDATA[journal_item.sku]]></fieldname>
+            <title><![CDATA[SKU]]></title>
+            <font><![CDATA[default]]></font>
+            <size><![CDATA[12]]></size>
+            <align><![CDATA[L]]></align>
+            <color><![CDATA[0:0:0]]></color>
+            <width><![CDATA[35]]></width>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_item.description]]></fieldname>
+            <title><![CDATA[Description]]></title>
+            <font><![CDATA[default]]></font>
+            <size><![CDATA[12]]></size>
+            <align><![CDATA[L]]></align>
+            <color><![CDATA[0:0:0]]></color>
+            <width><![CDATA[86]]></width>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_item.qty]]></fieldname>
+            <title><![CDATA[Quantity]]></title>
+            <font><![CDATA[default]]></font>
+            <size><![CDATA[12]]></size>
+            <align><![CDATA[C]]></align>
+            <color><![CDATA[0:0:0]]></color>
+            <width><![CDATA[22]]></width>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_item.debit_amount /journal_item.qty]]></fieldname>
+            <title><![CDATA[Unit Price]]></title>
+            <font><![CDATA[default]]></font>
+            <size><![CDATA[12]]></size>
+            <align><![CDATA[R]]></align>
+            <color><![CDATA[0:0:0]]></color>
+            <width><![CDATA[27]]></width>
+            <formatting><![CDATA[currency]]></formatting>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_item.debit_amount]]></fieldname>
+            <title><![CDATA[Extension]]></title>
+            <font><![CDATA[default]]></font>
+            <size><![CDATA[12]]></size>
+            <align><![CDATA[R]]></align>
+            <color><![CDATA[0:0:0]]></color>
+            <width><![CDATA[30]]></width>
+            <formatting><![CDATA[currency]]></formatting>
+        </boxfield>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Total - Order Total]]></title>
+    <abscissa><![CDATA[178]]></abscissa>
+    <ordinate><![CDATA[260]]></ordinate>
+    <width><![CDATA[30]]></width>
+    <height><![CDATA[7]]></height>
+    <type><![CDATA[Ttl]]></type>
+    <settings>
+        <display><![CDATA[0]]></display>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <boxfield>
+            <fieldname><![CDATA[journal_item.debit_amount]]></fieldname>
+            <formatting><![CDATA[currency]]></formatting>
+        </boxfield>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Ordered By]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[8]]></ordinate>
+    <width><![CDATA[60]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[ORDERED BY:]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Co Phone]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[32]]></ordinate>
+    <width><![CDATA[15]]></width>
+    <height><![CDATA[4]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Phone:]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Co Fax]]></title>
+    <abscissa><![CDATA[50]]></abscissa>
+    <ordinate><![CDATA[32]]></ordinate>
+    <width><![CDATA[15]]></width>
+    <height><![CDATA[4]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Fax:]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Purchase Order]]></title>
+    <abscissa><![CDATA[165]]></abscissa>
+    <ordinate><![CDATA[8]]></ordinate>
+    <width><![CDATA[42]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[16]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Purchase Order]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - PO Number]]></title>
+    <abscissa><![CDATA[155]]></abscissa>
+    <ordinate><![CDATA[14]]></ordinate>
+    <width><![CDATA[50]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[PO Number]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Date Issued]]></title>
+    <abscissa><![CDATA[155]]></abscissa>
+    <ordinate><![CDATA[24]]></ordinate>
+    <width><![CDATA[50]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Date Issued]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Page Num]]></title>
+    <abscissa><![CDATA[175]]></abscissa>
+    <ordinate><![CDATA[34]]></ordinate>
+    <width><![CDATA[30]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Page Number]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - To]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[40]]></ordinate>
+    <width><![CDATA[15]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[To:]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Ship To]]></title>
+    <abscissa><![CDATA[120]]></abscissa>
+    <ordinate><![CDATA[40]]></ordinate>
+    <width><![CDATA[30]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Ship To:]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Phone]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[73]]></ordinate>
+    <width><![CDATA[20]]></width>
+    <height><![CDATA[4]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Phone:]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Fax]]></title>
+    <abscissa><![CDATA[65]]></abscissa>
+    <ordinate><![CDATA[73]]></ordinate>
+    <width><![CDATA[20]]></width>
+    <height><![CDATA[4]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Fax:]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Good Thru]]></title>
+    <abscissa><![CDATA[9]]></abscissa>
+    <ordinate><![CDATA[81]]></ordinate>
+    <width><![CDATA[38]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[C]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Good Thru]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Ship Via]]></title>
+    <abscissa><![CDATA[49]]></abscissa>
+    <ordinate><![CDATA[81]]></ordinate>
+    <width><![CDATA[38]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[C]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Ship Via]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Account Number]]></title>
+    <abscissa><![CDATA[89]]></abscissa>
+    <ordinate><![CDATA[81]]></ordinate>
+    <width><![CDATA[38]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[C]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Account Number]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Terms]]></title>
+    <abscissa><![CDATA[129]]></abscissa>
+    <ordinate><![CDATA[81]]></ordinate>
+    <width><![CDATA[38]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[C]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Payment Terms]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Buyer]]></title>
+    <abscissa><![CDATA[169]]></abscissa>
+    <ordinate><![CDATA[81]]></ordinate>
+    <width><![CDATA[38]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[C]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Buyer]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Total]]></title>
+    <abscissa><![CDATA[151]]></abscissa>
+    <ordinate><![CDATA[260]]></ordinate>
+    <width><![CDATA[27]]></width>
+    <height><![CDATA[7]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[10]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[PO Total]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Rect - General Info]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[80]]></ordinate>
+    <width><![CDATA[200]]></width>
+    <height><![CDATA[16]]></height>
+    <type><![CDATA[Rect]]></type>
+    <settings>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Line - Gen Horizontal]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[88]]></ordinate>
+    <type><![CDATA[Line]]></type>
+    <settings>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <linetype><![CDATA[H]]></linetype>
+        <length><![CDATA[200]]></length>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Line - Gen Vert 1]]></title>
+    <abscissa><![CDATA[48]]></abscissa>
+    <ordinate><![CDATA[80]]></ordinate>
+    <type><![CDATA[Line]]></type>
+    <settings>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <linetype><![CDATA[V]]></linetype>
+        <length><![CDATA[16]]></length>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Line - Gen Vert 2]]></title>
+    <abscissa><![CDATA[88]]></abscissa>
+    <ordinate><![CDATA[80]]></ordinate>
+    <type><![CDATA[Line]]></type>
+    <settings>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <linetype><![CDATA[V]]></linetype>
+        <length><![CDATA[16]]></length>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Line - Gen Vert 3]]></title>
+    <abscissa><![CDATA[128]]></abscissa>
+    <ordinate><![CDATA[80]]></ordinate>
+    <type><![CDATA[Line]]></type>
+    <settings>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <linetype><![CDATA[V]]></linetype>
+        <length><![CDATA[16]]></length>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Line - Gen Vert 4]]></title>
+    <abscissa><![CDATA[168]]></abscissa>
+    <ordinate><![CDATA[80]]></ordinate>
+    <type><![CDATA[Line]]></type>
+    <settings>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <linetype><![CDATA[V]]></linetype>
+        <length><![CDATA[16]]></length>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Revised]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[263]]></ordinate>
+    <width><![CDATA[60]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[16]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Revised:]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Rev Date]]></title>
+    <abscissa><![CDATA[50]]></abscissa>
+    <ordinate><![CDATA[263]]></ordinate>
+    <width><![CDATA[60]]></width>
+    <height><![CDATA[6]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[16]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Revision Date:]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Rect - Rev Chk Box]]></title>
+    <abscissa><![CDATA[37]]></abscissa>
+    <ordinate><![CDATA[263]]></ordinate>
+    <width><![CDATA[5]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Rect]]></type>
+    <settings>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Line - Rev Date]]></title>
+    <abscissa><![CDATA[90]]></abscissa>
+    <ordinate><![CDATA[269]]></ordinate>
+    <type><![CDATA[Line]]></type>
+    <settings>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <linetype><![CDATA[H]]></linetype>
+        <length><![CDATA[50]]></length>
+    </settings>
+</fieldlist>
+<filterlist>
+    <fieldname><![CDATA[journal_main.invoice_num]]></fieldname>
+    <title><![CDATA[PO Number]]></title>
+    <visible><![CDATA[1]]></visible>
+    <type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[journal_main.closed]]></fieldname>
+    <title><![CDATA[Closed]]></title>
+    <visible><![CDATA[1]]></visible>
+    <type><![CDATA[2]]></type>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[journal_item.gl_type]]></fieldname>
+    <title><![CDATA[Entry Type]]></title>
+    <visible><![CDATA[0]]></visible>
+    <type><![CDATA[6]]></type>
+    <min><![CDATA[itm]]></min>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[journal_main.journal_id]]></fieldname>
+    <title><![CDATA[Journal ID]]></title>
+    <visible><![CDATA[0]]></visible>
+    <type><![CDATA[6]]></type>
+    <min><![CDATA[4]]></min>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[address_book.type]]></fieldname>
+    <title><![CDATA[Address Book Type]]></title>
+    <visible><![CDATA[0]]></visible>
+    <type><![CDATA[6]]></type>
+    <min><![CDATA[m]]></min>
+</filterlist>
+    <title><![CDATA[Purchase Order]]></title>
+    <description><![CDATA[Vendor purchase order. Format: Letter, Portrait]]></description>
+<page>
+    <size><![CDATA[Letter:216:282]]></size>
+    <orientation><![CDATA[P]]></orientation>
+    <margin>
+        <top><![CDATA[8]]></top>
+        <bottom><![CDATA[8]]></bottom>
+        <left><![CDATA[8]]></left>
+        <right><![CDATA[8]]></right>
+    </margin>
+</page>
+    <datelist><![CDATA[abcdefghijk]]></datelist>
+    <datedefault><![CDATA[c]]></datedefault>
+    <datefield><![CDATA[journal_main.post_date]]></datefield>
+    <formbreakfield><![CDATA[journal_main.id]]></formbreakfield>
+    <groupname><![CDATA[vend:j4]]></groupname>
+    <filenameprefix><![CDATA[PO-]]></filenameprefix>
+    <filenamefield><![CDATA[journal_main.invoice_num]]></filenamefield>
+    <security><![CDATA[u:-1;g:-1]]></security>
+</PhreeformReport>

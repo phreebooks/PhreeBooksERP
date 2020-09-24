@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<PhreeformReport>
+    <reporttype><![CDATA[frm]]></reporttype>
+<tables>
+    <tablename><![CDATA[journal_main]]></tablename>
+</tables>
+<fieldlist>
+    <title><![CDATA[Deposit Date]]></title>
+    <abscissa><![CDATA[35]]></abscissa>
+    <ordinate><![CDATA[47]]></ordinate>
+    <width><![CDATA[30]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <fieldname><![CDATA[journal_main.post_date]]></fieldname>
+        <formatting><![CDATA[date]]></formatting>
+        <display><![CDATA[0]]></display>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Number of Items]]></title>
+    <abscissa><![CDATA[140]]></abscissa>
+    <ordinate><![CDATA[27]]></ordinate>
+    <width><![CDATA[30]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Ttl]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.closed]]></fieldname>
+        </boxfield>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Total Deposit]]></title>
+    <abscissa><![CDATA[140]]></abscissa>
+    <ordinate><![CDATA[49]]></ordinate>
+    <width><![CDATA[30]]></width>
+    <height><![CDATA[5]]></height>
+    <type><![CDATA[Ttl]]></type>
+    <settings>
+        <display><![CDATA[0]]></display>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.total_amount]]></fieldname>
+            <formatting><![CDATA[currency]]></formatting>
+        </boxfield>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Deposit Table]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[100]]></ordinate>
+    <width><![CDATA[200]]></width>
+    <height><![CDATA[150]]></height>
+    <type><![CDATA[Tbl]]></type>
+    <settings>
+        <hfont><![CDATA[default]]></hfont>
+        <hsize><![CDATA[8]]></hsize>
+        <halign><![CDATA[L]]></halign>
+        <hcolor><![CDATA[0:0:0]]></hcolor>
+        <hbsize><![CDATA[1]]></hbsize>
+        <hbcolor><![CDATA[0:0:0]]></hbcolor>
+        <hfcolor><![CDATA[0:0:0]]></hfcolor>
+        <bshow><![CDATA[1]]></bshow>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.primary_name_b]]></fieldname>
+            <title><![CDATA[Payment From]]></title>
+            <font><![CDATA[default]]></font>
+            <size><![CDATA[12]]></size>
+            <align><![CDATA[L]]></align>
+            <color><![CDATA[0:0:0]]></color>
+            <width><![CDATA[120]]></width>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.purch_order_id]]></fieldname>
+            <title><![CDATA[Reference]]></title>
+            <font><![CDATA[default]]></font>
+            <size><![CDATA[12]]></size>
+            <align><![CDATA[L]]></align>
+            <color><![CDATA[0:0:0]]></color>
+            <width><![CDATA[40]]></width>
+        </boxfield>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.total_amount]]></fieldname>
+            <title><![CDATA[Amount]]></title>
+            <font><![CDATA[default]]></font>
+            <size><![CDATA[12]]></size>
+            <align><![CDATA[R]]></align>
+            <color><![CDATA[0:0:0]]></color>
+            <width><![CDATA[40]]></width>
+            <formatting><![CDATA[currency]]></formatting>
+        </boxfield>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Text - Total Deposit]]></title>
+    <abscissa><![CDATA[128]]></abscissa>
+    <ordinate><![CDATA[251]]></ordinate>
+    <width><![CDATA[40]]></width>
+    <height><![CDATA[4.5]]></height>
+    <type><![CDATA[Text]]></type>
+    <settings>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <text><![CDATA[Total Deposit:]]></text>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Total]]></title>
+    <abscissa><![CDATA[168]]></abscissa>
+    <ordinate><![CDATA[251]]></ordinate>
+    <width><![CDATA[40]]></width>
+    <height><![CDATA[4.5]]></height>
+    <type><![CDATA[Ttl]]></type>
+    <settings>
+        <display><![CDATA[0]]></display>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[R]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+        <boxfield>
+            <fieldname><![CDATA[journal_main.total_amount]]></fieldname>
+            <formatting><![CDATA[currency]]></formatting>
+        </boxfield>
+    </settings>
+</fieldlist>
+<fieldlist>
+    <title><![CDATA[Data - Date]]></title>
+    <abscissa><![CDATA[8]]></abscissa>
+    <ordinate><![CDATA[251]]></ordinate>
+    <width><![CDATA[40]]></width>
+    <height><![CDATA[4.5]]></height>
+    <type><![CDATA[Data]]></type>
+    <settings>
+        <fieldname><![CDATA[journal_main.post_date]]></fieldname>
+        <formatting><![CDATA[date]]></formatting>
+        <display><![CDATA[0]]></display>
+        <font><![CDATA[default]]></font>
+        <size><![CDATA[12]]></size>
+        <align><![CDATA[L]]></align>
+        <color><![CDATA[0:0:0]]></color>
+        <bsize><![CDATA[1]]></bsize>
+        <bcolor><![CDATA[0:0:0]]></bcolor>
+        <fcolor><![CDATA[0:0:0]]></fcolor>
+    </settings>
+</fieldlist>
+<sortlist>
+    <default><![CDATA[0]]></default>
+</sortlist>
+<sortlist>
+    <default><![CDATA[0]]></default>
+</sortlist>
+<filterlist>
+    <fieldname><![CDATA[journal_main.invoice_num]]></fieldname>
+    <title><![CDATA[Deposit ID]]></title>
+    <visible><![CDATA[1]]></visible>
+    <type><![CDATA[6]]></type>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[journal_main.journal_id]]></fieldname>
+    <title><![CDATA[Journal ID]]></title>
+    <type><![CDATA[9]]></type>
+    <min><![CDATA[2,17,18]]></min>
+</filterlist>
+    <title><![CDATA[Deposit Slip]]></title>
+    <description><![CDATA[Bank Deposit Slip; Top form, bottom listing; Portrait; Letter]]></description>
+<page>
+    <size><![CDATA[Letter:216:282]]></size>
+    <orientation><![CDATA[P]]></orientation>
+    <margin>
+        <top><![CDATA[8]]></top>
+        <bottom><![CDATA[8]]></bottom>
+        <left><![CDATA[8]]></left>
+        <right><![CDATA[8]]></right>
+    </margin>
+</page>
+    <datelist><![CDATA[a]]></datelist>
+    <datedefault><![CDATA[a]]></datedefault>
+    <formbreakfield><![CDATA[journal_main.invoice_num]]></formbreakfield>
+    <groupname><![CDATA[bnk:j18]]></groupname>
+    <security><![CDATA[u:-1;g:-1]]></security>
+</PhreeformReport>

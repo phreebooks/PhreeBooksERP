@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<PhreeformReport>
+    <reporttype><![CDATA[rpt]]></reporttype>
+<tables>
+    <joinopt><![CDATA[JOIN]]></joinopt>
+    <tablename><![CDATA[journal_history]]></tablename>
+    <join_type><![CDATA[JOIN]]></join_type>
+</tables>
+<fieldlist>
+    <fieldname><![CDATA[journal_history.gl_account]]></fieldname>
+    <title><![CDATA[Account #]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[20]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[L]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[journal_history.gl_account]]></fieldname>
+    <title><![CDATA[Title]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[65]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[L]]></align>
+    <formatting><![CDATA[glTitle]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[journal_history.gl_type]]></fieldname>
+    <title><![CDATA[Account Type]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[50]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[L]]></align>
+    <formatting><![CDATA[glType]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[greatest(journal_history.debit_amount -journal_history.credit_amount + journal_history.beginning_balance, 0)]]></fieldname>
+    <title><![CDATA[Debit Amount]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[30]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[curNull0]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[greatest(journal_history.credit_amount - journal_history.debit_amount - journal_history.beginning_balance, 0)]]></fieldname>
+    <title><![CDATA[Credit Amount]]></title>
+    <visible><![CDATA[1]]></visible>
+    <width><![CDATA[30]]></width>
+    <break><![CDATA[1]]></break>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[curNull0]]></formatting>
+</fieldlist>
+<sortlist>
+    <fieldname><![CDATA[journal_history.gl_account]]></fieldname>
+    <title><![CDATA[Account Number]]></title>
+    <default><![CDATA[1]]></default>
+</sortlist>
+    <title><![CDATA[General Ledger Trial Balance]]></title>
+    <description><![CDATA[General Ledger Trial Balance. Format: Letter, Portrait]]></description>
+<page>
+    <size><![CDATA[Letter:216:282]]></size>
+    <orientation><![CDATA[P]]></orientation>
+    <margin>
+        <top><![CDATA[8]]></top>
+        <bottom><![CDATA[8]]></bottom>
+        <left><![CDATA[8]]></left>
+        <right><![CDATA[8]]></right>
+    </margin>
+</page>
+<heading>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[12]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</heading>
+<title1>
+    <text><![CDATA[%reportname%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title1>
+<title2>
+    <text><![CDATA[Report Generated %date%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title2>
+<filter>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[8]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</filter>
+<data>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</data>
+<totals>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</totals>
+    <datedefault><![CDATA[a]]></datedefault>
+    <datefield><![CDATA[journal_history.period]]></datefield>
+    <truncate><![CDATA[on]]></truncate>
+    <groupname><![CDATA[gl:rpt]]></groupname>
+    <security><![CDATA[u:-1;g:-1]]></security>
+    <datelist><![CDATA[z]]></datelist>
+</PhreeformReport>

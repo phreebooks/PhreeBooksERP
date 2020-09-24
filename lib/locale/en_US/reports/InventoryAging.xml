@@ -1,0 +1,184 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<PhreeformReport>
+    <reporttype><![CDATA[rpt]]></reporttype>
+<tables>
+    <tablename><![CDATA[inventory_history]]></tablename>
+    <join_type><![CDATA[JOIN]]></join_type>
+</tables>
+<tables>
+    <tablename><![CDATA[inventory]]></tablename>
+    <relationship><![CDATA[inventory_history.sku=inventory.sku]]></relationship>
+    <join_type><![CDATA[JOIN]]></join_type>
+</tables>
+<fieldlist>
+    <fieldname><![CDATA[inventory_history.sku]]></fieldname>
+    <title><![CDATA[SKU]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[35]]></width>
+    <align><![CDATA[L]]></align>
+    <total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory_history.post_date]]></fieldname>
+    <title><![CDATA[Purchase Date]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[30]]></width>
+    <align><![CDATA[L]]></align>
+    <formatting><![CDATA[date]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory_history.remaining]]></fieldname>
+    <title><![CDATA[Qty]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[15]]></width>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory_history.trans_code]]></fieldname>
+    <title><![CDATA[Serial Number]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[40]]></width>
+    <align><![CDATA[L]]></align>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.description_short]]></fieldname>
+    <title><![CDATA[Description]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[60]]></width>
+    <align><![CDATA[L]]></align>
+    <total><![CDATA[0]]></total>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory_history.unit_cost]]></fieldname>
+    <title><![CDATA[Unit Cost]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[26]]></width>
+    <align><![CDATA[R]]></align>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory.full_price]]></fieldname>
+    <title><![CDATA[Full Price]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[26]]></width>
+    <align><![CDATA[R]]></align>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<fieldlist>
+    <fieldname><![CDATA[inventory_history.unit_cost * inventory_history.remaining]]></fieldname>
+    <title><![CDATA[Total Value]]></title>
+    <visible><![CDATA[1]]></visible>
+    <break><![CDATA[1]]></break>
+    <width><![CDATA[30]]></width>
+    <align><![CDATA[R]]></align>
+    <total><![CDATA[1]]></total>
+    <formatting><![CDATA[currency]]></formatting>
+</fieldlist>
+<grouplist>
+    <fieldname><![CDATA[inventory_history.sku]]></fieldname>
+    <title><![CDATA[SKU]]></title>
+    <default><![CDATA[1]]></default>
+    <processing><![CDATA[0]]></processing>
+</grouplist>
+<grouplist>
+    <fieldname><![CDATA[inventory_history.post_date]]></fieldname>
+    <title><![CDATA[Purchase Date]]></title>
+    <default><![CDATA[0]]></default>
+    <page_break><![CDATA[0]]></page_break>
+    <processing><![CDATA[0]]></processing>
+</grouplist>
+<sortlist>
+    <fieldname><![CDATA[inventory_history.post_date]]></fieldname>
+    <title><![CDATA[Purchase Date]]></title>
+    <default><![CDATA[1]]></default>
+</sortlist>
+<sortlist>
+    <fieldname><![CDATA[inventory_history.sku]]></fieldname>
+    <title><![CDATA[SKU]]></title>
+    <default><![CDATA[0]]></default>
+</sortlist>
+<sortlist>
+    <fieldname><![CDATA[inventory_history.remaining]]></fieldname>
+    <title><![CDATA[Qty]]></title>
+    <default><![CDATA[0]]></default>
+</sortlist>
+<filterlist>
+    <fieldname><![CDATA[inventory_history.sku]]></fieldname>
+    <description><![CDATA[SKU]]></description>
+    <visible><![CDATA[1]]></visible>
+    <type><![CDATA[0]]></type>
+</filterlist>
+<filterlist>
+    <fieldname><![CDATA[inventory_history.remaining]]></fieldname>
+    <title><![CDATA[Remaining]]></title>
+    <visible><![CDATA[0]]></visible>
+    <min><![CDATA[0]]></min>
+    <type><![CDATA[8]]></type>
+</filterlist>
+    <title><![CDATA[Inventory Aging]]></title>
+    <description><![CDATA[Inventory aging report.  Format Letter, Landscape.]]></description>
+<page>
+    <size><![CDATA[Letter:216:282]]></size>
+    <orientation><![CDATA[L]]></orientation>
+    <margin>
+        <top><![CDATA[8]]></top>
+        <bottom><![CDATA[8]]></bottom>
+        <left><![CDATA[8]]></left>
+        <right><![CDATA[8]]></right>
+    </margin>
+</page>
+<heading>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[12]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</heading>
+<title1>
+    <text><![CDATA[%reportname%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title1>
+<title2>
+    <text><![CDATA[Report Generated %date%]]></text>
+    <show><![CDATA[on]]></show>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</title2>
+<filter>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[8]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</filter>
+<data>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[C]]></align>
+</data>
+<totals>
+    <font><![CDATA[default]]></font>
+    <size><![CDATA[10]]></size>
+    <color><![CDATA[0:0:0]]></color>
+    <align><![CDATA[L]]></align>
+</totals>
+    <datelist><![CDATA[a]]></datelist>
+    <datedefault><![CDATA[a]]></datedefault>
+    <groupname><![CDATA[inv:rpt]]></groupname>
+    <security><![CDATA[u:-1;g:-1]]></security>
+</PhreeformReport>

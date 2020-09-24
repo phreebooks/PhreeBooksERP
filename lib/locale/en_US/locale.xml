@@ -1,0 +1,1349 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<Data>
+<Description>Contains the locales including countries, currencies and formats (date, time, numbers)</Description>
+<Notes>Format:
+    Country -> Title (English), ISO2, ISO3
+        Region -> Code, Title (English)
+    Currency -> ISO, Title, Precision (2), Prefix (null), Suffix (null), Decimal (.), Thousand(,), PrefixNegative(-), SuffixNegative (null)
+    Number   -> Prefix (null), Suffix (null), Decimal (.), Thousand (,), PrefixNegative (-), SuffixNegative (null)
+    Format   -> Date (d/m/Y), Time (H:i:s), DateTime (d/m/Y H:i:s)
+</Notes>
+<Timezone><Code>America/Los_Angeles</Code><Description>(UTC-8) Los Angeles, Vancouver, Tijuana</Description></Timezone>
+<Timezone><Code>America/Denver</Code><Description>(UTC-7) Denver, Phoenix, Calgary, Ciudad Juárez</Description></Timezone>
+<Timezone><Code>America/Chicago</Code><Description>(UTC-6) Chicago, Mexico City, San José, San Salvador, Winnipeg</Description></Timezone>
+<Timezone><Code>America/New_York</Code><Description>(UTC-5) New York, Lima, Toronto, Bogotá, Havana, Kingston</Description></Timezone>
+<Timezone><Code>America/Caracas</Code><Description>(UTC-4) Caracas, Santiago, La Paz, Manaus, Halifax, Santo Domingo</Description></Timezone>
+<Timezone><Code>America/Sao_Paulo</Code><Description>(UTC-3) Buenos Aires, Montevideo, São Paulo</Description></Timezone>
+<Timezone><Code>America/Noronha</Code><Description>(UTC-2) Brazil</Description></Timezone>
+<Timezone><Code>Atlantic/Bermuda</Code><Description>(UTC-1) Praia</Description></Timezone>
+<Timezone><Code>Europe/London</Code><Description>(UTC) Accra, Casablanca, Dakar, Dublin, Lisbon, London</Description></Timezone>
+<Timezone><Code>Europe/Rome</Code><Description>(UTC+1) Berlin, Lagos, Madrid, Paris, Rome, Tunis, Vienna, Warsaw</Description></Timezone>
+<Timezone><Code>Europe/Athens</Code><Description>(UTC+2) Athens, Bucharest, Cairo, Helsinki, Jerusalem, Johannesburg, Kiev</Description></Timezone>
+<Timezone><Code>Europe/Moscow</Code><Description>(UTC+3) Istanbul, Moscow, Nairobi, Baghdad, Doha, Minsk, Riyadh</Description></Timezone>
+<Timezone><Code>Asia/Dubai</Code><Description>(UTC+4) Baku, Dubai, Samara, Muscat</Description></Timezone>
+<Timezone><Code>Asia/Karachi</Code><Description>(UTC+5) Karachi, Tashkent, Yekaterinburg</Description></Timezone>
+<Timezone><Code>Asia/Dhaka</Code><Description>(UTC+6) Almaty, Dhaka, Omsk</Description></Timezone>
+<Timezone><Code>Asia/Jakarta</Code><Description>(UTC+7) Jakarta, Bangkok, Krasnoyarsk, Ho Chi Minh City</Description></Timezone>
+<Timezone><Code>Asia/Hong_Kong</Code><Description>(UTC+8) Beijing, Hong Kong, Taipei, Singapore, Kuala Lumpur</Description></Timezone>
+<Timezone><Code>Asia/Tokyo</Code><Description>(UTC+9) Seoul, Tokyo, Ambon, Yakutsk</Description></Timezone>
+<Timezone><Code>Australia/Brisbane</Code><Description>(UTC+10) Port Moresby, Brisbane, Vladivostok</Description></Timezone>
+<Timezone><Code>Australia/Sydney</Code><Description>(UTC+11) Sydney, Nouméa</Description></Timezone>
+<Timezone><Code>Pacific/Auckland</Code><Description>(UTC+12) Auckland, Suva</Description></Timezone>
+<Timezone><Code>Pacific/Pago_Pago</Code><Description>(UTC-11) Pago Pago</Description></Timezone>
+<Timezone><Code>Pacific/Honolulu</Code><Description>(UTC-10) Papeete, Honolulu</Description></Timezone>
+<Timezone><Code>America/Anchorage</Code><Description>(UTC-9) Anchorage</Description></Timezone>
+<Locale>
+    <Country><Title>Afghanistan</Title><ISO2>AF</ISO2><ISO3>AFG</ISO3></Country>
+    <Currency><ISO>AFN</ISO><Title>Afghanistan Afghani</Title><Prefix>&#x60b;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Åland Islands</Title><ISO2>AX</ISO2><ISO3>ALA</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Albania</Title><ISO2>AL</ISO2><ISO3>ALB</ISO3></Country>
+    <Currency><ISO>ALL</ISO><Title>Albania Lek</Title><Prefix>Lek</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Algeria</Title><ISO2>DZ</ISO2><ISO3>DZA</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>American Samoa</Title><ISO2>AS</ISO2><ISO3>ASM</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Andorra</Title><ISO2>AD</ISO2><ISO3>AND</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Angola</Title><ISO2>AO</ISO2><ISO3>AGO</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Anguilla</Title><ISO2>AI</ISO2><ISO3>AIA</ISO3></Country>
+    <Currency><ISO>XCD</ISO><Title>East Caribbean Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Antarctica</Title><ISO2>AQ</ISO2><ISO3>ATA</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Antigua and Barbuda</Title><ISO2>AG</ISO2><ISO3>ATG</ISO3></Country>
+    <Currency><ISO>XCD</ISO><Title>East Caribbean Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Argentina</Title><ISO2>AR</ISO2><ISO3>ARG</ISO3></Country>
+    <Currency><ISO>ARS</ISO><Title>Argentina Peso</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Armenia</Title><ISO2>AM</ISO2><ISO3>ARM</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Aruba</Title><ISO2>AW</ISO2><ISO3>ABW</ISO3></Country>
+    <Currency><ISO>AWG</ISO><Title>Aruba Guilder</Title><Prefix>&#x192;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Australia</Title><ISO2>AU</ISO2><ISO3>AUS</ISO3></Country>
+    <Currency><ISO>AUD</ISO><Title>Australia Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>&#160;</SymbolThousand><Precision>2</Precision></Currency>
+    <Number><Prefix></Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>-</PrefixNegative><SuffixNegative></SuffixNegative></Number>
+    <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Austria</Title><ISO2>AT</ISO2><ISO3>AUT</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Azerbaijan</Title><ISO2>AZ</ISO2><ISO3>AZE</ISO3></Country>
+    <Currency><ISO>AZN</ISO><Title>Azerbaijan New Manat</Title><Prefix>&#x43c;&#x430;&#x43d;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Bahamas</Title><ISO2>BS</ISO2><ISO3>BHS</ISO3></Country>
+    <Currency><ISO>BSD</ISO><Title>Bahamas Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Bahrain</Title><ISO2>BH</ISO2><ISO3>BHR</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Bangladesh</Title><ISO2>BD</ISO2><ISO3>BGD</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Barbados</Title><ISO2>BB</ISO2><ISO3>BRB</ISO3></Country>
+    <Currency><ISO>BBD</ISO><Title>Barbados Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Belarus</Title><ISO2>BY</ISO2><ISO3>BLR</ISO3></Country>
+    <Currency><ISO>BYR</ISO><Title>Belarus Ruble</Title><Prefix>p.</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Belgium</Title><ISO2>BE</ISO2><ISO3>BEL</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Belize</Title><ISO2>BZ</ISO2><ISO3>BLZ</ISO3></Country>
+    <Currency><ISO>BZD</ISO><Title>Belize Dollar</Title><Prefix>BZ$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Benin</Title><ISO2>BJ</ISO2><ISO3>BEN</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Bermuda</Title><ISO2>BM</ISO2><ISO3>BMU</ISO3></Country>
+    <Currency><ISO>BMD</ISO><Title>Bermuda Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Bhutan</Title><ISO2>BT</ISO2><ISO3>BTN</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Bolivia</Title><ISO2>BO</ISO2><ISO3>BOL</ISO3></Country>
+    <Currency><ISO>BOB</ISO><Title>Bolivia Boliviano</Title><Prefix>$b</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Bosnia and Herzegowina</Title><ISO2>BA</ISO2><ISO3>BIH</ISO3></Country>
+    <Currency><ISO>BAM</ISO><Title>Bosnia and Herzegovina Convertible Marka</Title><Prefix>KM</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Botswana</Title><ISO2>BW</ISO2><ISO3>BWA</ISO3></Country>
+    <Currency><ISO>BWP</ISO><Title>Botswana Pula</Title><Prefix>P</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Bouvet Island</Title><ISO2>BV</ISO2><ISO3>BVT</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Brazil</Title><ISO2>BR</ISO2><ISO3>BRA</ISO3></Country>
+    <Currency><ISO>BRL</ISO><Title>Brazil Real</Title><Prefix>R$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>British Indian Ocean Territory</Title><ISO2>IO</ISO2><ISO3>IOT</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Brunei Darussalam</Title><ISO2>BN</ISO2><ISO3>BRN</ISO3></Country>
+    <Currency><ISO>BND</ISO><Title>Brunei Darussalam Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Bulgaria</Title><ISO2>BG</ISO2><ISO3>BGR</ISO3></Country>
+    <Currency><ISO>BGN</ISO><Title>Bulgaria Lev</Title><Prefix>&#x43b;&#x432;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Burkina Faso</Title><ISO2>BF</ISO2><ISO3>BFA</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Burundi</Title><ISO2>BI</ISO2><ISO3>BDI</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Cambodia</Title><ISO2>KH</ISO2><ISO3>KHM</ISO3></Country>
+    <Currency><ISO>KHR</ISO><Title>Cambodia Riel</Title><Prefix>&#x17db;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Cameroon</Title><ISO2>CM</ISO2><ISO3>CMR</ISO3></Country>
+    <Currency><ISO>XAF</ISO><Title>Central African CFA franc</Title><Prefix>CFA</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>0</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Canada</Title><ISO2>CA</ISO2><ISO3>CAN</ISO3></Country>
+    <Currency><ISO>CAD</ISO><Title>Canada Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Number><Prefix></Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>-</PrefixNegative><SuffixNegative></SuffixNegative></Number>
+    <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Cape Verde</Title><ISO2>CV</ISO2><ISO3>CPV</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Cayman Islands</Title><ISO2>KY</ISO2><ISO3>CYM</ISO3></Country>
+    <Currency><ISO>KYD</ISO><Title>Cayman Islands Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Central African Republic</Title><ISO2>CF</ISO2><ISO3>CAF</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Chad</Title><ISO2>TD</ISO2><ISO3>TCD</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Chile</Title><ISO2>CL</ISO2><ISO3>CHL</ISO3></Country>
+    <Currency><ISO>CLP</ISO><Title>Chile Peso</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>China</Title><ISO2>CN</ISO2><ISO3>CHN</ISO3></Country>
+    <Currency><ISO>CNY</ISO><Title>China Yuan Renminbi</Title><Prefix>&#xa5;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Number><Prefix></Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>-</PrefixNegative><SuffixNegative></SuffixNegative></Number>
+    <Format><Date>Y-m-d</Date><Time>H:i:s</Time><DateTime>Y-m-d H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Christmas Island</Title><ISO2>CX</ISO2><ISO3>CXR</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Cocos (Keeling) Islands</Title><ISO2>CC</ISO2><ISO3>CCK</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Colombia</Title><ISO2>CO</ISO2><ISO3>COL</ISO3></Country>
+    <Currency><ISO>COP</ISO><Title>Colombia Peso</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Comoros</Title><ISO2>KM</ISO2><ISO3>COM</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Congo</Title><ISO2>CG</ISO2><ISO3>COG</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Congo, Democratic Republic Of</Title><ISO2>CD</ISO2><ISO3>COD</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Cook Islands</Title><ISO2>CK</ISO2><ISO3>COK</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Costa Rica</Title><ISO2>CR</ISO2><ISO3>CRI</ISO3></Country>
+    <Currency><ISO>CRC</ISO><Title>Costa Rica Colon</Title><Prefix>&#x20a1;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Cote D\'Ivoire</Title><ISO2>CI</ISO2><ISO3>CIV</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Croatia</Title><ISO2>HR</ISO2><ISO3>HRV</ISO3></Country>
+    <Currency><ISO>HRK</ISO><Title>Croatia Kuna</Title><Prefix>kn</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Cuba</Title><ISO2>CU</ISO2><ISO3>CUB</ISO3></Country>
+    <Currency><ISO>CUP</ISO><Title>Cuba Peso</Title><Prefix>&#x20b1;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Curacao</Title><ISO2>CW</ISO2><ISO3>CUW</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Cyprus</Title><ISO2>CY</ISO2><ISO3>CYP</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Czech Republic</Title><ISO2>CZ</ISO2><ISO3>CZE</ISO3></Country>
+    <Currency><ISO>CZK</ISO><Title>Czech Republic Koruna</Title><Prefix>&#x4b;&#x10d;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Denmark</Title><ISO2>DK</ISO2><ISO3>DNK</ISO3></Country>
+    <Currency><ISO>DKK</ISO><Title>Denmark Krone</Title><Prefix>kr</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Djibouti</Title><ISO2>DJ</ISO2><ISO3>DJI</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Dominica</Title><ISO2>DM</ISO2><ISO3>DMA</ISO3></Country>
+    <Currency><ISO>XCD</ISO><Title>East Caribbean Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Dominican Republic</Title><ISO2>DO</ISO2><ISO3>DOM</ISO3></Country>
+    <Currency><ISO>DOP</ISO><Title>Dominican Republic Peso</Title><Prefix>RD$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>East Timor</Title><ISO2>TP</ISO2><ISO3>TMP</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Ecuador</Title><ISO2>EC</ISO2><ISO3>ECU</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Egypt</Title><ISO2>EG</ISO2><ISO3>EGY</ISO3></Country>
+    <Currency><ISO>EGP</ISO><Title>Egypt Pound</Title><Prefix>&#xa3;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>El Salvador</Title><ISO2>SV</ISO2><ISO3>SLV</ISO3></Country>
+    <Currency><ISO>SVC</ISO><Title>El Salvador Colon</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Equatorial Guinea</Title><ISO2>GQ</ISO2><ISO3>GNQ</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Eritrea</Title><ISO2>ER</ISO2><ISO3>ERI</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Estonia</Title><ISO2>EE</ISO2><ISO3>EST</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Ethiopia</Title><ISO2>ET</ISO2><ISO3>ETH</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Falkland Islands (Malvinas)</Title><ISO2>FK</ISO2><ISO3>FLK</ISO3></Country>
+    <Currency><ISO>FKP</ISO><Title>Falkland Islands (Malvinas) Pound</Title><Prefix>&#xa3;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Faroe Islands</Title><ISO2>FO</ISO2><ISO3>FRO</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Fiji</Title><ISO2>FJ</ISO2><ISO3>FJI</ISO3></Country>
+    <Currency><ISO>FJD</ISO><Title>Fiji Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Finland</Title><ISO2>FI</ISO2><ISO3>FIN</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>France</Title><ISO2>FR</ISO2><ISO3>FRA</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>France Metropolitan</Title><ISO2>FX</ISO2><ISO3>FXX</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>French Guiana</Title><ISO2>GF</ISO2><ISO3>GUF</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>French Polynesia</Title><ISO2>PF</ISO2><ISO3>PYF</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>French Southern Territories</Title><ISO2>TF</ISO2><ISO3>ATF</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Gabon</Title><ISO2>GA</ISO2><ISO3>GAB</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Gambia</Title><ISO2>GM</ISO2><ISO3>GMB</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Georgia</Title><ISO2>GE</ISO2><ISO3>GEO</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Germany</Title><ISO2>DE</ISO2><ISO3>DEU</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Ghana</Title><ISO2>GH</ISO2><ISO3>GHA</ISO3></Country>
+    <Currency><ISO>GHC</ISO><Title>Ghana Cedi</Title><Prefix>&#xa2;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Gibraltar</Title><ISO2>GI</ISO2><ISO3>GIB</ISO3></Country>
+    <Currency><ISO>GIP</ISO><Title>Gibraltar Pound</Title><Prefix>&#xa3;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Greece</Title><ISO2>GR</ISO2><ISO3>GRC</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Greenland</Title><ISO2>GL</ISO2><ISO3>GRL</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Grenada</Title><ISO2>GD</ISO2><ISO3>GRD</ISO3></Country>
+    <Currency><ISO>XCD</ISO><Title>East Caribbean Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Guadeloupe</Title><ISO2>GP</ISO2><ISO3>GLP</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Guam</Title><ISO2>GU</ISO2><ISO3>GUM</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Guatemala</Title><ISO2>GT</ISO2><ISO3>GTM</ISO3></Country>
+    <Currency><ISO>GTQ</ISO><Title>Guatemala Quetzal</Title><Prefix>Q</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Guinea</Title><ISO2>GN</ISO2><ISO3>GIN</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Guinea-bissau</Title><ISO2>GW</ISO2><ISO3>GNB</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Guyana</Title><ISO2>GY</ISO2><ISO3>GUY</ISO3></Country>
+    <Currency><ISO>GYD</ISO><Title>Guyana Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Haiti</Title><ISO2>HT</ISO2><ISO3>HTI</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Heard and McDonald Islands</Title><ISO2>HM</ISO2><ISO3>HMD</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Honduras</Title><ISO2>HN</ISO2><ISO3>HND</ISO3></Country>
+    <Currency><ISO>HNL</ISO><Title>Honduras Lempira</Title><Prefix>L</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Hong Kong</Title><ISO2>HK</ISO2><ISO3>HKG</ISO3></Country>
+    <Currency><ISO>HKD</ISO><Title>Hong Kong Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Hungary</Title><ISO2>HU</ISO2><ISO3>HUN</ISO3></Country>
+    <Currency><ISO>HUF</ISO><Title>Hungary Forint</Title><Prefix>Ft</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Iceland</Title><ISO2>IS</ISO2><ISO3>ISL</ISO3></Country>
+    <Currency><ISO>ISK</ISO><Title>Iceland Krona</Title><Prefix>kr</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>India</Title><ISO2>IN</ISO2><ISO3>IND</ISO3></Country>
+    <Currency><ISO>INR</ISO><Title>India Rupee</Title><Prefix></Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>d-m-Y</Date><Time>H:i:s</Time><DateTime>d-m-Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Indonesia</Title><ISO2>ID</ISO2><ISO3>IDN</ISO3></Country>
+    <Currency><ISO>IDR</ISO><Title>Indonesia Rupiah</Title><Prefix>Rp</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Iran (Islamic Republic of)</Title><ISO2>IR</ISO2><ISO3>IRN</ISO3></Country>
+    <Currency><ISO>IRR</ISO><Title>Iran Rial</Title><Prefix>&#xfdfc;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Iraq</Title><ISO2>IQ</ISO2><ISO3>IRQ</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Ireland</Title><ISO2>IE</ISO2><ISO3>IRL</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>d-m-Y</Date><Time>H:i:s</Time><DateTime>d-m-Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Israel</Title><ISO2>IL</ISO2><ISO3>ISR</ISO3></Country>
+    <Currency><ISO>ILS</ISO><Title>Israel Shekel</Title><Prefix>&#x20aa;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Italy</Title><ISO2>IT</ISO2><ISO3>ITA</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Jamaica</Title><ISO2>JM</ISO2><ISO3>JAM</ISO3></Country>
+    <Currency><ISO>JMD</ISO><Title>Jamaica Dollar</Title><Prefix>J$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Japan</Title><ISO2>JP</ISO2><ISO3>JPN</ISO3></Country>
+    <Currency><ISO>JPY</ISO><Title>Japan Yen</Title><Prefix>&#xa5;</Prefix><Suffix></Suffix><SymbolDecimal></SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>0</Precision></Currency>
+    <Number><Prefix></Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>-</PrefixNegative><SuffixNegative></SuffixNegative></Number>
+    <Format><Date>Y年m月d日</Date><Time>H:i:s</Time><DateTime>Y年m月d日 H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Jordan</Title><ISO2>JO</ISO2><ISO3>JOR</ISO3></Country>
+    <Currency></Currency>
+    <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Kazakhstan</Title><ISO2>KZ</ISO2><ISO3>KAZ</ISO3></Country>
+    <Currency><ISO>KZT</ISO><Title>Kazakhstan Tenge</Title><Prefix>&#x43b;&#x432;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Kenya</Title><ISO2>KE</ISO2><ISO3>KEN</ISO3></Country>
+    <Currency></Currency>
+    <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Kiribati</Title><ISO2>KI</ISO2><ISO3>KIR</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Korea, Democratic People's Republic of</Title><ISO2>KP</ISO2><ISO3>PRK</ISO3></Country>
+    <Currency><ISO>KPW</ISO><Title>Korea (North) Won</Title><Prefix>&#x20a9;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Korea, Republic of</Title><ISO2>KR</ISO2><ISO3>KOR</ISO3></Country>
+    <Currency><ISO>KPW</ISO><Title>Korea (South) Won</Title><Prefix>&#x20a9;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>Y/m/d</Date><Time>H:i:s</Time><DateTime>Y/m/d H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Kuwait</Title><ISO2>KW</ISO2><ISO3>KWT</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Kyrgyzstan</Title><ISO2>KG</ISO2><ISO3>KGZ</ISO3></Country>
+    <Currency><ISO>KGS</ISO><Title>Kyrgyzstan Som</Title><Prefix>&#x43b;&#x432;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Lao People\'s Democratic Republic</Title><ISO2>LA</ISO2><ISO3>LAO</ISO3></Country>
+    <Currency><ISO>LAK</ISO><Title>Laos Kip</Title><Prefix>&#x20ad;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Latvia</Title><ISO2>LV</ISO2><ISO3>LVA</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Lebanon</Title><ISO2>LB</ISO2><ISO3>LBN</ISO3></Country>
+    <Currency><ISO>LBP</ISO><Title>Lebanon Pound</Title><Prefix>&#xa3;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Lesotho</Title><ISO2>LS</ISO2><ISO3>LSO</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Liberia</Title><ISO2>LR</ISO2><ISO3>LBR</ISO3></Country>
+    <Currency><ISO>LRD</ISO><Title>Liberia Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Libyan Arab Jamahiriya</Title><ISO2>LY</ISO2><ISO3>LBY</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Liechtenstein</Title><ISO2>LI</ISO2><ISO3>LIE</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Lithuania</Title><ISO2>LT</ISO2><ISO3>LTU</ISO3></Country>
+    <Currency><ISO>LTL</ISO><Title>Lithuania Litas</Title><Prefix>Lt</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>Y-m-d</Date><Time>H:i:s</Time><DateTime>Y-m-d H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Luxembourg</Title><ISO2>LU</ISO2><ISO3>LUX</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Macau</Title><ISO2>MO</ISO2><ISO3>MAC</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Macedonia, The Former Yugoslav Republic of</Title><ISO2>MK</ISO2><ISO3>MKD</ISO3></Country>
+    <Currency><ISO>MKD</ISO><Title>Macedonia Denar</Title><Prefix>&#x434;&#x435;&#x43d;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>d.m.Y</Date><Time>H:i:s</Time><DateTime>d.m.Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Madagascar</Title><ISO2>MG</ISO2><ISO3>MDG</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Malawi</Title><ISO2>MW</ISO2><ISO3>MWI</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Malaysia</Title><ISO2>MY</ISO2><ISO3>MYS</ISO3></Country>
+    <Currency><ISO>MYR</ISO><Title>Malaysia Ringgit</Title><Prefix>RM</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Maldives</Title><ISO2>MV</ISO2><ISO3>MDV</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Mali</Title><ISO2>ML</ISO2><ISO3>MLI</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Malta</Title><ISO2>MT</ISO2><ISO3>MLT</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Marshall Islands</Title><ISO2>MH</ISO2><ISO3>MHL</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Martinique</Title><ISO2>MQ</ISO2><ISO3>MTQ</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Mauritania</Title><ISO2>MR</ISO2><ISO3>MRT</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Mauritius</Title><ISO2>MU</ISO2><ISO3>MUS</ISO3></Country>
+    <Currency><ISO>MUR</ISO><Title>Mauritius Rupee</Title><Prefix>&#x20a8;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Mayotte</Title><ISO2>YT</ISO2><ISO3>MYT</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Mexico</Title><ISO2>MX</ISO2><ISO3>MEX</ISO3></Country>
+    <Currency><ISO>MXN</ISO><Title>Mexico Peso</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Number><Prefix></Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>-</PrefixNegative><SuffixNegative></SuffixNegative></Number>
+    <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Micronesia, Federated States of</Title><ISO2>FM</ISO2><ISO3>FSM</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Moldova, Republic of</Title><ISO2>MD</ISO2><ISO3>MDA</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Monaco</Title><ISO2>MC</ISO2><ISO3>MCO</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>d/m/Y</Date><Time>H:i:s</Time><DateTime>d/m/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Mongolia</Title><ISO2>MN</ISO2><ISO3>MNG</ISO3></Country>
+    <Currency><ISO>MNT</ISO><Title>Mongolia Tughrik</Title><Prefix>&#x20ae;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Montenegro</Title><ISO2>ME</ISO2><ISO3>MNE</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Montserrat</Title><ISO2>MS</ISO2><ISO3>MSR</ISO3></Country>
+    <Currency><ISO>XCD</ISO><Title>East Caribbean Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Morocco</Title><ISO2>MA</ISO2><ISO3>MAR</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Mozambique</Title><ISO2>MZ</ISO2><ISO3>MOZ</ISO3></Country>
+    <Currency><ISO>MZN</ISO><Title>Mozambique Metical</Title><Prefix>MT</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Myanmar</Title><ISO2>MM</ISO2><ISO3>MMR</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Namibia</Title><ISO2>NA</ISO2><ISO3>NAM</ISO3></Country>
+    <Currency><ISO>NAD</ISO><Title>Namibia Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Nauru</Title><ISO2>NR</ISO2><ISO3>NRU</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Nepal</Title><ISO2>NP</ISO2><ISO3>NPL</ISO3></Country>
+    <Currency><ISO>NPR</ISO><Title>Nepal Rupee</Title><Prefix>&#x20a8;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Netherlands</Title><ISO2>NL</ISO2><ISO3>NLD</ISO3>
+        <Region><Code>DR</Code><Title>Drenthe</Title></Region>
+        <Region><Code>FL</Code><Title>Flevoland</Title></Region>
+        <Region><Code>FR</Code><Title>Friesland</Title></Region>
+        <Region><Code>GE</Code><Title>Gelderland</Title></Region>
+        <Region><Code>GR</Code><Title>Groningen</Title></Region>
+        <Region><Code>LI</Code><Title>Limburg</Title></Region>
+        <Region><Code>NB</Code><Title>Noord-Brabant</Title></Region>
+        <Region><Code>NH</Code><Title>Noord-Holland</Title></Region>
+        <Region><Code>OV</Code><Title>Overijssel</Title></Region>
+        <Region><Code>UT</Code><Title>Utrecht</Title></Region>
+        <Region><Code>ZE</Code><Title>Zeeland</Title></Region>
+        <Region><Code>ZH</Code><Title>Zuid-Holland</Title></Region>
+    </Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Netherlands Antilles</Title><ISO2>AN</ISO2><ISO3>ANT</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>New Caledonia</Title><ISO2>NC</ISO2><ISO3>NCL</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>New Zealand</Title><ISO2>NZ</ISO2><ISO3>NZL</ISO3></Country>
+    <Currency><ISO>NZD</ISO><Title>New Zealand Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Nicaragua</Title><ISO2>NI</ISO2><ISO3>NIC</ISO3></Country>
+    <Currency><ISO>NIO</ISO><Title>Nicaragua Cordoba</Title><Prefix>C$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Niger</Title><ISO2>NE</ISO2><ISO3>NER</ISO3></Country>
+    <Currency><ISO>XOF</ISO><Title>West African CFA franc</Title><Prefix>CFA</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>0</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Nigeria</Title><ISO2>NG</ISO2><ISO3>NGA</ISO3></Country>
+    <Currency><ISO>NGN</ISO><Title>Nigeria Naira</Title><Prefix>&#x20a6;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Niue</Title><ISO2>NU</ISO2><ISO3>NIU</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Norfolk Island</Title><ISO2>NF</ISO2><ISO3>NFK</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Northern Mariana Islands</Title><ISO2>MP</ISO2><ISO3>MNP</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Norway</Title><ISO2>NO</ISO2><ISO3>NOR</ISO3></Country>
+    <Currency><ISO>NOK</ISO><Title>Norway Krone</Title><Prefix>kr</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Oman</Title><ISO2>OM</ISO2><ISO3>OMN</ISO3></Country>
+    <Currency><ISO>OMR</ISO><Title>Oman Rial</Title><Prefix>&#xfdfc;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Pakistan</Title><ISO2>PK</ISO2><ISO3>PAK</ISO3></Country>
+    <Currency><ISO>PKR</ISO><Title>Pakistan Rupee</Title><Prefix>&#x20a8;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Palau</Title><ISO2>PW</ISO2><ISO3>PLW</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Palestine, State of</Title><ISO2>PS</ISO2><ISO3>PSE</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Panama</Title><ISO2>PA</ISO2><ISO3>PAN</ISO3></Country>
+    <Currency><ISO>PAB</ISO><Title>Panama Balboa</Title><Prefix>B/.</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Papua New Guinea</Title><ISO2>PG</ISO2><ISO3>PNG</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Paraguay</Title><ISO2>PY</ISO2><ISO3>PRY</ISO3></Country>
+    <Currency><ISO>PYG</ISO><Title>Paraguay Guarani</Title><Prefix>Gs</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Peru</Title><ISO2>PE</ISO2><ISO3>PER</ISO3></Country>
+    <Currency><ISO>PEN</ISO><Title>Peru Nuevo Sol</Title><Prefix>S/.</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Philippines</Title><ISO2>PH</ISO2><ISO3>PHL</ISO3></Country>
+    <Currency><ISO>PHP</ISO><Title>Philippines Peso</Title><Prefix>&#x20b1;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Pitcairn</Title><ISO2>PN</ISO2><ISO3>PCN</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Poland</Title><ISO2>PL</ISO2><ISO3>POL</ISO3></Country>
+    <Currency><ISO>PLN</ISO><Title>Poland Zloty</Title><Prefix>&#x7a;&#x142;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Portugal</Title><ISO2>PT</ISO2><ISO3>PRT</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Puerto Rico</Title><ISO2>PR</ISO2><ISO3>PRI</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Qatar</Title><ISO2>QA</ISO2><ISO3>QAT</ISO3></Country>
+    <Currency><ISO>QAR</ISO><Title>Qatar Riyal</Title><Prefix>&#xfdfc;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Reunion</Title><ISO2>RE</ISO2><ISO3>REU</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Romania</Title><ISO2>RO</ISO2><ISO3>ROM</ISO3></Country>
+    <Currency><ISO>RON</ISO><Title>Romania New Leu</Title><Prefix>lei</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Russian Federation</Title><ISO2>RU</ISO2><ISO3>RUS</ISO3></Country>
+    <Currency><ISO>RUB</ISO><Title>Russia Ruble</Title><Prefix>&#x440;&#x443;&#x431;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format><Date>d.m.Y</Date><Time>H:i:s</Time><DateTime>d.m.Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>Rwanda</Title><ISO2>RW</ISO2><ISO3>RWA</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Saint Kitts and Nevis</Title><ISO2>KN</ISO2><ISO3>KNA</ISO3></Country>
+    <Currency><ISO>XCD</ISO><Title>East Caribbean Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Saint Lucia</Title><ISO2>LC</ISO2><ISO3>LCA</ISO3></Country>
+    <Currency><ISO>XCD</ISO><Title>East Caribbean Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Saint Vincent and the Grenadines</Title><ISO2>VC</ISO2><ISO3>VCT</ISO3></Country>
+    <Currency><ISO>XCD</ISO><Title>East Caribbean Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Samoa</Title><ISO2>WS</ISO2><ISO3>WSM</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>San Marino</Title><ISO2>SM</ISO2><ISO3>SMR</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Sao Tome and Principe</Title><ISO2>ST</ISO2><ISO3>STP</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Saudi Arabia</Title><ISO2>SA</ISO2><ISO3>SAU</ISO3></Country>
+    <Currency><ISO>SAR</ISO><Title>Saudi Arabia Riyal</Title><Prefix>&#xfdfc;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Senegal</Title><ISO2>SN</ISO2><ISO3>SEN</ISO3></Country>
+    <Currency><ISO>XOF</ISO><Title>West African CFA franc</Title><Prefix>CFA</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>0</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Serbia</Title><ISO2>RS</ISO2><ISO3>SRB</ISO3></Country>
+    <Currency><ISO>RSD</ISO><Title>Serbia Dinar</Title><Prefix>&#x414;&#x438;&#x43d;&#x2e;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Seychelles</Title><ISO2>SC</ISO2><ISO3>SYC</ISO3></Country>
+    <Currency><ISO>SCR</ISO><Title>Seychelles Rupee</Title><Prefix>&#x20a8;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Sierra Leone</Title><ISO2>SL</ISO2><ISO3>SLE</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Singapore</Title><ISO2>SG</ISO2><ISO3>SGP</ISO3></Country>
+    <Currency><ISO>SGD</ISO><Title>Singapore Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Slovakia (Slovak Republic)</Title><ISO2>SK</ISO2><ISO3>SVK</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Slovenia</Title><ISO2>SI</ISO2><ISO3>SVN</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Solomon Islands</Title><ISO2>SB</ISO2><ISO3>SLB</ISO3></Country>
+    <Currency><ISO>SBD</ISO><Title>Solomon Islands Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Somalia</Title><ISO2>SO</ISO2><ISO3>SOM</ISO3></Country>
+    <Currency><ISO>SOS</ISO><Title>Somalia Shilling</Title><Prefix>S</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>South Africa</Title><ISO2>ZA</ISO2><ISO3>ZAF</ISO3></Country>
+    <Currency><ISO>ZAR</ISO><Title>South Africa Rand</Title><Prefix>R</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>South Georgia and the South Sandwich Islands</Title><ISO2>GS</ISO2><ISO3>SGS</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Spain</Title><ISO2>ES</ISO2><ISO3>ESP</ISO3></Country>
+    <Currency><ISO>EUR</ISO><Title>Euro Member Countries</Title><Prefix>&#x20ac;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Sri Lanka</Title><ISO2>LK</ISO2><ISO3>LKA</ISO3></Country>
+    <Currency><ISO>LKR</ISO><Title>Sri Lanka Rupee</Title><Prefix>&#x20a8;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>St. Helena</Title><ISO2>SH</ISO2><ISO3>SHN</ISO3></Country>
+    <Currency><ISO>SHP</ISO><Title>Saint Helena Pound</Title><Prefix>&#xa3;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Sint Maarten (Dutch part)</Title><ISO2>SX</ISO2><ISO3>SXM</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Saint Martin (French part)</Title><ISO2>MF</ISO2><ISO3>MAF</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>St. Pierre and Miquelon</Title><ISO2>PM</ISO2><ISO3>SPM</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Sudan</Title><ISO2>SD</ISO2><ISO3>SDN</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Suriname</Title><ISO2>SR</ISO2><ISO3>SUR</ISO3></Country>
+    <Currency><ISO>SRD</ISO><Title>Suriname Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Svalbard and Jan Mayen Islands</Title><ISO2>SJ</ISO2><ISO3>SJM</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Swaziland</Title><ISO2>SZ</ISO2><ISO3>SWZ</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Sweden</Title><ISO2>SE</ISO2><ISO3>SWE</ISO3></Country>
+    <Currency><ISO>SEK</ISO><Title>Sweden Krona</Title><Prefix>kr</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Switzerland</Title><ISO2>CH</ISO2><ISO3>CHE</ISO3></Country>
+    <Currency><ISO>CHF</ISO><Title>Switzerland Franc</Title><Prefix>CHF</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Syrian Arab Republic</Title><ISO2>SY</ISO2><ISO3>SYR</ISO3></Country>
+    <Currency><ISO>SYP</ISO><Title>Syria Pound</Title><Prefix>&#xa3;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Taiwan</Title><ISO2>TW</ISO2><ISO3>TWN</ISO3></Country>
+    <Currency><ISO>TWD</ISO><Title>Taiwan New Dollar</Title><Prefix>NT$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Tajikistan</Title><ISO2>TJ</ISO2><ISO3>TJK</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Tanzania, United Republic of</Title><ISO2>TZ</ISO2><ISO3>TZA</ISO3></Country>
+    <Currency><ISO>TZS</ISO><Title>Tanzanian shilling</Title><Prefix>TSh</Prefix><Suffix></Suffix><SymbolDecimal>/</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Thailand</Title><ISO2>TH</ISO2><ISO3>THA</ISO3></Country>
+    <Currency><ISO>THB</ISO><Title>Thailand Baht</Title><Prefix>&#xe3f;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Togo</Title><ISO2>TG</ISO2><ISO3>TGO</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Tokelau</Title><ISO2>TK</ISO2><ISO3>TKL</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Tonga</Title><ISO2>TO</ISO2><ISO3>TON</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Trinidad and Tobago</Title><ISO2>TT</ISO2><ISO3>TTO</ISO3></Country>
+    <Currency><ISO>TTD</ISO><Title>Trinidad and Tobago Dollar</Title><Prefix>TT$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Tunisia</Title><ISO2>TN</ISO2><ISO3>TUN</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Turkey</Title><ISO2>TR</ISO2><ISO3>TUR</ISO3></Country>
+    <Currency><ISO>TRL</ISO><Title>Turkey Lira</Title><Prefix>&#x20a4;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Turkmenistan</Title><ISO2>TM</ISO2><ISO3>TKM</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Turks and Caicos Islands</Title><ISO2>TC</ISO2><ISO3>TCA</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Tuvalu</Title><ISO2>TV</ISO2><ISO3>TUV</ISO3></Country>
+    <Currency><ISO>TVD</ISO><Title>Tuvalu Dollar</Title><Prefix>$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Uganda</Title><ISO2>UG</ISO2><ISO3>UGA</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Ukraine</Title><ISO2>UA</ISO2><ISO3>UKR</ISO3></Country>
+    <Currency><ISO>UAH</ISO><Title>Ukraine Hryvnia</Title><Prefix>&#x20b4;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>United Arab Emirates</Title><ISO2>AE</ISO2><ISO3>ARE</ISO3></Country>
+    <Currency><ISO>AED</ISO><Title>Emirati Dirham</Title><Prefix></Prefix><Suffix>&#x62f;&#x2e;&#x625;</Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>United Kingdom</Title><ISO2>GB</ISO2><ISO3>GBR</ISO3></Country>
+    <Currency><ISO>GBP</ISO><Title>United Kingdom Pound</Title><Prefix>&#xa3;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>United States</Title><ISO2>US</ISO2><ISO3>USA</ISO3>
+        <Region><Code>AL</Code><Title>Alabama</Title></Region>
+        <Region><Code>AK</Code><Title>Alaska</Title></Region>
+        <Region><Code>AZ</Code><Title>Arizona</Title></Region>
+        <Region><Code>AR</Code><Title>Arkansas</Title></Region>
+        <Region><Code>CA</Code><Title>California</Title></Region>
+        <Region><Code>CO</Code><Title>Colorado</Title></Region>
+        <Region><Code>CT</Code><Title>Connecticut</Title></Region>
+        <Region><Code>DE</Code><Title>Delaware</Title></Region>
+        <Region><Code>DC</Code><Title>District of Columbia</Title></Region>
+        <Region><Code>FL</Code><Title>Florida</Title></Region>
+        <Region><Code>GA</Code><Title>Georgia</Title></Region>
+        <Region><Code>HI</Code><Title>Hawaii</Title></Region>
+        <Region><Code>ID</Code><Title>Idaho</Title></Region>
+        <Region><Code>IL</Code><Title>Illinois</Title></Region>
+        <Region><Code>IN</Code><Title>Indiana</Title></Region>
+        <Region><Code>IA</Code><Title>Iowa</Title></Region>
+        <Region><Code>KS</Code><Title>Kansas</Title></Region>
+        <Region><Code>KY</Code><Title>Kentucky</Title></Region>
+        <Region><Code>LA</Code><Title>Louisiana</Title></Region>
+        <Region><Code>ME</Code><Title>Maine</Title></Region>
+        <Region><Code>MD</Code><Title>Maryland</Title></Region>
+        <Region><Code>MA</Code><Title>Massachusetts</Title></Region>
+        <Region><Code>MI</Code><Title>Michigan</Title></Region>
+        <Region><Code>MN</Code><Title>Minnesota</Title></Region>
+        <Region><Code>MS</Code><Title>Mississippi</Title></Region>
+        <Region><Code>MO</Code><Title>Missouri</Title></Region>
+        <Region><Code>MT</Code><Title>Montana</Title></Region>
+        <Region><Code>NE</Code><Title>Nebraska</Title></Region>
+        <Region><Code>NV</Code><Title>Nevada</Title></Region>
+        <Region><Code>NH</Code><Title>New Hampshire</Title></Region>
+        <Region><Code>NJ</Code><Title>New Jersey</Title></Region>
+        <Region><Code>NM</Code><Title>New Mexico</Title></Region>
+        <Region><Code>NY</Code><Title>New York</Title></Region>
+        <Region><Code>NC</Code><Title>North Carolina</Title></Region>
+        <Region><Code>ND</Code><Title>North Dakota</Title></Region>
+        <Region><Code>OH</Code><Title>Ohio</Title></Region>
+        <Region><Code>OK</Code><Title>Oklahoma</Title></Region>
+        <Region><Code>OR</Code><Title>Oregon</Title></Region>
+        <Region><Code>PA</Code><Title>Pennsylvania</Title></Region>
+        <Region><Code>RI</Code><Title>Rhode Island</Title></Region>
+        <Region><Code>SC</Code><Title>South Carolina</Title></Region>
+        <Region><Code>SD</Code><Title>South Dakota</Title></Region>
+        <Region><Code>TN</Code><Title>Tennessee</Title></Region>
+        <Region><Code>TX</Code><Title>Texas</Title></Region>
+        <Region><Code>UT</Code><Title>Utah</Title></Region>
+        <Region><Code>VT</Code><Title>Vermont</Title></Region>
+        <Region><Code>VA</Code><Title>Virginia</Title></Region>
+        <Region><Code>WA</Code><Title>Washington</Title></Region>
+        <Region><Code>WV</Code><Title>West Virginia</Title></Region>
+        <Region><Code>WI</Code><Title>Wisconsin</Title></Region>
+        <Region><Code>WY</Code><Title>Wyoming</Title></Region>
+    </Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Number><Precision>2</Precision><Prefix></Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>-</PrefixNegative><SuffixNegative></SuffixNegative></Number>
+    <Format><Date>m/d/Y</Date><Time>H:i:s</Time><DateTime>m/d/Y H:i:s</DateTime></Format>
+</Locale>
+<Locale>
+    <Country><Title>United States Minor Outlying Islands</Title><ISO2>UM</ISO2><ISO3>UMI</ISO3>
+        <Region><Code>AF</Code><Title>Armed Forces Africa</Title></Region>
+        <Region><Code>AA</Code><Title>Armed Forces Americas</Title></Region>
+        <Region><Code>AC</Code><Title>Armed Forces Canada</Title></Region>
+        <Region><Code>AE</Code><Title>Armed Forces Europe</Title></Region>
+        <Region><Code>AM</Code><Title>Armed Forces Middle East</Title></Region>
+        <Region><Code>AP</Code><Title>Armed Forces Pacific</Title></Region>
+    </Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Uruguay</Title><ISO2>UY</ISO2><ISO3>URY</ISO3></Country>
+    <Currency><ISO>UYU</ISO><Title>Uruguay Peso</Title><Prefix>$U</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Uzbekistan</Title><ISO2>UZ</ISO2><ISO3>UZB</ISO3></Country>
+    <Currency><ISO>UZS</ISO><Title>Uzbekistan Som</Title><Prefix>&#x43b;&#x432;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Vanuatu</Title><ISO2>VU</ISO2><ISO3>VUT</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Vatican City State (Holy See)</Title><ISO2>VA</ISO2><ISO3>VAT</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Venezuela</Title><ISO2>VE</ISO2><ISO3>VEN</ISO3></Country>
+    <Currency><ISO>VEF</ISO><Title>Venezuela Bolivar</Title><Prefix>Bs</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Viet Nam</Title><ISO2>VN</ISO2><ISO3>VNM</ISO3></Country>
+    <Currency><ISO>VND</ISO><Title>Viet Nam Dong</Title><Prefix>&#x20ab;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Virgin Islands (British)</Title><ISO2>VG</ISO2><ISO3>VGB</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Virgin Islands (U.S.)</Title><ISO2>VI</ISO2><ISO3>VIR</ISO3></Country>
+    <Currency><ISO>USD</ISO><Title>United States Dollar</Title><Precision>2</Precision><Prefix>$</Prefix><Suffix></Suffix><Decimal>.</Decimal><Thousand>,</Thousand><PrefixNegative>(</PrefixNegative><SuffixNegative>)</SuffixNegative></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Wallis and Futuna Islands</Title><ISO2>WF</ISO2><ISO3>WLF</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Western Sahara</Title><ISO2>EH</ISO2><ISO3>ESH</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Yemen</Title><ISO2>YE</ISO2><ISO3>YEM</ISO3></Country>
+    <Currency><ISO>YER</ISO><Title>Yemen Rial</Title><Prefix>&#xfdfc;</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Yugoslavia</Title><ISO2>YU</ISO2><ISO3>YUG</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Zaire</Title><ISO2>ZR</ISO2><ISO3>ZAR</ISO3></Country>
+    <Currency></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Zambia</Title><ISO2>ZM</ISO2><ISO3>ZMB</ISO3></Country>
+    <Currency><ISO>ZMW</ISO><Title>Zambian kwacha</Title><Prefix></Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+<Locale>
+    <Country><Title>Zimbabwe</Title><ISO2>ZW</ISO2><ISO3>ZWE</ISO3></Country>
+    <Currency><ISO>ZWD</ISO><Title>Zimbabwe Dollar</Title><Prefix>Z$</Prefix><Suffix></Suffix><SymbolDecimal>.</SymbolDecimal><SymbolThousand>,</SymbolThousand><Precision>2</Precision></Currency>
+    <Format></Format>
+</Locale>
+</Data>

@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<!DOCTYPE xml>
+<PhreeformReport>
+	<reporttype><![CDATA[frm]]></reporttype>
+<tables>
+	<join_type><![CDATA[JOIN]]></join_type>
+	<tablename><![CDATA[journal_main]]></tablename>
+</tables>
+<tables>
+	<join_type><![CDATA[JOIN]]></join_type>
+	<tablename><![CDATA[journal_item]]></tablename>
+	<relationship><![CDATA[journal_main.id=journal_item.ref_id]]></relationship>
+</tables>
+<fieldlist>
+	<title><![CDATA[Text - Post Date]]></title>
+	<abscissa><![CDATA[10]]></abscissa>
+	<ordinate><![CDATA[10]]></ordinate>
+	<width><![CDATA[40]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<settings>
+		<text><![CDATA[Post Date]]></text>
+		<display><![CDATA[0]]></display>
+		<font><![CDATA[default]]></font>
+		<size><![CDATA[12]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[#000000]]></color>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<fieldlist>
+	<title><![CDATA[Data - Post Date]]></title>
+	<abscissa><![CDATA[50]]></abscissa>
+	<ordinate><![CDATA[10]]></ordinate>
+	<width><![CDATA[250]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<settings>
+		<fieldname><![CDATA[journal_main.post_date]]></fieldname>
+		<formatting><![CDATA[date]]></formatting>
+		<display><![CDATA[0]]></display>
+		<font><![CDATA[default]]></font>
+		<size><![CDATA[12]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[#000000]]></color>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<fieldlist>
+	<title><![CDATA[Text - Quantity]]></title>
+	<abscissa><![CDATA[10]]></abscissa>
+	<ordinate><![CDATA[15]]></ordinate>
+	<width><![CDATA[40]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<settings>
+		<text><![CDATA[Quantity]]></text>
+		<display><![CDATA[0]]></display>
+		<font><![CDATA[default]]></font>
+		<size><![CDATA[12]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[#000000]]></color>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<fieldlist>
+	<title><![CDATA[Data - Quantity]]></title>
+	<abscissa><![CDATA[50]]></abscissa>
+	<ordinate><![CDATA[15]]></ordinate>
+	<width><![CDATA[250]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<settings>
+		<fieldname><![CDATA[journal_item.qty]]></fieldname>
+		<display><![CDATA[0]]></display>
+		<font><![CDATA[default]]></font>
+		<size><![CDATA[12]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[#000000]]></color>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<fieldlist>
+	<title><![CDATA[Text - SKU]]></title>
+	<abscissa><![CDATA[10]]></abscissa>
+	<ordinate><![CDATA[20]]></ordinate>
+	<width><![CDATA[40]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<settings>
+		<text><![CDATA[SKU]]></text>
+		<display><![CDATA[0]]></display>
+		<font><![CDATA[default]]></font>
+		<size><![CDATA[12]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[#000000]]></color>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<fieldlist>
+	<title><![CDATA[Data - SKU]]></title>
+	<abscissa><![CDATA[50]]></abscissa>
+	<ordinate><![CDATA[20]]></ordinate>
+	<width><![CDATA[250]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<settings>
+		<fieldname><![CDATA[journal_item.sku]]></fieldname>
+		<display><![CDATA[0]]></display>
+		<font><![CDATA[default]]></font>
+		<size><![CDATA[12]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[#000000]]></color>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<fieldlist>
+	<title><![CDATA[Text -Description]]></title>
+	<abscissa><![CDATA[10]]></abscissa>
+	<ordinate><![CDATA[25]]></ordinate>
+	<width><![CDATA[40]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<settings>
+		<text><![CDATA[Description]]></text>
+		<display><![CDATA[0]]></display>
+		<font><![CDATA[default]]></font>
+		<size><![CDATA[12]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[#000000]]></color>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<fieldlist>
+	<title><![CDATA[Data - Description]]></title>
+	<abscissa><![CDATA[50]]></abscissa>
+	<ordinate><![CDATA[25]]></ordinate>
+	<width><![CDATA[250]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<settings>
+		<fieldname><![CDATA[journal_item.description]]></fieldname>
+		<display><![CDATA[0]]></display>
+		<font><![CDATA[default]]></font>
+		<size><![CDATA[12]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[#000000]]></color>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<fieldlist>
+	<title><![CDATA[Text - Assy Cost]]></title>
+	<abscissa><![CDATA[10]]></abscissa>
+	<ordinate><![CDATA[30]]></ordinate>
+	<width><![CDATA[40]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Text]]></type>
+	<settings>
+		<text><![CDATA[Assembly Cost]]></text>
+		<display><![CDATA[0]]></display>
+		<font><![CDATA[default]]></font>
+		<size><![CDATA[12]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[#000000]]></color>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<fieldlist>
+	<title><![CDATA[Data - Assembly Cost]]></title>
+	<abscissa><![CDATA[50]]></abscissa>
+	<ordinate><![CDATA[30]]></ordinate>
+	<width><![CDATA[250]]></width>
+	<height><![CDATA[5]]></height>
+	<type><![CDATA[Data]]></type>
+	<settings>
+		<fieldname><![CDATA[journal_main.id]]></fieldname>
+		<processing><![CDATA[invCOGS]]></processing>
+		<formatting><![CDATA[currency]]></formatting>
+		<display><![CDATA[0]]></display>
+		<font><![CDATA[default]]></font>
+		<size><![CDATA[12]]></size>
+		<align><![CDATA[L]]></align>
+		<color><![CDATA[#000000]]></color>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<fieldlist>
+	<title><![CDATA[Data - Image]]></title>
+	<abscissa><![CDATA[10]]></abscissa>
+	<ordinate><![CDATA[50]]></ordinate>
+	<width><![CDATA[40]]></width>
+	<type><![CDATA[ImgLink]]></type>
+	<settings>
+		<fieldname><![CDATA[journal_item.sku]]></fieldname>
+		<processing><![CDATA[image_sku]]></processing>
+		<bsize><![CDATA[1]]></bsize>
+		<bcolor><![CDATA[#000000]]></bcolor>
+		<fcolor><![CDATA[#000000]]></fcolor>
+	</settings>
+</fieldlist>
+<filterlist>
+	<fieldname><![CDATA[journal_item.sku]]></fieldname>
+	<title><![CDATA[SKU]]></title>
+	<type><![CDATA[8]]></type>
+</filterlist>
+	<title><![CDATA[Assembly Detail]]></title>
+	<description><![CDATA[Form to show details of a given assembly]]></description>
+<page>
+	<size><![CDATA[LETTER:216:279]]></size>
+	<orientation><![CDATA[P]]></orientation>
+	<margin>
+		<top><![CDATA[8]]></top>
+		<bottom><![CDATA[8]]></bottom>
+		<left><![CDATA[8]]></left>
+		<right><![CDATA[8]]></right>
+	</margin>
+</page>
+	<datelist><![CDATA[a]]></datelist>
+	<datedefault><![CDATA[a]]></datedefault>
+	<defaultemail><![CDATA[user]]></defaultemail>
+	<formbreakfield><![CDATA[journal_main.id]]></formbreakfield>
+	<groupname><![CDATA[inv:j14]]></groupname>
+	<security><![CDATA[u:-1;g:-1]]></security>
+</PhreeformReport>
